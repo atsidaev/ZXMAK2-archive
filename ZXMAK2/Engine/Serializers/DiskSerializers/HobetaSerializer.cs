@@ -1,0 +1,131 @@
+using System;
+using System.IO;
+using System.Text;
+
+using ZXMAK2.Engine.Devices.Disk;
+
+
+namespace ZXMAK2.Engine.Serializers.DiskSerializers
+{
+	public class HobetaSerializer : FormatSerializer
+	{
+		#region private data
+		
+		protected DiskImage _diskImage;
+
+		#endregion
+
+
+		public HobetaSerializer(DiskImage diskImage)
+		{
+			_diskImage = diskImage;
+		}
+		
+		
+		#region FormatSerializer
+
+		public override string FormatGroup { get { return "Disk images"; } }
+		public override string FormatName { get { return "Hobeta disk image"; } }
+		public override string FormatExtension { get { return "$"; } }
+
+		public override bool CanDeserialize { get { return true; } }
+		
+		public override void Deserialize(Stream stream)
+		{
+			loadFromStream(stream);
+            _diskImage.ModifyFlag = ModifyFlag.None;
+            _diskImage.Present = true;
+        }
+
+        public override void SetSource(string fileName)
+        {
+            _diskImage.FileName = fileName;
+        }
+
+        public override void SetReadOnly(bool readOnly)
+        {
+            _diskImage.IsWP = readOnly;
+        }
+
+		#endregion
+
+
+		#region private
+		private void loadFromStream(Stream stream)
+		{
+			if (stream.Length < 15)
+			{
+				DialogProvider.Show(
+                    "Invalid HOBETA file size", 
+                    "HOBETA loader",
+                    DlgButtonSet.OK,
+                    DlgIcon.Error);
+				return;
+			}
+
+			byte[] fbuf = new byte[stream.Length];
+			stream.Seek(0, SeekOrigin.Begin);
+			stream.Read(fbuf, 0, (int)stream.Length);
+
+			if (fbuf[14] * 256 + 17 != fbuf.Length || fbuf[13] != 0 || fbuf[14] == 0)
+			{
+				DialogProvider.Show(
+                    "Corrupt HOBETA file!", 
+                    "HOBETA loader",
+                    DlgButtonSet.OK,
+                    DlgIcon.Error);
+				return;
+			}
+
+			string oldExt = Path.GetExtension(_diskImage.FileName).ToUpper();
+			if (oldExt == string.Empty)
+				_diskImage.Format();
+
+			fbuf[13] = fbuf[14];
+			addFile(fbuf, 0, 0x11);
+			//_diskImage.FileName = "UNKNOWN.$Z";
+		}
+
+		protected bool addFile(byte[] buf, int hdrIndex, int dataIndex)
+		{
+			byte[] s9 = new byte[256];
+			_diskImage.readLogicalSector(0, 0, 9, s9);
+			int len = buf[hdrIndex + 13];
+			int pos = s9[0xE4] * 0x10;
+
+			byte[] dir = new byte[256];
+			_diskImage.readLogicalSector(0, 0, 1 + pos / 0x100, dir);
+			if ((s9[0xE5] | (s9[0xE6] << 8)) < len)   // disk full
+				return false;
+			for (int i = 0; i < 14; i++)
+				dir[(pos & 0xFF) + i] = buf[hdrIndex + i];
+			ushort x = (ushort)(s9[0xE1] | (s9[0xE2] << 8));
+			dir[(pos & 0xFF) + 14] = (byte)x;
+			dir[(pos & 0xFF) + 15] = (byte)(x >> 8);
+
+			_diskImage.writeLogicalSector(0, 0, 1 + pos / 0x100, dir);
+
+			pos = s9[0xE1] + 16 * s9[0xE2];
+			s9[0xE1] = (byte)((pos + len) & 0x0F);
+			s9[0xE2] = (byte)((pos + len) >> 4);
+			s9[0xE4]++;
+
+			x = (ushort)(s9[0xE5] | (s9[0xE6] << 8));
+			x -= (ushort)len;
+			s9[0xE5] = (byte)x;
+			s9[0xE6] = (byte)(x >> 8);
+
+			_diskImage.writeLogicalSector(0, 0, 9, s9);
+
+			// goto next track
+			for (int i = 0; i < len; i++, pos++)
+			{
+				for (int j = 0; j < 0x100; j++)
+					s9[j] = buf[dataIndex + i * 0x100 + j];
+				_diskImage.writeLogicalSector(pos / 32, (pos / 16) & 1, (pos & 0x0F) + 1, s9);
+			}
+			return true;
+		}
+		#endregion
+	}
+}

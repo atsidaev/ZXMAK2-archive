@@ -1,0 +1,427 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ZXMAK2</RootNamespace>
+    <AssemblyName>ZXMAK2</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.Direct3D.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2910.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2911.0\Microsoft.DirectX.Direct3DX.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.DirectX.DirectInput, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectInput.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectSound.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\Configuration\ConfigScreenControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsBetaDisk.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsBetaDisk.Designer.cs">
+      <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsGenericDevice.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsGenericDevice.Designer.cs">
+      <DependentUpon>CtlSettingsGenericDevice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsMemory.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsMemory.Designer.cs">
+      <DependentUpon>CtlSettingsMemory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsUla.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsUla.Designer.cs">
+      <DependentUpon>CtlSettingsUla.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsGenericSound.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsGenericSound.Designer.cs">
+      <DependentUpon>CtlSettingsGenericSound.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Configuration\FormAddDeviceWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\Configuration\FormAddDeviceWizard.Designer.cs">
+      <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Debugger\FormMemoryMap.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\Debugger\FormMemoryMap.Designer.cs">
+      <DependentUpon>FormMemoryMap.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FormAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\Debugger\dbgWD1793.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\Debugger\dbgWD1793.designer.cs">
+      <DependentUpon>dbgWD1793.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Debugger\DebugPanels.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Debugger\FormCPU.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\Debugger\FormCPU.designer.cs">
+      <DependentUpon>FormCPU.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RenderVideo.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\TapeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\TapeForm.designer.cs">
+      <DependentUpon>TapeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DialogProvider.cs" />
+    <Compile Include="Engine\Devices\AyMouseDevice.cs" />
+    <Compile Include="Engine\Devices\BeeperDevice.cs" />
+    <Compile Include="Engine\Bus\BusManager.cs" />
+    <Compile Include="Engine\Devices\BeeperQuorum.cs" />
+    <Compile Include="Engine\Devices\BeeperScorpion.cs" />
+    <Compile Include="Engine\Devices\CmosProfi.cs" />
+    <Compile Include="Engine\Devices\Disk\BetaDiskInterfaceLec.cs" />
+    <Compile Include="Engine\Devices\CmosDevice.cs" />
+    <Compile Include="Engine\Devices\Disk\BetaDiskInterfaceProfi.cs" />
+    <Compile Include="Engine\Devices\Disk\BetaDiskInterfaceExt.cs" />
+    <Compile Include="Engine\Devices\Disk\BetaDiskInterfaceQuorum.cs" />
+    <Compile Include="Engine\Devices\KempstonJoystick.cs" />
+    <Compile Include="Engine\Devices\Memory\MemoryAtm450.cs" />
+    <Compile Include="Engine\Devices\Memory\MemoryAtm710.cs" />
+    <Compile Include="Engine\Devices\Memory\MemoryBase.cs" />
+    <Compile Include="Engine\Devices\Memory\MemoryLec528.cs" />
+    <Compile Include="Engine\Devices\Memory\MemoryPentagon512.cs" />
+    <Compile Include="Engine\Devices\Memory\MemoryProfi1024.cs" />
+    <Compile Include="Engine\Devices\Memory\MemoryScorpion1024.cs" />
+    <Compile Include="Engine\Devices\Memory\MemoryScorpion256.cs" />
+    <Compile Include="Engine\Devices\Memory\MemorySpectrum128.cs" />
+    <Compile Include="Engine\Devices\Memory\MemorySpectrum48.cs" />
+    <Compile Include="Engine\Devices\Memory\MemoryQuorum256.cs" />
+    <Compile Include="Engine\Devices\KeyboardQuorum.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaDelta.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaLeningrad.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaPentagon.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaProfi5XX.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaSpectrum128.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaSpectrum48.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaSpectrum48snow.cs" />
+    <Compile Include="Engine\Devices\Ula\ZebestUla.cs" />
+    <Compile Include="Engine\Interfaces\IBusDevice.cs" />
+    <Compile Include="Engine\Interfaces\IConfigurable.cs" />
+    <Compile Include="Engine\Interfaces\IDebuggable.cs" />
+    <Compile Include="Engine\Interfaces\IJtagDevice.cs" />
+    <Compile Include="Engine\Interfaces\IKeyboardDevice.cs" />
+    <Compile Include="Engine\Interfaces\IMemoryDevice.cs" />
+    <Compile Include="Engine\Interfaces\IMouseDevice.cs" />
+    <Compile Include="Engine\Interfaces\ISoundRenderer.cs" />
+    <Compile Include="Engine\Interfaces\IUlaDevice.cs" />
+    <Compile Include="Engine\Devices\KempstonMouseDevice.cs" />
+    <Compile Include="Engine\Devices\KeyboardDevice.cs" />
+    <Compile Include="Engine\Serializers\ScreenshotSerializers\BmpSerializer.cs" />
+    <Compile Include="Engine\Serializers\ScreenshotSerializers\JpgSerializer.cs" />
+    <Compile Include="Engine\Serializers\ScreenshotSerializers\PngSerializer.cs" />
+    <Compile Include="Engine\Serializers\ScreenshotSerializers\ScreenshotSerializerBase.cs" />
+    <Compile Include="Engine\Serializers\SnapshotSerializers\SnapshotSerializerBase.cs" />
+    <Compile Include="Engine\Devices\Memory\MemoryPentagon128.cs" />
+    <Compile Include="Engine\Serializers\SnapshotSerializers\SzxSerializer.cs" />
+    <Compile Include="Engine\SpectrumConcrete.cs" />
+    <Compile Include="Controls\FormMachineSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Engine\Devices\Ula\UlaAtm450.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaDeviceBase.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaProfi3XX.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaQuorum.cs" />
+    <Compile Include="Engine\Devices\Ula\UlaScorpion.cs" />
+    <Compile Include="Engine\Z80\DasmUtils.cs" />
+    <Compile Include="Engine\Z80\Z80FXCBops.cs" />
+    <Compile Include="LogAgent.cs" />
+    <Compile Include="MDX\DirectKeyboard.cs" />
+    <Compile Include="MDX\DirectMouse.cs" />
+    <Compile Include="MDX\DirectSound.cs" />
+    <Compile Include="Engine\Devices\AY8910.cs" />
+    <Compile Include="Engine\Devices\Disk\DiskImage.cs" />
+    <Compile Include="Engine\Devices\Disk\Sector.cs" />
+    <Compile Include="Engine\Devices\Disk\SimpleSector.cs" />
+    <Compile Include="Engine\Devices\Disk\Track.cs" />
+    <Compile Include="Engine\Devices\Disk\BetaDiskInterface.cs" />
+    <Compile Include="Engine\Interfaces\IAY8910Device.cs" />
+    <Compile Include="Engine\Interfaces\IBetaDiskDevice.cs" />
+    <Compile Include="Engine\Interfaces\ITapeDevice.cs" />
+    <Compile Include="Engine\Serializers\DiskLoadManager.cs" />
+    <Compile Include="Engine\Serializers\DiskSerializers\FdiSerializer.cs" />
+    <Compile Include="Engine\Serializers\DiskSerializers\HobetaSerializer.cs" />
+    <Compile Include="Engine\Serializers\DiskSerializers\LzssHuffmanStream.cs" />
+    <Compile Include="Engine\Serializers\DiskSerializers\SclSerializer.cs" />
+    <Compile Include="Engine\Serializers\DiskSerializers\Td0Serializer.cs" />
+    <Compile Include="Engine\Serializers\DiskSerializers\TrdSerializer.cs" />
+    <Compile Include="Engine\Serializers\DiskSerializers\UdiSerializer.cs" />
+    <Compile Include="Engine\Serializers\FormatSerializer.cs" />
+    <Compile Include="Engine\Serializers\LoadManager.cs" />
+    <Compile Include="Engine\Serializers\SerializeManager.cs" />
+    <Compile Include="Engine\Serializers\ScreenshotSerializers\ScrSerializer.cs" />
+    <Compile Include="Engine\Serializers\SnapshotSerializers\SitSerializer.cs" />
+    <Compile Include="Engine\Serializers\SnapshotSerializers\SnaSerializer.cs" />
+    <Compile Include="Engine\Serializers\SnapshotSerializers\Z80Serializer.cs" />
+    <Compile Include="Engine\Serializers\SnapshotSerializers\ZxSerializer.cs" />
+    <Compile Include="Engine\Serializers\TapeSerializers\CswSerializer.cs" />
+    <Compile Include="Engine\Serializers\TapeSerializers\TapSerializer.cs" />
+    <Compile Include="Engine\Serializers\TapeSerializers\TzxSerializer.cs" />
+    <Compile Include="Engine\SpectrumBase.cs" />
+    <Compile Include="Engine\Devices\TapeDevice.cs" />
+    <Compile Include="Engine\Z80\dasm.cs" />
+    <Compile Include="Engine\Z80\Z80.cs" />
+    <Compile Include="Engine\Z80\Z80ALU.cs" />
+    <Compile Include="Engine\Z80\Z80CBops.cs" />
+    <Compile Include="Engine\Z80\Z80EDops.cs" />
+    <Compile Include="Engine\Z80\Z80FXops.cs" />
+    <Compile Include="Engine\Z80\Z80OPS.cs" />
+    <Compile Include="Engine\Z80\Z80REGS.cs" />
+    <Compile Include="Controls\FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\Log.cs" />
+    <Compile Include="Logging\LoggerInternal.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Logging\LogMessage.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Controls\Render3D.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Engine\VirtualMachine.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="ZipLib\Checksums\Adler32.cs" />
+    <Compile Include="ZipLib\Checksums\CRC32.cs" />
+    <Compile Include="ZipLib\Checksums\IChecksum.cs" />
+    <Compile Include="ZipLib\Checksums\StrangeCRC.cs" />
+    <Compile Include="ZipLib\Core\FileSystemScanner.cs" />
+    <Compile Include="ZipLib\Core\INameTransform.cs" />
+    <Compile Include="ZipLib\Core\IScanFilter.cs" />
+    <Compile Include="ZipLib\Core\IScanner.cs" />
+    <Compile Include="ZipLib\Core\NameFilter.cs" />
+    <Compile Include="ZipLib\Core\PathFilter.cs" />
+    <Compile Include="ZipLib\Core\StreamUtils.cs" />
+    <Compile Include="ZipLib\Encryption\PkzipClassic.cs" />
+    <Compile Include="ZipLib\SharpZipBaseException.cs" />
+    <Compile Include="ZipLib\Zip\Compression\Deflater.cs" />
+    <Compile Include="ZipLib\Zip\Compression\DeflaterConstants.cs" />
+    <Compile Include="ZipLib\Zip\Compression\DeflaterEngine.cs" />
+    <Compile Include="ZipLib\Zip\Compression\DeflaterHuffman.cs" />
+    <Compile Include="ZipLib\Zip\Compression\DeflaterPending.cs" />
+    <Compile Include="ZipLib\Zip\Compression\Inflater.cs" />
+    <Compile Include="ZipLib\Zip\Compression\InflaterDynHeader.cs" />
+    <Compile Include="ZipLib\Zip\Compression\InflaterHuffmanTree.cs" />
+    <Compile Include="ZipLib\Zip\Compression\PendingBuffer.cs" />
+    <Compile Include="ZipLib\Zip\Compression\Streams\DeflaterOutputStream.cs" />
+    <Compile Include="ZipLib\Zip\Compression\Streams\InflaterInputStream.cs" />
+    <Compile Include="ZipLib\Zip\Compression\Streams\OutputWindow.cs" />
+    <Compile Include="ZipLib\Zip\Compression\Streams\StreamManipulator.cs" />
+    <Compile Include="ZipLib\Zip\FastZip.cs" />
+    <Compile Include="ZipLib\Zip\IEntryFactory.cs" />
+    <Compile Include="ZipLib\Zip\ZipConstants.cs" />
+    <Compile Include="ZipLib\Zip\ZipEntry.cs" />
+    <Compile Include="ZipLib\Zip\ZipEntryFactory.cs" />
+    <Compile Include="ZipLib\Zip\ZipException.cs" />
+    <Compile Include="ZipLib\Zip\ZipExtraData.cs" />
+    <Compile Include="ZipLib\Zip\ZipFile.cs" />
+    <Compile Include="ZipLib\Zip\ZipHelperStream.cs" />
+    <Compile Include="ZipLib\Zip\ZipInputStream.cs" />
+    <Compile Include="ZipLib\Zip\ZipNameTransform.cs" />
+    <Compile Include="ZipLib\Zip\ZipOutputStream.cs" />
+    <EmbeddedResource Include="Controls\Configuration\CtlSettingsBetaDisk.resx">
+      <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Configuration\CtlSettingsGenericDevice.resx">
+      <DependentUpon>CtlSettingsGenericDevice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Configuration\CtlSettingsMemory.resx">
+      <DependentUpon>CtlSettingsMemory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Configuration\CtlSettingsUla.resx">
+      <DependentUpon>CtlSettingsUla.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Configuration\CtlSettingsGenericSound.resx">
+      <DependentUpon>CtlSettingsGenericSound.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Configuration\FormAddDeviceWizard.resx">
+      <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Debugger\FormMemoryMap.resx">
+      <DependentUpon>FormMemoryMap.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FormAbout.resx">
+      <DependentUpon>FormAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Debugger\dbgWD1793.resx">
+      <DependentUpon>dbgWD1793.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Debugger\FormCPU.resx">
+      <DependentUpon>FormCPU.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FormMachineSettings.resx">
+      <DependentUpon>FormMachineSettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TapeForm.resx">
+      <DependentUpon>TapeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="boot.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Machines.PAK">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Roms.PAK">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\Fdd.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\ZXMAK2.ICO" />
+    <None Include="Icons\PlayIcon.png" />
+    <None Include="Icons\RewindIcon.png" />
+    <None Include="Icons\PrevIcon.png" />
+    <None Include="Icons\NextIcon.png" />
+    <None Include="Icons\StopIcon.png" />
+    <None Include="Icons\Rocket.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
