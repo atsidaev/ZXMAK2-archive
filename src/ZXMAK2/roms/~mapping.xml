@@ -1,0 +1,46 @@
+<Mapping>
+	<Model name="Default">
+		<Page name="128" image="128-0.rom"/>
+		<Page name="SOS" image="128-1.rom"/>
+		<Page name="DOS" image="trdos.rom"/>
+		<!--<Page name="SYS" image="shadow.rom"/>-->
+	</Model>
+	<Model name="ZX48">
+		<Page name="SOS" image="48.rom" offset="0x0000" length="0x4000"/>
+	</Model>
+	<Model name="ZX128">
+		<Page name="128" image="128-0.rom"/>
+		<Page name="SOS" image="128-1.rom"/>
+	</Model>
+	<Model name="ATM450">
+		<Page name="128" image="atm103rs.rom" offset="0x8000" />
+		<Page name="SOS" image="atm103rs.rom" offset="0xC000" />
+		<Page name="DOS" image="atm103rs.rom" offset="0x4000" />
+		<Page name="SYS" image="atm103rs.rom" offset="0x0000" />
+	</Model>
+	<Model name="Pentagon">
+		<Page name="128" image="pentagon.rom" offset="0x0000" />
+		<Page name="SOS" image="pentagon.rom" offset="0x4000" />
+	</Model>
+	<Model name="Profi">
+		<Page name="128" image="PROF-M.ROM" offset="0x8000" />
+		<Page name="SOS" image="PROF-M.ROM" offset="0xC000" />
+		<Page name="DOS" image="PROF-M.ROM" offset="0x4000" />
+		<Page name="SYS" image="PROF-M.ROM" offset="0x0000" />
+	</Model>
+	<Model name="Quorum">
+		<Page name="128" image="QU7V42.rom" offset="0x8000" />
+		<Page name="SOS" image="QU7V42.rom" offset="0xC000" />
+		<Page name="DOS" image="QU7V42.rom" offset="0x4000" />
+		<Page name="SYS" image="QU7V42.rom" offset="0x0000" />
+	</Model>
+	<Model name="Scorpion">
+		<Page name="128" image="scorp295.rom" offset="0x0000" />
+		<Page name="SOS" image="scorp295.rom" offset="0x4000" />
+		<Page name="DOS" image="scorp295.rom" offset="0xC000" />
+		<Page name="SYS" image="scorp295.rom" offset="0x8000" />
+	</Model>
+	<Model name="LEC">
+		<Page name="SOS" image="LEC24.ROM"/>
+	</Model>
+</Mapping>
