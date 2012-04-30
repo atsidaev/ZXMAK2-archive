@@ -8,17 +8,15 @@ using ZXMAK2.Engine.Z80;
 
 namespace ZXMAK2.Engine.Devices
 {
-    public class AY8910 : IBusDevice, ISoundRenderer, IConfigurable, IAY8910Device
+    public class AY8910 : BusDeviceBase, ISoundRenderer, IConfigurable, IAY8910Device
 	{
         #region IBusDevice
 
-        public virtual string Name { get { return "AY8910"; } }
-        public virtual string Description { get { return "Standard AY8910 Programmable Sound Generator"; } }
-        public BusCategory Category { get { return BusCategory.Music; } }
-		private int m_busOrder = 0;
-		public int BusOrder { get { return m_busOrder; } set { m_busOrder = value; } }
+        public override string Name { get { return "AY8910"; } }
+        public override string Description { get { return "Standard AY8910 Programmable Sound Generator"; } }
+        public override BusCategory Category { get { return BusCategory.Music; } }
 
-        public virtual void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
 			m_cpu = bmgr.CPU;
             IUlaDevice ula = (IUlaDevice)bmgr.FindDevice(typeof(IUlaDevice));
@@ -45,11 +43,11 @@ namespace ZXMAK2.Engine.Devices
             bmgr.SubscribeEndFrame(EndFrame);
         }
 
-        public virtual void BusConnect()
+        public override void BusConnect()
         {
         }
 
-        public virtual void BusDisconnect()
+        public override void BusDisconnect()
         {
         }
 

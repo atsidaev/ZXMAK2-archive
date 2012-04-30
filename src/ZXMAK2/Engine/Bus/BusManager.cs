@@ -17,7 +17,7 @@ namespace ZXMAK2.Engine.Bus
         private LoadManager m_loadManager;
         private IUlaDevice m_ula;
         private IDebuggable m_debuggable;
-        private List<IBusDevice> m_deviceList = new List<IBusDevice>();
+        private List<BusDeviceBase> m_deviceList = new List<BusDeviceBase>();
         private BusReadProc[] m_mapReadMemoryM1;
         private BusReadProc[] m_mapReadMemory;
         private BusReadIoProc[] m_mapReadPort;
@@ -185,18 +185,18 @@ namespace ZXMAK2.Engine.Bus
 			get { return m_sandBox; } 
 		}
 
-        public IBusDevice FindDevice(Type type)
+        public BusDeviceBase FindDevice(Type type)
         {
-            foreach (IBusDevice device in m_deviceList)
+            foreach (BusDeviceBase device in m_deviceList)
                 if (type.IsAssignableFrom(device.GetType()))
                     return device;
             return null;
         }
 
-        public List<IBusDevice> FindDevices(Type type)
+        public List<BusDeviceBase> FindDevices(Type type)
         {
-            List<IBusDevice> list = new List<IBusDevice>();
-            foreach (IBusDevice device in m_deviceList)
+            List<BusDeviceBase> list = new List<BusDeviceBase>();
+            foreach (BusDeviceBase device in m_deviceList)
                 if (type.IsAssignableFrom(device.GetType()))
                     list.Add(device);
             return list;
@@ -285,11 +285,11 @@ namespace ZXMAK2.Engine.Bus
 
         #region Device Add/Remove
 
-        public void Add(IBusDevice device)
+        public void Add(BusDeviceBase device)
         {
             if (m_connected)
                 throw new InvalidOperationException("Cannot add device into connected bus!");
-            foreach(IBusDevice device2 in m_deviceList)
+            foreach(BusDeviceBase device2 in m_deviceList)
                 if(device2.GetType()==device.GetType())
                     throw new InvalidOperationException(string.Format("Cannot add device {0}, because this device already exist!", device.Name));
             if(device is IJtagDevice && FindDevice(typeof(IJtagDevice))!=null)
@@ -306,7 +306,7 @@ namespace ZXMAK2.Engine.Bus
 			m_deviceList.Add(device);
         }
 
-        public void Remove(IBusDevice device)
+        public void Remove(BusDeviceBase device)
         {
             if (m_connected)
                 throw new InvalidOperationException("Cannot remove device from connected bus!");
@@ -373,14 +373,14 @@ namespace ZXMAK2.Engine.Bus
                 m_loadManager.Clear();
                 m_loadManager.AddStandardSerializers();
             }
-            foreach (IBusDevice device in m_deviceList)
+            foreach (BusDeviceBase device in m_deviceList)
             {
                 try { device.BusInit(this); }
                 catch (Exception ex)
                 { success = false; LogAgent.Error(ex); }
             }
             m_frameTactCount = m_ula.FrameTactCount;
-            foreach (IBusDevice device in m_deviceList)
+            foreach (BusDeviceBase device in m_deviceList)
             {
                 try { device.BusConnect();}
                 catch (Exception ex)
@@ -410,7 +410,7 @@ namespace ZXMAK2.Engine.Bus
                 if (jtag != null)
                     jtag.Detach();
             }
-            foreach (IBusDevice device in m_deviceList)
+            foreach (BusDeviceBase device in m_deviceList)
             {
                 try
                 {
@@ -496,8 +496,8 @@ namespace ZXMAK2.Engine.Bus
             //LogAgent.Debug("time begin BusManager.LoadConfig");
             Disconnect();
             // store old devices to allow reuse & save state
-            Dictionary<string, IBusDevice> oldDevices = new Dictionary<string, IBusDevice>();
-            foreach (IBusDevice device in m_deviceList)
+            Dictionary<string, BusDeviceBase> oldDevices = new Dictionary<string, BusDeviceBase>();
+            foreach (BusDeviceBase device in m_deviceList)
                 oldDevices.Add(getDeviceKey(device.GetType()), device);
             Clear();
             int orderCounter=0;
@@ -523,12 +523,12 @@ namespace ZXMAK2.Engine.Bus
                         LogAgent.Error("Device not found: {0}", typeName);
                         continue;
                     }
-                    if (!typeof(IBusDevice).IsAssignableFrom(type))
+                    if (!typeof(BusDeviceBase).IsAssignableFrom(type))
                     {
                         LogAgent.Error("Invalid Device: {0}", type.FullName);
                         continue;
                     }
-                    IBusDevice device = null;
+                    BusDeviceBase device = null;
                     string key = getDeviceKey(type);
                     if (oldDevices.ContainsKey(key))
                     {
@@ -538,7 +538,7 @@ namespace ZXMAK2.Engine.Bus
                     else
                     {
                         //create new
-                        device = (IBusDevice)Activator.CreateInstance(type);
+                        device = (BusDeviceBase)Activator.CreateInstance(type);
                     }
 					int busOrder;
 					if (node.Attributes["busOrder"] == null || int.TryParse(node.Attributes["busOrder"].InnerText, out busOrder))
@@ -575,7 +575,7 @@ namespace ZXMAK2.Engine.Bus
         public void SaveConfig(XmlNode busNode)
         {
             //LogAgent.Debug("time begin BusManager.SaveConfig");
-            foreach (IBusDevice device in m_deviceList)
+            foreach (BusDeviceBase device in m_deviceList)
             {
                 try
                 {
@@ -605,9 +605,9 @@ namespace ZXMAK2.Engine.Bus
 		}
     }
 
-    public class BusDevicePriorityComparison : IComparer<IBusDevice>, System.Collections.IComparer
+    public class BusDevicePriorityComparison : IComparer<BusDeviceBase>, System.Collections.IComparer
     {
-        public int Compare(IBusDevice x, IBusDevice y)
+        public int Compare(BusDeviceBase x, BusDeviceBase y)
         {
             if (x == y)
                 return 0;
@@ -625,7 +625,7 @@ namespace ZXMAK2.Engine.Bus
 
         public int Compare(object x, object y)
         {
-            return Compare(x as IBusDevice, y as IBusDevice);
+            return Compare(x as BusDeviceBase, y as BusDeviceBase);
         }
     }
 }

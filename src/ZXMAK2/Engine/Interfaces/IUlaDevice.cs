@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace ZXMAK2.Engine.Interfaces
 {
-    public interface IUlaDevice : IBusDevice
+    public interface IUlaDevice //: BusDeviceBase
     {
         int[] VideoBuffer { get; set; }
         float VideoHeightScale { get; }

@@ -5,7 +5,7 @@ using ZXMAK2.Engine.Devices.Disk;
 
 namespace ZXMAK2.Engine.Interfaces
 {
-    public interface IBetaDiskDevice : IBusDevice
+    public interface IBetaDiskDevice //: BusDeviceBase
     {
         bool DOSEN { get; set; }
 

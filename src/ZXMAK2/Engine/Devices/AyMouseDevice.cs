@@ -5,28 +5,26 @@ using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Engine.Devices
 {
-    public class AyMouseDevice : IBusDevice, IMouseDevice
+    public class AyMouseDevice : BusDeviceBase, IMouseDevice
     {
         #region IBusDevice Members
 
-        public string Name { get { return "AY Mouse"; } }
-        public string Description { get { return "AY Mouse based on V.M.G. extension"; } }
-        public BusCategory Category { get { return BusCategory.Mouse; } }
-		private int m_busOrder = 0;
-		public int BusOrder { get { return m_busOrder; } set { m_busOrder = value; } }
+        public override string Name { get { return "AY Mouse"; } }
+        public override string Description { get { return "AY Mouse based on V.M.G. extension"; } }
+        public override BusCategory Category { get { return BusCategory.Mouse; } }
 
-        public void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             m_ay8910 = bmgr.FindDevice(typeof(AY8910)) as AY8910;
         }
 
-        public void BusConnect()
+        public override void BusConnect()
         {
             if (m_ay8910 != null)
                 m_ay8910.UpdateIRA += new AyUpdatePortDelegate(ay_UpdateIRA);	// AY mouse handler
         }
 
-        public void BusDisconnect()
+        public override void BusDisconnect()
         {
             if (m_ay8910 != null)
                 m_ay8910.UpdateIRA -= new AyUpdatePortDelegate(ay_UpdateIRA);	// AY mouse handler

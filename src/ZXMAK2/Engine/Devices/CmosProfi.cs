@@ -6,29 +6,27 @@ using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Engine.Devices
 {
-    public class CmosProfi : IBusDevice
+    public class CmosProfi : BusDeviceBase
     {
         #region IBusDevice Members
 
-        public string Name { get { return "CMOS PROFI"; } }
-        public string Description { get { return "PROFI CMOS device\nPort:\t#9F"; } }
-        public BusCategory Category { get { return BusCategory.Other; } }
-        private int m_busOrder = 0;
-        public int BusOrder { get { return m_busOrder; } set { m_busOrder = value; } }
+        public override string Name { get { return "CMOS PROFI"; } }
+        public override string Description { get { return "PROFI CMOS device\nPort:\t#9F"; } }
+        public override BusCategory Category { get { return BusCategory.Other; } }
 
-        public void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             m_memory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
             bmgr.SubscribeWRIO(0x009F, 0x009F, busWriteProfi);
             bmgr.SubscribeRDIO(0x009F, 0x009F, busReadProfi);
         }
 
-        public void BusConnect()
+        public override void BusConnect()
         {
             loadRam();
         }
 
-        public void BusDisconnect()
+        public override void BusDisconnect()
         {
             saveRam();
         }

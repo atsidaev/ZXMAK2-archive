@@ -229,8 +229,8 @@ namespace ZXMAK2.Engine
         {
             m_spectrum.IsRunning = true;
 
-            List<IBusDevice> keyboards = m_spectrum.BusManager.FindDevices(typeof(IKeyboardDevice));
-            List<IBusDevice> mouses = m_spectrum.BusManager.FindDevices(typeof(IMouseDevice));
+            List<BusDeviceBase> keyboards = m_spectrum.BusManager.FindDevices(typeof(IKeyboardDevice));
+            List<BusDeviceBase> mouses = m_spectrum.BusManager.FindDevices(typeof(IMouseDevice));
             
             while (m_spectrum.IsRunning)
             {
@@ -248,7 +248,7 @@ namespace ZXMAK2.Engine
                 if (keyboards.Count>0)
                 {
                     m_keyboard.Scan();
-					foreach (IBusDevice dev in keyboards)
+					foreach (BusDeviceBase dev in keyboards)
 					{
 						IKeyboardDevice keyboard = dev as IKeyboardDevice;
 						keyboard.KeyboardState = m_keyboard.State;
@@ -258,7 +258,7 @@ namespace ZXMAK2.Engine
                 if (mouses.Count > 0)
                 {
                     m_mouse.Scan();
-                    foreach (IBusDevice dev in mouses)
+                    foreach (BusDeviceBase dev in mouses)
                     {
                         IMouseDevice mouse = dev as IMouseDevice;
 						mouse.MouseState = m_mouse.MouseState;
@@ -286,9 +286,9 @@ namespace ZXMAK2.Engine
                 return;
             }
 
-            List<IBusDevice> renderers = m_spectrum.BusManager.FindDevices(typeof(ISoundRenderer));
+            List<BusDeviceBase> renderers = m_spectrum.BusManager.FindDevices(typeof(ISoundRenderer));
             List<uint[]> buffers = new List<uint[]>();
-            foreach (IBusDevice device in renderers)
+            foreach (BusDeviceBase device in renderers)
             {
                 ISoundRenderer renderer = device as ISoundRenderer;
                 buffers.Add(renderer.AudioBuffer);

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ZXMAK2.Engine.Interfaces
 {
-    public interface IJtagDevice : IBusDevice
+    public interface IJtagDevice //: BusDeviceBase
     {
         void Attach(IDebuggable dbg);
         void Detach();

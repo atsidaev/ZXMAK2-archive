@@ -29,33 +29,33 @@ namespace ZXMAK2.Engine.Interfaces
 		Z80CPU CPU { get; }
 		bool IsSandbox { get; }
         
-        IBusDevice FindDevice(Type type);
+        BusDeviceBase FindDevice(Type type);
     }
 
-    public interface IBusDevice
+    public abstract class BusDeviceBase
     {
-        string Name { get; }
-        string Description { get; }
-        BusCategory Category { get; }
-		int BusOrder { get; set; }
+        public abstract string Name { get; }
+        public abstract string Description { get; }
+        public abstract BusCategory Category { get; }
+		public int BusOrder { get; set; }
         #region Comment
         /// <summary>
         /// Collect information about device. Add handlers & serializers here.
         /// </summary>
         #endregion
-        void BusInit(IBusManager bmgr);
+        public abstract void BusInit(IBusManager bmgr);
         #region Comment
         /// <summary>
         /// Called after Init, before device will be used. Add load files here
         /// </summary>
         #endregion
-        void BusConnect();
+        public abstract void BusConnect();
         #region Comment
         /// <summary>
         /// Called when device using finished. Add flush & close files here
         /// </summary>
         #endregion
-        void BusDisconnect();
+        public abstract void BusDisconnect();
     }
 
     public enum BusCategory

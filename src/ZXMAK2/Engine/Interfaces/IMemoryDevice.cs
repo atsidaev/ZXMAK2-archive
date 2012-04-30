@@ -3,7 +3,7 @@
 
 namespace ZXMAK2.Engine.Interfaces
 {
-    public interface IMemoryDevice : IBusDevice
+    public interface IMemoryDevice //: BusDeviceBase
     {
         byte RDMEM_DBG(ushort addr);
         void WRMEM_DBG(ushort addr, byte value);

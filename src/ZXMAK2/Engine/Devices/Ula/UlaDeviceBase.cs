@@ -9,17 +9,14 @@ using ZXMAK2.Engine.Z80;
 
 namespace ZXMAK2.Engine.Devices.Ula
 {
-    public abstract class UlaDeviceBase : IBusDevice, IUlaDevice
+    public abstract class UlaDeviceBase : BusDeviceBase, IUlaDevice
     {
         #region IBusDevice
 
-        public abstract string Name { get; }
-        public virtual string Description { get { return "ULA device based on UlaDeviceBase"; } }
-        public BusCategory Category { get { return BusCategory.ULA; } }
-		private int m_busOrder = 0;
-		public int BusOrder { get { return m_busOrder; } set { m_busOrder = value; } }
+        public override string Description { get { return "ULA device based on UlaDeviceBase"; } }
+        public override BusCategory Category { get { return BusCategory.ULA; } }
 
-        public virtual void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
 			m_page0000 = -1;
 			m_page4000 = 5;
@@ -47,12 +44,12 @@ namespace ZXMAK2.Engine.Devices.Ula
             bmgr.AddSerializer(new PngSerializer(this));
         }
 
-        public virtual void BusConnect()
+        public override void BusConnect()
         {
             fillUlaTables(c_frameTactCount);
         }
 
-        public virtual void BusDisconnect()
+        public override void BusDisconnect()
         {
         }
 

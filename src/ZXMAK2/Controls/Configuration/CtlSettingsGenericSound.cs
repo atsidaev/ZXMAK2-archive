@@ -27,8 +27,9 @@ namespace ZXMAK2.Controls.Configuration
 		{
 			m_bmgr = bmgr;
 			m_device = device;
-			txtDevice.Text = device.Name;
-			txtDescription.Text = device.Description.Replace("\n", Environment.NewLine);
+            BusDeviceBase busDevice = (BusDeviceBase)device;
+            txtDevice.Text = busDevice.Name;
+            txtDescription.Text = busDevice.Description.Replace("\n", Environment.NewLine);
 
 			int value = m_device.Volume;
 			if (value < 0)

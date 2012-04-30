@@ -13,14 +13,14 @@ namespace ZXMAK2.Controls.Configuration
     public partial class CtlSettingsGenericDevice : ConfigScreenControl
     {
         private BusManager m_bmgr;
-        private IBusDevice m_device;
+        private BusDeviceBase m_device;
 
         public CtlSettingsGenericDevice()
         {
             InitializeComponent();
         }
 
-        public void Init(BusManager bmgr, IBusDevice device)
+        public void Init(BusManager bmgr, BusDeviceBase device)
         {
             m_bmgr = bmgr;
             m_device = device;

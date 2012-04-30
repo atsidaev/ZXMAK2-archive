@@ -45,8 +45,8 @@ namespace Test
 			p128.Init();
 			p128.BusManager.Disconnect();
 			p128.BusManager.Clear(); 
-			p128.BusManager.Add(mem);
-			p128.BusManager.Add(ula);
+			p128.BusManager.Add((BusDeviceBase)mem);
+			p128.BusManager.Add((BusDeviceBase)ula);
 			p128.BusManager.Connect();
 			p128.IsRunning = true;
 			p128.DoReset();
