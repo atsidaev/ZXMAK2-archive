@@ -6,33 +6,27 @@ using ZXMAK2.Engine.Z80;
 
 namespace ZXMAK2.Engine.Devices
 {
-    public class KeyboardQuorum : IKeyboardDevice, IBusDevice
+    public class KeyboardQuorum : BusDeviceBase, IKeyboardDevice
     {
-        private int m_busOrder;
         private long m_intState;
         private UInt64 m_extState;
         private IKeyboardState m_keyboardState;
         private Z80CPU m_cpu;
 
-        public int BusOrder 
-        {
-            get { return m_busOrder; }
-            set { m_busOrder = value; }
-        }
-        public BusCategory Category { get { return BusCategory.Keyboard; } }
-        public string Name { get { return "Quorum Keyboard"; } }
-        public string Description { get { return "Quorum extended keyboard\n\n(c) Eltaron"; } }
+        public override BusCategory Category { get { return BusCategory.Keyboard; } }
+        public override string Name { get { return "Quorum Keyboard"; } }
+        public override string Description { get { return "Quorum extended keyboard\n\n(c) Eltaron"; } }
 
 
-        public void BusConnect()
+        public override void BusConnect()
         {
         }
 
-        public void BusDisconnect()
+        public override void BusDisconnect()
         {
         }
 
-        public void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             bmgr.SubscribeRDIO(0x99, 0x98, readPortFE);
             bmgr.SubscribeRDIO(0x99, 0x18, readPort7E);
@@ -42,7 +36,7 @@ namespace ZXMAK2.Engine.Devices
             m_cpu = bmgr.CPU;
         }
 
-        void NMIACK()
+        private void NMIACK()
         {
             m_cpu.NMI = false;
         }

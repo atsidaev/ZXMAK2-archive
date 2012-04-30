@@ -15,17 +15,15 @@ using System.Xml;
 
 namespace ZXMAK2.Engine.Devices
 {
-    public class TapeDevice : IBusDevice, ISoundRenderer, IConfigurable, ITapeDevice
+    public class TapeDevice : BusDeviceBase, ISoundRenderer, IConfigurable, ITapeDevice
 	{
         #region IBusDevice
 
-        public string Name { get { return "Tape Player"; } }
-        public string Description { get { return "Generic Tape Device"; } }
-        public BusCategory Category { get { return BusCategory.Tape; } }
-		private int m_busOrder = 0;
-		public int BusOrder { get { return m_busOrder; } set { m_busOrder = value; } }
+        public override string Name { get { return "Tape Player"; } }
+        public override string Description { get { return "Generic Tape Device"; } }
+        public override BusCategory Category { get { return BusCategory.Tape; } }
 
-        public void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
 			m_cpu = bmgr.CPU;
 			m_memory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
@@ -43,11 +41,11 @@ namespace ZXMAK2.Engine.Devices
             bmgr.AddSerializer(new CswSerializer(this));
         }
 
-        public void BusConnect()
+        public override void BusConnect()
         {
         }
 
-        public void BusDisconnect()
+        public override void BusDisconnect()
         {
         }
 

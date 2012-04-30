@@ -5,26 +5,24 @@ using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Engine.Devices
 {
-    public class KeyboardDevice : IBusDevice, IKeyboardDevice
+    public class KeyboardDevice : BusDeviceBase, IKeyboardDevice
     {
         #region IBusDevice
 
-        public string Name { get { return "Standard Keyboard"; } }
-        public string Description { get { return "Standard Spectrum Keyboard"; } }
-        public BusCategory Category { get { return BusCategory.Keyboard; } }
-		private int m_busOrder = 0;
-		public int BusOrder { get { return m_busOrder; } set { m_busOrder = value; } }
+        public override string Name { get { return "Standard Keyboard"; } }
+        public override string Description { get { return "Standard Spectrum Keyboard"; } }
+        public override BusCategory Category { get { return BusCategory.Keyboard; } }
 
-        public void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             bmgr.SubscribeRDIO(0x0001, 0x0000, readPortFE);
         }
 
-        public void BusConnect()
+        public override void BusConnect()
         {
         }
 
-        public void BusDisconnect()
+        public override void BusDisconnect()
         {
         }
 

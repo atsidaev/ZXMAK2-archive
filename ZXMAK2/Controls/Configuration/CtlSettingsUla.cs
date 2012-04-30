@@ -31,7 +31,7 @@ namespace ZXMAK2.Controls.Configuration
                     foreach (Type type in asm.GetTypes())
                         if (type.IsClass && !type.IsAbstract && typeof(IUlaDevice).IsAssignableFrom(type))
                         {
-                            IBusDevice dev = (IBusDevice)Activator.CreateInstance(type);
+                            BusDeviceBase dev = (BusDeviceBase)Activator.CreateInstance(type);
                             cbxType.Items.Add(dev.Name);
                         }
                 }
@@ -71,12 +71,14 @@ namespace ZXMAK2.Controls.Configuration
             IUlaDevice oldUla = (IUlaDevice)m_bmgr.FindDevice(typeof(IUlaDevice));
             if (oldUla != null && oldUla.GetType() != ula.GetType())
             {
-                if (oldUla != null)
+                BusDeviceBase busOldUla = (BusDeviceBase)oldUla;
+                BusDeviceBase busNewUla = (BusDeviceBase)ula;
+                if (busOldUla != null)
                 {
-                    m_bmgr.Remove(oldUla);
+                    m_bmgr.Remove(busOldUla);
                     ula.PortFE = oldUla.PortFE;
                 }
-                m_bmgr.Add(ula);
+                m_bmgr.Add(busNewUla);
             }
             Init(m_bmgr, (UlaDeviceBase)ula);
         }
@@ -87,7 +89,7 @@ namespace ZXMAK2.Controls.Configuration
                 foreach (Type type in asm.GetTypes())
                     if (type.IsClass && !type.IsAbstract && iface.IsAssignableFrom(type))
                     {
-                        IBusDevice dev = (IBusDevice)Activator.CreateInstance(type);
+                        BusDeviceBase dev = (BusDeviceBase)Activator.CreateInstance(type);
                         if (dev.Name == typeName)
                             return type;
                     }

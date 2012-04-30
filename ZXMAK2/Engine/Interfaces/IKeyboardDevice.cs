@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ZXMAK2.Engine.Interfaces
 {
-    public interface IKeyboardDevice : IBusDevice
+    public interface IKeyboardDevice //: BusDeviceBase
     {
 		IKeyboardState KeyboardState { get; set; }
     }

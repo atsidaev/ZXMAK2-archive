@@ -25,11 +25,11 @@ namespace ZXMAK2.Controls.Configuration
             refreshDeviceList();
         }
 
-        private IBusDevice m_device = null;
-        public IBusDevice Device { get { return m_device; } }
+        private BusDeviceBase m_device = null;
+        public BusDeviceBase Device { get { return m_device; } }
 
-        private List<IBusDevice> m_ignoreList = new List<IBusDevice>();
-        public List<IBusDevice> IgnoreList
+        private List<BusDeviceBase> m_ignoreList = new List<BusDeviceBase>();
+        public List<BusDeviceBase> IgnoreList
         {
             get { return m_ignoreList; }
             set { m_ignoreList = value; /*refreshDeviceList();*/ }
@@ -55,7 +55,7 @@ namespace ZXMAK2.Controls.Configuration
                 if(index<0)
                     return;
                 ListViewItem lvi = lstCategory.Items[index];
-                m_device = (IBusDevice)lvi.Tag;
+                m_device = (BusDeviceBase)lvi.Tag;
                 DialogResult = System.Windows.Forms.DialogResult.OK;
                 Close();
             }
@@ -109,7 +109,7 @@ namespace ZXMAK2.Controls.Configuration
             {
                 try
                 {
-                    IBusDevice device = (IBusDevice)Activator.CreateInstance(type);
+                    BusDeviceBase device = (BusDeviceBase)Activator.CreateInstance(type);
                     ListViewItem lvi = new ListViewItem();
                     lvi.Tag = device;
                     lvi.Text = string.Format("{0} - {1}",device.Category, device.Name);
@@ -129,8 +129,8 @@ namespace ZXMAK2.Controls.Configuration
 
         private int CategoryComparison<T>(T x, T y) where T : ListViewItem
         {
-            IBusDevice dev1 = x.Tag as IBusDevice;
-            IBusDevice dev2 = y.Tag as IBusDevice;
+            BusDeviceBase dev1 = x.Tag as BusDeviceBase;
+            BusDeviceBase dev2 = y.Tag as BusDeviceBase;
             if(dev1!=null && dev2!=null)
             {
                 if (dev1.Category != dev2.Category)
@@ -171,10 +171,10 @@ namespace ZXMAK2.Controls.Configuration
                 try
                 {
                     foreach (Type type in asm.GetTypes())
-                        if (type.IsClass && !type.IsAbstract && typeof(IBusDevice).IsAssignableFrom(type))
+                        if (type.IsClass && !type.IsAbstract && typeof(BusDeviceBase).IsAssignableFrom(type))
                         {
                             bool ignore = false;
-                            foreach (IBusDevice bd in IgnoreList)
+                            foreach (BusDeviceBase bd in IgnoreList)
                                 if (bd != null && bd.GetType() == type)
                                 {
                                     ignore = true;

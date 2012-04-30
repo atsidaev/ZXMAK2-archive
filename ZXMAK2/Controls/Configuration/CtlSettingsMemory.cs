@@ -30,7 +30,7 @@ namespace ZXMAK2.Controls.Configuration
                 foreach (Type type in asm.GetTypes())
                     if (type.IsClass && !type.IsAbstract && typeof(IMemoryDevice).IsAssignableFrom(type))
                     {
-                        IBusDevice dev = (IBusDevice)Activator.CreateInstance(type);
+                        BusDeviceBase dev = (BusDeviceBase)Activator.CreateInstance(type);
                         cbxType.Items.Add(dev.Name);
                     }
             cbxType.Sorted = true;
@@ -41,10 +41,11 @@ namespace ZXMAK2.Controls.Configuration
             m_bmgr = bmgr;
             m_device = device;
 
+            BusDeviceBase busDevice = (BusDeviceBase)device;
             cbxType.SelectedIndex = -1;
             if(m_device!=null)
                 for (int i = 0; i < cbxType.Items.Count; i++)
-                    if (m_device.Name == (string)cbxType.Items[i])
+                    if (busDevice.Name == (string)cbxType.Items[i])
                     {
                         cbxType.SelectedIndex = i;
                         break;
@@ -59,11 +60,13 @@ namespace ZXMAK2.Controls.Configuration
             IMemoryDevice oldMemory = (IMemoryDevice)m_bmgr.FindDevice(typeof(IMemoryDevice));
             if (oldMemory != null && oldMemory.GetType() != memory.GetType())
             {
-                if (oldMemory != null)
+                BusDeviceBase busOldMemory = (BusDeviceBase)oldMemory;
+                BusDeviceBase busNewMemory = (BusDeviceBase)memory;
+                if (busOldMemory != null)
                 {
-                    m_bmgr.Remove(oldMemory);
+                    m_bmgr.Remove(busOldMemory);
                 }
-                m_bmgr.Add(memory);
+                m_bmgr.Add(busNewMemory);
             }
             Init(m_bmgr, (IMemoryDevice)memory);
         }
@@ -74,7 +77,7 @@ namespace ZXMAK2.Controls.Configuration
                 foreach (Type type in asm.GetTypes())
                     if (type.IsClass && !type.IsAbstract && iface.IsAssignableFrom(type))
                     {
-                        IBusDevice dev = (IBusDevice)Activator.CreateInstance(type);
+                        BusDeviceBase dev = (BusDeviceBase)Activator.CreateInstance(type);
                         if (dev.Name == typeName)
                             return type;
                     }

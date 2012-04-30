@@ -6,17 +6,15 @@ using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Engine.Devices
 {
-    public class CmosDevice : IBusDevice
+    public class CmosDevice : BusDeviceBase
     {
         #region IBusDevice Members
 
-        public string Name { get { return "CMOS"; } }
-        public string Description { get { return "Generic CMOS device\nPorts:\n#DFF7=reg (w)\n#BFF7=data (r/w)"; } }
-        public BusCategory Category { get { return BusCategory.Other; } }
-		private int m_busOrder = 0;
-		public int BusOrder { get { return m_busOrder; } set { m_busOrder = value; } }
+        public override string Name { get { return "CMOS"; } }
+        public override string Description { get { return "Generic CMOS device\nPorts:\n#DFF7=reg (w)\n#BFF7=data (r/w)"; } }
+        public override BusCategory Category { get { return BusCategory.Other; } }
 
-        public void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             m_memory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
             bmgr.SubscribeRDIO(0xF008, 0xB000, readPortBFF7);   // DATA IN
@@ -31,12 +29,12 @@ namespace ZXMAK2.Engine.Devices
             //bmgr.SubscribeWRIO(0xFFFF, 0xFFEF, writePortBFF7);
         }
 
-        public void BusConnect()
+        public override void BusConnect()
         {
             loadRam();
         }
 
-        public void BusDisconnect()
+        public override void BusDisconnect()
         {
             saveRam();
         }

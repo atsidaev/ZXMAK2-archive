@@ -7,17 +7,15 @@ using ZXMAK2.Engine.Z80;
 
 namespace ZXMAK2.Engine.Devices
 {
-    public class BeeperDevice : IBusDevice, ISoundRenderer, IConfigurable
+    public class BeeperDevice : BusDeviceBase, ISoundRenderer, IConfigurable
     {
         #region IBusDevice
 
-        public virtual string Name { get { return "Standard Beeper"; } }
-        public virtual string Description { get { return "Simple Standard Beeper"; } }
-        public BusCategory Category { get { return BusCategory.Sound; } }
-		private int m_busOrder = 0;
-		public int BusOrder { get { return m_busOrder; } set { m_busOrder = value; } }
+        public override string Name { get { return "Standard Beeper"; } }
+        public override string Description { get { return "Simple Standard Beeper"; } }
+        public override BusCategory Category { get { return BusCategory.Sound; } }
 
-        public void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             m_cpu = bmgr.CPU;
             IUlaDevice ula = (IUlaDevice)bmgr.FindDevice(typeof(IUlaDevice));
@@ -30,11 +28,11 @@ namespace ZXMAK2.Engine.Devices
             bmgr.SubscribeEndFrame(EndFrame);
         }
 
-        public void BusConnect()
+        public override void BusConnect()
         {
         }
 
-        public void BusDisconnect()
+        public override void BusDisconnect()
         {
         }
 

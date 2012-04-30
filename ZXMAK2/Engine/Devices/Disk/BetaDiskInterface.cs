@@ -72,17 +72,15 @@ namespace ZXMAK2.Engine.Devices.Disk
 	#endregion
 
 
-    public class BetaDiskInterface : IBusDevice, IConfigurable, IBetaDiskDevice
+    public class BetaDiskInterface : BusDeviceBase, IConfigurable, IBetaDiskDevice
 	{
 		#region IBusDevice
 
-        public virtual string Name { get { return "BDI"; } }
-        public virtual string Description { get { return "Beta Disk Interface"; } }
-        public BusCategory Category { get { return BusCategory.Disk; } }
-		private int m_busOrder = 0;
-		public int BusOrder { get { return m_busOrder; } set { m_busOrder = value; } }
+        public override string Name { get { return "BDI"; } }
+        public override string Description { get { return "Beta Disk Interface"; } }
+        public override BusCategory Category { get { return BusCategory.Disk; } }
 
-        public virtual void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             m_cpu = bmgr.CPU;
 			m_sandbox = bmgr.IsSandbox;
@@ -102,14 +100,14 @@ namespace ZXMAK2.Engine.Devices.Disk
                 bmgr.AddSerializer(fs);
         }
 
-        public virtual void BusConnect()
+        public override void BusConnect()
         {
 			if(!m_sandbox)
 				foreach (DiskImage di in FDD)
 	                di.Connect();
         }
 
-        public virtual void BusDisconnect()
+        public override void BusDisconnect()
         {
 			if(!m_sandbox)
 				foreach (DiskImage di in FDD)

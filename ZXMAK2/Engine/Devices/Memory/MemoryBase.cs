@@ -7,17 +7,13 @@ using ZXMAK2.Engine.Devices.Ula;
 
 namespace ZXMAK2.Engine.Devices.Memory
 {
-    public abstract class MemoryBase : IBusDevice, IMemoryDevice
+    public abstract class MemoryBase : BusDeviceBase, IMemoryDevice
     {
         #region IBusDevice Members
 
-        public abstract string Name { get; }
-        public abstract string Description { get; }
-        public BusCategory Category { get { return BusCategory.Memory; } }
-		private int m_busOrder = 0;
-		public int BusOrder { get { return m_busOrder; } set { m_busOrder = value; } }
+        public override BusCategory Category { get { return BusCategory.Memory; } }
 
-        public virtual void BusInit(IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
 			m_ula = bmgr.FindDevice(typeof(UlaDeviceBase)) as UlaDeviceBase;
 			bmgr.SubscribeRDMEM(0xC000, 0x0000, ReadMem0000);
@@ -35,13 +31,13 @@ namespace ZXMAK2.Engine.Devices.Memory
             bmgr.SubscribeWRMEM(0xC000, 0xC000, WriteMemC000);
         }
 
-        public virtual void BusConnect()
+        public override void BusConnect()
         {
             LoadRom();
             UpdateMapping();
         }
 
-        public virtual void BusDisconnect()
+        public override void BusDisconnect()
         {
         }
 

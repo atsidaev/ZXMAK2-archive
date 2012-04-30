@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ZXMAK2.Engine.Interfaces
 {
-    public interface ITapeDevice : IBusDevice
+    public interface ITapeDevice //: BusDeviceBase
     {
         void Play();
         void Stop();

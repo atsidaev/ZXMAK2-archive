@@ -260,7 +260,7 @@ namespace ZXMAK2.Controls
         private VirtualMachine m_vm;
         private BusManager m_workBus;
         private List<ConfigScreenControl> m_ctlList = new List<ConfigScreenControl>();
-        private List<IBusDevice> m_devList = new List<IBusDevice>();
+        private List<BusDeviceBase> m_devList = new List<BusDeviceBase>();
 
 		#endregion
 
@@ -318,7 +318,7 @@ namespace ZXMAK2.Controls
             }
         }
 
-        private void insertListViewItem(int index, UserControl control, IBusDevice device)
+        private void insertListViewItem(int index, UserControl control, BusDeviceBase device)
         {
             control.Location = new Point(0, 0);
             control.Size = pnlSettings.ClientSize;
@@ -425,7 +425,7 @@ namespace ZXMAK2.Controls
             }
             m_ctlList.Clear();
             m_devList.Clear();
-            foreach (IBusDevice device in m_workBus.FindDevices(typeof(IBusDevice)))
+            foreach (BusDeviceBase device in m_workBus.FindDevices(typeof(BusDeviceBase)))
             {
                 try
                 {
@@ -472,7 +472,7 @@ namespace ZXMAK2.Controls
 			int index = getSelectedIndex();
 			if (index <= 0 || index >= m_devList.Count - 1)
 				return false;
-			IBusDevice device = index < lstNavigation.Items.Count - 1 ? m_devList[index] : null;
+			BusDeviceBase device = index < lstNavigation.Items.Count - 1 ? m_devList[index] : null;
 			if (device == null)
 				return false;
 			if (device is IUlaDevice)
@@ -497,7 +497,7 @@ namespace ZXMAK2.Controls
 			int index = getSelectedIndex();
 			if (index <= 0 || index >= m_devList.Count - 1)
 				return false;
-			IBusDevice device = index < lstNavigation.Items.Count - 1 ? m_devList[index] : null;
+			BusDeviceBase device = index < lstNavigation.Items.Count - 1 ? m_devList[index] : null;
 			if (device == null)
 				return false;
 			if (device is IUlaDevice)
@@ -634,7 +634,7 @@ namespace ZXMAK2.Controls
                     foreach (ConfigScreenControl csc in m_ctlList)
                         csc.Apply();
                     
-                    IBusDevice device = wizard.Device;// (IBusDevice)Activator.CreateInstance(wizard.DeviceType);
+                    BusDeviceBase device = wizard.Device;// (IBusDevice)Activator.CreateInstance(wizard.DeviceType);
                     //IBusDevice device = new KeyboardDevice();
                     m_workBus.Add(device);
 
@@ -670,7 +670,7 @@ namespace ZXMAK2.Controls
 		private void btnUp_Click(object sender, EventArgs e)
 		{
 			int indexFrom = getSelectedIndex();
-			IBusDevice deviceFrom = indexFrom < lstNavigation.Items.Count - 1 ? m_devList[indexFrom] : null;
+			BusDeviceBase deviceFrom = indexFrom < lstNavigation.Items.Count - 1 ? m_devList[indexFrom] : null;
 			if (deviceFrom is IUlaDevice)
 				return;
 			if (deviceFrom is IMemoryDevice)
@@ -678,7 +678,7 @@ namespace ZXMAK2.Controls
 			int indexTo = indexFrom - 1;
 			if (indexTo < 0)
 				return;
-			IBusDevice deviceTo = indexTo < lstNavigation.Items.Count - 1 ? m_devList[indexTo] : null;
+			BusDeviceBase deviceTo = indexTo < lstNavigation.Items.Count - 1 ? m_devList[indexTo] : null;
 			if (deviceTo is IUlaDevice)
 				return;
 			if (deviceTo is IMemoryDevice)
@@ -687,7 +687,7 @@ namespace ZXMAK2.Controls
 			deviceFrom.BusOrder = deviceTo.BusOrder;
 			deviceTo.BusOrder = tmp;
 
-			IBusDevice device = m_devList[indexFrom];
+			BusDeviceBase device = m_devList[indexFrom];
 			m_devList.RemoveAt(indexFrom);
 			m_devList.Insert(indexTo, device);
 			ConfigScreenControl ctl = m_ctlList[indexFrom];
@@ -705,7 +705,7 @@ namespace ZXMAK2.Controls
 		private void btnDown_Click(object sender, EventArgs e)
 		{
 			int indexFrom = getSelectedIndex();
-			IBusDevice deviceFrom = indexFrom < lstNavigation.Items.Count - 1 ? m_devList[indexFrom] : null;
+			BusDeviceBase deviceFrom = indexFrom < lstNavigation.Items.Count - 1 ? m_devList[indexFrom] : null;
 			if (deviceFrom == null)
 				return;
 			if (deviceFrom is IUlaDevice)
@@ -715,7 +715,7 @@ namespace ZXMAK2.Controls
 			int indexTo = indexFrom + 1;
 			if (indexTo > lstNavigation.Items.Count-1)
 				return;
-			IBusDevice deviceTo = indexTo < lstNavigation.Items.Count - 1 ? m_devList[indexTo] : null;
+			BusDeviceBase deviceTo = indexTo < lstNavigation.Items.Count - 1 ? m_devList[indexTo] : null;
 			if (deviceTo == null)
 				return;
 			if (deviceTo is IUlaDevice)
@@ -726,7 +726,7 @@ namespace ZXMAK2.Controls
 			deviceFrom.BusOrder = deviceTo.BusOrder;
 			deviceTo.BusOrder = tmp;
 
-			IBusDevice device = m_devList[indexTo];
+			BusDeviceBase device = m_devList[indexTo];
 			m_devList.RemoveAt(indexTo);
 			m_devList.Insert(indexFrom, device);
 			ConfigScreenControl ctl = m_ctlList[indexTo];

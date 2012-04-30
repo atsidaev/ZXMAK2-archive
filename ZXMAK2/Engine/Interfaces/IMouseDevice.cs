@@ -3,7 +3,7 @@
 
 namespace ZXMAK2.Engine.Interfaces
 {
-    public interface IMouseDevice : IBusDevice
+    public interface IMouseDevice //: BusDeviceBase
     {
 		IMouseState MouseState { get; set; }
     }
