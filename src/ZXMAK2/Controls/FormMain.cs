@@ -15,6 +15,8 @@ using ZXMAK2.Engine.Devices.Memory;
 using ZXMAK2.Controls;
 using ZXMAK2.Controls.Debugger;
 using ZXMAK2.MDX;
+using System.Collections.Generic;
+using System.Net;
 
 
 namespace ZXMAK2.Controls
@@ -110,7 +112,13 @@ namespace ZXMAK2.Controls
                     else
                         m_vm.SaveConfigAs(fileName);
                     if (StartupImage != string.Empty)
-                        setCaption(m_vm.Spectrum.Loader.OpenFileName(StartupImage, true));
+                    {
+                        string imageName = m_vm.Spectrum.Loader.OpenFileName(StartupImage, true);
+                        if (imageName != string.Empty)
+                        {
+                            setCaption(imageName);
+                        }
+                    }
                     m_vm.DoRun();
                 }
                 catch (Exception ex)
@@ -273,7 +281,64 @@ namespace ZXMAK2.Controls
                 Menu = mainMenu;
         }
 
-        
+        private void OpenFile(string fileName, bool readOnly)
+        {
+            bool running = m_vm.IsRunning;
+            m_vm.DoStop();
+            try
+            {
+                if (m_vm.Spectrum.Loader.CheckCanOpenFileName(fileName))
+                {
+                    string imageName = m_vm.Spectrum.Loader.OpenFileName(fileName, readOnly);
+                    if (imageName != string.Empty)
+                    {
+                        setCaption(imageName);
+                        m_vm.SaveConfig();
+                    }
+                }
+                else
+                {
+                    DialogProvider.Show(
+                        "Unrecognized file!",
+                        "Error",
+                        DlgButtonSet.OK,
+                        DlgIcon.Error);
+                }
+            }
+            finally
+            {
+                if (running)
+                    m_vm.DoRun();
+            }
+        }
+
+        private void SaveFile(string fileName)
+        {
+            bool running = m_vm.IsRunning;
+            m_vm.DoStop();
+            try
+            {
+                if (m_vm.Spectrum.Loader.CheckCanSaveFileName(fileName))
+                {
+                    setCaption(m_vm.Spectrum.Loader.SaveFileName(fileName));
+                    m_vm.SaveConfig();
+                }
+                else
+                {
+                    DialogProvider.Show(
+                        "Unrecognized file!",
+                        "Error",
+                        DlgButtonSet.OK,
+                        DlgIcon.Error);
+                }
+            }
+            finally
+            {
+                if (running)
+                    m_vm.DoRun();
+            }
+        }
+
         #region Menu Handlers
 
         private void menuFileOpen_Click(object sender, EventArgs e)
@@ -292,30 +357,7 @@ namespace ZXMAK2.Controls
                 loadDialog.FileOk += new CancelEventHandler(loadDialog_FileOk);
                 if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) 
                     return;
-
-                bool running = m_vm.IsRunning;
-                m_vm.DoStop();
-                try
-                {
-                    if (m_vm.Spectrum.Loader.CheckCanOpenFileName(loadDialog.FileName))
-                    {
-                        setCaption(m_vm.Spectrum.Loader.OpenFileName(loadDialog.FileName, loadDialog.ReadOnlyChecked));
-                        m_vm.SaveConfig();
-                    }
-                    else
-                    {
-                        DialogProvider.Show(
-                            "Unrecognized file!",
-                            "Error",
-                            DlgButtonSet.OK,
-                            DlgIcon.Error);
-                    }
-                }
-                finally
-                {
-                    if (running)
-                        m_vm.DoRun();
-                }
+                OpenFile(loadDialog.FileName, loadDialog.ReadOnlyChecked);
             }
         }
 
@@ -339,30 +381,7 @@ namespace ZXMAK2.Controls
                 saveDialog.OverwritePrompt = true;
                 if (saveDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     return;
-
-                bool running = m_vm.IsRunning;
-                m_vm.DoStop();
-                try
-                {
-                    if (m_vm.Spectrum.Loader.CheckCanSaveFileName(saveDialog.FileName))
-                    {
-                        setCaption(m_vm.Spectrum.Loader.SaveFileName(saveDialog.FileName));
-                        m_vm.SaveConfig();
-                    }
-                    else
-                    {
-                        DialogProvider.Show(
-                            "Unrecognized file!",
-                            "Error",
-                            DlgButtonSet.OK,
-                            DlgIcon.Error);
-                    }
-                }
-                finally
-                {
-                    if (running)
-                        m_vm.DoRun();
-                }
+                SaveFile(saveDialog.FileName);
             }
         }
 
@@ -668,6 +687,194 @@ namespace ZXMAK2.Controls
             {
                 LogAgent.Error(ex);
             }
+        }
+
+        private void FormMain_DragEnter(object sender, DragEventArgs e)
+        {
+            try
+            {
+                DragDataWrapper ddw = new DragDataWrapper(e.Data);
+                bool allowOpen = false;
+                if (ddw.IsFileDrop)
+                {
+                    string fileName = ddw.GetFilePath();
+                    if (fileName != string.Empty &&
+                        m_vm.Spectrum.Loader.CheckCanOpenFileName(fileName))
+                    {
+                        allowOpen = true;
+                    }
+                }
+                else if (ddw.IsLinkDrop)
+                {
+                    allowOpen = true;
+                }
+                e.Effect = allowOpen ? DragDropEffects.Link : DragDropEffects.None;
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+        }
+
+        private void FormMain_DragDrop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                DragDataWrapper ddw = new DragDataWrapper(e.Data);
+                if (ddw.IsFileDrop)
+                {
+                    string fileName = ddw.GetFilePath();
+                    if (fileName != string.Empty)
+                    {
+                        this.BeginInvoke(new OpenFileHandler(OpenFile), fileName, true);
+                        this.Activate();
+                    }
+                }
+                else if (ddw.IsLinkDrop)
+                {
+                    string linkUrl = ddw.GetLinkUri();
+                    if (linkUrl != string.Empty)
+                    {
+                        Uri fileUri = new Uri(linkUrl);
+                        this.BeginInvoke(new OpenUriHandler(OpenUri), fileUri);
+                        this.Activate();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+        }
+
+        private void OpenUri(Uri uri)
+        {
+            try
+            {
+                string fileName = string.Empty;
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(uri);
+                    HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
+                    try
+                    {
+                        fileName = Path.GetFileName(webResponse.ResponseUri.LocalPath);
+                        using (Stream stream = webResponse.GetResponseStream())
+                        {
+                            byte[] data = downloadStream(stream, webResponse.ContentLength);
+                            ms.Write(data, 0, data.Length);
+                            ms.Seek(0, SeekOrigin.Begin);
+                        }
+                    }
+                    finally
+                    {
+                        webResponse.Close();
+                    }
+                    OpenStream(fileName, ms);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                DialogProvider.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+            }
+        }
+
+        private byte[] downloadStream(Stream stream, long length)
+        {
+            byte[] data = new byte[length];
+            long read = 0;
+            int tickCount = Environment.TickCount;
+            while (read < length)
+            {
+                read += stream.Read(data, (int)read, (int)(length - read));
+                if ((Environment.TickCount - tickCount) > 10000)
+                    throw new TimeoutException("Download timeout error!");
+            }
+            return data;
+        }
+
+        private void OpenStream(string fileName, Stream fileStream)
+        {
+            bool running = m_vm.IsRunning;
+            m_vm.DoStop();
+            try
+            {
+                if (m_vm.Spectrum.Loader.CheckCanOpenFileStream(fileName, fileStream))
+                {
+                    string imageName = m_vm.Spectrum.Loader.OpenFileStream(fileName, fileStream);
+                    if (imageName != string.Empty)
+                    {
+                        setCaption(imageName);
+                        m_vm.SaveConfig();
+                    }
+                }
+                else
+                {
+                    DialogProvider.Show(
+                        "Unrecognized file!",
+                        "Error",
+                        DlgButtonSet.OK,
+                        DlgIcon.Error);
+                }
+            }
+            finally
+            {
+                if (running)
+                    m_vm.DoRun();
+            }
+        }
+        
+        private delegate void OpenFileHandler(string fileName, bool readOnly);
+        private delegate void OpenUriHandler(Uri fileUri);
+    }
+
+    internal class DragDataWrapper
+    {
+        private IDataObject m_dataObject;
+        public DragDataWrapper(IDataObject dataObject)
+        {
+            m_dataObject = dataObject;
+        }
+
+        public bool IsFileDrop { get { return m_dataObject.GetDataPresent(DataFormatEx.FileDrop); } }
+        public bool IsLinkDrop { get { return m_dataObject.GetDataPresent(DataFormatEx.Uri); } }
+
+        public string GetFilePath()
+        {
+            object objData = m_dataObject.GetData(DataFormatEx.FileDrop);
+            string[] fileArray = getStringArray(objData as Array);
+            return fileArray.Length == 1 ? fileArray[0] : string.Empty;
+        }
+
+        public string GetLinkUri()
+        {
+            object objData = m_dataObject.GetData(DataFormatEx.Uri);
+            string fileUri = string.Empty;
+            using (MemoryStream ms = objData as MemoryStream)
+            {
+                byte[] data = new byte[ms.Length];
+                ms.Read(data, 0, data.Length);
+                fileUri = Encoding.ASCII.GetString(data, 0, data.Length);
+            }
+            return fileUri;
+        }
+
+        private static string[] getStringArray(Array dataArray)
+        {
+            List<String> list = new List<string>();
+            if (dataArray != null)
+            {
+                foreach (string value in dataArray)
+                    list.Add(value);
+            }
+            return list.ToArray();
+        }
+
+        private static class DataFormatEx
+        {
+            public static string FileDrop = DataFormats.FileDrop;
+            public static string Uri = "UniformResourceLocator";
         }
     }
 }
