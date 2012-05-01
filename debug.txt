@@ -1,0 +1,4 @@
+
+Disable stop on the following exceptions:
+Microsoft.DirectX.DirectInput.OtherApplicationHasPriorityException
+Microsoft.DirectX.DirectInput.InputLostFocusException

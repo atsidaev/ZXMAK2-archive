@@ -1,4 +1,5 @@
 ﻿using System;
+using ZXMAK2.Controls;
 
 
 namespace ZXMAK2
@@ -24,6 +25,24 @@ namespace ZXMAK2
                 message, caption,
                 (System.Windows.Forms.MessageBoxButtons)buttonSet,
                 (System.Windows.Forms.MessageBoxIcon)icon);
+        }
+
+        public static object ObjectSelector(object[] objArray, string caption)
+        {
+            if (objArray.Length < 1)
+                return null;
+            if (objArray.Length == 1)
+                return objArray[0];
+            using (ObjectSelectorDialog form = new ObjectSelectorDialog())
+            {
+                form.ItemArray = objArray;
+                form.ItemSelected = objArray[0];
+                form.Text = caption;
+                form.ShowDialog();
+                if (form.DialogResult==System.Windows.Forms.DialogResult.OK)
+                    return form.ItemSelected;
+                return null;
+            }
         }
     }
 
