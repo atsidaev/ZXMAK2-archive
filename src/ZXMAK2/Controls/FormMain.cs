@@ -17,6 +17,7 @@ using ZXMAK2.Controls.Debugger;
 using ZXMAK2.MDX;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Mime;
 
 
 namespace ZXMAK2.Controls
@@ -770,12 +771,19 @@ namespace ZXMAK2.Controls
         private byte[] downloadUri(Uri uri, out string fileName)
         {
             WebRequest webRequest = WebRequest.Create(uri);
-            webRequest.Timeout = 10000;
+            webRequest.Timeout = 15000;
             //webRequest.Credentials = new NetworkCredential("anonymous", "User@");
             WebResponse webResponse = webRequest.GetResponse();
             try
             {
                 fileName = Path.GetFileName(webResponse.ResponseUri.LocalPath);
+                if (webResponse.Headers["Content-Disposition"] != null)
+                {
+                    ContentDisposition contDisp = new ContentDisposition(
+                        webResponse.Headers["Content-Disposition"]);
+                    if (!string.IsNullOrEmpty(contDisp.FileName))
+                        fileName = contDisp.FileName;
+                }
                 using (Stream stream = webResponse.GetResponseStream())
                 {
                     byte[] data = downloadStream(stream, webResponse.ContentLength, webRequest.Timeout);
