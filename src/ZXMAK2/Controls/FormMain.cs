@@ -754,22 +754,9 @@ namespace ZXMAK2.Controls
                 string fileName = string.Empty;
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(uri);
-                    HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
-                    try
-                    {
-                        fileName = Path.GetFileName(webResponse.ResponseUri.LocalPath);
-                        using (Stream stream = webResponse.GetResponseStream())
-                        {
-                            byte[] data = downloadStream(stream, webResponse.ContentLength);
-                            ms.Write(data, 0, data.Length);
-                            ms.Seek(0, SeekOrigin.Begin);
-                        }
-                    }
-                    finally
-                    {
-                        webResponse.Close();
-                    }
+                    byte[] data = downloadUri(uri, out fileName);
+                    ms.Write(data, 0, data.Length);
+                    ms.Seek(0, SeekOrigin.Begin);
                     OpenStream(fileName, ms);
                 }
             }
@@ -780,7 +767,28 @@ namespace ZXMAK2.Controls
             }
         }
 
-        private byte[] downloadStream(Stream stream, long length)
+        private byte[] downloadUri(Uri uri, out string fileName)
+        {
+            WebRequest webRequest = WebRequest.Create(uri);
+            webRequest.Timeout = 10000;
+            //webRequest.Credentials = new NetworkCredential("anonymous", "User@");
+            WebResponse webResponse = webRequest.GetResponse();
+            try
+            {
+                fileName = Path.GetFileName(webResponse.ResponseUri.LocalPath);
+                using (Stream stream = webResponse.GetResponseStream())
+                {
+                    byte[] data = downloadStream(stream, webResponse.ContentLength, webRequest.Timeout);
+                    return data;
+                }
+            }
+            finally
+            {
+                webResponse.Close();
+            }
+        }
+
+        private byte[] downloadStream(Stream stream, long length, int timeOut)
         {
             byte[] data = new byte[length];
             long read = 0;
@@ -788,7 +796,7 @@ namespace ZXMAK2.Controls
             while (read < length)
             {
                 read += stream.Read(data, (int)read, (int)(length - read));
-                if ((Environment.TickCount - tickCount) > 10000)
+                if ((Environment.TickCount - tickCount) > timeOut)
                     throw new TimeoutException("Download timeout error!");
             }
             return data;
@@ -855,9 +863,13 @@ namespace ZXMAK2.Controls
             {
                 byte[] data = new byte[ms.Length];
                 ms.Read(data, 0, data.Length);
-                fileUri = Encoding.ASCII.GetString(data, 0, data.Length);
+                int length;
+                for (length = 0; length < data.Length; length++)
+                    if (data[length] == 0)
+                        break;
+                fileUri = Encoding.ASCII.GetString(data, 0, length);
             }
-            return fileUri;
+            return fileUri.Trim();
         }
 
         private static string[] getStringArray(Array dataArray)
