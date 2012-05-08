@@ -786,7 +786,9 @@ namespace ZXMAK2.Controls
                 }
                 using (Stream stream = webResponse.GetResponseStream())
                 {
-                    byte[] data = downloadStream(stream, webResponse.ContentLength, webRequest.Timeout);
+                    byte[] data = webResponse.ContentLength >=0 ?
+                        downloadStream(stream, webResponse.ContentLength, webRequest.Timeout) :
+                        downloadStreamNoLength(stream, webRequest.Timeout);
                     return data;
                 }
             }
@@ -808,6 +810,26 @@ namespace ZXMAK2.Controls
                     throw new TimeoutException("Download timeout error!");
             }
             return data;
+        }
+
+        private byte[] downloadStreamNoLength(Stream stream, int timeOut)
+        {
+            List<byte> list = new List<byte>();
+            byte[] readBuffer = new byte[0x10000];
+            int tickCount = Environment.TickCount;
+            while (true)
+            {
+                if ((Environment.TickCount - tickCount) > timeOut)
+                    throw new TimeoutException("Download timeout error!");
+                int len = stream.Read(readBuffer, 0, readBuffer.Length);
+                if (len==0)
+                {
+                    break;
+                }
+                for(int i=0; i < len; i++)
+                    list.Add(readBuffer[i]);
+            }
+            return list.ToArray();
         }
 
         private void OpenStream(string fileName, Stream fileStream)
