@@ -102,13 +102,13 @@ namespace ZXMAK2.Engine.Devices
         #region Bus Handlers
 
         private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
-		{
-			//if (!iorqge)
-			//    return;
-			//iorqge = false;
-			value &= 0xBF;
+        {
+            //if (!iorqge)
+            //    return;
+            //iorqge = false;
+            value &= 0xBF;
             value |= (byte)(GetTapeBit(m_cpu.Tact) ? 0x40 : 0x00);
-		}
+        }
 
 		private void tapeTrap(ushort addr, ref byte value)
 		{
@@ -300,7 +300,7 @@ namespace ZXMAK2.Engine.Devices
 				{
 					_index = value;
 					_playPosition = 0;
-					raiseTapeStateChanged();
+					OnTapeStateChanged();
 					//if(Play)
 					//   _currentBlock = _blocks[_index] as TapeBlock;
 				}
@@ -308,10 +308,10 @@ namespace ZXMAK2.Engine.Devices
 		}
 
 		public event EventHandler TapeStateChanged;
-		private void raiseTapeStateChanged()
+		protected virtual void OnTapeStateChanged()
 		{
 			if (TapeStateChanged != null)
-				TapeStateChanged(this, new EventArgs());
+				TapeStateChanged(this, EventArgs.Empty);
 		}
 
 		public int Position
@@ -341,7 +341,7 @@ namespace ZXMAK2.Engine.Devices
 			if (_index < 0) //???
 			{
 				_play = false;
-				raiseTapeStateChanged();
+				OnTapeStateChanged();
 				return _state;
 			}
 
@@ -364,10 +364,10 @@ namespace ZXMAK2.Engine.Devices
 						_lastTact = globalTact;
 						_index = 0;
 						_play = false;
-						raiseTapeStateChanged();
+						OnTapeStateChanged();
 						return _state;
 					}
-					raiseTapeStateChanged();
+					OnTapeStateChanged();
 				}
 				_waitEdge = _blocks[_index].Periods[_playPosition];
 			}
@@ -394,7 +394,7 @@ namespace ZXMAK2.Engine.Devices
 				_index = 0;
 			_playPosition = 0;
 			_play = false;
-			raiseTapeStateChanged();
+			OnTapeStateChanged();
 		}
 
 		public void Rewind()
@@ -406,7 +406,7 @@ namespace ZXMAK2.Engine.Devices
 				_index = 0;
 			_playPosition = 0;
 			_play = false;
-			raiseTapeStateChanged();
+			OnTapeStateChanged();
 		}
 		
         public void Play()
@@ -431,14 +431,15 @@ namespace ZXMAK2.Engine.Devices
 				_state ^= -1;
 				_waitEdge = _blocks[_index].Periods[_playPosition];
 				_play = true;
-				raiseTapeStateChanged();
+				OnTapeStateChanged();
 			}
 		}
 		public void Stop()
 		{
             _lastTact = m_cpu.Tact;
 			_play = false;
-			raiseTapeStateChanged();
+            _playPosition = 0;
+			OnTapeStateChanged();
 		}
 		#endregion
     }
