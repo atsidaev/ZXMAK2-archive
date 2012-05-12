@@ -57,10 +57,6 @@
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.menuVmSettings = new System.Windows.Forms.MenuItem();
             this.menuTools = new System.Windows.Forms.MenuItem();
-            this.menuToolsDebugger = new System.Windows.Forms.MenuItem();
-            this.menuToolsMemory = new System.Windows.Forms.MenuItem();
-            this.menuToolsVG93 = new System.Windows.Forms.MenuItem();
-            this.menuToolsTape = new System.Windows.Forms.MenuItem();
             this.menuHelp = new System.Windows.Forms.MenuItem();
             this.menuHelpAbout = new System.Windows.Forms.MenuItem();
             this.renderVideo = new ZXMAK2.Controls.RenderVideo();
@@ -255,37 +251,8 @@
             // menuTools
             // 
             this.menuTools.Index = 3;
-            this.menuTools.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuToolsDebugger,
-            this.menuToolsMemory,
-            this.menuToolsVG93,
-            this.menuToolsTape});
             this.menuTools.Text = "Tools";
             this.menuTools.Popup += new System.EventHandler(this.menuTools_Popup);
-            // 
-            // menuToolsDebugger
-            // 
-            this.menuToolsDebugger.Index = 0;
-            this.menuToolsDebugger.Text = "Debugger";
-            this.menuToolsDebugger.Click += new System.EventHandler(this.menuToolsDebugger_Click);
-            // 
-            // menuToolsMemory
-            // 
-            this.menuToolsMemory.Index = 1;
-            this.menuToolsMemory.Text = "Memory Map";
-            this.menuToolsMemory.Click += new System.EventHandler(this.menuToolsMemory_Click);
-            // 
-            // menuToolsVG93
-            // 
-            this.menuToolsVG93.Index = 2;
-            this.menuToolsVG93.Text = "VG93";
-            this.menuToolsVG93.Click += new System.EventHandler(this.menuToolsVG93_Click);
-            // 
-            // menuToolsTape
-            // 
-            this.menuToolsTape.Index = 3;
-            this.menuToolsTape.Text = "Tape";
-            this.menuToolsTape.Click += new System.EventHandler(this.menuToolsTape_Click);
             // 
             // menuHelp
             // 
@@ -347,8 +314,6 @@
         private System.Windows.Forms.MenuItem menuHelp;
         private System.Windows.Forms.MenuItem menuHelpAbout;
         private System.Windows.Forms.MenuItem menuTools;
-        private System.Windows.Forms.MenuItem menuToolsDebugger;
-        private System.Windows.Forms.MenuItem menuToolsVG93;
         private System.Windows.Forms.MenuItem menuView;
         private System.Windows.Forms.MenuItem menuViewFullscreen;
         private System.Windows.Forms.MenuItem menuViewWindowed;
@@ -357,7 +322,6 @@
         private System.Windows.Forms.MenuItem menuViewSizeX2;
         private System.Windows.Forms.MenuItem menuViewSizeX3;
         private System.Windows.Forms.MenuItem menuViewSizeX4;
-        private System.Windows.Forms.MenuItem menuToolsTape;
         private System.Windows.Forms.MenuItem menuVm;
         private System.Windows.Forms.MenuItem menuVmReset;
         private System.Windows.Forms.MenuItem menuVmNmi;
@@ -371,7 +335,6 @@
         private System.Windows.Forms.MenuItem menuViewVBlankSync;
         private System.Windows.Forms.MenuItem menuViewDisplayIcon;
         private System.Windows.Forms.MenuItem menuViewDebugInfo;
-        private System.Windows.Forms.MenuItem menuToolsMemory;
     }
 }
 

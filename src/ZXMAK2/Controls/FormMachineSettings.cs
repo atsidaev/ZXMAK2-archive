@@ -560,9 +560,6 @@ namespace ZXMAK2.Controls
                 bool running = m_vm.IsRunning;
                 m_vm.DoStop();
 
-                if (m_workBus.FindDevice(typeof(IJtagDevice)) != null)
-                    ZXMAK2.Controls.Debugger.FormCpu.Shutdown();
-
                 
                 BusManager bmgr = m_vm.Spectrum.BusManager;
 

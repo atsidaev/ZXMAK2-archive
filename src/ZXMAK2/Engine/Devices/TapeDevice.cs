@@ -15,7 +15,7 @@ using System.Xml;
 
 namespace ZXMAK2.Engine.Devices
 {
-    public class TapeDevice : BusDeviceBase, ISoundRenderer, IConfigurable, ITapeDevice
+    public class TapeDevice : BusDeviceBase, ITapeDevice, ISoundRenderer, IConfigurable, IGuiExtension
 	{
         #region IBusDevice
 
@@ -442,5 +442,68 @@ namespace ZXMAK2.Engine.Devices
 			OnTapeStateChanged();
 		}
 		#endregion
+
+        #region IGuiExtension Members
+
+        private GuiData m_guiData;
+        private object m_subMenuItem;
+        private object m_form;
+
+        public void AttachGui(GuiData guiData)
+        {
+            m_guiData = guiData;
+            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            {
+                System.Windows.Forms.MenuItem menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
+                if (menuItem != null)
+                {
+                    m_subMenuItem = new System.Windows.Forms.MenuItem("Tape", menu_Click);
+                    menuItem.MenuItems.Add((System.Windows.Forms.MenuItem)m_subMenuItem);
+                }
+            }
+        }
+
+        public void DetachGui()
+        {
+            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            {
+                System.Windows.Forms.MenuItem subMenuItem = m_subMenuItem as System.Windows.Forms.MenuItem;
+                System.Windows.Forms.Form form = m_form as System.Windows.Forms.Form;
+                if (subMenuItem != null)
+                {
+                    subMenuItem.Parent.MenuItems.Remove(subMenuItem);
+                    subMenuItem.Dispose();
+                    m_subMenuItem = null;
+                }
+                if (form != null)
+                {
+                    form.Close();
+                    m_form = null;
+                }
+            }
+            m_guiData = null;
+        }
+
+        private void menu_Click(object sender, EventArgs e)
+        {
+            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            {
+                Controls.TapeForm form = m_form as Controls.TapeForm;
+                if (form == null)
+                {
+                    form = new Controls.TapeForm(this);
+                    form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg) { m_form = null; };
+                    m_form = form;
+                    form.Show((System.Windows.Forms.Form)m_guiData.MainWindow);
+                }
+                else
+                {
+                    form.Show();
+                    form.Activate();
+                }
+            }
+        }
+
+        #endregion
     }
 }

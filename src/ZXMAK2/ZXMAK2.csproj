@@ -166,6 +166,7 @@
     <Compile Include="Engine\Devices\BeeperQuorum.cs" />
     <Compile Include="Engine\Devices\BeeperScorpion.cs" />
     <Compile Include="Engine\Devices\CmosProfi.cs" />
+    <Compile Include="Engine\Devices\Debugger.cs" />
     <Compile Include="Engine\Devices\Disk\BetaDiskInterfaceLec.cs" />
     <Compile Include="Engine\Devices\CmosDevice.cs" />
     <Compile Include="Engine\Devices\Disk\BetaDiskInterfaceProfi.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="Engine\Interfaces\IJtagDevice.cs" />
     <Compile Include="Engine\Interfaces\IKeyboardDevice.cs" />
     <Compile Include="Engine\Interfaces\IMemoryDevice.cs" />
+    <Compile Include="Engine\Interfaces\IGuiExtension.cs" />
     <Compile Include="Engine\Interfaces\IMouseDevice.cs" />
     <Compile Include="Engine\Interfaces\ISoundRenderer.cs" />
     <Compile Include="Engine\Interfaces\IUlaDevice.cs" />

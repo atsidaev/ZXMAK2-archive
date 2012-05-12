@@ -60,14 +60,18 @@ namespace ZXMAK2.Engine
             this.m_mouse = mouse;
             this.m_sound = sound;
             m_spectrum = new SpectrumConcrete();
-            m_spectrum.Init();
             m_spectrum.UpdateState += OnUpdateState;
             m_spectrum.Breakpoint += OnBreakpoint;
-			m_spectrum.UpdateFrame += OnUpdateFrame;
-			m_spectrum.DoReset();
-            m_spectrum.BusManager.SetDebuggable(this);
+            m_spectrum.UpdateFrame += OnUpdateFrame;
         }
 
+        public void Init()
+        {
+            m_spectrum.Init();
+            m_spectrum.DoReset();
+            m_spectrum.BusManager.SetDebuggable(this);
+        }
+        
         private string m_name = "ZX Spectrum Clone";
         private string m_description = "N/A";
         
