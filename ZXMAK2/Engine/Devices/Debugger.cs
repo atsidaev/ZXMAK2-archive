@@ -112,12 +112,15 @@ namespace ZXMAK2.Engine.Devices
         protected virtual void OnBreakpoint(object sender, EventArgs e)
         {
             System.Windows.Forms.Form mainForm = m_guiData.MainWindow as System.Windows.Forms.Form;
-            if (mainForm.InvokeRequired)
+            if (mainForm != null)
             {
-                mainForm.BeginInvoke(new EventHandler(OnBreakpoint), sender, e);
-                return;
+                if (mainForm.InvokeRequired)
+                {
+                    mainForm.BeginInvoke(new EventHandler(OnBreakpoint), sender, e);
+                    return;
+                }
+                menu_Click(this, EventArgs.Empty);
             }
-            menu_Click(this, EventArgs.Empty);
         }
 
         #endregion
