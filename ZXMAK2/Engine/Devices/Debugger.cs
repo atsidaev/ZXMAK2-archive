@@ -32,10 +32,12 @@ namespace ZXMAK2.Engine.Devices
         public void Attach(IDebuggable dbg)
         {
             m_target = dbg;
+            m_target.Breakpoint += new EventHandler(OnBreakpoint);
         }
 
         public void Detach()
         {
+            m_target.Breakpoint -= new EventHandler(OnBreakpoint);
         }
 
         #endregion
@@ -92,9 +94,9 @@ namespace ZXMAK2.Engine.Devices
                 {
                     form = new Controls.Debugger.FormCpu();
                     form.Init(m_target);
-                    form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg) 
+                    form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg)
                     {
-                        m_form = null; 
+                        m_form = null;
                     };
                     m_form = form;
                     form.Show((System.Windows.Forms.Form)m_guiData.MainWindow);
@@ -105,6 +107,17 @@ namespace ZXMAK2.Engine.Devices
                     form.Activate();
                 }
             }
+        }
+
+        protected virtual void OnBreakpoint(object sender, EventArgs e)
+        {
+            System.Windows.Forms.Form mainForm = m_guiData.MainWindow as System.Windows.Forms.Form;
+            if (mainForm.InvokeRequired)
+            {
+                mainForm.BeginInvoke(new EventHandler(OnBreakpoint), sender, e);
+                return;
+            }
+            menu_Click(this, EventArgs.Empty);
         }
 
         #endregion
