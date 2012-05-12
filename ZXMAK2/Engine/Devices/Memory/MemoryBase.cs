@@ -249,53 +249,10 @@ namespace ZXMAK2.Engine.Devices.Memory
 					mapping.Load(stream);
 				foreach (XmlNode modelNode in mapping.SelectNodes("/Mapping/Model"))
 					if (modelNode.Attributes["name"] != null && string.Compare(modelName, modelNode.Attributes["name"].InnerText) == 0)
-						foreach (XmlNode pageNode in modelNode.SelectNodes("Page"))
-						{
-							if (pageNode.Attributes["name"] == null || pageNode.Attributes["image"] == null)
-							{
-								LogAgent.Warn("ROM mapping contains invalid Page node attribute \"name\" or \"image\" is missing");
-								continue;
-							}
-							string pageName = pageNode.Attributes["name"].InnerText;
-							string pageImage = pageNode.Attributes["image"].InnerText;
-							try
-							{
-								int fileOffset = 0;
-								int fileLength = 0x4000;
-								if (pageNode.Attributes["offset"] != null)
-									fileOffset = Utils.ParseSpectrumInt(pageNode.Attributes["offset"].InnerText);
-								if (pageNode.Attributes["length"] != null)
-									fileLength = Utils.ParseSpectrumInt(pageNode.Attributes["length"].InnerText);
-
-								int pageNo = 0;
-								switch (pageName.ToUpper())
-								{
-									case "128": pageNo = GetRomIndex(RomName.ROM_128); break;
-                                    case "SOS": pageNo = GetRomIndex(RomName.ROM_SOS); break;
-                                    case "DOS": pageNo = GetRomIndex(RomName.ROM_DOS); break;
-                                    case "SYS": pageNo = GetRomIndex(RomName.ROM_SYS); break;
-									default:
-										LogAgent.Warn(
-											"ROM mapping contains Page with unknown name: \"{0}\"",
-											pageName);
-										continue;
-								}
-                                using (Stream stream = GetRomFileStream(pageImage))
-								{
-									stream.Seek(fileOffset, SeekOrigin.Begin);
-									stream.Read(RomPages[pageNo], 0, fileLength);
-								}
-							}
-							catch (Exception ex)
-							{
-								LogAgent.Error(ex);
-                                LogAgent.Error(
-                                    "ROM load failed, model=\"{0}\", page=\"{1}\", image=\"{2}\"", 
-                                    modelNode.Attributes["name"].InnerText, 
-                                    pageName, 
-                                    pageImage);
-							}
-						}
+					{	
+                        loadRomModelSection(modelNode);
+                        break;
+                    }
 			}
 			catch (Exception ex)
 			{
@@ -304,7 +261,99 @@ namespace ZXMAK2.Engine.Devices.Memory
 			}
 		}
 
-		public static Stream GetRomFileStream(string fileName)
+
+        private void loadRomModelSection(XmlNode modelNode)
+        {
+            foreach (XmlNode pageNode in modelNode.SelectNodes("Page"))
+            {
+                if (pageNode.Attributes["name"] == null || pageNode.Attributes["image"] == null)
+                {
+                    LogAgent.Warn("ROM mapping contains invalid Page node attribute \"name\" or \"image\" is missing");
+                    continue;
+                }
+                string pageName = pageNode.Attributes["name"].InnerText;
+                string pageImage = pageNode.Attributes["image"].InnerText;
+                try
+                {
+                    int fileOffset = 0;
+                    int fileLength = (int)GetRomFileLength(pageImage);
+                    if (pageNode.Attributes["offset"] != null)
+                    {
+                        fileOffset = Utils.ParseSpectrumInt(pageNode.Attributes["offset"].InnerText);
+                        fileLength -= fileOffset; 
+                    }
+                    if (pageNode.Attributes["length"] != null)
+                        fileLength = Utils.ParseSpectrumInt(pageNode.Attributes["length"].InnerText);
+
+                    byte[] data = new byte[fileLength];
+                    using (Stream stream = GetRomFileStream(pageImage))
+                    {
+                        stream.Seek(fileOffset, SeekOrigin.Begin);
+                        stream.Read(data, 0, data.Length);
+                    }
+                    OnLoadRomPage(pageName, data);
+                }
+                catch (Exception ex)
+                {
+                    LogAgent.Error(ex);
+                    LogAgent.Error(
+                        "ROM load failed, model=\"{0}\", page=\"{1}\", image=\"{2}\"",
+                        modelNode.Attributes["name"].InnerText,
+                        pageName,
+                        pageImage);
+                }
+            }
+        }
+
+        protected virtual void OnLoadRomPage(string pageName, byte[] data)
+        {
+            int pageNo = 0;
+            switch (pageName.ToUpper())
+            {
+                case "128": pageNo = GetRomIndex(RomName.ROM_128); break;
+                case "SOS": pageNo = GetRomIndex(RomName.ROM_SOS); break;
+                case "DOS": pageNo = GetRomIndex(RomName.ROM_DOS); break;
+                case "SYS": pageNo = GetRomIndex(RomName.ROM_SYS); break;
+                default:
+                    return;
+                    //LogAgent.Warn(
+                    //    "ROM mapping contains Page with unknown name: \"{0}\"",
+                    //    entryName);
+                    //return;
+            }
+            int length = 0x4000;
+            if (data.Length < length)
+                length = data.Length;
+            Array.Copy(data, 0, RomPages[pageNo], 0, length);
+        }
+
+        public static long GetRomFileLength(string fileName)
+        {
+            string folderName = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            
+            // override
+            string romsFolderName = Path.Combine(folderName, "roms");
+            if (Directory.Exists(romsFolderName))
+            {
+                string romsFileName = Path.Combine(romsFolderName, fileName);
+                if (File.Exists(romsFileName))
+                    return new FileInfo(romsFileName).Length;
+            }
+
+            string pakFileName = Path.Combine(folderName, "Roms.PAK");
+
+            using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(pakFileName))
+                foreach (ZipLib.Zip.ZipEntry entry in zip)
+                    if (entry.IsFile &&
+                        entry.CanDecompress &&
+                        string.Compare(entry.Name, fileName, true) == 0)
+                    {
+                        return entry.Size;
+                    }
+            throw new FileNotFoundException(string.Format("ROM file not found: {0}", fileName));
+        }
+
+        public static Stream GetRomFileStream(string fileName)
 		{
 			string folderName = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 			
