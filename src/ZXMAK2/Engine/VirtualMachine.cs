@@ -231,47 +231,54 @@ namespace ZXMAK2.Engine
 
         private unsafe void runThreadProc()
         {
-            m_spectrum.IsRunning = true;
-
-            List<BusDeviceBase> keyboards = m_spectrum.BusManager.FindDevices(typeof(IKeyboardDevice));
-            List<BusDeviceBase> mouses = m_spectrum.BusManager.FindDevices(typeof(IMouseDevice));
-            
-            while (m_spectrum.IsRunning)
+            try
             {
-                //if ((GetAsyncKeyState(VK_F4) & 1) != 0)
-                //{
-                //    Pentagon128 p128 = Spectrum as Pentagon128;
-                //    for(int i=0; i < 50*60; i++)
-                //        p128.ExecuteFrameFast();
-                //    long frame = p128.CPU.Tact/(50*71680);
-                //    LogAgent.Info(frame.ToString());
-                //    OnUpdateFrame(); 
-                //    continue;
-                //}
+                m_spectrum.IsRunning = true;
 
-                if (keyboards.Count>0)
-                {
-                    m_keyboard.Scan();
-					foreach (BusDeviceBase dev in keyboards)
-					{
-						IKeyboardDevice keyboard = dev as IKeyboardDevice;
-						keyboard.KeyboardState = m_keyboard.State;
-					}
-                }
+                List<BusDeviceBase> keyboards = m_spectrum.BusManager.FindDevices(typeof(IKeyboardDevice));
+                List<BusDeviceBase> mouses = m_spectrum.BusManager.FindDevices(typeof(IMouseDevice));
 
-                if (mouses.Count > 0)
+                while (m_spectrum.IsRunning)
                 {
-                    m_mouse.Scan();
-                    foreach (BusDeviceBase dev in mouses)
+                    //if ((GetAsyncKeyState(VK_F4) & 1) != 0)
+                    //{
+                    //    Pentagon128 p128 = Spectrum as Pentagon128;
+                    //    for(int i=0; i < 50*60; i++)
+                    //        p128.ExecuteFrameFast();
+                    //    long frame = p128.CPU.Tact/(50*71680);
+                    //    LogAgent.Info(frame.ToString());
+                    //    OnUpdateFrame(); 
+                    //    continue;
+                    //}
+
+                    if (keyboards.Count > 0)
                     {
-                        IMouseDevice mouse = dev as IMouseDevice;
-						mouse.MouseState = m_mouse.MouseState;
+                        m_keyboard.Scan();
+                        foreach (BusDeviceBase dev in keyboards)
+                        {
+                            IKeyboardDevice keyboard = dev as IKeyboardDevice;
+                            keyboard.KeyboardState = m_keyboard.State;
+                        }
                     }
-                }
 
-                //lock(m_sync)
-					m_spectrum.ExecuteFrame();
-                m_debugFrameStartTact = (int)(m_spectrum.CPU.Tact % Spectrum.BusManager.FrameTactCount);
+                    if (mouses.Count > 0)
+                    {
+                        m_mouse.Scan();
+                        foreach (BusDeviceBase dev in mouses)
+                        {
+                            IMouseDevice mouse = dev as IMouseDevice;
+                            mouse.MouseState = m_mouse.MouseState;
+                        }
+                    }
+
+                    //lock(m_sync)
+                    m_spectrum.ExecuteFrame();
+                    m_debugFrameStartTact = (int)(m_spectrum.CPU.Tact % Spectrum.BusManager.FrameTactCount);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
             }
         }
 
