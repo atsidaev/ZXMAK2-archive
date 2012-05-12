@@ -34,6 +34,9 @@ namespace ZXMAK2.Engine.Bus
         private List<FormatSerializer> m_serializerList = new List<FormatSerializer>();
 
         public event BusFrameEventHandler FrameReady;
+        public event EventHandler BusConnected;
+        public event EventHandler BusDisconnect;
+
 
         public void Init(Z80CPU cpu, LoadManager loadManager, bool sandBox)
         {
@@ -393,6 +396,7 @@ namespace ZXMAK2.Engine.Bus
                 if (jtag != null)
                     jtag.Attach(m_debuggable);
             }
+            OnBusConnected();
             return success;
         }
 
@@ -402,6 +406,7 @@ namespace ZXMAK2.Engine.Bus
                 return;
             m_connected = false;
             OnEndFrame();
+            OnBusDisconnect();
             if (m_loadManager != null)
                 m_loadManager.Clear();
             if (m_debuggable != null)
@@ -421,6 +426,18 @@ namespace ZXMAK2.Engine.Bus
                     LogAgent.Error(ex);
                 }
             }
+        }
+
+        protected virtual void OnBusConnected()
+        {
+            if (BusConnected != null)
+                BusConnected(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnBusDisconnect()
+        {
+            if (BusDisconnect != null)
+                BusDisconnect(this, EventArgs.Empty);
         }
 
         internal void SetDebuggable(IDebuggable dbg)

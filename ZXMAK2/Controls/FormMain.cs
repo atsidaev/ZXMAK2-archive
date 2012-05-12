@@ -62,14 +62,60 @@ namespace ZXMAK2.Controls
                 m_keyboard = new DirectKeyboard(this);
                 m_sound = new DirectSound(this, -1, 44100, 16, 2, 882 * 2 * 2, 4);
                 m_vm = new VirtualMachine(m_keyboard, m_mouse, m_sound);
+                m_vm.Spectrum.BusManager.BusConnected += OnVmBusConnected;
+                m_vm.Spectrum.BusManager.BusDisconnect += OnVmBusDisconnect;
                 m_vm.UpdateVideo += vm_UpdateVideo;
-                //m_vm.Breakpoint += vm_Breakpoint;
-                //ClientSize = new Size(m_vm.Spectrum.Ula.VideoSize.Width * 2, m_vm.Spectrum.Ula.VideoSize.Height * 2);
-                //m_vm.DoRun();
+                m_vm.Init();
             }
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
+            }
+        }
+
+        protected virtual void OnVmBusConnected(object sender, EventArgs e)
+        {
+            List<BusDeviceBase> list = m_vm.Spectrum.BusManager.FindDevices(typeof(IGuiExtension));
+            list.Sort(delegate(BusDeviceBase x1, BusDeviceBase x2) {
+                if (x1 == x2) return 0;
+                if (x1 is IJtagDevice) return -1;
+                if (x2 is IJtagDevice) return 1;
+                return x2.Name.CompareTo(x1.Name);
+            });
+            foreach (IGuiExtension wfe in list)
+            {
+                try
+                {
+                    GuiData guiData = new GuiData(this, menuTools);
+                    wfe.AttachGui(guiData);
+                }
+                catch (Exception ex)
+                {
+                    LogAgent.Error(ex);
+                }
+            }
+        }
+
+        protected virtual void OnVmBusDisconnect(object sender, EventArgs e)
+        {
+            List<BusDeviceBase> list = m_vm.Spectrum.BusManager.FindDevices(typeof(IGuiExtension));
+            list.Sort(delegate(BusDeviceBase x1, BusDeviceBase x2)
+            {
+                if (x1 == x2) return 0;
+                if (x1 is IJtagDevice) return -1;
+                if (x2 is IJtagDevice) return 1;
+                return x2.Name.CompareTo(x1.Name);
+            });
+            foreach (IGuiExtension wfe in list)
+            {
+                try
+                {
+                    wfe.DetachGui();
+                }
+                catch (Exception ex)
+                {
+                    LogAgent.Error(ex);
+                }
             }
         }
 
@@ -393,42 +439,14 @@ namespace ZXMAK2.Controls
 
         private void menuTools_Popup(object sender, EventArgs e)
         {
-            menuToolsDebugger.Visible = m_vm.Spectrum.BusManager.FindDevice(typeof(IJtagDevice)) == null;
-            menuToolsTape.Visible = m_vm.Spectrum.BusManager.FindDevice(typeof(ITapeDevice)) != null;
-        }
-
-        private void menuToolsDebugger_Click(object sender, EventArgs e)
-        {
-            if (m_vm.Spectrum.BusManager.FindDevice(typeof(IJtagDevice)) != null)
-                return;
-            FormCpu.Show(this, m_vm);
-        }
-
-        private void menuToolsTape_Click(object sender, EventArgs e)
-        {
-            ITapeDevice tape = m_vm.Spectrum.BusManager.FindDevice(typeof(ITapeDevice)) as ITapeDevice;
-            if (tape == null)
-                return;
-            new TapeForm(tape).Show(this);
+            //menuToolsDebugger.Visible = m_vm.Spectrum.BusManager.FindDevice(typeof(IJtagDevice)) == null;
+            //menuToolsTape.Visible = m_vm.Spectrum.BusManager.FindDevice(typeof(ITapeDevice)) != null;
         }
 
         private void menuHelpAbout_Click(object sender, EventArgs e)
         {
             using (FormAbout form = new FormAbout())
                 form.ShowDialog();
-        }
-
-        private void menuToolsMemory_Click(object sender, EventArgs e)
-        {
-            FormMemoryMap form = new FormMemoryMap();
-            form.Memory = m_vm.Spectrum.BusManager.FindDevice(typeof(IMemoryDevice)) as MemoryBase;
-            form.Show(this);
-        }
-        
-        private void menuToolsVG93_Click(object sender, EventArgs e)
-        {
-            IBetaDiskDevice betaDisk = m_vm.Spectrum.BusManager.FindDevice(typeof(IBetaDiskDevice)) as IBetaDiskDevice;
-            new dbgWD1793(betaDisk).Show(this);
         }
 
         private void menuVm_Popup(object sender, EventArgs e)

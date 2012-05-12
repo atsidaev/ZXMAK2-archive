@@ -31,12 +31,16 @@ namespace ZXMAK2.Engine
         public override Z80CPU CPU { get { return _cpu; } }
         public override LoadManager Loader { get { return _loader; } }
 
-        public override void Init()
+        public SpectrumConcrete()
         {
-            base.Init();
             _loader = new LoadManager(this);
             _cpu = new Z80CPU();
             _bus = new BusManager();
+        }
+
+        public override void Init()
+        {
+            base.Init();
             _bus.Init(_cpu, _loader, false);
             _bus.FrameReady += OnUpdateFrame;
             //default devices...
@@ -49,7 +53,8 @@ namespace ZXMAK2.Engine
             _bus.Add(new ZXMAK2.Engine.Devices.KeyboardDevice());
             _bus.Add(new ZXMAK2.Engine.Devices.KempstonMouseDevice());
             _bus.Add(new ZXMAK2.Engine.Devices.AyMouseDevice());
-			_bus.Connect();
+            _bus.Add(new ZXMAK2.Engine.Devices.Debugger());
+            _bus.Connect();
             _cpu.RST = true;
             _cpu.ExecCycle();
             _cpu.RST = false;

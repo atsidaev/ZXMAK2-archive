@@ -17,12 +17,14 @@ namespace ZXMAK2.Controls.Debugger
 	{
 		private IDebuggable m_spectrum;
         private DasmUtils m_dasmUtils;
-        private bool m_allowClose = false;
 		
-        private FormCpu()
+        public FormCpu()
 		{
 			InitializeComponent();
 		}
+
+        public bool AllowClose { get; set; }
+
 
         public void Init(IDebuggable debugTarget)
         {
@@ -46,7 +48,6 @@ namespace ZXMAK2.Controls.Debugger
 		{
             m_spectrum.UpdateState -= spectrum_OnUpdateState;
             m_spectrum.Breakpoint -= spectrum_OnBreakpoint;
-            s_instance = null;
 		}
 
         private void FormCPU_Load(object sender, EventArgs e)
@@ -398,7 +399,7 @@ namespace ZXMAK2.Controls.Debugger
 		private void FormCPU_FormClosing(object sender, FormClosingEventArgs e)
 		{
             //LogAgent.Debug("FormCpu.FormCPU_FormClosing {0}", e.CloseReason);
-            if (e.CloseReason != CloseReason.FormOwnerClosing && !m_allowClose)
+            if (e.CloseReason != CloseReason.FormOwnerClosing && !this.AllowClose)
             {
                 //LogAgent.Debug("FormCpu.Hide");
                 Hide();
@@ -437,46 +438,6 @@ namespace ZXMAK2.Controls.Debugger
 			}
 			UpdateCPU(false);
 		}
-
-        
-        #region Static
-
-        private static FormCpu s_instance = null;
-        
-        public static void Show(Form form, IDebuggable debugTarget)
-        {
-            //LogAgent.Info("ShowCPU {0}", debugTarget);
-            if (s_instance != null && s_instance.m_spectrum != debugTarget)
-            {
-                s_instance.m_allowClose = true;
-                s_instance.Close();
-                s_instance = null;
-            }
-            if (s_instance == null)
-            {
-                s_instance = new FormCpu();
-                s_instance.Init(debugTarget);
-                s_instance.Show(form);
-            }
-            else
-            {
-                s_instance.Show();
-            }
-        }
-
-        private delegate void CloseDelegate();
-        public static void Shutdown()
-        {
-            if (s_instance != null)
-            {
-                s_instance.m_spectrum.ClearBreakpoints();
-                s_instance.m_allowClose = true;
-                s_instance.Invoke(new CloseDelegate(s_instance.Close), null);
-                s_instance = null;
-            }
-        }
-
-        #endregion
 
         private static int s_addr = 0x4000;
         private static int s_len = 6912;

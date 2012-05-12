@@ -14,15 +14,10 @@ namespace ZXMAK2.Controls.Debugger
         private const string CS_UNKNOWN = "???";
         private MemoryBase m_memory = null;
         
-        public FormMemoryMap()
+        public FormMemoryMap(MemoryBase memory)
         {
+            m_memory = memory;
             InitializeComponent();
-        }
-
-        public MemoryBase Memory
-        {
-            get { return m_memory; }
-            set { m_memory = value; }
         }
 
         private void timerUpdate_Tick(object sender, EventArgs e)
