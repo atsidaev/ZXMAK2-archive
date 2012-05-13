@@ -153,12 +153,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             uint* bitmapBufPtr, 
             int startTact, 
             int endTact, 
-            ref int ulaFetchB1, 
-            ref int ulaFetchB2, 
-            ref int ulaFetchA1, 
-            ref int ulaFetchA2, 
-            ref uint ulaFetchInk, 
-            ref uint ulaFetchPaper)
+            UlaStateBase ulaState)
         {
             switch (m_mode)
             {
@@ -170,7 +165,7 @@ namespace ZXMAK2.Engine.Devices.Ula
                 case 3: // 256x192 (standard)
                     break;
             }
-            base.fetchVideo(bitmapBufPtr, startTact, endTact, ref ulaFetchB1, ref ulaFetchB2, ref ulaFetchA1, ref ulaFetchA2, ref ulaFetchInk, ref ulaFetchPaper);
+            base.fetchVideo(bitmapBufPtr, startTact, endTact, ulaState);
         }
 
         public override System.Drawing.Size VideoSize
