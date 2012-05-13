@@ -37,6 +37,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             c_ulaFirstPaperLine = 64;
             c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
             c_frameTactCount = 69888;//+
+            c_ulaBorder4T = true;
 
             c_ulaBorderTop = 24;//64;
             c_ulaBorderBottom = 24;// 40;

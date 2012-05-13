@@ -40,6 +40,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             c_ulaFirstPaperLine = 63;
             c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
 			c_frameTactCount = 70908;
+            c_ulaBorder4T = true;
 
             c_ulaBorderTop = 55;      //56
             c_ulaBorderBottom = 56;   //
@@ -97,7 +98,7 @@ namespace ZXMAK2.Engine.Devices.Ula
 			contendPortEarly(addr);
 			if ((addr & 0x0001) == 0)
 			{
-				UpdateState((int)((CPU.Tact + 1) % FrameTactCount));  // -2 should be good for 4T border
+				UpdateState((int)((CPU.Tact - 1) % FrameTactCount));  // -2 should be good for 4T border
 				PortFE = value;
 			}
 			contendPortLate(addr);
@@ -191,20 +192,12 @@ namespace ZXMAK2.Engine.Devices.Ula
 			}
 		}
 
+        // Contended memory info links:
         // 128: http://www.worldofspectrum.org/faq/reference/128kreference.htm
         //  48: http://www.worldofspectrum.org/faq/reference/48kreference.htm
         // http://www.zxdesign.info/dynamicRam.shtml
+        // examples: http://zxm.speccy.cz/realspec/
 
         private int[] m_contention;
-
-
-        #region Fuse
-
-        /* Contention patterns */
-        //private static int[] contention_pattern_65432100 = new int[] { 5, 4, 3, 2, 1, 0, 0, 6 }; //128
-        //private static int[] contention_pattern_76543210 = new int[] { 0, 7, 6, 5, 4, 3, 2, 1 }; //???
-        //return timings[ tstates_through_line % 8 ];
-
-        #endregion
     }
 }

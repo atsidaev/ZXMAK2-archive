@@ -39,6 +39,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             c_ulaFirstPaperLine = 64;
             c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
             c_frameTactCount = 69888;
+            c_ulaBorder4T = true;
 
             c_ulaBorderTop = 55;      //56
             c_ulaBorderBottom = 56;   //
@@ -100,7 +101,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             contendPortEarly(addr);
             if ((addr & 0x0001) == 0)
             {
-                UpdateState((int)((CPU.Tact + 1) % FrameTactCount));
+                UpdateState((int)((CPU.Tact - 1) % FrameTactCount));
                 PortFE = value;
             }
             contendPortLate(addr);
@@ -139,19 +140,23 @@ namespace ZXMAK2.Engine.Devices.Ula
 
             for (int takt = startTact; takt < endTact; takt++)
             {
+                if (!c_ulaBorder4T || (takt & 3) == 1)
+                {
+                    ulaState.Border = _borderColor;
+                }
                 switch (_ulaDo[takt])
                 {
                     case 0:     // no action
-                        continue;
+                        break;
 
                     case 1:     // border
-                        bitmapBufPtr[_ulaLineOffset[takt]] = _borderColor;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = _borderColor;
-                        continue;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ulaState.Border;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ulaState.Border;
+                        break;
 
                     case 2:     // border & fetch B1
-                        bitmapBufPtr[_ulaLineOffset[takt]] = _borderColor;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = _borderColor;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ulaState.Border;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ulaState.Border;
 
                         ulaState.B1 = _ulaMemory[_ulaAddrBW[takt]];
                         if (m_snow>0)
@@ -168,8 +173,8 @@ namespace ZXMAK2.Engine.Devices.Ula
                         break;
 
                     case 3:     // border & fetch A1
-                        bitmapBufPtr[_ulaLineOffset[takt]] = _borderColor;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = _borderColor;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ulaState.Border;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ulaState.Border;
 
                         ulaState.A1 = _ulaMemory[_ulaAddrAT[takt]];
                         //if (m_snow>0)

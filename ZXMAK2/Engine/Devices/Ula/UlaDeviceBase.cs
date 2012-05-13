@@ -73,6 +73,7 @@ namespace ZXMAK2.Engine.Devices.Ula
         public int c_ulaIntBegin = 0;
         public int c_ulaIntLength = 32;
         public int c_ulaFlashPeriod = 25;
+        public bool c_ulaBorder4T = false;
 
         public int c_ulaWidth;
         public int c_ulaHeight;
@@ -504,26 +505,30 @@ namespace ZXMAK2.Engine.Devices.Ula
 
             for (int takt = startTact; takt < endTact; takt++)
             {
+                if (!c_ulaBorder4T || (takt & 3) == 1)
+                {
+                    ulaState.Border = _borderColor;
+                }
                 switch (_ulaDo[takt])
                 {
                     case 0:     // no action
-                        continue;
+                        break;
                     
                     case 1:     // border
-                        bitmapBufPtr[_ulaLineOffset[takt]] = _borderColor;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = _borderColor;
-                        continue;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ulaState.Border;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ulaState.Border;
+                        break;
                     
                     case 2:     // border & fetch B1
-                        bitmapBufPtr[_ulaLineOffset[takt]] = _borderColor;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = _borderColor;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ulaState.Border;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ulaState.Border;
 
                         ulaState.B1 = _ulaMemory[_ulaAddrBW[takt]];
                         break;
                     
                     case 3:     // border & fetch A1
-                        bitmapBufPtr[_ulaLineOffset[takt]] = _borderColor;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = _borderColor;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ulaState.Border;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ulaState.Border;
 
                         ulaState.A1 = _ulaMemory[_ulaAddrAT[takt]];
                         ulaState.Ink = _ulaInk[ulaState.A1 + _flashState];
@@ -611,5 +616,6 @@ namespace ZXMAK2.Engine.Devices.Ula
         public int A2;
         public uint Ink = 0;
         public uint Paper = 0;
+        public uint Border = 0;
     }
 }
