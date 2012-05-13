@@ -37,6 +37,7 @@ namespace ZXMAK2.Engine.Devices.Ula
 			c_ulaFirstPaperLine = 64;
 			c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
 			c_frameTactCount = 69888;
+            c_ulaBorder4T = true;
 
 			c_ulaBorderTop = 55;      //56 (at least 48=border, other=retrace or border)
 			c_ulaBorderBottom = 56;   //
@@ -81,7 +82,7 @@ namespace ZXMAK2.Engine.Devices.Ula
 			contendPortEarly(addr);
 			if ((addr & 0x0001) == 0)
 			{
-                int frameTact = (int)((CPU.Tact + 1) % FrameTactCount);
+				int frameTact = (int)((CPU.Tact - 1) % FrameTactCount);
                 UpdateState(frameTact);
 				PortFE = value;
 			}
