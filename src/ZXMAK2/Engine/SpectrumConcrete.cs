@@ -23,13 +23,16 @@ namespace ZXMAK2.Engine
 
         private List<ushort> _breakpoints = null;
 
+        private int m_frameStartTact;
+
         #endregion
 
         public override BusManager BusManager { get { return _bus; } }
 
-
         public override Z80CPU CPU { get { return _cpu; } }
         public override LoadManager Loader { get { return _loader; } }
+
+        public override int FrameStartTact { get { return m_frameStartTact; } }
 
         public SpectrumConcrete()
         {
@@ -131,7 +134,7 @@ namespace ZXMAK2.Engine
         #endregion
 
 
-        public unsafe override bool ExecuteFrame()
+        public unsafe override void ExecuteFrame()
         {
 			//System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             //stopwatch.Start();
@@ -144,21 +147,33 @@ namespace ZXMAK2.Engine
                 _bus.ExecCycle();
                 if (_breakpoints != null && CheckBreakpoint(_cpu.regs.PC) && !_cpu.HALTED)
                 {
+                    long delta = t - _cpu.Tact;
+                    if (delta <= 0)
+                    {
+                        m_frameStartTact = -(int)delta;
+                    }
                     IsRunning = false;
                     OnUpdateFrame();
                     OnBreakpoint();
-                    return false;
+                    return;
                 }
 			}
+            m_frameStartTact = (int)(_cpu.Tact - t);
 
             //stopwatch.Stop();
             //LogAgent.Info("{0}", stopwatch.ElapsedTicks);
-            return true;
         }
 
 		protected override void OnExecCycle()
 		{
+            int frameTact = _bus.GetFrameTact();
+            long t = _cpu.Tact - frameTact + _bus.FrameTactCount;
             _bus.ExecCycle();
+            long delta = t - _cpu.Tact;
+            if (delta <= 0)
+            {
+                m_frameStartTact = -(int)delta;
+            }
             if (_breakpoints != null && CheckBreakpoint(_cpu.regs.PC) && !_cpu.HALTED)
             {
                 IsRunning = false;
