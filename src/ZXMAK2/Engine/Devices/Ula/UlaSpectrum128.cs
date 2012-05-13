@@ -41,6 +41,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
 			c_frameTactCount = 70908;
             c_ulaBorder4T = true;
+            c_ulaBorder4Tstage = 3;
 
             c_ulaBorderTop = 55;      //56
             c_ulaBorderBottom = 56;   //
@@ -95,14 +96,15 @@ namespace ZXMAK2.Engine.Devices.Ula
 
         private void WritePortAll(ushort addr, byte value, ref bool iorqge)
         {
-			contendPortEarly(addr);
-			if ((addr & 0x0001) == 0)
+            contendPortEarly(addr);
+            contendPortLate(addr);
+            if ((addr & 0x0001) == 0)
 			{
-				UpdateState((int)((CPU.Tact - 1) % FrameTactCount));  // -2 should be good for 4T border
+                int frameTact = (int)((CPU.Tact - 1) % FrameTactCount); // -2 should be good for 4T border
+                UpdateState(frameTact);
 				PortFE = value;
 			}
-			contendPortLate(addr);
-		}
+        }
 
         private void ReadPortAll(ushort addr, ref byte value, ref bool iorqge)
         {
@@ -160,7 +162,7 @@ namespace ZXMAK2.Engine.Devices.Ula
         }
 
 
-        private void fillTable(bool lateModel)
+        protected void fillTable(bool lateModel)
 		{
 			m_contention = new int[c_frameTactCount];
             int[] byteContention = new int[] { 6, 5, 4, 3, 2, 1, 0, 0, };
@@ -199,5 +201,15 @@ namespace ZXMAK2.Engine.Devices.Ula
         // examples: http://zxm.speccy.cz/realspec/
 
         private int[] m_contention;
+    }
+
+    public class UlaSpectrum128_Early : UlaSpectrum128
+    {
+        public override string Name { get { return "ZX Spectrum 128 - Early Model"; } }
+
+        public UlaSpectrum128_Early()
+        {
+            fillTable(false);
+        }
     }
 }

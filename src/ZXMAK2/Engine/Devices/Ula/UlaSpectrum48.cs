@@ -38,6 +38,7 @@ namespace ZXMAK2.Engine.Devices.Ula
 			c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
 			c_frameTactCount = 69888;
             c_ulaBorder4T = true;
+            c_ulaBorder4Tstage = 1;
 
 			c_ulaBorderTop = 55;      //56 (at least 48=border, other=retrace or border)
 			c_ulaBorderBottom = 56;   //
@@ -79,15 +80,15 @@ namespace ZXMAK2.Engine.Devices.Ula
 
 		private void WritePortAll(ushort addr, byte value, ref bool iorqge)
 		{
-			contendPortEarly(addr);
-			if ((addr & 0x0001) == 0)
+            contendPortEarly(addr);
+            contendPortLate(addr);
+            if ((addr & 0x0001) == 0)
 			{
 				int frameTact = (int)((CPU.Tact - 1) % FrameTactCount);
                 UpdateState(frameTact);
 				PortFE = value;
 			}
-			contendPortLate(addr);
-		}
+        }
 
 		private void ReadPortAll(ushort addr, ref byte value, ref bool iorqge)
 		{
@@ -144,7 +145,7 @@ namespace ZXMAK2.Engine.Devices.Ula
 		}
 
 
-		private void fillTable(bool lateModel)
+		protected void fillTable(bool lateModel)
 		{
 			m_contention = new int[c_frameTactCount];
 			int[] byteContention = new int[] { 6, 5, 4, 3, 2, 1, 0, 0, };
@@ -178,4 +179,14 @@ namespace ZXMAK2.Engine.Devices.Ula
 
 		private int[] m_contention;
 	}
+
+    public class UlaSpectrum48_Early : UlaSpectrum48
+    {
+        public override string Name { get { return "ZX Spectrum 48 - Early Model"; } }
+
+        public UlaSpectrum48_Early()
+        {
+            fillTable(false);
+        }
+    }
 }
