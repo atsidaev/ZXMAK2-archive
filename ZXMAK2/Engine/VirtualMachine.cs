@@ -222,13 +222,7 @@ namespace ZXMAK2.Engine
         private DirectMouse m_mouse;
         private unsafe DirectSound m_sound;
 
-        //[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-        //private static extern short GetAsyncKeyState(int vkey);
-        //private static int VK_F4 = 0x73;
-
-        private int m_debugFrameStartTact = 0;
-
-        public int DebugFrameStartTact { get { return m_debugFrameStartTact; } }
+        public int DebugFrameStartTact { get { return Spectrum.FrameStartTact; } }
 
         private unsafe void runThreadProc()
         {
@@ -241,17 +235,6 @@ namespace ZXMAK2.Engine
 
                 while (m_spectrum.IsRunning)
                 {
-                    //if ((GetAsyncKeyState(VK_F4) & 1) != 0)
-                    //{
-                    //    Pentagon128 p128 = Spectrum as Pentagon128;
-                    //    for(int i=0; i < 50*60; i++)
-                    //        p128.ExecuteFrameFast();
-                    //    long frame = p128.CPU.Tact/(50*71680);
-                    //    LogAgent.Info(frame.ToString());
-                    //    OnUpdateFrame(); 
-                    //    continue;
-                    //}
-
                     if (keyboards.Count > 0)
                     {
                         m_keyboard.Scan();
@@ -271,12 +254,7 @@ namespace ZXMAK2.Engine
                             mouse.MouseState = m_mouse.MouseState;
                         }
                     }
-
-                    //lock(m_sync)
-                    if (m_spectrum.ExecuteFrame())
-                    {
-                        m_debugFrameStartTact = (int)(Spectrum.CPU.Tact % Spectrum.BusManager.FrameTactCount);
-                    }
+                    m_spectrum.ExecuteFrame();
                 }
             }
             catch (Exception ex)

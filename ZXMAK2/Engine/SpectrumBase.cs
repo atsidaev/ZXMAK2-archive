@@ -128,6 +128,8 @@ namespace ZXMAK2.Engine
 		public abstract Z80CPU CPU { get; }
         public abstract BusManager BusManager { get; }
         public abstract LoadManager Loader { get; }
+
+        public abstract int FrameStartTact { get; }
 		
 		public virtual bool IsRunning 
 		{
@@ -193,7 +195,7 @@ namespace ZXMAK2.Engine
 
 		#endregion
 
-        public unsafe abstract bool ExecuteFrame();
+        public unsafe abstract void ExecuteFrame();
 
         #endregion
 
