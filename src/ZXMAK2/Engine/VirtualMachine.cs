@@ -273,8 +273,10 @@ namespace ZXMAK2.Engine
                     }
 
                     //lock(m_sync)
-                    m_spectrum.ExecuteFrame();
-                    m_debugFrameStartTact = (int)(m_spectrum.CPU.Tact % Spectrum.BusManager.FrameTactCount);
+                    if (m_spectrum.ExecuteFrame())
+                    {
+                        m_debugFrameStartTact = (int)(Spectrum.CPU.Tact % Spectrum.BusManager.FrameTactCount);
+                    }
                 }
             }
             catch (Exception ex)

@@ -193,7 +193,7 @@ namespace ZXMAK2.Engine
 
 		#endregion
 
-        public unsafe abstract void ExecuteFrame();
+        public unsafe abstract bool ExecuteFrame();
 
         #endregion
 

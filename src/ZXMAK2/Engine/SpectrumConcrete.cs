@@ -131,7 +131,7 @@ namespace ZXMAK2.Engine
         #endregion
 
 
-        public unsafe override void ExecuteFrame()
+        public unsafe override bool ExecuteFrame()
         {
 			//System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             //stopwatch.Start();
@@ -147,12 +147,13 @@ namespace ZXMAK2.Engine
                     IsRunning = false;
                     OnUpdateFrame();
                     OnBreakpoint();
-                    return;
+                    return false;
                 }
 			}
 
             //stopwatch.Stop();
             //LogAgent.Info("{0}", stopwatch.ElapsedTicks);
+            return true;
         }
 
 		protected override void OnExecCycle()
