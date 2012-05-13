@@ -189,32 +189,22 @@ namespace ZXMAK2.Engine.Devices.Ula
             uint* bitmapBufPtr, 
             int startTact, 
             int endTact, 
-            ref int ulaFetchB1,
-            ref int ulaFetchB2,
-            ref int ulaFetchA1,
-            ref int ulaFetchA2,
-            ref uint ulaFetchInk, 
-            ref uint ulaFetchPaper)
+            UlaStateBase ulaState)
         {
             if (m_profiMode)
-                fetchVideoProfi(bitmapBufPtr, startTact, endTact, _ulaState);
+                fetchVideoProfi(bitmapBufPtr, startTact, endTact, _ulaStateProfi);
             else
                 base.fetchVideo(
                     bitmapBufPtr, 
                     startTact, 
                     endTact, 
-                    ref ulaFetchB1,
-                    ref ulaFetchB2,
-                    ref ulaFetchA1,
-                    ref ulaFetchA2,
-                    ref ulaFetchInk, 
-                    ref ulaFetchPaper);
+                    ulaState);
         }
 
 
         #region Profi Update
 
-        private class UlaState
+        private class UlaStateProfi : UlaStateBase
         {
 			//public byte ulaFetchBW = 0;
 			//public byte ulaFetchAT = 0;
@@ -222,9 +212,9 @@ namespace ZXMAK2.Engine.Devices.Ula
 			//public uint ulaFetchPaper = 0;
         }
         
-        private UlaState _ulaState = new UlaState();
+        private UlaStateProfi _ulaStateProfi = new UlaStateProfi();
 
-        private unsafe delegate void UlaDoDelegate(uint* buffer, int tact, UlaState state);
+        private unsafe delegate void UlaDoDelegate(uint* buffer, int tact, UlaStateProfi state);
         private UlaDoDelegate[] _ulaDoTable;
         private int[] _ulaBwOffset;
         private int[] _ulaVideoOffset;
@@ -293,7 +283,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             }
         }
 
-        private unsafe void ulaDoProfi32_0(uint* buffer, int tact, UlaState state)
+        private unsafe void ulaDoProfi32_0(uint* buffer, int tact, UlaStateProfi state)
         {
             int bufOffset = _ulaVideoOffset[tact];
             uint ink = Palette[(~PortFE)&7];
@@ -303,7 +293,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             buffer[bufOffset + 3] = ink;
         }
         
-        private unsafe void ulaDoProfi32_1_CLR(uint* buffer, int tact, UlaState state)
+        private unsafe void ulaDoProfi32_1_CLR(uint* buffer, int tact, UlaStateProfi state)
         {
             int offset = _ulaBwOffset[tact];
             int shr = _memoryCpmUlaBw[offset];
@@ -318,7 +308,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             buffer[bufOffset + 3] = ((shr & 0x10) != 0) ? ink : paper;
         }
         
-        private unsafe void ulaDoProfi32_2_CLR(uint* buffer, int tact, UlaState state)
+        private unsafe void ulaDoProfi32_2_CLR(uint* buffer, int tact, UlaStateProfi state)
         {
             int offset = _ulaBwOffset[tact];
             int shr = _memoryCpmUlaBw[offset];
@@ -333,7 +323,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             buffer[bufOffset + 3] = ((shr & 0x01) != 0) ? ink : paper;
         }
 
-        private unsafe void ulaDoProfi32_1_BNW(uint* buffer, int tact, UlaState state)
+        private unsafe void ulaDoProfi32_1_BNW(uint* buffer, int tact, UlaStateProfi state)
         {
             int offset = _ulaBwOffset[tact];
             int shr = _memoryCpmUlaBw[offset];
@@ -347,7 +337,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             buffer[bufOffset + 3] = ((shr & 0x10) != 0) ? ink : paper;
         }
 
-        private unsafe void ulaDoProfi32_2_BNW(uint* buffer, int tact, UlaState state)
+        private unsafe void ulaDoProfi32_2_BNW(uint* buffer, int tact, UlaStateProfi state)
         {
             int offset = _ulaBwOffset[tact];
             int shr = _memoryCpmUlaBw[offset];
@@ -361,7 +351,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             buffer[bufOffset + 3] = ((shr & 0x01) != 0) ? ink : paper;
         }
 
-        private unsafe void fetchVideoProfi(uint* bitmapBufPtr, int startTact, int endTact, UlaState ulaState)
+        private unsafe void fetchVideoProfi(uint* bitmapBufPtr, int startTact, int endTact, UlaStateProfi ulaState)
         {
             if (bitmapBufPtr == null || _ulaDoTable == null)
                 return;

@@ -95,12 +95,7 @@ namespace ZXMAK2.Engine.Devices.Ula
         protected uint[] _ulaInk;
         protected uint[] _ulaPaper;
 
-        protected int _ulaFetchB1;
-        protected int _ulaFetchA1;
-        protected int _ulaFetchB2;
-        protected int _ulaFetchA2;
-        protected uint _ulaFetchInk = 0;
-        protected uint _ulaFetchPaper = 0;
+        protected UlaStateBase UlaState = new UlaStateBase();
 
         protected byte[] _ulaMemory;              // current video ram bank
         private int _lastFrameTact = 0;         // last processed tact
@@ -251,12 +246,7 @@ namespace ZXMAK2.Engine.Devices.Ula
                     (uint*)ptr,
                     _lastFrameTact,
                     frameTact,
-                    ref _ulaFetchB1,
-                    ref _ulaFetchB2,
-                    ref _ulaFetchA1,
-                    ref _ulaFetchA2,
-                    ref _ulaFetchInk,
-                    ref _ulaFetchPaper);
+                    UlaState);
             _lastFrameTact = frameTact;
         }
 
@@ -292,24 +282,13 @@ namespace ZXMAK2.Engine.Devices.Ula
 
         public unsafe void ForceRedrawFrame()
         {
-            int ulaFetchB1 = 0;
-            int ulaFetchA1 = 0;
-            int ulaFetchB2 = 0;
-            int ulaFetchA2 = 0;
-            uint ulaFetchInk = 0;
-            uint ulaFetchPaper = 0;
-
+            UlaStateBase ulaState = new UlaStateBase();
             fixed (int* ptr = _bitmapBufPtr)
                 fetchVideo(
                     (uint*)ptr,
                     0,
                     c_frameTactCount,
-                    ref ulaFetchB1,
-                    ref ulaFetchB2,
-                    ref ulaFetchA1,
-                    ref ulaFetchA2,
-                    ref ulaFetchInk,
-                    ref ulaFetchPaper);
+                    ulaState);
         }
 
         private byte m_portFE = 0;
@@ -513,12 +492,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             uint* bitmapBufPtr, 
             int startTact, 
             int endTact, 
-            ref int ulaFetchB1,
-            ref int ulaFetchB2,
-            ref int ulaFetchA1,
-            ref int ulaFetchA2,
-            ref uint ulaFetchInk, 
-            ref uint ulaFetchPaper)
+            UlaStateBase ulaState)
         {
 			if (bitmapBufPtr == null || _ulaDo == null)
                 return;
@@ -544,71 +518,71 @@ namespace ZXMAK2.Engine.Devices.Ula
                         bitmapBufPtr[_ulaLineOffset[takt]] = _borderColor;
                         bitmapBufPtr[_ulaLineOffset[takt] + 1] = _borderColor;
 
-                        ulaFetchB1 = _ulaMemory[_ulaAddrBW[takt]];
+                        ulaState._ulaFetchB1 = _ulaMemory[_ulaAddrBW[takt]];
                         break;
                     
                     case 3:     // border & fetch A1
                         bitmapBufPtr[_ulaLineOffset[takt]] = _borderColor;
                         bitmapBufPtr[_ulaLineOffset[takt] + 1] = _borderColor;
 
-                        ulaFetchA1 = _ulaMemory[_ulaAddrAT[takt]];
-                        ulaFetchInk = _ulaInk[ulaFetchA1 + _flashState];
-                        ulaFetchPaper = _ulaPaper[ulaFetchA1 + _flashState];
+                        ulaState._ulaFetchA1 = _ulaMemory[_ulaAddrAT[takt]];
+                        ulaState._ulaFetchInk = _ulaInk[ulaState._ulaFetchA1 + _flashState];
+                        ulaState._ulaFetchPaper = _ulaPaper[ulaState._ulaFetchA1 + _flashState];
                         break;
                     
                     case 4:     // shift 1 & fetch B2
-                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaFetchB1 & 0x80) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaFetchB1 & 0x40) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        ulaFetchB1 <<= 2;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaState._ulaFetchB1 & 0x80) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaState._ulaFetchB1 & 0x40) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        ulaState._ulaFetchB1 <<= 2;
 
-                        ulaFetchB2 = _ulaMemory[_ulaAddrBW[takt]];
+                        ulaState._ulaFetchB2 = _ulaMemory[_ulaAddrBW[takt]];
                         break;
 
                     case 5:     // shift 1 & fetch A2
-                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaFetchB1 & 0x80) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaFetchB1 & 0x40) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        ulaFetchB1 <<= 2;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaState._ulaFetchB1 & 0x80) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaState._ulaFetchB1 & 0x40) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        ulaState._ulaFetchB1 <<= 2;
 
-                        ulaFetchA2 = _ulaMemory[_ulaAddrAT[takt]];
+                        ulaState._ulaFetchA2 = _ulaMemory[_ulaAddrAT[takt]];
                         break;
 
                     case 6:     // shift 1
-                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaFetchB1 & 0x80) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaFetchB1 & 0x40) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        ulaFetchB1 <<= 2;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaState._ulaFetchB1 & 0x80) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaState._ulaFetchB1 & 0x40) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        ulaState._ulaFetchB1 <<= 2;
                         break;
 
                     case 7:     // shift 1 (last)
-                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaFetchB1 & 0x80) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaFetchB1 & 0x40) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        ulaFetchB1 <<= 2;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaState._ulaFetchB1 & 0x80) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaState._ulaFetchB1 & 0x40) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        ulaState._ulaFetchB1 <<= 2;
 
-                        ulaFetchInk = _ulaInk[ulaFetchA2 + _flashState];
-                        ulaFetchPaper = _ulaPaper[ulaFetchA2 + _flashState];
+                        ulaState._ulaFetchInk = _ulaInk[ulaState._ulaFetchA2 + _flashState];
+                        ulaState._ulaFetchPaper = _ulaPaper[ulaState._ulaFetchA2 + _flashState];
                         break;
 
                     case 8:     // shift 2
-                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaFetchB2 & 0x80) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaFetchB2 & 0x40) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        ulaFetchB2 <<= 2;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaState._ulaFetchB2 & 0x80) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaState._ulaFetchB2 & 0x40) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        ulaState._ulaFetchB2 <<= 2;
                         break;
 
                     case 9:     // shift 2 & fetch B1
-                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaFetchB2 & 0x80) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaFetchB2 & 0x40) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        ulaFetchB2 <<= 2;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaState._ulaFetchB2 & 0x80) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaState._ulaFetchB2 & 0x40) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        ulaState._ulaFetchB2 <<= 2;
 
-                        ulaFetchB1 = _ulaMemory[_ulaAddrBW[takt]];
+                        ulaState._ulaFetchB1 = _ulaMemory[_ulaAddrBW[takt]];
                         break;
 
                     case 10:     // shift 2 & fetch A1
-                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaFetchB2 & 0x80) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaFetchB2 & 0x40) != 0) ? ulaFetchInk : ulaFetchPaper;
-                        ulaFetchB2 <<= 2;
+                        bitmapBufPtr[_ulaLineOffset[takt]] = ((ulaState._ulaFetchB2 & 0x80) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        bitmapBufPtr[_ulaLineOffset[takt] + 1] = ((ulaState._ulaFetchB2 & 0x40) != 0) ? ulaState._ulaFetchInk : ulaState._ulaFetchPaper;
+                        ulaState._ulaFetchB2 <<= 2;
 
-                        ulaFetchA1 = _ulaMemory[_ulaAddrAT[takt]];
-                        ulaFetchInk = _ulaInk[ulaFetchA1 + _flashState];
-                        ulaFetchPaper = _ulaPaper[ulaFetchA1 + _flashState];
+                        ulaState._ulaFetchA1 = _ulaMemory[_ulaAddrAT[takt]];
+                        ulaState._ulaFetchInk = _ulaInk[ulaState._ulaFetchA1 + _flashState];
+                        ulaState._ulaFetchPaper = _ulaPaper[ulaState._ulaFetchA1 + _flashState];
                         break;
                 }
             }
@@ -627,5 +601,15 @@ namespace ZXMAK2.Engine.Devices.Ula
 		};
 
         #endregion
+    }
+
+    public class UlaStateBase
+    {
+        public int _ulaFetchB1;
+        public int _ulaFetchA1;
+        public int _ulaFetchB2;
+        public int _ulaFetchA2;
+        public uint _ulaFetchInk = 0;
+        public uint _ulaFetchPaper = 0;
     }
 }
