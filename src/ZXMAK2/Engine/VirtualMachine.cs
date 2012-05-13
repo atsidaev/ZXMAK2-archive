@@ -207,6 +207,7 @@ namespace ZXMAK2.Engine
 
         private void OnBreakpoint(object sender, EventArgs e)
         {
+            m_bpTriggered = true;
             if (Breakpoint != null)
                 Breakpoint(this, EventArgs.Empty);
         }
@@ -347,14 +348,17 @@ namespace ZXMAK2.Engine
 
         #region IDebuggable
 
+        private bool m_bpTriggered;
+
         public void DoReset()
         {
             lock (m_sync)
             {
                 bool run = IsRunning;
                 DoStop();
+                m_bpTriggered = false;
                 Spectrum.DoReset();
-                if (run)
+                if (run && !m_bpTriggered)
                     DoRun();
             }
             OnUpdateVideo();
@@ -366,8 +370,9 @@ namespace ZXMAK2.Engine
             {
                 bool run = IsRunning;
                 DoStop();
+                m_bpTriggered = false;
                 Spectrum.DoNmi();
-                if (run)
+                if (run && !m_bpTriggered)
                     DoRun();
             }
             OnUpdateVideo();
