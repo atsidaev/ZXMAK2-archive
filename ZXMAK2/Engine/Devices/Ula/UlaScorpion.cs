@@ -17,8 +17,6 @@ namespace ZXMAK2.Engine.Devices.Ula
             bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, busRDM1);
             bmgr.SubscribeRDMEM_M1(0xC000, 0x8000, busRDM1);
             bmgr.SubscribeRDMEM_M1(0xC000, 0xC000, busRDM1);
-
-            bmgr.SubscribeINTACK(busIntAck);
         }
 
         #endregion
@@ -38,13 +36,14 @@ namespace ZXMAK2.Engine.Devices.Ula
             c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
             c_frameTactCount = 69888;//+
             c_ulaBorder4T = true;
+            c_ulaBorder4Tstage = 3;
 
             c_ulaBorderTop = 24;//64;
             c_ulaBorderBottom = 24;// 40;
             c_ulaBorderLeftT = 16;// 24;  //24
             c_ulaBorderRightT = 16;// 24; //32
 
-            c_ulaIntBegin = 64-1;
+            c_ulaIntBegin = 64-3;
             c_ulaIntLength = 32;    // according to fuse
 
             c_ulaWidth = (c_ulaBorderLeftT + 128 + c_ulaBorderRightT) * 2;
@@ -56,14 +55,6 @@ namespace ZXMAK2.Engine.Devices.Ula
         private void busRDM1(ushort addr, ref byte value)
         {
             CPU.Tact += CPU.Tact & 1;
-        }
-
-        private void busIntAck()
-        {
-            CPU.INT = false;
-            // ugly, but probably works :)
-            CPU.Tact -= CPU.Tact % FrameTactCount;
-            //CPU.Tact += CPU.Tact & 1;
         }
 
         #endregion

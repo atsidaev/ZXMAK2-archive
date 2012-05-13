@@ -64,6 +64,8 @@ namespace ZXMAK2.Engine.Devices.Ula
         public int c_ulaFirstPaperLine = 80;
         public int c_ulaFirstPaperTact = 68;      // 68 [32sync+36border+128scr+28border]
         public int c_frameTactCount = 71680;
+        public bool c_ulaBorder4T = false;
+        public int c_ulaBorder4Tstage = 1;
 
         public int c_ulaBorderTop = 24;//64;
         public int c_ulaBorderBottom = 24;//48;
@@ -73,7 +75,6 @@ namespace ZXMAK2.Engine.Devices.Ula
         public int c_ulaIntBegin = 0;
         public int c_ulaIntLength = 32;
         public int c_ulaFlashPeriod = 25;
-        public bool c_ulaBorder4T = false;
 
         public int c_ulaWidth;
         public int c_ulaHeight;
@@ -505,7 +506,7 @@ namespace ZXMAK2.Engine.Devices.Ula
 
             for (int takt = startTact; takt < endTact; takt++)
             {
-                if (!c_ulaBorder4T || (takt & 3) == 1)
+                if (!c_ulaBorder4T || (takt & 3) == c_ulaBorder4Tstage)
                 {
                     ulaState.Border = _borderColor;
                 }
