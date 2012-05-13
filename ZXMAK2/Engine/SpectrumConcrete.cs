@@ -133,18 +133,22 @@ namespace ZXMAK2.Engine
 
         public unsafe override void ExecuteFrame()
         {
-            if (!IsRunning)
-                return;
-
 			//System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             //stopwatch.Start();
 
             int frameTact = _bus.GetFrameTact();
             long t = _cpu.Tact - frameTact + _bus.FrameTactCount;
 
-            while (IsRunning && (t - _cpu.Tact) > 0)
+            while ((t - _cpu.Tact) > 0)
             {
-                OnExecCycle();
+                _bus.ExecCycle();
+                if (_breakpoints != null && CheckBreakpoint(_cpu.regs.PC) && !_cpu.HALTED)
+                {
+                    IsRunning = false;
+                    OnUpdateFrame();
+                    OnBreakpoint();
+                    return;
+                }
 			}
 
             //stopwatch.Stop();
