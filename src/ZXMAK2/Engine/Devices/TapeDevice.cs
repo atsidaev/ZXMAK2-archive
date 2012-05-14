@@ -294,7 +294,7 @@ namespace ZXMAK2.Engine.Devices
 			}
 			set
 			{
-				if (value == _playPosition)
+				if (value == _index)
 					return;
 				if (value >= 0 && value < _blocks.Count)
 				{
