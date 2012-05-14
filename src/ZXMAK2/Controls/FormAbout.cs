@@ -72,7 +72,7 @@ namespace ZXMAK2.Controls
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(218, 26);
             this.labelCopyright.TabIndex = 4;
-            this.labelCopyright.Text = "Copyright © 2001-2011 Alexander Makeev.\nAll rights reserved.";
+            this.labelCopyright.Text = "Copyright © 2001-2012 Alexander Makeev.\nAll rights reserved.";
             // 
             // labelAmstrad
             // 
