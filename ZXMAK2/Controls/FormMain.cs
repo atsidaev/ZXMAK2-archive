@@ -18,6 +18,7 @@ using ZXMAK2.MDX;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mime;
+using System.Collections.Specialized;
 
 
 namespace ZXMAK2.Controls
@@ -797,35 +798,14 @@ namespace ZXMAK2.Controls
                 fileName = Path.GetFileName(webResponse.ResponseUri.LocalPath);
                 if (webResponse.Headers["Content-Disposition"] != null)
                 {
-                    ContentDisposition contDisp = null;
-                    try
+                    string dispName = getContentFileName(
+                        webResponse.Headers["Content-Disposition"]);
+                    if (!string.IsNullOrEmpty(dispName))
+                        fileName = dispName;
+                    // fix name...
+                    foreach (char c in Path.GetInvalidFileNameChars())
                     {
-                        contDisp = new ContentDisposition(webResponse.Headers["Content-Disposition"]);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogAgent.Error(ex);
-                    }
-                    try
-                    {
-                        if (contDisp == null)
-                        {
-                            // invalid character?
-                            string fixedHeader = webResponse.Headers["Content-Disposition"];
-                            fixedHeader = fixedHeader.Replace('[', '-').Replace(']', '-');
-                            contDisp = new ContentDisposition(fixedHeader);
-                            LogAgent.Warn(
-                                "content-disposition contains invalid characters: {0}",
-                                webResponse.Headers["Content-Disposition"]);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogAgent.Error(ex);
-                    }
-                    if (contDisp != null && !string.IsNullOrEmpty(contDisp.FileName))
-                    {
-                        fileName = contDisp.FileName;
+                        fileName = fileName.Replace(new string(c, 1), string.Empty);
                     }
                 }
                 using (Stream stream = webResponse.GetResponseStream())
@@ -840,6 +820,34 @@ namespace ZXMAK2.Controls
             {
                 webResponse.Close();
             }
+        }
+
+        private string getContentFileName(string header)
+        {
+            if (string.IsNullOrEmpty(header))
+                return null;
+            try
+            {
+                ContentDisposition contDisp = new ContentDisposition(header);
+                if (!string.IsNullOrEmpty(contDisp.FileName))
+                    return contDisp.FileName;
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }             
+            LogAgent.Warn("content-disposition bad format: {0}", header);
+            try
+            {
+                ContentDispositionEx contDisp = new ContentDispositionEx(header);
+                if (!string.IsNullOrEmpty(contDisp.FileName))
+                    return contDisp.FileName;
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+            return null;
         }
 
         private byte[] downloadStream(Stream stream, long length, int timeOut)
@@ -962,5 +970,75 @@ namespace ZXMAK2.Controls
             public static string FileDrop = DataFormats.FileDrop;
             public static string Uri = "UniformResourceLocator";
         }
+    }
+
+    public class ContentDispositionEx
+    {
+        private StringDictionary m_params = new StringDictionary();
+        private string m_dispType;
+        
+        public ContentDispositionEx(string rawValue)
+        {
+            Parse(rawValue);
+        }
+
+        protected virtual void Parse(string rawValue)
+        {
+            m_params.Clear();
+            string[] keyPairs = rawValue.Split(';');
+            m_dispType = keyPairs[0];
+            
+            for (int i=1; i < keyPairs.Length; i++)
+            {
+                string keyPair = keyPairs[i];
+                int index = keyPair.IndexOf('=');
+                if (index < 0)
+                {
+                    LogAgent.Error(
+                        "ContentDispositionEx.Parse: invalid key pair '{0}'",
+                        keyPair);
+                    continue;
+                }
+                string key = keyPair.Substring(0, index).Trim();
+                string value = keyPair.Substring(index + 1).Trim();
+                if (value.StartsWith("\"") && value.EndsWith("\"") && value.Length>1)
+                {    
+                    value = value.Substring(1, value.Length-1);
+                    value = value.Replace("\\\"", "\"").Trim();
+                }
+                key = key.ToLower();
+                m_params[key] = value;
+            }
+        }
+
+        public string DispositionType
+        {
+            get { return m_dispType; }
+            set { m_dispType = value; }
+        }
+
+        public string FileName
+        {
+            get { return m_params["filename"]; }
+            set { m_params["filename"] = value; }
+        }
+
+        public long Size
+        {
+            get { return m_params.ContainsKey("size") ? Convert.ToInt64(m_params["size"]) : -1; }
+            set { if (value < 0) m_params.Remove("size"); else m_params["size"] = Convert.ToString(value); }
+        }
+
+        //public DateTime CreationDate
+        //{
+        //    get { return ParseDateRFC822(m_params["creation-date"]); }
+        //    set { m_params["creation-date"] = ToStringDateRFC822(value); }
+        //}
+
+        //public DateTime ModificationDate
+        //{
+        //    get { return ParseDateRFC822(m_params["modification-date"]); }
+        //    set { m_params["modification-date"] = ToStringDateRFC822(value); }
+        //}
     }
 }
