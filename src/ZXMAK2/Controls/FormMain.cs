@@ -797,10 +797,36 @@ namespace ZXMAK2.Controls
                 fileName = Path.GetFileName(webResponse.ResponseUri.LocalPath);
                 if (webResponse.Headers["Content-Disposition"] != null)
                 {
-                    ContentDisposition contDisp = new ContentDisposition(
-                        webResponse.Headers["Content-Disposition"]);
-                    if (!string.IsNullOrEmpty(contDisp.FileName))
+                    ContentDisposition contDisp = null;
+                    try
+                    {
+                        contDisp = new ContentDisposition(webResponse.Headers["Content-Disposition"]);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogAgent.Error(ex);
+                    }
+                    try
+                    {
+                        if (contDisp == null)
+                        {
+                            // invalid character?
+                            string fixedHeader = webResponse.Headers["Content-Disposition"];
+                            fixedHeader = fixedHeader.Replace('[', '-').Replace(']', '-');
+                            contDisp = new ContentDisposition(fixedHeader);
+                            LogAgent.Warn(
+                                "content-disposition contains invalid characters: {0}",
+                                webResponse.Headers["Content-Disposition"]);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogAgent.Error(ex);
+                    }
+                    if (contDisp != null && !string.IsNullOrEmpty(contDisp.FileName))
+                    {
                         fileName = contDisp.FileName;
+                    }
                 }
                 using (Stream stream = webResponse.GetResponseStream())
                 {
