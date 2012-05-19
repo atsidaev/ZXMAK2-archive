@@ -9,7 +9,7 @@ namespace ZXMAK2.Engine.Interfaces
     /// Used to save/load state of AY8910 devices
     /// </summary>
     #endregion
-    public interface IAY8910Device //: BusDeviceBase
+    public interface IAyDevice
     {
         byte ADDR_REG { get; set; }
         byte DATA_REG { get; set; }

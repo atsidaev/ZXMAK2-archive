@@ -123,7 +123,7 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 					LogAgent.Warn("Z80Serializer.loadFromStream: Interface I not implemented, but Interface I ROM required!");
 
 				// Load AY-3-8910 registers
-				IAY8910Device aydev = _spec.BusManager.FindDevice(typeof(IAY8910Device)) as IAY8910Device;
+				IAyDevice aydev = _spec.BusManager.FindDevice(typeof(IAyDevice)) as IAyDevice;
 				if (aydev != null)
 				{
 					for (int i = 0; i < 16; i++)
@@ -363,7 +363,7 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 			hdr1[Z80HDR1_7FFD] = 0x0E;       // ?? dont know what is it, but other emuls doing that (128K only)
 
 			// Save AY registers
-			IAY8910Device aydev = _spec.BusManager.FindDevice(typeof(IAY8910Device)) as IAY8910Device;
+			IAyDevice aydev = _spec.BusManager.FindDevice(typeof(IAyDevice)) as IAyDevice;
 			if (aydev != null)
 			{
 				byte ayaddr = aydev.ADDR_REG;
