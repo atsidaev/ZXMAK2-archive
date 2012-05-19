@@ -236,7 +236,7 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 			byte chFlags = data[offset]; offset += 1;
 			byte chCurrentRegister = data[offset]; offset += 1;
             
-			IAY8910Device aydev = _spec.BusManager.FindDevice(typeof(IAY8910Device)) as IAY8910Device;
+			IAyDevice aydev = _spec.BusManager.FindDevice(typeof(IAyDevice)) as IAyDevice;
             if (aydev != null)
 			{
 				for (int i = 0; i < 16; i++)
@@ -462,7 +462,7 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 
         private void save_AY(Stream stream)
         {
-            IAY8910Device aydev = _spec.BusManager.FindDevice(typeof(IAY8910Device)) as IAY8910Device;
+            IAyDevice aydev = _spec.BusManager.FindDevice(typeof(IAyDevice)) as IAyDevice;
             if (aydev != null)
             {
                 StreamHelper.Write(stream, Encoding.ASCII.GetBytes("AY\0\0"));

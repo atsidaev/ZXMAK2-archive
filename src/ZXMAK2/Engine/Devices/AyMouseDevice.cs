@@ -21,13 +21,13 @@ namespace ZXMAK2.Engine.Devices
         public override void BusConnect()
         {
             if (m_ay8910 != null)
-                m_ay8910.UpdateIRA += new AyUpdatePortDelegate(ay_UpdateIRA);	// AY mouse handler
+                m_ay8910.UpdateIRA += ay_UpdateIRA;	// AY mouse handler
         }
 
         public override void BusDisconnect()
         {
             if (m_ay8910 != null)
-                m_ay8910.UpdateIRA -= new AyUpdatePortDelegate(ay_UpdateIRA);	// AY mouse handler
+                m_ay8910.UpdateIRA -= ay_UpdateIRA;	// AY mouse handler
         }
 
         #endregion
