@@ -87,9 +87,9 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="BINDATA\eeprom.bin" />
+    <None Include="BINDATA\MACHINES.PAK" />
     <None Include="BINDATA\ROMS.PAK" />
     <None Include="BINDATA\SYSDISK.IMG.zip" />
-    <None Include="BINDATA\ZXMAK2.VMZ" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
