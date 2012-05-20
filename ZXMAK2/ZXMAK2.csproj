@@ -212,6 +212,7 @@
     <Compile Include="Engine\Serializers\SnapshotSerializers\SnapshotSerializerBase.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryPentagon128.cs" />
     <Compile Include="Engine\Serializers\SnapshotSerializers\SzxSerializer.cs" />
+    <Compile Include="Engine\Serializers\TapeSerializers\WavSerializer.cs" />
     <Compile Include="Engine\SpectrumConcrete.cs" />
     <Compile Include="Controls\FormMachineSettings.cs">
       <SubType>Form</SubType>
@@ -378,7 +379,7 @@
     <None Include="boot.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Machines.PAK">
+    <None Include="MACHINES.PAK">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">
