@@ -39,6 +39,7 @@ namespace ZXMAK2.Engine.Devices
 			bmgr.AddSerializer(new TapSerializer(this));
             bmgr.AddSerializer(new TzxSerializer(this));
             bmgr.AddSerializer(new CswSerializer(this));
+            bmgr.AddSerializer(new WavSerializer(this));
         }
 
         public override void BusConnect()

@@ -649,6 +649,8 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 		{
 			byte[] data = new byte[4];
 			stream.Read(data, 0, data.Length);
+            //if (!BitConverter.IsLittleEndian)
+            //    Array.Reverse(data);
 			value = BitConverter.ToInt32(data, 0);
 		}
 
