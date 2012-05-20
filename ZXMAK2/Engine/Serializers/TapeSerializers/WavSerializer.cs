@@ -76,26 +76,65 @@ namespace ZXMAK2.Engine.Serializers.TapeSerializers
 
         public Int32 ReadNext()
         {
+            // check - sample should be in PCM format
+            if (m_header.fmtCode != WAVE_FORMAT_PCM &&
+                m_header.fmtCode != WAVE_FORMAT_IEEE_FLOAT)
+            {
+                throw new FormatException(string.Format(
+                    "Not supported audio format: {0}",
+                    m_header.fmtCode));
+            }
             byte[] data = new byte[m_header.fmtBlockAlign];
             m_stream.Read(data, 0, data.Length);
-            if (m_header.bitDepth == 8)
-                return getSample8(data, 0, m_header.channels);
-            if (m_header.bitDepth == 16)
-                return getSample16(data, 0, m_header.channels);
+            if (m_header.fmtCode == WAVE_FORMAT_PCM)
+            {
+                // use first channel only
+                if (m_header.bitDepth == 8)
+                    return getSamplePcm8(data, 0, 0);
+                if (m_header.bitDepth == 16)
+                    return getSamplePcm16(data, 0, 0);
+                if (m_header.bitDepth == 24)
+                    return getSamplePcm24(data, 0, 0);
+            }
+            else if (m_header.fmtCode == WAVE_FORMAT_IEEE_FLOAT)
+            {
+                // use first channel only
+                if (m_header.bitDepth == 32)
+                    return getSampleFloat32(data, 0, 0);
+            }
             throw new NotSupportedException("Not supported WAV file format");
         }
 
-        private Int32 getSample8(byte[] bufferRaw, int offset, short channelCount)
+        private int getSampleFloat32(byte[] data, int offset, int channel)
         {
-            // use first channel only
-            return bufferRaw[offset] - 127;
+            // convert to 16 bit integer
+            float fSample = BitConverter.ToSingle(data, offset + 4 * channel);
+            Int32 iSample = (Int32)(fSample * 32768F);
+            if (iSample < -32768) iSample = -32768;
+	        else if (iSample > 32767) iSample=32767;
+            return iSample;
+        }
+
+        private Int32 getSamplePcm8(byte[] bufferRaw, int offset, int channel)
+        {
+            return bufferRaw[offset+channel] - 128;
         }
         
-        private Int32 getSample16(byte[] bufferRaw, int offset, short channelCount)
+        private Int32 getSamplePcm16(byte[] bufferRaw, int offset, int channel)
         {
-            // use first channel only
-            return BitConverter.ToInt32(bufferRaw, offset);
+            return BitConverter.ToInt16(bufferRaw, offset + 2 * channel);
         }
+        
+        private Int32 getSamplePcm24(byte[] bufferRaw, int offset, int channel)
+        {
+            return BitConverter.ToInt16(bufferRaw, offset + 4 * channel);
+        }
+
+        private const int WAVE_FORMAT_PCM = 1;              /* PCM */
+        private const int WAVE_FORMAT_IEEE_FLOAT = 3;       /* IEEE float */
+        private const int WAVE_FORMAT_ALAW = 6;             /* 8-bit ITU-T G.711 A-law */
+        private const int WAVE_FORMAT_MULAW = 7;            /* 8-bit ITU-T G.711 µ-law */
+        private const int WAVE_FORMAT_EXTENSIBLE = 0xFFFE;  /* Determined by SubFormat */
     }
 
     public class WavHeader
@@ -103,7 +142,7 @@ namespace ZXMAK2.Engine.Serializers.TapeSerializers
         // RIFF chunk (12 bytes)
         public Int32 chunkID;           // "RIFF"
         public Int32 fileSize;
-        public Int32 riffType;
+        public Int32 riffType;          // "WAVE"
         
         // Format chunk (24 bytes)
         public Int32 fmtID;             // "fmt "
@@ -123,15 +162,61 @@ namespace ZXMAK2.Engine.Serializers.TapeSerializers
 
         public void Deserialize(Stream stream)
         {
-			StreamHelper.Read(stream, out chunkID);
+            StreamHelper.Read(stream, out chunkID);
             StreamHelper.Read(stream, out fileSize);
             StreamHelper.Read(stream, out riffType);
             if (chunkID != BitConverter.ToInt32(Encoding.ASCII.GetBytes("RIFF"), 0))
             {
                 throw new FormatException("Invalid WAV file header");
             }
-            StreamHelper.Read(stream, out fmtID);
-            StreamHelper.Read(stream, out fmtSize);
+            if (riffType != BitConverter.ToInt32(Encoding.ASCII.GetBytes("WAVE"), 0))
+            {
+                throw new FormatException(string.Format(
+                    "Not supported RIFF type: '{0}'",
+                    Encoding.ASCII.GetString(BitConverter.GetBytes(riffType))));
+            }
+            Int32 chunkId;
+            Int32 chunkSize;
+            while (stream.Position < stream.Length)
+            {
+                StreamHelper.Read(stream, out chunkId);
+                StreamHelper.Read(stream, out chunkSize);
+                string strChunkId = Encoding.ASCII.GetString(
+                    BitConverter.GetBytes(chunkId));
+                if (strChunkId == "fmt ")
+                {
+                    read_fmt(stream, chunkId, chunkSize);
+                }
+                else if (strChunkId == "data")
+                {
+                    read_data(stream, chunkId, chunkSize);
+                    break;
+                }
+                else
+                {
+                    stream.Seek(chunkSize, SeekOrigin.Current);
+                }
+            }
+            if (fmtID != BitConverter.ToInt32(Encoding.ASCII.GetBytes("fmt "), 0))
+            {
+                throw new FormatException("format chunk not found");
+            }
+            if (dataID != BitConverter.ToInt32(Encoding.ASCII.GetBytes("data"), 0))
+            {
+                throw new FormatException("data chunk not found");
+            }
+        }
+
+        private void read_data(Stream stream, int chunkId, int chunkSize)
+        {
+            dataID = chunkId;
+            dataSize = chunkSize;
+        }
+
+        private void read_fmt(Stream stream, int chunkId, int chunkSize)
+        {
+            fmtID = chunkId;
+            fmtSize = chunkSize;
             StreamHelper.Read(stream, out fmtCode);
             StreamHelper.Read(stream, out channels);
             StreamHelper.Read(stream, out sampleRate);
@@ -143,25 +228,6 @@ namespace ZXMAK2.Engine.Serializers.TapeSerializers
                 // Read any extra values
                 StreamHelper.Read(stream, out fmtExtraSize);
                 stream.Seek(fmtExtraSize, SeekOrigin.Current);
-            }
-            if (fmtID != BitConverter.ToInt32(Encoding.ASCII.GetBytes("fmt "), 0))
-            {
-                throw new FormatException("Invalid WAV file header");
-            }
-            StreamHelper.Read(stream, out dataID);
-            StreamHelper.Read(stream, out dataSize);
-            if (dataID != BitConverter.ToInt32(Encoding.ASCII.GetBytes("data"), 0))
-            {
-                throw new FormatException("Invalid WAV file header");
-            }
-
-            if (dataSize != fileSize - 36)
-            {
-                LogAgent.Warn(
-                    "WavHeader.Deserialize: invalid dataSize={0}, used dataSize={1}",
-                    dataSize,
-                    fileSize - 36);
-                dataSize = fileSize - 36;
             }
         }
     }

@@ -353,6 +353,11 @@ namespace ZXMAK2.Controls
                         DlgIcon.Error);
                 }
             }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                DialogProvider.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+            }
             finally
             {
                 if (running)
@@ -379,6 +384,11 @@ namespace ZXMAK2.Controls
                         DlgButtonSet.OK,
                         DlgIcon.Error);
                 }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                DialogProvider.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
             }
             finally
             {
