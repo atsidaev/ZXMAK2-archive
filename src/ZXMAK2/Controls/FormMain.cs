@@ -912,7 +912,7 @@ namespace ZXMAK2.Controls
                 else
                 {
                     DialogProvider.Show(
-                        "Unrecognized file!",
+                        string.Format("Unrecognized file!\n\n{0}", fileName),
                         "Error",
                         DlgButtonSet.OK,
                         DlgIcon.Error);
