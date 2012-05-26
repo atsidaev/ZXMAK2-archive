@@ -66,6 +66,8 @@ namespace ZXMAK2.Engine.Devices.Ula
             contendMemory();
         }
 
+        #region The same as 128
+
         protected void ContendNoMreq(ushort addr)
         {
             if (IsContended(addr))
@@ -82,7 +84,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             contendPortLate(addr);
             if ((addr & 0x0001) == 0)
             {
-                int frameTact = (int)((CPU.Tact-2) % FrameTactCount);
+                int frameTact = (int)((CPU.Tact - 2) % FrameTactCount);
                 UpdateState(frameTact);
                 PortFE = value;
             }
@@ -98,11 +100,7 @@ namespace ZXMAK2.Engine.Devices.Ula
 
         #endregion
 
-        private void contendMemory()
-        {
-            int frameTact = (int)(CPU.Tact % c_frameTactCount);
-            CPU.Tact += m_contention[frameTact];
-        }
+        #endregion
 
         private bool IsContended(int addr)
         {
@@ -113,6 +111,14 @@ namespace ZXMAK2.Engine.Devices.Ula
         private bool IsPortUla(int addr)
         {
             return (addr & 1) == 0;
+        }
+
+        #region The same as 128
+
+        private void contendMemory()
+        {
+            int frameTact = (int)(CPU.Tact % c_frameTactCount);
+            CPU.Tact += m_contention[frameTact];
         }
 
         private void contendPortEarly(int addr)
@@ -175,7 +181,10 @@ namespace ZXMAK2.Engine.Devices.Ula
                 m_contention[t] = byteContention[pixByte];
             }
         }
+        
         private int[] m_contention;
+
+        #endregion
 
         //protected override void EndFrame()
         //{
