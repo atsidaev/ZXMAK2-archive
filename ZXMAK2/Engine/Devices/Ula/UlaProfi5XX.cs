@@ -73,7 +73,6 @@ namespace ZXMAK2.Engine.Devices.Ula
 
             m_pal = new byte[16];
             m_pal_map = new uint[0x100];
-            fillTables();
         }
 
         private void SetPalette(int index, byte value)
@@ -84,8 +83,10 @@ namespace ZXMAK2.Engine.Devices.Ula
             OnPaletteChanged();
         }
 
-        private void fillTables()
+        protected override void OnTimingChanged()
         {
+            base.OnTimingChanged();
+            //rebuild tables...
             for (int i = 0; i < 0x100; i++)
             {
                 //Gg0Rr0Bb

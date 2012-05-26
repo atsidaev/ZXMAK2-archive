@@ -73,20 +73,16 @@ namespace Plugins.Ula
 
             c_ulaWidth = (c_ulaBorderLeftT + 128 + c_ulaBorderRightT) * 2;
             c_ulaHeight = (c_ulaBorderTop + 192 + c_ulaBorderBottom);
-
-            fillTable(true);
         }
 
-
-        private void fillTable(bool lateModel)
+        protected override void OnTimingChanged()
         {
+            base.OnTimingChanged();
             m_contention = new int[c_frameTactCount];
             int[] byteContention = new int[] { 6, 5, 4, 3, 2, 1, 0, 0, };
             for (int t = 0; t < c_frameTactCount; t++)
             {
                 int shifted = t - c_ulaIntBegin;
-                if (!lateModel)
-                    shifted -= 1;
                 if (shifted < 0)
                     shifted += c_frameTactCount;
 

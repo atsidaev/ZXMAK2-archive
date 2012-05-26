@@ -120,7 +120,6 @@ namespace ZXMAK2.Engine.Devices.Ula
 
             c_ulaWidth = (c_ulaBorderLeftT + 128 + c_ulaBorderRightT) * 2;
             c_ulaHeight = (c_ulaBorderTop + 192 + c_ulaBorderBottom);
-            fillTables();
         }
 
         public override void SetPageMapping(int videoPage, int page0000, int page4000, int page8000, int pageC000)
@@ -302,8 +301,9 @@ namespace ZXMAK2.Engine.Devices.Ula
                     buffer[offset++] = (int)_borderColor;
         }
 
-        private void fillTables()
+        protected override void OnTimingChanged()
         {
+            base.OnTimingChanged();
             m_ulaAddr320 = new int[200 * 160];
             int offset = 0;
             for (int y = 0; y < 200; y++)

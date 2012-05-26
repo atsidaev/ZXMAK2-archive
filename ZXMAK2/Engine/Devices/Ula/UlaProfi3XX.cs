@@ -17,12 +17,6 @@ namespace ZXMAK2.Engine.Devices.Ula
             bmgr.SubscribeRDIO(0x0000, 0x0000, ReadPortAll);
         }
 
-        public override void BusConnect()
-        {
-            base.BusConnect();
-            fillUlaProfiModeTables(c_frameTactCount);
-        }
-
         #endregion
 
         #region UlaDeviceBase
@@ -221,14 +215,15 @@ namespace ZXMAK2.Engine.Devices.Ula
         private uint[] _ulaProfiInk;
         private uint[] _ulaProfiPaper;
 
-
-        private unsafe void fillUlaProfiModeTables(int MaxTakt)
+        protected unsafe override void OnTimingChanged()
         {
-            _ulaDoTable = new UlaDoDelegate[MaxTakt];
-            _ulaBwOffset = new int[MaxTakt];
-            _ulaVideoOffset = new int[MaxTakt];
+            base.OnTimingChanged();
+            // rebuild tables...
+            _ulaDoTable = new UlaDoDelegate[c_frameTactCount];
+            _ulaBwOffset = new int[c_frameTactCount];
+            _ulaVideoOffset = new int[c_frameTactCount];
 
-            for (int tact = 0; tact < MaxTakt; tact++)
+            for (int tact = 0; tact < c_frameTactCount; tact++)
             {
                 int scrtact = tact - (_ulaProfiScreenBeginTact + _ulaProfiLineBeginTact - c_ulaProfiBorderLeftT);
 
