@@ -79,21 +79,21 @@ namespace ZXMAK2.Engine.Devices.Ula
         private void WritePortAll(ushort addr, byte value, ref bool iorqge)
         {
             contendPortEarly(addr);
+            contendPortLate(addr);
             if ((addr & 0x0001) == 0)
             {
                 int frameTact = (int)((CPU.Tact-2) % FrameTactCount);
                 UpdateState(frameTact);
                 PortFE = value;
             }
-            contendPortLate(addr);
         }
 
         private void ReadPortAll(ushort addr, ref byte value, ref bool iorqge)
         {
             contendPortEarly(addr);
-            int frameTact = (int)((CPU.Tact-1) % FrameTactCount);
-            base.ReadPortFF(frameTact, ref value);
             contendPortLate(addr);
+            int frameTact = (int)((CPU.Tact - 1) % FrameTactCount);
+            base.ReadPortFF(frameTact, ref value);
         }
 
         #endregion
