@@ -14,59 +14,59 @@ namespace ZXMAK2.Engine.Z80
             int r = cmd & 7;
             regs[r] = ALU_RLC(regs[r]);
         }
-        
+
         private void CB_RRC(byte cmd)       // RRC r
         {
             int r = cmd & 7;
             regs[r] = ALU_RRC(regs[r]);
         }
-        
+
         private void CB_RL(byte cmd)        // RL r
         {
             int r = cmd & 7;
             regs[r] = ALU_RL(regs[r]);
         }
-        
+
         private void CB_RR(byte cmd)        // RR r
         {
             int r = cmd & 7;
             regs[r] = ALU_RR(regs[r]);
         }
-        
+
         private void CB_SLA(byte cmd)       // SLA r
         {
             int r = cmd & 7;
             regs[r] = ALU_SLA(regs[r]);
         }
-        
+
         private void CB_SRA(byte cmd)       // SRA r
         {
             int r = cmd & 7;
             regs[r] = ALU_SRA(regs[r]);
         }
-        
+
         private void CB_SLL(byte cmd)       // *SLL r
         {
             int r = cmd & 7;
             regs[r] = ALU_SLL(regs[r]);
         }
-        
+
         private void CB_SRL(byte cmd)       // SRL r
         {
             int r = cmd & 7;
             regs[r] = ALU_SRL(regs[r]);
         }
-        
+
         private void CB_BIT(byte cmd)       // BIT r
         {
             ALU_BIT(regs[cmd & 7], (cmd & 0x38) >> 3);
         }
-        
+
         private void CB_RES(byte cmd)       // RES r
         {
             regs[cmd & 7] &= (byte)~(1 << ((cmd & 0x38) >> 3));
         }
-        
+
         private void CB_SET(byte cmd)       // SET r
         {
             regs[cmd & 7] |= (byte)(1 << ((cmd & 0x38) >> 3));
@@ -82,7 +82,7 @@ namespace ZXMAK2.Engine.Z80
 
             WRMEM(regs.HL, val); Tact += 3;
         }
-        
+
         private void CB_RRCHL(byte cmd)       // RRC (HL)
         {
             // 15T (4, 4, 4, 3)
@@ -93,7 +93,7 @@ namespace ZXMAK2.Engine.Z80
 
             WRMEM(regs.HL, val); Tact += 3;
         }
-        
+
         private void CB_RLHL(byte cmd)        // RL (HL)
         {
             // 15T (4, 4, 4, 3)
@@ -104,7 +104,7 @@ namespace ZXMAK2.Engine.Z80
 
             WRMEM(regs.HL, val); Tact += 3;
         }
-        
+
         private void CB_RRHL(byte cmd)        // RR (HL) [15T]
         {
             // 15T (4, 4, 4, 3)
@@ -112,21 +112,21 @@ namespace ZXMAK2.Engine.Z80
             byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             val = ALU_RR(val);
-            
+
             WRMEM(regs.HL, val); Tact += 3;
         }
-        
+
         private void CB_SLAHL(byte cmd)       // SLA (HL) [15T]
         {
             // 15T (4, 4, 4, 3)
 
-            byte val = RDMEM(regs.HL); Tact++;
+            byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             val = ALU_SLA(val);
-            
+
             WRMEM(regs.HL, val); Tact += 3;
         }
-        
+
         private void CB_SRAHL(byte cmd)       // SRA (HL) [15T]
         {
             // 15T (4, 4, 4, 3)
@@ -134,10 +134,10 @@ namespace ZXMAK2.Engine.Z80
             byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             val = ALU_SRA(val);
-            
+
             WRMEM(regs.HL, val); Tact += 3;
         }
-        
+
         private void CB_SLLHL(byte cmd)       // *SLL (HL) [15T]
         {
             // 15T (4, 4, 4, 3)
@@ -145,10 +145,10 @@ namespace ZXMAK2.Engine.Z80
             byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             val = ALU_SLL(val);
-            
+
             WRMEM(regs.HL, val); Tact += 3;
         }
-        
+
         private void CB_SRLHL(byte cmd)       // SRL (HL)
         {
             // 15T (4, 4, 4, 3)
@@ -156,16 +156,15 @@ namespace ZXMAK2.Engine.Z80
             byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             val = ALU_SRL(val);
-            
+
             WRMEM(regs.HL, val); Tact += 3;
         }
-        
+
         private void CB_BITHL(byte cmd)       // BIT (HL) [12T]
         {
             // 12T (4, 4, 4)
 
-            byte val = RDMEM(regs.HL); Tact += 3;
-            RDNOMREQ(regs.HL); Tact++;
+            byte val = RDMEM(regs.HL); Tact += 4;
             ALU_BITMEM(val, (cmd & 0x38) >> 3);
         }
 
@@ -187,7 +186,7 @@ namespace ZXMAK2.Engine.Z80
             byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             val |= (byte)(1 << ((cmd & 0x38) >> 3));
-            
+
             WRMEM(regs.HL, val); Tact += 3;
         }
 
