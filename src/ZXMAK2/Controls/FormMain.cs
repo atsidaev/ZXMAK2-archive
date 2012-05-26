@@ -421,9 +421,18 @@ namespace ZXMAK2.Controls
 
         private void loadDialog_FileOk(object sender, CancelEventArgs e)
         {
-            OpenFileDialog loadDialog = sender as OpenFileDialog;
-            if (loadDialog == null) return;
-            e.Cancel = !m_vm.Spectrum.Loader.CheckCanOpenFileName(loadDialog.FileName);
+            try
+            {
+                OpenFileDialog loadDialog = sender as OpenFileDialog;
+                if (loadDialog == null) return;
+                e.Cancel = !m_vm.Spectrum.Loader.CheckCanOpenFileName(loadDialog.FileName);
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                e.Cancel = true;
+                DialogProvider.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+            }
         }
 
         private void menuFileSaveAs_Click(object sender, EventArgs e)
