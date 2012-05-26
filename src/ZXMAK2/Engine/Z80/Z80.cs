@@ -145,8 +145,8 @@ namespace ZXMAK2.Engine.Z80
             }
             else
             {
-                cbopTABLE[cmd](cmd);
                 refresh();
+                cbopTABLE[cmd](cmd);
             }
         }
         
