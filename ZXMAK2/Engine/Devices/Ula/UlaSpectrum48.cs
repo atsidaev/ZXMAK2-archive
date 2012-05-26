@@ -6,11 +6,11 @@ using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Engine.Devices.Ula
 {
-    public class UlaSpectrum48 : UlaDeviceBase
+    public class UlaSpectrum48_Early : UlaDeviceBase
     {
         #region IBusDevice
 
-        public override string Name { get { return "ZX Spectrum 48"; } }
+        public override string Name { get { return "ZX Spectrum 48 - Early Model"; } }
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -21,16 +21,13 @@ namespace ZXMAK2.Engine.Devices.Ula
             bmgr.SubscribeRDNOMREQ(0xC000, 0x4000, ContendNoMreq);
             bmgr.SubscribeWRNOMREQ(0xC000, 0x4000, ContendNoMreq);
 
-            if (m_lateModel)
-                bmgr.SubscribeRDIO(0x0000, 0x0000, ReadPortAllLate);
-            else
-                bmgr.SubscribeRDIO(0x0000, 0x0000, ReadPortAllEarly);
+            bmgr.SubscribeRDIO(0x0000, 0x0000, ReadPortAll);
             bmgr.SubscribeWRIO(0x0000, 0x0000, WritePortAll);
         }
 
         #endregion
 
-        public UlaSpectrum48()
+        public UlaSpectrum48_Early()
         {
             // ZX Spectrum 48
             // Total Size:          //+ 448 x 312
@@ -41,20 +38,18 @@ namespace ZXMAK2.Engine.Devices.Ula
             c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
             c_frameTactCount = 69888;
             c_ulaBorder4T = true;
-            c_ulaBorder4Tstage = 1;
+            c_ulaBorder4Tstage = 0;
 
             c_ulaBorderTop = 55;      //56 (at least 48=border, other=retrace or border)
             c_ulaBorderBottom = 56;   //
             c_ulaBorderLeftT = 24;    //16T
             c_ulaBorderRightT = 24;   //32T
 
-            c_ulaIntBegin = 62 + 1;
+            c_ulaIntBegin = 64;
             c_ulaIntLength = 32;    // according to fuse
 
             c_ulaWidth = (c_ulaBorderLeftT + 128 + c_ulaBorderRightT) * 2;
             c_ulaHeight = (c_ulaBorderTop + 192 + c_ulaBorderBottom);
-
-            fillTable(true);
         }
 
 
@@ -87,28 +82,19 @@ namespace ZXMAK2.Engine.Devices.Ula
             contendPortLate(addr);
             if ((addr & 0x0001) == 0)
             {
-                int frameTact = (int)((CPU.Tact - 1) % FrameTactCount);
+                int frameTact = (int)((CPU.Tact-2) % FrameTactCount);
                 UpdateState(frameTact);
                 PortFE = value;
             }
         }
 
-        private void ReadPortAllEarly(ushort addr, ref byte value, ref bool iorqge)
+        private void ReadPortAll(ushort addr, ref byte value, ref bool iorqge)
         {
             contendPortEarly(addr);
-            contendPortLate(addr);
-            int frameTact = (int)((CPU.Tact) % FrameTactCount);
+            int frameTact = (int)((CPU.Tact-1) % FrameTactCount);
             base.ReadPortFF(frameTact, ref value);
-        }
-
-        private void ReadPortAllLate(ushort addr, ref byte value, ref bool iorqge)
-        {
-            contendPortEarly(addr);
             contendPortLate(addr);
-            int frameTact = (int)((CPU.Tact - 1) % FrameTactCount);
-            base.ReadPortFF(frameTact, ref value);
         }
-
 
         #endregion
 
@@ -155,51 +141,91 @@ namespace ZXMAK2.Engine.Devices.Ula
             }
         }
 
-
-        protected void fillTable(bool lateModel)
+        protected override void OnTimingChanged()
         {
-            m_lateModel = lateModel;
+            base.OnTimingChanged();
+            
+            // build early model table...
             m_contention = new int[c_frameTactCount];
             int[] byteContention = new int[] { 6, 5, 4, 3, 2, 1, 0, 0, };
             for (int t = 0; t < c_frameTactCount; t++)
             {
-                int shifted = t - c_ulaIntBegin;
-                if (!lateModel)
-                    shifted -= 1;
+                int shifted = (t + 1) + c_ulaIntBegin;
+                // check overflow
                 if (shifted < 0)
                     shifted += c_frameTactCount;
+                shifted %= c_frameTactCount;
 
-                m_contention[shifted] = 0;
-                int line = t / c_ulaLineTime;
-                int pix = t % c_ulaLineTime;
+                m_contention[t] = 0;
+                int line = shifted / c_ulaLineTime;
+                int pix = shifted % c_ulaLineTime;
                 if (line < c_ulaFirstPaperLine || line >= (c_ulaFirstPaperLine + 192))
                 {
-                    m_contention[shifted] = 0;
+                    m_contention[t] = 0;
                     continue;
                 }
-                int scrPix = pix - c_ulaFirstPaperTact + 1;
+                int scrPix = pix - c_ulaFirstPaperTact;
                 if (scrPix < 0 || scrPix >= 128)
                 {
-                    m_contention[shifted] = 0;
+                    m_contention[t] = 0;
                     continue;
                 }
                 int pixByte = scrPix % 8;
 
-                m_contention[shifted] = byteContention[pixByte];
+                m_contention[t] = byteContention[pixByte];
             }
         }
-
-        private bool m_lateModel;
         private int[] m_contention;
+
+        //protected override void EndFrame()
+        //{
+        //    base.EndFrame();
+        //    if (IsKeyPressed(System.Windows.Forms.Keys.F1))
+        //    {
+        //        c_ulaBorder4T = true;
+        //        c_ulaBorder4Tstage = 0;
+        //        OnTimingChanged();
+        //    }
+        //    if (IsKeyPressed(System.Windows.Forms.Keys.F2))
+        //    {
+        //        c_ulaBorder4T = true;
+        //        c_ulaBorder4Tstage = 1;
+        //        OnTimingChanged();
+        //    }
+        //    if (IsKeyPressed(System.Windows.Forms.Keys.F3))
+        //    {
+        //        c_ulaBorder4T = true;
+        //        c_ulaBorder4Tstage = 2;
+        //        OnTimingChanged();
+        //    }
+        //    if (IsKeyPressed(System.Windows.Forms.Keys.F4))
+        //    {
+        //        c_ulaBorder4T = true;
+        //        c_ulaBorder4Tstage = 3;
+        //        OnTimingChanged();
+        //    }
+        //    if (IsKeyPressed(System.Windows.Forms.Keys.F5))
+        //    {
+        //        c_ulaBorder4T = false;
+        //        OnTimingChanged();
+        //    }
+        //}
+        //private static bool IsKeyPressed(System.Windows.Forms.Keys key)
+        //{
+        //    return (GetKeyState((int)key) & 0xFF00) != 0;
+        //}
+        //[System.Runtime.InteropServices.DllImport("user32")]
+        //private static extern short GetKeyState(int vKey);
     }
 
-    public class UlaSpectrum48_Early : UlaSpectrum48
+    public class UlaSpectrum48 : UlaSpectrum48_Early
     {
-        public override string Name { get { return "ZX Spectrum 48 - Early Model"; } }
+        public override string Name { get { return "ZX Spectrum 48"; } }
 
-        public UlaSpectrum48_Early()
+        public UlaSpectrum48()
         {
-            fillTable(false);
+            c_ulaFirstPaperTact += 1;
+            c_ulaBorder4Tstage = (c_ulaBorder4Tstage + 1) & 3;
         }
     }
 }
