@@ -324,8 +324,8 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
                 header.MachineId = MachineId.ZXSTMID_48K;
             }
             IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
-            if (ula is ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early ||
-                ula is ZXMAK2.Engine.Devices.Ula.UlaSpectrum128_Early)
+            if (ula.GetType() == typeof(ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early) ||
+                ula.GetType() == typeof(ZXMAK2.Engine.Devices.Ula.UlaSpectrum128_Early))
             {
                 header.Flags = (byte)(header.Flags & ~ZXSTMF_ALTERNATETIMINGS);
             }

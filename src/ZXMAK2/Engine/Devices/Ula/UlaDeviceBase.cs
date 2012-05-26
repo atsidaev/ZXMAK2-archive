@@ -46,7 +46,7 @@ namespace ZXMAK2.Engine.Devices.Ula
 
         public override void BusConnect()
         {
-            fillUlaTables(c_frameTactCount);
+            OnTimingChanged();
         }
 
         public override void BusDisconnect()
@@ -304,16 +304,14 @@ namespace ZXMAK2.Engine.Devices.Ula
             } 
         }
 
-
-        #region Private
-
-        protected virtual void fillUlaTables(int MaxTakt)
+        protected virtual void OnTimingChanged()
         {
+            // rebuild tables...
             int pitchWidth = c_ulaWidth;
-            _ulaLineOffset = new int[MaxTakt];
-            _ulaAddrBW = new int[MaxTakt];
-            _ulaAddrAT = new int[MaxTakt];
-            _ulaDo = new int[MaxTakt];
+            _ulaLineOffset = new int[c_frameTactCount];
+            _ulaAddrBW = new int[c_frameTactCount];
+            _ulaAddrAT = new int[c_frameTactCount];
+            _ulaDo = new int[c_frameTactCount];
 
             int takt = 0;
             for (int line = 0; line < c_frameTactCount / c_ulaLineTime; line++)
@@ -427,10 +425,10 @@ namespace ZXMAK2.Engine.Devices.Ula
                     else _ulaDo[takt] = 0;
                 }
 
-            shiftTable(ref _ulaDo, c_ulaIntBegin);
-            shiftTable(ref _ulaAddrBW, c_ulaIntBegin);
-            shiftTable(ref _ulaAddrAT, c_ulaIntBegin);
-            shiftTable(ref _ulaLineOffset, c_ulaIntBegin);
+            ShiftTable(ref _ulaDo, c_ulaIntBegin);
+            ShiftTable(ref _ulaAddrBW, c_ulaIntBegin);
+            ShiftTable(ref _ulaAddrAT, c_ulaIntBegin);
+            ShiftTable(ref _ulaLineOffset, c_ulaIntBegin);
 
             //{
             //    XmlDocument xml = new XmlDocument();
@@ -477,7 +475,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             }
         }
 
-		private void shiftTable(ref int[] table, int shift)
+		protected void ShiftTable(ref int[] table, int shift)
 		{
 			int[] shiftedTable = new int[table.Length];
 			for (int i = 0; i < table.Length; i++)
@@ -485,6 +483,7 @@ namespace ZXMAK2.Engine.Devices.Ula
 				int shiftedIndex = i - shift;
 				if (shiftedIndex < 0)
 					shiftedIndex += table.Length;
+                shiftedIndex %= table.Length;
 				shiftedTable[shiftedIndex] = table[i];
 			}
 			table = shiftedTable;
@@ -593,8 +592,6 @@ namespace ZXMAK2.Engine.Devices.Ula
                 }
             }
         }
-
-        #endregion
 
         #region Palette
 
