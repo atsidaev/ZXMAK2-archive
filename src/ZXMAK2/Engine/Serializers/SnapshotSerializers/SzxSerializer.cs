@@ -694,6 +694,11 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 			stream.Read(data, 0, data.Length);
 			value = (sbyte)data[0];
 		}
-	}
+
+        public static void Read(Stream stream, byte[] value)
+        {
+            stream.Read(value, 0, value.Length);
+        }
+    }
     #endregion
 }

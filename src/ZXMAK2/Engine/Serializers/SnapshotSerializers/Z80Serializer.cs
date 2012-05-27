@@ -59,27 +59,34 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 					byte[] bhdr2 = new byte[31];
 					stream.Read(bhdr2, 0, 31);
 				}
-				else if (hdr1[Z80HDR1_EXTSIZE] != 23)
-				{
-					string msg = string.Format(
-						"Z80 format version not recognized!\n" +
-						"(ExtensionSize = {0},\n" +
-						"supported only ExtensionSize={{0(old format), 23, 54}})",
-						hdr1[Z80HDR1_EXTSIZE]);
-					LogAgent.Warn("{0}", msg);
-					DialogProvider.Show(
-                        msg, 
+                else if (hdr1[Z80HDR1_EXTSIZE] == 55)
+                {
+					version = 3;
+					byte[] bhdr2 = new byte[31];
+					stream.Read(bhdr2, 0, 31);
+                    /*p1FFD = (byte)*/ stream.ReadByte();
+                }
+                else if (hdr1[Z80HDR1_EXTSIZE] != 23)
+                {
+                    string msg = string.Format(
+                        "Z80 format version not recognized!\n" +
+                        "(ExtensionSize = {0},\n" +
+                        "supported only ExtensionSize={{0(old format), 23, 54}})",
+                        hdr1[Z80HDR1_EXTSIZE]);
+                    LogAgent.Warn("{0}", msg);
+                    DialogProvider.Show(
+                        msg,
                         "Z80 loader",
                         DlgButtonSet.OK,
                         DlgIcon.Error);
-					return;
-				}
+                    return;
+                }
 			}
 
             InitStd128K();
 
 			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
-			IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+            IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
 
 			// Load registers:
 			_spec.CPU.regs.A = hdr[Z80HDR_A];
@@ -200,6 +207,7 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 					p7FFD = 0x30; // Lock 48K page 0
 			}
 			memory.CMR0 = p7FFD;
+            //memory.CMR1 = p1FFD;
 
 
 			// load rampages
@@ -248,8 +256,17 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 					stream.Read(bitbuf, 0, 1);
 					blockNumber = bitbuf[0];
 
-					stream.Read(block, 0, blockSize);
-					DecompressZ80(rawdata, block, 0x4000);
+                    if (blockSize!=0xFFFF)
+                    {
+                        stream.Read(block, 0, blockSize);
+                        DecompressZ80(rawdata, block, 0x4000);
+                    }
+                    else
+                    {
+                        blockSize = 0x4000;
+                        stream.Read(rawdata, 0, blockSize);
+                    }
+
 
 					if (blockNumber >= 3 && blockNumber <= 10 && mode128)
 					{
@@ -267,27 +284,17 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 					}
 					else if (blockNumber == 0)
 					{
-                        int rom48index = memory.GetRomIndex(RomName.ROM_SOS);
-                        for (int i = 0; i < 0x4000; i++)
-                            memory.RomPages[rom48index][i] = rawdata[i];
-						LogAgent.Warn("Z80Serializer.loadFromStream: ROM 48K loaded from snapshot!");
-						DialogProvider.Show(
-                            "ROM 48K loaded from snapshot!", 
-                            "Z80 loader",
-                            DlgButtonSet.OK,
-                            DlgIcon.Warning);
+                        //int rom48index = memory.GetRomIndex(RomName.ROM_SOS);
+                        //for (int i = 0; i < 0x4000; i++)
+                        //    memory.RomPages[rom48index][i] = rawdata[i];
+                        LogAgent.Warn("Z80Serializer.loadFromStream: Skip ROM 48K image!");
 					}
 					else if (blockNumber == 2)
 					{
-                        int rom128index = memory.GetRomIndex(RomName.ROM_128);
-                        for (int i = 0; i < 0x4000; i++)
-                            memory.RomPages[rom128index][i] = rawdata[i];
-						LogAgent.Warn("Z80Serializer.loadFromStream: ROM 128K loaded from snapshot!");
-						DialogProvider.Show(
-                            "ROM 128K loaded from snapshot!", 
-                            "Z80 loader",
-                            DlgButtonSet.OK,
-                            DlgIcon.Warning);
+                        //int rom128index = memory.GetRomIndex(RomName.ROM_128);
+                        //for (int i = 0; i < 0x4000; i++)
+                        //    memory.RomPages[rom128index][i] = rawdata[i];
+                        LogAgent.Warn("Z80Serializer.loadFromStream: Skip ROM 128K image!");
 					}
 				}
 			}
@@ -675,4 +682,429 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 		}
 		#endregion
 	}
+
+    #region New Z80 Loader
+
+    //public class Z80StreamHelper
+    //{
+    //    public int Version;
+
+    //    public ushort AF;
+    //    public ushort BC;
+    //    public ushort DE;
+    //    public ushort HL;
+    //    public ushort IX;
+    //    public ushort IY;
+    //    public ushort eAF;
+    //    public ushort eBC;
+    //    public ushort eDE;
+    //    public ushort eHL;
+
+    //    public ushort PC;
+    //    public ushort SP;
+    //    public ushort IR;
+    //    public bool IFF1;
+    //    public bool IFF2;
+    //    public byte IM;
+        
+    //    public byte PFE;
+    //    public byte P7FFD;
+    //    public byte P1FFD;
+    //    public bool IsCompressed;
+    //    public bool Is128;
+    //    public bool IsSamRom;
+
+    //    public byte HwMode;
+
+    //    // ext hdr
+    //    public byte[] AyData = new byte[16];
+    //    public byte AyIndex = 0;
+    //    public int Tact;
+        
+    //    public void Deserialize(Stream stream)
+    //    {
+    //        byte tmp1, tmp2, tmp3;
+    //        Version = -1;
+            
+    //        // read main header...
+    //        StreamHelper.Read(stream, out tmp1);    // A
+    //        StreamHelper.Read(stream, out tmp2);    // F
+    //        AF = (ushort)(tmp1 + 0x100 * tmp2);
+            
+    //        StreamHelper.Read(stream, out BC);
+    //        StreamHelper.Read(stream, out HL);
+    //        StreamHelper.Read(stream, out PC);
+    //        StreamHelper.Read(stream, out SP);
+            
+    //        StreamHelper.Read(stream, out tmp1);    // Interrupt register
+    //        StreamHelper.Read(stream, out tmp2);    // Refresh register (Bit 7 is not significant!)
+    //        StreamHelper.Read(stream, out tmp3);
+    //        // offset 12:
+    //        // Because of compatibility, if byte 12 is 255, it has to be regarded as being 1.
+    //        if (tmp1 == 255)
+    //            tmp1 = 1;
+    //        //Bit 0  : Bit 7 of the R-register
+    //        //Bit 1-3: Border colour
+    //        //Bit 4  : 1=Basic SamRom switched in
+    //        //Bit 5  : 1=Block of data is compressed
+    //        //Bit 6-7: No meaning
+    //        IR = (ushort)(tmp1 + 0x100 * ((tmp2 & 0x7F) | ((tmp3 & 0x01)<<7)));
+    //        PFE = (byte)((tmp3 >> 1) & 7);
+    //        IsSamRom = (tmp3 & 0x10) != 0;
+    //        IsCompressed = (tmp3 & 0x20) != 0;
+            
+    //        StreamHelper.Read(stream, out DE);
+    //        StreamHelper.Read(stream, out eBC);
+    //        StreamHelper.Read(stream, out eDE);
+    //        StreamHelper.Read(stream, out eHL);
+            
+    //        StreamHelper.Read(stream, out tmp1);    // A'
+    //        StreamHelper.Read(stream, out tmp2);    // F'
+    //        eAF = (ushort)(tmp1 + 0x100 * tmp2);
+            
+    //        StreamHelper.Read(stream, out IY);
+    //        StreamHelper.Read(stream, out IX);
+
+    //        StreamHelper.Read(stream, out tmp1);    // IFF1
+    //        StreamHelper.Read(stream, out tmp2);    // IFF2
+    //        IFF1 = tmp1 != 0;
+    //        IFF2 = tmp2 != 0;
+
+    //        StreamHelper.Read(stream, out tmp1);
+    //        //Bit 0-1: Interrupt mode (0, 1 or 2)
+    //        //Bit 2  : 1=Issue 2 emulation
+    //        //Bit 3  : 1=Double interrupt frequency
+    //        //Bit 4-5: 1=High video synchronisation
+    //        //         3=Low video synchronisation
+    //        //         0,2=Normal
+    //        //Bit 6-7: 0=Cursor/Protek/AGF joystick
+    //        //         1=Kempston joystick
+    //        //         2=Sinclair 2 Left joystick (or user defined, for version 3 .z80 files)
+    //        //         3=Sinclair 2 Right joystick
+    //        IM = (byte)(tmp1 & 0x03);
+
+    //        // Version < 2?
+    //        if (PC == 0)
+    //        {
+    //            Version = 1;
+    //            Is128 = false;
+    //            return;
+    //        }
+
+    //        ushort extLen;
+    //        StreamHelper.Read(stream, out extLen);    // Length of additional header block
+    //        if (extLen < 23)
+    //        {
+    //            LogAgent.Error(
+    //                "Z80StreamReader: not supported extended header ({0} bytes)",
+    //                extLen);
+    //            return;
+    //        }
+    //        StreamHelper.Read(stream, out PC);
+    //        byte[] extHdr = new byte[extLen - 2];
+    //        StreamHelper.Read(stream, extHdr);
+
+    //        if (extLen == 23)
+    //        {
+    //            Version = 2;
+    //        }
+    //        else if (extLen == 54 || extLen == 55)
+    //        {
+    //            Version = 3;
+    //        }
+
+    //        HwMode = extHdr[0];             // offset 34
+    //        P7FFD = extHdr[1];              // offset 35
+    //        AyIndex = extHdr[4];            // offset 38
+    //        for (int i = 0; i < 16; i++)
+    //            AyData[i] = extHdr[i + 5];  // offset 39-54
+            
+    //        Tact = 0;
+    //        P1FFD = 0;
+    //        if (Version == 3)
+    //        {
+                
+    //            Tact = extHdr[21] + 0x100 * extHdr[22] + 0x10000 * extHdr[23]; // offset 55,56,57
+    //            if (extLen == 55)
+    //            {
+    //                P1FFD = extHdr[52]; // offset 86
+    //            }
+    //        }
+    //        Is128 = checkMode128(Version, HwMode);
+    //    }
+
+    //    public Z80Block ReadNext(Stream stream)
+    //    {
+    //        if (Version == 1)
+    //            return readNext1(stream);
+    //        else if (Version == 2)
+    //            return readNext2n3(stream);
+    //        else return null;
+    //    }
+
+    //    private Z80Block readNext1(Stream stream)
+    //    {
+    //        int len = IsCompressed ? (int)(stream.Length - stream.Position) :
+    //            0xC000;
+    //        byte[] buffer = new byte[len];
+    //        stream.Read(buffer, 0, buffer.Length);
+
+    //        if (IsCompressed)
+    //        {
+    //            byte[] data = new byte[0xC000];
+    //            decompress(data, buffer, data.Length);
+    //            buffer = data;
+    //        }
+    //        return new Z80Block(buffer);
+    //    }
+
+    //    private Z80Block readNext2n3(Stream stream)
+    //    {
+    //        byte[] buffer = new byte[3];
+    //        int read = stream.Read(buffer, 0, 3);
+    //        if (read != 3)
+    //            return null;
+    //        int len = BitConverter.ToUInt16(buffer, 0);
+    //        int pageId = buffer[2];
+    //        if (len == 0xFFFF)
+    //        {
+    //            // not compressed
+    //            len = 0x4000;
+    //            buffer = new byte[len];
+    //            read = stream.Read(buffer, 0, len);
+    //            if (read != len)
+    //            {
+    //                LogAgent.Warn(
+    //                    "Z80StreamHelper: unexpected end of stream (read {0} of {1} bytes)",
+    //                    read,
+    //                    len);
+    //            }
+    //        }
+    //        else
+    //        {
+    //            // compressed
+    //            buffer = new byte[len];
+    //            read = stream.Read(buffer, 0, len);
+    //            if (read != len)
+    //            {
+    //                LogAgent.Warn(
+    //                    "Z80StreamHelper: unexpected end of stream (read {0} of {1} bytes)",
+    //                    read,
+    //                    len);
+    //            }
+    //            byte[] data = new byte[0x4000];
+    //            decompress(data, buffer, data.Length);
+    //            buffer = data;
+    //        }
+    //        return new Z80Block(Is128, pageId, buffer); 
+    //    }
+
+    //    private bool decompress(byte[] dest, byte[] src, int size)
+    //    {
+    //        try
+    //        {
+    //            uint c, j;
+    //            uint k;
+    //            byte l;
+    //            byte im;
+
+    //            uint i = 0;
+
+    //            j = 0;
+    //            while (j < size)
+    //            {
+    //                c = src[i++];
+    //                //      if(c == -1) return;
+    //                im = (byte)c;
+
+    //                if (im != 0xed)
+    //                {
+    //                    dest[j++] = im;
+    //                }
+    //                else
+    //                {
+    //                    c = src[i++];
+    //                    //         if(c == -1) return;
+    //                    im = (byte)c;
+    //                    if (im != 0xed)
+    //                    {
+    //                        dest[j++] = 0xed;
+    //                        i--;
+    //                    }
+    //                    else
+    //                    {
+    //                        /* fetch count */
+    //                        k = src[i++];
+    //                        //            if(k == -1) return;
+
+    //                        /* fetch character */
+    //                        c = src[i++];
+    //                        //            if(c == -1) return;
+    //                        l = (byte)c;
+    //                        while (k != 0)
+    //                        {
+    //                            dest[j++] = l;
+    //                            k--;
+    //                        }
+    //                    }
+    //                }
+    //            }
+
+    //            if (j != size)
+    //            {
+    //                LogAgent.Error(
+    //                    "Z80StreamHelper: Decompression error - file corrupt? (j={0}, size={1})",
+    //                    j,
+    //                    size);
+    //                return false;
+    //            }
+    //            return true;
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            LogAgent.Error(ex);
+    //            return false;
+    //        }
+    //    }
+
+    //    private static bool checkMode128(int version, byte hwMode)
+    //    {
+    //        if (version == 2)
+    //        {
+    //            switch (hwMode)
+    //            {
+    //                case 0:  // 48k
+    //                case 1:  // 48k + If.1
+    //                case 2:  // SamRam
+    //                    return false;
+    //                case 3:  // 128k
+    //                case 4:  // 128k + If.1
+    //                case 9:  // [ext] Pentagon (128K)
+    //                case 10: // [ext] Scorpion (256K)
+    //                    return true;
+    //                default:
+    //                    LogAgent.Warn(
+    //                        "Z80StreamSerializer.checkMode128: Unrecognized ZX Spectrum config! (ver={0}, hwMode={1})",
+    //                        version,
+    //                        hwMode);
+    //                    break;
+    //            }
+    //        }
+    //        if (version == 3)
+    //        {
+    //            switch (hwMode)
+    //            {
+    //                case 0:  // 48k
+    //                case 1:  // 48k + If.1
+    //                case 2:  // SamRam
+    //                case 3:  // 48k + M.G.T.
+    //                    return false;
+    //                case 4:  // 128k
+    //                case 5:  // 128k + If.1
+    //                case 6:  // 128k + M.G.T.
+    //                case 9:  // [ext] Pentagon (128K)
+    //                case 10: // [ext] Scorpion (256K)
+    //                    return true;
+    //                default:
+    //                    LogAgent.Warn(
+    //                        "Z80StreamHelper.checkMode128: Unrecognized ZX Spectrum config! (ver={0}, hwMode={1})",
+    //                        version,
+    //                        hwMode);
+    //                    break;
+    //            }
+    //        }
+    //        return true;
+    //    }
+    //}
+
+    //public class Z80Block
+    //{
+    //    private Z80BlockId m_id;
+    //    private int m_page;
+    //    private byte[] m_data;
+
+    //    public Z80Block(byte[] data)
+    //    {
+    //        m_id = Z80BlockId.RamFull48;
+    //        m_page = 0;
+    //        m_data = data;
+    //    }
+
+    //    public Z80Block(bool is128, int pageId, byte[] data)
+    //    {
+    //        parsePageId(is128, pageId);
+    //        m_data = data;
+    //    }
+
+    //    public Z80BlockId Id { get { return m_id; } }
+    //    public int Page { get { return m_page; } }
+    //    public byte[] Data { get { return m_data; } }
+
+    //    private void parsePageId(bool is128, int pageId)
+    //    {
+    //        if (is128)
+    //        {
+    //            if (pageId >= 3 && pageId <= 10)
+    //            {
+    //                m_id = Z80BlockId.RamPage;
+    //                m_page = (pageId - 3) & 7;
+    //                return;
+    //            }
+    //        }
+    //        else
+    //        {
+    //            if (pageId == 4 || pageId == 5 || pageId == 8)
+    //            {
+    //                int page48 = 0;
+    //                if (pageId == 8) 
+    //                    page48 = 5;
+    //                if (pageId == 4) 
+    //                    page48 = 2;
+    //                m_id = Z80BlockId.RamPage;
+    //                m_page = page48;
+    //                return;
+    //            }                
+    //        }
+    //        if (pageId == 0)
+    //        {
+    //            m_id = Z80BlockId.Rom48;
+    //            m_page = 0;
+    //            return;
+    //        }
+    //        if (pageId == 1)
+    //        {
+    //            m_id = Z80BlockId.RomPlusD;
+    //            m_page = 0;
+    //            return;
+    //        }
+    //        if (pageId == 2)
+    //        {
+    //            m_id = Z80BlockId.Rom128;
+    //            m_page = 0;
+    //            return;
+    //        }
+    //        if (pageId == 11)
+    //        {
+    //            m_id = Z80BlockId.RomMultiface;
+    //            m_page = 0;
+    //            return;
+    //        }
+    //        m_id = Z80BlockId.Unknown;
+    //        m_page = 0;
+    //        LogAgent.Error("Z80Block.parsePageId: unknown blockId={0}", pageId);
+    //    }
+    //}
+    
+    //public enum Z80BlockId
+    //{
+    //    RamFull48,
+    //    RamPage,
+    //    Rom48,
+    //    Rom128,
+    //    RomPlusD,
+    //    RomMultiface,
+    //    Unknown,
+    //}
+
+    #endregion
 }
