@@ -16,7 +16,7 @@ namespace ZXMAK2.Engine.Devices.Memory
         {
             base.BusInit(bmgr);
 			bmgr.SubscribeWRIO(0x8002, 0x0000, writePort7FFD);
-            //bmgr.SubscribeRDIO(0x8002, 0x0000, readPort7FFD);
+            bmgr.SubscribeRDIO(0x8002, 0x0000, readPort7FFD);
             bmgr.SubscribeRESET(busReset);
         }
 
@@ -71,12 +71,11 @@ namespace ZXMAK2.Engine.Devices.Memory
                 CMR0 = value;
         }
 
-        //private void readPort7FFD(ushort addr, ref byte value, ref bool iorqge)
-        //{
-        //    if (!m_lock)
-        //        CMR0 = value;
-        //    //value = CMR0;
-        //}
+        private void readPort7FFD(ushort addr, ref byte value, ref bool iorqge)
+        {
+            if (!m_lock)
+                CMR0 = value;// (byte)((CMR0 & 0x20) | (value & ~0x20));
+        }
 
         private void busReset()
         {
