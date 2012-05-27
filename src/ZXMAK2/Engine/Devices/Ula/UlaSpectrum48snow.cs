@@ -11,7 +11,7 @@ namespace ZXMAK2.Engine.Devices.Ula
     {
         #region IBusDevice
 
-        public override string Name { get { return "ZX Spectrum 48 [+Snow]"; } }
+        public override string Name { get { return "ZX Spectrum 48 [snow]"; } }
 
         public override void BusInit(IBusManager bmgr)
         {
