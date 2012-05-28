@@ -971,6 +971,9 @@ namespace ZipLib.Zip
 				int storedNameLength = ReadLEUshort();
 				int extraDataLength = ReadLEUshort();
 
+				// eliminate system id from version (use version only)
+				extractVersion &= 0x00FF; 
+
 				if ( testData ) {
 					if ( entry.IsFile ) {
 						if ( !entry.IsCompressionMethodSupported() ) {
@@ -2867,7 +2870,11 @@ namespace ZipLib.Zip
 				
 				StreamUtils.ReadFully(baseStream_, buffer, 0, nameLen);
 				string name = ZipConstants.ConvertToStringExt(bitFlags, buffer, nameLen);
-				
+
+				// eliminate system id from version (use version only)
+				versionToExtract &= 0x00FF;
+				versionMadeBy &= 0x00FF;
+
 				ZipEntry entry = new ZipEntry(name, versionToExtract, versionMadeBy, (CompressionMethod)method);
 				entry.Crc = crc & 0xffffffffL;
 				entry.Size = size & 0xffffffffL;
