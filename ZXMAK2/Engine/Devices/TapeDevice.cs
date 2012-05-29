@@ -2,118 +2,129 @@
 /// Author: Alex Makeev
 /// Date: 16.04.2007
 using System;
+using System.IO;
+using System.Xml;
 using System.Text;
 using System.Collections.Generic;
-using System.IO;
 
 using ZXMAK2.Engine.Serializers;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Serializers.TapeSerializers;
 using ZXMAK2.Engine.Z80;
-using System.Xml;
 
 
 namespace ZXMAK2.Engine.Devices
 {
-    public class TapeDevice : BusDeviceBase, ITapeDevice, ISoundRenderer, IConfigurable, IGuiExtension
+	public class TapeDevice : BusDeviceBase, ITapeDevice, ISoundRenderer, IConfigurable, IGuiExtension
 	{
-        #region IBusDevice
+		#region IBusDevice
 
-        public override string Name { get { return "Tape Player"; } }
-        public override string Description { get { return "Generic Tape Device"; } }
-        public override BusCategory Category { get { return BusCategory.Tape; } }
+		public override string Name { get { return "Tape Player"; } }
+		public override string Description { get { return "Generic Tape Device"; } }
+		public override BusCategory Category { get { return BusCategory.Tape; } }
 
-        public override void BusInit(IBusManager bmgr)
-        {
+		public override void BusInit(IBusManager bmgr)
+		{
 			m_cpu = bmgr.CPU;
 			m_memory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
-            IUlaDevice ula = (IUlaDevice)bmgr.FindDevice(typeof(IUlaDevice));
-            m_frameTactCount = ula.FrameTactCount;
-			
-            bmgr.SubscribeRDIO(0x0001, 0x0000, readPortFE);
-            
-            bmgr.SubscribePreCycle(busPreCycle);
-            bmgr.SubscribeBeginFrame(busBeginFrame);
-            bmgr.SubscribeEndFrame(busEndFrame);
-	
+			IUlaDevice ula = (IUlaDevice)bmgr.FindDevice(typeof(IUlaDevice));
+			m_frameTactCount = ula.FrameTactCount;
+
+			bmgr.SubscribeRDIO(0x0001, 0x0000, readPortFE);
+
+			bmgr.SubscribePreCycle(busPreCycle);
+			bmgr.SubscribeBeginFrame(busBeginFrame);
+			bmgr.SubscribeEndFrame(busEndFrame);
+
 			bmgr.AddSerializer(new TapSerializer(this));
-            bmgr.AddSerializer(new TzxSerializer(this));
-            bmgr.AddSerializer(new CswSerializer(this));
-            bmgr.AddSerializer(new WavSerializer(this));
-        }
+			bmgr.AddSerializer(new TzxSerializer(this));
+			bmgr.AddSerializer(new CswSerializer(this));
+			bmgr.AddSerializer(new WavSerializer(this));
+		}
 
-        public override void BusConnect()
-        {
-        }
-
-        public override void BusDisconnect()
-        {
-        }
-
-        #endregion
-
-        #region ITapeDevice
-
-        public bool TrapsAllowed
-        {
-            get { return m_trapsAllowed; }
-            set { m_trapsAllowed = value; }
-        }
-        
-        #endregion
-
-        #region ISoundRenderer Members
-
-        public uint[] AudioBuffer 
-        { 
-            get { return m_audioBuffer; } 
-        }
-
-        public int Volume
-        {
-            get { return m_volume; }
-            set
-            {
-                if (value < 0)
-                    value = 0;
-                if (value > 100)
-                    value = 100;
-                m_volume = value;
-                m_dacValue0 = 0;
-                m_dacValue1 = (uint)((0x1FFF * m_volume) / 100);
-            }
-        }
-
-        #endregion
-
-        #region IConfigurable
-
-        public void LoadConfig(XmlNode itemNode)
-        {
-            Volume = Utils.GetXmlAttributeAsInt32(itemNode, "volume", Volume);
-        }
-
-        public void SaveConfig(XmlNode itemNode)
-        {
-            Utils.SetXmlAttribute(itemNode, "volume", Volume);
-        }
-
-        #endregion
-
-        #region Bus Handlers
-
-        private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
-        {
-            //if (!iorqge)
-            //    return;
-            //iorqge = false;
-            value &= 0xBF;
-            value |= (byte)(GetTapeBit(m_cpu.Tact) ? 0x40 : 0x00);
-        }
-
-		private void tapeTrap(ushort addr, ref byte value)
+		public override void BusConnect()
 		{
-            if (!IsPlay || !TrapsAllowed || !m_memory.IsRom48)
+		}
+
+		public override void BusDisconnect()
+		{
+		}
+
+		#endregion
+
+		#region ITapeDevice
+
+		public bool TrapsAllowed
+		{
+			get { return m_trapsAllowed; }
+			set { m_trapsAllowed = value; }
+		}
+
+		#endregion
+
+		#region ISoundRenderer Members
+
+		public uint[] AudioBuffer
+		{
+			get { return m_audioBuffer; }
+		}
+
+		public int Volume
+		{
+			get { return m_volume; }
+			set
+			{
+				if (value < 0)
+					value = 0;
+				if (value > 100)
+					value = 100;
+				m_volume = value;
+				m_dacValue0 = 0;
+				m_dacValue1 = (uint)((0x1FFF * m_volume) / 100);
+			}
+		}
+
+		#endregion
+
+		#region IConfigurable
+
+		public void LoadConfig(XmlNode itemNode)
+		{
+			Volume = Utils.GetXmlAttributeAsInt32(itemNode, "volume", Volume);
+		}
+
+		public void SaveConfig(XmlNode itemNode)
+		{
+			Utils.SetXmlAttribute(itemNode, "volume", Volume);
+		}
+
+		#endregion
+
+		#region Bus Handlers
+
+		private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
+		{
+			//if (!iorqge)
+			//    return;
+			//iorqge = false;
+
+			if (tape_bit(m_cpu.Tact))
+				value |= 0x40;
+			else
+				value &= 0xBF;
+		}
+
+		private void busPreCycle(int frameTact)
+		{
+			if (!m_isPlay)
+				return;
+			//bmgr.SubscribeRDMEM_M1(0xFFFF, 0x056B, tapeTrap);
+			//bmgr.SubscribeRDMEM_M1(0xFFFF, 0x059E, tapeTrap);
+
+			flushAudio(frameTact);
+
+			ushort addr = m_cpu.regs.PC;
+			if (!TrapsAllowed || !m_memory.IsRom48 || !(addr == 0x056B || addr == 0x059E))
 				return;
 
 			TapeBlock tb = Blocks[CurrentBlock];
@@ -122,7 +133,7 @@ namespace ZXMAK2.Engine.Devices
 
 			ushort rIX = m_cpu.regs.IX;
 			ushort rDE = m_cpu.regs.DE;
-			if (rDE != (tb.TapData.Length - 2)) 
+			if (rDE != (tb.TapData.Length - 2))
 				return;
 
 			int offset = 0;
@@ -135,172 +146,110 @@ namespace ZXMAK2.Engine.Devices
 			}
 			crc ^= tb.TapData[offset];
 
-			m_cpu.regs.PC = 0x05DF-1;
+			m_cpu.regs.PC = 0x05DF;//0x05DF - 1;
 			m_cpu.regs.IX = rIX;
 			m_cpu.regs.DE = 0;
 			m_cpu.regs.H = crc;
 			m_cpu.regs.L = tb.TapData[offset];
 			m_cpu.regs.BC = 0xB001;
 
-			int newBlock = CurrentBlock+1;
-            if (newBlock < Blocks.Count)
-            {
-                CurrentBlock = newBlock;
-            }
-            else
-            {
-                Stop();
-                Rewind();
-            }
-
-            
-
-			//tMask=0x80;
-			//byteptr = 0;
-			//cntr = 0;
-
-			//NextBlock();
-			//BlockEnd = true;
+			int newBlock = CurrentBlock + 1;
+			if (newBlock < Blocks.Count)
+			{
+				CurrentBlock = newBlock;
+			}
+			else
+			{
+				Stop();
+				Rewind();
+			}
 		}
 
-        private void busPreCycle(int frameTact)
-        {
-            if (!IsPlay)
-                return;
-            //bmgr.SubscribeRDMEM_M1(0xFFFF, 0x056B, tapeTrap);
-            //bmgr.SubscribeRDMEM_M1(0xFFFF, 0x059E, tapeTrap);
+		private void busBeginFrame()
+		{
+			m_samplePos = 0;
+		}
 
-            UpdateState(frameTact);
-
-            ushort addr = m_cpu.regs.PC;
-            if (!TrapsAllowed || !m_memory.IsRom48 || !(addr==0x056B || addr==0x059E))
-                return;
-
-            TapeBlock tb = Blocks[CurrentBlock];
-            if (tb.TapData == null)
-                return;
-
-            ushort rIX = m_cpu.regs.IX;
-            ushort rDE = m_cpu.regs.DE;
-            if (rDE != (tb.TapData.Length - 2))
-                return;
-
-            int offset = 0;
-            byte crc = 0;
-            crc = tb.TapData[offset++];
-            for (int i = 0; i < rDE; i++)
-            {
-                crc ^= tb.TapData[offset];
-                m_cpu.WRMEM(rIX++, tb.TapData[offset++]);
-            }
-            crc ^= tb.TapData[offset];
-
-            m_cpu.regs.PC = 0x05DF;//0x05DF - 1;
-            m_cpu.regs.IX = rIX;
-            m_cpu.regs.DE = 0;
-            m_cpu.regs.H = crc;
-            m_cpu.regs.L = tb.TapData[offset];
-            m_cpu.regs.BC = 0xB001;
-
-            int newBlock = CurrentBlock + 1;
-            if (newBlock < Blocks.Count)
-            {
-                CurrentBlock = newBlock;
-            }
-            else
-            {
-                Stop();
-                Rewind();
-            }
-        }
-        
-        private void busBeginFrame()
-        {
-            m_samplePos = 0;
-        }
-
-        private void busEndFrame()
-        {
-            UpdateState(m_frameTactCount);
-        }
+		private void busEndFrame()
+		{
+			flushAudio(m_frameTactCount);
+		}
 
 		#endregion
 
-        protected void UpdateState(int frameTact)
-        {
-            int tp = (m_audioBuffer.Length * frameTact / m_frameTactCount);
-            if (tp > m_audioBuffer.Length) tp = m_audioBuffer.Length;
-            if (tp > m_samplePos)
-            {
-                uint val = m_dacValue0;
-                if (GetTapeBit(m_cpu.Tact))
-                    val += m_dacValue1;
-                val = val | (val << 16);
-
-                for (; m_samplePos < tp; m_samplePos++)
-                    m_audioBuffer[m_samplePos] = val;
-            }
-        }
-
-
+		#region private data
 
 		private Z80CPU m_cpu;
 		private IMemoryDevice m_memory;
-        private bool m_trapsAllowed = true;
-        
-        private uint[] m_audioBuffer = new uint[882];
-        private int m_volume = 100;
-        private uint m_dacValue0 = 0;
-        private uint m_dacValue1 = 0x1FFF;
-        private int m_frameTactCount;
-        private int m_samplePos = 0;
+		private bool m_trapsAllowed = true;
 
+		// sound related
+		private uint[] m_audioBuffer = new uint[882];
+		private int m_volume = 100;
+		private uint m_dacValue0 = 0;
+		private uint m_dacValue1 = 0x1FFF;
+		private int m_frameTactCount;
+		private int m_samplePos = 0;
 
-        #region private data
-		private long _Z80FQ = 3500000;
+		// data related
+		private int c_Z80FQ = 3500000;
 
-		private List<TapeBlock> _blocks = new List<TapeBlock>();
-		private int _index = 0;
-		private int _playPosition = 0;
+		private List<TapeBlock> m_blocks = new List<TapeBlock>();
+		private int m_index = 0;
+		private int m_playPosition = 0;
 
-		private bool _play = false;
+		private bool m_isPlay = false;
 
-		private long _lastTact = 0;
-		private int _waitEdge = 0;
-		private int _state = 0;
+		private long m_lastTact = 0;
+		private int m_waitEdge = 0;
+		private bool m_state = false;
+
 		#endregion
 
 
 		public TapeDevice()
 		{
-			_Z80FQ = 3500000;
-            Volume = 5;
+			Volume = 5;
 		}
 
-		public long Z80FQ { get { return _Z80FQ; } }
+
+		#region Events
+
+		public event EventHandler TapeStateChanged;
+
+		protected virtual void OnTapeStateChanged()
+		{
+			if (TapeStateChanged != null)
+				TapeStateChanged(this, EventArgs.Empty);
+		}
+
+		#endregion
+
+		#region Properties
+
 		public List<TapeBlock> Blocks
 		{
-			get { return _blocks; }
-			set { _blocks = value; }
+			get { return m_blocks; }
+			set { m_blocks = value; }
 		}
-		
-        public int CurrentBlock
+
+		public int CurrentBlock
 		{
 			get
 			{
-				if (_blocks.Count > 0)
-					return _index;
+				if (m_blocks.Count > 0)
+					return m_index;
 				else
 					return -1;
 			}
 			set
 			{
-				if (value == _index)
+				if (value == m_index)
 					return;
-				if (value >= 0 && value < _blocks.Count)
+				if (value >= 0 && value < m_blocks.Count)
 				{
-					_index = value;
-					_playPosition = 0;
+					m_index = value;
+					m_playPosition = 0;
 					OnTapeStateChanged();
 					//if(Play)
 					//   _currentBlock = _blocks[_index] as TapeBlock;
@@ -308,203 +257,217 @@ namespace ZXMAK2.Engine.Devices
 			}
 		}
 
-		public event EventHandler TapeStateChanged;
-		protected virtual void OnTapeStateChanged()
-		{
-			if (TapeStateChanged != null)
-				TapeStateChanged(this, EventArgs.Empty);
-		}
-
 		public int Position
 		{
 			get
 			{
-				if (_playPosition >= _blocks[_index].Periods.Count)
+				if (m_playPosition >= m_blocks[m_index].Periods.Count)
 					return 0;
-				return _playPosition;
+				return m_playPosition;
 			}
 		}
 
-        public int TactsPerSecond { get { return (int)Z80FQ; } }
-
-
-
-		#region private methods
-		private int tape_bit(long globalTact)
+		public bool IsPlay
 		{
-			int delta = (int)(globalTact - _lastTact);
-
-			if (!_play)
-			{
-				_lastTact = globalTact;
-				return 0;
-			}
-			if (_index < 0) //???
-			{
-				_play = false;
-				OnTapeStateChanged();
-				return _state;
-			}
-
-			while (delta >= _waitEdge)
-			{
-				delta -= _waitEdge;
-				_state ^= -1;
-
-				_playPosition++;
-				if (_playPosition >= _blocks[_index].Periods.Count) // endof block?
-				{
-					while (_playPosition >= _blocks[_index].Periods.Count)   // skip empty blocks
-					{
-						_playPosition = 0;
-						_index++;
-						if (_index >= _blocks.Count) break;
-					}
-					if (_index >= _blocks.Count)  // end of tape -> rewind & stop
-					{
-						_lastTact = globalTact;
-						_index = 0;
-						_play = false;
-						OnTapeStateChanged();
-						return _state;
-					}
-					OnTapeStateChanged();
-				}
-				_waitEdge = _blocks[_index].Periods[_playPosition];
-			}
-			_lastTact = globalTact - (long)delta;
-			return _state;
+			get { return m_isPlay; }
 		}
+
+		public int TactsPerSecond
+		{
+			get { return c_Z80FQ; }
+		}
+
 		#endregion
 
-		#region public methods
-		
-        protected bool GetTapeBit(long globalTact)
-		{
-			return tape_bit(globalTact)!=0;
-		}
+		#region Public Methods
 
-		public bool IsPlay { get { return _play; } }
-		//public long LastProcessedTact { get { return _lastTact; } }
-
-		public void Reset()  // loaded new image
+		/// <summary>
+		/// Called on load new image
+		/// </summary>
+		public void Reset()
 		{
-			_waitEdge = 0;
-			_index = -1;
-			if (_blocks.Count > 0)
-				_index = 0;
-			_playPosition = 0;
-			_play = false;
-			OnTapeStateChanged();
+			m_index = -1;
+			Stop();
 		}
 
 		public void Rewind()
 		{
-			_lastTact = m_cpu.Tact;
-			_waitEdge = 0;
-			_index = -1;
-			if (_blocks.Count > 0)
-				_index = 0;
-			_playPosition = 0;
-			_play = false;
-			OnTapeStateChanged();
+			m_index = -1;
+			Stop();
 		}
-		
-        public void Play()
+
+		public void Play()
 		{
-            _lastTact = m_cpu.Tact;
-			if (_blocks.Count > 0 && _index >= 0)
+			m_lastTact = m_cpu.Tact;
+			m_waitEdge = 0;
+			m_playPosition = 0;
+
+			if (m_blocks.Count > 0 && m_index >= 0)
 			{
-				while (_playPosition >= _blocks[_index].Periods.Count)
+				while (m_playPosition >= m_blocks[m_index].Periods.Count)
 				{
-					_playPosition = 0;
-					_index++;
-					if (_index >= _blocks.Count) break;
+					m_playPosition = 0;
+					m_index++;
+					if (m_index >= m_blocks.Count)
+						break;
 				}
-				if (_index >= _blocks.Count)  // end of tape -> rewind & stop
+				if (m_index >= m_blocks.Count)
 				{
-					_index = -1;
+					// end of tape -> rewind & stop
+					m_index = -1;
+					Stop();
 					return;
 				}
-				//if (_playPosition >= _blocks[_index].Periods.Count)
-				//   _playPosition = 0;
 
-				_state ^= -1;
-				_waitEdge = _blocks[_index].Periods[_playPosition];
-				_play = true;
+				//m_state = !m_state;
+				m_waitEdge = m_blocks[m_index].Periods[m_playPosition];
+				m_isPlay = true;
 				OnTapeStateChanged();
 			}
 		}
+
 		public void Stop()
 		{
-            _lastTact = m_cpu.Tact;
-			_play = false;
-            _playPosition = 0;
+			m_lastTact = m_cpu.Tact;
+			m_waitEdge = 0;
+			m_playPosition = 0;
+			if (m_index < 0 && m_blocks.Count > 0)
+				m_index = 0;
+			m_isPlay = false;
 			OnTapeStateChanged();
 		}
+
 		#endregion
 
-        #region IGuiExtension Members
+		#region private methods
 
-        private GuiData m_guiData;
-        private object m_subMenuItem;
-        private object m_form;
+		private void flushAudio(int frameTact)
+		{
+			int tp = (m_audioBuffer.Length * frameTact / m_frameTactCount);
+			if (tp > m_audioBuffer.Length) tp = m_audioBuffer.Length;
+			if (tp > m_samplePos)
+			{
+				uint val = m_dacValue0;
+				if (tape_bit(m_cpu.Tact))
+					val += m_dacValue1;
+				val = val | (val << 16);
 
-        public void AttachGui(GuiData guiData)
-        {
-            m_guiData = guiData;
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                System.Windows.Forms.MenuItem menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
-                if (menuItem != null)
-                {
-                    m_subMenuItem = new System.Windows.Forms.MenuItem("Tape", menu_Click);
-                    menuItem.MenuItems.Add((System.Windows.Forms.MenuItem)m_subMenuItem);
-                }
-            }
-        }
+				for (; m_samplePos < tp; m_samplePos++)
+					m_audioBuffer[m_samplePos] = val;
+			}
+		}
 
-        public void DetachGui()
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                System.Windows.Forms.MenuItem subMenuItem = m_subMenuItem as System.Windows.Forms.MenuItem;
-                System.Windows.Forms.Form form = m_form as System.Windows.Forms.Form;
-                if (subMenuItem != null)
-                {
-                    subMenuItem.Parent.MenuItems.Remove(subMenuItem);
-                    subMenuItem.Dispose();
-                    m_subMenuItem = null;
-                }
-                if (form != null)
-                {
-                    form.Close();
-                    m_form = null;
-                }
-            }
-            m_guiData = null;
-        }
+		private bool tape_bit(long globalTact)
+		{
+			int delta = (int)(globalTact - m_lastTact);
 
-        private void menu_Click(object sender, EventArgs e)
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                Controls.TapeForm form = m_form as Controls.TapeForm;
-                if (form == null)
-                {
-                    form = new Controls.TapeForm(this);
-                    form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg) { m_form = null; };
-                    m_form = form;
-                    form.Show((System.Windows.Forms.Form)m_guiData.MainWindow);
-                }
-                else
-                {
-                    form.Show();
-                    form.Activate();
-                }
-            }
-        }
+			if (!m_isPlay)
+			{
+				m_lastTact = globalTact;
+				return false;
+			}
+			if (m_index < 0)
+			{
+				// end of tape -> rewind & stop
+				Stop();
+				return m_state;
+			}
 
-        #endregion
-    }
+			while (delta >= m_waitEdge)
+			{
+				delta -= m_waitEdge;
+				m_state = !m_state;
+
+				m_playPosition++;
+				if (m_playPosition >= m_blocks[m_index].Periods.Count) // endof block?
+				{
+					while (m_playPosition >= m_blocks[m_index].Periods.Count)
+					{
+						// skip empty blocks
+						m_playPosition = 0;
+						m_index++;
+						if (m_index >= m_blocks.Count)
+							break;
+					}
+					if (m_index >= m_blocks.Count)
+					{
+						// end of tape -> rewind & stop
+						m_index = -1;
+						Stop();
+						return m_state;
+					}
+					OnTapeStateChanged();
+				}
+				m_waitEdge = m_blocks[m_index].Periods[m_playPosition];
+			}
+			m_lastTact = globalTact - (long)delta;
+			return m_state;
+		}
+
+		#endregion
+
+
+		#region IGuiExtension Members
+
+		private GuiData m_guiData;
+		private object m_subMenuItem;
+		private object m_form;
+
+		public void AttachGui(GuiData guiData)
+		{
+			m_guiData = guiData;
+			if (m_guiData.MainWindow is System.Windows.Forms.Form)
+			{
+				System.Windows.Forms.MenuItem menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
+				if (menuItem != null)
+				{
+					m_subMenuItem = new System.Windows.Forms.MenuItem("Tape", menu_Click);
+					menuItem.MenuItems.Add((System.Windows.Forms.MenuItem)m_subMenuItem);
+				}
+			}
+		}
+
+		public void DetachGui()
+		{
+			if (m_guiData.MainWindow is System.Windows.Forms.Form)
+			{
+				System.Windows.Forms.MenuItem subMenuItem = m_subMenuItem as System.Windows.Forms.MenuItem;
+				System.Windows.Forms.Form form = m_form as System.Windows.Forms.Form;
+				if (subMenuItem != null)
+				{
+					subMenuItem.Parent.MenuItems.Remove(subMenuItem);
+					subMenuItem.Dispose();
+					m_subMenuItem = null;
+				}
+				if (form != null)
+				{
+					form.Close();
+					m_form = null;
+				}
+			}
+			m_guiData = null;
+		}
+
+		private void menu_Click(object sender, EventArgs e)
+		{
+			if (m_guiData.MainWindow is System.Windows.Forms.Form)
+			{
+				Controls.TapeForm form = m_form as Controls.TapeForm;
+				if (form == null)
+				{
+					form = new Controls.TapeForm(this);
+					form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg) { m_form = null; };
+					m_form = form;
+					form.Show((System.Windows.Forms.Form)m_guiData.MainWindow);
+				}
+				else
+				{
+					form.Show();
+					form.Activate();
+				}
+			}
+		}
+
+		#endregion
+	}
 }
