@@ -733,7 +733,10 @@ namespace ZXMAK2.Controls
 			try
 			{
 				if (!CanFocus)
+				{
+					e.Effect = DragDropEffects.None;					
 					return;
+				}
 				DragDataWrapper ddw = new DragDataWrapper(e.Data);
 				bool allowOpen = false;
 				if (ddw.IsFileDrop)
