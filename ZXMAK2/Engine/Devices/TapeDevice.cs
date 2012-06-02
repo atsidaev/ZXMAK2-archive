@@ -54,10 +54,16 @@ namespace ZXMAK2.Engine.Devices
 
 		#region ITapeDevice
 
-		public bool TrapsAllowed
+		public bool UseTraps
 		{
 			get { return m_trapsAllowed; }
 			set { m_trapsAllowed = value; }
+		}
+
+		public bool UseAutoPlay
+		{
+			get { return m_autoPlay; }
+			set { m_autoPlay = value; detectorReset(); }
 		}
 
 		#endregion
@@ -91,11 +97,15 @@ namespace ZXMAK2.Engine.Devices
 		public void LoadConfig(XmlNode itemNode)
 		{
 			Volume = Utils.GetXmlAttributeAsInt32(itemNode, "volume", Volume);
+			UseTraps = Utils.GetXmlAttributeAsBool(itemNode, "useTraps", UseTraps);
+			UseAutoPlay = Utils.GetXmlAttributeAsBool(itemNode, "useAutoPlay", UseAutoPlay);
 		}
 
 		public void SaveConfig(XmlNode itemNode)
 		{
 			Utils.SetXmlAttribute(itemNode, "volume", Volume);
+			Utils.SetXmlAttribute(itemNode, "useTraps", UseTraps);
+			Utils.SetXmlAttribute(itemNode, "useAutoPlay", UseAutoPlay);
 		}
 
 		#endregion
@@ -112,6 +122,8 @@ namespace ZXMAK2.Engine.Devices
 				value |= 0x40;
 			else
 				value &= 0xBF;
+			if (m_autoPlay)
+				detectorRead();
 		}
 
 		private void busPreCycle(int frameTact)
@@ -124,7 +136,7 @@ namespace ZXMAK2.Engine.Devices
 			flushAudio(frameTact);
 
 			ushort addr = m_cpu.regs.PC;
-			if (!TrapsAllowed || !m_memory.IsRom48 || !(addr == 0x056B || addr == 0x059E))
+			if (!UseTraps || !m_memory.IsRom48 || !(addr == 0x056B || addr == 0x059E))
 				return;
 
 			TapeBlock tb = Blocks[CurrentBlock];
@@ -173,6 +185,8 @@ namespace ZXMAK2.Engine.Devices
 		private void busEndFrame()
 		{
 			flushAudio(m_frameTactCount);
+			if (m_autoPlay)
+				detectorFrame();
 		}
 
 		#endregion
@@ -182,6 +196,7 @@ namespace ZXMAK2.Engine.Devices
 		private Z80CPU m_cpu;
 		private IMemoryDevice m_memory;
 		private bool m_trapsAllowed = true;
+		private bool m_autoPlay = true;
 
 		// sound related
 		private uint[] m_audioBuffer = new uint[882];
@@ -328,12 +343,19 @@ namespace ZXMAK2.Engine.Devices
 
 		public void Stop()
 		{
+			m_isPlay = false;
+			if (m_index >= 0 && m_index < m_blocks.Count &&
+				m_playPosition >= m_blocks[m_index].Periods.Count - 1)
+			{
+				m_index++;
+				if (m_index >= m_blocks.Count)
+					m_index = -1;
+			}
 			m_lastTact = m_cpu.Tact;
 			m_waitEdge = 0;
 			m_playPosition = 0;
 			if (m_index < 0 && m_blocks.Count > 0)
 				m_index = 0;
-			m_isPlay = false;
 			OnTapeStateChanged();
 		}
 
@@ -402,6 +424,78 @@ namespace ZXMAK2.Engine.Devices
 			}
 			m_lastTact = globalTact - (long)delta;
 			return m_state;
+		}
+
+		#endregion
+
+
+		#region AutoPlay
+
+		private long m_lastInTact = 0;
+		private int m_detectCounter;
+		private int m_detectTimeOut;
+		private ushort m_lastPC;
+		private byte[] m_lastRegs;
+
+		private void detectorReset()
+		{
+			m_lastInTact = 0;
+			m_detectCounter = 0;
+			m_lastPC = 0;
+			m_lastRegs = null;
+		}
+
+		private void detectorRead()
+		{
+			long cpuTact = m_cpu.Tact;
+			int delta = (int)(cpuTact - m_lastInTact);
+			m_lastInTact = cpuTact;
+
+			byte[] newRegs = new byte[] {
+				m_cpu.regs.A,
+				m_cpu.regs.B, m_cpu.regs.C,
+				m_cpu.regs.D, m_cpu.regs.E,
+				m_cpu.regs.H, m_cpu.regs.L,
+			};
+			if (delta > 0 && delta < 96 && m_cpu.regs.PC == m_lastPC && m_lastRegs != null)
+			{
+				int diffCount = 0;
+				int diffValue = 0;
+				for (int i = 0; i < newRegs.Length; i++)
+				{
+					if (m_lastRegs[i] != newRegs[i])
+					{
+						diffValue = m_lastRegs[i] - newRegs[i];
+						diffCount++;
+					}
+				}
+				if (diffCount == 1 && (diffValue == 1 || diffValue == -1))
+				{
+					m_detectCounter++;
+					if (m_detectCounter >= 8 && m_autoPlay)
+					{
+						if (!m_isPlay)
+							Play();
+						m_detectTimeOut = 50;
+					}
+				}
+				else
+				{
+					m_detectCounter = 0;
+				}
+			}
+			m_lastRegs = newRegs;
+			m_lastPC = m_cpu.regs.PC;
+		}
+
+		private void detectorFrame()
+		{
+			if (m_isPlay && m_autoPlay)
+			{
+				m_detectTimeOut--;
+				if (m_detectTimeOut < 0)
+					Stop();
+			}
 		}
 
 		#endregion

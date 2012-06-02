@@ -156,9 +156,6 @@
     <Compile Include="Controls\TapeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\TapeForm.designer.cs">
-      <DependentUpon>TapeForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="DialogProvider.cs" />
     <Compile Include="Engine\Devices\AyMouseDevice.cs" />
     <Compile Include="Engine\Devices\BeeperDevice.cs" />
@@ -423,6 +420,9 @@
     <None Include="Icons\NextIcon.png" />
     <None Include="Icons\StopIcon.png" />
     <None Include="Icons\Rocket.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Autoplay.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
