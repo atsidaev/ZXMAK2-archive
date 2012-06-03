@@ -114,8 +114,8 @@ namespace ZXMAK2.Engine.Devices
 
 		private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
 		{
-			//if (!iorqge)
-			//    return;
+			if (!iorqge || m_memory.DOSEN)
+				return;
 			//iorqge = false;
 
 			if (tape_bit(m_cpu.Tact))
