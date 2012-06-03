@@ -15,7 +15,8 @@ namespace ZXMAK2.Engine.Devices
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeRDIO(0x0001, 0x0000, readPortFE);
+			m_memory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+			bmgr.SubscribeRDIO(0x0001, 0x0000, readPortFE);
         }
 
         public override void BusConnect()
@@ -42,12 +43,16 @@ namespace ZXMAK2.Engine.Devices
 
 		private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
 		{
+			if (!iorqge || m_memory.DOSEN)
+				return;
+			//iorqge = false;
 			value &= 0xE0;
 			value |= (byte)(ScanKbdPort(addr) & 0x1F);
 		}
 		
 		#endregion
 
+		private IMemoryDevice m_memory;
 		private IKeyboardState m_keyboardState = null;
 
 		#region Comment
