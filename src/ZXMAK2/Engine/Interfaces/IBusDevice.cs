@@ -28,6 +28,7 @@ namespace ZXMAK2.Engine.Interfaces
 
 		Z80CPU CPU { get; }
 		bool IsSandbox { get; }
+		String GetSatelliteFileName(string extension);
 
 		BusDeviceBase FindDevice(Type type);
 	}
@@ -38,28 +39,28 @@ namespace ZXMAK2.Engine.Interfaces
 		public abstract string Description { get; }
 		public abstract BusCategory Category { get; }
 		public int BusOrder { get; set; }
-		
+
 		#region Comment
 		/// <summary>
 		/// Collect information about device. Add handlers & serializers here.
 		/// </summary>
 		#endregion
 		public abstract void BusInit(IBusManager bmgr);
-		
+
 		#region Comment
 		/// <summary>
 		/// Called after Init, before device will be used. Add load files here
 		/// </summary>
 		#endregion
 		public abstract void BusConnect();
-		
+
 		#region Comment
 		/// <summary>
 		/// Called when device using finished. Add flush & close files here
 		/// </summary>
 		#endregion
 		public abstract void BusDisconnect();
-		
+
 		#region Comment
 		/// <summary>
 		/// Called to reset device to initial state (before load snapshot)
