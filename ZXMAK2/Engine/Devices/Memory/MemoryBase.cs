@@ -161,6 +161,18 @@ namespace ZXMAK2.Engine.Devices.Memory
 		public byte[] Window8000 { get { return MapRead8000; } }
 		public byte[] WindowC000 { get { return MapReadC000; } }
 
+		public override void ResetState()
+		{
+			m_map48 = new int[4] { -1, -1, -1, -1 };
+			m_dosen = false;
+			m_sysen = false;
+			m_cmr0 = 0;
+			m_cmr1 = 0;
+			LoadRom();
+			UpdateMapping();
+			base.ResetState();
+		}
+
 		public virtual string GetRomName(int pageNo)
 		{
 			if (pageNo == GetRomIndex(RomName.ROM_128))
