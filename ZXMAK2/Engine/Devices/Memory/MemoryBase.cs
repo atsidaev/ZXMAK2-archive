@@ -335,12 +335,17 @@ namespace ZXMAK2.Engine.Devices.Memory
 				case "SOS": pageNo = GetRomIndex(RomName.ROM_SOS); break;
 				case "DOS": pageNo = GetRomIndex(RomName.ROM_DOS); break;
 				case "SYS": pageNo = GetRomIndex(RomName.ROM_SYS); break;
+				case "RAW":
+					{
+						int pCount = data.Length / 0x4000;
+						if (pCount > RomPages.Length)
+							pCount = RomPages.Length;
+						for (int p = 0; p < RomPages.Length; p++)
+							Array.Copy(data, (p % pCount) * 0x4000, RomPages[p], 0, 0x4000);
+					}
+					return;
 				default:
 					return;
-				//LogAgent.Warn(
-				//    "ROM mapping contains Page with unknown name: \"{0}\"",
-				//    entryName);
-				//return;
 			}
 			if (pageNo >= 0)
 			{
