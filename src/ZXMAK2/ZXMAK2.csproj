@@ -176,7 +176,6 @@
     <Compile Include="Engine\Devices\Memory\MemoryLec528.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryPentagon512.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryProfi1024.cs" />
-    <Compile Include="Engine\Devices\Memory\MemoryScorpion1024.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryScorpion256.cs" />
     <Compile Include="Engine\Devices\Memory\MemorySpectrum128.cs" />
     <Compile Include="Engine\Devices\Memory\MemorySpectrum48.cs" />

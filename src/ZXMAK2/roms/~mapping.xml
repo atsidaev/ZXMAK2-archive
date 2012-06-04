@@ -35,10 +35,16 @@
 		<Page name="SYS" image="QU7V42.rom" offset="0x0000" />
 	</Model>
 	<Model name="Scorpion">
+<!--
 		<Page name="128" image="scorp295.rom" offset="0x0000" />
 		<Page name="SOS" image="scorp295.rom" offset="0x4000" />
 		<Page name="DOS" image="scorp295.rom" offset="0xC000" />
 		<Page name="SYS" image="scorp295.rom" offset="0x8000" />
+-->
+		<Page name="RAW" image="scorp295.rom" />		
+	</Model>
+	<Model name="Scorpion-ProfRom">
+		<Page name="RAW" image="scorp256.rom" offset="0" />
 	</Model>
 	<Model name="LEC">
 		<Page name="SOS" image="LEC24.ROM"/>
