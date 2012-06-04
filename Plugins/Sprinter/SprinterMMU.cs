@@ -1147,20 +1147,10 @@ namespace Plugins.Memory
         #endregion
 
         #region -- Load ROM --
-        protected override void LoadRom()
+        
+		protected override void LoadRom()
         {
-            base.LoadRom();   // <- load default roms
             base.LoadRomPack("Sprinter");
-        }
-
-        protected override void OnLoadRomPage(string pageName, byte[] data)
-        {
-            base.OnLoadRomPage(pageName, data);
-            if (pageName == "FULL-ROM")
-            {
-                for (int index = 0; index < 16; index++)
-                    Array.Copy(data, index * 0x4000, this.RomPages[index], 0, 0x4000);
-            }
         }
 
         #endregion 
