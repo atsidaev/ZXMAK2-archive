@@ -14,29 +14,29 @@ namespace ZXMAK2.Engine.Serializers.DiskSerializers
 		{
 		}
 
-		
+
 		#region FormatSerializer
-		
+
 		public override string FormatName { get { return "SCL disk image"; } }
 		public override string FormatExtension { get { return "SCL"; } }
-        public override bool CanDeserialize { get { return true; } }
+		public override bool CanDeserialize { get { return true; } }
 
 		public override void Deserialize(Stream stream)
 		{
 			loadFromStream(stream);
-            _diskImage.ModifyFlag = ModifyFlag.None;
-            _diskImage.Present = true;
-        }
+			_diskImage.ModifyFlag = ModifyFlag.None;
+			_diskImage.Present = true;
+		}
 
-        public override void SetSource(string fileName)
-        {
-            _diskImage.FileName = fileName;
-        }
+		public override void SetSource(string fileName)
+		{
+			_diskImage.FileName = fileName;
+		}
 
-        public override void SetReadOnly(bool readOnly)
-        {
-            _diskImage.IsWP = readOnly;
-        }
+		public override void SetReadOnly(bool readOnly)
+		{
+			_diskImage.IsWP = readOnly;
+		}
 
 		#endregion
 
@@ -46,11 +46,11 @@ namespace ZXMAK2.Engine.Serializers.DiskSerializers
 			if (stream.Length < 9 || stream.Length > 2544 * 256 + 9)
 			{
 				DialogProvider.Show(
-                    "Invalid SCL file size", 
-                    "SCL loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Warning);
-                return;
+					"Invalid SCL file size",
+					"SCL loader",
+					DlgButtonSet.OK,
+					DlgIcon.Warning);
+				return;
 			}
 
 			byte[] fbuf = new byte[stream.Length];
@@ -61,19 +61,33 @@ namespace ZXMAK2.Engine.Serializers.DiskSerializers
 			if (Encoding.ASCII.GetString(fbuf, 0, 8) != "SINCLAIR")
 			{
 				DialogProvider.Show(
-                    "Corrupted SCL file", 
-                    "SCL loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+					"Corrupted SCL file",
+					"SCL loader",
+					DlgButtonSet.OK,
+					DlgIcon.Error);
 				return;
 			}
 
 			//            if (fbuf.Length >= (9 + (0x100 + 14) * fbuf[8]))  
 			//               throw new InvalidDataException("Corrupt *.SCL file!");
 
-			//string oldExt = Path.GetExtension(_diskImage.FileName).ToUpper();
-			//if (oldExt == string.Empty)
-			_diskImage.Format();
+			bool needFormat = true;
+			if (_diskImage.IsConnected && _diskImage.Present)
+			{
+				DlgResult dlgRes = DialogProvider.Show(
+					"Do you want to append file(s) to existing disk?\n\nPlease click 'Yes' to append file(s).\nOr click 'No' to create new disk...",
+					"SCL loader",
+					DlgButtonSet.YesNoCancel,
+					DlgIcon.Question);
+				if (dlgRes == DlgResult.Cancel)
+					return;
+				if (dlgRes == DlgResult.Yes)
+					needFormat = false;
+			}
+			if (needFormat)
+			{
+				_diskImage.Format();
+			}
 
 			int size;
 			for (int i = size = 0; i < fbuf[8]; i++)
