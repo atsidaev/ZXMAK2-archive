@@ -181,6 +181,9 @@
     <Compile Include="Engine\Devices\Memory\MemorySpectrum48.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryQuorum256.cs" />
     <Compile Include="Engine\Devices\KeyboardQuorum.cs" />
+    <Compile Include="Engine\Devices\SmucDevice.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Engine\Devices\Ula\UlaDelta.cs" />
     <Compile Include="Engine\Devices\Ula\UlaLeningrad.cs" />
     <Compile Include="Engine\Devices\Ula\UlaPentagon.cs" />
