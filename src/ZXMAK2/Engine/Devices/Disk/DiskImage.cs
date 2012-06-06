@@ -39,36 +39,36 @@ namespace ZXMAK2.Engine.Devices.Disk
 		private string _fileName = string.Empty;
 		#endregion
 
-//#BEGIN us0374
-        public Track t;
-//#END us0374
-		
+		//#BEGIN us0374
+		public Track t;
+		//#END us0374
+
 
 		#region public
 
-        private DiskLoadManager m_serializer;
+		private DiskLoadManager m_serializer;
 
 		public DiskImage()
 		{
 		}
 
-        public void Init(long rotateTime)
-        {
-            _rotateTime = rotateTime;
-            _indexTime = rotateTime / 50;
-            _nullTrack = new Track(rotateTime);
-            m_serializer = new DiskLoadManager(this);
-        }
+		public void Init(long rotateTime)
+		{
+			_rotateTime = rotateTime;
+			_indexTime = rotateTime / 50;
+			_nullTrack = new Track(rotateTime);
+			m_serializer = new DiskLoadManager(this);
+		}
 
-        public DiskLoadManager SerializeManager { get { return m_serializer; } }
+		public DiskLoadManager SerializeManager { get { return m_serializer; } }
 
 		public string Description = string.Empty;
 
-		public bool Present 
-        { 
-            get { return _present; }
-            set { _present = value; }
-        }
+		public bool Present
+		{
+			get { return _present; }
+			set { _present = value; }
+		}
 
 		public event SaveDiskDelegate SaveDisk;
 		protected void OnSaveDisk()
@@ -192,7 +192,7 @@ namespace ZXMAK2.Engine.Devices.Disk
 				}
 			}
 
-			
+
 			// TRDOS level format: 2544 secs (80 cyls, 2 sides)
 			byte[] trsec = new byte[256];
 			for (int i = 0; i < trsec.Length; i++)
@@ -280,26 +280,31 @@ namespace ZXMAK2.Engine.Devices.Disk
 		}
 		#endregion
 
-        public void Connect()
-        {
-            if (Present)
-            {
-                if (!string.IsNullOrEmpty(FileName))
-                {
-                    SerializeManager.OpenFileName(FileName, IsWP);
-                }
-                else
-                {
-                    SetPhysics(80, 2);
-                    format_trdos();
-                }
-            }
-        }
+		public void Connect()
+		{
+			if (Present)
+			{
+				if (!string.IsNullOrEmpty(FileName))
+				{
+					SerializeManager.OpenFileName(FileName, IsWP);
+				}
+				else
+				{
+					SetPhysics(80, 2);
+					format_trdos();
+				}
+			}
+			m_isConnected = true;
+		}
 
-        public void Disconnect()
-        {
-            if (Present && !IsWP && ModifyFlag != Disk.ModifyFlag.None)
-                OnSaveDisk();
-        }
-    }
+		public void Disconnect()
+		{
+			if (Present && !IsWP && ModifyFlag != Disk.ModifyFlag.None)
+				OnSaveDisk();
+			m_isConnected = false;
+		}
+
+		private bool m_isConnected = false;
+		public bool IsConnected { get { return m_isConnected; } }
+	}
 }

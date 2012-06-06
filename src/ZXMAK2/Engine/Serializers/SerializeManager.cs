@@ -11,7 +11,7 @@ namespace ZXMAK2.Engine.Serializers
 	{
 		private Dictionary<string, FormatSerializer> _formats = new Dictionary<string, FormatSerializer>();
 
-		
+
 		public string GetOpenExtFilter()
 		{
 			string result = string.Empty;
@@ -72,7 +72,7 @@ namespace ZXMAK2.Engine.Serializers
 							gext += "*.!*;.$*";
 						else
 							gext += "*." + fs.FormatExtension.ToLower();
-						
+
 						if (gext.Length > 0)
 						{
 							if (result.Length > 0) result += "|";
@@ -90,60 +90,60 @@ namespace ZXMAK2.Engine.Serializers
 			return Path.GetFileName(fileName);
 		}
 
-        public string OpenFileStream(string fileName, Stream fileStream)
-        {
-            string ext = Path.GetExtension(fileName).ToUpper();
-            if (ext != ".ZIP")
-            {
-                openStream(fileStream, ext, string.Empty, true);
-                return Path.GetFileName(fileName);
-            }
-            else
-            {
-                List<ZipLib.Zip.ZipEntry> list = new List<ZipLib.Zip.ZipEntry>();
-                using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(fileStream))
-                {
-                    zip.IsStreamOwner = false;
-                    foreach (ZipLib.Zip.ZipEntry entry in zip)
-                    {
-                        if (entry.IsFile && entry.CanDecompress &&
-                           Path.GetExtension(entry.Name).ToUpper() != ".ZIP" &&
-                           CheckCanOpenFileName(entry.Name))
-                        {
-                            //return openZipEntry(fileName, zip, entry);
-                            list.Add(entry);
-                        }
-                    }
-                    ZipLib.Zip.ZipEntry selEntry = null;
-                    if (list.Count == 1)
-                    {
-                        selEntry = list[0];
-                    }
-                    else if (list.Count > 1)
-                    {
-                        selEntry = (ZipLib.Zip.ZipEntry)DialogProvider.ObjectSelector(
-                            list.ToArray(),
-                            Path.GetFileName(fileName));
-                        if (selEntry == null)
-                            return string.Empty;
-                    }
-                    if (selEntry != null)
-                    {
-                        string result = openZipEntry(fileName, zip, selEntry, string.Empty);
-                        if (result != string.Empty)
-                        {
-                            return result;
-                        }
-                    }
-                }
-            }
-            DialogProvider.Show(
-                string.Format("Can't open {0}!\n\nSupported file not found!", fileName),
-                "Error",
-                DlgButtonSet.OK,
-                DlgIcon.Error);
-            return string.Empty;
-        }
+		public string OpenFileStream(string fileName, Stream fileStream)
+		{
+			string ext = Path.GetExtension(fileName).ToUpper();
+			if (ext != ".ZIP")
+			{
+				openStream(fileStream, ext, string.Empty, true);
+				return Path.GetFileName(fileName);
+			}
+			else
+			{
+				List<ZipLib.Zip.ZipEntry> list = new List<ZipLib.Zip.ZipEntry>();
+				using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(fileStream))
+				{
+					zip.IsStreamOwner = false;
+					foreach (ZipLib.Zip.ZipEntry entry in zip)
+					{
+						if (entry.IsFile && entry.CanDecompress &&
+						   Path.GetExtension(entry.Name).ToUpper() != ".ZIP" &&
+						   CheckCanOpenFileName(entry.Name))
+						{
+							//return openZipEntry(fileName, zip, entry);
+							list.Add(entry);
+						}
+					}
+					ZipLib.Zip.ZipEntry selEntry = null;
+					if (list.Count == 1)
+					{
+						selEntry = list[0];
+					}
+					else if (list.Count > 1)
+					{
+						selEntry = (ZipLib.Zip.ZipEntry)DialogProvider.ObjectSelector(
+							list.ToArray(),
+							Path.GetFileName(fileName));
+						if (selEntry == null)
+							return string.Empty;
+					}
+					if (selEntry != null)
+					{
+						string result = openZipEntry(fileName, zip, selEntry, string.Empty);
+						if (result != string.Empty)
+						{
+							return result;
+						}
+					}
+				}
+			}
+			DialogProvider.Show(
+				string.Format("Can't open {0}!\n\nSupported file not found!", fileName),
+				"Error",
+				DlgButtonSet.OK,
+				DlgIcon.Error);
+			return string.Empty;
+		}
 
 		public string OpenFileName(string fileName, bool wp)
 		{
@@ -156,114 +156,114 @@ namespace ZXMAK2.Engine.Serializers
 			}
 			else
 			{
-                List<ZipLib.Zip.ZipEntry> list = new List<ZipLib.Zip.ZipEntry>();
-                using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(fileName))
-                {
-                    foreach (ZipLib.Zip.ZipEntry entry in zip)
-                    {
-                        if (entry.IsFile && entry.CanDecompress &&
-                           Path.GetExtension(entry.Name).ToUpper() != ".ZIP" &&
-                           CheckCanOpenFileName(entry.Name))
-                        {
-                            //return openZipEntry(fileName, zip, entry);
-                            list.Add(entry);
-                        }
-                    }
-                    ZipLib.Zip.ZipEntry selEntry = null;
-                    if (list.Count == 1)
-                    {
-                        selEntry = list[0];
-                    }
-                    else if (list.Count > 1)
-                    {
-                        selEntry = (ZipLib.Zip.ZipEntry)DialogProvider.ObjectSelector(
-                            list.ToArray(),
-                            Path.GetFileName(fileName));
-                        if (selEntry==null)
-                            return string.Empty;
-                    }
-                    if (selEntry != null)
-                    {
-                        string result = openZipEntry(fileName, zip, selEntry, fileName);
-                        if (result != string.Empty)
-                        {
-                            return result;
-                        }
-                    }
-                }
-            }
+				List<ZipLib.Zip.ZipEntry> list = new List<ZipLib.Zip.ZipEntry>();
+				using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(fileName))
+				{
+					foreach (ZipLib.Zip.ZipEntry entry in zip)
+					{
+						if (entry.IsFile && entry.CanDecompress &&
+						   Path.GetExtension(entry.Name).ToUpper() != ".ZIP" &&
+						   CheckCanOpenFileName(entry.Name))
+						{
+							//return openZipEntry(fileName, zip, entry);
+							list.Add(entry);
+						}
+					}
+					ZipLib.Zip.ZipEntry selEntry = null;
+					if (list.Count == 1)
+					{
+						selEntry = list[0];
+					}
+					else if (list.Count > 1)
+					{
+						selEntry = (ZipLib.Zip.ZipEntry)DialogProvider.ObjectSelector(
+							list.ToArray(),
+							Path.GetFileName(fileName));
+						if (selEntry == null)
+							return string.Empty;
+					}
+					if (selEntry != null)
+					{
+						string result = openZipEntry(fileName, zip, selEntry, fileName);
+						if (result != string.Empty)
+						{
+							return result;
+						}
+					}
+				}
+			}
 			DialogProvider.Show(
-                string.Format("Can't open {0}!\n\nSupported file not found!", fileName),
-                "Error",
-                DlgButtonSet.OK,
-                DlgIcon.Error);
+				string.Format("Can't open {0}!\n\nSupported file not found!", fileName),
+				"Error",
+				DlgButtonSet.OK,
+				DlgIcon.Error);
 			return string.Empty;
 		}
 
-        private string openZipEntry(
-            string fileName, 
-            ZipLib.Zip.ZipFile zip, ZipLib.Zip.ZipEntry entry,
-            string source)
-        {
-            using (Stream s = zip.GetInputStream(entry))
-            {
-                byte[] data = new byte[entry.Size];
-                s.Read(data, 0, data.Length);
-                using (MemoryStream ms = new MemoryStream(data))
-                {
-                    if (intCheckCanOpenFileName(entry.Name))
-                    {
-                        openStream(ms, Path.GetExtension(entry.Name).ToUpper(), source, true);
-                    }
-                    else
-                    {
-                        DialogProvider.Show(
-                            string.Format("Can't open {0}\\{1}!\n\nFile not supported!", fileName, entry.Name),
-                            "Error",
-                            DlgButtonSet.OK,
-                            DlgIcon.Error);
-                        return string.Empty;
-                    }
-                    return string.Format("{0}/{1}", Path.GetFileName(fileName), entry.Name);
-                }
-            }
-        }
+		private string openZipEntry(
+			string fileName,
+			ZipLib.Zip.ZipFile zip, ZipLib.Zip.ZipEntry entry,
+			string source)
+		{
+			using (Stream s = zip.GetInputStream(entry))
+			{
+				byte[] data = new byte[entry.Size];
+				s.Read(data, 0, data.Length);
+				using (MemoryStream ms = new MemoryStream(data))
+				{
+					if (intCheckCanOpenFileName(entry.Name))
+					{
+						openStream(ms, Path.GetExtension(entry.Name).ToUpper(), source, true);
+					}
+					else
+					{
+						DialogProvider.Show(
+							string.Format("Can't open {0}\\{1}!\n\nFile not supported!", fileName, entry.Name),
+							"Error",
+							DlgButtonSet.OK,
+							DlgIcon.Error);
+						return string.Empty;
+					}
+					return string.Format("{0}/{1}", Path.GetFileName(fileName), entry.Name);
+				}
+			}
+		}
 
 
 		public bool CheckCanOpenFileName(string fileName)
 		{
-            if (Path.GetExtension(fileName).ToUpper() != ".ZIP")
-            {
-                return intCheckCanOpenFileName(fileName);
-            }
-            else
-            {
-                using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(fileName))
-                    foreach (ZipLib.Zip.ZipEntry entry in zip)
-                        if (entry.IsFile && entry.CanDecompress && intCheckCanOpenFileName(entry.Name))
-                            return true;
-            }
-            return false;
+			if (Path.GetExtension(fileName).ToUpper() != ".ZIP")
+			{
+				return intCheckCanOpenFileName(fileName);
+			}
+			else
+			{
+				using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(fileName))
+					foreach (ZipLib.Zip.ZipEntry entry in zip)
+						if (entry.IsFile && entry.CanDecompress && intCheckCanOpenFileName(entry.Name))
+							return true;
+			}
+			return false;
 		}
 
-        public bool CheckCanOpenFileStream(string fileName, Stream fileStream)
-        {
-            if (Path.GetExtension(fileName).ToUpper() != ".ZIP")
-            {
-                return intCheckCanOpenFileName(fileName);
-            }
-            else
-            {
-                using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(fileStream))
-                {
-                    zip.IsStreamOwner = false;
-                    foreach (ZipLib.Zip.ZipEntry entry in zip)
-                        if (entry.IsFile && entry.CanDecompress && intCheckCanOpenFileName(entry.Name))
-                            return true;
-                }
-            }
-            return false;
-        }
+		public bool CheckCanOpenFileStream(string fileName, Stream fileStream)
+		{
+			if (Path.GetExtension(fileName).ToUpper() != ".ZIP")
+			{
+				return intCheckCanOpenFileName(fileName);
+			}
+			else
+			{
+				using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(fileStream))
+				{
+					zip.IsStreamOwner = false;
+					foreach (ZipLib.Zip.ZipEntry entry in zip)
+						if (entry.IsFile && entry.CanDecompress && intCheckCanOpenFileName(entry.Name))
+							return true;
+				}
+			}
+			return false;
+		}
 
 		public bool CheckCanSaveFileName(string fileName)
 		{
@@ -273,27 +273,27 @@ namespace ZXMAK2.Engine.Serializers
 		public string GetDefaultExtension()
 		{
 			foreach (FormatSerializer fs in _formats.Values)
-				if (fs.CanSerialize && fs.FormatExtension!="$")
+				if (fs.CanSerialize && fs.FormatExtension != "$")
 					return "." + fs.FormatExtension;
 			return string.Empty;
 		}
 
 		#region private
 
-        private void saveStream(Stream stream, string ext, string source)
+		private void saveStream(Stream stream, string ext, string source)
 		{
 			FormatSerializer serializer = GetSerializer(ext);
-			if (serializer == null)
+			if (serializer == null || !serializer.CanSerialize)
 			{
 				DialogProvider.Show(
-                    string.Format("Save {0} file format not implemented!", ext), 
-                    "Error",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+					string.Format("Save {0} file format not implemented!", ext),
+					"Error",
+					DlgButtonSet.OK,
+					DlgIcon.Error);
 				return;
 			}
 			serializer.Serialize(stream);
-            serializer.SetSource(source);
+			serializer.SetSource(source);
 		}
 
 		private void openStream(Stream stream, string ext, string source, bool wp)
@@ -302,15 +302,15 @@ namespace ZXMAK2.Engine.Serializers
 			if (serializer == null)
 			{
 				DialogProvider.Show(
-                    string.Format("Open {0} file format not implemented!", ext), 
-                    "Error",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+					string.Format("Open {0} file format not implemented!", ext),
+					"Error",
+					DlgButtonSet.OK,
+					DlgIcon.Error);
 				return;
 			}
 			serializer.Deserialize(stream);
-            serializer.SetSource(source);
-            serializer.SetReadOnly(wp);
+			serializer.SetSource(source);
+			serializer.SetReadOnly(wp);
 		}
 
 		private bool intCheckCanOpenFileName(string fileName)
@@ -379,17 +379,17 @@ namespace ZXMAK2.Engine.Serializers
 			}
 		}
 
-        public void Clear()
-        {
-            _formats.Clear();
-        }
-
-        public void AddSerializer(FormatSerializer serializer)
+		public void Clear()
 		{
-            string key = serializer.FormatExtension.ToUpper();
-            if (_formats.ContainsKey(key))
-                throw new ArgumentException(string.Format("Cannot add serializer for extension \"{0}\", because there is another serializer exists for the same extension", serializer.FormatExtension));
-		    _formats.Add(key , serializer);
+			_formats.Clear();
+		}
+
+		public void AddSerializer(FormatSerializer serializer)
+		{
+			string key = serializer.FormatExtension.ToUpper();
+			if (_formats.ContainsKey(key))
+				throw new ArgumentException(string.Format("Cannot add serializer for extension \"{0}\", because there is another serializer exists for the same extension", serializer.FormatExtension));
+			_formats.Add(key, serializer);
 		}
 
 		public FormatSerializer GetSerializer(string ext)
@@ -410,11 +410,11 @@ namespace ZXMAK2.Engine.Serializers
 			return serializer;
 		}
 
-        public List<FormatSerializer> GetSerializers()
-        {
-            return new List<FormatSerializer>(_formats.Values);
-        }
-        #endregion
+		public List<FormatSerializer> GetSerializers()
+		{
+			return new List<FormatSerializer>(_formats.Values);
+		}
+		#endregion
 
 	}
 }
