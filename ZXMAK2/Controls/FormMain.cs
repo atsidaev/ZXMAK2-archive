@@ -77,7 +77,8 @@ namespace ZXMAK2.Controls
 		protected virtual void OnVmBusConnected(object sender, EventArgs e)
 		{
 			List<BusDeviceBase> list = m_vm.Spectrum.BusManager.FindDevices(typeof(IGuiExtension));
-			list.Sort(delegate(BusDeviceBase x1, BusDeviceBase x2) {
+			list.Sort(delegate(BusDeviceBase x1, BusDeviceBase x2)
+			{
 				if (x1 == x2) return 0;
 				if (x1 is IJtagDevice) return -1;
 				if (x2 is IJtagDevice) return 1;
@@ -198,6 +199,17 @@ namespace ZXMAK2.Controls
 		{
 		}
 
+		protected override void OnKeyUp(KeyEventArgs e)
+		{
+			//RESET
+			if (e.Alt && e.Control && e.KeyCode == Keys.Insert)
+			{
+				m_vm.DoReset();
+				e.Handled = true;
+				return;
+			}
+		}
+
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			if (e.Alt && e.Control && m_mouse != null)
@@ -215,7 +227,7 @@ namespace ZXMAK2.Controls
 			//RESET
 			if (e.Alt && e.Control && e.KeyCode == Keys.Insert)
 			{
-				m_vm.DoReset();
+				m_vm.CPU.RST = true;
 				e.Handled = true;
 				return;
 			}
@@ -734,7 +746,7 @@ namespace ZXMAK2.Controls
 			{
 				if (!CanFocus)
 				{
-					e.Effect = DragDropEffects.None;					
+					e.Effect = DragDropEffects.None;
 					return;
 				}
 				DragDataWrapper ddw = new DragDataWrapper(e.Data);
