@@ -49,4 +49,7 @@
 	<Model name="LEC">
 		<Page name="SOS" image="LEC24.ROM"/>
 	</Model>
+	<Model name="Sprinter">
+		<Page name="RAW" image="Sprinter/SP_304.BIN" />
+	</Model>
 </Mapping>

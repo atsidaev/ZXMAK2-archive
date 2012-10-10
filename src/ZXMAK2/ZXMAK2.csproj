@@ -204,6 +204,7 @@
     <Compile Include="Engine\Interfaces\IUlaDevice.cs" />
     <Compile Include="Engine\Devices\KempstonMouseDevice.cs" />
     <Compile Include="Engine\Devices\KeyboardDevice.cs" />
+    <Compile Include="Engine\Serializers\DiskSerializers\ImgSerializer.cs" />
     <Compile Include="Engine\Serializers\ScreenshotSerializers\BmpSerializer.cs" />
     <Compile Include="Engine\Serializers\ScreenshotSerializers\JpgSerializer.cs" />
     <Compile Include="Engine\Serializers\ScreenshotSerializers\PngSerializer.cs" />
@@ -281,6 +282,26 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Engine\VirtualMachine.cs" />
+    <Compile Include="Hardware\Sprinter\UI\CtlSettingsBetaDisk.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Hardware\Sprinter\UI\CtlSettingsBetaDisk.designer.cs">
+      <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hardware\Sprinter\UI\DebugForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Hardware\Sprinter\UI\DebugForm.designer.cs">
+      <DependentUpon>DebugForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hardware\Sprinter\KbdHits.cs" />
+    <Compile Include="Hardware\Sprinter\SprinterBDI.cs" />
+    <Compile Include="Hardware\Sprinter\SprinterDbg.cs" />
+    <Compile Include="Hardware\Sprinter\SprinterKBD.cs" />
+    <Compile Include="Hardware\Sprinter\SprinterMMU.cs" />
+    <Compile Include="Hardware\Sprinter\SprinterMouse.cs" />
+    <Compile Include="Hardware\Sprinter\SprinterRTC.cs" />
+    <Compile Include="Hardware\Sprinter\SprinterULA.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="ZipLib\Checksums\Adler32.cs" />
     <Compile Include="ZipLib\Checksums\CRC32.cs" />
@@ -374,6 +395,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Hardware\Sprinter\UI\CtlSettingsBetaDisk.resx">
+      <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Hardware\Sprinter\UI\DebugForm.resx">
+      <DependentUpon>DebugForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="boot.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -426,6 +453,7 @@
   <ItemGroup>
     <None Include="Icons\Autoplay.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
