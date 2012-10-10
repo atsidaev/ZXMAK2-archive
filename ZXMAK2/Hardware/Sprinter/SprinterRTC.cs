@@ -51,15 +51,18 @@ namespace ZXMAK2.Hardware.Sprinter
 		{
 			try
 			{
-				if (!File.Exists(fileName))
+				FileInfo fileInfo = new FileInfo(fileName);
+				for (int i = 0; i < m_eeprom.Length; i++)
+					m_eeprom[i]=0x00;
+				if (!fileInfo.Exists)
 					return;
-				using (FileStream eepromFile = File.Open(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read))
+				using (FileStream eepromFile = File.Open(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					if (eepromFile.Length < 256)
-						eepromFile.Write(m_eeprom, 0, 256);
-					else
-						eepromFile.Read(m_eeprom, 0, 256);
-					eepromFile.Flush();
+					int count = eepromFile.Read(m_eeprom, 0, m_eeprom.Length);
+					if (count < m_eeprom.Length)
+					{
+						LogAgent.Warn("CMOS image truncated - {0} bytes instead of {1}", count, m_eeprom.Length);
+					}
 				}
 			}
 			catch (Exception ex)
@@ -72,9 +75,15 @@ namespace ZXMAK2.Hardware.Sprinter
 		{
 			try
 			{
-				using (FileStream eepromFile = File.Open(fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
+				FileInfo fileInfo = new FileInfo(fileName);
+				if (fileInfo.IsReadOnly)
 				{
-					eepromFile.Write(m_eeprom, 0, 256);
+					LogAgent.Warn("CMOS image is not written to disk because it is write protected");
+					return;
+				}
+				using (FileStream eepromFile = File.Open(fileInfo.FullName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
+				{
+					eepromFile.Write(m_eeprom, 0, m_eeprom.Length);
 					eepromFile.Flush();
 				}
 			}
