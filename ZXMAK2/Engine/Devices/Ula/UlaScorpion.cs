@@ -61,20 +61,6 @@ namespace ZXMAK2.Engine.Devices.Ula
 
 		#region UlaDeviceBase
 
-		protected override void CheckInt(int frameTact)
-		{
-			if (frameTact < c_ulaIntLength)
-			{
-				if (!m_trgInt)
-					CPU.INT = m_trgInt = true;
-			}
-			else
-			{
-				m_trgInt = false;
-				CPU.INT = false;
-			}
-		}
-
 		protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
 		{
 			if (!Memory.DOSEN && (addr & 0x23) == (0xFE & 0x23))
@@ -82,8 +68,6 @@ namespace ZXMAK2.Engine.Devices.Ula
 		}
 
 		#endregion
-
-		private bool m_trgInt = false;
 	}
 
 	public class UlaScorpionEx : UlaScorpion

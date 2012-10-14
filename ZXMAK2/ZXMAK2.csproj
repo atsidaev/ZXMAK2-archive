@@ -204,11 +204,13 @@
     <Compile Include="Engine\Interfaces\IUlaDevice.cs" />
     <Compile Include="Engine\Devices\KempstonMouseDevice.cs" />
     <Compile Include="Engine\Devices\KeyboardDevice.cs" />
+    <Compile Include="Engine\RzxHandler.cs" />
     <Compile Include="Engine\Serializers\DiskSerializers\ImgSerializer.cs" />
     <Compile Include="Engine\Serializers\ScreenshotSerializers\BmpSerializer.cs" />
     <Compile Include="Engine\Serializers\ScreenshotSerializers\JpgSerializer.cs" />
     <Compile Include="Engine\Serializers\ScreenshotSerializers\PngSerializer.cs" />
     <Compile Include="Engine\Serializers\ScreenshotSerializers\ScreenshotSerializerBase.cs" />
+    <Compile Include="Engine\Serializers\SnapshotSerializers\RzxSerializer.cs" />
     <Compile Include="Engine\Serializers\SnapshotSerializers\SnapshotSerializerBase.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryPentagon128.cs" />
     <Compile Include="Engine\Serializers\SnapshotSerializers\SzxSerializer.cs" />

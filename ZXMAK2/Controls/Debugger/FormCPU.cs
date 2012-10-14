@@ -16,46 +16,46 @@ namespace ZXMAK2.Controls.Debugger
 	public partial class FormCpu : Form
 	{
 		private IDebuggable m_spectrum;
-        private DasmUtils m_dasmUtils;
-		
-        public FormCpu()
+		private DasmUtils m_dasmUtils;
+
+		public FormCpu()
 		{
 			InitializeComponent();
 		}
 
-        public bool AllowClose { get; set; }
+		public bool AllowClose { get; set; }
 
 
-        public void Init(IDebuggable debugTarget)
-        {
-            if(debugTarget==m_spectrum)
-                return;
-            if (m_spectrum != null)
-            {
-                m_spectrum.UpdateState -= spectrum_OnUpdateState;
-                m_spectrum.Breakpoint -= spectrum_OnBreakpoint;
-            }
-            if (debugTarget != null)
-            {
-                m_spectrum = debugTarget;
-                m_dasmUtils = new DasmUtils(m_spectrum.CPU, debugTarget.ReadMemory);
-                m_spectrum.UpdateState += spectrum_OnUpdateState;
-                m_spectrum.Breakpoint += spectrum_OnBreakpoint;
-            }
-        }
-
-        private void FormCPU_FormClosed(object sender, FormClosedEventArgs e)
+		public void Init(IDebuggable debugTarget)
 		{
-            m_spectrum.UpdateState -= spectrum_OnUpdateState;
-            m_spectrum.Breakpoint -= spectrum_OnBreakpoint;
+			if (debugTarget == m_spectrum)
+				return;
+			if (m_spectrum != null)
+			{
+				m_spectrum.UpdateState -= spectrum_OnUpdateState;
+				m_spectrum.Breakpoint -= spectrum_OnBreakpoint;
+			}
+			if (debugTarget != null)
+			{
+				m_spectrum = debugTarget;
+				m_dasmUtils = new DasmUtils(m_spectrum.CPU, debugTarget.ReadMemory);
+				m_spectrum.UpdateState += spectrum_OnUpdateState;
+				m_spectrum.Breakpoint += spectrum_OnBreakpoint;
+			}
 		}
 
-        private void FormCPU_Load(object sender, EventArgs e)
+		private void FormCPU_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			m_spectrum.UpdateState -= spectrum_OnUpdateState;
+			m_spectrum.Breakpoint -= spectrum_OnBreakpoint;
+		}
+
+		private void FormCPU_Load(object sender, EventArgs e)
 		{
 			UpdateCPU(true);
 		}
-		
-        private void FormCPU_Shown(object sender, EventArgs e)
+
+		private void FormCPU_Shown(object sender, EventArgs e)
 		{
 			Show();
 			UpdateCPU(false);
@@ -66,35 +66,35 @@ namespace ZXMAK2.Controls.Debugger
 
 		private void spectrum_OnUpdateState(object sender, EventArgs args)
 		{
-            if (!Created)
-                return;
-            if (InvokeRequired)
-            {
-                Invoke(new EventHandler(spectrum_OnUpdateState), sender, args);
-                return;
-            }
-            else
-            {
-                UpdateCPU(true);
-            }
+			if (!Created)
+				return;
+			if (InvokeRequired)
+			{
+				Invoke(new EventHandler(spectrum_OnUpdateState), sender, args);
+				return;
+			}
+			else
+			{
+				UpdateCPU(true);
+			}
 		}
 		private void spectrum_OnBreakpoint(object sender, EventArgs args)
 		{
-            //LogAgent.Info("spectrum_OnBreakpoint {0}", sender);
-            if (!Created)
-                return;
-            if (InvokeRequired)
-            {
-                Invoke(new EventHandler(spectrum_OnBreakpoint), sender, args);
-                return;
-            }
-            else
-            {
-                Show();
-                UpdateCPU(true);
-                dasmPanel.Focus();
-                Select();
-            }
+			//LogAgent.Info("spectrum_OnBreakpoint {0}", sender);
+			if (!Created)
+				return;
+			if (InvokeRequired)
+			{
+				Invoke(new EventHandler(spectrum_OnBreakpoint), sender, args);
+				return;
+			}
+			else
+			{
+				Show();
+				UpdateCPU(true);
+				dasmPanel.Focus();
+				Select();
+			}
 		}
 
 		private void UpdateCPU(bool updatePC)
@@ -137,15 +137,16 @@ namespace ZXMAK2.Controls.Debugger
 			listState.Items.Clear();
 			listState.Items.Add("IFF1=" + (m_spectrum.CPU.IFF1 ? "1" : "0") + " IFF2=" + (m_spectrum.CPU.IFF2 ? "1" : "0"));
 			listState.Items.Add("HALT=" + (m_spectrum.CPU.HALTED ? "1" : "0"));
-            listState.Items.Add("BINT=" + (m_spectrum.CPU.BINT ? "1" : "0"));
-            listState.Items.Add("  IM=" + m_spectrum.CPU.IM.ToString());
+			listState.Items.Add("BINT=" + (m_spectrum.CPU.BINT ? "1" : "0"));
+			listState.Items.Add("  IM=" + m_spectrum.CPU.IM.ToString());
 			listState.Items.Add("  FX=" + m_spectrum.CPU.FX.ToString());
 			listState.Items.Add(" XFX=" + m_spectrum.CPU.XFX.ToString());
 			listState.Items.Add("Tact=" + m_spectrum.CPU.Tact.ToString());
 			listState.Items.Add("frmT=" + m_spectrum.GetFrameTact().ToString());
+			listState.Items.Add(" rzx=" + m_spectrum.CPU.RzxCounter.ToString());
 		}
-		
-        private void UpdateDASM(bool updatePC)
+
+		private void UpdateDASM(bool updatePC)
 		{
 			if (!m_spectrum.IsRunning && updatePC)
 			{
@@ -157,41 +158,41 @@ namespace ZXMAK2.Controls.Debugger
 				dasmPanel.Refresh();
 			}
 		}
-		
-        private void UpdateDATA()
+
+		private void UpdateDATA()
 		{
 			dataPanel.UpdateLines();
 			dataPanel.Refresh();
 		}
-		
-        private bool dasmPanel_CheckExecuting(object Sender, ushort ADDR)
+
+		private bool dasmPanel_CheckExecuting(object Sender, ushort ADDR)
 		{
 			if (m_spectrum.IsRunning) return false;
 			if (ADDR == m_spectrum.CPU.regs.PC) return true;
 			return false;
 		}
-		
-        private void dasmPanel_GetDasm(object Sender, ushort ADDR, out string DASM, out int len)
+
+		private void dasmPanel_GetDasm(object Sender, ushort ADDR, out string DASM, out int len)
 		{
-            string mnemonic = Z80CPU.GetMnemonic(m_spectrum.ReadMemory, ADDR, true, out len);
-            string timing = m_dasmUtils.GetTimingInfo(ADDR);
-            
-            DASM = string.Format("{0,-24} ; {1}", mnemonic, timing);
+			string mnemonic = Z80CPU.GetMnemonic(m_spectrum.ReadMemory, ADDR, true, out len);
+			string timing = m_dasmUtils.GetTimingInfo(ADDR);
+
+			DASM = string.Format("{0,-24} ; {1}", mnemonic, timing);
 		}
-		
-        private void dasmPanel_GetData(object Sender, ushort ADDR, int len, out byte[] data)
+
+		private void dasmPanel_GetData(object Sender, ushort ADDR, int len, out byte[] data)
 		{
 			data = new byte[len];
 			for (int i = 0; i < len; i++)
 				data[i] = m_spectrum.ReadMemory((ushort)(ADDR + i));
 		}
-		
-        private bool dasmPanel_CheckBreakpoint(object Sender, ushort ADDR)
+
+		private bool dasmPanel_CheckBreakpoint(object Sender, ushort ADDR)
 		{
 			return m_spectrum.CheckBreakpoint(ADDR);
 		}
-		
-        private void dasmPanel_SetBreakpoint(object Sender, ushort Addr)
+
+		private void dasmPanel_SetBreakpoint(object Sender, ushort Addr)
 		{
 			if (m_spectrum.CheckBreakpoint(Addr))
 				m_spectrum.RemoveBreakpoint(Addr);  // reset
@@ -220,7 +221,7 @@ namespace ZXMAK2.Controls.Debugger
 					catch (Exception ex)
 					{
 						LogAgent.Error(ex);
-                        DialogProvider.ShowFatalError(ex);
+						DialogProvider.ShowFatalError(ex);
 					}
 					UpdateCPU(true);
 					break;
@@ -234,7 +235,7 @@ namespace ZXMAK2.Controls.Debugger
 					catch (Exception ex)
 					{
 						LogAgent.Error(ex);
-                        DialogProvider.ShowFatalError(ex);
+						DialogProvider.ShowFatalError(ex);
 					}
 					UpdateCPU(true);
 					break;
@@ -255,21 +256,21 @@ namespace ZXMAK2.Controls.Debugger
 			if (!InputBox.InputValue("Disassembly Address", "New Address:", "#", "X4", ref ToAddr, 0, 0xFFFF)) return;
 			dasmPanel.TopAddress = (ushort)ToAddr;
 		}
-		
-        private void menuItemDasmGotoPC_Click(object sender, EventArgs e)
+
+		private void menuItemDasmGotoPC_Click(object sender, EventArgs e)
 		{
 			dasmPanel.ActiveAddress = m_spectrum.CPU.regs.PC;
 			dasmPanel.UpdateLines();
 			Refresh();
 		}
-		
-        private void menuItemDasmClearBP_Click(object sender, EventArgs e)
+
+		private void menuItemDasmClearBP_Click(object sender, EventArgs e)
 		{
 			m_spectrum.ClearBreakpoints();
 			UpdateCPU(false);
 		}
-		
-        private void menuItemDasmRefresh_Click(object sender, EventArgs e)
+
+		private void menuItemDasmRefresh_Click(object sender, EventArgs e)
 		{
 			dasmPanel.UpdateLines();
 			Refresh();
@@ -338,8 +339,8 @@ namespace ZXMAK2.Controls.Debugger
 					break;
 			}
 		}
-		
-        private void ChangeReg(ref ushort p, string reg)
+
+		private void ChangeReg(ref ushort p, string reg)
 		{
 			int val = p;
 			if (!InputBox.InputValue("Change Register " + reg, "New value:", "#", "X4", ref val, 0, 0xFFFF)) return;
@@ -363,15 +364,15 @@ namespace ZXMAK2.Controls.Debugger
 			m_spectrum.WriteMemory((ushort)Addr, (byte)poked);
 			UpdateCPU(false);
 		}
-		
-        private void menuItemDataGotoADDR_Click(object sender, EventArgs e)
+
+		private void menuItemDataGotoADDR_Click(object sender, EventArgs e)
 		{
 			int adr = dataPanel.TopAddress;
 			if (!InputBox.InputValue("Data Panel Address", "New Address:", "#", "X4", ref adr, 0, 0xFFFF)) return;
 			dataPanel.TopAddress = (ushort)adr;
 		}
-		
-        private void menuItemDataRefresh_Click(object sender, EventArgs e)
+
+		private void menuItemDataRefresh_Click(object sender, EventArgs e)
 		{
 			dataPanel.UpdateLines();
 			Refresh();
@@ -398,13 +399,13 @@ namespace ZXMAK2.Controls.Debugger
 
 		private void FormCPU_FormClosing(object sender, FormClosingEventArgs e)
 		{
-            //LogAgent.Debug("FormCpu.FormCPU_FormClosing {0}", e.CloseReason);
-            if (e.CloseReason != CloseReason.FormOwnerClosing && !this.AllowClose)
-            {
-                //LogAgent.Debug("FormCpu.Hide");
-                Hide();
-                e.Cancel = true;
-            }
+			//LogAgent.Debug("FormCpu.FormCPU_FormClosing {0}", e.CloseReason);
+			if (e.CloseReason != CloseReason.FormOwnerClosing && !this.AllowClose)
+			{
+				//LogAgent.Debug("FormCpu.Hide");
+				Hide();
+				e.Cancel = true;
+			}
 		}
 
 		private void listState_DoubleClick(object sender, EventArgs e)
@@ -430,7 +431,7 @@ namespace ZXMAK2.Controls.Debugger
 					if (InputBox.InputValue("Frame Tact", "New Frame Tact:", "", "D", ref frameTact, 0, m_spectrum.FrameTactCount))
 					{
 						int delta = frameTact - m_spectrum.GetFrameTact();
-						if(delta < 0)
+						if (delta < 0)
 							delta += m_spectrum.FrameTactCount;
 						m_spectrum.CPU.Tact += delta;
 					}
@@ -439,68 +440,68 @@ namespace ZXMAK2.Controls.Debugger
 			UpdateCPU(false);
 		}
 
-        private static int s_addr = 0x4000;
-        private static int s_len = 6912;
-        
-        private void menuLoadBlock_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog loadDialog = new OpenFileDialog())
-            {
-                loadDialog.InitialDirectory = ".";
-                loadDialog.SupportMultiDottedExtensions = true;
-                loadDialog.Title = "Load Block...";
-                loadDialog.Filter = "All files (*.*)|*.*";
-                loadDialog.DefaultExt = "";
-                loadDialog.FileName = "";
-                loadDialog.ShowReadOnly = false;
-                loadDialog.CheckFileExists = true;
-                if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
-                    return;
+		private static int s_addr = 0x4000;
+		private static int s_len = 6912;
 
-                FileInfo fileInfo = new FileInfo(loadDialog.FileName);
-                s_len = (int)fileInfo.Length;
+		private void menuLoadBlock_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog loadDialog = new OpenFileDialog())
+			{
+				loadDialog.InitialDirectory = ".";
+				loadDialog.SupportMultiDottedExtensions = true;
+				loadDialog.Title = "Load Block...";
+				loadDialog.Filter = "All files (*.*)|*.*";
+				loadDialog.DefaultExt = "";
+				loadDialog.FileName = "";
+				loadDialog.ShowReadOnly = false;
+				loadDialog.CheckFileExists = true;
+				if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+					return;
 
-                if (s_len < 1)
-                    return;
-                if (!InputBox.InputValue("Load Block", "Memory Address:", "#", "X4", ref s_addr, 0, 0xFFFF))
-                    return;
-                if (!InputBox.InputValue("Load Block", "Block Length:", "#", "X4", ref s_len, 0, 0x10000))
-                    return;
+				FileInfo fileInfo = new FileInfo(loadDialog.FileName);
+				s_len = (int)fileInfo.Length;
 
-                byte[] data = new byte[s_len];
-                using (FileStream fs = new FileStream(loadDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    fs.Read(data, 0, data.Length);
-                m_spectrum.WriteMemory((ushort)s_addr, data, 0, s_len);
-            }
-        }
+				if (s_len < 1)
+					return;
+				if (!InputBox.InputValue("Load Block", "Memory Address:", "#", "X4", ref s_addr, 0, 0xFFFF))
+					return;
+				if (!InputBox.InputValue("Load Block", "Block Length:", "#", "X4", ref s_len, 0, 0x10000))
+					return;
 
-        private void menuSaveBlock_Click(object sender, EventArgs e)
-        {
-            if (!InputBox.InputValue("Save Block", "Memory Address:", "#", "X4", ref s_addr, 0, 0xFFFF))
-                return;
-            if (!InputBox.InputValue("Save Block", "Block Length:", "#", "X4", ref s_len, 0, 0x10000))
-                return;
+				byte[] data = new byte[s_len];
+				using (FileStream fs = new FileStream(loadDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+					fs.Read(data, 0, data.Length);
+				m_spectrum.WriteMemory((ushort)s_addr, data, 0, s_len);
+			}
+		}
 
-            using (SaveFileDialog saveDialog = new SaveFileDialog())
-            {
-                saveDialog.InitialDirectory = ".";
-                saveDialog.SupportMultiDottedExtensions = true;
-                saveDialog.Title = "Save Block...";
-                saveDialog.Filter = "Binary Files (*.bin)|*.bin|All files (*.*)|*.*";
-                saveDialog.DefaultExt = "";
-                saveDialog.FileName = "";
-                saveDialog.OverwritePrompt = true;
-                if (saveDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
-                    return;
+		private void menuSaveBlock_Click(object sender, EventArgs e)
+		{
+			if (!InputBox.InputValue("Save Block", "Memory Address:", "#", "X4", ref s_addr, 0, 0xFFFF))
+				return;
+			if (!InputBox.InputValue("Save Block", "Block Length:", "#", "X4", ref s_len, 0, 0x10000))
+				return;
 
-                byte[] data = new byte[s_len];
-                m_spectrum.ReadMemory((ushort)s_addr, data, 0, s_len);
+			using (SaveFileDialog saveDialog = new SaveFileDialog())
+			{
+				saveDialog.InitialDirectory = ".";
+				saveDialog.SupportMultiDottedExtensions = true;
+				saveDialog.Title = "Save Block...";
+				saveDialog.Filter = "Binary Files (*.bin)|*.bin|All files (*.*)|*.*";
+				saveDialog.DefaultExt = "";
+				saveDialog.FileName = "";
+				saveDialog.OverwritePrompt = true;
+				if (saveDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+					return;
 
-                using (FileStream fs = new FileStream(saveDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-                    fs.Write(data, 0, data.Length);
-            }
-        }
-    }
+				byte[] data = new byte[s_len];
+				m_spectrum.ReadMemory((ushort)s_addr, data, 0, s_len);
+
+				using (FileStream fs = new FileStream(saveDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+					fs.Write(data, 0, data.Length);
+			}
+		}
+	}
 
 	public class InputBox : Form
 	{
@@ -576,13 +577,13 @@ namespace ZXMAK2.Controls.Debugger
 
 		public static bool Query(string Caption, string Text, ref string s_val)
 		{
-            using (InputBox ib = new InputBox(Caption, Text))
-            {
-                ib.textValue.Text = s_val;
-                if (ib.ShowDialog() != System.Windows.Forms.DialogResult.OK) 
-                    return false;
-                s_val = ib.textValue.Text;
-            }
+			using (InputBox ib = new InputBox(Caption, Text))
+			{
+				ib.textValue.Text = s_val;
+				if (ib.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+					return false;
+				s_val = ib.textValue.Text;
+			}
 			return true;
 		}
 		public static bool InputValue(string Caption, string Text, string prefix, string format, ref int value, int min, int max)
@@ -625,5 +626,5 @@ namespace ZXMAK2.Controls.Debugger
 		private System.Windows.Forms.TextBox textValue;
 		private System.Windows.Forms.Button buttonOK;
 		private System.Windows.Forms.Button buttonCancel;
-    }
+	}
 }

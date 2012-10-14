@@ -4,20 +4,21 @@ using System.Drawing;
 
 namespace ZXMAK2.Engine.Interfaces
 {
-    public interface IUlaDevice //: BusDeviceBase
-    {
-        int[] VideoBuffer { get; set; }
-        float VideoHeightScale { get; }
-        Size VideoSize { get; }
-        
-        void LoadScreenData(Stream stream);
-        void SaveScreenData(Stream stream);
-        void ForceRedrawFrame();
+	public interface IUlaDevice //: BusDeviceBase
+	{
+		int[] VideoBuffer { get; set; }
+		float VideoHeightScale { get; }
+		Size VideoSize { get; }
 
-        void Flush();
+		void LoadScreenData(Stream stream);
+		void SaveScreenData(Stream stream);
+		void ForceRedrawFrame();
 
-        int FrameTactCount { get; }
+		void Flush();
+
+		int FrameTactCount { get; }
+		bool CheckInt(int frameTact);
 
 		byte PortFE { get; set; }
-    }
+	}
 }

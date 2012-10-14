@@ -31,6 +31,8 @@ namespace ZXMAK2.Engine.Interfaces
 		String GetSatelliteFileName(string extension);
 
 		BusDeviceBase FindDevice(Type type);
+
+		RzxHandler RzxHandler { get; set; }
 	}
 
 	public abstract class BusDeviceBase
