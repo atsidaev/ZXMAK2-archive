@@ -39,6 +39,7 @@ namespace ZXMAK2.Engine.Bus
 		public event EventHandler BusConnected;
 		public event EventHandler BusDisconnect;
 
+		public RzxHandler RzxHandler { get; set; }
 
 		public void Init(Z80CPU cpu, LoadManager loadManager, bool sandBox)
 		{
@@ -76,6 +77,7 @@ namespace ZXMAK2.Engine.Bus
 			m_cpu.WRNOMREQ = WRNOMREQ;
 			//m_cpu.OnCycle = OnCpuCycle;
 			m_cpu.RESET = RESET;
+			RzxHandler = new RzxHandler(m_cpu, this);
 
 			m_deviceList.Clear();
 			m_mapReadMemoryM1 = null;
@@ -253,11 +255,15 @@ namespace ZXMAK2.Engine.Bus
 			bool iorqge = true;
 			if (proc != null)
 				proc(addr, ref result, ref iorqge);
+			if (RzxHandler.IsPlayback)
+				return RzxHandler.GetInput();
 			return result;
 		}
 
 		private void WRPORT(ushort addr, byte value)
 		{
+			if (RzxHandler.IsRecording)
+				RzxHandler.SetInput(value);
 			BusWriteIoProc proc = m_mapWritePort[addr];
 			bool iorqge = true;
 			if (proc != null)
@@ -280,6 +286,7 @@ namespace ZXMAK2.Engine.Bus
 
 		private void RESET()
 		{
+			RzxHandler.Reset();
 			if (m_reset != null)
 				m_reset();
 		}
@@ -511,9 +518,12 @@ namespace ZXMAK2.Engine.Bus
 			}
 			m_lastFrameTact = frameTact;
 
+			m_cpu.INT = RzxHandler.IsPlayback ?
+				RzxHandler.CheckInt(frameTact) :
+				m_ula.CheckInt(frameTact);
+
 			if (m_preCycle != null)
 				m_preCycle(frameTact);
-
 			m_cpu.ExecCycle();
 		}
 
