@@ -303,10 +303,7 @@ namespace ZXMAK2.Controls
 		{
 			if (m_vm != null)
 			{
-				IBetaDiskDevice betaDisk = m_vm.Spectrum.BusManager.FindDevice(typeof(IBetaDiskDevice)) as IBetaDiskDevice;
-				renderVideo.IconDisk = betaDisk != null ? betaDisk.LedDiskIO : false;
-				if (betaDisk != null)
-					betaDisk.LedDiskIO = false;
+				renderVideo.UpdateIcons(m_vm.Spectrum.BusManager.IconDescriptorArray);
 				renderVideo.DebugStartTact = m_vm.DebugFrameStartTact;
 				renderVideo.UpdateSurface(m_vm.Screen, m_vm.ScreenSize, m_vm.ScreenHeightScale);
 			}
@@ -316,10 +313,7 @@ namespace ZXMAK2.Controls
 		{
 			if (m_vm != null)
 			{
-				IBetaDiskDevice betaDisk = m_vm.Spectrum.BusManager.FindDevice(typeof(IBetaDiskDevice)) as IBetaDiskDevice;
-				renderVideo.IconDisk = betaDisk != null ? betaDisk.LedDiskIO : false;
-				if (betaDisk != null)
-					betaDisk.LedDiskIO = false;
+				renderVideo.UpdateIcons(m_vm.Spectrum.BusManager.IconDescriptorArray);
 				renderVideo.DebugStartTact = m_vm.DebugFrameStartTact;
 				renderVideo.UpdateSurface(m_vm.Screen, m_vm.ScreenSize, m_vm.ScreenHeightScale);
 			}

@@ -40,6 +40,10 @@ namespace ZXMAK2.Engine.Devices.Ide
 			bmgr.SubscribeWRIO(mask, 0xFFBA & mask, writeSys);
 			bmgr.SubscribeWRIO(mask, 0xFFBE & mask, writeIde);
 
+			bmgr.SubscribeBeginFrame(BusBeginFrame);
+			bmgr.SubscribeEndFrame(BusEndFrame);
+			bmgr.RegisterIcon(m_iconHdd);
+
 			m_rtcFileName = bmgr.GetSatelliteFileName("cmos");
 			m_nvramFileName = bmgr.GetSatelliteFileName("nvram");
 		}
@@ -73,6 +77,16 @@ namespace ZXMAK2.Engine.Devices.Ide
 				m_nvram.Save(m_nvramFileName);
 		}
 
+		public virtual void BusBeginFrame()
+		{
+			m_ata.dev[0].Led = m_ata.dev[1].Led = false;
+		}
+
+		public virtual void BusEndFrame()
+		{
+			m_iconHdd.Visible = m_ata.dev[0].Led || m_ata.dev[1].Led;
+		}
+
 		#endregion
 
 		private IMemoryDevice m_memory = null;
@@ -85,6 +99,7 @@ namespace ZXMAK2.Engine.Devices.Ide
 		private NvramChip m_nvram = new NvramChip();
 		private string m_rtcFileName;
 		private string m_nvramFileName;
+		private IconDescriptor m_iconHdd = new IconDescriptor("HDD", Utils.GetIconStream("hdd.png"));
 
 
 		private void busReset()
@@ -652,7 +667,7 @@ namespace ZXMAK2.Engine.Devices.Ide
 
 		public ATA_PASSER ata_p = new ATA_PASSER();
 		//ATAPI_PASSER atapi_p;
-
+		public bool Led = false;
 
 		public bool loaded()
 		{
@@ -778,6 +793,7 @@ namespace ZXMAK2.Engine.Devices.Ide
 			if (/* (reg.status & (STATUS_DRQ | STATUS_BSY)) != STATUS_DRQ ||*/ transptr >= transcount)
 				return 0xFFFF;
 
+			Led = true;
 			// DRQ=1, BSY=0, data present
 			UInt16 result = (UInt16)(transbf[transptr * 2] | (transbf[transptr * 2 + 1] << 8));
 			transptr++;
@@ -812,6 +828,8 @@ namespace ZXMAK2.Engine.Devices.Ide
 				return;
 			if (/* (reg.status & (STATUS_DRQ | STATUS_BSY)) != STATUS_DRQ ||*/ transptr >= transcount)
 				return;
+
+			Led = true;
 			transbf[transptr * 2] = (byte)data;
 			transbf[transptr * 2 + 1] = (byte)(data >> 8);
 			transptr++;

@@ -25,6 +25,7 @@ namespace ZXMAK2.Engine.Interfaces
 		void SubscribeEndFrame(BusFrameEventHandler handler);
 
 		void AddSerializer(FormatSerializer serializer);
+		void RegisterIcon(IconDescriptor iconDesc);
 
 		Z80CPU CPU { get; }
 		bool IsSandbox { get; }
