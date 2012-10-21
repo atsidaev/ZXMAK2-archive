@@ -33,13 +33,16 @@ namespace ZXMAK2.Engine.Bus
 		private BusSignalProc m_intAck;
 		private BusFrameEventHandler m_beginFrame;
 		private BusFrameEventHandler m_endFrame;
-		private List<FormatSerializer> m_serializerList = new List<FormatSerializer>();
+		private IconDescriptor[] m_iconDescList = new IconDescriptor[0];
+		private IconDescriptor m_iconPause = new IconDescriptor("PAUSE", Utils.GetIconStream("pause_vm.png"));
 
 		public event BusFrameEventHandler FrameReady;
 		public event EventHandler BusConnected;
 		public event EventHandler BusDisconnect;
 
 		public RzxHandler RzxHandler { get; set; }
+		public IconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
+		public IconDescriptor IconPause { get { return m_iconPause; } }
 
 		public void Init(Z80CPU cpu, LoadManager loadManager, bool sandBox)
 		{
@@ -50,6 +53,7 @@ namespace ZXMAK2.Engine.Bus
 				m_loadManager.Clear();
 				m_loadManager.AddStandardSerializers();
 			}
+			m_iconDescList = new IconDescriptor[0];
 			if (m_cpu != null)
 			{
 				m_cpu.RDMEM_M1 = null;
@@ -91,7 +95,6 @@ namespace ZXMAK2.Engine.Bus
 			m_preCycle = null;
 			m_beginFrame = null;
 			m_endFrame = null;
-			m_serializerList.Clear();
 		}
 
 
@@ -180,6 +183,13 @@ namespace ZXMAK2.Engine.Bus
 		{
 			if (m_loadManager != null)
 				m_loadManager.AddSerializer(serializer);
+		}
+
+		void IBusManager.RegisterIcon(IconDescriptor iconDesc)
+		{
+			List<IconDescriptor> list = new List<IconDescriptor>(m_iconDescList);
+			list.Add(iconDesc);
+			m_iconDescList = list.ToArray();
 		}
 
 		Z80CPU IBusManager.CPU
@@ -395,6 +405,7 @@ namespace ZXMAK2.Engine.Bus
 				m_loadManager.Clear();
 				m_loadManager.AddStandardSerializers();
 			}
+			m_iconDescList = new IconDescriptor[] { m_iconPause };
 			foreach (BusDeviceBase device in m_deviceList)
 			{
 				try { device.BusInit(this); }
@@ -428,6 +439,7 @@ namespace ZXMAK2.Engine.Bus
 			OnBusDisconnect();
 			if (m_loadManager != null)
 				m_loadManager.Clear();
+			m_iconDescList = new IconDescriptor[0];
 			if (m_debuggable != null)
 			{
 				IJtagDevice jtag = FindDevice(typeof(IJtagDevice)) as IJtagDevice;

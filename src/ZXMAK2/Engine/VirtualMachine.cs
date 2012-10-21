@@ -205,6 +205,7 @@ namespace ZXMAK2.Engine
 		/// </summary>
 		private void OnUpdateState(object sender, EventArgs e)
 		{
+			m_spectrum.BusManager.IconPause.Visible = !m_spectrum.IsRunning;
 			if (UpdateState != null)
 				UpdateState(this, EventArgs.Empty);
 			IUlaDevice ula = m_spectrum.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;

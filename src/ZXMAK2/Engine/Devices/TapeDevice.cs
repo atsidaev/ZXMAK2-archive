@@ -40,6 +40,7 @@ namespace ZXMAK2.Engine.Devices
 			bmgr.AddSerializer(new TzxSerializer(this));
 			bmgr.AddSerializer(new CswSerializer(this));
 			bmgr.AddSerializer(new WavSerializer(this));
+			bmgr.RegisterIcon(m_iconTape);
 		}
 
 		public override void BusConnect()
@@ -122,8 +123,7 @@ namespace ZXMAK2.Engine.Devices
 				value |= 0x40;
 			else
 				value &= 0xBF;
-			if (m_autoPlay)
-				detectorRead();
+			detectorRead();
 		}
 
 		private void busPreCycle(int frameTact)
@@ -185,8 +185,8 @@ namespace ZXMAK2.Engine.Devices
 		private void busEndFrame()
 		{
 			flushAudio(m_frameTactCount);
-			if (m_autoPlay)
-				detectorFrame();
+			detectorFrame();
+			m_iconTape.Visible = m_detectCounter >= 8;
 		}
 
 		#endregion
@@ -218,6 +218,8 @@ namespace ZXMAK2.Engine.Devices
 		private long m_lastTact = 0;
 		private int m_waitEdge = 0;
 		private bool m_state = false;
+
+		private IconDescriptor m_iconTape = new IconDescriptor("TAPE", Utils.GetIconStream("cassette.png"));
 
 		#endregion
 

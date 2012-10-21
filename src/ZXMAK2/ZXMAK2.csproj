@@ -192,6 +192,7 @@
     <Compile Include="Engine\Devices\Ula\UlaSpectrum48.cs" />
     <Compile Include="Engine\Devices\Ula\UlaSpectrum48snow.cs" />
     <Compile Include="Engine\Devices\Ula\ZebestUla.cs" />
+    <Compile Include="Engine\IconDescriptor.cs" />
     <Compile Include="Engine\Interfaces\IBusDevice.cs" />
     <Compile Include="Engine\Interfaces\IConfigurable.cs" />
     <Compile Include="Engine\Interfaces\IDebuggable.cs" />
@@ -455,7 +456,18 @@
   <ItemGroup>
     <None Include="Icons\Autoplay.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\FddWr.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\pause_vm.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\cassette.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\hdd.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
