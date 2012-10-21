@@ -23,7 +23,7 @@ using System.Collections.Specialized;
 
 namespace ZXMAK2.Controls
 {
-	public partial class FormMain : Form
+	public unsafe partial class FormMain : Form
 	{
 		private VirtualMachine m_vm;
 		private DirectKeyboard m_keyboard;
@@ -298,7 +298,6 @@ namespace ZXMAK2.Controls
 			}
 		}
 
-
 		private void vm_UpdateVideo(object sender, EventArgs e)
 		{
 			if (m_vm != null)
@@ -542,6 +541,7 @@ namespace ZXMAK2.Controls
 		private void menuView_Popup(object sender, EventArgs e)
 		{
 			menuViewSmoothing.Checked = renderVideo.Smoothing;
+			menuViewNoFlic.Checked = renderVideo.NoFlic;
 			menuViewKeepProportion.Checked = renderVideo.KeepProportion;
 			menuViewVBlankSync.Checked = renderVideo.VBlankSync;
 			menuViewDisplayIcon.Checked = renderVideo.DisplayIcon;
@@ -579,12 +579,14 @@ namespace ZXMAK2.Controls
 		private void menuViewRender_Click(object sender, EventArgs e)
 		{
 			menuViewSmoothing.Checked = sender == menuViewSmoothing ? !menuViewSmoothing.Checked : menuViewSmoothing.Checked;
+			menuViewNoFlic.Checked = sender == menuViewNoFlic ? !menuViewNoFlic.Checked : menuViewNoFlic.Checked;
 			menuViewKeepProportion.Checked = sender == menuViewKeepProportion ? !menuViewKeepProportion.Checked : menuViewKeepProportion.Checked;
 			menuViewVBlankSync.Checked = sender == menuViewVBlankSync ? !menuViewVBlankSync.Checked : menuViewVBlankSync.Checked;
 			menuViewDisplayIcon.Checked = sender == menuViewDisplayIcon ? !menuViewDisplayIcon.Checked : menuViewDisplayIcon.Checked;
 			menuViewDebugInfo.Checked = sender == menuViewDebugInfo ? !menuViewDebugInfo.Checked : menuViewDebugInfo.Checked;
 
 			renderVideo.Smoothing = menuViewSmoothing.Checked;
+			renderVideo.NoFlic = menuViewNoFlic.Checked;
 			renderVideo.KeepProportion = menuViewKeepProportion.Checked;
 			renderVideo.VBlankSync = menuViewVBlankSync.Checked;
 			renderVideo.DisplayIcon = menuViewDisplayIcon.Checked;
@@ -593,6 +595,7 @@ namespace ZXMAK2.Controls
 			{
 				RegistryKey rkey = Registry.CurrentUser.CreateSubKey("SOFTWARE\\ZXMAK2");
 				rkey.SetValue("RenderSmoothing", renderVideo.Smoothing ? 1 : 0, RegistryValueKind.DWord);
+				rkey.SetValue("RenderNoFlic", renderVideo.NoFlic ? 1 : 0, RegistryValueKind.DWord);
 				rkey.SetValue("RenderKeepProportion", renderVideo.KeepProportion ? 1 : 0, RegistryValueKind.DWord);
 				rkey.SetValue("RenderVBlankSync", renderVideo.VBlankSync ? 1 : 0, RegistryValueKind.DWord);
 				rkey.SetValue("RenderDisplayIcon", renderVideo.DisplayIcon ? 1 : 0, RegistryValueKind.DWord);
@@ -715,11 +718,14 @@ namespace ZXMAK2.Controls
 				if (rkey != null)
 				{
 					object objSmooth = rkey.GetValue("RenderSmoothing");
+					object objNoFlic = rkey.GetValue("RenderNoFlic");
 					object objKeep = rkey.GetValue("RenderKeepProportion");
 					object objSync = rkey.GetValue("RenderVBlankSync");
 					object objIcon = rkey.GetValue("RenderDisplayIcon");
 					if (objSmooth != null && objSmooth is int)
 						renderVideo.Smoothing = (int)objSmooth != 0;
+					if (objNoFlic != null && objNoFlic is int)
+						renderVideo.NoFlic = (int)objNoFlic != 0;
 					if (objKeep != null && objKeep is int)
 						renderVideo.KeepProportion = (int)objKeep != 0;
 					if (objSync != null && objSync is int)

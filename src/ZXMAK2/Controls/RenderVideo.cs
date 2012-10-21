@@ -26,9 +26,22 @@ namespace ZXMAK2.Controls
 		public bool Smoothing = false;
 		public bool KeepProportion = false;
 		public bool DebugInfo = false;
+		public unsafe bool NoFlic
+		{
+			get { return m_drawFilter == drawFrame_noflic; }
+			set { m_drawFilter = value ? (DrawFilterDelegate)drawFrame_noflic : (DrawFilterDelegate)drawFrame; }
+		}
 
 		public bool IconDisk = false;
 		public bool DisplayIcon = true;
+
+		private unsafe DrawFilterDelegate m_drawFilter;
+		private unsafe delegate void DrawFilterDelegate(int* dstBuffer, int* srcBuffer);
+
+		public unsafe RenderVideo()
+		{
+			m_drawFilter = drawFrame;
+		}
 
 		protected override void OnCreateDevice()
 		{
@@ -84,7 +97,7 @@ namespace ZXMAK2.Controls
 					{
 						using (GraphicsStream gs = _texture.LockRectangle(0, LockFlags.None))
 							fixed (int* srcPtr = surfaceBuffer)
-								drawFrame((int*)gs.InternalData, srcPtr);
+								m_drawFilter((int*)gs.InternalData, srcPtr);
 						_texture.UnlockRectangle(0);
 					}
 				}
@@ -252,6 +265,33 @@ namespace ZXMAK2.Controls
 				for (int i = 0; i < m_surfaceSize.Width; i++)
 					dstLine[i] = srcLine[i];
 			}
+		}
+
+		private int[] m_lastBuffer = new int[0];
+
+		private unsafe void drawFrame_noflic(int* dstBuffer, int* srcBuffer)
+		{
+			int size = m_surfaceSize.Height * m_surfaceSize.Width;
+			if (m_lastBuffer.Length < size)
+				m_lastBuffer = new int[size];
+			fixed (int* srcBuffer2 = m_lastBuffer)
+				for (int y = 0; y < m_surfaceSize.Height; y++)
+				{
+					int surfaceOffset = m_surfaceSize.Width * y;
+					int* pSrcArray1 = srcBuffer + surfaceOffset;
+					int* pSrcArray2 = srcBuffer2 + surfaceOffset;
+					int* pDstArray = dstBuffer + m_textureSize.Width * y;
+					for (int i = 0; i < m_surfaceSize.Width; i++)
+					{
+						int src1 = pSrcArray1[i];
+						int src2 = pSrcArray2[i];
+						int r1 = (((src1 >> 16) & 0xFF) + ((src2 >> 16) & 0xFF)) / 2;
+						int g1 = (((src1 >> 8) & 0xFF) + ((src2 >> 8) & 0xFF)) / 2;
+						int b1 = (((src1 >> 0) & 0xFF) + ((src2 >> 0) & 0xFF)) / 2;
+						pSrcArray2[i] = src1;
+						pDstArray[i] = -16777216 | (r1 << 16) | (g1 << 8) | b1;
+					}
+				}
 		}
 
 		private static int getPotSize(Size surfaceSize)
