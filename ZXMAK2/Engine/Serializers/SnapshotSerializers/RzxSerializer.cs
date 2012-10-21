@@ -8,14 +8,6 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 {
 	public class RzxSerializer : SnapshotSerializerBase
 	{
-		const int CREATOR_INFORMATION_BLOCK = 0x10;
-		const int SECURITY_INFORMATION_BLOCK = 0x20;
-		const int SECURITY_SIGNATURE_BLOCK = 0x21;
-		const int SNAPSHOT_BLOCK = 0x30;
-		const int INPUT_RECORDING_BLOCK = 0x80;
-
-		const string RZX_SIGNATURE = "RZX!";
-
 		public RzxSerializer(SpectrumBase spec)
 			: base(spec)
 		{
@@ -32,6 +24,9 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 			stream.Read(data, 0, data.Length);
 			RzxBlockReader reader = new RzxBlockReader(_spec, new MemoryStream(data));
 			_spec.BusManager.RzxHandler.Play(reader);
+			IUlaDevice ula = (IUlaDevice)_spec.BusManager.FindDevice(typeof(IUlaDevice));
+			ula.ForceRedrawFrame();
+			_spec.RaiseUpdateState();
 		}
 	}
 
@@ -126,9 +121,6 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 			{
 				using (Stream stream = rzxSnap.GetSnapshotStream())
 					fs.Deserialize(stream);
-				IUlaDevice ula = (IUlaDevice)m_spectrum.BusManager.FindDevice(typeof(IUlaDevice));
-				ula.ForceRedrawFrame();
-				m_spectrum.RaiseUpdateState();
 			}
 		}
 	}
