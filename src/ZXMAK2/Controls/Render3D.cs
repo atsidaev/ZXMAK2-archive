@@ -68,7 +68,7 @@ namespace ZXMAK2.Controls
 		{
 			lock (SyncRoot)
 			{
-				CreateFlags flags = CreateFlags.SoftwareVertexProcessing;
+				CreateFlags flags = CreateFlags.MultiThreaded | CreateFlags.SoftwareVertexProcessing;
 
 				//m_presentParams = new PresentParameters();
 				m_presentParams.Windowed = true;
