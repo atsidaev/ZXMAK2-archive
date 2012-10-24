@@ -41,6 +41,7 @@ namespace ZXMAK2.Controls
 
 		public FormMain()
 		{
+			SetStyle(ControlStyles.Opaque, true);
 			InitializeComponent();
 			this.Icon = Utils.GetAppIcon();
 			//ClientSize = new Size(640, 480);
