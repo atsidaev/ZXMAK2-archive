@@ -365,7 +365,7 @@ namespace ZXMAK2.Engine.Devices
 
 		#region private methods
 
-		private void flushAudio(int frameTact)
+		private unsafe void flushAudio(int frameTact)
 		{
 			int tp = (m_audioBuffer.Length * frameTact / m_frameTactCount);
 			if (tp > m_audioBuffer.Length) tp = m_audioBuffer.Length;
@@ -373,11 +373,17 @@ namespace ZXMAK2.Engine.Devices
 			{
 				uint val = m_dacValue0;
 				if (tape_bit(m_cpu.Tact))
-					val += m_dacValue1;
+					val = m_dacValue1;
 				val = val | (val << 16);
+				//if (_tapeOutSoundEnable)
+				//{
+				//    if ((_portFE & 0x08) != 0)    // tape output
+				//        val += 0x1FFF;
+				//}
 
-				for (; m_samplePos < tp; m_samplePos++)
-					m_audioBuffer[m_samplePos] = val;
+				fixed (uint* pAudioBuffer = m_audioBuffer)
+					for (; m_samplePos < tp; m_samplePos++)
+						pAudioBuffer[m_samplePos] = val;
 			}
 		}
 
