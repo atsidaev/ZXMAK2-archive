@@ -26,80 +26,118 @@ namespace ZXMAK2.Controls
 			SetStyle(ControlStyles.Opaque | ControlStyles.UserPaint | ControlStyles.ResizeRedraw, true);
 		}
 
-		protected override void OnHandleCreated(EventArgs e)
+		public void InitWnd()
 		{
-			base.OnHandleCreated(e);
-			try
+			lock (SyncRoot)
 			{
-				init();
-			}
-			catch (Exception ex)
-			{
-				LogAgent.Error(ex);
+				if (D3D == null)
+					init();
 			}
 		}
 
-		protected override void OnHandleDestroyed(EventArgs e)
+		public void FreeWnd()
 		{
-			try
+			lock (SyncRoot)
 			{
-				free();
+				if (D3D != null)
+					free();
 			}
-			catch (Exception ex)
-			{
-				LogAgent.Error(ex);
-			}
-			base.OnHandleDestroyed(e);
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			try
-			{
-				RenderScene();
-			}
-			catch (Exception ex)
-			{
-				LogAgent.Error(ex);
-			}
+			RenderScene();
 		}
 
 		private void init()
 		{
-			lock (SyncRoot)
+			try
 			{
-				CreateFlags flags = CreateFlags.MultiThreaded | CreateFlags.SoftwareVertexProcessing;
+				lock (SyncRoot)
+				{
+					int adapter = Manager.Adapters.Default.Adapter;
+					Caps caps = Manager.GetDeviceCaps(adapter, DeviceType.Hardware);
+					CreateFlags flags = CreateFlags.MultiThreaded;
+					if (caps.DeviceCaps.SupportsHardwareTransformAndLight)
+						flags |= CreateFlags.HardwareVertexProcessing;
+					else
+						flags |= CreateFlags.SoftwareVertexProcessing;
 
-				//m_presentParams = new PresentParameters();
-				m_presentParams.Windowed = true;
-				m_presentParams.SwapEffect = SwapEffect.Discard;
-				m_presentParams.BackBufferFormat = Manager.Adapters.Default.CurrentDisplayMode.Format;// : Format.A8R8G8B8;
-				m_presentParams.BackBufferCount = 1;
-				if (m_vBlankSync)
-					m_presentParams.PresentationInterval = PresentInterval.One;
-				else
-					m_presentParams.PresentationInterval = PresentInterval.Immediate;
+					m_presentParams.Windowed = true;
+					m_presentParams.PresentationInterval =
+						m_vBlankSync ? PresentInterval.One : PresentInterval.Immediate;
+					m_presentParams.SwapEffect =
+						m_vBlankSync ? SwapEffect.Flip : SwapEffect.Discard;
+					m_presentParams.BackBufferCount = 1;
+					m_presentParams.BackBufferFormat = Format.A8R8G8B8;
+					m_presentParams.BackBufferWidth = ClientSize.Width > 0 ? ClientSize.Width : 1;
+					m_presentParams.BackBufferHeight = ClientSize.Height > 0 ? ClientSize.Height : 1;
+					m_presentParams.EnableAutoDepthStencil = false;
 
-				m_presentParams.BackBufferWidth = ClientSize.Width > 0 ? ClientSize.Width : 1;
-				m_presentParams.BackBufferHeight = ClientSize.Height > 0 ? ClientSize.Height : 1;
-
-				D3D = new Device(0, DeviceType.Hardware, this.Handle, flags, m_presentParams);
-				D3D.DeviceResizing += new System.ComponentModel.CancelEventHandler(D3D_DeviceResizing);
-				D3D.DeviceReset += new EventHandler(D3D_DeviceReset);
-				OnCreateDevice();
+					D3D = new Device(
+						adapter,
+						DeviceType.Hardware,
+						this.Handle,
+						flags,
+						m_presentParams);
+					D3D.DeviceResizing += new System.ComponentModel.CancelEventHandler(D3D_DeviceResizing);
+					D3D.DeviceReset += new EventHandler(D3D_DeviceReset);
+					OnCreateDevice();
+					RenderScene();
+				}
+			}
+			catch (Exception ex)
+			{
+				LogAgent.Error(ex);
 			}
 		}
 
 		private void free()
 		{
-			lock (SyncRoot)
+			try
 			{
-				if (D3D != null)
+				lock (SyncRoot)
 				{
-					OnDestroyDevice();
-					D3D.Dispose();
-					D3D = null;
+					if (D3D != null)
+					{
+						OnDestroyDevice();
+						D3D.Dispose();
+						D3D = null;
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				LogAgent.Error(ex);
+			}
+		}
+
+		private void reset()
+		{
+			try
+			{
+				lock (SyncRoot)
+				{
+					if (D3D == null)
+						return;
+
+					m_presentParams.Windowed = true;
+					m_presentParams.PresentationInterval =
+						m_vBlankSync ? PresentInterval.One : PresentInterval.Immediate;
+					m_presentParams.SwapEffect =
+						m_vBlankSync ? SwapEffect.Flip : SwapEffect.Discard;
+					m_presentParams.BackBufferCount = 1;
+					m_presentParams.BackBufferFormat = Format.A8R8G8B8;
+					m_presentParams.BackBufferWidth = ClientSize.Width > 0 ? ClientSize.Width : 1;
+					m_presentParams.BackBufferHeight = ClientSize.Height > 0 ? ClientSize.Height : 1;
+					m_presentParams.EnableAutoDepthStencil = false;
+
+					D3D.Reset(m_presentParams);
+				}
+			}
+			catch (Exception ex)
+			{
+				LogAgent.Error(ex);
 			}
 		}
 
@@ -124,22 +162,7 @@ namespace ZXMAK2.Controls
 		protected override void OnResize(EventArgs e)
 		{
 			base.OnResize(e);
-			lock (SyncRoot)
-			{
-				if (D3D != null)
-				{
-					try
-					{
-						m_presentParams.BackBufferWidth = ClientSize.Width > 0 ? ClientSize.Width : 1;
-						m_presentParams.BackBufferHeight = ClientSize.Height > 0 ? ClientSize.Height : 1;
-						D3D.Reset(m_presentParams);
-					}
-					catch (Exception ex)
-					{
-						LogAgent.Error(ex);
-					}
-				}
-			}
+			reset();
 		}
 
 		protected virtual void OnCreateDevice()
@@ -156,9 +179,9 @@ namespace ZXMAK2.Controls
 
 		protected void RenderScene()
 		{
-			lock (SyncRoot)
+			try
 			{
-				try
+				lock (SyncRoot)
 				{
 					if (D3D != null && Visible && ClientSize.Width > 0 && ClientSize.Height > 0)
 					{
@@ -168,13 +191,15 @@ namespace ZXMAK2.Controls
 						switch (resultCode)
 						{
 							case ResultCode.DeviceNotReset:
-								D3D.Reset(m_presentParams);
+								//LogAgent.Debug("DeviceNotReset");
+								reset();
 								break;
 							case ResultCode.DeviceLost:
+								//LogAgent.Debug("DeviceLost");
 								// e.g. aquired by other app
 								break;
 							case ResultCode.Success:
-								D3D.Clear(ClearFlags.Target, 0, 1, 0);
+								D3D.Clear(ClearFlags.Target, Color.Black, 1, 0);
 								D3D.BeginScene();
 								OnRenderScene();
 								D3D.EndScene();
@@ -187,10 +212,10 @@ namespace ZXMAK2.Controls
 						m_frameCounter++;
 					}
 				}
-				catch (Exception ex)
-				{
-					LogAgent.Error(ex);
-				}
+			}
+			catch (Exception ex)
+			{
+				LogAgent.Error(ex);
 			}
 		}
 
@@ -213,19 +238,8 @@ namespace ZXMAK2.Controls
 			{
 				if (value != m_vBlankSync)
 				{
-					lock (SyncRoot)
-					{
-						m_vBlankSync = value;
-
-						if (D3D != null)
-						{
-							m_presentParams.PresentationInterval =
-								m_vBlankSync ? PresentInterval.One : PresentInterval.Immediate;
-							m_presentParams.SwapEffect =
-								m_vBlankSync ? SwapEffect.Flip : SwapEffect.Discard;
-							D3D.Reset(m_presentParams);
-						}
-					}
+					m_vBlankSync = value;
+					reset();
 				}
 			}
 		}

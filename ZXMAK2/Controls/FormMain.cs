@@ -44,22 +44,16 @@ namespace ZXMAK2.Controls
 			SetStyle(ControlStyles.Opaque, true);
 			InitializeComponent();
 			this.Icon = Utils.GetAppIcon();
-			//ClientSize = new Size(640, 480);
 			loadClientSize();
 			loadRenderSetting();
 		}
 
-		public string StartupImage
+		internal void InitWnd()
 		{
-			get { return m_startupImage; }
-			set { m_startupImage = value; }
-		}
-
-		protected override void OnHandleCreated(EventArgs e)
-		{
-			base.OnHandleCreated(e);
+			//LogAgent.Debug("MainForm.InitWnd");
 			try
 			{
+				renderVideo.InitWnd();
 				m_mouse = new DirectMouse(this);
 				m_keyboard = new DirectKeyboard(this);
 				m_sound = new DirectSound(this, -1, 44100, 16, 2, 882 * 2 * 2, 4);
@@ -73,6 +67,35 @@ namespace ZXMAK2.Controls
 			{
 				LogAgent.Error(ex);
 			}
+		}
+
+		protected override void OnFormClosed(FormClosedEventArgs e)
+		{
+			//LogAgent.Debug("MainForm.OnFormClosed");
+			try
+			{
+				renderVideo.FreeWnd();
+				if (m_keyboard != null)
+					m_keyboard.Dispose();
+				m_keyboard = null;
+				if (m_mouse != null)
+					m_mouse.Dispose();
+				m_mouse = null;
+				if (m_sound != null)
+					m_sound.Dispose();
+				m_sound = null;
+			}
+			catch (Exception ex)
+			{
+				LogAgent.Error(ex);
+			}
+			base.OnFormClosed(e);
+		}
+
+		public string StartupImage
+		{
+			get { return m_startupImage; }
+			set { m_startupImage = value; }
 		}
 
 		protected virtual void OnVmBusConnected(object sender, EventArgs e)
@@ -120,27 +143,6 @@ namespace ZXMAK2.Controls
 					LogAgent.Error(ex);
 				}
 			}
-		}
-
-		protected override void OnHandleDestroyed(EventArgs e)
-		{
-			try
-			{
-				if (m_keyboard != null)
-					m_keyboard.Dispose();
-				m_keyboard = null;
-				if (m_mouse != null)
-					m_mouse.Dispose();
-				m_mouse = null;
-				if (m_sound != null)
-					m_sound.Dispose();
-				m_sound = null;
-			}
-			catch (Exception ex)
-			{
-				LogAgent.Error(ex);
-			}
-			base.OnHandleDestroyed(e);
 		}
 
 		private bool m_firstShow = true;
