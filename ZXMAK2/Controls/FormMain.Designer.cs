@@ -260,7 +260,6 @@
 			// 
 			this.menuTools.Index = 3;
 			this.menuTools.Text = "Tools";
-			this.menuTools.Popup += new System.EventHandler(this.menuTools_Popup);
 			// 
 			// menuHelp
 			// 
