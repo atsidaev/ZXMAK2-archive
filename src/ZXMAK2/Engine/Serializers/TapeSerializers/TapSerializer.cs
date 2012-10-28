@@ -106,9 +106,17 @@ namespace ZXMAK2.Engine.Serializers.TapeSerializers
 		{
 			string dst = string.Empty;
 			byte crc = 0;
+			byte crcValue=0;
+			byte crcFile=0;
 			byte[] prg = new byte[10];
 			for (int i = 0; i < blockLength; i++)
+			{	
 				crc ^= block[indexOffset + i];
+				if (i < blockLength-1)
+					crcValue = crc;
+				else
+					crcFile = block[indexOffset + i];
+			}
 			if (block[indexOffset + 0] == 0 && blockLength == 19 &&
 			   (block[indexOffset + 1] == 0 || block[indexOffset + 1] == 3))
 			{
@@ -128,7 +136,7 @@ namespace ZXMAK2.Engine.Serializers.TapeSerializers
 				dst = string.Format("Data block, {0} bytes", blockLength - 2);
 			else
 				dst = string.Format("#{0} block, {1} bytes", block[indexOffset + 0].ToString("X2"), blockLength - 2);
-			dst += string.Format(", crc {0}", ((crc != 0) ? "bad" : "ok"));
+			dst += string.Format(", crc {0}", ((crc != 0) ? string.Format("bad (#{0:X2}!=#{1:X2})", crcFile, crcValue) : "ok"));
 
 			return dst;
 		}
