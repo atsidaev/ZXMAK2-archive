@@ -465,12 +465,6 @@ namespace ZXMAK2.Controls
 			Close();
 		}
 
-		private void menuTools_Popup(object sender, EventArgs e)
-		{
-			//menuToolsDebugger.Visible = m_vm.Spectrum.BusManager.FindDevice(typeof(IJtagDevice)) == null;
-			//menuToolsTape.Visible = m_vm.Spectrum.BusManager.FindDevice(typeof(ITapeDevice)) != null;
-		}
-
 		private void menuHelpAbout_Click(object sender, EventArgs e)
 		{
 			using (FormAbout form = new FormAbout())
@@ -594,19 +588,8 @@ namespace ZXMAK2.Controls
 			renderVideo.VBlankSync = menuViewVBlankSync.Checked;
 			renderVideo.DisplayIcon = menuViewDisplayIcon.Checked;
 			renderVideo.DebugInfo = menuViewDebugInfo.Checked;
-			try
-			{
-				RegistryKey rkey = Registry.CurrentUser.CreateSubKey("SOFTWARE\\ZXMAK2");
-				rkey.SetValue("RenderSmoothing", renderVideo.Smoothing ? 1 : 0, RegistryValueKind.DWord);
-				rkey.SetValue("RenderNoFlic", renderVideo.NoFlic ? 1 : 0, RegistryValueKind.DWord);
-				rkey.SetValue("RenderKeepProportion", renderVideo.KeepProportion ? 1 : 0, RegistryValueKind.DWord);
-				rkey.SetValue("RenderVBlankSync", renderVideo.VBlankSync ? 1 : 0, RegistryValueKind.DWord);
-				rkey.SetValue("RenderDisplayIcon", renderVideo.DisplayIcon ? 1 : 0, RegistryValueKind.DWord);
-			}
-			catch (Exception ex)
-			{
-				LogAgent.Error(ex);
-			}
+			
+			saveRenderSetting();
 		}
 
 		#endregion
@@ -671,6 +654,8 @@ namespace ZXMAK2.Controls
 				saveClientSize();
 		}
 
+		#region Save/Load Registry Settings
+
 		private void saveClientSize()
 		{
 			try
@@ -713,6 +698,23 @@ namespace ZXMAK2.Controls
 			ClientSize = new Size(640, 480);
 		}
 
+		private void saveRenderSetting()
+		{
+			try
+			{
+				RegistryKey rkey = Registry.CurrentUser.CreateSubKey("SOFTWARE\\ZXMAK2");
+				rkey.SetValue("RenderSmoothing", renderVideo.Smoothing ? 1 : 0, RegistryValueKind.DWord);
+				rkey.SetValue("RenderNoFlic", renderVideo.NoFlic ? 1 : 0, RegistryValueKind.DWord);
+				rkey.SetValue("RenderKeepProportion", renderVideo.KeepProportion ? 1 : 0, RegistryValueKind.DWord);
+				rkey.SetValue("RenderVBlankSync", renderVideo.VBlankSync ? 1 : 0, RegistryValueKind.DWord);
+				rkey.SetValue("RenderDisplayIcon", renderVideo.DisplayIcon ? 1 : 0, RegistryValueKind.DWord);
+			}
+			catch (Exception ex)
+			{
+				LogAgent.Error(ex);
+			}
+		}
+
 		private void loadRenderSetting()
 		{
 			try
@@ -742,6 +744,8 @@ namespace ZXMAK2.Controls
 				LogAgent.Error(ex);
 			}
 		}
+
+		#endregion
 
 		private void FormMain_DragEnter(object sender, DragEventArgs e)
 		{
@@ -813,11 +817,9 @@ namespace ZXMAK2.Controls
 			try
 			{
 				string fileName = string.Empty;
-				using (MemoryStream ms = new MemoryStream())
+				byte[] data = downloadUri(uri, out fileName);
+				using (MemoryStream ms = new MemoryStream(data))
 				{
-					byte[] data = downloadUri(uri, out fileName);
-					ms.Write(data, 0, data.Length);
-					ms.Seek(0, SeekOrigin.Begin);
 					OpenStream(fileName, ms);
 				}
 			}
