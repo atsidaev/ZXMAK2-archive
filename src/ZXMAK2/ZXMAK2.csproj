@@ -170,6 +170,7 @@
     <Compile Include="Engine\Devices\Disk\BetaDiskInterfaceExt.cs" />
     <Compile Include="Engine\Devices\Disk\BetaDiskInterfaceQuorum.cs" />
     <Compile Include="Engine\Devices\KempstonJoystick.cs" />
+    <Compile Include="Hardware\SpectrumPlus3\MemoryPlus3.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryAtm450.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryAtm710.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryBase.cs" />
@@ -181,6 +182,7 @@
     <Compile Include="Engine\Devices\Memory\MemorySpectrum48.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryQuorum256.cs" />
     <Compile Include="Engine\Devices\KeyboardQuorum.cs" />
+    <Compile Include="Hardware\SpectrumPlus3\PrinterPlus3.cs" />
     <Compile Include="Engine\Devices\SmucDevice.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -227,6 +229,7 @@
     <Compile Include="Engine\Devices\Ula\UlaScorpion.cs" />
     <Compile Include="Engine\Z80\DasmUtils.cs" />
     <Compile Include="Engine\Z80\Z80FXCBops.cs" />
+    <Compile Include="Hardware\SpectrumPlus3\UlaPlus3.cs" />
     <Compile Include="LogAgent.cs" />
     <Compile Include="MDX\DirectKeyboard.cs" />
     <Compile Include="MDX\DirectMouse.cs" />

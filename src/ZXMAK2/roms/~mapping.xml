@@ -12,6 +12,12 @@
 		<Page name="128" image="128-0.rom"/>
 		<Page name="SOS" image="128-1.rom"/>
 	</Model>
+	<Model name="PLUS3">
+		<Page name="128" image="PLUS3/plus3-0.rom"/>
+		<Page name="SYS" image="PLUS3/plus3-1.rom"/>
+		<Page name="DOS" image="PLUS3/plus3-2.rom"/>
+		<Page name="SOS" image="PLUS3/plus3-3.rom"/>
+	</Model>
 	<Model name="ATM450">
 		<Page name="128" image="atm103rs.rom" offset="0x8000" />
 		<Page name="SOS" image="atm103rs.rom" offset="0xC000" />

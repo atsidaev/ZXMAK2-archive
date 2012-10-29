@@ -23,7 +23,8 @@ namespace ZXMAK2.Engine.Devices
 			IMemoryDevice memory = (IMemoryDevice)bmgr.FindDevice(typeof(IMemoryDevice));
 			initTiming(m_sampleRate, ula.FrameTactCount);
 
-			if (memory is ZXMAK2.Engine.Devices.Memory.MemorySpectrum128)
+			if (memory is ZXMAK2.Engine.Devices.Memory.MemorySpectrum128 ||
+				memory is ZXMAK2.Hardware.SpectrumPlus3.MemoryPlus3)
 			{
 				bmgr.SubscribeWRIO(0xC002, 0xC000, writePortAddr);   // #FFFD (reg#)
 				bmgr.SubscribeRDIO(0xC002, 0xC000, readPortData);    // #FFFD (rd data/reg#)
