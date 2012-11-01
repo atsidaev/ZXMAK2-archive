@@ -44,7 +44,7 @@ namespace ZXMAK2.Hardware.SpectrumPlus3
 			c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
 			c_frameTactCount = 70908;
 			c_ulaBorder4T = true;
-			c_ulaBorder4Tstage = 2;
+			c_ulaBorder4Tstage = 1;
 
 			c_ulaBorderTop = 55;      //56
 			c_ulaBorderBottom = 56;   //
