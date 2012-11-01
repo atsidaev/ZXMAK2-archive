@@ -309,7 +309,11 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 			// very ugly, because there is no option for custom configuration machine
 			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
 			header.MachineId = MachineId.ZXSTMID_128K;
-			if(memory.RamPages.Length!=8)
+			if (memory is ZXMAK2.Hardware.SpectrumPlus3.MemoryPlus3)
+			{	
+				header.MachineId = MachineId.ZXSTMID_PLUS3;
+			}
+			else if (memory.RamPages.Length != 8)
 			{
 				header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
 				if (memory is ZXMAK2.Engine.Devices.Memory.MemoryPentagon512)
