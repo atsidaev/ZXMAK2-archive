@@ -162,7 +162,7 @@ namespace ZXMAK2.Hardware.SpectrumPlus3
 
             // build early model table...
             m_contention = new int[c_frameTactCount];
-            int[] byteContention = new int[] { 6, 5, 4, 3, 2, 1, 0, 0, };
+            int[] byteContention = new int[] { 0, 7, 6, 5, 4, 3, 2, 1, };
             for (int t = 0; t < c_frameTactCount; t++)
             {
                 int shifted = t - c_ulaIntBegin;
