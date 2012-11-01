@@ -13,11 +13,11 @@ using ZXMAK2.Engine.Devices.Ula;
 
 namespace ZXMAK2.Hardware.SpectrumPlus3
 {
-    public class UlaPlus3_Early : UlaDeviceBase
+    public class UlaPlus3 : UlaDeviceBase
     {
         #region IBusDevice
 
-        public override string Name { get { return "ZX Spectrum +3 [early model]"; } }
+		public override string Name { get { return "ZX Spectrum +2A/+3"; } }
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -33,7 +33,7 @@ namespace ZXMAK2.Hardware.SpectrumPlus3
 
         #endregion
 
-		public UlaPlus3_Early()
+		public UlaPlus3()
         {
             // ZX Spectrum +3
             // Total Size:          //+ 456 x 311
@@ -162,7 +162,7 @@ namespace ZXMAK2.Hardware.SpectrumPlus3
 
             // build early model table...
             m_contention = new int[c_frameTactCount];
-            int[] byteContention = new int[] { 0, 7, 6, 5, 4, 3, 2, 1, };
+            int[] byteContention = new int[] { 1, 0, 7, 6, 5, 4, 3, 2, };
             for (int t = 0; t < c_frameTactCount; t++)
             {
                 int shifted = t - c_ulaIntBegin;
@@ -232,16 +232,5 @@ namespace ZXMAK2.Hardware.SpectrumPlus3
         //}
         //[System.Runtime.InteropServices.DllImport("user32")]
         //private static extern short GetKeyState(int vKey);
-    }
-
-    public class UlaPlus3 : UlaPlus3_Early
-    {
-        public override string Name { get { return "ZX Spectrum +3 [late model]"; } }
-
-        public UlaPlus3()
-        {
-            c_ulaFirstPaperTact += 1;
-            c_ulaBorder4Tstage = (c_ulaBorder4Tstage + 1) & 3;
-        }
     }
 }
