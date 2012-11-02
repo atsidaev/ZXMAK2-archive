@@ -47,6 +47,7 @@
     <None Include="app.config" />
     <EmbeddedResource Include="testVideo.z80" />
     <EmbeddedResource Include="zexall.sna" />
+    <EmbeddedResource Include="testOutFe.z80" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZXMAK2\ZXMAK2.csproj">
