@@ -52,7 +52,7 @@ namespace ZXMAK2.Hardware.SpectrumPlus3
 			c_ulaBorderRightT = 24;   //32T
 
 			c_ulaIntBegin = 64 + 2;
-			c_ulaIntLength = 36;    // according to fuse
+			c_ulaIntLength = 32;    // according to fuse
 
 			c_ulaWidth = (c_ulaBorderLeftT + 128 + c_ulaBorderRightT) * 2;
 			c_ulaHeight = (c_ulaBorderTop + 192 + c_ulaBorderBottom);
@@ -69,7 +69,7 @@ namespace ZXMAK2.Hardware.SpectrumPlus3
 
 		protected override void WriteMemC000(ushort addr, byte value)
 		{
-			if ((m_pageC000 & 1) != 0 /*m_pageC000 == 1 || m_pageC000 == 3 || m_pageC000 == 5 || m_pageC000 == 7*/)
+			if ((m_pageC000 & 1) != 0)
 				contendMemory();
 			base.WriteMemC000(addr, value);
 		}
@@ -81,7 +81,7 @@ namespace ZXMAK2.Hardware.SpectrumPlus3
 
 		protected void ReadMemC000(ushort addr, ref byte value)
 		{
-			if ((m_pageC000 & 1) != 0 /*m_pageC000 == 1 || m_pageC000 == 3 || m_pageC000 == 5 || m_pageC000 == 7*/)
+			if ((m_pageC000 & 1) != 0)
 				contendMemory();
 		}
 
@@ -111,49 +111,12 @@ namespace ZXMAK2.Hardware.SpectrumPlus3
 
 		#endregion
 
-		private bool IsContended(int addr)
-		{
-			int test = addr & 0xC000;
-			return (test == 0x4000 || (test == 0xC000 && (m_pageC000 & 1) != 0/*(m_pageC000 == 1 || m_pageC000 == 3 || m_pageC000 == 5 || m_pageC000 == 7)*/));
-		}
-
-		private bool IsPortUla(int addr)
-		{
-			return (addr & 1) == 0;
-		}
-
 		#region The same as 48
 
 		private void contendMemory()
 		{
 			int frameTact = (int)(CPU.Tact % c_frameTactCount);
 			CPU.Tact += m_contention[frameTact];
-		}
-
-		private void contendPortEarly(int addr)
-		{
-			if (IsContended(addr))
-			{
-				int frameTact = (int)(CPU.Tact % c_frameTactCount);
-				CPU.Tact += m_contention[frameTact];
-			}
-		}
-
-		private void contendPortLate(int addr)
-		{
-			int shift = 1;
-			int frameTact = (int)((CPU.Tact + shift) % c_frameTactCount);
-
-			if (IsPortUla(addr))
-			{
-				CPU.Tact += m_contention[frameTact];
-			}
-			else if (IsContended(addr))
-			{
-				CPU.Tact += m_contention[frameTact]; frameTact += m_contention[frameTact]; frameTact++; frameTact %= c_frameTactCount;
-				CPU.Tact += m_contention[frameTact]; frameTact += m_contention[frameTact]; frameTact++; frameTact %= c_frameTactCount;
-				CPU.Tact += m_contention[frameTact]; frameTact += m_contention[frameTact]; frameTact++; frameTact %= c_frameTactCount;
-			}
 		}
 
 		protected override void OnTimingChanged()
