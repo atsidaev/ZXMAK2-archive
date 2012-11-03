@@ -134,6 +134,7 @@ namespace Test
 					return;
 				}
 			}
+			p128.BusManager.Disconnect();
 			ConsoleColor tmp2 = Console.ForegroundColor;
 			Console.ForegroundColor = ConsoleColor.Green;
 			Console.WriteLine("Sanity ULA {0} [{1}]:\tpassed", ula.GetType().Name, name);
@@ -335,6 +336,7 @@ namespace Test
 				}
 			}
 			p128.Loader.SaveFileName(string.Format("{0:D8}.PNG", frame));
+			p128.BusManager.Disconnect();
 		}
 
 		private static void ExecTests(string testName, int frameCount)
@@ -358,6 +360,7 @@ namespace Test
 			watch.Stop();
 			Console.WriteLine("{0}:\t{1} [ms]", testName, watch.ElapsedMilliseconds);
 			//p128.Loader.SaveFileName(testName);
+			p128.BusManager.Disconnect();
 		}
 
 		private static Stream GetTestStream(string testName)
