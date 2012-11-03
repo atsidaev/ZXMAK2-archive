@@ -486,12 +486,7 @@
   <ItemGroup>
     <None Include="Icons\Keyboard48k.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Engine\Bus\" />
-    <Folder Include="Engine\Devices\Disk\" />
-    <Folder Include="Engine\Devices\Memory\" />
-    <Folder Include="Engine\Devices\Ula\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
