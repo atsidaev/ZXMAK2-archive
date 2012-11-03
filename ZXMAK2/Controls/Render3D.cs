@@ -46,7 +46,27 @@ namespace ZXMAK2.Controls
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			RenderScene();
+			try
+			{
+				if (D3D != null)
+				{
+					RenderScene();
+				}
+				else
+				{
+					e.Graphics.FillRectangle(Brushes.Black, e.ClipRectangle);
+					e.Graphics.DrawImage(SystemIcons.Warning.ToBitmap(), new Point(10, 10));
+					e.Graphics.DrawString(
+						"Direct3D not initialized!",
+						new System.Drawing.Font(Font.FontFamily, 20),
+						Brushes.White,
+						new PointF(10 + SystemIcons.Warning.Width + 10, 10));
+				}
+			}
+			catch (Exception ex)
+			{
+				LogAgent.Error(ex);
+			}
 		}
 
 		private void init()
