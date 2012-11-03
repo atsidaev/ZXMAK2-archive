@@ -52,6 +52,7 @@ namespace ZXMAK2.Engine.Devices
 				return;
 			iorqge = false;
 			int b = MouseState != null ? MouseState.Buttons : 0;
+			b = ((b & 1) << 1) | ((b & 2) >> 1) | (b & 0xFC);			// D0 - right, D1 - left, D2 - middle
 			value = (byte)(b ^ 0xFF);     //  Kempston mouse buttons
         }
 
