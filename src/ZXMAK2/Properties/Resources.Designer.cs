@@ -67,6 +67,13 @@ namespace ZXMAK2.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Keyboard48k {
+            get {
+                object obj = ResourceManager.GetObject("Keyboard48k", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap NextIcon {
             get {
                 object obj = ResourceManager.GetObject("NextIcon", resourceCulture);

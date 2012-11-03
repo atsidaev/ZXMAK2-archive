@@ -471,6 +471,25 @@ namespace ZXMAK2.Controls
 				form.ShowDialog();
 		}
 
+		private void menuHelpKeyboard_Click(object sender, EventArgs e)
+		{
+			FormKeyboardHelp form = (FormKeyboardHelp)menuHelpKeyboard.Tag;
+			if (form == null)
+			{
+				form = new FormKeyboardHelp();
+				form.FormClosed += new FormClosedEventHandler(delegate(object s1, FormClosedEventArgs e1)
+				{
+					menuHelpKeyboard.Tag = null;
+				});
+				menuHelpKeyboard.Tag = form;
+				form.Show(this);
+			}
+			else
+			{
+				form.Activate();
+			}
+		}
+
 		private void menuVm_Popup(object sender, EventArgs e)
 		{
 			menuVmPause.Text = m_vm.IsRunning ? "Pause" : "Resume";
@@ -588,7 +607,7 @@ namespace ZXMAK2.Controls
 			renderVideo.VBlankSync = menuViewVBlankSync.Checked;
 			renderVideo.DisplayIcon = menuViewDisplayIcon.Checked;
 			renderVideo.DebugInfo = menuViewDebugInfo.Checked;
-			
+
 			saveRenderSetting();
 		}
 

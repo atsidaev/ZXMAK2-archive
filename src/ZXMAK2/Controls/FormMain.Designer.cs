@@ -59,6 +59,8 @@
 			this.menuVmSettings = new System.Windows.Forms.MenuItem();
 			this.menuTools = new System.Windows.Forms.MenuItem();
 			this.menuHelp = new System.Windows.Forms.MenuItem();
+			this.menuHelpKeyboard = new System.Windows.Forms.MenuItem();
+			this.menuItem4 = new System.Windows.Forms.MenuItem();
 			this.menuHelpAbout = new System.Windows.Forms.MenuItem();
 			this.renderVideo = new ZXMAK2.Controls.RenderVideo();
 			this.SuspendLayout();
@@ -265,12 +267,25 @@
 			// 
 			this.menuHelp.Index = 4;
 			this.menuHelp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuHelpKeyboard,
+            this.menuItem4,
             this.menuHelpAbout});
 			this.menuHelp.Text = "Help";
 			// 
+			// menuHelpKeyboard
+			// 
+			this.menuHelpKeyboard.Index = 0;
+			this.menuHelpKeyboard.Text = "Keyboard Help";
+			this.menuHelpKeyboard.Click += new System.EventHandler(this.menuHelpKeyboard_Click);
+			// 
+			// menuItem4
+			// 
+			this.menuItem4.Index = 1;
+			this.menuItem4.Text = "-";
+			// 
 			// menuHelpAbout
 			// 
-			this.menuHelpAbout.Index = 0;
+			this.menuHelpAbout.Index = 2;
 			this.menuHelpAbout.Text = "About";
 			this.menuHelpAbout.Click += new System.EventHandler(this.menuHelpAbout_Click);
 			// 
@@ -344,6 +359,8 @@
         private System.Windows.Forms.MenuItem menuViewDisplayIcon;
         private System.Windows.Forms.MenuItem menuViewDebugInfo;
 		private System.Windows.Forms.MenuItem menuViewNoFlic;
+		private System.Windows.Forms.MenuItem menuHelpKeyboard;
+		private System.Windows.Forms.MenuItem menuItem4;
     }
 }
 
