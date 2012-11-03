@@ -149,13 +149,18 @@ namespace ZXMAK2.Engine.Devices
 			}
 		}
 
+		protected override void BeginFrame()
+		{
+			base.BeginFrame();
+			m_iconTape.Visible = false;
+		}
+
 		protected override void EndFrame()
 		{
 			//ushort val = tape_bit(m_cpu.Tact) ? m_dacValue1 : m_dacValue0;
 			//UpdateDAC(val, val);
 			base.EndFrame();
 			detectorFrame();
-			m_iconTape.Visible = m_detectCounter >= 8 && m_detectTimeOut >= 0;
 		}
 		
 		#endregion
@@ -422,6 +427,7 @@ namespace ZXMAK2.Engine.Devices
 				}
 				if (diffCount == 1 && (diffValue == 1 || diffValue == -1))
 				{
+					m_iconTape.Visible = true;
 					m_detectCounter++;
 					if (m_detectCounter >= 8 && m_autoPlay)
 					{
@@ -441,17 +447,12 @@ namespace ZXMAK2.Engine.Devices
 
 		private void detectorFrame()
 		{
-			if (m_detectTimeOut > 0)
+			if (m_isPlay && m_autoPlay)
+			{
 				m_detectTimeOut--;
-			if (m_detectTimeOut < 0 && m_isPlay && m_autoPlay)
-				Stop();
-
-			//if (m_isPlay && m_autoPlay)
-			//{
-			//    m_detectTimeOut--;
-			//    if (m_detectTimeOut < 0)
-			//        Stop();
-			//}
+				if (m_detectTimeOut < 0)
+					Stop();
+			}
 		}
 
 		#endregion
