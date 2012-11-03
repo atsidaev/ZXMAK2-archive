@@ -15,7 +15,7 @@ using ZXMAK2.Engine.Z80;
 
 namespace ZXMAK2.Engine.Devices
 {
-	public class TapeDevice : BusDeviceBase, ITapeDevice, ISoundRenderer, IConfigurable, IGuiExtension
+	public class TapeDevice : SoundRendererDeviceBase, ITapeDevice, IGuiExtension
 	{
 		#region IBusDevice
 
@@ -25,30 +25,19 @@ namespace ZXMAK2.Engine.Devices
 
 		public override void BusInit(IBusManager bmgr)
 		{
+			base.BusInit(bmgr);
 			m_cpu = bmgr.CPU;
 			m_memory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
-			IUlaDevice ula = (IUlaDevice)bmgr.FindDevice(typeof(IUlaDevice));
-			m_frameTactCount = ula.FrameTactCount;
 
 			bmgr.SubscribeRDIO(0x0001, 0x0000, readPortFE);
 
 			bmgr.SubscribePreCycle(busPreCycle);
-			bmgr.SubscribeBeginFrame(busBeginFrame);
-			bmgr.SubscribeEndFrame(busEndFrame);
 
 			bmgr.AddSerializer(new TapSerializer(this));
 			bmgr.AddSerializer(new TzxSerializer(this));
 			bmgr.AddSerializer(new CswSerializer(this));
 			bmgr.AddSerializer(new WavSerializer(this));
 			bmgr.RegisterIcon(m_iconTape);
-		}
-
-		public override void BusConnect()
-		{
-		}
-
-		public override void BusDisconnect()
-		{
 		}
 
 		#endregion
@@ -69,48 +58,30 @@ namespace ZXMAK2.Engine.Devices
 
 		#endregion
 
-		#region ISoundRenderer Members
-
-		public uint[] AudioBuffer
-		{
-			get { return m_audioBuffer; }
-		}
-
-		public int Volume
-		{
-			get { return m_volume; }
-			set
-			{
-				if (value < 0)
-					value = 0;
-				if (value > 100)
-					value = 100;
-				m_volume = value;
-				m_dacValue0 = 0;
-				m_dacValue1 = (uint)((0x1FFF * m_volume) / 100);
-			}
-		}
-
-		#endregion
-
 		#region IConfigurable
 
-		public void LoadConfig(XmlNode itemNode)
+		public override void LoadConfig(XmlNode itemNode)
 		{
-			Volume = Utils.GetXmlAttributeAsInt32(itemNode, "volume", Volume);
+			base.LoadConfig(itemNode);
 			UseTraps = Utils.GetXmlAttributeAsBool(itemNode, "useTraps", UseTraps);
 			UseAutoPlay = Utils.GetXmlAttributeAsBool(itemNode, "useAutoPlay", UseAutoPlay);
 		}
 
-		public void SaveConfig(XmlNode itemNode)
+		public override void SaveConfig(XmlNode itemNode)
 		{
-			Utils.SetXmlAttribute(itemNode, "volume", Volume);
+			base.SaveConfig(itemNode);
 			Utils.SetXmlAttribute(itemNode, "useTraps", UseTraps);
 			Utils.SetXmlAttribute(itemNode, "useAutoPlay", UseAutoPlay);
 		}
 
 		#endregion
 
+		protected override void OnVolumeChanged(int oldVolume, int newVolume)
+		{
+			m_dacValue0 = 0;
+			m_dacValue1 = (ushort)((0x1FFF * newVolume) / 100);
+		}
+		
 		#region Bus Handlers
 
 		private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
@@ -133,7 +104,8 @@ namespace ZXMAK2.Engine.Devices
 			//bmgr.SubscribeRDMEM_M1(0xFFFF, 0x056B, tapeTrap);
 			//bmgr.SubscribeRDMEM_M1(0xFFFF, 0x059E, tapeTrap);
 
-			flushAudio(frameTact);
+			ushort val = tape_bit(m_cpu.Tact) ? m_dacValue1 : m_dacValue0;
+			UpdateDAC(val, val);
 
 			ushort addr = m_cpu.regs.PC;
 			if (!UseTraps || !m_memory.IsRom48 || !(addr == 0x056B || addr == 0x059E))
@@ -177,18 +149,15 @@ namespace ZXMAK2.Engine.Devices
 			}
 		}
 
-		private void busBeginFrame()
+		protected override void EndFrame()
 		{
-			m_samplePos = 0;
-		}
-
-		private void busEndFrame()
-		{
-			flushAudio(m_frameTactCount);
+			//ushort val = tape_bit(m_cpu.Tact) ? m_dacValue1 : m_dacValue0;
+			//UpdateDAC(val, val);
+			base.EndFrame();
 			detectorFrame();
-			m_iconTape.Visible = m_detectCounter >= 8;
+			m_iconTape.Visible = m_detectCounter >= 8 && m_detectTimeOut >= 0;
 		}
-
+		
 		#endregion
 
 		#region private data
@@ -199,12 +168,8 @@ namespace ZXMAK2.Engine.Devices
 		private bool m_autoPlay = true;
 
 		// sound related
-		private uint[] m_audioBuffer = new uint[882];
-		private int m_volume = 100;
-		private uint m_dacValue0 = 0;
-		private uint m_dacValue1 = 0x1FFF;
-		private int m_frameTactCount;
-		private int m_samplePos = 0;
+		private ushort m_dacValue0 = 0;
+		private ushort m_dacValue1 = 0x1FFF;
 
 		// data related
 		private int c_Z80FQ = 3500000;
@@ -226,7 +191,7 @@ namespace ZXMAK2.Engine.Devices
 
 		public TapeDevice()
 		{
-			Volume = 5;
+			Volume = 20;
 		}
 
 
@@ -365,28 +330,6 @@ namespace ZXMAK2.Engine.Devices
 
 		#region private methods
 
-		private unsafe void flushAudio(int frameTact)
-		{
-			int tp = (m_audioBuffer.Length * frameTact / m_frameTactCount);
-			if (tp > m_audioBuffer.Length) tp = m_audioBuffer.Length;
-			if (tp > m_samplePos)
-			{
-				uint val = m_dacValue0;
-				if (tape_bit(m_cpu.Tact))
-					val = m_dacValue1;
-				val = val | (val << 16);
-				//if (_tapeOutSoundEnable)
-				//{
-				//    if ((_portFE & 0x08) != 0)    // tape output
-				//        val += 0x1FFF;
-				//}
-
-				fixed (uint* pAudioBuffer = m_audioBuffer)
-					for (; m_samplePos < tp; m_samplePos++)
-						pAudioBuffer[m_samplePos] = val;
-			}
-		}
-
 		private bool tape_bit(long globalTact)
 		{
 			int delta = (int)(globalTact - m_lastTact);
@@ -498,12 +441,17 @@ namespace ZXMAK2.Engine.Devices
 
 		private void detectorFrame()
 		{
-			if (m_isPlay && m_autoPlay)
-			{
+			if (m_detectTimeOut > 0)
 				m_detectTimeOut--;
-				if (m_detectTimeOut < 0)
-					Stop();
-			}
+			if (m_detectTimeOut < 0 && m_isPlay && m_autoPlay)
+				Stop();
+
+			//if (m_isPlay && m_autoPlay)
+			//{
+			//    m_detectTimeOut--;
+			//    if (m_detectTimeOut < 0)
+			//        Stop();
+			//}
 		}
 
 		#endregion
