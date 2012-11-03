@@ -170,6 +170,7 @@
     <Compile Include="Engine\Devices\Disk\BetaDiskInterfaceExt.cs" />
     <Compile Include="Engine\Devices\Disk\BetaDiskInterfaceQuorum.cs" />
     <Compile Include="Engine\Devices\KempstonJoystick.cs" />
+    <Compile Include="Engine\Devices\SoundRendererDeviceBase.cs" />
     <Compile Include="Hardware\SpectrumPlus3\MemoryPlus3.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryAtm450.cs" />
     <Compile Include="Engine\Devices\Memory\MemoryAtm710.cs" />
