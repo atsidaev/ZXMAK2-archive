@@ -47,7 +47,7 @@ namespace ZXMAK2.Engine.Devices.Memory
 			m_lock = (CMR0 & 0x20) != 0;
 			int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 			bool norom = (CMR1 & 0x01) != 0;
-			
+
 			int romPage = GetRomPage();
 			int ramPage = GetRamPage();
 
@@ -129,8 +129,12 @@ namespace ZXMAK2.Engine.Devices.Memory
 
 		private void busNmi()
 		{
-			// enable shadow rom
-			CMR1 |= 0x02;
+			// check DOSEN to avoid conflict with BDI
+			if (!DOSEN)
+			{
+				// enable shadow rom
+				CMR1 |= 0x02;
+			}
 		}
 
 		#endregion
@@ -233,7 +237,7 @@ namespace ZXMAK2.Engine.Devices.Memory
 		{
 			get { return !SYSEN && !DOSEN && (CMR0 & 0x10) != 0; }
 		}
-		
+
 		protected override void InitRam()
 		{
 			base.InitRam();
@@ -243,7 +247,7 @@ namespace ZXMAK2.Engine.Devices.Memory
 				m_romPages[i] = new byte[0x4000];
 		}
 
-		protected override void  LoadRom()
+		protected override void LoadRom()
 		{
 			LoadRomPack("Scorpion-ProfRom");
 		}
