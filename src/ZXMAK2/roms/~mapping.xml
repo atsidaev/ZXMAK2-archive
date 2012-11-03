@@ -28,6 +28,16 @@
 		<Page name="128" image="pentagon.rom" offset="0x0000" />
 		<Page name="SOS" image="pentagon.rom" offset="0x4000" />
 	</Model>
+	<Model name="Pentagon512">
+		<Page name="128" image="pentagon.rom" offset="0x0000" />
+		<Page name="SOS" image="pentagon.rom" offset="0x4000" />
+		<Page name="SYS" image="gluck.rom" offset="0x0000" />
+	</Model>
+	<Model name="Pentagon1024">
+		<Page name="128" image="pentagon.rom" offset="0x0000" />
+		<Page name="SOS" image="pentagon.rom" offset="0x4000" />
+		<Page name="SYS" image="gluck.rom" offset="0x0000" />
+	</Model>
 	<Model name="Profi">
 		<Page name="128" image="PROF-M.ROM" offset="0x8000" />
 		<Page name="SOS" image="PROF-M.ROM" offset="0xC000" />
