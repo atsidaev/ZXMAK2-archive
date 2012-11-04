@@ -63,9 +63,17 @@ using ZXMAK2.Engine.Z80;
 				//LogAgent.Info("RZX: get {0}:{1}=#{2:X2}  RZX={3} PC=#{4:X4}", m_playFrame, m_playIndex, frame.IOData[m_playIndex], m_cpu.RzxCounter, m_cpu.regs.PC);
 				return frame.InputData[m_playIndex++];
 			}
-			LogAgent.Warn("RZX: frame {0}  RZX={1} PC=#{2:X4} - unexpected end of input", m_playFrame, m_cpu.RzxCounter, m_cpu.regs.PC);
+			LogAgent.Warn(
+				"RZX: frame={0}/{1}  fetch={2}/{3}  input={4}/{5}  PC=#{6:X4} - unexpected end of input", 
+				Frame,
+				FrameCount,
+				Fetch,
+				FetchCount,
+				Input,
+				InputCount, 
+				m_cpu.regs.PC);
 			DialogProvider.Show(
-				string.Format("RZX playback stopped!\nReason: unexpected end of input - synchronization lost!\n\nFrame:\t{0}\nFetch:\t{1}\nPC:\t#{2:X4}", m_playFrame, m_cpu.RzxCounter, m_cpu.regs.PC),
+				string.Format("RZX playback stopped!\nReason: unexpected end of input - synchronization lost!\n\nFrame:\t{0}/{1}\nFetch:\t{2}/{3}\nInput:\t{4}/{5}\nPC:\t#{6:X4}", Frame, FrameCount, Fetch, FetchCount, Input, InputCount, m_cpu.regs.PC),
 				"RZX",
 				DlgButtonSet.OK,
 				DlgIcon.Error);
@@ -95,9 +103,17 @@ using ZXMAK2.Engine.Z80;
 			//LogAgent.Info("RZX: ---- int  RZX={0} PC=#{1:X4} ----", m_cpu.RzxCounter, m_cpu.regs.PC, m_busMgr.GetFrameTact());
 			if (m_playIndex != frame.InputData.Length)
 			{
-				LogAgent.Error("RZX: frame {0} interrupt at pos {1} of {2}", m_playFrame, m_playIndex, frame.InputData.Length);
+				LogAgent.Error(
+					"RZX: frame={0}/{1}  fetch={2}/{3}  input={4}/{5}  PC=#{6:X4} - unexpected frame",
+					Frame,
+					FrameCount,
+					Fetch,
+					FetchCount,
+					Input,
+					InputCount,
+					m_cpu.regs.PC);
 				DialogProvider.Show(
-					string.Format("RZX playback stopped!\nReason: unexpected frame - synchronization lost!\n\nFrame:\t{0}\nPosition:\t{1}\nTotal:\t{2}", m_playFrame, m_playIndex, frame.InputData.Length),
+					string.Format("RZX playback stopped!\nReason: unexpected frame - synchronization lost!\n\nFrame:\t{0}/{1}\nFetch:\t{2}/{3}\nInput:\t{4}/{5}\nPC:\t#{6:X4}", Frame, FrameCount, Fetch, FetchCount, Input, InputCount, m_cpu.regs.PC),
 					"RZX",
 					DlgButtonSet.OK,
 					DlgIcon.Error);
