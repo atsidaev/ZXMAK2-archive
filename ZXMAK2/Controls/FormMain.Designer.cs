@@ -52,6 +52,7 @@
 			this.menuViewDebugInfo = new System.Windows.Forms.MenuItem();
 			this.menuVm = new System.Windows.Forms.MenuItem();
 			this.menuVmPause = new System.Windows.Forms.MenuItem();
+			this.menuVmMaximumSpeed = new System.Windows.Forms.MenuItem();
 			this.menuItem3 = new System.Windows.Forms.MenuItem();
 			this.menuVmReset = new System.Windows.Forms.MenuItem();
 			this.menuVmNmi = new System.Windows.Forms.MenuItem();
@@ -216,6 +217,7 @@
 			this.menuVm.Index = 2;
 			this.menuVm.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuVmPause,
+            this.menuVmMaximumSpeed,
             this.menuItem3,
             this.menuVmReset,
             this.menuVmNmi,
@@ -230,31 +232,37 @@
 			this.menuVmPause.Text = "Pause";
 			this.menuVmPause.Click += new System.EventHandler(this.menuVmPause_Click);
 			// 
+			// menuVmMaximumSpeed
+			// 
+			this.menuVmMaximumSpeed.Index = 1;
+			this.menuVmMaximumSpeed.Text = "Maximum Speed";
+			this.menuVmMaximumSpeed.Click += new System.EventHandler(this.menuVmMaximumSpeed_Click);
+			// 
 			// menuItem3
 			// 
-			this.menuItem3.Index = 1;
+			this.menuItem3.Index = 2;
 			this.menuItem3.Text = "-";
 			// 
 			// menuVmReset
 			// 
-			this.menuVmReset.Index = 2;
+			this.menuVmReset.Index = 3;
 			this.menuVmReset.Text = "RESET    (Alt+Ctrl+Insert)";
 			this.menuVmReset.Click += new System.EventHandler(this.menuVmReset_Click);
 			// 
 			// menuVmNmi
 			// 
-			this.menuVmNmi.Index = 3;
+			this.menuVmNmi.Index = 4;
 			this.menuVmNmi.Text = "NMI";
 			this.menuVmNmi.Click += new System.EventHandler(this.menuVmNmi_Click);
 			// 
 			// menuItem1
 			// 
-			this.menuItem1.Index = 4;
+			this.menuItem1.Index = 5;
 			this.menuItem1.Text = "-";
 			// 
 			// menuVmSettings
 			// 
-			this.menuVmSettings.Index = 5;
+			this.menuVmSettings.Index = 6;
 			this.menuVmSettings.Text = "Settings";
 			this.menuVmSettings.Click += new System.EventHandler(this.menuVmOptions_Click);
 			// 
@@ -361,6 +369,7 @@
 		private System.Windows.Forms.MenuItem menuViewNoFlic;
 		private System.Windows.Forms.MenuItem menuHelpKeyboard;
 		private System.Windows.Forms.MenuItem menuItem4;
+		private System.Windows.Forms.MenuItem menuVmMaximumSpeed;
     }
 }
 

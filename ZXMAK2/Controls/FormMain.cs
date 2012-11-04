@@ -555,13 +555,6 @@ namespace ZXMAK2.Controls
 
 		private void menuView_Popup(object sender, EventArgs e)
 		{
-			menuViewSmoothing.Checked = renderVideo.Smoothing;
-			menuViewNoFlic.Checked = renderVideo.NoFlic;
-			menuViewKeepProportion.Checked = renderVideo.KeepProportion;
-			menuViewVBlankSync.Checked = renderVideo.VBlankSync;
-			menuViewDisplayIcon.Checked = renderVideo.DisplayIcon;
-			menuViewDebugInfo.Checked = renderVideo.DebugInfo;
-
 			menuViewFullscreen.Enabled = !Fullscreen;
 			menuViewFullscreen.Checked = Fullscreen;
 			menuViewWindowed.Enabled = Fullscreen;
@@ -600,14 +593,25 @@ namespace ZXMAK2.Controls
 			menuViewDisplayIcon.Checked = sender == menuViewDisplayIcon ? !menuViewDisplayIcon.Checked : menuViewDisplayIcon.Checked;
 			menuViewDebugInfo.Checked = sender == menuViewDebugInfo ? !menuViewDebugInfo.Checked : menuViewDebugInfo.Checked;
 
+			applyRenderSetting();
+			saveRenderSetting();
+		}
+
+		private void menuVmMaximumSpeed_Click(object sender, EventArgs e)
+		{
+			menuVmMaximumSpeed.Checked = !menuVmMaximumSpeed.Checked;
+			m_vm.MaxSpeed = menuVmMaximumSpeed.Checked;
+			applyRenderSetting();
+		}
+
+		private void applyRenderSetting()
+		{
 			renderVideo.Smoothing = menuViewSmoothing.Checked;
 			renderVideo.NoFlic = menuViewNoFlic.Checked;
 			renderVideo.KeepProportion = menuViewKeepProportion.Checked;
-			renderVideo.VBlankSync = menuViewVBlankSync.Checked;
+			renderVideo.VBlankSync = menuViewVBlankSync.Checked && !menuVmMaximumSpeed.Checked;
 			renderVideo.DisplayIcon = menuViewDisplayIcon.Checked;
 			renderVideo.DebugInfo = menuViewDebugInfo.Checked;
-
-			saveRenderSetting();
 		}
 
 		#endregion
@@ -721,11 +725,11 @@ namespace ZXMAK2.Controls
 			try
 			{
 				RegistryKey rkey = Registry.CurrentUser.CreateSubKey("SOFTWARE\\ZXMAK2");
-				rkey.SetValue("RenderSmoothing", renderVideo.Smoothing ? 1 : 0, RegistryValueKind.DWord);
-				rkey.SetValue("RenderNoFlic", renderVideo.NoFlic ? 1 : 0, RegistryValueKind.DWord);
-				rkey.SetValue("RenderKeepProportion", renderVideo.KeepProportion ? 1 : 0, RegistryValueKind.DWord);
-				rkey.SetValue("RenderVBlankSync", renderVideo.VBlankSync ? 1 : 0, RegistryValueKind.DWord);
-				rkey.SetValue("RenderDisplayIcon", renderVideo.DisplayIcon ? 1 : 0, RegistryValueKind.DWord);
+				rkey.SetValue("RenderSmoothing", menuViewSmoothing.Checked ? 1 : 0, RegistryValueKind.DWord);
+				rkey.SetValue("RenderNoFlic", menuViewNoFlic.Checked ? 1 : 0, RegistryValueKind.DWord);
+				rkey.SetValue("RenderKeepProportion", menuViewKeepProportion.Checked ? 1 : 0, RegistryValueKind.DWord);
+				rkey.SetValue("RenderVBlankSync", menuViewVBlankSync.Checked ? 1 : 0, RegistryValueKind.DWord);
+				rkey.SetValue("RenderDisplayIcon", menuViewDisplayIcon.Checked ? 1 : 0, RegistryValueKind.DWord);
 			}
 			catch (Exception ex)
 			{
@@ -746,15 +750,16 @@ namespace ZXMAK2.Controls
 					object objSync = rkey.GetValue("RenderVBlankSync");
 					object objIcon = rkey.GetValue("RenderDisplayIcon");
 					if (objSmooth != null && objSmooth is int)
-						renderVideo.Smoothing = (int)objSmooth != 0;
+						menuViewSmoothing.Checked = (int)objSmooth != 0;
 					if (objNoFlic != null && objNoFlic is int)
-						renderVideo.NoFlic = (int)objNoFlic != 0;
+						menuViewNoFlic.Checked = (int)objNoFlic != 0;
 					if (objKeep != null && objKeep is int)
-						renderVideo.KeepProportion = (int)objKeep != 0;
+						menuViewKeepProportion.Checked = (int)objKeep != 0;
 					if (objSync != null && objSync is int)
-						renderVideo.VBlankSync = (int)objSync != 0;
+						menuViewVBlankSync.Checked = (int)objSync != 0;
 					if (objIcon != null && objIcon is int)
-						renderVideo.DisplayIcon = (int)objIcon != 0;
+						menuViewDisplayIcon.Checked = (int)objIcon != 0;
+					applyRenderSetting();
 				}
 			}
 			catch (Exception ex)
