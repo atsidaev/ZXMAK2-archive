@@ -376,7 +376,7 @@ namespace ZXMAK2.Controls.Debugger
           // 
           this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
           this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-          this.ClientSize = new System.Drawing.Size(619, 366);
+          this.ClientSize = new System.Drawing.Size(619, 400);
           this.Controls.Add(this.panelDasm);
           this.Controls.Add(this.splitter2);
           this.Controls.Add(this.panelMem);

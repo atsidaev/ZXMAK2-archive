@@ -143,7 +143,12 @@ namespace ZXMAK2.Controls.Debugger
 			listState.Items.Add(" XFX=" + m_spectrum.CPU.XFX.ToString());
 			listState.Items.Add("Tact=" + m_spectrum.CPU.Tact.ToString());
 			listState.Items.Add("frmT=" + m_spectrum.GetFrameTact().ToString());
-			listState.Items.Add(" rzx=" + m_spectrum.CPU.RzxCounter.ToString());
+			if (m_spectrum.RzxState.IsPlayback)
+			{
+				listState.Items.Add(string.Format("rzxm={0}/{1}", m_spectrum.RzxState.Fetch, m_spectrum.RzxState.FetchCount));
+				listState.Items.Add(string.Format("rzxi={0}/{1}", m_spectrum.RzxState.Input, m_spectrum.RzxState.InputCount));
+				listState.Items.Add(string.Format("rzff={0}/{1}", m_spectrum.RzxState.Frame, m_spectrum.RzxState.FrameCount));
+			}
 		}
 
 		private void UpdateDASM(bool updatePC)

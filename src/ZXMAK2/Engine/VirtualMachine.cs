@@ -519,6 +519,15 @@ namespace ZXMAK2.Engine
 			}
 		}
 
+		public IRzxState RzxState
+		{
+			get
+			{
+				lock (m_sync)
+					return Spectrum.BusManager.RzxHandler;
+			}
+		}
+
 		#endregion
 	}
 }
