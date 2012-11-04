@@ -63,7 +63,7 @@ using ZXMAK2.Engine.Z80;
 				//LogAgent.Info("RZX: get {0}:{1}=#{2:X2}  RZX={3} PC=#{4:X4}", m_playFrame, m_playIndex, frame.IOData[m_playIndex], m_cpu.RzxCounter, m_cpu.regs.PC);
 				return frame.InputData[m_playIndex++];
 			}
-			LogAgent.Warn(
+			LogAgent.Error(
 				"RZX: frame={0}/{1}  fetch={2}/{3}  input={4}/{5}  PC=#{6:X4} - unexpected end of input", 
 				Frame,
 				FrameCount,
