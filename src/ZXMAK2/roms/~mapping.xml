@@ -44,6 +44,12 @@
 		<Page name="DOS" image="PROF-M.ROM" offset="0x4000" />
 		<Page name="SYS" image="PROF-M.ROM" offset="0x0000" />
 	</Model>
+	<Model name="Profi3XX">
+		<Page name="128" image="profi_v10.rom" offset="0x8000" />
+		<Page name="SOS" image="profi_v10.rom" offset="0xC000" />
+		<Page name="DOS" image="profi_v10.rom" offset="0x4000" />
+		<Page name="SYS" image="profi_v10.rom" offset="0x0000" />
+	</Model>
 	<Model name="Quorum">
 		<Page name="128" image="QU7V42.rom" offset="0x8000" />
 		<Page name="SOS" image="QU7V42.rom" offset="0xC000" />
