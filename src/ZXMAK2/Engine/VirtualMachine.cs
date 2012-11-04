@@ -176,26 +176,29 @@ namespace ZXMAK2.Engine
 
 		private void OnUpdateFrame(object sender, EventArgs e)
 		{
-			byte[] sndbuf = m_sound.LockBuffer();
-			while (m_spectrum.IsRunning && sndbuf == null)
+			if (!MaxSpeed)
 			{
-				Thread.Sleep(1);
-				sndbuf = m_sound.LockBuffer();
-			}
-			if (sndbuf != null)
-			{
-				try
+				byte[] sndbuf = m_sound.LockBuffer();
+				while (m_spectrum.IsRunning && sndbuf == null)
 				{
-					mixAudio(sndbuf);
+					Thread.Sleep(1);
+					sndbuf = m_sound.LockBuffer();
 				}
-				finally
+				if (sndbuf != null)
 				{
-					m_sound.UnlockBuffer(sndbuf);
+					try
+					{
+						mixAudio(sndbuf);
+					}
+					finally
+					{
+						m_sound.UnlockBuffer(sndbuf);
+					}
 				}
-			}
-			else
-			{
-				Thread.Sleep(1);
+				else
+				{
+					Thread.Sleep(1);
+				}
 			}
 			OnUpdateVideo();
 		}
@@ -232,6 +235,7 @@ namespace ZXMAK2.Engine
 		private unsafe DirectSound m_sound;
 
 		public int DebugFrameStartTact { get { return Spectrum.FrameStartTact; } }
+		public bool MaxSpeed = false;
 
 		private unsafe void runThreadProc()
 		{
