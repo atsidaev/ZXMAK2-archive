@@ -214,6 +214,7 @@
     <Compile Include="Interfaces\IMemoryDevice.cs" />
     <Compile Include="Interfaces\IGuiExtension.cs" />
     <Compile Include="Interfaces\IMouseDevice.cs" />
+    <Compile Include="Interfaces\IRzxState.cs" />
     <Compile Include="Interfaces\ISoundRenderer.cs" />
     <Compile Include="Interfaces\IUlaDevice.cs" />
     <Compile Include="Hardware\General\KempstonMouseDevice.cs" />

@@ -17,7 +17,7 @@ using ZXMAK2.Engine.Z80;
 		  public byte[] InputData { get; set; }
 	  }
 
-	  public class RzxHandler
+	  public class RzxHandler : IRzxState
 	  {
 		  private Z80CPU m_cpu;
 		  private BusManager m_busMgr;
@@ -121,5 +121,18 @@ using ZXMAK2.Engine.Z80;
 			  }
 			  return false;
 		  }
+
+		  #region IRzxState Members
+
+		  bool IRzxState.IsPlayback { get { return IsPlayback; } }
+		  bool IRzxState.IsRecording { get { return IsRecording; } }
+		  public int Frame { get { return IsPlayback ? m_playFrame : 0; } }
+		  public int Fetch { get { return IsPlayback ? m_cpu.RzxCounter : 0; } }
+		  public int Input { get { return IsPlayback ? m_playIndex : 0; } }
+		  public int FrameCount { get { return IsPlayback ? m_frameArray.Length : 0; } }
+		  public int FetchCount { get { return IsPlayback ? m_frameArray[m_playFrame].FetchCount : 0; } }
+		  public int InputCount { get { return IsPlayback ? m_frameArray[m_playFrame].InputData.Length : 0; } }
+
+		  #endregion
 	  }
   }
