@@ -1,9 +1,9 @@
 using System;
 
-using ZXMAK2.Engine.Devices.Disk;
+using ZXMAK2.Entities;
 
 
-namespace ZXMAK2.Engine.Interfaces
+namespace ZXMAK2.Interfaces
 {
 	public interface IBetaDiskDevice //: BusDeviceBase
 	{

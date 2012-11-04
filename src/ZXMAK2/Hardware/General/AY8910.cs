@@ -3,10 +3,11 @@
 /// Date: 13.04.2007
 using System;
 using System.Xml;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine;
 
-namespace ZXMAK2.Engine.Devices
+namespace ZXMAK2.Hardware.General
 {
 	public class AY8910 : BusDeviceBase, ISoundRenderer, IConfigurable, IAyDevice
 	{
@@ -23,8 +24,8 @@ namespace ZXMAK2.Engine.Devices
 			IMemoryDevice memory = (IMemoryDevice)bmgr.FindDevice(typeof(IMemoryDevice));
 			initTiming(m_sampleRate, ula.FrameTactCount);
 
-			if (memory is ZXMAK2.Engine.Devices.Memory.MemorySpectrum128 ||
-				memory is ZXMAK2.Hardware.SpectrumPlus3.MemoryPlus3)
+			if (memory is ZXMAK2.Hardware.Spectrum.MemorySpectrum128 ||
+				memory is ZXMAK2.Hardware.Spectrum.MemoryPlus3)
 			{
 				bmgr.SubscribeWRIO(0xC002, 0xC000, writePortAddr);   // #FFFD (reg#)
 				bmgr.SubscribeRDIO(0xC002, 0xC000, readPortData);    // #FFFD (rd data/reg#)

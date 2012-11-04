@@ -6,8 +6,8 @@ using System.Threading;
 using System.Windows.Forms;
 
 using ZXMAK2.Engine;
-using ZXMAK2.Engine.Devices.Disk;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Entities;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.Controls.Debugger

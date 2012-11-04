@@ -1,12 +1,11 @@
 ﻿using System;
 
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Ula;
-using ZXMAK2.Engine.Devices.Disk;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
 using ZXMAK2.Engine.Z80;
 
 
-namespace ZXMAK2.Engine.Devices.Memory
+namespace ZXMAK2.Hardware.Profi
 {
     public class MemoryProfi1024 : MemoryBase
     {

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Memory;
+using ZXMAK2.Interfaces;
 
-namespace ZXMAK2.Engine.Devices.Disk
+namespace ZXMAK2.Hardware.General
 {
     public class BetaDiskInterfaceExt : BetaDiskInterface
     {

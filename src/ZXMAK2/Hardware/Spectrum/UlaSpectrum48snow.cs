@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 
 
-namespace ZXMAK2.Engine.Devices.Ula
+namespace ZXMAK2.Hardware.Spectrum
 {
     public class UlaSpectrum48snow : UlaSpectrum48
     {

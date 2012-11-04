@@ -2,9 +2,10 @@
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
-namespace ZXMAK2.Engine.Devices
+namespace ZXMAK2.Hardware.Profi
 {
 	public class CmosProfi : BusDeviceBase
 	{

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Ula;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
 
-namespace ZXMAK2.Engine.Devices.Memory
+namespace ZXMAK2.Hardware
 {
 	public abstract class MemoryBase : BusDeviceBase, IMemoryDevice, IGuiExtension
 	{

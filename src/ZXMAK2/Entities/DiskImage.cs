@@ -5,11 +5,11 @@ using System;
 using System.Collections;
 using System.IO;
 
-using ZXMAK2.Engine.Serializers;
+using ZXMAK2.Serializers;
 using System.Collections.Generic;
 
 
-namespace ZXMAK2.Engine.Devices.Disk
+namespace ZXMAK2.Entities
 {
 	public enum ModifyFlag
 	{
@@ -299,7 +299,7 @@ namespace ZXMAK2.Engine.Devices.Disk
 
 		public void Disconnect()
 		{
-			if (Present && !IsWP && ModifyFlag != Disk.ModifyFlag.None)
+			if (Present && !IsWP && ModifyFlag != ModifyFlag.None)
 				OnSaveDisk();
 			m_isConnected = false;
 		}

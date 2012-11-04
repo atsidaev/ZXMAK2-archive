@@ -4,9 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ZXMAK2.Engine.Z80;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Memory;
-using ZXMAK2.Engine.Devices.Ula;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.Hardware.Sprinter

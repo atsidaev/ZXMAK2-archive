@@ -5,10 +5,10 @@ using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
-using ZXMAK2.Engine.Bus;
-using ZXMAK2.Engine.Serializers;
+using ZXMAK2.Engine;
+using ZXMAK2.Serializers;
 
 
 namespace ZXMAK2.Engine
@@ -47,16 +47,16 @@ namespace ZXMAK2.Engine
             _bus.Init(_cpu, _loader, false);
             _bus.FrameReady += OnUpdateFrame;
             //default devices...
-			_bus.Add(new ZXMAK2.Engine.Devices.Memory.MemoryPentagon128());
-			_bus.Add(new ZXMAK2.Engine.Devices.Ula.UlaPentagon());
-            _bus.Add(new ZXMAK2.Engine.Devices.Disk.BetaDiskInterface());
-            _bus.Add(new ZXMAK2.Engine.Devices.AY8910());
-            _bus.Add(new ZXMAK2.Engine.Devices.BeeperDevice());
-            _bus.Add(new ZXMAK2.Engine.Devices.TapeDevice());
-            _bus.Add(new ZXMAK2.Engine.Devices.KeyboardDevice());
-            _bus.Add(new ZXMAK2.Engine.Devices.KempstonMouseDevice());
-            _bus.Add(new ZXMAK2.Engine.Devices.AyMouseDevice());
-            _bus.Add(new ZXMAK2.Engine.Devices.Debugger());
+			_bus.Add(new ZXMAK2.Hardware.Pentagon.MemoryPentagon128());
+			_bus.Add(new ZXMAK2.Hardware.Pentagon.UlaPentagon());
+            _bus.Add(new ZXMAK2.Hardware.General.BetaDiskInterface());
+            _bus.Add(new ZXMAK2.Hardware.General.AY8910());
+            _bus.Add(new ZXMAK2.Hardware.General.BeeperDevice());
+            _bus.Add(new ZXMAK2.Hardware.General.TapeDevice());
+            _bus.Add(new ZXMAK2.Hardware.General.KeyboardDevice());
+            _bus.Add(new ZXMAK2.Hardware.General.KempstonMouseDevice());
+            _bus.Add(new ZXMAK2.Hardware.General.AyMouseDevice());
+            _bus.Add(new ZXMAK2.Hardware.General.Debugger());
             _bus.Connect();
             _cpu.RST = true;
             _cpu.ExecCycle();

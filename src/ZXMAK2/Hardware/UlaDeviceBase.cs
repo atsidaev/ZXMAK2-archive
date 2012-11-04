@@ -2,12 +2,13 @@
 using System.IO;
 using System.Xml;
 using System.Drawing;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Serializers.ScreenshotSerializers;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Serializers.ScreenshotSerializers;
 using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine;
 
 
-namespace ZXMAK2.Engine.Devices.Ula
+namespace ZXMAK2.Hardware
 {
 	public abstract class UlaDeviceBase : BusDeviceBase, IUlaDevice
 	{

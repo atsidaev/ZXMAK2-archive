@@ -1,13 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using ZXMAK2.Engine.Interfaces;
 using System.Reflection;
-using System.IO;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
 namespace ZXMAK2.Controls.Configuration
 {

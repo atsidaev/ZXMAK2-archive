@@ -4,7 +4,7 @@
 using System;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectInput;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.MDX
@@ -92,7 +92,7 @@ namespace ZXMAK2.MDX
 				m_state = state;
 			}
 
-			public bool this[ZXMAK2.Engine.Interfaces.Key key] { get { return m_state[(Microsoft.DirectX.DirectInput.Key)key]; } }
+			public bool this[ZXMAK2.Interfaces.Key key] { get { return m_state[(Microsoft.DirectX.DirectInput.Key)key]; } }
 		}
 	}
 }

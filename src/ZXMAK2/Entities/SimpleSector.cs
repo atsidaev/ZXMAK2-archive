@@ -1,7 +1,7 @@
 using System;
 
 
-namespace ZXMAK2.Engine.Devices.Disk
+namespace ZXMAK2.Entities
 {
 	public class SimpleSector : Sector
 	{

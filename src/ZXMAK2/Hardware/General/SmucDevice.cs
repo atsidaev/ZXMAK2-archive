@@ -1,11 +1,12 @@
 ﻿using System;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using System.IO;
 using System.Text;
 using System.Xml;
+using ZXMAK2.Engine;
 
 
-namespace ZXMAK2.Engine.Devices.Ide
+namespace ZXMAK2.Hardware.General
 {
 	/// <summary>
 	/// http://zx.pk.ru/attachment.php?attachmentid=13640&d=1254911208

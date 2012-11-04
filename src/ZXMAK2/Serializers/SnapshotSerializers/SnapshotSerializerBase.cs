@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
-namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
+namespace ZXMAK2.Serializers.SnapshotSerializers
 {
 	public abstract class SnapshotSerializerBase : FormatSerializer
 	{

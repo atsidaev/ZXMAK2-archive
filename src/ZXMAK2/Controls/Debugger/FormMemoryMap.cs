@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using ZXMAK2.Engine.Devices.Memory;
+using ZXMAK2.Hardware;
 
 namespace ZXMAK2.Controls.Debugger
 {

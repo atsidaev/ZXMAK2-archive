@@ -4,10 +4,11 @@
 using System;
 using System.Xml;
 using System.Collections.Generic;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine;
 
-namespace ZXMAK2.Engine.Devices
+namespace ZXMAK2.Hardware
 {
 	public abstract class SoundRendererDeviceBase : BusDeviceBase, ISoundRenderer, IConfigurable
 	{
@@ -463,7 +464,7 @@ namespace ZXMAK2.Engine.Devices
 	//    {
 	//        m_fileStream.Seek(0, System.IO.SeekOrigin.End);
 	//        for (int i = 0; i < length; i++)
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(m_fileStream, buffer[i+offset]);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(m_fileStream, buffer[i+offset]);
 			
 	//        m_riffHdr.RiffSize = (uint)m_fileStream.Length-8;
 	//        m_riffChunkFact.value += (uint)length;
@@ -491,9 +492,9 @@ namespace ZXMAK2.Engine.Devices
 
 	//        public void Write(System.IO.FileStream stream)
 	//        {
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, riff_id);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, RiffSize);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wave_id);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, riff_id);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, RiffSize);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wave_id);
 	//        }
 
 	//        public const uint Size = 3*4;
@@ -519,16 +520,16 @@ namespace ZXMAK2.Engine.Devices
 
 	//        public void Write(System.IO.FileStream stream)
 	//        {
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
 				
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wFormatTag);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wChannels);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, dwSamplesPerSec);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, dwAvgBytesPerSec);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wBlockAlign);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wBitsPerSample);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, __zero);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wFormatTag);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wChannels);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, dwSamplesPerSec);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, dwAvgBytesPerSec);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wBlockAlign);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wBitsPerSample);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, __zero);
 	//        }
 
 	//        public const uint Size = 2*4 + 0x12;
@@ -548,9 +549,9 @@ namespace ZXMAK2.Engine.Devices
 
 	//        public void Write(System.IO.FileStream stream)
 	//        {
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, value);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, value);
 	//        }
 
 	//        public const uint Size = 2 * 4 + 4;
@@ -568,8 +569,8 @@ namespace ZXMAK2.Engine.Devices
 
 	//        public void Write(System.IO.FileStream stream)
 	//        {
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
-	//            ZXMAK2.Engine.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
+	//            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
 	//        }
 
 	//        public const uint Size = 2*4;

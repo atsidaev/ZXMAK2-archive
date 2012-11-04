@@ -5,10 +5,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-using ZXMAK2.Engine.Devices.Disk;
+using ZXMAK2.Entities;
 
 
-namespace ZXMAK2.Engine.Serializers.DiskSerializers
+namespace ZXMAK2.Serializers.DiskSerializers
 {
     public class ImgSerializer:FormatSerializer
     {
@@ -54,7 +54,7 @@ namespace ZXMAK2.Engine.Serializers.DiskSerializers
 //                    trackArray[m].AssignSectors(sectorList);
                 }
             }
-            _diskImage.ModifyFlag = ZXMAK2.Engine.Devices.Disk.ModifyFlag.None;
+            _diskImage.ModifyFlag = ZXMAK2.Entities.ModifyFlag.None;
         }
 
 
@@ -94,7 +94,7 @@ namespace ZXMAK2.Engine.Serializers.DiskSerializers
                     //_diskImage.GetTrackImage(i, m).
                 }
             }
-            _diskImage.ModifyFlag = ZXMAK2.Engine.Devices.Disk.ModifyFlag.None;
+            _diskImage.ModifyFlag = ZXMAK2.Entities.ModifyFlag.None;
 
 /*            for (int i = 0; stream.Position < stream.Length; i += 0x200)
             {

@@ -2,10 +2,11 @@ using System;
 using System.IO;
 
 using ZXMAK2.Engine.Z80;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
 
-namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
+namespace ZXMAK2.Serializers.SnapshotSerializers
 {
     public class ZxSerializer : SnapshotSerializerBase
 	{
@@ -79,8 +80,8 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 			_spec.CPU.regs.PC = (ushort)(hdr[0xB4] << 8 | hdr[0xB5]);
 
 			_spec.CPU.BINT = false;
-			_spec.CPU.XFX = Z80.OPXFX.NONE;
-			_spec.CPU.FX = Z80.OPFX.NONE;
+			_spec.CPU.XFX = OPXFX.NONE;
+			_spec.CPU.FX = OPFX.NONE;
 
 			_spec.CPU.IFF1 = _spec.CPU.IFF2 = (hdr[0x8E] & 1) != 0;
 			_spec.CPU.HALTED = (hdr[0xBD] & 1) != 0;

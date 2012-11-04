@@ -1,15 +1,14 @@
 ﻿using System;
+using System.IO;
+using System.Xml;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Reflection;
 
 using ZXMAK2.Engine;
-using ZXMAK2.Engine.Bus;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using ZXMAK2.Controls.Configuration;
-using System.Xml;
-using System.IO;
 
 
 namespace ZXMAK2.Controls
@@ -388,7 +387,7 @@ namespace ZXMAK2.Controls
             m_vm = vm;
 
             m_workBus = new BusManager();
-            m_workBus.Init(new Engine.Z80.Z80CPU(), new Engine.Serializers.LoadManager(null), true);
+            m_workBus.Init(new Engine.Z80.Z80CPU(), new ZXMAK2.Serializers.LoadManager(null), true);
             
             XmlDocument xml = new XmlDocument();
             XmlNode root = xml.AppendChild(xml.CreateElement("Bus"));

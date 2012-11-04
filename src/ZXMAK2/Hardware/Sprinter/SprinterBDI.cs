@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Z80;
-using ZXMAK2.Engine.Devices.Disk;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Serializers;
+using ZXMAK2.Entities;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Serializers;
 
 
 namespace ZXMAK2.Hardware.Sprinter

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Text;
-
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Ula;
+using ZXMAK2.Interfaces;
 
 
-namespace Plugins.Ula
+namespace ZXMAK2.Hardware.Clone
 {
     public class UlaDelta : UlaDeviceBase
     {

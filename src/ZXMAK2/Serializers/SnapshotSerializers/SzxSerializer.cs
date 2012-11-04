@@ -4,9 +4,10 @@ using System.Text;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
-namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
+namespace ZXMAK2.Serializers.SnapshotSerializers
 {
 	public class SzxSerializer : SnapshotSerializerBase
 	{
@@ -309,18 +310,20 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 			// very ugly, because there is no option for custom configuration machine
 			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
 			header.MachineId = MachineId.ZXSTMID_128K;
-			if (memory is ZXMAK2.Hardware.SpectrumPlus3.MemoryPlus3)
+			if (memory is ZXMAK2.Hardware.Spectrum.MemoryPlus3)
 			{	
 				header.MachineId = MachineId.ZXSTMID_PLUS3;
 			}
 			else if (memory.RamPages.Length != 8)
 			{
 				header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
-				if (memory is ZXMAK2.Engine.Devices.Memory.MemoryPentagon512)
+				if (memory is ZXMAK2.Hardware.Pentagon.MemoryPentagon512)
 					header.MachineId = MachineId.ZXSTMID_PENTAGON512;
-				else if (memory is ZXMAK2.Engine.Devices.Memory.MemoryScorpion1024)
+				else if (memory is ZXMAK2.Hardware.Pentagon.MemoryPentagon1024)
 					header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
-				else if (memory is ZXMAK2.Engine.Devices.Memory.MemoryScorpion256)
+				else if (memory is ZXMAK2.Hardware.Scorpion.MemoryScorpion1024)
+					header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
+				else if (memory is ZXMAK2.Hardware.Scorpion.MemoryScorpion256)
 					header.MachineId = MachineId.ZXSTMID_SCORPION;
 			}
             else if (memory.IsMap48)
@@ -328,8 +331,8 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
                 header.MachineId = MachineId.ZXSTMID_48K;
             }
             IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
-            if (ula.GetType() == typeof(ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early) ||
-                ula.GetType() == typeof(ZXMAK2.Engine.Devices.Ula.UlaSpectrum128_Early))
+            if (ula.GetType() == typeof(ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early) ||
+                ula.GetType() == typeof(ZXMAK2.Hardware.Spectrum.UlaSpectrum128_Early))
             {
                 header.Flags = (byte)(header.Flags & ~ZXSTMF_ALTERNATETIMINGS);
             }

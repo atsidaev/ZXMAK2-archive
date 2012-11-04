@@ -2,7 +2,7 @@ using System;
 using System.IO;
 
 
-namespace ZXMAK2.Engine.Serializers
+namespace ZXMAK2.Serializers
 {
 	public abstract class FormatSerializer
 	{

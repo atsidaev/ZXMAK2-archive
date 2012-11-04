@@ -1,7 +1,8 @@
 ﻿using System;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
-namespace ZXMAK2.Engine.Devices
+namespace ZXMAK2.Hardware.General
 {
     public class Debugger : BusDeviceBase, IJtagDevice, IGuiExtension
     {

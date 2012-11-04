@@ -2,7 +2,7 @@
 using System.Xml;
 
 
-namespace ZXMAK2.Engine.Interfaces
+namespace ZXMAK2.Interfaces
 {
     #region Comment
     /// <summary>

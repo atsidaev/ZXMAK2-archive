@@ -5,7 +5,7 @@ using ZXMAK2.Engine;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 
 namespace Test
 {
@@ -19,34 +19,34 @@ namespace Test
 				return;
 			}
 
-			SanityUla("NOP        ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early(), new byte[] { 0x00 }, s_patternUla48_Early_NOP);
-			SanityUla("DJNZ       ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early(), new byte[] { 0x10, 0x00 }, s_patternUla48_Early_DJNZ);
-			SanityUla("IN A,(#FE) ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early(), new byte[] { 0xDB, 0xFE }, s_patternUla48_Early_INAFE);
-			SanityUla("OUT (#FE),A", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early(), new byte[] { 0xD3, 0xFE }, s_patternUla48_Early_OUTAFE);
-			SanityUla("LD A,(HL)  ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early(), new byte[] { 0x7E }, s_patternUla48_Early_LDAHL);
-			SanityUla("IN A,(C)   ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early(), new byte[] { 0xED, 0x78 }, s_patternUla48_Early_INAC);
-			SanityUla("OUT (C),A  ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early(), new byte[] { 0xED, 0x79 }, s_patternUla48_Early_OUTCA);
-			SanityUla("BIT 7,A    ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early(), new byte[] { 0xCB, 0x7F }, s_patternUla48_Early_BIT7A);
-			SanityUla("BIT 7,(HL) ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early(), new byte[] { 0xCB, 0x7E }, s_patternUla48_Early_BIT7HL);
-			SanityUla("SET 7,(HL) ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48_Early(), new byte[] { 0xCB, 0xFE }, s_patternUla48_Early_SET7HL);
+			SanityUla("NOP        ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0x00 }, s_patternUla48_Early_NOP);
+			SanityUla("DJNZ       ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0x10, 0x00 }, s_patternUla48_Early_DJNZ);
+			SanityUla("IN A,(#FE) ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0xDB, 0xFE }, s_patternUla48_Early_INAFE);
+			SanityUla("OUT (#FE),A", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0xD3, 0xFE }, s_patternUla48_Early_OUTAFE);
+			SanityUla("LD A,(HL)  ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0x7E }, s_patternUla48_Early_LDAHL);
+			SanityUla("IN A,(C)   ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0xED, 0x78 }, s_patternUla48_Early_INAC);
+			SanityUla("OUT (C),A  ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0xED, 0x79 }, s_patternUla48_Early_OUTCA);
+			SanityUla("BIT 7,A    ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0xCB, 0x7F }, s_patternUla48_Early_BIT7A);
+			SanityUla("BIT 7,(HL) ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0xCB, 0x7E }, s_patternUla48_Early_BIT7HL);
+			SanityUla("SET 7,(HL) ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0xCB, 0xFE }, s_patternUla48_Early_SET7HL);
 
-			SanityUla("NOP        ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48(), new byte[] { 0x00 }, s_patternUla48_Late_NOP);
-			SanityUla("DJNZ       ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48(), new byte[] { 0x10, 0x00 }, s_patternUla48_Late_DJNZ);
-			SanityUla("IN A,(#FE) ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48(), new byte[] { 0xDB, 0xFE }, s_patternUla48_Late_INAFE);
-			SanityUla("OUT (#FE),A", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48(), new byte[] { 0xD3, 0xFE }, s_patternUla48_Late_OUTAFE);
-			SanityUla("LD A,(HL)  ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48(), new byte[] { 0x7E }, s_patternUla48_Late_LDAHL);
-			SanityUla("IN A,(C)   ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48(), new byte[] { 0xED, 0x78 }, s_patternUla48_Late_INAC);
-			SanityUla("OUT (C),A  ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48(), new byte[] { 0xED, 0x79 }, s_patternUla48_Late_OUTCA);
-			SanityUla("BIT 7,A    ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48(), new byte[] { 0xCB, 0x7F }, s_patternUla48_Late_BIT7A);
-			SanityUla("BIT 7,(HL) ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48(), new byte[] { 0xCB, 0x7E }, s_patternUla48_Late_BIT7HL);
-			SanityUla("SET 7,(HL) ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum48(), new byte[] { 0xCB, 0xFE }, s_patternUla48_Late_SET7HL);
+			SanityUla("NOP        ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48(), new byte[] { 0x00 }, s_patternUla48_Late_NOP);
+			SanityUla("DJNZ       ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48(), new byte[] { 0x10, 0x00 }, s_patternUla48_Late_DJNZ);
+			SanityUla("IN A,(#FE) ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48(), new byte[] { 0xDB, 0xFE }, s_patternUla48_Late_INAFE);
+			SanityUla("OUT (#FE),A", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48(), new byte[] { 0xD3, 0xFE }, s_patternUla48_Late_OUTAFE);
+			SanityUla("LD A,(HL)  ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48(), new byte[] { 0x7E }, s_patternUla48_Late_LDAHL);
+			SanityUla("IN A,(C)   ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48(), new byte[] { 0xED, 0x78 }, s_patternUla48_Late_INAC);
+			SanityUla("OUT (C),A  ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48(), new byte[] { 0xED, 0x79 }, s_patternUla48_Late_OUTCA);
+			SanityUla("BIT 7,A    ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48(), new byte[] { 0xCB, 0x7F }, s_patternUla48_Late_BIT7A);
+			SanityUla("BIT 7,(HL) ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48(), new byte[] { 0xCB, 0x7E }, s_patternUla48_Late_BIT7HL);
+			SanityUla("SET 7,(HL) ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48(), new byte[] { 0xCB, 0xFE }, s_patternUla48_Late_SET7HL);
 
-			SanityUla("NOP        ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum128(), new byte[] { 0x00 }, s_patternUla128_NOP);
-			SanityUla("INC HL     ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum128(), new byte[] { 0x23 }, s_patternUla128_INCHL);
-			SanityUla("LD A,(HL)  ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum128(), new byte[] { 0x7E }, s_patternUla128_LDA_HL_);
-			SanityUla("LD (HL),A  ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum128(), new byte[] { 0x77 }, s_patternUla128_LDA_HL_); // pattern the same as ld a,(hl)
-			SanityUla("OUT (C),A  ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum128(), new byte[] { 0xED, 0x79, 0x03 }, s_patternUla128_OUTCA);
-			SanityUla("IN A,(C)   ", new ZXMAK2.Engine.Devices.Ula.UlaSpectrum128(), new byte[] { 0xED, 0x78, 0x03 }, s_patternUla128_OUTCA); // pattern the same as out (c),a
+			SanityUla("NOP        ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum128(), new byte[] { 0x00 }, s_patternUla128_NOP);
+			SanityUla("INC HL     ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum128(), new byte[] { 0x23 }, s_patternUla128_INCHL);
+			SanityUla("LD A,(HL)  ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum128(), new byte[] { 0x7E }, s_patternUla128_LDA_HL_);
+			SanityUla("LD (HL),A  ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum128(), new byte[] { 0x77 }, s_patternUla128_LDA_HL_); // pattern the same as ld a,(hl)
+			SanityUla("OUT (C),A  ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum128(), new byte[] { 0xED, 0x79, 0x03 }, s_patternUla128_OUTCA);
+			SanityUla("IN A,(C)   ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum128(), new byte[] { 0xED, 0x78, 0x03 }, s_patternUla128_OUTCA); // pattern the same as out (c),a
 
 			Console.WriteLine("=====Engine Performance Benchmark (500 frames rendering time)=====");
 			Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
@@ -64,7 +64,7 @@ namespace Test
 
 		private static void SanityUla(string name, IUlaDevice ula, byte[] opcode, int[] pattern)
 		{
-			IMemoryDevice mem = new ZXMAK2.Engine.Devices.Memory.MemorySpectrum48();// MemoryPentagon128();
+			IMemoryDevice mem = new ZXMAK2.Hardware.Spectrum.MemorySpectrum48();// MemoryPentagon128();
 			SpectrumConcrete p128 = new SpectrumConcrete();
 			p128.Init();
 			p128.BusManager.Disconnect();

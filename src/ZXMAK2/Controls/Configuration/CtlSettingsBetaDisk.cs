@@ -1,15 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Disk;
-using ZXMAK2.Engine.Bus;
-using System.IO;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
+using ZXMAK2.Engine;
+using ZXMAK2.Hardware.General;
 
 
 namespace ZXMAK2.Controls.Configuration

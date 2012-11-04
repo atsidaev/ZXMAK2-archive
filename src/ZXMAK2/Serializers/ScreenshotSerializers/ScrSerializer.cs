@@ -2,10 +2,10 @@ using System;
 using System.IO;
 
 using ZXMAK2.Engine.Z80;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 
 
-namespace ZXMAK2.Engine.Serializers.ScreenshotSerializers
+namespace ZXMAK2.Serializers.ScreenshotSerializers
 {
 	public class ScrSerializer : FormatSerializer
 	{

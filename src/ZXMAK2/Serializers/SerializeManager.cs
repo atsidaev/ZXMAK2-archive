@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 
 
-namespace ZXMAK2.Engine.Serializers
+namespace ZXMAK2.Serializers
 {
 	public abstract class SerializeManager
 	{

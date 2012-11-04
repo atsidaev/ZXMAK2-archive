@@ -2,7 +2,7 @@
 using System.IO;
 using System.Drawing;
 
-namespace ZXMAK2.Engine.Interfaces
+namespace ZXMAK2.Interfaces
 {
 	public interface IUlaDevice //: BusDeviceBase
 	{

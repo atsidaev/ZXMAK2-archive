@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Ula;
+using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
 
-namespace ZXMAK2.Engine.Devices.Memory
+namespace ZXMAK2.Hardware.Atm
 {
     /*
     

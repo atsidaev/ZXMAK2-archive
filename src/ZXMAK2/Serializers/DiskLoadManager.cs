@@ -2,11 +2,11 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-using ZXMAK2.Engine.Devices.Disk;
-using ZXMAK2.Engine.Serializers.DiskSerializers;
+using ZXMAK2.Entities;
+using ZXMAK2.Serializers.DiskSerializers;
 
 
-namespace ZXMAK2.Engine.Serializers
+namespace ZXMAK2.Serializers
 {
 	public class DiskLoadManager : SerializeManager
 	{

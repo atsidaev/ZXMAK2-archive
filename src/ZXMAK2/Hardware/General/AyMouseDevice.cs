@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
-namespace ZXMAK2.Engine.Devices
+namespace ZXMAK2.Hardware.General
 {
     public class AyMouseDevice : BusDeviceBase, IMouseDevice
     {

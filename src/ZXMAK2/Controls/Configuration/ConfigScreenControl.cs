@@ -1,6 +1,6 @@
 ﻿using System;
-using ZXMAK2.Engine.Bus;
 using System.Windows.Forms;
+using ZXMAK2.Engine;
 
 
 namespace ZXMAK2.Controls.Configuration

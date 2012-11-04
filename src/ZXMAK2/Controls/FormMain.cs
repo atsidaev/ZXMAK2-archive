@@ -7,18 +7,17 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.ComponentModel;
-using Microsoft.Win32;
-
-using ZXMAK2.Engine;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Memory;
-using ZXMAK2.Controls;
-using ZXMAK2.Controls.Debugger;
-using ZXMAK2.MDX;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mime;
 using System.Collections.Specialized;
+using Microsoft.Win32;
+
+using ZXMAK2.Engine;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Controls;
+using ZXMAK2.Controls.Debugger;
+using ZXMAK2.MDX;
 
 
 namespace ZXMAK2.Controls

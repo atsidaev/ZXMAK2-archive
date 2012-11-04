@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace ZXMAK2.Engine.Devices.Disk
+namespace ZXMAK2.Entities
 {
 	public class SECHDR
 	{

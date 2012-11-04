@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ZXMAK2.Hardware.Pentagon;
 
-namespace ZXMAK2.Engine.Devices.Ula
+namespace ZXMAK2.Hardware.Clone
 {
     public class ZebestUla : UlaPentagon
     {
