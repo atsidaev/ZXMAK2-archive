@@ -36,7 +36,7 @@ namespace ZXMAK2.Hardware.Pentagon
 		protected override void UpdateMapping()
 		{
 			bool extMode = (CMR1 & 0x04) == 0;			// D2 - 0=extended memory mode; 1=lock 128K mode
-			bool norom = extMode && (CMR1 & 0x10) != 0;	// D3 - ram0 at 0000...3FFF
+			bool norom = (CMR1 & 0x10) != 0;			// D3 - ram0 at 0000...3FFF
 
 			m_lock = !extMode && (CMR0 & 0x20) != 0;
 			int ramPage = CMR0 & 7;
