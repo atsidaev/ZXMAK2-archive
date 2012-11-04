@@ -2,10 +2,11 @@ using System;
 using System.IO;
 
 using ZXMAK2.Engine.Z80;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
 
-namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
+namespace ZXMAK2.Serializers.SnapshotSerializers
 {
     public class Z80Serializer : SnapshotSerializerBase
 	{
@@ -106,8 +107,8 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 			_spec.CPU.regs.PC = (version == 1) ? getUInt16(hdr, Z80HDR_PC) : getUInt16(hdr1, Z80HDR1_PC);
 
 			_spec.CPU.BINT = false;
-			_spec.CPU.XFX = Z80.OPXFX.NONE;
-			_spec.CPU.FX = Z80.OPFX.NONE;
+			_spec.CPU.XFX = OPXFX.NONE;
+			_spec.CPU.FX = OPFX.NONE;
 			_spec.CPU.HALTED = false;
 
 			// CPU.Status...

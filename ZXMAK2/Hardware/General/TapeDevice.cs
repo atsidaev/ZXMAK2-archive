@@ -7,13 +7,15 @@ using System.Xml;
 using System.Text;
 using System.Collections.Generic;
 
-using ZXMAK2.Engine.Serializers;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Serializers.TapeSerializers;
+using ZXMAK2.Serializers;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Serializers.TapeSerializers;
 using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 
-namespace ZXMAK2.Engine.Devices
+namespace ZXMAK2.Hardware.General
 {
 	public class TapeDevice : SoundRendererDeviceBase, ITapeDevice, IGuiExtension
 	{

@@ -2,7 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 
-namespace ZXMAK2.Engine.Devices.Ula
+namespace ZXMAK2.Hardware.Profi
 {
     public class UlaProfi5XX : UlaProfi3XX
     {

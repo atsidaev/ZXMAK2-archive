@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ZXMAK2.Controls;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
 namespace ZXMAK2.Hardware.Sprinter
 {

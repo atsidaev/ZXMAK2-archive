@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Memory;
+using ZXMAK2.Interfaces;
 
-namespace ZXMAK2.Hardware.SpectrumPlus3
+namespace ZXMAK2.Hardware.Spectrum
 {
 	public class MemoryPlus3 : MemoryBase
 	{

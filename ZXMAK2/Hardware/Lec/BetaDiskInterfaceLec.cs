@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ZXMAK2.Engine.Devices.Disk;
+using ZXMAK2.Entities;
+using ZXMAK2.Hardware.General;
 
-namespace ZXMAK2.Engine.Devices
+namespace ZXMAK2.Hardware.Lec
 {
     public class BetaDiskInterfaceLec : BetaDiskInterface
     {

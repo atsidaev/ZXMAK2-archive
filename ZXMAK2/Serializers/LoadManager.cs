@@ -3,14 +3,15 @@ using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Serializers.ScreenshotSerializers;
-using ZXMAK2.Engine.Serializers.SnapshotSerializers;
-using ZXMAK2.Engine.Serializers.TapeSerializers;
-using ZXMAK2.Engine.Serializers.DiskSerializers;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Serializers.ScreenshotSerializers;
+using ZXMAK2.Serializers.SnapshotSerializers;
+using ZXMAK2.Serializers.TapeSerializers;
+using ZXMAK2.Serializers.DiskSerializers;
+using ZXMAK2.Engine;
 
 
-namespace ZXMAK2.Engine.Serializers
+namespace ZXMAK2.Serializers
 {
 	public class LoadManager : SerializeManager
 	{

@@ -2,8 +2,8 @@
 using System.Text;
 using System.Collections.Generic;
 
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
 
 namespace ZXMAK2.Hardware.Sprinter

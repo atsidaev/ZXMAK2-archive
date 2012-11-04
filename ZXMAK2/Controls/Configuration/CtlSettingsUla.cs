@@ -3,9 +3,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Bus;
-using ZXMAK2.Engine.Devices.Ula;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
+using ZXMAK2.Hardware;
 
 
 namespace ZXMAK2.Controls.Configuration

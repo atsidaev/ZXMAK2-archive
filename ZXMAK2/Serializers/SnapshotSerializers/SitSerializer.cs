@@ -1,9 +1,11 @@
 using System;
 using System.IO;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
+using ZXMAK2.Engine.Z80;
 
 
-namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
+namespace ZXMAK2.Serializers.SnapshotSerializers
 {
     public class SitSerializer : SnapshotSerializerBase
 	{
@@ -80,8 +82,8 @@ namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
 			_spec.CPU.regs._AF = getUInt16(hdr, 24);
 
 			_spec.CPU.BINT = false;
-			_spec.CPU.XFX = Z80.OPXFX.NONE;
-			_spec.CPU.FX = Z80.OPFX.NONE;
+			_spec.CPU.XFX = OPXFX.NONE;
+			_spec.CPU.FX = OPFX.NONE;
 			_spec.CPU.HALTED = false;
 
 			_spec.CPU.IFF1 = _spec.CPU.IFF2 = (hdr[26] & 1) != 0;    // ?

@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-namespace ZXMAK2.Engine.Devices.Ula
+namespace ZXMAK2.Hardware.Atm
 {
     public class UlaAtm450 : UlaDeviceBase
     {
@@ -342,7 +342,7 @@ namespace ZXMAK2.Engine.Devices.Ula
             m_ulaSGEN = new byte[256 * 8];
             try
             {
-                using (Stream stream = ZXMAK2.Engine.Devices.Memory.MemoryBase.GetRomFileStream("atm_sgen.rom"))
+                using (Stream stream = MemoryBase.GetRomFileStream("atm_sgen.rom"))
                     stream.Read(m_ulaSGEN, 0, m_ulaSGEN.Length);
             }
             catch(Exception ex)

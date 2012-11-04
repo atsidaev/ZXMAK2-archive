@@ -5,9 +5,9 @@ using System;
 using System.Xml;
 
 using ZXMAK2.Engine.Z80;
-using ZXMAK2.Engine.Serializers;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Bus;
+using ZXMAK2.Serializers;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
 
 namespace ZXMAK2.Engine

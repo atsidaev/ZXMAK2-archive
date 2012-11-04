@@ -3,13 +3,14 @@ using System.IO;
 using System.Xml;
 
 using ZXMAK2.Engine;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
-using ZXMAK2.Engine.Serializers;
+using ZXMAK2.Serializers;
+using ZXMAK2.Entities;
 
 
 
-namespace ZXMAK2.Engine.Devices.Disk
+namespace ZXMAK2.Hardware.General
 {
 	#region enums
 	public enum WDSTATE : byte

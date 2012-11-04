@@ -5,8 +5,9 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Controls
 {

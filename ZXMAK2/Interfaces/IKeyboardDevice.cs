@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZXMAK2.Engine.Interfaces
+namespace ZXMAK2.Interfaces
 {
     public interface IKeyboardDevice //: BusDeviceBase
     {

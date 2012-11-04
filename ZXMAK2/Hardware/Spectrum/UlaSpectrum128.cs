@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 
 // Contended memory info links:
 // 128: http://www.worldofspectrum.org/faq/reference/128kreference.htm
@@ -9,7 +7,7 @@ using ZXMAK2.Engine.Interfaces;
 // http://www.zxdesign.info/dynamicRam.shtml
 // examples: http://zxm.speccy.cz/realspec/
 
-namespace ZXMAK2.Engine.Devices.Ula
+namespace ZXMAK2.Hardware.Spectrum
 {
     public class UlaSpectrum128_Early : UlaDeviceBase
     {

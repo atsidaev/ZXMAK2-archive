@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace ZXMAK2.Engine.Serializers.ScreenshotSerializers
+namespace ZXMAK2.Serializers.ScreenshotSerializers
 {
     public class BmpSerializer : ScreenshotSerializerBase
     {

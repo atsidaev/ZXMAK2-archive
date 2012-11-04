@@ -7,10 +7,10 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 
-using ZXMAK2.Engine.Devices.Disk;
+using ZXMAK2.Entities;
 
 
-namespace ZXMAK2.Engine.Serializers.DiskSerializers
+namespace ZXMAK2.Serializers.DiskSerializers
 {
 	public class Td0Serializer : FormatSerializer
 	{

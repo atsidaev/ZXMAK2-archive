@@ -1,7 +1,7 @@
 ﻿using System;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 
-namespace ZXMAK2.Engine.Devices
+namespace ZXMAK2.Hardware.General
 {
 	public class BeeperDevice : SoundRendererDeviceBase
 	{

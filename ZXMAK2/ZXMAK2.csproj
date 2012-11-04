@@ -164,6 +164,8 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DialogProvider.cs" />
+    <Compile Include="Engine\BusDeviceBase.cs" />
+    <Compile Include="Entities\TapeBlock.cs" />
     <Compile Include="Hardware\General\AyMouseDevice.cs" />
     <Compile Include="Hardware\General\BeeperDevice.cs" />
     <Compile Include="Engine\BusManager.cs" />

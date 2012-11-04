@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
 
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Ula;
+using ZXMAK2.Interfaces;
 
 
-namespace ZXMAK2.Engine.Devices.Memory
+namespace ZXMAK2.Hardware.Pentagon
 {
     public class MemoryPentagon128 : MemoryBase
     {

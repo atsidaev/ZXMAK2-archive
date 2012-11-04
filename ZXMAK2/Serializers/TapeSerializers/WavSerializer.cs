@@ -3,11 +3,12 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Serializers.SnapshotSerializers;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Serializers.SnapshotSerializers;
+using ZXMAK2.Entities;
 
 
-namespace ZXMAK2.Engine.Serializers.TapeSerializers
+namespace ZXMAK2.Serializers.TapeSerializers
 {
 	public class WavSerializer : FormatSerializer
 	{

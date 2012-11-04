@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ZXMAK2.Engine.Z80;
 
-namespace ZXMAK2.Engine.Interfaces
+namespace ZXMAK2.Interfaces
 {
     public interface IDebuggable
     {

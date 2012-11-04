@@ -1,14 +1,14 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
-using ZXMAK2.Engine.Serializers;
-using System.IO;
+using ZXMAK2.Serializers;
 
-namespace ZXMAK2.Engine.Bus
+namespace ZXMAK2.Engine
 {
 	public class BusManager : IBusManager
 	{

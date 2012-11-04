@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 
-namespace ZXMAK2.Engine.Serializers.ScreenshotSerializers
+namespace ZXMAK2.Serializers.ScreenshotSerializers
 {
     public abstract class ScreenshotSerializerBase : FormatSerializer
     {

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Hardware.General;
 
-namespace ZXMAK2.Engine.Devices.Disk
+namespace ZXMAK2.Hardware.Quorum
 {
     public class BetaDiskInterfaceQuorum : BetaDiskInterface
     {

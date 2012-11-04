@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
-using ZXMAK2.Engine.Bus;
 
 ﻿﻿namespace ZXMAK2.Engine
   {

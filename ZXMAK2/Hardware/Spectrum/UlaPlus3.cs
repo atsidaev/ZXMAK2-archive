@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Devices.Ula;
+using ZXMAK2.Interfaces;
 
 // Contended memory info links:
 //  +3: http://scratchpad.wikia.com/wiki/Contended_memory#Instruction_breakdown
@@ -11,7 +8,7 @@ using ZXMAK2.Engine.Devices.Ula;
 // http://www.zxdesign.info/dynamicRam.shtml
 // examples: http://zxm.speccy.cz/realspec/
 
-namespace ZXMAK2.Hardware.SpectrumPlus3
+namespace ZXMAK2.Hardware.Spectrum
 {
 	public class UlaPlus3 : UlaDeviceBase
 	{

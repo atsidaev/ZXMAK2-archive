@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Text;
-using System.Collections.Generic;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
-namespace ZXMAK2.Hardware.SpectrumPlus3
+namespace ZXMAK2.Hardware.Spectrum
 {
 	public class PrinterPlus3 : BusDeviceBase
 	{

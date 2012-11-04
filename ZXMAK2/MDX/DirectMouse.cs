@@ -79,7 +79,7 @@ namespace ZXMAK2.MDX
 		}
 
 		private MouseStateWrapper m_state = new MouseStateWrapper();
-		public ZXMAK2.Engine.Interfaces.IMouseState MouseState { get { return m_state; } }
+		public ZXMAK2.Interfaces.IMouseState MouseState { get { return m_state; } }
 
 		public void Scan()
 		{
@@ -93,7 +93,7 @@ namespace ZXMAK2.MDX
 			}
 		}
 		
-		private class MouseStateWrapper : ZXMAK2.Engine.Interfaces.IMouseState
+		private class MouseStateWrapper : ZXMAK2.Interfaces.IMouseState
 		{
 			private int m_x = 0;
 			private int m_y = 0;

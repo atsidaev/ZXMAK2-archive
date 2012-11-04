@@ -1,9 +1,9 @@
 ﻿using System;
 
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 
 
-namespace ZXMAK2.Engine.Devices.Memory
+namespace ZXMAK2.Hardware.Scorpion
 {
 	public class MemoryScorpion256 : MemoryBase
 	{

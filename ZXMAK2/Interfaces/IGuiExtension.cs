@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 
 
-namespace ZXMAK2.Engine.Interfaces
+namespace ZXMAK2.Interfaces
 {
     public interface IGuiExtension
     {

@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
-namespace ZXMAK2.Engine.Serializers.SnapshotSerializers
+namespace ZXMAK2.Serializers.SnapshotSerializers
 {
 	public class RzxSerializer : SnapshotSerializerBase
 	{

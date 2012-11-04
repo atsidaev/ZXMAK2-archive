@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace ZXMAK2.Engine.Devices.Ula
+namespace ZXMAK2.Hardware.Quorum
 {
     public class UlaQuorum : UlaDeviceBase
     {

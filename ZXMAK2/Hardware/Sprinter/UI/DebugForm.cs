@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Interfaces;
 using ZXMAK2.Controls.Debugger;
 using ZXMAK2.Engine.Z80;
 

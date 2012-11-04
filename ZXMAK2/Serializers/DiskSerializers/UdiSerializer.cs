@@ -2,10 +2,10 @@ using System;
 using System.IO;
 using System.Text;
 
-using ZXMAK2.Engine.Devices.Disk;
+using ZXMAK2.Entities;
 
 
-namespace ZXMAK2.Engine.Serializers.DiskSerializers
+namespace ZXMAK2.Serializers.DiskSerializers
 {
 	public class UdiSerializer : FormatSerializer
 	{

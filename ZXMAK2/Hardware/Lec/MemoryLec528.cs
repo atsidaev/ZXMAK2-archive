@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZXMAK2.Engine.Devices.Memory
+namespace ZXMAK2.Hardware.Lec
 {
     public class MemoryLec48528 : MemoryBase
     {

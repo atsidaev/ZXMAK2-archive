@@ -2,7 +2,7 @@ using System;
 using System.IO;
 
 
-namespace ZXMAK2.Engine.Serializers.DiskSerializers
+namespace ZXMAK2.Serializers.DiskSerializers
 {
 	public class LzssHuffmanStream : Stream
 	{
