@@ -206,7 +206,10 @@ namespace ZXMAK2.Controls
 			//RESET
 			if (e.Alt && e.Control && e.KeyCode == Keys.Insert)
 			{
-				m_vm.DoReset();
+				if (m_vm.IsRunning)
+					m_vm.CPU.RST = false;
+				else
+					m_vm.DoReset();
 				e.Handled = true;
 				return;
 			}
