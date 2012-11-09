@@ -13,10 +13,12 @@ namespace ZXMAK2.Engine.Z80
 	public delegate void OnWRBUS(ushort ADDR, byte value);
 	public enum OPFX { NONE, IX, IY }
 	public enum OPXFX { NONE, CB, ED }
+	public enum CpuType { Z80 = 0, Z84 }
 
 
 	public partial class Z80CPU
 	{
+		public CpuType CpuType = CpuType.Z80;
 		public int RzxCounter = 0;
 		public long Tact = 0;
 		public REGS regs = new REGS();
