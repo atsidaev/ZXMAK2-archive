@@ -99,11 +99,11 @@ namespace ZXMAK2.Hardware.Profi
 
 		#region Constants
 
-		private int _ulaProfiTactsPerLine = 224;			// tacts per line
-		private int _ulaProfiScreenBeginTact = 36 * 224;	// tact for left top pixel
-		private int _ulaProfiLineBeginTact = 48;			// tact for left pixel in line
-		public int c_ulaProfiBorderLeftT = 16;
-		public int c_ulaProfiBorderRightT = 16;
+		private int _ulaProfiTactsPerLine;		// tacts per line
+		private int _ulaProfiScreenBeginTact;	// tact for left top pixel
+		private int _ulaProfiLineBeginTact;		// tact for left pixel in line
+		public int c_ulaProfiBorderLeftT;
+		public int c_ulaProfiBorderRightT;
 		public bool c_ulaProfiColor = false;
 
 		private int _ulaProfiWidth;
@@ -120,19 +120,15 @@ namespace ZXMAK2.Hardware.Profi
 
 		public UlaProfi3XX()
 		{
-			// PROFI
-			// Total Size:          448 x 312
-			// Visible Size:        384 x 296 (72+256+56 x 64+192+40)
-			// First Line Border:   16
-			// First Line Paper:    80
-			// Paper Lines:         192
-			// Bottom Border Lines: 40
+			// PROFI 3.2
+			// Total Size:          768 x 312
+			// Visible Size:        640 x 240 (64+512+64 x 0+240+0)
 			// SYNCGEN: SAMX6 (original)
 
 			c_ulaLineTime = 224;
 			c_ulaFirstPaperLine = 56;
 			c_ulaFirstPaperTact = 42;
-			c_frameTactCount = 69888;
+			c_frameTactCount = 69888;	// 59904 for profi mode (312x192)
 
 			c_ulaBorderTop = 24;
 			c_ulaBorderBottom = 24;
@@ -141,6 +137,14 @@ namespace ZXMAK2.Hardware.Profi
 
 			c_ulaIntBegin = 0;
 			c_ulaIntLength = 32 + 7;	//  needs approve
+
+			// profi mode timings...
+			_ulaProfiTactsPerLine = 192;			// tacts per line
+			_ulaProfiScreenBeginTact = 72 * 192;	// tact for left top pixel
+			_ulaProfiLineBeginTact = 44;			// tact for left pixel in line
+			c_ulaProfiBorderLeftT = 16;			// real 3.xx=6
+			c_ulaProfiBorderRightT = 16;		// real 3.xx=10
+			c_ulaProfiColor = false;
 
 			c_ulaWidth = (c_ulaBorderLeftT + 128 + c_ulaBorderRightT) * 2;
 			c_ulaHeight = (c_ulaBorderTop + 192 + c_ulaBorderBottom);
@@ -366,5 +370,57 @@ namespace ZXMAK2.Hardware.Profi
 		}
 
 		#endregion
+
+		//private int m_lastChange = 0;
+		//private int m_frame = 0;
+		//protected override void EndFrame()
+		//{
+		//    m_frame++;
+		//    if (m_frame < m_lastChange+50)
+		//        return;
+		//    base.EndFrame();
+		//    if (IsKeyPressed(System.Windows.Forms.Keys.F1))
+		//    {
+		//        m_lastChange = m_frame;
+		//        _ulaProfiTactsPerLine--;
+		//        OnTimingChanged();
+		//    }
+		//    if (IsKeyPressed(System.Windows.Forms.Keys.F2))
+		//    {
+		//        m_lastChange = m_frame;
+		//        _ulaProfiTactsPerLine++;
+		//        OnTimingChanged();
+		//    }
+		//    if (IsKeyPressed(System.Windows.Forms.Keys.F3))
+		//    {
+		//        m_lastChange = m_frame;
+		//        _ulaProfiLineBeginTact--;
+		//        OnTimingChanged();
+		//    }
+		//    if (IsKeyPressed(System.Windows.Forms.Keys.F4))
+		//    {
+		//        m_lastChange = m_frame;
+		//        _ulaProfiLineBeginTact++;
+		//        OnTimingChanged();
+		//    }
+		//    if (IsKeyPressed(System.Windows.Forms.Keys.F5))
+		//    {
+		//        m_lastChange = m_frame;
+		//        _ulaProfiScreenBeginTact -= _ulaProfiTactsPerLine;
+		//        OnTimingChanged();
+		//    }
+		//    if (IsKeyPressed(System.Windows.Forms.Keys.F6))
+		//    {
+		//        m_lastChange = m_frame;
+		//        _ulaProfiScreenBeginTact += _ulaProfiTactsPerLine;
+		//        OnTimingChanged();
+		//    }
+		//}
+		//private static bool IsKeyPressed(System.Windows.Forms.Keys key)
+		//{
+		//    return (GetKeyState((int)key) & 0xFF00) != 0;
+		//}
+		//[System.Runtime.InteropServices.DllImport("user32")]
+		//private static extern short GetKeyState(int vKey);
 	}
 }
