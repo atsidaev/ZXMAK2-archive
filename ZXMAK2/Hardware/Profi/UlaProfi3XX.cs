@@ -141,7 +141,7 @@ namespace ZXMAK2.Hardware.Profi
 			// profi mode timings...
 			_ulaProfiTactsPerLine = 192;			// tacts per line
 			_ulaProfiScreenBeginTact = 72 * 192;	// tact for left top pixel
-			_ulaProfiLineBeginTact = 44;			// tact for left pixel in line
+			_ulaProfiLineBeginTact = 8;				// tact for left pixel in line
 			c_ulaProfiBorderLeftT = 16;			// real 3.xx=6
 			c_ulaProfiBorderRightT = 16;		// real 3.xx=10
 			c_ulaProfiColor = false;
@@ -376,7 +376,7 @@ namespace ZXMAK2.Hardware.Profi
 		//protected override void EndFrame()
 		//{
 		//    m_frame++;
-		//    if (m_frame < m_lastChange+50)
+		//    if (m_frame < m_lastChange + 50)
 		//        return;
 		//    base.EndFrame();
 		//    if (IsKeyPressed(System.Windows.Forms.Keys.F1))
