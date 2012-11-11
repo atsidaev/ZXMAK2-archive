@@ -19,7 +19,7 @@ namespace ZXMAK2.Hardware.Atm
 			m_ulaAtm = base.m_ula as UlaAtm450;
 
 			bmgr.SubscribeRDIO(0x0001, 0x0000, busReadPortFE);					// bit Z emulation
-			bmgr.SubscribeWRIO(0x00FF, 0x00FF & 0x00FF, busWritePortXXFF_PAL);	// atm_writepal(val);
+			bmgr.SubscribeWRIO(0x009F, 0x00FF & 0x009F, busWritePortXXFF_PAL);	// atm_writepal(val);
 
 			bmgr.SubscribeWRIO(0x00FF, 0xFF77 & 0x00FF, busWritePortFF77_SYS);
 			bmgr.SubscribeWRIO(0x00FF, 0x3FF7 & 0x00FF, busWritePortXFF7_WND);	//ATM3 mask=0x3FFF
@@ -98,13 +98,13 @@ namespace ZXMAK2.Hardware.Atm
 				int w1 = m_pXFF7[index + 1];
 				int w2 = m_pXFF7[index + 2];
 				int w3 = m_pXFF7[index + 3];
-				int romPage0 = (DOSEN && (w0 & 0x80) != 0) ? GetRomIndex(RomName.ROM_DOS) : w0 & romMask;
-				int romPage1 = w1 & romMask;
-				int romPage2 = w2 & romMask;
-				int romPage3 = w3 & romMask;
-				int ramPage0 = w0 & ramMask;
-				int ramPage1 = w1 & ramMask;
-				int ramPage2 = w2 & ramMask;
+				int romPage0 = (w0 & 0x80) != 0 ? (w0 & romMask & 0xFE) | (DOSEN | SYSEN ? 1 : 0) : w0 & romMask;
+				int romPage1 = (w1 & 0x80) != 0 ? (w1 & romMask & 0xFE) | (DOSEN | SYSEN ? 1 : 0) : w1 & romMask;
+				int romPage2 = (w2 & 0x80) != 0 ? (w2 & romMask & 0xFE) | (DOSEN | SYSEN ? 1 : 0) : w2 & romMask;
+				int romPage3 = (w3 & 0x80) != 0 ? (w3 & romMask & 0xFE) | (DOSEN | SYSEN ? 1 : 0) : w3 & romMask;
+				int ramPage0 = (w0 & 0x80) != 0 ? (w0 & ramMask & 0xF8) | (CMR0 & 7) : w0 & ramMask;
+				int ramPage1 = (w1 & 0x80) != 0 ? (w1 & ramMask & 0xF8) | (CMR0 & 7) : w1 & ramMask;
+				int ramPage2 = (w2 & 0x80) != 0 ? (w2 & ramMask & 0xF8) | (CMR0 & 7) : w2 & ramMask;
 				int ramPage3 = (w3 & 0x80) != 0 ? (w3 & ramMask & 0xF8) | (CMR0 & 7) : w3 & ramMask;
 				bool isRam0 = (w0 & 0x40) != 0;
 				bool isRam1 = (w1 & 0x40) != 0;
@@ -213,25 +213,31 @@ namespace ZXMAK2.Hardware.Atm
 
 		private void busWritePortXXFF_PAL(ushort addr, byte value, ref bool iorqge)
 		{
-			if (DOSEN)
-				return;
-			if (m_ulaAtm != null && PEN2)
+			if ((DOSEN || SYSEN) && PEN2 && m_ulaAtm != null)
+			{
 				m_ulaAtm.SetPaletteAtm2(value);
+			}
 		}
 
 		private void busWritePortFF77_SYS(ushort addr, byte value, ref bool iorqge) // ATM2
 		{
-			m_pFF77 = value;
-			m_aFF77 = addr;
-			UpdateMapping();
-			//cpu.int_gate = (comp.pFF77 & 0x20) != false;
-			//set_banks();
+			if (DOSEN || SYSEN)
+			{
+				m_pFF77 = value;
+				m_aFF77 = addr;
+				UpdateMapping();
+				//cpu.int_gate = (comp.pFF77 & 0x20) != false;
+				//set_banks();
+			}
 		}
 
 		private void busWritePortXFF7_WND(ushort addr, byte value, ref bool iorqge) // ATM2
 		{
-			m_pXFF7[((CMR0 & 0x10) >> 2) | ((addr >> 14) & 3)] = value ^ 0x3F; //(((value & 0xC0) << 2) | (value & 0x3F)) ^ 0x33F;
-			UpdateMapping();
+			if (DOSEN || SYSEN)
+			{
+				m_pXFF7[((CMR0 & 0x10) >> 2) | ((addr >> 14) & 3)] = value ^ 0x3F; //(((value & 0xC0) << 2) | (value & 0x3F)) ^ 0x33F;
+				UpdateMapping();
+			}
 		}
 
 		private void busWritePort7FFD_128(ushort addr, byte value, ref bool iorqge)
