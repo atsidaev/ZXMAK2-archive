@@ -337,11 +337,17 @@ namespace ZXMAK2.Hardware
 				case "SYS": pageNo = GetRomIndex(RomName.ROM_SYS); break;
 				case "RAW":
 					{
-						int pCount = data.Length / 0x4000;
-						if (pCount > RomPages.Length)
-							pCount = RomPages.Length;
-						for (int p = 0; p < RomPages.Length; p++)
-							Array.Copy(data, (p % pCount) * 0x4000, RomPages[p], 0, 0x4000);
+						int capLen = (data.Length / 0x4000) * 0x4000;
+						if ((data.Length % 0x4000) != 0)
+							capLen += 0x4000;
+						byte[] capRom = new byte[capLen];
+						for (int i = 0; i < capRom.Length; i++)
+							capRom[i] = 0xFF;	// non flashed area
+						Array.Copy(data, 0, capRom, 0, data.Length);
+						for (int i = 0; i < RomPages.Length; i++)
+						{
+							Array.Copy(capRom, (i * 0x4000) % capLen, RomPages[i], 0, 0x4000);
+						}
 					}
 					return;
 				default:
