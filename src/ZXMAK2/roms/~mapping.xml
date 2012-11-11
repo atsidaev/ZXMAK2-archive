@@ -24,6 +24,9 @@
 		<Page name="DOS" image="atm103rs.rom" offset="0x4000" />
 		<Page name="SYS" image="atm103rs.rom" offset="0x0000" />
 	</Model>
+	<Model name="ATM710">
+		<Page name="RAW" image="bios_1_07_13.rom" offset="0" />
+	</Model>
 	<Model name="Pentagon">
 		<Page name="128" image="pentagon.rom" offset="0x0000" />
 		<Page name="SOS" image="pentagon.rom" offset="0x4000" />

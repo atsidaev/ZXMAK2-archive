@@ -169,6 +169,7 @@
     <Compile Include="Hardware\General\AyMouseDevice.cs" />
     <Compile Include="Hardware\General\BeeperDevice.cs" />
     <Compile Include="Engine\BusManager.cs" />
+    <Compile Include="Hardware\HardwareValueAttribute.cs" />
     <Compile Include="Hardware\Quorum\BeeperQuorum.cs" />
     <Compile Include="Hardware\Scorpion\BeeperScorpion.cs" />
     <Compile Include="Hardware\Profi\CmosProfi.cs" />
