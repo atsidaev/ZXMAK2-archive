@@ -34,6 +34,9 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
+  <PropertyGroup>
+    <TrackFileAccess>false</TrackFileAccess>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
@@ -126,6 +129,9 @@
     </Compile>
     <Compile Include="Controls\Configuration\FormAddDeviceWizard.Designer.cs">
       <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Debugger\DebuggerManager.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Controls\Debugger\FormMemoryMap.cs">
       <SubType>Form</SubType>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ZXMAK2.Engine.Z80;
+using ZXMAK2.Controls.Debugger;
 
 namespace ZXMAK2.Interfaces
 {
@@ -24,6 +25,11 @@ namespace ZXMAK2.Interfaces
 		bool CheckBreakpoint(ushort addr);
 		void ClearBreakpoints();
 
+        void AddExtBreakpoint(List<string> breakListDesc);
+        void RemoveExtBreakpoint(byte addr);
+        Dictionary<byte, breakpointInfo> GetExtBreakpointsList();
+        bool CheckExtBreakpoints();
+        void ClearExtBreakpoints(int whichBpToClear); // if -1 => all breakpoints clear
 		event EventHandler UpdateState;
 		event EventHandler Breakpoint;
 		bool IsRunning { get; }

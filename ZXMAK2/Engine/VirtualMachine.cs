@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using ZXMAK2.Engine;
 using ZXMAK2.Interfaces;
 using ZXMAK2.MDX;
+using ZXMAK2.Controls.Debugger;
 
 namespace ZXMAK2.Engine
 {
@@ -486,6 +487,36 @@ namespace ZXMAK2.Engine
 			lock (m_sync)
 				Spectrum.ClearBreakpoints();
 		}
+
+        public void AddExtBreakpoint(List<string> breakListDesc)
+        {
+            lock (m_sync)
+                Spectrum.AddExtBreakpoint(breakListDesc);
+        }
+
+        public void RemoveExtBreakpoint(byte breakpointNrToRemove)
+        {
+            lock (m_sync)
+                Spectrum.RemoveExtBreakpoint(breakpointNrToRemove);
+        }
+
+        public bool CheckExtBreakpoints()
+        {
+            lock (m_sync)
+                return Spectrum.CheckExtBreakpoints();
+        }
+
+        public Dictionary<byte, breakpointInfo> GetExtBreakpointsList()
+        {
+            lock (m_sync)
+                return Spectrum.GetExtBreakpointsList();
+        }
+
+        public void ClearExtBreakpoints(int whichBpToClear)
+        {
+            lock (m_sync)
+                Spectrum.ClearExtBreakpoints(whichBpToClear);
+        }
 
 		public event EventHandler UpdateState;
 		public event EventHandler Breakpoint;
