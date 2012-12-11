@@ -9,7 +9,7 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
 using ZXMAK2.Serializers;
-
+using ZXMAK2.Controls.Debugger;
 
 namespace ZXMAK2.Engine
 {
@@ -22,6 +22,9 @@ namespace ZXMAK2.Engine
 		private LoadManager _loader;
 
 		private List<ushort> _breakpoints = null;
+
+        //conditional breakpoints
+        private Dictionary<byte, breakpointInfo> _breakpointsExt = null;
 
 		private int m_frameStartTact;
 
@@ -133,6 +136,165 @@ namespace ZXMAK2.Engine
 
 		#endregion
 
+        #region 2.) Extended breakpoints(conditional on memory change, write, registry change, ...)
+        public override void AddExtBreakpoint(List<string> newBreakpointDesc)
+        {
+            if (_breakpointsExt == null)
+                _breakpointsExt = new Dictionary<byte, breakpointInfo>();
+
+            breakpointInfo breakpointInfo = new breakpointInfo();
+
+            //1.LEFT condition
+            bool leftIsMemoryReference = false;
+
+            string left = newBreakpointDesc[1];
+            if (FormCpu.isMemoryReference(left))
+            {
+                breakpointInfo.leftCondition = left.ToUpper();
+
+                // it can be memory reference by registry value, e.g.: (PC), (DE), ...
+                if (FormCpu.isRegistryMemoryReference(left))
+                    breakpointInfo.leftValue = FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(left));
+                else
+                    breakpointInfo.leftValue = FormCpu.getReferencedMemoryPointer(left);
+
+                leftIsMemoryReference = true;
+            }
+            else
+            {
+                //must be a registry
+                if (!FormCpu.isRegistry(left))
+                    throw new Exception("incorrect breakpoint(left condition)");
+
+                breakpointInfo.leftCondition = left.ToUpper();
+            }
+
+            //2.CONDITION type
+            breakpointInfo.conditionTypeSign = newBreakpointDesc[2]; // ==, !=, <, >, ...
+
+            //3.RIGHT condition
+            byte rightType = 0xFF; // 0 - memory reference, 1 - registry value, 2 - common value
+
+            string right = newBreakpointDesc[3];
+            if (FormCpu.isMemoryReference(right))
+            {
+                breakpointInfo.rightCondition = right.ToUpper(); // because of breakpoint panel
+                breakpointInfo.rightValue = ReadMemory(FormCpu.getReferencedMemoryPointer(right));
+
+                rightType = 0;
+            }
+            else
+            {
+                if (FormCpu.isRegistry(right))
+                {
+                    breakpointInfo.rightCondition = right;
+
+                    rightType = 1;
+                }
+                else
+                {
+                    //it has to be a common value, e.g.: #4000, %111010101, ...
+                    breakpointInfo.rightCondition = right.ToUpper(); // because of breakpoint panel
+                    breakpointInfo.rightValue = FormCpu.convertNumberWithPrefix(right); // last chance
+
+                    rightType = 2;
+                }
+            }
+
+            if (rightType == 0xFF)
+                throw new Exception("incorrect right condition");
+
+            //4. finish
+            if (leftIsMemoryReference)
+            {
+                if (FormCpu.isRegistryMemoryReference(breakpointInfo.leftCondition)) // left condition is e.g.: (PC), (HL), (DE), ...
+                {
+                    if (rightType == 2) // right is number
+                        breakpointInfo.accessType = BreakPointConditionType.registryMemoryReferenceVsValue;
+                }
+            }
+            else
+            {
+                if (rightType == 2)
+                    breakpointInfo.accessType = BreakPointConditionType.registryVsValue;
+            }
+
+            breakpointInfo.isOn = true; // activate the breakpoint
+
+            //ADD breakpoint into list
+            _breakpointsExt.Add((byte)_breakpointsExt.Count, breakpointInfo);
+        }
+        public override void RemoveExtBreakpoint(byte breakpointNrToRemove)
+        {
+            if (breakpointNrToRemove + 1 > _breakpointsExt.Count)
+                return;
+
+            _breakpointsExt.Remove(breakpointNrToRemove);
+        }
+        public override Dictionary<byte, breakpointInfo> GetExtBreakpointsList()
+        {
+            if (_breakpointsExt != null)
+                return _breakpointsExt;
+
+            _breakpointsExt = new Dictionary<byte, breakpointInfo>();
+
+            return _breakpointsExt;
+        }
+        public override bool CheckExtBreakpoints()
+        {
+            if (_breakpointsExt == null || _breakpointsExt.Count == 0)
+                return false;
+
+            for (byte counter = 0; counter < _breakpointsExt.Count; counter++)
+            {
+                if (!_breakpointsExt[counter].isOn)
+                    continue;
+
+                ushort leftValue = 0;
+                ushort rightValue = 0;
+
+                switch (_breakpointsExt[counter].accessType)
+                {
+                    // e.g.: PC == #9C40
+                    case BreakPointConditionType.registryVsValue:
+                        leftValue = FormCpu.getRegistryValueByName(_cpu.regs, _breakpointsExt[counter].leftCondition);
+                        rightValue = _breakpointsExt[counter].rightValue;
+                        break;
+                    // e.g.: (#9C40) != #2222
+                    case BreakPointConditionType.memoryVsValue:
+                        leftValue = ReadMemory(_breakpointsExt[counter].leftValue);
+                        rightValue = _breakpointsExt[counter].rightValue;
+                        break;
+                    // e.g.: (PC) == #D1 - instruction breakpoint
+                    case BreakPointConditionType.registryMemoryReferenceVsValue:
+                        leftValue = ReadMemory(FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(_breakpointsExt[counter].leftCondition)));
+                        rightValue = _breakpointsExt[counter].rightValue;
+                        break;
+                    default:
+                        break;
+                }
+
+                //condition
+                if (_breakpointsExt[counter].conditionTypeSign == "==") // is equal
+                {
+                    if (leftValue == rightValue)
+                        return true;
+                }
+                else if (_breakpointsExt[counter].conditionTypeSign == "!=") // is equal
+                {
+                    if (leftValue != rightValue)
+                        return true;
+                };
+            }
+
+            return false;
+        }
+
+        // if -1 => all breakpoints clear
+        public override void ClearExtBreakpoints(int whichBpToClear)
+        {
+        }
+        #endregion
 
 		public unsafe override void ExecuteFrame()
 		{
@@ -145,7 +307,10 @@ namespace ZXMAK2.Engine
 			while (t > _cpu.Tact/* && IsRunning*/)
 			{
 				_bus.ExecCycle();
-				if (_breakpoints != null && CheckBreakpoint(_cpu.regs.PC) && !_cpu.HALTED)
+				if (
+                    ( CheckBreakpoint(_cpu.regs.PC) || CheckExtBreakpoints() )  &&
+                    !_cpu.HALTED
+                   )
 				{
 					int delta1 = (int)(_cpu.Tact - t);
 					if (delta1 >= 0)

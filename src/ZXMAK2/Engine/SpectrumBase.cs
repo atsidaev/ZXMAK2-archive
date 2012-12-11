@@ -8,7 +8,8 @@ using ZXMAK2.Engine.Z80;
 using ZXMAK2.Serializers;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
-
+using ZXMAK2.Controls.Debugger;
+using System.Collections.Generic;
 
 namespace ZXMAK2.Engine
 {
@@ -192,6 +193,13 @@ namespace ZXMAK2.Engine
 		public abstract ushort[] GetBreakpointList();
 		public abstract bool CheckBreakpoint(ushort addr);
 		public abstract void ClearBreakpoints();
+
+        //conditional breakpoints
+        public abstract void AddExtBreakpoint(List<string> breakListDesc);
+        public abstract void RemoveExtBreakpoint(byte addr);
+        public abstract Dictionary<byte, breakpointInfo> GetExtBreakpointsList();
+        public abstract bool CheckExtBreakpoints();
+        public abstract void ClearExtBreakpoints(int whichBpToClear); // if -1 => all breakpoints clear
 
 		#endregion
 
