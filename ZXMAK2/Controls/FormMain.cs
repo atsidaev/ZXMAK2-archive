@@ -472,6 +472,18 @@ namespace ZXMAK2.Controls
 				form.ShowDialog();
 		}
 
+        private void menuGeneralHelp_Click(object sender, EventArgs e)
+        {
+            if (!File.Exists("ZXMak2.chm"))
+            {
+                string message =  "Help file(ZXMak2.chm) could not be found.\n\nHint: Try to recompile the project or copy manually the file\n";
+                       message += "         into folder where the application runs.";
+                DialogProvider.Show(message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+            }
+            else
+                Help.ShowHelp(this, "ZXMak2.chm");
+        }
+
 		private void menuHelpKeyboard_Click(object sender, EventArgs e)
 		{
 			FormKeyboardHelp form = (FormKeyboardHelp)menuHelpKeyboard.Tag;
