@@ -180,13 +180,21 @@ namespace ZXMAK2.Controls.Debugger
                 else
                 {
                     // show conditional breakpoints list on listState panel
-                    for (byte counter = 0; counter < m_spectrum.GetExtBreakpointsList().Count; counter++)
+                    foreach (KeyValuePair<byte, breakpointInfo> item in m_spectrum.GetExtBreakpointsList())
                     {
-                        string brDesc = m_spectrum.GetExtBreakpointsList()[counter].leftCondition.ToString();
-                        brDesc += m_spectrum.GetExtBreakpointsList()[counter].conditionTypeSign.ToString();
-                        brDesc += m_spectrum.GetExtBreakpointsList()[counter].rightCondition.ToString();
+                        string brDesc = String.Empty;
 
-                        listState.Items.Add(counter.ToString() + ": " + brDesc);
+                        brDesc += item.Key.ToString() + ":";
+                        if (!item.Value.isOn)
+                            brDesc += "(off)";
+                        else
+                            brDesc += " ";
+                        brDesc += item.Value.leftCondition.ToString();
+                        brDesc += item.Value.conditionTypeSign.ToString();
+                        brDesc += item.Value.rightCondition.ToString();
+
+                        listState.Items.Add(brDesc);
+
                     }
                 }
             }
@@ -338,6 +346,37 @@ namespace ZXMAK2.Controls.Debugger
 		{
 			if (listF.SelectedIndex < 0) return;
 			if (m_spectrum.IsRunning) return;
+
+            switch (listF.SelectedIndex)
+            {
+                case 9:     //iff
+                    m_spectrum.CPU.IFF1 = m_spectrum.CPU.IFF2 = !m_spectrum.CPU.IFF1;
+                    UpdateCPU(false);
+                    return;
+                case 11:     //halt
+                    m_spectrum.CPU.HALTED = !m_spectrum.CPU.HALTED;
+                    UpdateCPU(false);
+                    return;
+                case 13:     //im
+                    m_spectrum.CPU.IM++;
+                    if (m_spectrum.CPU.IM > 2)
+                        m_spectrum.CPU.IM = 0;
+                    UpdateCPU(false);
+                    return;
+                /*ToDo:
+                case 16:     //frmT
+                    int frameTact = m_spectrum.GetFrameTact();
+                    if (InputBox.InputValue("Frame Tact", "New Frame Tact:", "", "D", ref frameTact, 0, m_spectrum.FrameTactCount))
+                    {
+                        int delta = frameTact - m_spectrum.GetFrameTact();
+                        if (delta < 0)
+                            delta += m_spectrum.FrameTactCount;
+                        m_spectrum.CPU.Tact += delta;
+                    }
+                    UpdateCPU(false);
+                    return;*/
+            }
+
 			m_spectrum.CPU.regs.F ^= (byte)(0x80 >> listF.SelectedIndex);
 			UpdateREGS();
 		}
@@ -525,7 +564,23 @@ namespace ZXMAK2.Controls.Debugger
 
 		private void listState_DoubleClick(object sender, EventArgs e)
 		{
-			if (listState.SelectedIndex < 0) return;
+            if (!showStack) // if we are in breakpoint mode only
+            {
+                int selectedIndex = listState.SelectedIndex;
+                if (selectedIndex < 0 || m_spectrum.GetExtBreakpointsList().Count == 0) return;
+                if (selectedIndex + 1 > m_spectrum.GetExtBreakpointsList().Count) return;
+
+                string strTemp = listState.Items[selectedIndex].ToString();
+                int index = strTemp.IndexOf(':');
+                string key = String.Empty;
+                if(index > 0)
+                    key = strTemp.Substring(0, index);
+
+                bool isBreakpointIsOn = m_spectrum.GetExtBreakpointsList()[Convert.ToByte(key)].isOn;
+                m_spectrum.EnableOrDisableBreakpointStatus(Convert.ToByte(key), !isBreakpointIsOn);
+                UpdateREGS();
+            }
+			/*if (listState.SelectedIndex < 0) return;
 			if (m_spectrum.IsRunning)
 				return;
 			switch (listState.SelectedIndex)
@@ -552,7 +607,7 @@ namespace ZXMAK2.Controls.Debugger
 					}
 					break;
 			}
-			UpdateCPU(false);
+			UpdateCPU(false);*/
 		}
 
         private static int s_addr = 0x4000;
@@ -658,6 +713,16 @@ namespace ZXMAK2.Controls.Debugger
                     {
                         // remove breakpoint
                         m_spectrum.RemoveExtBreakpoint(Convert.ToByte(convertNumberWithPrefix(parsedCommand[1])));
+                    }
+                    else if (getDbgCommandType(parsedCommand) == CommandType.enableBreakpoint)
+                    {
+                        //enable breakpoint
+                        m_spectrum.EnableOrDisableBreakpointStatus(Convert.ToByte(convertNumberWithPrefix(parsedCommand[1])), true);
+                    }
+                    else if (getDbgCommandType(parsedCommand) == CommandType.disableBreakpoint)
+                    {
+                        //enable breakpoint
+                        m_spectrum.EnableOrDisableBreakpointStatus(Convert.ToByte(convertNumberWithPrefix(parsedCommand[1])), false);
                     }
                     else
                     {

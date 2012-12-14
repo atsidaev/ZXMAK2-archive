@@ -280,7 +280,7 @@ namespace ZXMAK2.Engine
                     if (leftValue == rightValue)
                         return true;
                 }
-                else if (_breakpointsExt[counter].conditionTypeSign == "!=") // is equal
+                else if (_breakpointsExt[counter].conditionTypeSign == "!=") // is not equal
                 {
                     if (leftValue != rightValue)
                         return true;
@@ -288,6 +288,21 @@ namespace ZXMAK2.Engine
             }
 
             return false;
+        }
+
+        public override void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn) //enables/disables breakpoint, command "on" or "off"
+        {
+            if (_breakpointsExt == null || _breakpointsExt.Count == 0)
+                return;
+
+            if( !_breakpointsExt.ContainsKey(whichBpToEnableOrDisable) )
+                return;
+
+            breakpointInfo tempbreakpointInfo = (breakpointInfo)_breakpointsExt[whichBpToEnableOrDisable];
+            tempbreakpointInfo.isOn = setOn;
+            _breakpointsExt[whichBpToEnableOrDisable] = tempbreakpointInfo;
+
+            return;
         }
 
         // if -1 => all breakpoints clear
