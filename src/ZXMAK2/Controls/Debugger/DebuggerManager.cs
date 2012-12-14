@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections.ObjectModel;
 using ZXMAK2.Interfaces;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace ZXMAK2.Controls.Debugger
 {
@@ -42,7 +43,9 @@ namespace ZXMAK2.Controls.Debugger
         public static string[] Regs16Bit = new string[] { "AF", "BC", "DE", "HL", "IX", "IY", "SP", "IR", "PC", "AF'", "BC'", "DE'", "HL'" };
         public static char[]   Regs8Bit  = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'H', 'L' };
 
-        public enum CommandType { memoryOrRegistryManipulation, breakpointManipulation, gotoAdress, removeBreakpoint, Unidentified }; // E.g.: ld = memoryOrRegistryManipulation
+        public enum CommandType { memoryOrRegistryManipulation, breakpointManipulation, gotoAdress, removeBreakpoint, enableBreakpoint,
+                                  disableBreakpoint, Unidentified
+                                }; // E.g.: ld = memoryOrRegistryManipulation
         public enum BreakPointAccessType { memoryAccess, memoryWrite, memoryChange, registryValue, All, Undefined };
 
         public enum CharType { Number = 0, Letter, Other };
@@ -51,15 +54,17 @@ namespace ZXMAK2.Controls.Debugger
         public static string DbgKeywordBREAK = "br"; // set breakpoint
         public static string DbgKeywordDissassemble = "ds"; // dasmPanel - goto adress(disassembly panel), (=disassembly)
         public static string DbgRemoveBreakpoint = "del"; // remove breakpoint, e.g.: del 1 - will delete breakpoint nr. 1
+        public static string DbgEnableBreakpoint = "on"; // enables breakpoint
+        public static string DbgDisableBreakpoint = "off"; // disables breakpoint
 
         static char[]  debugDelimitersOther = new char[] { '(', '=', ')', '!' };
 
         // Main method - returns string list with items entered in debug command line, e.g. : 
         //
-        // 1. item: ld
-        // 2. item: bc
-        // 3. item: #4000
-        //
+        // 0. item: br
+        // 1. item: (PC)
+        // 2. item: ==
+        // 3. item: #9C40
         public static List<string> ParseCommand(string dbgCommand)
         {
             try
@@ -68,7 +73,7 @@ namespace ZXMAK2.Controls.Debugger
                 string[] parts = dbgCommand.Split(delimiters,
                                  StringSplitOptions.RemoveEmptyEntries);
 
-                return CorrectSplitDbgCommands(parts); // toto treba, lebo napr. moze vzniknut pc==#3455(v kope)
+                return CorrectSplitDbgCommands(parts);
             }
             catch (Exception)
             {
@@ -94,13 +99,15 @@ namespace ZXMAK2.Controls.Debugger
                 HasDigitsAndLettersInString(actItem, ref hasLetters, ref hasDigits);
                 HasOtherCharsInString(actItem, delimiters2, ref hasOtherChars);
 
-                // treba opravit dany string ?...Priklad takeho chybneho: "pc==#0000"
+                // string needs a correction ? E.g.: "pc==#0000"
                 if (((hasLetters ? 1 : 0) + (hasDigits ? 1 : 0) + (hasOtherChars ? 1 : 0)) > 1)
                 {
-                    // treba opravovat - inicializacia
                     CharType prevCharType = getCharType(actItem[0]);
 
-                    string actCommand = String.Empty;
+                    string actCommand           = String.Empty;
+                    Char   prevCharInDbgCommand = ' ';
+                    bool   bParsingHexNumber    = false;
+                    bool   bBracketsOpen        = false;
 
                     for (byte counterCmdChars = 0; counterCmdChars < actItem.Length; counterCmdChars++)
                     {
@@ -108,19 +115,66 @@ namespace ZXMAK2.Controls.Debugger
 
                         CharType actCharType = getCharType(actCharInDbgCommand);
 
-                        if (actCharType != prevCharType)
+                        /* when parsing hex number then another special functionality*/
+                        if (actCharInDbgCommand == '#')
                         {
                             dbgCommandsList.Add(actCommand);
 
                             actCommand = actCharInDbgCommand.ToString();
                             prevCharType = actCharType;
                             actCharType = getCharType(actCharInDbgCommand);
+                            bParsingHexNumber = true;
+                            bBracketsOpen = false;
+                            continue;
+                        }
 
+                        if (bParsingHexNumber)
+                        {
+                            if (IsHex(actCharInDbgCommand))
+                            {
+                                actCommand += actCharInDbgCommand;
+                                actCharType = CharType.Number;
+                                prevCharInDbgCommand = actCharInDbgCommand;
+                                continue;
+                            }
+                            else
+                                bParsingHexNumber = false;
+                        }
+
+                        /* avoid brackets splitting*/
+                        if ( actCharInDbgCommand == '(' )
+                        {
+                            bBracketsOpen = true;
+                            actCommand += actCharInDbgCommand;
+                            prevCharInDbgCommand = actCharInDbgCommand;
+                            continue;
+                        }
+
+                        if (bBracketsOpen && actCharInDbgCommand == ')')
+                        {
+                            dbgCommandsList.Add(actCommand+")");
+
+                            actCommand = String.Empty;
+                            prevCharType = actCharType;
+                            actCharType = getCharType(actCharInDbgCommand);
+                            bParsingHexNumber = false;
+                            bBracketsOpen = false;
+                        }
+                        else if (actCharType != prevCharType && !bBracketsOpen)
+                        {
+                            dbgCommandsList.Add(actCommand);
+
+                            actCommand = actCharInDbgCommand.ToString();
+                            prevCharType = actCharType;
+                            actCharType = getCharType(actCharInDbgCommand);
+                            bParsingHexNumber = false;
                         }
                         else
                         {
-                            actCommand += actItem[counterCmdChars];
+                            actCommand += actCharInDbgCommand;
                         }
+
+                        prevCharInDbgCommand = actCharInDbgCommand;
                     }
 
                     dbgCommandsList.Add(actCommand);
@@ -169,10 +223,10 @@ namespace ZXMAK2.Controls.Debugger
 
         public static CharType getCharType(char inputChar)
         {
-            if (Char.IsLetter(inputChar))
-                return CharType.Letter;
-
             if (Char.IsDigit(inputChar) || inputChar == '%' || inputChar == '#') // % - binary number, # - hex number
+                return CharType.Number;
+
+            if (Char.IsLetter(inputChar))
                 return CharType.Letter;
 
             foreach (char c in debugDelimitersOther)
@@ -200,6 +254,16 @@ namespace ZXMAK2.Controls.Debugger
             if (command[0].ToUpper() == DbgKeywordDissassemble.ToString().ToUpper())
             {
                 return CommandType.gotoAdress;
+            }
+
+            if (command[0].ToUpper() == DbgEnableBreakpoint.ToString().ToUpper())
+            {
+                return CommandType.enableBreakpoint;
+            }
+
+            if (command[0].ToUpper() == DbgDisableBreakpoint.ToString().ToUpper())
+            {
+                return CommandType.disableBreakpoint;
             }
 
             if (command[0].ToUpper() == DbgRemoveBreakpoint.ToString().ToUpper())
@@ -273,6 +337,11 @@ namespace ZXMAK2.Controls.Debugger
             }
 
             return false;
+        }
+
+        public static bool IsHex(char c)
+        {
+            return (new Regex("[A-Fa-f0-9]").IsMatch(c.ToString()));
         }
 
         public static bool isRegistryMemoryReference(string registryMemoryReference)

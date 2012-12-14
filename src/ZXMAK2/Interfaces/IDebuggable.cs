@@ -29,6 +29,7 @@ namespace ZXMAK2.Interfaces
         void RemoveExtBreakpoint(byte addr);
         Dictionary<byte, breakpointInfo> GetExtBreakpointsList();
         bool CheckExtBreakpoints();
+        void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn); //enables/disables breakpoint, command "on" or "off"
         void ClearExtBreakpoints(int whichBpToClear); // if -1 => all breakpoints clear
 		event EventHandler UpdateState;
 		event EventHandler Breakpoint;

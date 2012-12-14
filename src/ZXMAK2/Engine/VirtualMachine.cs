@@ -512,6 +512,12 @@ namespace ZXMAK2.Engine
                 return Spectrum.GetExtBreakpointsList();
         }
 
+        public void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn) //enables/disables breakpoint, command "on" or "off"
+        {
+            lock (m_sync)
+                Spectrum.EnableOrDisableBreakpointStatus(whichBpToEnableOrDisable, setOn);
+        }
+
         public void ClearExtBreakpoints(int whichBpToClear)
         {
             lock (m_sync)
