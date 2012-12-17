@@ -221,8 +221,19 @@ namespace ZXMAK2.Engine
 
             breakpointInfo.isOn = true; // activate the breakpoint
 
-            //ADD breakpoint into list
-            _breakpointsExt.Add((byte)_breakpointsExt.Count, breakpointInfo);
+            // ADD breakpoint into list
+            // Here will be the breakpoint key assigned by searching keys starting with key 0
+            // Maximum 255 breakpoints is allowed
+            for (byte counter = 0; counter < 0xFF; counter++)
+            {
+                if (!_breakpointsExt.ContainsKey(counter))
+                {
+                    _breakpointsExt.Add(counter, breakpointInfo);
+                    return;
+                }
+            }
+
+            throw new Exception("Maximum breakpoints count(255) exceeded...");
         }
         public override void RemoveExtBreakpoint(byte breakpointNrToRemove)
         {

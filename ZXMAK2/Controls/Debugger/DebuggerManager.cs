@@ -65,126 +65,28 @@ namespace ZXMAK2.Controls.Debugger
         // 1. item: (PC)
         // 2. item: ==
         // 3. item: #9C40
+        // 
+        // Must be working: ld hl,  #4000; br (pc)==#4000; br (pc)   ==#af; ...
         public static List<string> ParseCommand(string dbgCommand)
         {
             try
             {
-                string[] delimiters = new string[] { ",", " " };
-                string[] parts = dbgCommand.Split(delimiters,
-                                 StringSplitOptions.RemoveEmptyEntries);
+                string       pattern = @"(\s+|,|==|!=)";
+                List<string> dbgParsed = new List<string>();
+                dbgParsed.Clear();
 
-                return CorrectSplitDbgCommands(parts);
+                foreach (string result in Regex.Split(dbgCommand, pattern)) 
+                {
+                    if (!String.IsNullOrEmpty(result) && result.Trim() != "" && result != ",")
+                        dbgParsed.Add(result);
+                }
+
+                return dbgParsed;
             }
             catch (Exception)
             {
                 return null;
             }
-        }
-
-        private static List<string> CorrectSplitDbgCommands(string[] i_splittedCommands)
-        {
-            char[] delimiters2 = new char[] { '=', '!' };
-            List<string> dbgCommandsList = new List<string>();
-
-            dbgCommandsList.Clear(); // output List
-
-            for (int counter = 0; counter < i_splittedCommands.Length; counter++)
-            {
-                string actItem = i_splittedCommands[counter];
-
-                bool hasLetters = false;
-                bool hasDigits = false;
-                bool hasOtherChars = false;
-
-                HasDigitsAndLettersInString(actItem, ref hasLetters, ref hasDigits);
-                HasOtherCharsInString(actItem, delimiters2, ref hasOtherChars);
-
-                // string needs a correction ? E.g.: "pc==#0000"
-                if (((hasLetters ? 1 : 0) + (hasDigits ? 1 : 0) + (hasOtherChars ? 1 : 0)) > 1)
-                {
-                    CharType prevCharType = getCharType(actItem[0]);
-
-                    string actCommand           = String.Empty;
-                    Char   prevCharInDbgCommand = ' ';
-                    bool   bParsingHexNumber    = false;
-                    bool   bBracketsOpen        = false;
-
-                    for (byte counterCmdChars = 0; counterCmdChars < actItem.Length; counterCmdChars++)
-                    {
-                        char actCharInDbgCommand = actItem[counterCmdChars];
-
-                        CharType actCharType = getCharType(actCharInDbgCommand);
-
-                        /* when parsing hex number then another special functionality*/
-                        if (actCharInDbgCommand == '#')
-                        {
-                            dbgCommandsList.Add(actCommand);
-
-                            actCommand = actCharInDbgCommand.ToString();
-                            prevCharType = actCharType;
-                            actCharType = getCharType(actCharInDbgCommand);
-                            bParsingHexNumber = true;
-                            bBracketsOpen = false;
-                            continue;
-                        }
-
-                        if (bParsingHexNumber)
-                        {
-                            if (IsHex(actCharInDbgCommand))
-                            {
-                                actCommand += actCharInDbgCommand;
-                                actCharType = CharType.Number;
-                                prevCharInDbgCommand = actCharInDbgCommand;
-                                continue;
-                            }
-                            else
-                                bParsingHexNumber = false;
-                        }
-
-                        /* avoid brackets splitting*/
-                        if ( actCharInDbgCommand == '(' )
-                        {
-                            bBracketsOpen = true;
-                            actCommand += actCharInDbgCommand;
-                            prevCharInDbgCommand = actCharInDbgCommand;
-                            continue;
-                        }
-
-                        if (bBracketsOpen && actCharInDbgCommand == ')')
-                        {
-                            dbgCommandsList.Add(actCommand+")");
-
-                            actCommand = String.Empty;
-                            prevCharType = actCharType;
-                            actCharType = getCharType(actCharInDbgCommand);
-                            bParsingHexNumber = false;
-                            bBracketsOpen = false;
-                        }
-                        else if (actCharType != prevCharType && !bBracketsOpen)
-                        {
-                            dbgCommandsList.Add(actCommand);
-
-                            actCommand = actCharInDbgCommand.ToString();
-                            prevCharType = actCharType;
-                            actCharType = getCharType(actCharInDbgCommand);
-                            bParsingHexNumber = false;
-                        }
-                        else
-                        {
-                            actCommand += actCharInDbgCommand;
-                        }
-
-                        prevCharInDbgCommand = actCharInDbgCommand;
-                    }
-
-                    dbgCommandsList.Add(actCommand);
-
-                }
-                else
-                    dbgCommandsList.Add(actItem);
-            }
-
-            return dbgCommandsList;
         }
 
         public static void HasDigitsAndLettersInString(string s, ref bool hasLetters, ref bool hasDigits)
