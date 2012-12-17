@@ -158,14 +158,21 @@ namespace ZXMAK2.Controls.Debugger
             if (showStack) // toggle by F12 key
             {
                 // show stack on listState panel
-                int counter = 0;
+                int  localStack = m_spectrum.CPU.regs.SP;
+                byte counter = 0;
                 do
                 {
-                    UInt16 localSP = Convert.ToUInt16(m_spectrum.CPU.regs.SP + counter);
-                    UInt16 stackAdressLo = m_spectrum.ReadMemory(Convert.ToUInt16(m_spectrum.CPU.regs.SP + counter++));
-                    UInt16 stackAdressHi = m_spectrum.ReadMemory(Convert.ToUInt16(m_spectrum.CPU.regs.SP + counter++));
-                    listState.Items.Add(localSP.ToString("X4") + ":   " + (stackAdressLo + stackAdressHi * 256).ToString("X4"));
+                    //the stack pointer can be set too low(SP=65535), e.g. Dizzy1,
+                    //so condition on stack top must be added
+                    if (localStack + 1 > 0xFFFF)
+                        break;
 
+                    UInt16 stackAdressLo = m_spectrum.ReadMemory(Convert.ToUInt16(localStack++));
+                    UInt16 stackAdressHi = m_spectrum.ReadMemory(Convert.ToUInt16(localStack++));
+
+                    listState.Items.Add((localStack-2).ToString("X4") + ":   " + (stackAdressLo + stackAdressHi * 256).ToString("X4"));
+
+                    counter += 2;
                     if (counter >= 20)
                         break;
 
