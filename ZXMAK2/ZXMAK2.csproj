@@ -133,6 +133,7 @@
     <Compile Include="Controls\Debugger\DebuggerManager.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Controls\Debugger\DictionarySafe.cs" />
     <Compile Include="Controls\Debugger\FormMemoryMap.cs">
       <SubType>Form</SubType>
     </Compile>
