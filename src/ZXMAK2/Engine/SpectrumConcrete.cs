@@ -24,7 +24,7 @@ namespace ZXMAK2.Engine
 		private List<ushort> _breakpoints = null;
 
         //conditional breakpoints
-        private Dictionary<byte, breakpointInfo> _breakpointsExt = null;
+        private DictionarySafe<byte, breakpointInfo> _breakpointsExt = null;
 
 		private int m_frameStartTact;
 
@@ -140,7 +140,7 @@ namespace ZXMAK2.Engine
         public override void AddExtBreakpoint(List<string> newBreakpointDesc)
         {
             if (_breakpointsExt == null)
-                _breakpointsExt = new Dictionary<byte, breakpointInfo>();
+                _breakpointsExt = new DictionarySafe<byte, breakpointInfo>();
 
             breakpointInfo breakpointInfo = new breakpointInfo();
 
@@ -237,17 +237,14 @@ namespace ZXMAK2.Engine
         }
         public override void RemoveExtBreakpoint(byte breakpointNrToRemove)
         {
-            if (breakpointNrToRemove + 1 > _breakpointsExt.Count)
-                return;
-
             _breakpointsExt.Remove(breakpointNrToRemove);
         }
-        public override Dictionary<byte, breakpointInfo> GetExtBreakpointsList()
+        public override DictionarySafe<byte, breakpointInfo> GetExtBreakpointsList()
         {
             if (_breakpointsExt != null)
                 return _breakpointsExt;
 
-            _breakpointsExt = new Dictionary<byte, breakpointInfo>();
+            _breakpointsExt = new DictionarySafe<byte, breakpointInfo>();
 
             return _breakpointsExt;
         }
@@ -280,6 +277,13 @@ namespace ZXMAK2.Engine
                     case BreakPointConditionType.registryMemoryReferenceVsValue:
                         leftValue = ReadMemory(FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(_breakpointsExt[counter].leftCondition)));
                         rightValue = _breakpointsExt[counter].rightValue;
+                        if (rightValue > 0xFF) //check on 2 bytes right condition, e.g.: (PC) == #5EED
+                        {
+                            int hiByte = FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(_breakpointsExt[counter].leftCondition)) + 1;
+                            if (hiByte > 0xFFFF)
+                                hiByte = 0;
+                            leftValue += Convert.ToUInt16(ReadMemory(Convert.ToUInt16(hiByte)) * 256);
+                        }
                         break;
                     default:
                         break;

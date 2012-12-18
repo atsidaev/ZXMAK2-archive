@@ -506,7 +506,7 @@ namespace ZXMAK2.Engine
                 return Spectrum.CheckExtBreakpoints();
         }
 
-        public Dictionary<byte, breakpointInfo> GetExtBreakpointsList()
+        public DictionarySafe<byte, breakpointInfo> GetExtBreakpointsList()
         {
             lock (m_sync)
                 return Spectrum.GetExtBreakpointsList();
