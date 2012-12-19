@@ -87,7 +87,7 @@ namespace ZXMAK2.Controls.Debugger
                     if (_dict.TryGetValue(key, out value))
                         return value;
                     else
-                        return default(TValue);
+                        throw new Exception("Breakpoint with ID:" + key + " not found !" );
                 }
             }
             set
@@ -136,7 +136,7 @@ namespace ZXMAK2.Controls.Debugger
 
         public bool IsReadOnly
         {
-            get { throw new NotImplementedException(); }
+            get { lock (Lock) { return false; } }
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)

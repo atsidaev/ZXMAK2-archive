@@ -200,7 +200,9 @@ namespace ZXMAK2.Engine
         public abstract DictionarySafe<byte, breakpointInfo> GetExtBreakpointsList();
         public abstract bool CheckExtBreakpoints();
         public abstract void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn); //enables/disables breakpoint, command "on" or "off"
-        public abstract void ClearExtBreakpoints(int whichBpToClear); // if -1 => all breakpoints clear
+        public abstract void ClearExtBreakpoints();
+        public abstract void LoadBreakpointsListFromFile(string fileName);
+        public abstract void SaveBreakpointsListToFile(string fileName);
 
 		#endregion
 

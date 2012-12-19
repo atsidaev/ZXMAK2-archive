@@ -35,6 +35,9 @@ namespace ZXMAK2.Controls.Debugger
 
         //is active
         public bool isOn;
+
+        //original breakpoint string(raw data get from dbg command line)
+        public string breakpointString;
     }
     #endregion
 
@@ -44,18 +47,21 @@ namespace ZXMAK2.Controls.Debugger
         public static char[]   Regs8Bit  = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'H', 'L' };
 
         public enum CommandType { memoryOrRegistryManipulation, breakpointManipulation, gotoAdress, removeBreakpoint, enableBreakpoint,
-                                  disableBreakpoint, Unidentified
+                                  disableBreakpoint, loadBreakpointsListFromFile, saveBreakpointsListToFile, Unidentified
                                 }; // E.g.: ld = memoryOrRegistryManipulation
         public enum BreakPointAccessType { memoryAccess, memoryWrite, memoryChange, registryValue, All, Undefined };
 
         public enum CharType { Number = 0, Letter, Other };
 
+        //debugger commands list
         public static string DbgKeywordLD = "ld"; // memory/registers modification(=ld as in assembler)
         public static string DbgKeywordBREAK = "br"; // set breakpoint
         public static string DbgKeywordDissassemble = "ds"; // dasmPanel - goto adress(disassembly panel), (=disassembly)
         public static string DbgRemoveBreakpoint = "del"; // remove breakpoint, e.g.: del 1 - will delete breakpoint nr. 1
         public static string DbgEnableBreakpoint = "on"; // enables breakpoint
         public static string DbgDisableBreakpoint = "off"; // disables breakpoint
+        public static string DbgLoadBreakpointsListFromFile = "loadbrs"; // loads breakpoints from file
+        public static string DbgSaveBreakpointsListFromFile = "savebrs"; // save actual breakpoints list into file
 
         static char[]  debugDelimitersOther = new char[] { '(', '=', ')', '!' };
 
@@ -171,6 +177,16 @@ namespace ZXMAK2.Controls.Debugger
             if (command[0].ToUpper() == DbgRemoveBreakpoint.ToString().ToUpper())
             {
                 return CommandType.removeBreakpoint;
+            }
+
+            if (command[0].ToUpper() == DbgLoadBreakpointsListFromFile.ToString().ToUpper())
+            {
+                return CommandType.loadBreakpointsListFromFile;
+            }
+
+            if (command[0].ToUpper() == DbgSaveBreakpointsListFromFile.ToString().ToUpper())
+            {
+                return CommandType.saveBreakpointsListToFile;
             }
 
             return CommandType.Unidentified;
