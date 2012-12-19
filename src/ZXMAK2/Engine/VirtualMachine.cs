@@ -518,10 +518,21 @@ namespace ZXMAK2.Engine
                 Spectrum.EnableOrDisableBreakpointStatus(whichBpToEnableOrDisable, setOn);
         }
 
-        public void ClearExtBreakpoints(int whichBpToClear)
+        public void ClearExtBreakpoints()
         {
             lock (m_sync)
-                Spectrum.ClearExtBreakpoints(whichBpToClear);
+                Spectrum.ClearExtBreakpoints();
+        }
+
+        public void LoadBreakpointsListFromFile(string fileName)
+        {
+            lock (m_sync)
+                Spectrum.LoadBreakpointsListFromFile(fileName);
+        }
+        public void SaveBreakpointsListToFile(string fileName)
+        {
+            lock (m_sync)
+                Spectrum.SaveBreakpointsListToFile(fileName);
         }
 
 		public event EventHandler UpdateState;

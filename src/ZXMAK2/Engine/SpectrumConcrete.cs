@@ -221,6 +221,15 @@ namespace ZXMAK2.Engine
 
             breakpointInfo.isOn = true; // activate the breakpoint
 
+            //save breakpoint command line string
+            breakpointInfo.breakpointString = String.Empty;
+            for (byte counter = 0; counter < newBreakpointDesc.Count; counter++)
+            {
+                breakpointInfo.breakpointString += newBreakpointDesc[counter];
+                if (counter+1 < newBreakpointDesc.Count)
+                    breakpointInfo.breakpointString += " ";
+            }
+
             // ADD breakpoint into list
             // Here will be the breakpoint key assigned by searching keys starting with key 0
             // Maximum 255 breakpoints is allowed
@@ -253,53 +262,56 @@ namespace ZXMAK2.Engine
             if (_breakpointsExt == null || _breakpointsExt.Count == 0)
                 return false;
 
-            for (byte counter = 0; counter < _breakpointsExt.Count; counter++)
+            lock (_breakpointsExt)
             {
-                if (!_breakpointsExt[counter].isOn)
-                    continue;
-
-                ushort leftValue = 0;
-                ushort rightValue = 0;
-
-                switch (_breakpointsExt[counter].accessType)
+                foreach (KeyValuePair<byte, breakpointInfo> breakpoint in _breakpointsExt)
                 {
-                    // e.g.: PC == #9C40
-                    case BreakPointConditionType.registryVsValue:
-                        leftValue = FormCpu.getRegistryValueByName(_cpu.regs, _breakpointsExt[counter].leftCondition);
-                        rightValue = _breakpointsExt[counter].rightValue;
-                        break;
-                    // e.g.: (#9C40) != #2222
-                    case BreakPointConditionType.memoryVsValue:
-                        leftValue = ReadMemory(_breakpointsExt[counter].leftValue);
-                        rightValue = _breakpointsExt[counter].rightValue;
-                        break;
-                    // e.g.: (PC) == #D1 - instruction breakpoint
-                    case BreakPointConditionType.registryMemoryReferenceVsValue:
-                        leftValue = ReadMemory(FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(_breakpointsExt[counter].leftCondition)));
-                        rightValue = _breakpointsExt[counter].rightValue;
-                        if (rightValue > 0xFF) //check on 2 bytes right condition, e.g.: (PC) == #5EED
-                        {
-                            int hiByte = FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(_breakpointsExt[counter].leftCondition)) + 1;
-                            if (hiByte > 0xFFFF)
-                                hiByte = 0;
-                            leftValue += Convert.ToUInt16(ReadMemory(Convert.ToUInt16(hiByte)) * 256);
-                        }
-                        break;
-                    default:
-                        break;
+                    if (!breakpoint.Value.isOn)
+                        continue;
+
+                    ushort leftValue = 0;
+                    ushort rightValue = 0;
+
+                    switch (breakpoint.Value.accessType)
+                    {
+                        // e.g.: PC == #9C40
+                        case BreakPointConditionType.registryVsValue:
+                            leftValue = FormCpu.getRegistryValueByName(_cpu.regs, breakpoint.Value.leftCondition);
+                            rightValue = breakpoint.Value.rightValue;
+                            break;
+                        // e.g.: (#9C40) != #2222
+                        case BreakPointConditionType.memoryVsValue:
+                            leftValue = ReadMemory(breakpoint.Value.leftValue);
+                            rightValue = breakpoint.Value.rightValue;
+                            break;
+                        // e.g.: (PC) == #D1 - instruction breakpoint
+                        case BreakPointConditionType.registryMemoryReferenceVsValue:
+                            leftValue = ReadMemory(FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(breakpoint.Value.leftCondition)));
+                            rightValue = breakpoint.Value.rightValue;
+                            if (rightValue > 0xFF) //check on 2 bytes right condition, e.g.: (PC) == #5EED
+                            {
+                                int hiByte = FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(breakpoint.Value.leftCondition)) + 1;
+                                if (hiByte > 0xFFFF)
+                                    hiByte = 0;
+                                leftValue += Convert.ToUInt16(ReadMemory(Convert.ToUInt16(hiByte)) * 256);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                    //condition
+                    if (breakpoint.Value.conditionTypeSign == "==") // is equal
+                    {
+                        if (leftValue == rightValue)
+                            return true;
+                    }
+                    else if (breakpoint.Value.conditionTypeSign == "!=") // is not equal
+                    {
+                        if (leftValue != rightValue)
+                            return true;
+                    };
                 }
-
-                //condition
-                if (_breakpointsExt[counter].conditionTypeSign == "==") // is equal
-                {
-                    if (leftValue == rightValue)
-                        return true;
-                }
-                else if (_breakpointsExt[counter].conditionTypeSign == "!=") // is not equal
-                {
-                    if (leftValue != rightValue)
-                        return true;
-                };
             }
 
             return false;
@@ -320,9 +332,61 @@ namespace ZXMAK2.Engine
             return;
         }
 
-        // if -1 => all breakpoints clear
-        public override void ClearExtBreakpoints(int whichBpToClear)
+        // clears all conditional breakpoints
+        public override void ClearExtBreakpoints()
         {
+            lock (_breakpointsExt)
+                _breakpointsExt.Clear();
+        }
+
+        public override void LoadBreakpointsListFromFile(string fileName)
+        {
+            System.IO.StreamReader file = null;
+
+            try
+            {
+                if (!File.Exists(fileName))
+                    throw new Exception("file " + fileName + " does not exists...");
+
+                string dbgCommandFromFile = String.Empty;
+                file = new System.IO.StreamReader(fileName);
+                while ((dbgCommandFromFile = file.ReadLine()) != null)
+                {
+                    if (dbgCommandFromFile.Trim() == String.Empty || dbgCommandFromFile[0] == ';')
+                        continue;
+
+                    List<string> parsedCommand = FormCpu.ParseCommand(dbgCommandFromFile);
+                    if (parsedCommand == null)
+                        throw new Exception("unknown debugger command");
+
+                    AddExtBreakpoint(parsedCommand);
+                }
+            }
+            finally
+            {
+                file.Close();
+            }
+        }
+        public override void SaveBreakpointsListToFile(string fileName)
+        {
+            DictionarySafe<byte, breakpointInfo> localBreakpointsList = GetExtBreakpointsList();
+            if (localBreakpointsList.Count == 0)
+                return;
+
+            System.IO.StreamWriter file = null;
+            try
+            {
+                file = new System.IO.StreamWriter(fileName);
+
+                foreach (KeyValuePair<byte, breakpointInfo> breakpoint in localBreakpointsList)
+                {
+                    file.WriteLine(breakpoint.Value.breakpointString);
+                }
+            }
+            finally
+            {
+                file.Close();
+            }
         }
         #endregion
 

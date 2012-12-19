@@ -30,7 +30,11 @@ namespace ZXMAK2.Interfaces
         DictionarySafe<byte, breakpointInfo> GetExtBreakpointsList();
         bool CheckExtBreakpoints();
         void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn); //enables/disables breakpoint, command "on" or "off"
-        void ClearExtBreakpoints(int whichBpToClear); // if -1 => all breakpoints clear
+        void ClearExtBreakpoints();
+        void LoadBreakpointsListFromFile(string fileName);
+        void SaveBreakpointsListToFile(string fileName);
+
+
 		event EventHandler UpdateState;
 		event EventHandler Breakpoint;
 		bool IsRunning { get; }

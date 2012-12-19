@@ -728,8 +728,20 @@ namespace ZXMAK2.Controls.Debugger
                     }
                     else if (getDbgCommandType(parsedCommand) == CommandType.disableBreakpoint)
                     {
-                        //enable breakpoint
+                        //disable breakpoint
                         m_spectrum.EnableOrDisableBreakpointStatus(Convert.ToByte(convertNumberWithPrefix(parsedCommand[1])), false);
+                    }
+                    else if (getDbgCommandType(parsedCommand) == CommandType.loadBreakpointsListFromFile)
+                    {
+                        //load breakpoints list into debugger
+                        m_spectrum.LoadBreakpointsListFromFile(parsedCommand[1]);
+
+                        showStack = false;                        
+                    }
+                    else if (getDbgCommandType(parsedCommand) == CommandType.saveBreakpointsListToFile)
+                    {
+                        //save breakpoints list into debugger
+                        m_spectrum.SaveBreakpointsListToFile(parsedCommand[1]);
                     }
                     else
                     {
