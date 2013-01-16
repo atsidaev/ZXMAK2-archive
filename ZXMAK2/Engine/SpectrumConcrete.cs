@@ -148,22 +148,22 @@ namespace ZXMAK2.Engine
             bool leftIsMemoryReference = false;
 
             string left = newBreakpointDesc[1];
-            if (FormCpu.isMemoryReference(left))
+            if (DebuggerManager.isMemoryReference(left))
             {
                 breakpointInfo.leftCondition = left.ToUpper();
 
                 // it can be memory reference by registry value, e.g.: (PC), (DE), ...
-                if (FormCpu.isRegistryMemoryReference(left))
-                    breakpointInfo.leftValue = FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(left));
+                if (DebuggerManager.isRegistryMemoryReference(left))
+                    breakpointInfo.leftValue = DebuggerManager.getRegistryValueByName(_cpu.regs, DebuggerManager.getRegistryFromReference(left));
                 else
-                    breakpointInfo.leftValue = FormCpu.getReferencedMemoryPointer(left);
+                    breakpointInfo.leftValue = DebuggerManager.getReferencedMemoryPointer(left);
 
                 leftIsMemoryReference = true;
             }
             else
             {
                 //must be a registry
-                if (!FormCpu.isRegistry(left))
+                if (!DebuggerManager.isRegistry(left))
                     throw new Exception("incorrect breakpoint(left condition)");
 
                 breakpointInfo.leftCondition = left.ToUpper();
@@ -176,16 +176,16 @@ namespace ZXMAK2.Engine
             byte rightType = 0xFF; // 0 - memory reference, 1 - registry value, 2 - common value
 
             string right = newBreakpointDesc[3];
-            if (FormCpu.isMemoryReference(right))
+            if (DebuggerManager.isMemoryReference(right))
             {
                 breakpointInfo.rightCondition = right.ToUpper(); // because of breakpoint panel
-                breakpointInfo.rightValue = ReadMemory(FormCpu.getReferencedMemoryPointer(right));
+                breakpointInfo.rightValue = ReadMemory(DebuggerManager.getReferencedMemoryPointer(right));
 
                 rightType = 0;
             }
             else
             {
-                if (FormCpu.isRegistry(right))
+                if (DebuggerManager.isRegistry(right))
                 {
                     breakpointInfo.rightCondition = right;
 
@@ -195,7 +195,7 @@ namespace ZXMAK2.Engine
                 {
                     //it has to be a common value, e.g.: #4000, %111010101, ...
                     breakpointInfo.rightCondition = right.ToUpper(); // because of breakpoint panel
-                    breakpointInfo.rightValue = FormCpu.convertNumberWithPrefix(right); // last chance
+                    breakpointInfo.rightValue = DebuggerManager.convertNumberWithPrefix(right); // last chance
 
                     rightType = 2;
                 }
@@ -207,7 +207,7 @@ namespace ZXMAK2.Engine
             //4. finish
             if (leftIsMemoryReference)
             {
-                if (FormCpu.isRegistryMemoryReference(breakpointInfo.leftCondition)) // left condition is e.g.: (PC), (HL), (DE), ...
+                if (DebuggerManager.isRegistryMemoryReference(breakpointInfo.leftCondition)) // left condition is e.g.: (PC), (HL), (DE), ...
                 {
                     if (rightType == 2) // right is number
                         breakpointInfo.accessType = BreakPointConditionType.registryMemoryReferenceVsValue;
@@ -276,7 +276,7 @@ namespace ZXMAK2.Engine
                     {
                         // e.g.: PC == #9C40
                         case BreakPointConditionType.registryVsValue:
-                            leftValue = FormCpu.getRegistryValueByName(_cpu.regs, breakpoint.Value.leftCondition);
+                            leftValue = DebuggerManager.getRegistryValueByName(_cpu.regs, breakpoint.Value.leftCondition);
                             rightValue = breakpoint.Value.rightValue;
                             break;
                         // e.g.: (#9C40) != #2222
@@ -286,11 +286,11 @@ namespace ZXMAK2.Engine
                             break;
                         // e.g.: (PC) == #D1 - instruction breakpoint
                         case BreakPointConditionType.registryMemoryReferenceVsValue:
-                            leftValue = ReadMemory(FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(breakpoint.Value.leftCondition)));
+                            leftValue = ReadMemory(DebuggerManager.getRegistryValueByName(_cpu.regs, DebuggerManager.getRegistryFromReference(breakpoint.Value.leftCondition)));
                             rightValue = breakpoint.Value.rightValue;
                             if (rightValue > 0xFF) //check on 2 bytes right condition, e.g.: (PC) == #5EED
                             {
-                                int hiByte = FormCpu.getRegistryValueByName(_cpu.regs, FormCpu.getRegistryFromReference(breakpoint.Value.leftCondition)) + 1;
+                                int hiByte = DebuggerManager.getRegistryValueByName(_cpu.regs, DebuggerManager.getRegistryFromReference(breakpoint.Value.leftCondition)) + 1;
                                 if (hiByte > 0xFFFF)
                                     hiByte = 0;
                                 leftValue += Convert.ToUInt16(ReadMemory(Convert.ToUInt16(hiByte)) * 256);
@@ -355,7 +355,7 @@ namespace ZXMAK2.Engine
                     if (dbgCommandFromFile.Trim() == String.Empty || dbgCommandFromFile[0] == ';')
                         continue;
 
-                    List<string> parsedCommand = FormCpu.ParseCommand(dbgCommandFromFile);
+                    List<string> parsedCommand = DebuggerManager.ParseCommand(dbgCommandFromFile);
                     if (parsedCommand == null)
                         throw new Exception("unknown debugger command");
 
