@@ -400,11 +400,15 @@ namespace ZXMAK2.Engine
 
 			while (t > _cpu.Tact/* && IsRunning*/)
 			{
+				// Alex: performance critical block, do not modify!
 				_bus.ExecCycle();
-				if (
-                    ( CheckBreakpoint(_cpu.regs.PC) || CheckExtBreakpoints() )  &&
-                    !_cpu.HALTED
-                   )
+				if (_cpu.HALTED || (_breakpoints == null && _breakpointsExt == null))
+				{
+					continue;
+				}
+				// Alex: end of performance critical block
+				
+				if (CheckBreakpoint(_cpu.regs.PC) || CheckExtBreakpoints())
 				{
 					int delta1 = (int)(_cpu.Tact - t);
 					if (delta1 >= 0)
