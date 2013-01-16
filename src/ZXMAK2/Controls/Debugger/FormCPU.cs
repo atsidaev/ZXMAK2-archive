@@ -688,57 +688,57 @@ namespace ZXMAK2.Controls.Debugger
                 {
                     string actualCommand = dbgCmdLine.Text;
 
-                    List<string> parsedCommand = ParseCommand(actualCommand);
+                    List<string> parsedCommand = DebuggerManager.ParseCommand(actualCommand);
                     if (parsedCommand == null)
                         throw new Exception("unknown debugger command");
 
-                    CommandType commandType = getDbgCommandType(parsedCommand);
+                    DebuggerManager.CommandType commandType = DebuggerManager.getDbgCommandType(parsedCommand);
 
-                    if (commandType == CommandType.Unidentified)
+                    if (commandType == DebuggerManager.CommandType.Unidentified)
                         throw new Exception("unknown debugger command"); // unknown cmd line type
 
                     //breakpoint manipulation ?
-                    if (getDbgCommandType(parsedCommand) == CommandType.breakpointManipulation)
+                    if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.breakpointManipulation)
                     {
                         // add new enhanced breakpoint
                         string left = parsedCommand[1];
 
                         //left side must be registry or memory reference
-                        if (!isRegistry(left) && !isMemoryReference(left))
+                        if (!DebuggerManager.isRegistry(left) && !DebuggerManager.isMemoryReference(left))
                             throw new Exception("bad condition !");
 
                         m_spectrum.AddExtBreakpoint(parsedCommand); // add breakpoint, send parsed command e.g.: br pc == #0000
 
                         showStack = false; // show breakpoint list on listState panel
                     }
-                    else if (getDbgCommandType(parsedCommand) == CommandType.gotoAdress)
+                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.gotoAdress)
                     {
                         // goto adress to dissasembly
-                        dasmPanel.TopAddress = convertNumberWithPrefix(parsedCommand[1]);
+                        dasmPanel.TopAddress = DebuggerManager.convertNumberWithPrefix(parsedCommand[1]);
                     }
-                    else if (getDbgCommandType(parsedCommand) == CommandType.removeBreakpoint)
+                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.removeBreakpoint)
                     {
                         // remove breakpoint
-                        m_spectrum.RemoveExtBreakpoint(Convert.ToByte(convertNumberWithPrefix(parsedCommand[1])));
+                        m_spectrum.RemoveExtBreakpoint(Convert.ToByte(DebuggerManager.convertNumberWithPrefix(parsedCommand[1])));
                     }
-                    else if (getDbgCommandType(parsedCommand) == CommandType.enableBreakpoint)
+                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.enableBreakpoint)
                     {
                         //enable breakpoint
-                        m_spectrum.EnableOrDisableBreakpointStatus(Convert.ToByte(convertNumberWithPrefix(parsedCommand[1])), true);
+                        m_spectrum.EnableOrDisableBreakpointStatus(Convert.ToByte(DebuggerManager.convertNumberWithPrefix(parsedCommand[1])), true);
                     }
-                    else if (getDbgCommandType(parsedCommand) == CommandType.disableBreakpoint)
+                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.disableBreakpoint)
                     {
                         //disable breakpoint
-                        m_spectrum.EnableOrDisableBreakpointStatus(Convert.ToByte(convertNumberWithPrefix(parsedCommand[1])), false);
+                        m_spectrum.EnableOrDisableBreakpointStatus(Convert.ToByte(DebuggerManager.convertNumberWithPrefix(parsedCommand[1])), false);
                     }
-                    else if (getDbgCommandType(parsedCommand) == CommandType.loadBreakpointsListFromFile)
+                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.loadBreakpointsListFromFile)
                     {
                         //load breakpoints list into debugger
                         m_spectrum.LoadBreakpointsListFromFile(parsedCommand[1]);
 
                         showStack = false;                        
                     }
-                    else if (getDbgCommandType(parsedCommand) == CommandType.saveBreakpointsListToFile)
+                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.saveBreakpointsListToFile)
                     {
                         //save breakpoints list into debugger
                         m_spectrum.SaveBreakpointsListToFile(parsedCommand[1]);
@@ -757,41 +757,41 @@ namespace ZXMAK2.Controls.Debugger
                         bool isRightRegistry = false;
 
                         //Reading values - left side of statement
-                        if (isMemoryReference(left))
+                        if (DebuggerManager.isMemoryReference(left))
                         {
-                            leftNum = getReferencedMemoryPointer(left);
+                            leftNum = DebuggerManager.getReferencedMemoryPointer(left);
 
                             isLeftMemoryReference = true;
                         }
                         else
                         {
                             // is it register ?
-                            if (isRegistry(left))
+                            if (DebuggerManager.isRegistry(left))
                             {
-                                leftNum = getRegistryValueByName(m_spectrum.CPU.regs, left);
+                                leftNum = DebuggerManager.getRegistryValueByName(m_spectrum.CPU.regs, left);
                                 isLeftRegistry = true;
                             }
                             else
-                                leftNum = convertNumberWithPrefix(left);
+                                leftNum = DebuggerManager.convertNumberWithPrefix(left);
                         }
 
                         //Reading values - right side of statement
-                        if (isMemoryReference(right))
+                        if (DebuggerManager.isMemoryReference(right))
                         {
-                            rightNum = getReferencedMemoryPointer(right);
+                            rightNum = DebuggerManager.getReferencedMemoryPointer(right);
 
                             isRightMemoryReference = true;
                         }
                         else
                         {
                             // is it register ?
-                            if (isRegistry(right))
+                            if (DebuggerManager.isRegistry(right))
                             {
-                                rightNum = getRegistryValueByName(m_spectrum.CPU.regs, right);
+                                rightNum = DebuggerManager.getRegistryValueByName(m_spectrum.CPU.regs, right);
                                 isRightRegistry = true;
                             }
                             else
-                                rightNum = convertNumberWithPrefix(right);
+                                rightNum = DebuggerManager.convertNumberWithPrefix(right);
                         }
 
                         //Writing Memory/Registry
@@ -807,7 +807,7 @@ namespace ZXMAK2.Controls.Debugger
                             if (isRightRegistry)
                             {
                                 // e.g.: ld (#9C40), hl
-                                UInt16 regValue = getRegistryValueByName(m_spectrum.CPU.regs, right);
+                                UInt16 regValue = DebuggerManager.getRegistryValueByName(m_spectrum.CPU.regs, right);
                                 if (regValue <= Byte.MaxValue)
                                     m_spectrum.WriteMemory(leftNum, Convert.ToByte(regValue));
                                 else

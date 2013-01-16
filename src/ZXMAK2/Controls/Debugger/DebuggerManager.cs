@@ -41,7 +41,7 @@ namespace ZXMAK2.Controls.Debugger
     }
     #endregion
 
-    public partial class FormCpu : Form
+    public partial class DebuggerManager
     {
         public static string[] Regs16Bit = new string[] { "AF", "BC", "DE", "HL", "IX", "IY", "SP", "IR", "PC", "AF'", "BC'", "DE'", "HL'" };
         public static char[]   Regs8Bit  = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'H', 'L' };
