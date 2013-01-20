@@ -463,8 +463,8 @@ namespace ZXMAK2.Hardware.General
 		#region IGuiExtension Members
 
 		private GuiData m_guiData;
-		private object m_subMenuItem;
-		private object m_form;
+		private System.Windows.Forms.MenuItem m_subMenuItem;
+		private Controls.TapeForm m_form;
 
 		public void AttachGui(GuiData guiData)
 		{
@@ -475,7 +475,7 @@ namespace ZXMAK2.Hardware.General
 				if (menuItem != null)
 				{
 					m_subMenuItem = new System.Windows.Forms.MenuItem("Tape", menu_Click);
-					menuItem.MenuItems.Add((System.Windows.Forms.MenuItem)m_subMenuItem);
+					menuItem.MenuItems.Add(m_subMenuItem);
 				}
 			}
 		}
@@ -484,17 +484,15 @@ namespace ZXMAK2.Hardware.General
 		{
 			if (m_guiData.MainWindow is System.Windows.Forms.Form)
 			{
-				System.Windows.Forms.MenuItem subMenuItem = m_subMenuItem as System.Windows.Forms.MenuItem;
-				System.Windows.Forms.Form form = m_form as System.Windows.Forms.Form;
-				if (subMenuItem != null)
+				if (m_subMenuItem != null)
 				{
-					subMenuItem.Parent.MenuItems.Remove(subMenuItem);
-					subMenuItem.Dispose();
+					m_subMenuItem.Parent.MenuItems.Remove(m_subMenuItem);
+					m_subMenuItem.Dispose();
 					m_subMenuItem = null;
 				}
-				if (form != null)
+				if (m_form != null)
 				{
-					form.Close();
+					m_form.Close();
 					m_form = null;
 				}
 			}
@@ -505,18 +503,16 @@ namespace ZXMAK2.Hardware.General
 		{
 			if (m_guiData.MainWindow is System.Windows.Forms.Form)
 			{
-				Controls.TapeForm form = m_form as Controls.TapeForm;
-				if (form == null)
+				if (m_form == null)
 				{
-					form = new Controls.TapeForm(this);
-					form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg) { m_form = null; };
-					m_form = form;
-					form.Show((System.Windows.Forms.Form)m_guiData.MainWindow);
+					m_form = new Controls.TapeForm(this);
+					m_form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg) { m_form = null; };
+					m_form.Show((System.Windows.Forms.Form)m_guiData.MainWindow);
 				}
 				else
 				{
-					form.Show();
-					form.Activate();
+					m_form.Show();
+					m_form.Activate();
 				}
 			}
 		}

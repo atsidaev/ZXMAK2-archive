@@ -7,8 +7,9 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 using ZXMAK2.Interfaces;
-using ZXMAK2.Controls.Debugger;
 using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine;
+using ZXMAK2.Controls.Debugger;
 
 namespace ZXMAK2.Hardware.Sprinter.UI
 {
@@ -112,11 +113,6 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         {
         }
 
-        private bool dasmPanel_CheckBreakpoint(object Sender, ushort ADDR)
-        {
-            return m_spectrum.CheckBreakpoint(ADDR);
-        }
-
         private bool dasmPanel_CheckExecuting(object Sender, ushort ADDR)
         {
             if (m_spectrum.IsRunning)
@@ -150,17 +146,31 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             }
         }
 
-        private void dasmPanel_SetBreakpoint(object Sender, ushort Addr)
-        {
-            if (m_spectrum.CheckBreakpoint(Addr))
-            {
-                m_spectrum.RemoveBreakpoint(Addr);
-            }
-            else
-            {
-                m_spectrum.AddBreakpoint(Addr);
-            }
-        }
+		private bool dasmPanel_CheckBreakpoint(object sender, ushort addr)
+		{
+			foreach (Breakpoint bp in m_spectrum.GetBreakpointList())
+				if (bp.Address.HasValue && bp.Address == addr)
+					return true;
+			return false;
+		}
+
+		private void dasmPanel_SetBreakpoint(object sender, ushort addr)
+		{
+			bool found = false;
+			foreach (Breakpoint bp in m_spectrum.GetBreakpointList())
+			{
+				if (bp.Address.HasValue && bp.Address == addr)
+				{
+					m_spectrum.RemoveBreakpoint(bp);
+					found = true;
+				}
+			}
+			if (!found)
+			{
+				Breakpoint bp = new Breakpoint(addr);
+				m_spectrum.AddBreakpoint(bp);
+			}
+		}
 
         private void dataPanel_DataClick(object Sender, ushort Addr)
         {
