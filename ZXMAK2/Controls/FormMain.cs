@@ -201,7 +201,14 @@ namespace ZXMAK2.Controls
 		{
 		}
 
-		protected override void OnKeyUp(KeyEventArgs e)
+        protected override void OnDeactivate(EventArgs e)
+        {
+            base.OnDeactivate(e);
+            if (m_vm.CPU.RST)
+                m_vm.CPU.RST = false;
+        }
+        
+        protected override void OnKeyUp(KeyEventArgs e)
 		{
 			//RESET
 			if (e.Alt && e.Control && e.KeyCode == Keys.Insert)
