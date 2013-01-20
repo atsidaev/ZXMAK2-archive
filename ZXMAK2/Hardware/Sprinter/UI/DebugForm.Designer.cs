@@ -71,10 +71,10 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             this.listREGS = new System.Windows.Forms.ListBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panelMem = new System.Windows.Forms.Panel();
-            this.dataPanel = new ZXMAK2.Controls.Debugger.DataPanel();
+            this.dataPanel = new ZXMAK2.Hardware.General.UI.DataPanel();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.panelDasm = new System.Windows.Forms.Panel();
-            this.dasmPanel = new ZXMAK2.Controls.Debugger.DasmPanel();
+            this.dasmPanel = new ZXMAK2.Hardware.General.UI.DasmPanel();
             this.contextMenuDasm = new System.Windows.Forms.ContextMenu();
             this.menuItemDasmGotoADDR = new System.Windows.Forms.MenuItem();
             this.menuItemDasmGotoPC = new System.Windows.Forms.MenuItem();

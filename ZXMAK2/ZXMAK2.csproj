@@ -164,13 +164,13 @@
     <Compile Include="Hardware\Adlers\UI\FormCPU.designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Debugger\DebugPanels.cs">
+    <Compile Include="Hardware\General\UI\DebugPanels.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\Debugger\FormCPU.cs">
+    <Compile Include="Hardware\General\UI\FormCPU.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\Debugger\FormCPU.designer.cs">
+    <Compile Include="Hardware\General\UI\FormCPU.designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\RenderVideo.cs">
@@ -414,7 +414,7 @@
     <EmbeddedResource Include="Hardware\Adlers\UI\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Debugger\FormCPU.resx">
+    <EmbeddedResource Include="Hardware\General\UI\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\FormMain.resx">
