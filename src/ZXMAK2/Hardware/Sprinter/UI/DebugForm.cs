@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
-using ZXMAK2.Controls.Debugger;
+using ZXMAK2.Hardware.General.UI;
 
 namespace ZXMAK2.Hardware.Sprinter.UI
 {
