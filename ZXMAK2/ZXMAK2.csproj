@@ -91,6 +91,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\Breakpoint.cs" />
     <Compile Include="Controls\Configuration\ConfigScreenControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -130,10 +131,6 @@
     <Compile Include="Controls\Configuration\FormAddDeviceWizard.Designer.cs">
       <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Debugger\DebuggerManager.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\Debugger\DictionarySafe.cs" />
     <Compile Include="Controls\Debugger\FormMemoryMap.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -154,6 +151,18 @@
     </Compile>
     <Compile Include="Controls\Debugger\dbgWD1793.designer.cs">
       <DependentUpon>dbgWD1793.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hardware\Adlers\Debugger.cs" />
+    <Compile Include="Hardware\Adlers\UI\DebuggerManager.cs" />
+    <Compile Include="Hardware\Adlers\UI\DebugPanels.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Hardware\Adlers\UI\DictionarySafe.cs" />
+    <Compile Include="Hardware\Adlers\UI\FormCPU.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Hardware\Adlers\UI\FormCPU.designer.cs">
+      <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\Debugger\DebugPanels.cs">
       <SubType>Component</SubType>
@@ -214,6 +223,7 @@
     <Compile Include="Hardware\Spectrum\UlaSpectrum48snow.cs" />
     <Compile Include="Hardware\Clone\ZebestUla.cs" />
     <Compile Include="Engine\IconDescriptor.cs" />
+    <Compile Include="Interfaces\IMachineState.cs" />
     <Compile Include="Interfaces\IBusDevice.cs" />
     <Compile Include="Interfaces\IConfigurable.cs" />
     <Compile Include="Interfaces\IDebuggable.cs" />
@@ -400,6 +410,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Debugger\dbgWD1793.resx">
       <DependentUpon>dbgWD1793.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Hardware\Adlers\UI\FormCPU.resx">
+      <DependentUpon>FormCPU.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Debugger\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>

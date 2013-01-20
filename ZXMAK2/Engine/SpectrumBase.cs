@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace ZXMAK2.Engine
 {
-	public abstract class SpectrumBase : IDisposable
+	public abstract class SpectrumBase : IMachineState, IDisposable
 	{
 		#region private
 
@@ -112,7 +112,7 @@ namespace ZXMAK2.Engine
 					if (CPU.regs.PC == nextAddr)
 						break;
 
-					if (CheckBreakpoint(CPU.regs.PC))
+					if (CheckBreakpoint())
 					{
 						OnUpdateFrame();
 						OnBreakpoint();
@@ -188,21 +188,11 @@ namespace ZXMAK2.Engine
 			OnUpdateState();
 		}
 
-		public abstract void AddBreakpoint(ushort addr);
-		public abstract void RemoveBreakpoint(ushort addr);
-		public abstract ushort[] GetBreakpointList();
-		public abstract bool CheckBreakpoint(ushort addr);
+		public abstract void AddBreakpoint(Breakpoint bp);
+		public abstract void RemoveBreakpoint(Breakpoint bp);
+		public abstract Breakpoint[] GetBreakpointList();
 		public abstract void ClearBreakpoints();
-
-        //conditional breakpoints
-        public abstract void AddExtBreakpoint(List<string> breakListDesc);
-        public abstract void RemoveExtBreakpoint(byte addr);
-        public abstract DictionarySafe<byte, breakpointInfo> GetExtBreakpointsList();
-        public abstract bool CheckExtBreakpoints();
-        public abstract void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn); //enables/disables breakpoint, command "on" or "off"
-        public abstract void ClearExtBreakpoints();
-        public abstract void LoadBreakpointsListFromFile(string fileName);
-        public abstract void SaveBreakpointsListToFile(string fileName);
+		protected abstract bool CheckBreakpoint();
 
 		#endregion
 

@@ -458,28 +458,22 @@ namespace ZXMAK2.Engine
 			OnUpdateVideo();
 		}
 
-		public void AddBreakpoint(ushort addr)
+		public void AddBreakpoint(Breakpoint bp)
 		{
 			lock (m_sync)
-				Spectrum.AddBreakpoint(addr);
+				Spectrum.AddBreakpoint(bp);
 		}
 
-		public void RemoveBreakpoint(ushort addr)
+		public void RemoveBreakpoint(Breakpoint bp)
 		{
 			lock (m_sync)
-				Spectrum.RemoveBreakpoint(addr);
+				Spectrum.RemoveBreakpoint(bp);
 		}
 
-		public ushort[] GetBreakpointList()
+		public Breakpoint[] GetBreakpointList()
 		{
 			lock (m_sync)
 				return Spectrum.GetBreakpointList();
-		}
-
-		public bool CheckBreakpoint(ushort addr)
-		{
-			lock (m_sync)
-				return Spectrum.CheckBreakpoint(addr);
 		}
 
 		public void ClearBreakpoints()
@@ -487,53 +481,6 @@ namespace ZXMAK2.Engine
 			lock (m_sync)
 				Spectrum.ClearBreakpoints();
 		}
-
-        public void AddExtBreakpoint(List<string> breakListDesc)
-        {
-            lock (m_sync)
-                Spectrum.AddExtBreakpoint(breakListDesc);
-        }
-
-        public void RemoveExtBreakpoint(byte breakpointNrToRemove)
-        {
-            lock (m_sync)
-                Spectrum.RemoveExtBreakpoint(breakpointNrToRemove);
-        }
-
-        public bool CheckExtBreakpoints()
-        {
-            lock (m_sync)
-                return Spectrum.CheckExtBreakpoints();
-        }
-
-        public DictionarySafe<byte, breakpointInfo> GetExtBreakpointsList()
-        {
-            lock (m_sync)
-                return Spectrum.GetExtBreakpointsList();
-        }
-
-        public void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn) //enables/disables breakpoint, command "on" or "off"
-        {
-            lock (m_sync)
-                Spectrum.EnableOrDisableBreakpointStatus(whichBpToEnableOrDisable, setOn);
-        }
-
-        public void ClearExtBreakpoints()
-        {
-            lock (m_sync)
-                Spectrum.ClearExtBreakpoints();
-        }
-
-        public void LoadBreakpointsListFromFile(string fileName)
-        {
-            lock (m_sync)
-                Spectrum.LoadBreakpointsListFromFile(fileName);
-        }
-        public void SaveBreakpointsListToFile(string fileName)
-        {
-            lock (m_sync)
-                Spectrum.SaveBreakpointsListToFile(fileName);
-        }
 
 		public event EventHandler UpdateState;
 		public event EventHandler Breakpoint;

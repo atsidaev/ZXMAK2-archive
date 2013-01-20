@@ -248,8 +248,8 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             this.dataPanel.TabIndex = 0;
             this.dataPanel.Text = "dataPanel1";
             this.dataPanel.TopAddress = ((ushort)(0));
-            this.dataPanel.GetData += new ZXMAK2.Controls.Debugger.DataPanel.ONGETDATACPU(this.dasmPanel_GetData);
-            this.dataPanel.DataClick += new ZXMAK2.Controls.Debugger.DataPanel.ONCLICKCPU(this.dataPanel_DataClick);
+            this.dataPanel.GetData += this.dasmPanel_GetData;
+            this.dataPanel.DataClick += this.dataPanel_DataClick;
             this.dataPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataPanel_MouseClick);
             // 
             // splitter2
@@ -285,11 +285,11 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             this.dasmPanel.TabIndex = 0;
             this.dasmPanel.Text = "dasmPanel1";
             this.dasmPanel.TopAddress = ((ushort)(0));
-            this.dasmPanel.CheckBreakpoint += new ZXMAK2.Controls.Debugger.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckBreakpoint);
-            this.dasmPanel.CheckExecuting += new ZXMAK2.Controls.Debugger.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckExecuting);
-            this.dasmPanel.GetData += new ZXMAK2.Controls.Debugger.DasmPanel.ONGETDATACPU(this.dasmPanel_GetData);
-            this.dasmPanel.GetDasm += new ZXMAK2.Controls.Debugger.DasmPanel.ONGETDASMCPU(this.dasmPanel_GetDasm);
-            this.dasmPanel.BreakpointClick += new ZXMAK2.Controls.Debugger.DasmPanel.ONCLICKCPU(this.dasmPanel_SetBreakpoint);
+            this.dasmPanel.CheckBreakpoint += this.dasmPanel_CheckBreakpoint;
+            this.dasmPanel.CheckExecuting += this.dasmPanel_CheckExecuting;
+            this.dasmPanel.GetData += this.dasmPanel_GetData;
+            this.dasmPanel.GetDasm += this.dasmPanel_GetDasm;
+            this.dasmPanel.BreakpointClick += this.dasmPanel_SetBreakpoint;
             this.dasmPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseClick);
             // 
             // contextMenuDasm

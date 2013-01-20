@@ -1,21 +1,32 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Windows.Forms;
-
-using ZXMAK2.Controls;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 
-namespace ZXMAK2.Hardware.Sprinter
+namespace ZXMAK2.Hardware.Adlers
 {
-    public class SprinterDebugger : BusDeviceBase, IJtagDevice, IGuiExtension
+    public class Debugger : BusDeviceBase, IJtagDevice, IGuiExtension
     {
         private IDebuggable m_target;
 
-        //int mnu_number=-1;
-        
-        //bool sandbox;
+        #region BusDeviceBase
+
+        public override string Name { get { return "Debugger Adlers"; } }
+        public override string Description { get { return "Debugger Adlers"; } }
+        public override BusCategory Category { get { return BusCategory.Other; } }
+
+        public override void BusInit(IBusManager bmgr)
+        {
+        }
+
+        public override void BusConnect()
+        {
+        }
+
+        public override void BusDisconnect()
+        {
+        }
+
+        #endregion
 
         #region IJtagDevice
 
@@ -32,42 +43,18 @@ namespace ZXMAK2.Hardware.Sprinter
 
         #endregion
 
-        #region IBusDevice
-
-        public override void BusConnect()
-        {
-            
-        }
-
-        public override void BusDisconnect()
-        {
-            
-        }
-
-        public override void BusInit(IBusManager bmgr)
-        {
-        }
-
-        public override BusCategory Category { get { return BusCategory.Other; } }
-
-        public override string Description { get { return "Sprinter debugger"; } }
-
-        public override string Name { get { return "Sprinter debugger"; } }
-
-        #endregion
-
         #region IGuiExtension Members
 
         private GuiData m_guiData;
 		private System.Windows.Forms.MenuItem m_subMenuItem;
-		private UI.DebugForm m_form;
+		private UI.FormCpu m_form;
 
         public void AttachGui(GuiData guiData)
         {
             m_guiData = guiData;
             if (m_guiData.MainWindow is System.Windows.Forms.Form)
             {
-                var menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
+                System.Windows.Forms.MenuItem menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
                 if (menuItem != null)
                 {
                     m_subMenuItem = new System.Windows.Forms.MenuItem("Debugger", menu_Click);
@@ -102,7 +89,7 @@ namespace ZXMAK2.Hardware.Sprinter
             {
                 if (m_form == null)
                 {
-					m_form = new UI.DebugForm();
+					m_form = new UI.FormCpu();
                     m_form.Init(m_target);
                     m_form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg)
                     {

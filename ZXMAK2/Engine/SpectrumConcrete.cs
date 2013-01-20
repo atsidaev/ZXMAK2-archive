@@ -21,10 +21,7 @@ namespace ZXMAK2.Engine
 		private BusManager _bus;
 		private LoadManager _loader;
 
-		private List<ushort> _breakpoints = null;
-
-        //conditional breakpoints
-        private DictionarySafe<byte, breakpointInfo> _breakpointsExt = null;
+		private List<Breakpoint> _breakpoints = new List<Breakpoint>();
 
 		private int m_frameStartTact;
 
@@ -94,301 +91,35 @@ namespace ZXMAK2.Engine
 			OnUpdateState();
 		}
 
-		public override void AddBreakpoint(ushort addr)
+		public override void AddBreakpoint(Breakpoint bp)
 		{
-			if (_breakpoints == null)
-				_breakpoints = new List<ushort>();
-			if (!_breakpoints.Contains(addr))
-				_breakpoints.Add(addr);
+			_breakpoints.Add(bp);
 		}
 
-		public override void RemoveBreakpoint(ushort addr)
+		public override void RemoveBreakpoint(Breakpoint bp)
 		{
-			if (_breakpoints != null)
-			{
-				if (_breakpoints.Contains(addr))
-					_breakpoints.Remove(addr);
-				if (_breakpoints.Count < 1)
-					_breakpoints = null;
-			}
+			_breakpoints.Remove(bp);
 		}
 
-		public override ushort[] GetBreakpointList()
+		public override Breakpoint[] GetBreakpointList()
 		{
-			if (_breakpoints == null)
-				return new ushort[0];
 			return _breakpoints.ToArray();
-		}
-
-		public override bool CheckBreakpoint(ushort addr)
-		{
-			if (_breakpoints != null)
-				return _breakpoints.Contains(addr);
-			return false;
 		}
 
 		public override void ClearBreakpoints()
 		{
-			if (_breakpoints != null)
-				_breakpoints.Clear();
-			_breakpoints = null;
+			_breakpoints.Clear();
+		}
+
+		protected override bool CheckBreakpoint()
+		{
+			foreach (Breakpoint bp in _breakpoints)
+				if (bp.Check(this))
+					return true;
+			return false;
 		}
 
 		#endregion
-
-        #region 2.) Extended breakpoints(conditional on memory change, write, registry change, ...)
-        public override void AddExtBreakpoint(List<string> newBreakpointDesc)
-        {
-            if (_breakpointsExt == null)
-                _breakpointsExt = new DictionarySafe<byte, breakpointInfo>();
-
-            breakpointInfo breakpointInfo = new breakpointInfo();
-
-            //1.LEFT condition
-            bool leftIsMemoryReference = false;
-
-            string left = newBreakpointDesc[1];
-            if (DebuggerManager.isMemoryReference(left))
-            {
-                breakpointInfo.leftCondition = left.ToUpper();
-
-                // it can be memory reference by registry value, e.g.: (PC), (DE), ...
-                if (DebuggerManager.isRegistryMemoryReference(left))
-                    breakpointInfo.leftValue = DebuggerManager.getRegistryValueByName(_cpu.regs, DebuggerManager.getRegistryFromReference(left));
-                else
-                    breakpointInfo.leftValue = DebuggerManager.getReferencedMemoryPointer(left);
-
-                leftIsMemoryReference = true;
-            }
-            else
-            {
-                //must be a registry
-                if (!DebuggerManager.isRegistry(left))
-                    throw new Exception("incorrect breakpoint(left condition)");
-
-                breakpointInfo.leftCondition = left.ToUpper();
-            }
-
-            //2.CONDITION type
-            breakpointInfo.conditionTypeSign = newBreakpointDesc[2]; // ==, !=, <, >, ...
-
-            //3.RIGHT condition
-            byte rightType = 0xFF; // 0 - memory reference, 1 - registry value, 2 - common value
-
-            string right = newBreakpointDesc[3];
-            if (DebuggerManager.isMemoryReference(right))
-            {
-                breakpointInfo.rightCondition = right.ToUpper(); // because of breakpoint panel
-                breakpointInfo.rightValue = ReadMemory(DebuggerManager.getReferencedMemoryPointer(right));
-
-                rightType = 0;
-            }
-            else
-            {
-                if (DebuggerManager.isRegistry(right))
-                {
-                    breakpointInfo.rightCondition = right;
-
-                    rightType = 1;
-                }
-                else
-                {
-                    //it has to be a common value, e.g.: #4000, %111010101, ...
-                    breakpointInfo.rightCondition = right.ToUpper(); // because of breakpoint panel
-                    breakpointInfo.rightValue = DebuggerManager.convertNumberWithPrefix(right); // last chance
-
-                    rightType = 2;
-                }
-            }
-
-            if (rightType == 0xFF)
-                throw new Exception("incorrect right condition");
-
-            //4. finish
-            if (leftIsMemoryReference)
-            {
-                if (DebuggerManager.isRegistryMemoryReference(breakpointInfo.leftCondition)) // left condition is e.g.: (PC), (HL), (DE), ...
-                {
-                    if (rightType == 2) // right is number
-                        breakpointInfo.accessType = BreakPointConditionType.registryMemoryReferenceVsValue;
-                }
-            }
-            else
-            {
-                if (rightType == 2)
-                    breakpointInfo.accessType = BreakPointConditionType.registryVsValue;
-            }
-
-            breakpointInfo.isOn = true; // activate the breakpoint
-
-            //save breakpoint command line string
-            breakpointInfo.breakpointString = String.Empty;
-            for (byte counter = 0; counter < newBreakpointDesc.Count; counter++)
-            {
-                breakpointInfo.breakpointString += newBreakpointDesc[counter];
-                if (counter+1 < newBreakpointDesc.Count)
-                    breakpointInfo.breakpointString += " ";
-            }
-
-            // ADD breakpoint into list
-            // Here will be the breakpoint key assigned by searching keys starting with key 0
-            // Maximum 255 breakpoints is allowed
-            for (byte counter = 0; counter < 0xFF; counter++)
-            {
-                if (!_breakpointsExt.ContainsKey(counter))
-                {
-                    _breakpointsExt.Add(counter, breakpointInfo);
-                    return;
-                }
-            }
-
-            throw new Exception("Maximum breakpoints count(255) exceeded...");
-        }
-        public override void RemoveExtBreakpoint(byte breakpointNrToRemove)
-        {
-            _breakpointsExt.Remove(breakpointNrToRemove);
-        }
-        public override DictionarySafe<byte, breakpointInfo> GetExtBreakpointsList()
-        {
-            if (_breakpointsExt != null)
-                return _breakpointsExt;
-
-            _breakpointsExt = new DictionarySafe<byte, breakpointInfo>();
-
-            return _breakpointsExt;
-        }
-        public override bool CheckExtBreakpoints()
-        {
-            if (_breakpointsExt == null || _breakpointsExt.Count == 0)
-                return false;
-
-            lock (_breakpointsExt)
-            {
-                foreach (KeyValuePair<byte, breakpointInfo> breakpoint in _breakpointsExt)
-                {
-                    if (!breakpoint.Value.isOn)
-                        continue;
-
-                    ushort leftValue = 0;
-                    ushort rightValue = 0;
-
-                    switch (breakpoint.Value.accessType)
-                    {
-                        // e.g.: PC == #9C40
-                        case BreakPointConditionType.registryVsValue:
-                            leftValue = DebuggerManager.getRegistryValueByName(_cpu.regs, breakpoint.Value.leftCondition);
-                            rightValue = breakpoint.Value.rightValue;
-                            break;
-                        // e.g.: (#9C40) != #2222
-                        case BreakPointConditionType.memoryVsValue:
-                            leftValue = ReadMemory(breakpoint.Value.leftValue);
-                            rightValue = breakpoint.Value.rightValue;
-                            break;
-                        // e.g.: (PC) == #D1 - instruction breakpoint
-                        case BreakPointConditionType.registryMemoryReferenceVsValue:
-                            leftValue = ReadMemory(DebuggerManager.getRegistryValueByName(_cpu.regs, DebuggerManager.getRegistryFromReference(breakpoint.Value.leftCondition)));
-                            rightValue = breakpoint.Value.rightValue;
-                            if (rightValue > 0xFF) //check on 2 bytes right condition, e.g.: (PC) == #5EED
-                            {
-                                int hiByte = DebuggerManager.getRegistryValueByName(_cpu.regs, DebuggerManager.getRegistryFromReference(breakpoint.Value.leftCondition)) + 1;
-                                if (hiByte > 0xFFFF)
-                                    hiByte = 0;
-                                leftValue += Convert.ToUInt16(ReadMemory(Convert.ToUInt16(hiByte)) * 256);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
-                    //condition
-                    if (breakpoint.Value.conditionTypeSign == "==") // is equal
-                    {
-                        if (leftValue == rightValue)
-                            return true;
-                    }
-                    else if (breakpoint.Value.conditionTypeSign == "!=") // is not equal
-                    {
-                        if (leftValue != rightValue)
-                            return true;
-                    };
-                }
-            }
-
-            return false;
-        }
-
-        public override void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn) //enables/disables breakpoint, command "on" or "off"
-        {
-            if (_breakpointsExt == null || _breakpointsExt.Count == 0)
-                return;
-
-            if( !_breakpointsExt.ContainsKey(whichBpToEnableOrDisable) )
-                return;
-
-            breakpointInfo tempbreakpointInfo = (breakpointInfo)_breakpointsExt[whichBpToEnableOrDisable];
-            tempbreakpointInfo.isOn = setOn;
-            _breakpointsExt[whichBpToEnableOrDisable] = tempbreakpointInfo;
-
-            return;
-        }
-
-        // clears all conditional breakpoints
-        public override void ClearExtBreakpoints()
-        {
-            lock (_breakpointsExt)
-                _breakpointsExt.Clear();
-        }
-
-        public override void LoadBreakpointsListFromFile(string fileName)
-        {
-            System.IO.StreamReader file = null;
-
-            try
-            {
-                if (!File.Exists(fileName))
-                    throw new Exception("file " + fileName + " does not exists...");
-
-                string dbgCommandFromFile = String.Empty;
-                file = new System.IO.StreamReader(fileName);
-                while ((dbgCommandFromFile = file.ReadLine()) != null)
-                {
-                    if (dbgCommandFromFile.Trim() == String.Empty || dbgCommandFromFile[0] == ';')
-                        continue;
-
-                    List<string> parsedCommand = DebuggerManager.ParseCommand(dbgCommandFromFile);
-                    if (parsedCommand == null)
-                        throw new Exception("unknown debugger command");
-
-                    AddExtBreakpoint(parsedCommand);
-                }
-            }
-            finally
-            {
-                file.Close();
-            }
-        }
-        public override void SaveBreakpointsListToFile(string fileName)
-        {
-            DictionarySafe<byte, breakpointInfo> localBreakpointsList = GetExtBreakpointsList();
-            if (localBreakpointsList.Count == 0)
-                return;
-
-            System.IO.StreamWriter file = null;
-            try
-            {
-                file = new System.IO.StreamWriter(fileName);
-
-                foreach (KeyValuePair<byte, breakpointInfo> breakpoint in localBreakpointsList)
-                {
-                    file.WriteLine(breakpoint.Value.breakpointString);
-                }
-            }
-            finally
-            {
-                file.Close();
-            }
-        }
-        #endregion
 
 		public unsafe override void ExecuteFrame()
 		{
@@ -402,14 +133,14 @@ namespace ZXMAK2.Engine
 			{
 				// Alex: performance critical block, do not modify!
 				_bus.ExecCycle();
-				if (_cpu.HALTED || (_breakpoints == null && _breakpointsExt == null))
+				if (_breakpoints.Count==0 || _cpu.HALTED)
 				{
-					continue;
+				    continue;
 				}
 				// Alex: end of performance critical block
-				
-				if (CheckBreakpoint(_cpu.regs.PC) || CheckExtBreakpoints())
-				{
+
+				if (CheckBreakpoint())
+				{	
 					int delta1 = (int)(_cpu.Tact - t);
 					if (delta1 >= 0)
 						m_frameStartTact = delta1;
@@ -435,7 +166,7 @@ namespace ZXMAK2.Engine
 			int delta = (int)(_cpu.Tact - t);
 			if (delta >= 0)
 				m_frameStartTact = delta;
-			if (_breakpoints != null && CheckBreakpoint(_cpu.regs.PC) && !_cpu.HALTED)
+			if (CheckBreakpoint())
 			{
 				IsRunning = false;
 				OnUpdateFrame();

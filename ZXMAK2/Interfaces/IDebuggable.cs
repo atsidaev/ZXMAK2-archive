@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Controls.Debugger;
+using ZXMAK2.Engine;
 
 namespace ZXMAK2.Interfaces
 {
@@ -19,21 +20,10 @@ namespace ZXMAK2.Interfaces
 		void ReadMemory(ushort addr, byte[] data, int offset, int length);
 		void WriteMemory(ushort addr, byte[] data, int offset, int length);
 
-		void AddBreakpoint(ushort addr);
-		void RemoveBreakpoint(ushort addr);
-		ushort[] GetBreakpointList();
-		bool CheckBreakpoint(ushort addr);
+		void AddBreakpoint(Breakpoint bp);
+		void RemoveBreakpoint(Breakpoint bp);
+		Breakpoint[] GetBreakpointList();
 		void ClearBreakpoints();
-
-        void AddExtBreakpoint(List<string> breakListDesc);
-        void RemoveExtBreakpoint(byte addr);
-        DictionarySafe<byte, breakpointInfo> GetExtBreakpointsList();
-        bool CheckExtBreakpoints();
-        void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn); //enables/disables breakpoint, command "on" or "off"
-        void ClearExtBreakpoints();
-        void LoadBreakpointsListFromFile(string fileName);
-        void SaveBreakpointsListToFile(string fileName);
-
 
 		event EventHandler UpdateState;
 		event EventHandler Breakpoint;
