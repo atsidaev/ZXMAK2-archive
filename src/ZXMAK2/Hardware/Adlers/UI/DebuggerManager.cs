@@ -7,7 +7,7 @@ using ZXMAK2.Interfaces;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 
-namespace ZXMAK2.Controls.Debugger
+namespace ZXMAK2.Hardware.Adlers.UI
 {
 
     #region Debugger enums/structs, ...
@@ -18,7 +18,7 @@ namespace ZXMAK2.Controls.Debugger
     public enum BreakPointConditionType { memoryVsValue, valueVsRegister, registryVsValue, registryMemoryReferenceVsValue };
 
     //Information about extended breakpoint
-    public struct breakpointInfo
+    public class BreakpointInfo
     {
         public BreakPointConditionType accessType;
 
