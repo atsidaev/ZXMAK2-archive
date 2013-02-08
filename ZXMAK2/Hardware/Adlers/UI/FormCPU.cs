@@ -998,8 +998,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
 				_breakpointsExt.Add((byte)_breakpointsExt.Count, bp);
 				m_spectrum.AddBreakpoint(bp);
 			}
-
-			throw new Exception("Maximum breakpoints count(255) exceeded...");
+            else
+                throw new Exception("Maximum breakpoints count(255) exceeded...");
 		}
 		public void RemoveExtBreakpoint(byte index)
 		{
