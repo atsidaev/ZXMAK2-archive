@@ -196,6 +196,7 @@
     <Compile Include="Hardware\General\BetaDiskInterfaceExt.cs" />
     <Compile Include="Hardware\Quorum\BetaDiskInterfaceQuorum.cs" />
     <Compile Include="Hardware\General\KempstonJoystick.cs" />
+    <Compile Include="Hardware\Scorpion\UlaScorpionGreen.cs" />
     <Compile Include="Hardware\SoundRendererDeviceBase.cs" />
     <Compile Include="Hardware\Pentagon\MemoryPentagon1024.cs" />
     <Compile Include="Hardware\Spectrum\MemoryPlus3.cs" />
@@ -256,7 +257,7 @@
     <Compile Include="Hardware\UlaDeviceBase.cs" />
     <Compile Include="Hardware\Profi\UlaProfi3XX.cs" />
     <Compile Include="Hardware\Quorum\UlaQuorum.cs" />
-    <Compile Include="Hardware\Scorpion\UlaScorpion.cs" />
+    <Compile Include="Hardware\Scorpion\UlaScorpionYellow.cs" />
     <Compile Include="Engine\Z80\DasmUtils.cs" />
     <Compile Include="Engine\Z80\Z80FXCBops.cs" />
     <Compile Include="Hardware\Spectrum\UlaPlus3.cs" />
