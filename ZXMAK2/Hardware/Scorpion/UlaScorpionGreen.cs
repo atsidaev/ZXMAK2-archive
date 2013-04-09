@@ -23,7 +23,7 @@ namespace ZXMAK2.Hardware.Scorpion
             // Bottom Border Lines: ?40
 
             c_ulaLineTime = 224;
-            c_ulaFirstPaperLine = 80;
+            c_ulaFirstPaperLine = 64;
             c_ulaFirstPaperTact = 64;      // ?64 [40sync+24border+128scr+32border]
             c_frameTactCount = 70784;
             c_ulaBorder4T = true;
