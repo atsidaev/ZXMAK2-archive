@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
+            this.menuMain = new System.Windows.Forms.MainMenu(this.components);
             this.menuFile = new System.Windows.Forms.MenuItem();
             this.menuFileOpen = new System.Windows.Forms.MenuItem();
             this.menuFileSaveAs = new System.Windows.Forms.MenuItem();
@@ -43,7 +43,7 @@
             this.menuViewSizeX4 = new System.Windows.Forms.MenuItem();
             this.menuViewWindowed = new System.Windows.Forms.MenuItem();
             this.menuViewFullscreen = new System.Windows.Forms.MenuItem();
-            this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.menuViewSeparator1 = new System.Windows.Forms.MenuItem();
             this.menuViewSmoothing = new System.Windows.Forms.MenuItem();
             this.menuViewNoFlic = new System.Windows.Forms.MenuItem();
             this.menuViewKeepProportion = new System.Windows.Forms.MenuItem();
@@ -53,23 +53,23 @@
             this.menuVm = new System.Windows.Forms.MenuItem();
             this.menuVmPause = new System.Windows.Forms.MenuItem();
             this.menuVmMaximumSpeed = new System.Windows.Forms.MenuItem();
-            this.menuItem3 = new System.Windows.Forms.MenuItem();
+            this.menuVmSeparator2 = new System.Windows.Forms.MenuItem();
             this.menuVmReset = new System.Windows.Forms.MenuItem();
             this.menuVmNmi = new System.Windows.Forms.MenuItem();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.menuVmSeparator1 = new System.Windows.Forms.MenuItem();
             this.menuVmSettings = new System.Windows.Forms.MenuItem();
             this.menuTools = new System.Windows.Forms.MenuItem();
             this.menuHelp = new System.Windows.Forms.MenuItem();
-            this.menuGeneralHelp = new System.Windows.Forms.MenuItem();
+            this.menuHelpGeneral = new System.Windows.Forms.MenuItem();
             this.menuHelpKeyboard = new System.Windows.Forms.MenuItem();
-            this.menuItem4 = new System.Windows.Forms.MenuItem();
+            this.menuHelpSeparator1 = new System.Windows.Forms.MenuItem();
             this.menuHelpAbout = new System.Windows.Forms.MenuItem();
             this.renderVideo = new ZXMAK2.Controls.RenderVideo();
             this.SuspendLayout();
             // 
-            // mainMenu
+            // menuMain
             // 
-            this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuMain.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuFile,
             this.menuView,
             this.menuVm,
@@ -116,7 +116,7 @@
             this.menuViewSize,
             this.menuViewWindowed,
             this.menuViewFullscreen,
-            this.menuItem2,
+            this.menuViewSeparator1,
             this.menuViewSmoothing,
             this.menuViewNoFlic,
             this.menuViewKeepProportion,
@@ -172,10 +172,10 @@
             this.menuViewFullscreen.Text = "Fullscreen   (Alt+Enter)";
             this.menuViewFullscreen.Click += new System.EventHandler(this.menuViewFullscreen_Click);
             // 
-            // menuItem2
+            // menuViewSeparator1
             // 
-            this.menuItem2.Index = 3;
-            this.menuItem2.Text = "-";
+            this.menuViewSeparator1.Index = 3;
+            this.menuViewSeparator1.Text = "-";
             // 
             // menuViewSmoothing
             // 
@@ -219,10 +219,10 @@
             this.menuVm.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuVmPause,
             this.menuVmMaximumSpeed,
-            this.menuItem3,
+            this.menuVmSeparator2,
             this.menuVmReset,
             this.menuVmNmi,
-            this.menuItem1,
+            this.menuVmSeparator1,
             this.menuVmSettings});
             this.menuVm.Text = "VM";
             this.menuVm.Popup += new System.EventHandler(this.menuVm_Popup);
@@ -239,10 +239,10 @@
             this.menuVmMaximumSpeed.Text = "Maximum Speed";
             this.menuVmMaximumSpeed.Click += new System.EventHandler(this.menuVmMaximumSpeed_Click);
             // 
-            // menuItem3
+            // menuVmSeparator2
             // 
-            this.menuItem3.Index = 2;
-            this.menuItem3.Text = "-";
+            this.menuVmSeparator2.Index = 2;
+            this.menuVmSeparator2.Text = "-";
             // 
             // menuVmReset
             // 
@@ -256,10 +256,10 @@
             this.menuVmNmi.Text = "NMI";
             this.menuVmNmi.Click += new System.EventHandler(this.menuVmNmi_Click);
             // 
-            // menuItem1
+            // menuVmSeparator1
             // 
-            this.menuItem1.Index = 5;
-            this.menuItem1.Text = "-";
+            this.menuVmSeparator1.Index = 5;
+            this.menuVmSeparator1.Text = "-";
             // 
             // menuVmSettings
             // 
@@ -276,17 +276,17 @@
             // 
             this.menuHelp.Index = 4;
             this.menuHelp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuGeneralHelp,
+            this.menuHelpGeneral,
             this.menuHelpKeyboard,
-            this.menuItem4,
+            this.menuHelpSeparator1,
             this.menuHelpAbout});
             this.menuHelp.Text = "Help";
             // 
-            // menuGeneralHelp
+            // menuHelpGeneral
             // 
-            this.menuGeneralHelp.Index = 0;
-            this.menuGeneralHelp.Text = "General Help";
-            this.menuGeneralHelp.Click += new System.EventHandler(this.menuGeneralHelp_Click);
+            this.menuHelpGeneral.Index = 0;
+            this.menuHelpGeneral.Text = "View Help";
+            this.menuHelpGeneral.Click += new System.EventHandler(this.menuHelpViewHelp_Click);
             // 
             // menuHelpKeyboard
             // 
@@ -294,10 +294,10 @@
             this.menuHelpKeyboard.Text = "Keyboard Help";
             this.menuHelpKeyboard.Click += new System.EventHandler(this.menuHelpKeyboard_Click);
             // 
-            // menuItem4
+            // menuHelpSeparator1
             // 
-            this.menuItem4.Index = 2;
-            this.menuItem4.Text = "-";
+            this.menuHelpSeparator1.Index = 2;
+            this.menuHelpSeparator1.Text = "-";
             // 
             // menuHelpAbout
             // 
@@ -316,10 +316,10 @@
             this.renderVideo.TabIndex = 0;
             this.renderVideo.Text = "renderVideo";
             this.renderVideo.VBlankSync = false;
-            this.renderVideo.DoubleClick += new System.EventHandler(this.renderVideo_Click);
             this.renderVideo.DeviceReset += new System.EventHandler(this.renderVideo_DeviceReset);
-            this.renderVideo.MouseMove += new System.Windows.Forms.MouseEventHandler(this.renderVideo_MouseMove);
             this.renderVideo.SizeChanged += new System.EventHandler(this.renderVideo_SizeChanged);
+            this.renderVideo.DoubleClick += new System.EventHandler(this.renderVideo_Click);
+            this.renderVideo.MouseMove += new System.Windows.Forms.MouseEventHandler(this.renderVideo_MouseMove);
             // 
             // FormMain
             // 
@@ -329,13 +329,13 @@
             this.ClientSize = new System.Drawing.Size(640, 421);
             this.Controls.Add(this.renderVideo);
             this.KeyPreview = true;
-            this.Menu = this.mainMenu;
+            this.Menu = this.menuMain;
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ZXMAK2";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.FormMain_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.FormMain_DragEnter);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Resize += new System.EventHandler(this.FormMain_Resize);
             this.ResumeLayout(false);
 
@@ -344,15 +344,12 @@
         #endregion
 
         private Controls.RenderVideo renderVideo;
-        private System.Windows.Forms.MainMenu mainMenu;
+        private System.Windows.Forms.MainMenu menuMain;
         private System.Windows.Forms.MenuItem menuFile;
         private System.Windows.Forms.MenuItem menuFileOpen;
         private System.Windows.Forms.MenuItem menuFileSaveAs;
         private System.Windows.Forms.MenuItem menuFileSplitter;
         private System.Windows.Forms.MenuItem menuFileExit;
-        private System.Windows.Forms.MenuItem menuHelp;
-        private System.Windows.Forms.MenuItem menuHelpAbout;
-        private System.Windows.Forms.MenuItem menuTools;
         private System.Windows.Forms.MenuItem menuView;
         private System.Windows.Forms.MenuItem menuViewFullscreen;
         private System.Windows.Forms.MenuItem menuViewWindowed;
@@ -361,24 +358,27 @@
         private System.Windows.Forms.MenuItem menuViewSizeX2;
         private System.Windows.Forms.MenuItem menuViewSizeX3;
         private System.Windows.Forms.MenuItem menuViewSizeX4;
-        private System.Windows.Forms.MenuItem menuVm;
-        private System.Windows.Forms.MenuItem menuVmReset;
-        private System.Windows.Forms.MenuItem menuVmNmi;
-        private System.Windows.Forms.MenuItem menuItem1;
-        private System.Windows.Forms.MenuItem menuVmSettings;
-        private System.Windows.Forms.MenuItem menuVmPause;
-        private System.Windows.Forms.MenuItem menuItem3;
-        private System.Windows.Forms.MenuItem menuItem2;
+        private System.Windows.Forms.MenuItem menuViewSeparator1;
         private System.Windows.Forms.MenuItem menuViewSmoothing;
         private System.Windows.Forms.MenuItem menuViewKeepProportion;
         private System.Windows.Forms.MenuItem menuViewVBlankSync;
         private System.Windows.Forms.MenuItem menuViewDisplayIcon;
         private System.Windows.Forms.MenuItem menuViewDebugInfo;
-		private System.Windows.Forms.MenuItem menuViewNoFlic;
-		private System.Windows.Forms.MenuItem menuHelpKeyboard;
-		private System.Windows.Forms.MenuItem menuItem4;
+        private System.Windows.Forms.MenuItem menuViewNoFlic;
+        private System.Windows.Forms.MenuItem menuVm;
+        private System.Windows.Forms.MenuItem menuVmReset;
+        private System.Windows.Forms.MenuItem menuVmNmi;
+        private System.Windows.Forms.MenuItem menuVmSeparator1;
+        private System.Windows.Forms.MenuItem menuVmSettings;
+        private System.Windows.Forms.MenuItem menuVmPause;
+        private System.Windows.Forms.MenuItem menuVmSeparator2;
 		private System.Windows.Forms.MenuItem menuVmMaximumSpeed;
-        private System.Windows.Forms.MenuItem menuGeneralHelp;
+        private System.Windows.Forms.MenuItem menuTools;
+        private System.Windows.Forms.MenuItem menuHelp;
+        private System.Windows.Forms.MenuItem menuHelpGeneral;
+        private System.Windows.Forms.MenuItem menuHelpKeyboard;
+        private System.Windows.Forms.MenuItem menuHelpSeparator1;
+        private System.Windows.Forms.MenuItem menuHelpAbout;
     }
 }
 

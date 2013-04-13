@@ -342,7 +342,7 @@ namespace ZXMAK2.Controls
 			if (Menu != null && e.Y > 1)
 				Menu = null;
 			else if (e.Y <= SystemInformation.MenuHeight)
-				Menu = mainMenu;
+				Menu = menuMain;
 		}
 
 		private void OpenFile(string fileName, bool readOnly)
@@ -479,16 +479,22 @@ namespace ZXMAK2.Controls
 				form.ShowDialog();
 		}
 
-        private void menuGeneralHelp_Click(object sender, EventArgs e)
+        private void menuHelpViewHelp_Click(object sender, EventArgs e)
         {
-            if (!File.Exists("ZXMak2.chm"))
+			var appName = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
+			var helpFile = Path.ChangeExtension(appName, ".chm");
+            if (File.Exists(helpFile))
             {
-                string message =  "Help file(ZXMak2.chm) could not be found.\n\nHint: Try to recompile the project or copy manually the file\n";
-                       message += "         into folder where the application runs.";
-                DialogProvider.Show(message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+                Help.ShowHelp(this, helpFile);
             }
             else
-                Help.ShowHelp(this, "ZXMak2.chm");
+            {
+                DialogProvider.Show(
+                    "Help file is missing",
+                    "ERROR", 
+                    DlgButtonSet.OK, 
+                    DlgIcon.Error);
+            }
         }
 
 		private void menuHelpKeyboard_Click(object sender, EventArgs e)
@@ -633,6 +639,7 @@ namespace ZXMAK2.Controls
 			renderVideo.VBlankSync = menuViewVBlankSync.Checked && !menuVmMaximumSpeed.Checked;
 			renderVideo.DisplayIcon = menuViewDisplayIcon.Checked;
 			renderVideo.DebugInfo = menuViewDebugInfo.Checked;
+            renderVideo.Invalidate();
 		}
 
 		#endregion
@@ -668,7 +675,7 @@ namespace ZXMAK2.Controls
 						FormBorderStyle = m_style;
 
 						m_mouse.StopCapture();
-						Menu = mainMenu;
+						Menu = menuMain;
 						ClientSize = m_size;
 					}
 
