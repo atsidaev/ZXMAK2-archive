@@ -31,6 +31,7 @@ namespace ZXMAK2.Controls
 		private Button btnDown;
         private Button btnWizard;
         private ContextMenuStrip ctxMenuWizard;
+        private Separator separator1;
 		private System.Windows.Forms.ImageList imageList;
 
 		/// <summary>
@@ -62,12 +63,13 @@ namespace ZXMAK2.Controls
             this.btnDown = new System.Windows.Forms.Button();
             this.btnWizard = new System.Windows.Forms.Button();
             this.ctxMenuWizard = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.separator1 = new ZXMAK2.Controls.Separator();
             this.SuspendLayout();
             // 
             // lstNavigation
             // 
-            this.lstNavigation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.lstNavigation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.lstNavigation.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colDevice,
             this.colSummary});
@@ -85,7 +87,7 @@ namespace ZXMAK2.Controls
             this.lstNavigation.Location = new System.Drawing.Point(12, 12);
             this.lstNavigation.MultiSelect = false;
             this.lstNavigation.Name = "lstNavigation";
-            this.lstNavigation.Size = new System.Drawing.Size(260, 281);
+            this.lstNavigation.Size = new System.Drawing.Size(260, 332);
             this.lstNavigation.SmallImageList = this.imageList;
             this.lstNavigation.TabIndex = 0;
             this.lstNavigation.UseCompatibleStateImageBehavior = false;
@@ -119,18 +121,18 @@ namespace ZXMAK2.Controls
             // 
             // pnlSettings
             // 
-            this.pnlSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlSettings.Location = new System.Drawing.Point(278, 12);
             this.pnlSettings.Name = "pnlSettings";
-            this.pnlSettings.Size = new System.Drawing.Size(293, 281);
+            this.pnlSettings.Size = new System.Drawing.Size(284, 332);
             this.pnlSettings.TabIndex = 1;
             // 
             // btnRemove
             // 
             this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnRemove.Enabled = false;
-            this.btnRemove.Location = new System.Drawing.Point(197, 305);
+            this.btnRemove.Location = new System.Drawing.Point(197, 362);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(75, 27);
             this.btnRemove.TabIndex = 2;
@@ -142,7 +144,7 @@ namespace ZXMAK2.Controls
             // 
             this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnAdd.Enabled = false;
-            this.btnAdd.Location = new System.Drawing.Point(116, 305);
+            this.btnAdd.Location = new System.Drawing.Point(116, 362);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 27);
             this.btnAdd.TabIndex = 3;
@@ -154,7 +156,7 @@ namespace ZXMAK2.Controls
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(496, 305);
+            this.btnCancel.Location = new System.Drawing.Point(487, 362);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 27);
             this.btnCancel.TabIndex = 4;
@@ -164,7 +166,7 @@ namespace ZXMAK2.Controls
             // btnApply
             // 
             this.btnApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnApply.Location = new System.Drawing.Point(415, 305);
+            this.btnApply.Location = new System.Drawing.Point(406, 362);
             this.btnApply.Name = "btnApply";
             this.btnApply.Size = new System.Drawing.Size(75, 27);
             this.btnApply.TabIndex = 5;
@@ -174,7 +176,8 @@ namespace ZXMAK2.Controls
             // 
             // btnUp
             // 
-            this.btnUp.Location = new System.Drawing.Point(12, 305);
+            this.btnUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnUp.Location = new System.Drawing.Point(12, 362);
             this.btnUp.Name = "btnUp";
             this.btnUp.Size = new System.Drawing.Size(27, 27);
             this.btnUp.TabIndex = 6;
@@ -184,7 +187,8 @@ namespace ZXMAK2.Controls
             // 
             // btnDown
             // 
-            this.btnDown.Location = new System.Drawing.Point(45, 305);
+            this.btnDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnDown.Location = new System.Drawing.Point(45, 362);
             this.btnDown.Name = "btnDown";
             this.btnDown.Size = new System.Drawing.Size(27, 27);
             this.btnDown.TabIndex = 7;
@@ -194,8 +198,9 @@ namespace ZXMAK2.Controls
             // 
             // btnWizard
             // 
+            this.btnWizard.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnWizard.Image = ((System.Drawing.Image)(resources.GetObject("btnWizard.Image")));
-            this.btnWizard.Location = new System.Drawing.Point(334, 305);
+            this.btnWizard.Location = new System.Drawing.Point(325, 362);
             this.btnWizard.Name = "btnWizard";
             this.btnWizard.Size = new System.Drawing.Size(75, 27);
             this.btnWizard.TabIndex = 8;
@@ -209,17 +214,30 @@ namespace ZXMAK2.Controls
             this.ctxMenuWizard.Name = "ctxMenuWizard";
             this.ctxMenuWizard.Size = new System.Drawing.Size(61, 4);
             // 
+            // separator1
+            // 
+            this.separator1.Alignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.separator1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.separator1.Location = new System.Drawing.Point(-3, 350);
+            this.separator1.Name = "separator1";
+            this.separator1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.separator1.Size = new System.Drawing.Size(580, 6);
+            this.separator1.TabIndex = 9;
+            this.separator1.Text = "separator1";
+            // 
             // FormMachineSettings
             // 
             this.AcceptButton = this.btnApply;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(583, 340);
-            this.Controls.Add(this.btnWizard);
-            this.Controls.Add(this.btnDown);
-            this.Controls.Add(this.btnUp);
+            this.ClientSize = new System.Drawing.Size(574, 397);
+            this.Controls.Add(this.separator1);
             this.Controls.Add(this.btnApply);
+            this.Controls.Add(this.btnWizard);
+            this.Controls.Add(this.btnUp);
+            this.Controls.Add(this.btnDown);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.btnRemove);
