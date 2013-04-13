@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.General
 {
@@ -12,7 +13,7 @@ namespace ZXMAK2.Hardware.General
 
         public override string Name { get { return "AY Mouse"; } }
         public override string Description { get { return "AY Mouse based on V.M.G. extension"; } }
-        public override BusCategory Category { get { return BusCategory.Mouse; } }
+        public override BusDeviceCategory Category { get { return BusDeviceCategory.Mouse; } }
 
         public override void BusInit(IBusManager bmgr)
         {

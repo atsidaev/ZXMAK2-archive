@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Hardware.General
@@ -17,7 +18,7 @@ namespace ZXMAK2.Hardware.General
 
 		public override string Name { get { return "SMUC"; } }
 		public override string Description { get { return "Spectrum Multi Unit Controller"; } }
-		public override BusCategory Category { get { return BusCategory.Other; } }
+		public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
 
 		public override void BusInit(IBusManager bmgr)
 		{

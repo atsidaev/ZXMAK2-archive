@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware
 {
@@ -15,7 +16,7 @@ namespace ZXMAK2.Hardware
 		#region IBusDevice
 
 		public override string Description { get { return "Sound Device"; } }
-		public override BusCategory Category { get { return BusCategory.Sound; } }
+		public override BusDeviceCategory Category { get { return BusDeviceCategory.Sound; } }
 
 		public override void BusInit(IBusManager bmgr)
 		{

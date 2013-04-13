@@ -79,7 +79,7 @@ namespace ZXMAK2.Hardware.General
 
 		public override string Name { get { return "BDI"; } }
 		public override string Description { get { return "Beta Disk Interface"; } }
-		public override BusCategory Category { get { return BusCategory.Disk; } }
+		public override BusDeviceCategory Category { get { return BusDeviceCategory.Disk; } }
 
 		public override void BusInit(IBusManager bmgr)
 		{

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.Sprinter
 {
@@ -12,7 +13,7 @@ namespace ZXMAK2.Hardware.Sprinter
 	{
 		#region IBusDevice Members
 
-		public override BusCategory Category { get { return BusCategory.Other; } }
+		public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
 		public override string Description { get { return "Sprinter RTC"; } }
 		public override string Name { get { return "Sprinter RTC"; } }
 

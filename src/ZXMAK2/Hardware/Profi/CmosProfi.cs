@@ -4,6 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.Profi
 {
@@ -13,7 +14,7 @@ namespace ZXMAK2.Hardware.Profi
 
 		public override string Name { get { return "CMOS PROFI"; } }
 		public override string Description { get { return "PROFI CMOS device\nPort:\t#9F"; } }
-		public override BusCategory Category { get { return BusCategory.Other; } }
+		public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
 
 		public override void BusInit(IBusManager bmgr)
 		{

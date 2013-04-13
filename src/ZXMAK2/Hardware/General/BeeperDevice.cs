@@ -1,5 +1,6 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.General
 {
@@ -9,7 +10,7 @@ namespace ZXMAK2.Hardware.General
 
 		public override string Name { get { return "Standard Beeper"; } }
 		public override string Description { get { return "Simple Standard Beeper"; } }
-		public override BusCategory Category { get { return BusCategory.Sound; } }
+		public override BusDeviceCategory Category { get { return BusDeviceCategory.Sound; } }
 
 		public override void BusInit(IBusManager bmgr)
 		{

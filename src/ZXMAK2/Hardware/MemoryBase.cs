@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Hardware
@@ -11,7 +12,7 @@ namespace ZXMAK2.Hardware
 	{
 		#region IBusDevice Members
 
-		public override BusCategory Category { get { return BusCategory.Memory; } }
+		public override BusDeviceCategory Category { get { return BusDeviceCategory.Memory; } }
 
 		public override void BusInit(IBusManager bmgr)
 		{

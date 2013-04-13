@@ -23,7 +23,7 @@ namespace ZXMAK2.Hardware.General
 
 		public override string Name { get { return "Tape Player"; } }
 		public override string Description { get { return "Generic Tape Device"; } }
-		public override BusCategory Category { get { return BusCategory.Tape; } }
+		public override BusDeviceCategory Category { get { return BusDeviceCategory.Tape; } }
 
 		public override void BusInit(IBusManager bmgr)
 		{

@@ -6,6 +6,7 @@ using System.Xml;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.General
 {
@@ -15,7 +16,7 @@ namespace ZXMAK2.Hardware.General
 
 		public override string Name { get { return "AY8910"; } }
 		public override string Description { get { return "Standard AY8910 Programmable Sound Generator"; } }
-		public override BusCategory Category { get { return BusCategory.Music; } }
+		public override BusDeviceCategory Category { get { return BusDeviceCategory.Music; } }
 
 		public override void BusInit(IBusManager bmgr)
 		{

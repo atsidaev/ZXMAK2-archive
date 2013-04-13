@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Hardware.Sprinter
@@ -145,11 +146,11 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-        public override BusCategory Category
+        public override BusDeviceCategory Category
         {
             get
             {
-                return BusCategory.Mouse;
+                return BusDeviceCategory.Mouse;
             }
         }
 

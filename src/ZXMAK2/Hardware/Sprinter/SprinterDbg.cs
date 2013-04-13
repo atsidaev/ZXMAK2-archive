@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using ZXMAK2.Controls;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.Sprinter
 {
@@ -48,7 +49,7 @@ namespace ZXMAK2.Hardware.Sprinter
         {
         }
 
-        public override BusCategory Category { get { return BusCategory.Other; } }
+        public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
 
         public override string Description { get { return "Sprinter debugger"; } }
 
