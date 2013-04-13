@@ -2,6 +2,7 @@
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.Quorum
 {
@@ -12,7 +13,7 @@ namespace ZXMAK2.Hardware.Quorum
         private IKeyboardState m_keyboardState;
         private Z80CPU m_cpu;
 
-        public override BusCategory Category { get { return BusCategory.Keyboard; } }
+        public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }
         public override string Name { get { return "Quorum Keyboard"; } }
         public override string Description { get { return "Quorum extended keyboard\n\n(c) Eltaron"; } }
 

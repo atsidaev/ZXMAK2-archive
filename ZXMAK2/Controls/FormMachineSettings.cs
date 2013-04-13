@@ -9,6 +9,7 @@ using System.Reflection;
 using ZXMAK2.Engine;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Controls.Configuration;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Controls
@@ -334,27 +335,27 @@ namespace ZXMAK2.Controls
             lstNavigation.Items.Insert(index, lvi);
         }
 
-        public static int FindImageIndex(BusCategory category)
+        public static int FindImageIndex(BusDeviceCategory category)
         {
             switch (category)
             {
-                case BusCategory.Memory:
+                case BusDeviceCategory.Memory:
                     return 0;
-                case BusCategory.Other:
+                case BusDeviceCategory.Other:
                     return 1;
-                case BusCategory.ULA:
+                case BusDeviceCategory.ULA:
                     return 2;
-                case BusCategory.Disk:
+                case BusDeviceCategory.Disk:
                     return 3;
-                case BusCategory.Sound:
+                case BusDeviceCategory.Sound:
                     return 4;
-                case BusCategory.Music:
+                case BusDeviceCategory.Music:
                     return 5;
-                case BusCategory.Tape:
+                case BusDeviceCategory.Tape:
                     return 6;
-                case BusCategory.Keyboard:
+                case BusDeviceCategory.Keyboard:
                     return 7;
-                case BusCategory.Mouse:
+                case BusDeviceCategory.Mouse:
                     return 8;
 
                 default:

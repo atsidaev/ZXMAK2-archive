@@ -84,6 +84,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectSound.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualC" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -91,6 +92,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\Separator.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Engine\Breakpoint.cs" />
     <Compile Include="Controls\Configuration\ConfigScreenControl.cs">
       <SubType>UserControl</SubType>
@@ -152,6 +156,9 @@
     <Compile Include="Controls\Debugger\dbgWD1793.designer.cs">
       <DependentUpon>dbgWD1793.cs</DependentUpon>
     </Compile>
+    <Compile Include="Engine\DeviceEnumerator.cs" />
+    <Compile Include="Entities\BusDeviceCategory.cs" />
+    <Compile Include="Entities\BusDeviceDescriptor.cs" />
     <Compile Include="Hardware\Adlers\Debugger.cs" />
     <Compile Include="Hardware\Adlers\UI\DebuggerManager.cs" />
     <Compile Include="Hardware\Adlers\UI\DebugPanels.cs">

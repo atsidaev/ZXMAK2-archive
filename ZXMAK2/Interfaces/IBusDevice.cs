@@ -35,19 +35,6 @@ namespace ZXMAK2.Interfaces
 		RzxHandler RzxHandler { get; set; }
 	}
 
-	public enum BusCategory
-	{
-		Memory,
-		ULA,
-		Disk,
-		Sound,
-		Music,
-		Tape,
-		Keyboard,
-		Mouse,
-		Other,
-	}
-
 	public delegate void BusReadProc(ushort addr, ref byte value);
 	public delegate void BusWriteProc(ushort addr, byte value);
 	public delegate void BusReadIoProc(ushort addr, ref byte value, ref bool iorqge);

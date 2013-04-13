@@ -47,10 +47,16 @@
             this.btnNext = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.txtDescription = new System.Windows.Forms.TextBox();
+            this.lstDevices = new System.Windows.Forms.ListBox();
+            this.lblDevices = new System.Windows.Forms.Label();
+            this.lblCategory = new System.Windows.Forms.Label();
             this.lstCategory = new System.Windows.Forms.ListView();
             this.colCategory = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.separator1 = new ZXMAK2.Controls.Separator();
+            this.sepTop = new ZXMAK2.Controls.Separator();
             this.pnlTop.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -64,7 +70,7 @@
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(426, 52);
+            this.pnlTop.Size = new System.Drawing.Size(574, 58);
             this.pnlTop.TabIndex = 0;
             // 
             // lblActionAim
@@ -82,15 +88,15 @@
             this.lblActionHint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.lblActionHint.Location = new System.Drawing.Point(20, 9);
             this.lblActionHint.Name = "lblActionHint";
-            this.lblActionHint.Size = new System.Drawing.Size(101, 13);
+            this.lblActionHint.Size = new System.Drawing.Size(307, 13);
             this.lblActionHint.TabIndex = 0;
-            this.lblActionHint.Text = "Device Category";
+            this.lblActionHint.Text = "From the list below, select the device you are adding";
             // 
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(345, 320);
+            this.btnCancel.Location = new System.Drawing.Point(493, 370);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 22);
             this.btnCancel.TabIndex = 1;
@@ -100,8 +106,7 @@
             // btnBack
             // 
             this.btnBack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBack.Enabled = false;
-            this.btnBack.Location = new System.Drawing.Point(183, 320);
+            this.btnBack.Location = new System.Drawing.Point(331, 370);
             this.btnBack.Name = "btnBack";
             this.btnBack.Size = new System.Drawing.Size(75, 22);
             this.btnBack.TabIndex = 2;
@@ -112,7 +117,7 @@
             // btnNext
             // 
             this.btnNext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNext.Location = new System.Drawing.Point(264, 320);
+            this.btnNext.Location = new System.Drawing.Point(412, 370);
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(75, 22);
             this.btnNext.TabIndex = 3;
@@ -122,33 +127,86 @@
             // 
             // tabControl
             // 
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
             this.tabControl.Controls.Add(this.tabPage1);
             this.tabControl.Controls.Add(this.tabPage2);
             this.tabControl.ItemSize = new System.Drawing.Size(58, 18);
-            this.tabControl.Location = new System.Drawing.Point(-5, 52);
+            this.tabControl.Location = new System.Drawing.Point(0, 64);
             this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(440, 262);
+            this.tabControl.Size = new System.Drawing.Size(574, 291);
             this.tabControl.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl.TabIndex = 4;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.txtDescription);
+            this.tabPage1.Controls.Add(this.lstDevices);
+            this.tabPage1.Controls.Add(this.lblDevices);
+            this.tabPage1.Controls.Add(this.lblCategory);
             this.tabPage1.Controls.Add(this.lstCategory);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(432, 236);
+            this.tabPage1.Size = new System.Drawing.Size(566, 265);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             // 
+            // txtDescription
+            // 
+            this.txtDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtDescription.Location = new System.Drawing.Point(195, 191);
+            this.txtDescription.Multiline = true;
+            this.txtDescription.Name = "txtDescription";
+            this.txtDescription.ReadOnly = true;
+            this.txtDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtDescription.Size = new System.Drawing.Size(368, 73);
+            this.txtDescription.TabIndex = 6;
+            this.txtDescription.WordWrap = false;
+            // 
+            // lstDevices
+            // 
+            this.lstDevices.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstDevices.FormattingEnabled = true;
+            this.lstDevices.HorizontalScrollbar = true;
+            this.lstDevices.IntegralHeight = false;
+            this.lstDevices.Location = new System.Drawing.Point(195, 16);
+            this.lstDevices.Name = "lstDevices";
+            this.lstDevices.Size = new System.Drawing.Size(368, 169);
+            this.lstDevices.TabIndex = 5;
+            this.lstDevices.SelectedIndexChanged += new System.EventHandler(this.lstDevices_SelectedIndexChanged);
+            this.lstDevices.DoubleClick += new System.EventHandler(this.lstDevices_DoubleClick);
+            // 
+            // lblDevices
+            // 
+            this.lblDevices.AutoSize = true;
+            this.lblDevices.Location = new System.Drawing.Point(192, 0);
+            this.lblDevices.Name = "lblDevices";
+            this.lblDevices.Size = new System.Drawing.Size(49, 13);
+            this.lblDevices.TabIndex = 4;
+            this.lblDevices.Text = "Devices:";
+            // 
+            // lblCategory
+            // 
+            this.lblCategory.AutoSize = true;
+            this.lblCategory.Location = new System.Drawing.Point(0, 0);
+            this.lblCategory.Name = "lblCategory";
+            this.lblCategory.Size = new System.Drawing.Size(60, 13);
+            this.lblCategory.TabIndex = 2;
+            this.lblCategory.Text = "Categories:";
+            // 
             // lstCategory
             // 
-            this.lstCategory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.lstCategory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.lstCategory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colCategory});
             this.lstCategory.FullRowSelect = true;
@@ -164,16 +222,16 @@
             listViewItem7,
             listViewItem8,
             listViewItem9});
-            this.lstCategory.Location = new System.Drawing.Point(8, 12);
+            this.lstCategory.LabelWrap = false;
+            this.lstCategory.Location = new System.Drawing.Point(3, 16);
             this.lstCategory.MultiSelect = false;
             this.lstCategory.Name = "lstCategory";
-            this.lstCategory.Size = new System.Drawing.Size(186, 209);
+            this.lstCategory.Size = new System.Drawing.Size(186, 247);
             this.lstCategory.SmallImageList = this.imageList;
             this.lstCategory.TabIndex = 1;
             this.lstCategory.UseCompatibleStateImageBehavior = false;
             this.lstCategory.View = System.Windows.Forms.View.Details;
             this.lstCategory.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lstCategory_ItemSelectionChanged);
-            this.lstCategory.DoubleClick += new System.EventHandler(this.lstCategory_DoubleClick);
             // 
             // colCategory
             // 
@@ -200,17 +258,43 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(432, 236);
+            this.tabPage2.Size = new System.Drawing.Size(566, 265);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // separator1
+            // 
+            this.separator1.Alignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.separator1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.separator1.Location = new System.Drawing.Point(0, 349);
+            this.separator1.Name = "separator1";
+            this.separator1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.separator1.Size = new System.Drawing.Size(574, 6);
+            this.separator1.TabIndex = 6;
+            this.separator1.Text = "separator1";
+            // 
+            // sepTop
+            // 
+            this.sepTop.Alignment = System.Drawing.ContentAlignment.TopCenter;
+            this.sepTop.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.sepTop.Location = new System.Drawing.Point(0, 58);
+            this.sepTop.Name = "sepTop";
+            this.sepTop.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.sepTop.Size = new System.Drawing.Size(574, 6);
+            this.sepTop.TabIndex = 5;
+            this.sepTop.Text = "separator1";
             // 
             // FormAddDeviceWizard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(426, 347);
+            this.ClientSize = new System.Drawing.Size(574, 397);
+            this.Controls.Add(this.separator1);
+            this.Controls.Add(this.sepTop);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.pnlTop);
             this.Controls.Add(this.btnNext);
@@ -228,6 +312,7 @@
             this.pnlTop.PerformLayout();
             this.tabControl.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -246,5 +331,11 @@
         private System.Windows.Forms.ListView lstCategory;
         private System.Windows.Forms.ColumnHeader colCategory;
         private System.Windows.Forms.ImageList imageList;
+        private Separator sepTop;
+        private Separator separator1;
+        private System.Windows.Forms.Label lblCategory;
+        private System.Windows.Forms.Label lblDevices;
+        private System.Windows.Forms.ListBox lstDevices;
+        private System.Windows.Forms.TextBox txtDescription;
     }
 }

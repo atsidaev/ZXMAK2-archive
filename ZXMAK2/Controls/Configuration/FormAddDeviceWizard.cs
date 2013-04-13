@@ -7,11 +7,14 @@ using System.Windows.Forms;
 using System.Reflection;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Controls.Configuration
 {
     public partial class FormAddDeviceWizard : Form
     {
+        private DeviceEnumerator m_deviceEnumerator = new DeviceEnumerator();
+        
         public FormAddDeviceWizard()
         {
             InitializeComponent();
@@ -21,27 +24,23 @@ namespace ZXMAK2.Controls.Configuration
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            refreshDeviceList();
+            m_deviceEnumerator.Refresh();
+            BindCategoryList();
+            tabControl_SelectedIndexChanged(this, EventArgs.Empty);
         }
 
-        private BusDeviceBase m_device = null;
-        public BusDeviceBase Device { get { return m_device; } }
-
-        private List<BusDeviceBase> m_ignoreList = new List<BusDeviceBase>();
-        public List<BusDeviceBase> IgnoreList
-        {
-            get { return m_ignoreList; }
-            set { m_ignoreList = value; /*refreshDeviceList();*/ }
-        }
+        public BusDeviceBase Device { get; private set; }
+        public List<BusDeviceBase> IgnoreList { get; set; }
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl.TabIndex == 0)
+            if (tabControl.SelectedIndex == 0)
             {
                 //lblActionHint.Text = "Device Category";
                 //lblActionAim.Text = "What category of device do you want to add?";
-                lblActionHint.Text = "Device Type";
-                lblActionAim.Text = "What type of device do you want to add?";
+                //lblActionHint.Text = "Device Type";
+                //lblActionAim.Text = "What type of device do you want to add?";
+                btnBack.Enabled = false;
                 btnNext.Text = "Finish";
             }
         }
@@ -50,156 +49,137 @@ namespace ZXMAK2.Controls.Configuration
         {
             if (tabControl.SelectedIndex == 0)
             {
-                int index = getSelectedCategoryIndex();
-                if(index<0)
+                var bdd = lstDevices.SelectedItem as BusDeviceDescriptor;
+                if (bdd == null)
+                {
                     return;
-                ListViewItem lvi = lstCategory.Items[index];
-                m_device = (BusDeviceBase)lvi.Tag;
-                DialogResult = System.Windows.Forms.DialogResult.OK;
-                Close();
+                }
+                try
+                {
+                    Device = (BusDeviceBase)Activator.CreateInstance(bdd.Type);
+                    DialogResult = System.Windows.Forms.DialogResult.OK;
+                    Close();
+                }
+                catch (Exception ex)
+                {
+                    LogAgent.Error(ex);
+                }
             }
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            if (tabControl.SelectedIndex == 1)
-            {
-                tabControl.SelectedIndex--;
-                btnNext.Text = "Next >";
-                btnNext.Enabled = true;     // bcz already selected
-                btnBack.Enabled = false;
-            }
+            //if (tabControl.SelectedIndex == 1)
+            //{
+            //    tabControl.SelectedIndex--;
+            //    btnNext.Text = "Next >";
+            //    btnNext.Enabled = true;     // bcz already selected
+            //    btnBack.Enabled = false;
+            //}
         }
         
-        #region Step 1 - Device Category
-        
-        //private BusCategory m_busCategory;
-        
-        private static BusCategory[] categoryList = new BusCategory[]
-        {
-            BusCategory.Memory, BusCategory.ULA, BusCategory.Disk, BusCategory.Sound,
-            BusCategory.Music, BusCategory.Tape, BusCategory.Keyboard, BusCategory.Mouse,
-            BusCategory.Other,
-        };
-
         private void lstCategory_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            btnNext.Text = "Finish";
-            btnNext.Enabled = e.IsSelected;
-            lblActionHint.Text = "Device Type";
-            lblActionAim.Text = "What type of device do you want to add?";
+            //btnNext.Text = "Finish";
+            //btnNext.Enabled = e.IsSelected;
+            //lblActionHint.Text = "Device Type";
+            //lblActionAim.Text = "What type of device do you want to add?";
+            BindDeviceList();
         }
 
-        private int getSelectedCategoryIndex()
+        private void lstDevices_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var bdd = lstDevices.SelectedItem as BusDeviceDescriptor;
+            if (bdd == null)
+            {
+                txtDescription.Text = string.Empty;
+                btnNext.Enabled = false;
+                return;
+            }
+            txtDescription.Text = bdd.Description;
+            btnNext.Enabled = true;
+        }
+
+        private int GetSelectedCategoryIndex()
         {
             foreach (int index in lstCategory.SelectedIndices)
                 return index;
             return -1;
         }
 
-        #endregion
+        private IEnumerable<Type> GetIgnoreTypes()
+        {
+            var ignoreTypes = new List<Type>();
+            foreach (var bdd in IgnoreList)
+            {
+                ignoreTypes.Add(bdd.GetType());
+            }
+            return ignoreTypes;
+        }
 
-        private void refreshDeviceList()
+        private void BindCategoryList()
         {
             lstCategory.Items.Clear();
-
-            List<ListViewItem> list = new List<ListViewItem>();
-            foreach (Type type in CollectBusDeviceTypes())
+            lstCategory.SelectedIndices.Clear();
+            var list = new List<BusDeviceCategory>();
+            foreach (var bdd in m_deviceEnumerator.SelectWithout(GetIgnoreTypes()))
             {
-                try
+                if (!list.Contains(bdd.Category))
                 {
-                    BusDeviceBase device = (BusDeviceBase)Activator.CreateInstance(type);
-                    ListViewItem lvi = new ListViewItem();
-                    lvi.Tag = device;
-                    lvi.Text = string.Format("{0} - {1}",device.Category, device.Name);
-                    lvi.ImageIndex = FormMachineSettings.FindImageIndex(device.Category);
-                    list.Add(lvi);
-                }
-                catch(Exception ex)
-                {
-                    LogAgent.Error(ex);
+                    list.Add(bdd.Category);
                 }
             }
-            list.Sort(CategoryComparison);
-            lstCategory.Items.AddRange(list.ToArray());
-            lstCategory.SelectedIndices.Clear();
+            list.Sort();
+            foreach (var category in list)
+            {
+                ListViewItem lvi = new ListViewItem();
+                lvi.Tag = category;
+                lvi.Text = string.Format("{0}", category);
+                lvi.ImageIndex = FormMachineSettings.FindImageIndex(category);
+                lstCategory.Items.Add(lvi);
+            }
             lstCategory.SelectedIndices.Add(0);
         }
 
-        private int CategoryComparison<T>(T x, T y) where T : ListViewItem
+        private void BindDeviceList()
         {
-            BusDeviceBase dev1 = x.Tag as BusDeviceBase;
-            BusDeviceBase dev2 = y.Tag as BusDeviceBase;
-            if(dev1!=null && dev2!=null)
+            lstDevices.Items.Clear();
+            lstDevices_SelectedIndexChanged(lstDevices, EventArgs.Empty);
+            var catIndex = GetSelectedCategoryIndex();
+            if (catIndex < 0)
             {
-                if (dev1.Category != dev2.Category)
-                    return dev1.Category.CompareTo(dev2.Category);
-                else 
-                    return dev1.Name.CompareTo(dev2.Name);
+                return;
             }
-            return 0;
+            var category = (BusDeviceCategory)lstCategory.Items[catIndex].Tag;
+            var list = new List<BusDeviceDescriptor>();
+            list.AddRange(m_deviceEnumerator.SelectByCategoryWithout(category, GetIgnoreTypes()));
+            list.Sort(DeviceNameComparison);
+            foreach (var bdd in list)
+            {
+                lstDevices.Items.Add(bdd);
+            }
+            //lstDevices.SelectedIndices.Add(0);
         }
 
-        private Type[] CollectBusDeviceTypes()
+        private void lstDevices_DoubleClick(object sender, EventArgs e)
         {
-            List<Type> list = new List<Type>();
-            
-            string folderName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            folderName = Path.Combine(folderName, "Plugins");
-            if (Directory.Exists(folderName))
-            {
-                foreach (string fileName in Directory.GetFiles(folderName, "*.dll", SearchOption.AllDirectories))
-                {
-                    try
-                    {
-                        Assembly asm = Assembly.LoadFrom(fileName);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogAgent.Error(ex);
-                        DialogProvider.Show(
-                            string.Format("Load plugin failed!\n\n{0}", fileName), 
-                            "WARNING",
-                            DlgButtonSet.OK,
-                            DlgIcon.Warning);
-                    }
-                }
-            }
-            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                try
-                {
-                    foreach (Type type in asm.GetTypes())
-                        if (type.IsClass && !type.IsAbstract && typeof(BusDeviceBase).IsAssignableFrom(type))
-                        {
-                            bool ignore = false;
-                            foreach (BusDeviceBase bd in IgnoreList)
-                                if (bd != null && bd.GetType() == type)
-                                {
-                                    ignore = true;
-                                    break;
-                                }
-                            if (!ignore)
-                                list.Add(type);
-                        }
-                }
-                catch (Exception ex)
-                {
-                    LogAgent.Error(ex);
-                    DialogProvider.Show(
-                        string.Format("Bad plugin assembly!\nSee logs for details\n\n{0}", asm.Location), 
-                        "ERROR",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
-                }
-            }
-            return list.ToArray();
+            if (lstDevices.SelectedItem != null)
+                btnNext_Click(lstDevices, EventArgs.Empty);
         }
 
-        private void lstCategory_DoubleClick(object sender, EventArgs e)
+        private static int DeviceNameComparison(
+            BusDeviceDescriptor left,
+            BusDeviceDescriptor right)
         {
-            if (btnNext.Enabled)
-                btnNext_Click(sender, e);
+            if (left == null && right == null)
+            {
+                return 0;
+            }
+            if (left != null && right != null)
+            {
+                return left.Name.CompareTo(right.Name);
+            }
+            return left == null ? -1 : 1;
         }
     }
 }

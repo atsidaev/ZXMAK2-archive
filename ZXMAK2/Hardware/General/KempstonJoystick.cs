@@ -1,6 +1,7 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.General
 {
@@ -10,7 +11,7 @@ namespace ZXMAK2.Hardware.General
 
         public override string Name { get { return "Kempston Joystick (Stub)"; } }
         public override string Description { get { return "Standard Spectrum Joystick\n\nWARNING: This is Stub device (port emulation only)!\nSorry, real joystick read is not implemented yet"; } }
-        public override BusCategory Category { get { return BusCategory.Other; } }
+        public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
 
         public override void BusInit(IBusManager bmgr)
         {

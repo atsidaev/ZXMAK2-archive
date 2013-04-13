@@ -6,6 +6,7 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Serializers.ScreenshotSerializers;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Hardware
@@ -15,7 +16,7 @@ namespace ZXMAK2.Hardware
 		#region IBusDevice
 
 		public override string Description { get { return "ULA device based on UlaDeviceBase"; } }
-		public override BusCategory Category { get { return BusCategory.ULA; } }
+		public override BusDeviceCategory Category { get { return BusDeviceCategory.ULA; } }
 
 		public override void BusInit(IBusManager bmgr)
 		{

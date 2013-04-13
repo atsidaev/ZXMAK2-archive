@@ -2,6 +2,7 @@
 
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Hardware.General
@@ -12,7 +13,7 @@ namespace ZXMAK2.Hardware.General
 
         public override string Name { get { return "Standard Keyboard"; } }
         public override string Description { get { return "Standard Spectrum Keyboard"; } }
-        public override BusCategory Category { get { return BusCategory.Keyboard; } }
+        public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }
 
         public override void BusInit(IBusManager bmgr)
         {

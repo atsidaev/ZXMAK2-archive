@@ -1,5 +1,6 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Engine
@@ -8,7 +9,7 @@ namespace ZXMAK2.Engine
 	{
 		public abstract string Name { get; }
 		public abstract string Description { get; }
-		public abstract BusCategory Category { get; }
+		public abstract BusDeviceCategory Category { get; }
 		public int BusOrder { get; set; }
 
 		#region Comment

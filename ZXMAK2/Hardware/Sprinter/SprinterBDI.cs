@@ -108,7 +108,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-        public override BusCategory Category { get { return BusCategory.Disk; } }
+        public override BusDeviceCategory Category { get { return BusDeviceCategory.Disk; } }
 
         public override void BusInit(IBusManager bmgr)
         {

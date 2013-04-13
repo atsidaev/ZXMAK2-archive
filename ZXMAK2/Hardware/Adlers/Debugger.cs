@@ -1,6 +1,7 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.Adlers
 {
@@ -12,7 +13,7 @@ namespace ZXMAK2.Hardware.Adlers
 
         public override string Name { get { return "Debugger Adlers"; } }
         public override string Description { get { return "Debugger Adlers"; } }
-        public override BusCategory Category { get { return BusCategory.Other; } }
+        public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
 
         public override void BusInit(IBusManager bmgr)
         {
