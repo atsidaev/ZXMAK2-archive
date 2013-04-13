@@ -96,7 +96,10 @@ namespace ZXMAK2.Controls.Configuration
                 btnNext.Enabled = false;
                 return;
             }
-            txtDescription.Text = bdd.Description;
+            var lines = (bdd.Description ?? string.Empty).Split(
+                new string[] {Environment.NewLine, "\r", "\n" }, 
+                StringSplitOptions.None);
+            txtDescription.Lines = lines;
             btnNext.Enabled = true;
         }
 

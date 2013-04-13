@@ -161,12 +161,13 @@
             // 
             this.txtDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtDescription.Location = new System.Drawing.Point(195, 191);
+            this.txtDescription.Location = new System.Drawing.Point(173, 191);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.ReadOnly = true;
             this.txtDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtDescription.Size = new System.Drawing.Size(368, 73);
+            this.txtDescription.ShortcutsEnabled = false;
+            this.txtDescription.Size = new System.Drawing.Size(390, 73);
             this.txtDescription.TabIndex = 6;
             this.txtDescription.WordWrap = false;
             // 
@@ -178,9 +179,9 @@
             this.lstDevices.FormattingEnabled = true;
             this.lstDevices.HorizontalScrollbar = true;
             this.lstDevices.IntegralHeight = false;
-            this.lstDevices.Location = new System.Drawing.Point(195, 16);
+            this.lstDevices.Location = new System.Drawing.Point(173, 16);
             this.lstDevices.Name = "lstDevices";
-            this.lstDevices.Size = new System.Drawing.Size(368, 169);
+            this.lstDevices.Size = new System.Drawing.Size(390, 169);
             this.lstDevices.TabIndex = 5;
             this.lstDevices.SelectedIndexChanged += new System.EventHandler(this.lstDevices_SelectedIndexChanged);
             this.lstDevices.DoubleClick += new System.EventHandler(this.lstDevices_DoubleClick);
@@ -188,7 +189,7 @@
             // lblDevices
             // 
             this.lblDevices.AutoSize = true;
-            this.lblDevices.Location = new System.Drawing.Point(192, 0);
+            this.lblDevices.Location = new System.Drawing.Point(170, 0);
             this.lblDevices.Name = "lblDevices";
             this.lblDevices.Size = new System.Drawing.Size(49, 13);
             this.lblDevices.TabIndex = 4;
@@ -226,7 +227,7 @@
             this.lstCategory.Location = new System.Drawing.Point(3, 16);
             this.lstCategory.MultiSelect = false;
             this.lstCategory.Name = "lstCategory";
-            this.lstCategory.Size = new System.Drawing.Size(186, 247);
+            this.lstCategory.Size = new System.Drawing.Size(164, 247);
             this.lstCategory.SmallImageList = this.imageList;
             this.lstCategory.TabIndex = 1;
             this.lstCategory.UseCompatibleStateImageBehavior = false;
@@ -236,7 +237,7 @@
             // colCategory
             // 
             this.colCategory.Text = "Category";
-            this.colCategory.Width = 156;
+            this.colCategory.Width = 160;
             // 
             // imageList
             // 
