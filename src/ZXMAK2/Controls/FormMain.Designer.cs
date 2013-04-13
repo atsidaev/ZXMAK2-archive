@@ -60,7 +60,7 @@
             this.menuVmSettings = new System.Windows.Forms.MenuItem();
             this.menuTools = new System.Windows.Forms.MenuItem();
             this.menuHelp = new System.Windows.Forms.MenuItem();
-            this.menuHelpGeneral = new System.Windows.Forms.MenuItem();
+            this.menuHelpViewHelp = new System.Windows.Forms.MenuItem();
             this.menuHelpKeyboard = new System.Windows.Forms.MenuItem();
             this.menuHelpSeparator1 = new System.Windows.Forms.MenuItem();
             this.menuHelpAbout = new System.Windows.Forms.MenuItem();
@@ -276,7 +276,7 @@
             // 
             this.menuHelp.Index = 4;
             this.menuHelp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuHelpGeneral,
+            this.menuHelpViewHelp,
             this.menuHelpKeyboard,
             this.menuHelpSeparator1,
             this.menuHelpAbout});
@@ -284,9 +284,9 @@
             // 
             // menuHelpGeneral
             // 
-            this.menuHelpGeneral.Index = 0;
-            this.menuHelpGeneral.Text = "View Help";
-            this.menuHelpGeneral.Click += new System.EventHandler(this.menuHelpViewHelp_Click);
+            this.menuHelpViewHelp.Index = 0;
+            this.menuHelpViewHelp.Text = "View Help";
+            this.menuHelpViewHelp.Click += new System.EventHandler(this.menuHelpViewHelp_Click);
             // 
             // menuHelpKeyboard
             // 
@@ -375,7 +375,7 @@
 		private System.Windows.Forms.MenuItem menuVmMaximumSpeed;
         private System.Windows.Forms.MenuItem menuTools;
         private System.Windows.Forms.MenuItem menuHelp;
-        private System.Windows.Forms.MenuItem menuHelpGeneral;
+        private System.Windows.Forms.MenuItem menuHelpViewHelp;
         private System.Windows.Forms.MenuItem menuHelpKeyboard;
         private System.Windows.Forms.MenuItem menuHelpSeparator1;
         private System.Windows.Forms.MenuItem menuHelpAbout;

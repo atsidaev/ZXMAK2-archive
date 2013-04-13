@@ -35,10 +35,8 @@ namespace ZXMAK2.Controls
 		private FormBorderStyle m_style;
 		private bool m_topMost;
 
-		private string m_startupImage = string.Empty;
 
-
-		public FormMain()
+        public FormMain()
 		{
 			SetStyle(ControlStyles.Opaque, true);
 			InitializeComponent();
@@ -91,11 +89,7 @@ namespace ZXMAK2.Controls
 			base.OnFormClosed(e);
 		}
 
-		public string StartupImage
-		{
-			get { return m_startupImage; }
-			set { m_startupImage = value; }
-		}
+		public string StartupImage { get; set; }
 
 		protected virtual void OnVmBusConnected(object sender, EventArgs e)
 		{
@@ -162,7 +156,7 @@ namespace ZXMAK2.Controls
 						m_vm.OpenConfig(fileName);
 					else
 						m_vm.SaveConfigAs(fileName);
-					if (StartupImage != string.Empty)
+					if (StartupImage != null)
 					{
 						string imageName = m_vm.Spectrum.Loader.OpenFileName(StartupImage, true);
 						if (imageName != string.Empty)
