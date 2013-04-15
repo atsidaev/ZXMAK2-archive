@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Controls.Configuration
 {
@@ -23,12 +24,16 @@ namespace ZXMAK2.Controls.Configuration
         {
             cbxType.Items.Clear();
             foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
                 foreach (Type type in asm.GetTypes())
+                {
                     if (type.IsClass && !type.IsAbstract && typeof(IMemoryDevice).IsAssignableFrom(type))
                     {
-                        BusDeviceBase dev = (BusDeviceBase)Activator.CreateInstance(type);
+                        var dev = (BusDeviceBase)Activator.CreateInstance(type);
                         cbxType.Items.Add(dev.Name);
                     }
+                }
+            }
             cbxType.Sorted = true;
         }
 
@@ -39,7 +44,7 @@ namespace ZXMAK2.Controls.Configuration
 
             BusDeviceBase busDevice = (BusDeviceBase)device;
             cbxType.SelectedIndex = -1;
-            if(m_device!=null)
+            if (m_device != null)
                 for (int i = 0; i < cbxType.Items.Count; i++)
                     if (busDevice.Name == (string)cbxType.Items[i])
                     {

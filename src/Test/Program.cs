@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Diagnostics;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
 
 namespace Test
 {

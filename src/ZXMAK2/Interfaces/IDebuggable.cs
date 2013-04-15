@@ -4,6 +4,7 @@ using System.Text;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Controls.Debugger;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Interfaces
 {

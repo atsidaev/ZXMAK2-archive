@@ -95,7 +95,7 @@
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Engine\Breakpoint.cs" />
+    <Compile Include="Entities\Breakpoint.cs" />
     <Compile Include="Controls\Configuration\ConfigScreenControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -157,6 +157,7 @@
       <DependentUpon>dbgWD1793.cs</DependentUpon>
     </Compile>
     <Compile Include="Engine\DeviceEnumerator.cs" />
+    <Compile Include="Entities\RzxFrame.cs" />
     <Compile Include="Entities\BusDeviceCategory.cs" />
     <Compile Include="Entities\BusDeviceDescriptor.cs" />
     <Compile Include="Hardware\Adlers\Debugger.cs" />
@@ -190,7 +191,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DialogProvider.cs" />
-    <Compile Include="Engine\BusDeviceBase.cs" />
+    <Compile Include="Entities\BusDeviceBase.cs" />
     <Compile Include="Entities\TapeBlock.cs" />
     <Compile Include="Hardware\General\AyMouseDevice.cs" />
     <Compile Include="Hardware\General\BeeperDevice.cs" />
@@ -236,10 +237,10 @@
     <Compile Include="Hardware\Spectrum\UlaSpectrum48.cs" />
     <Compile Include="Hardware\Spectrum\UlaSpectrum48snow.cs" />
     <Compile Include="Hardware\Clone\ZebestUla.cs" />
-    <Compile Include="Engine\IconDescriptor.cs" />
+    <Compile Include="Entities\IconDescriptor.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRenderer.cs" />
     <Compile Include="Interfaces\IMachineState.cs" />
-    <Compile Include="Interfaces\IBusDevice.cs" />
+    <Compile Include="Interfaces\IBusManager.cs" />
     <Compile Include="Interfaces\IConfigurable.cs" />
     <Compile Include="Interfaces\IDebuggable.cs" />
     <Compile Include="Interfaces\IJtagDevice.cs" />
@@ -247,6 +248,7 @@
     <Compile Include="Interfaces\IMemoryDevice.cs" />
     <Compile Include="Interfaces\IGuiExtension.cs" />
     <Compile Include="Interfaces\IMouseDevice.cs" />
+    <Compile Include="Interfaces\IRzxFrameSource.cs" />
     <Compile Include="Interfaces\IRzxState.cs" />
     <Compile Include="Interfaces\ISoundRenderer.cs" />
     <Compile Include="Interfaces\IUlaDevice.cs" />

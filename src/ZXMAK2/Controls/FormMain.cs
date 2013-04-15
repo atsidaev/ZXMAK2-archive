@@ -18,6 +18,7 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Controls;
 using ZXMAK2.Controls.Debugger;
 using ZXMAK2.MDX;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Controls

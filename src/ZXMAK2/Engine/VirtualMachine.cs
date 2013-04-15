@@ -11,518 +11,519 @@ using ZXMAK2.Engine;
 using ZXMAK2.Interfaces;
 using ZXMAK2.MDX;
 using ZXMAK2.Controls.Debugger;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Engine
 {
-	public class VirtualMachine : IDebuggable
-	{
-		private readonly object m_sync = new object();
-		private Thread m_thread = null;
+    public class VirtualMachine : IDebuggable
+    {
+        private readonly object m_sync = new object();
+        private Thread m_thread = null;
 
-		private int[] m_blankScreen = new int[320 * 240];
-		public Size ScreenSize
-		{
-			get
-			{
+        private int[] m_blankScreen = new int[320 * 240];
+        public Size ScreenSize
+        {
+            get
+            {
                 var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
-				if (ula != null)
-					return ula.VideoSize;
-				return new Size(320, 240);
-			}
-		}
+                if (ula != null)
+                    return ula.VideoSize;
+                return new Size(320, 240);
+            }
+        }
 
-		public float ScreenHeightScale
-		{
-			get
-			{
+        public float ScreenHeightScale
+        {
+            get
+            {
                 var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
-				if (ula != null)
-					return ula.VideoHeightScale;
-				return 1F;
-			}
-		}
+                if (ula != null)
+                    return ula.VideoHeightScale;
+                return 1F;
+            }
+        }
 
-		public int[] Screen
-		{
-			get
-			{
+        public int[] Screen
+        {
+            get
+            {
                 var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
-				if (ula != null)
-					return ula.VideoBuffer;
-				return m_blankScreen;
-			}
-		}
+                if (ula != null)
+                    return ula.VideoBuffer;
+                return m_blankScreen;
+            }
+        }
 
-		public event EventHandler UpdateVideo;
+        public event EventHandler UpdateVideo;
 
-		public unsafe VirtualMachine(DirectKeyboard keyboard, DirectMouse mouse, DirectSound sound)
-		{
-			this.m_keyboard = keyboard;
-			this.m_mouse = mouse;
-			this.m_sound = sound;
-			m_spectrum = new SpectrumConcrete();
-			m_spectrum.UpdateState += OnUpdateState;
-			m_spectrum.Breakpoint += OnBreakpoint;
-			m_spectrum.UpdateFrame += OnUpdateFrame;
-		}
+        public unsafe VirtualMachine(DirectKeyboard keyboard, DirectMouse mouse, DirectSound sound)
+        {
+            this.m_keyboard = keyboard;
+            this.m_mouse = mouse;
+            this.m_sound = sound;
+            m_spectrum = new SpectrumConcrete();
+            m_spectrum.UpdateState += OnUpdateState;
+            m_spectrum.Breakpoint += OnBreakpoint;
+            m_spectrum.UpdateFrame += OnUpdateFrame;
+        }
 
-		public void Init()
-		{
-			m_spectrum.Init();
-			m_spectrum.DoReset();
-			m_spectrum.BusManager.SetDebuggable(this);
-		}
+        public void Init()
+        {
+            m_spectrum.Init();
+            m_spectrum.DoReset();
+            m_spectrum.BusManager.SetDebuggable(this);
+        }
 
-		private string m_name = "ZX Spectrum Clone";
-		private string m_description = "N/A";
+        private string m_name = "ZX Spectrum Clone";
+        private string m_description = "N/A";
 
-		public void Load(XmlNode parent)
-		{
+        public void Load(XmlNode parent)
+        {
 
-			XmlNode infoNode = parent.SelectSingleNode("Info");
-			XmlNode busNode = parent.SelectSingleNode("Bus");
-			if (busNode == null)
-			{
-				LogAgent.Error("Machine bus configuration not found!");
-				throw new ArgumentException("Machine bus configuration not found!");
-			}
+            XmlNode infoNode = parent.SelectSingleNode("Info");
+            XmlNode busNode = parent.SelectSingleNode("Bus");
+            if (busNode == null)
+            {
+                LogAgent.Error("Machine bus configuration not found!");
+                throw new ArgumentException("Machine bus configuration not found!");
+            }
 
-			m_name = "ZX Spectrum Clone";
-			m_description = "N/A";
-			if (infoNode != null)
-			{
-				if (infoNode.Attributes["name"] != null)
-					m_name = infoNode.Attributes["name"].InnerText;
-				if (infoNode.Attributes["description"] != null)
-					m_description = infoNode.Attributes["description"].InnerText;
-			}
-			m_spectrum.Load(busNode);
-		}
+            m_name = "ZX Spectrum Clone";
+            m_description = "N/A";
+            if (infoNode != null)
+            {
+                if (infoNode.Attributes["name"] != null)
+                    m_name = infoNode.Attributes["name"].InnerText;
+                if (infoNode.Attributes["description"] != null)
+                    m_description = infoNode.Attributes["description"].InnerText;
+            }
+            m_spectrum.Load(busNode);
+        }
 
-		public void Save(XmlNode parent)
-		{
-			XmlElement xeInfo = parent.OwnerDocument.CreateElement("Info");
-			if (m_name != "ZX Spectrum Clone")
-				xeInfo.SetAttribute("name", m_name);
-			if (m_description != "N/A")
-				xeInfo.SetAttribute("description", m_description);
-			parent.AppendChild(xeInfo);
-			XmlElement xeBus = parent.OwnerDocument.CreateElement("Bus");
-			XmlNode busNode = parent.AppendChild(xeBus);
-			m_spectrum.Save(busNode);
-		}
+        public void Save(XmlNode parent)
+        {
+            XmlElement xeInfo = parent.OwnerDocument.CreateElement("Info");
+            if (m_name != "ZX Spectrum Clone")
+                xeInfo.SetAttribute("name", m_name);
+            if (m_description != "N/A")
+                xeInfo.SetAttribute("description", m_description);
+            parent.AppendChild(xeInfo);
+            XmlElement xeBus = parent.OwnerDocument.CreateElement("Bus");
+            XmlNode busNode = parent.AppendChild(xeBus);
+            m_spectrum.Save(busNode);
+        }
 
-		#region Open/Save Config
+        #region Open/Save Config
 
-		private string m_configFileName = string.Empty;
+        private string m_configFileName = string.Empty;
 
-		public void OpenConfig(string fileName)
-		{
-			fileName = Path.GetFullPath(fileName);
-			using (Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-			{
-				m_configFileName = fileName;
-				m_spectrum.BusManager.MachineFile = m_configFileName;
-				OpenConfig(stream);
-			}
-		}
+        public void OpenConfig(string fileName)
+        {
+            fileName = Path.GetFullPath(fileName);
+            using (Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                m_configFileName = fileName;
+                m_spectrum.BusManager.MachineFile = m_configFileName;
+                OpenConfig(stream);
+            }
+        }
 
-		public void SaveConfig()
-		{
-			if (!string.IsNullOrEmpty(m_configFileName))
-				using (Stream stream = new FileStream(m_configFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-					SaveConfig(stream);
-		}
+        public void SaveConfig()
+        {
+            if (!string.IsNullOrEmpty(m_configFileName))
+                using (Stream stream = new FileStream(m_configFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    SaveConfig(stream);
+        }
 
-		public void SaveConfigAs(string fileName)
-		{
-			fileName = Path.GetFullPath(fileName);
-			using (Stream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-			{
-				m_configFileName = fileName;
-				m_spectrum.BusManager.MachineFile = m_configFileName;
-				SaveConfig(stream);
-			}
-		}
+        public void SaveConfigAs(string fileName)
+        {
+            fileName = Path.GetFullPath(fileName);
+            using (Stream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+            {
+                m_configFileName = fileName;
+                m_spectrum.BusManager.MachineFile = m_configFileName;
+                SaveConfig(stream);
+            }
+        }
 
-		public void OpenConfig(Stream stream)
-		{
-			XmlDocument xml = new XmlDocument();
-			xml.Load(stream);
-			XmlNode root = xml.SelectSingleNode("/VirtualMachine");
-			if (root == null)
-			{
-				LogAgent.Error("Invalid Machine Configuration File");
-				throw new ArgumentException("Invalid Machine Configuration File");
-			}
-			Load(root);
-		}
+        public void OpenConfig(Stream stream)
+        {
+            XmlDocument xml = new XmlDocument();
+            xml.Load(stream);
+            XmlNode root = xml.SelectSingleNode("/VirtualMachine");
+            if (root == null)
+            {
+                LogAgent.Error("Invalid Machine Configuration File");
+                throw new ArgumentException("Invalid Machine Configuration File");
+            }
+            Load(root);
+        }
 
-		public void SaveConfig(Stream stream)
-		{
-			XmlDocument xml = new XmlDocument();
-			XmlNode root = xml.AppendChild(xml.CreateElement("VirtualMachine"));
-			Save(root);
+        public void SaveConfig(Stream stream)
+        {
+            XmlDocument xml = new XmlDocument();
+            XmlNode root = xml.AppendChild(xml.CreateElement("VirtualMachine"));
+            Save(root);
 
-			xml.Save(stream);
-		}
+            xml.Save(stream);
+        }
 
-		#endregion
+        #endregion
 
-		private void OnUpdateVideo()
-		{
-			if (UpdateVideo != null)
-				UpdateVideo(this, EventArgs.Empty);
-		}
+        private void OnUpdateVideo()
+        {
+            if (UpdateVideo != null)
+                UpdateVideo(this, EventArgs.Empty);
+        }
 
-		private void OnUpdateFrame(object sender, EventArgs e)
-		{
-			if (!MaxSpeed)
-			{
-				byte[] sndbuf = m_sound.LockBuffer();
-				while (m_spectrum.IsRunning && sndbuf == null)
-				{
-					Thread.Sleep(1);
-					sndbuf = m_sound.LockBuffer();
-				}
-				if (sndbuf != null)
-				{
-					try
-					{
-						mixAudio(sndbuf);
-					}
-					finally
-					{
-						m_sound.UnlockBuffer(sndbuf);
-					}
-				}
-				else
-				{
-					Thread.Sleep(1);
-				}
-			}
-			OnUpdateVideo();
-		}
+        private void OnUpdateFrame(object sender, EventArgs e)
+        {
+            if (!MaxSpeed)
+            {
+                byte[] sndbuf = m_sound.LockBuffer();
+                while (m_spectrum.IsRunning && sndbuf == null)
+                {
+                    Thread.Sleep(1);
+                    sndbuf = m_sound.LockBuffer();
+                }
+                if (sndbuf != null)
+                {
+                    try
+                    {
+                        mixAudio(sndbuf);
+                    }
+                    finally
+                    {
+                        m_sound.UnlockBuffer(sndbuf);
+                    }
+                }
+                else
+                {
+                    Thread.Sleep(1);
+                }
+            }
+            OnUpdateVideo();
+        }
 
-		/// <summary>
-		/// Debugger Update State
-		/// </summary>
-		private void OnUpdateState(object sender, EventArgs e)
-		{
-			m_spectrum.BusManager.IconPause.Visible = !m_spectrum.IsRunning;
-			if (UpdateState != null)
-				UpdateState(this, EventArgs.Empty);
+        /// <summary>
+        /// Debugger Update State
+        /// </summary>
+        private void OnUpdateState(object sender, EventArgs e)
+        {
+            m_spectrum.BusManager.IconPause.Visible = !m_spectrum.IsRunning;
+            if (UpdateState != null)
+                UpdateState(this, EventArgs.Empty);
             var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
-			if (ula != null)
-				ula.Flush();
-			OnUpdateVideo();
-		}
+            if (ula != null)
+                ula.Flush();
+            OnUpdateVideo();
+        }
 
-		private void OnBreakpoint(object sender, EventArgs e)
-		{
-			m_bpTriggered = true;
-			if (Breakpoint != null)
-				Breakpoint(this, EventArgs.Empty);
-		}
+        private void OnBreakpoint(object sender, EventArgs e)
+        {
+            m_bpTriggered = true;
+            if (Breakpoint != null)
+                Breakpoint(this, EventArgs.Empty);
+        }
 
 
-		#region spectrum
+        #region spectrum
 
-		public SpectrumBase Spectrum { get { return m_spectrum; } }
+        public SpectrumBase Spectrum { get { return m_spectrum; } }
 
-		private SpectrumBase m_spectrum;
-		private DirectKeyboard m_keyboard;
-		private DirectMouse m_mouse;
-		private unsafe DirectSound m_sound;
+        private SpectrumBase m_spectrum;
+        private DirectKeyboard m_keyboard;
+        private DirectMouse m_mouse;
+        private unsafe DirectSound m_sound;
 
-		public int DebugFrameStartTact { get { return Spectrum.FrameStartTact; } }
-		public bool MaxSpeed = false;
+        public int DebugFrameStartTact { get { return Spectrum.FrameStartTact; } }
+        public bool MaxSpeed = false;
 
-		private unsafe void runThreadProc()
-		{
-			try
-			{
-				m_spectrum.IsRunning = true;
+        private unsafe void runThreadProc()
+        {
+            try
+            {
+                m_spectrum.IsRunning = true;
 
                 var keyboards = m_spectrum.BusManager.FindDevices<IKeyboardDevice>();
                 var mouses = m_spectrum.BusManager.FindDevices<IMouseDevice>();
 
-				while (m_spectrum.IsRunning)
-				{
-					if (keyboards.Count > 0)
-					{
-						m_keyboard.Scan();
+                while (m_spectrum.IsRunning)
+                {
+                    if (keyboards.Count > 0)
+                    {
+                        m_keyboard.Scan();
                         foreach (var kbd in keyboards)
-						{
-							kbd.KeyboardState = m_keyboard.State;
-						}
-					}
-					if (mouses.Count > 0)
-					{
-						m_mouse.Scan();
-						foreach (var mouse in mouses)
-						{
-							mouse.MouseState = m_mouse.MouseState;
-						}
-					}
-					m_spectrum.ExecuteFrame();
-				}
-			}
-			catch (Exception ex)
-			{
-				LogAgent.Error(ex);
-			}
-		}
+                        {
+                            kbd.KeyboardState = m_keyboard.State;
+                        }
+                    }
+                    if (mouses.Count > 0)
+                    {
+                        m_mouse.Scan();
+                        foreach (var mouse in mouses)
+                        {
+                            mouse.MouseState = m_mouse.MouseState;
+                        }
+                    }
+                    m_spectrum.ExecuteFrame();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+        }
 
-		private unsafe void mixAudio(byte[] sndbuf)
-		{
-			if (sndbuf == null)
-				return;
+        private unsafe void mixAudio(byte[] sndbuf)
+        {
+            if (sndbuf == null)
+                return;
 
-			int len = 44100 / 50;//50 fps
+            int len = 44100 / 50;//50 fps
 
-			if (!m_spectrum.IsRunning)
-			{
-				fixed (byte* soundPtr = sndbuf)
-					for (int i = 0; i < len * 4; i++)
-						soundPtr[i] = 0;
-				return;
-			}
+            if (!m_spectrum.IsRunning)
+            {
+                fixed (byte* soundPtr = sndbuf)
+                    for (int i = 0; i < len * 4; i++)
+                        soundPtr[i] = 0;
+                return;
+            }
 
             var renderers = m_spectrum.BusManager.FindDevices<ISoundRenderer>();
-			var buffers = new List<uint[]>();
+            var buffers = new List<uint[]>();
             foreach (var renderer in renderers)
-			{
-				buffers.Add(renderer.AudioBuffer);
-			}
-			mixBuffers(sndbuf, buffers.ToArray());
-		}
+            {
+                buffers.Add(renderer.AudioBuffer);
+            }
+            mixBuffers(sndbuf, buffers.ToArray());
+        }
 
-		private unsafe void mixBuffers(byte[] dst, uint[][] bufferArray)
-		{
-			fixed (byte* bptr = dst)
-			{
-				uint* uiptr = (uint*)bptr;
+        private unsafe void mixBuffers(byte[] dst, uint[][] bufferArray)
+        {
+            fixed (byte* bptr = dst)
+            {
+                uint* uiptr = (uint*)bptr;
 
-				for (int i = 0; i < dst.Length / 4; i++)    // clean buffer
-				{
-					uint value1 = 0;
-					uint value2 = 0;
-					if (bufferArray.Length > 0)
-					{
-						for (int j = 0; j < bufferArray.Length; j++)
-						{
-							value1 += bufferArray[j][i] >> 16;
-							value2 += bufferArray[j][i] & 0xFFFF;
-						}
-						value1 /= (uint)bufferArray.Length;
-						value2 /= (uint)bufferArray.Length;
-					}
-					uiptr[i] = (value1 << 16) | value2;
-				}
+                for (int i = 0; i < dst.Length / 4; i++)    // clean buffer
+                {
+                    uint value1 = 0;
+                    uint value2 = 0;
+                    if (bufferArray.Length > 0)
+                    {
+                        for (int j = 0; j < bufferArray.Length; j++)
+                        {
+                            value1 += bufferArray[j][i] >> 16;
+                            value2 += bufferArray[j][i] & 0xFFFF;
+                        }
+                        value1 /= (uint)bufferArray.Length;
+                        value2 /= (uint)bufferArray.Length;
+                    }
+                    uiptr[i] = (value1 << 16) | value2;
+                }
 
-				//for (int i = 0; i < dst.Length / 4; i++)    // clean buffer
-				//    uiptr[i] = 0;
-				//foreach (uint[] buffer in bufferArray)       // mix sound sources
-				//    fixed (uint* uibuffer = buffer)
-				//        for (int i = 0; i < dst.Length/4; i++)
-				//        {
-				//            uint s1 = uiptr[i];
-				//            uint s2 = uibuffer[i];
-				//            uiptr[i] = ((((s1 >> 16) + (s2 >> 16)) / 2) << 16) | (((s1 & 0xFFFF) + (s2 & 0xFFFF)) / 2);
-				//        }
-			}
-		}
+                //for (int i = 0; i < dst.Length / 4; i++)    // clean buffer
+                //    uiptr[i] = 0;
+                //foreach (uint[] buffer in bufferArray)       // mix sound sources
+                //    fixed (uint* uibuffer = buffer)
+                //        for (int i = 0; i < dst.Length/4; i++)
+                //        {
+                //            uint s1 = uiptr[i];
+                //            uint s2 = uibuffer[i];
+                //            uiptr[i] = ((((s1 >> 16) + (s2 >> 16)) / 2) << 16) | (((s1 & 0xFFFF) + (s2 & 0xFFFF)) / 2);
+                //        }
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region IDebuggable
+        #region IDebuggable
 
-		private bool m_bpTriggered;
+        private bool m_bpTriggered;
 
-		public void DoReset()
-		{
-			lock (m_sync)
-			{
-				bool run = IsRunning;
-				DoStop();
-				m_bpTriggered = false;
-				Spectrum.DoReset();
-				if (run && !m_bpTriggered)
-					DoRun();
-			}
-			OnUpdateVideo();
-		}
+        public void DoReset()
+        {
+            lock (m_sync)
+            {
+                bool run = IsRunning;
+                DoStop();
+                m_bpTriggered = false;
+                Spectrum.DoReset();
+                if (run && !m_bpTriggered)
+                    DoRun();
+            }
+            OnUpdateVideo();
+        }
 
-		public void DoNmi()
-		{
-			lock (m_sync)
-			{
-				bool run = IsRunning;
-				DoStop();
-				m_bpTriggered = false;
-				Spectrum.DoNmi();
-				if (run && !m_bpTriggered)
-					DoRun();
-			}
-			OnUpdateVideo();
-		}
+        public void DoNmi()
+        {
+            lock (m_sync)
+            {
+                bool run = IsRunning;
+                DoStop();
+                m_bpTriggered = false;
+                Spectrum.DoNmi();
+                if (run && !m_bpTriggered)
+                    DoRun();
+            }
+            OnUpdateVideo();
+        }
 
-		public void DoStepInto()
-		{
-			lock (m_sync)
-				Spectrum.DoStepInto();
-			OnUpdateVideo();
-		}
+        public void DoStepInto()
+        {
+            lock (m_sync)
+                Spectrum.DoStepInto();
+            OnUpdateVideo();
+        }
 
-		public void DoStepOver()
-		{
-			lock (m_sync)
-				Spectrum.DoStepOver();
-			OnUpdateVideo();
-		}
+        public void DoStepOver()
+        {
+            lock (m_sync)
+                Spectrum.DoStepOver();
+            OnUpdateVideo();
+        }
 
-		public void DoRun()
-		{
-			lock (m_sync)
-			{
-				if (IsRunning)
-					return;
-				m_thread = null;
-				m_thread = new Thread(new ThreadStart(runThreadProc));
-				m_thread.Name = "VirtualMachine.runThreadProc";
-				m_thread.Priority = ThreadPriority.AboveNormal;
-				m_thread.Start();
-				while (!IsRunning)
-					Thread.Sleep(1);
-			}
-			OnUpdateVideo();
-		}
+        public void DoRun()
+        {
+            lock (m_sync)
+            {
+                if (IsRunning)
+                    return;
+                m_thread = null;
+                m_thread = new Thread(new ThreadStart(runThreadProc));
+                m_thread.Name = "VirtualMachine.runThreadProc";
+                m_thread.Priority = ThreadPriority.AboveNormal;
+                m_thread.Start();
+                while (!IsRunning)
+                    Thread.Sleep(1);
+            }
+            OnUpdateVideo();
+        }
 
-		public void DoStop()
-		{
-			Thread thread = null;
-			lock (m_sync)
-			{
-				if (!IsRunning)
-					return;
-				if (m_thread == null)
-					return;
-				Spectrum.IsRunning = false;
-				thread = m_thread;
-				m_thread = null;
-			}
-			thread.Join();
-			thread = null;
-			OnUpdateVideo();
-		}
+        public void DoStop()
+        {
+            Thread thread = null;
+            lock (m_sync)
+            {
+                if (!IsRunning)
+                    return;
+                if (m_thread == null)
+                    return;
+                Spectrum.IsRunning = false;
+                thread = m_thread;
+                m_thread = null;
+            }
+            thread.Join();
+            thread = null;
+            OnUpdateVideo();
+        }
 
-		public byte ReadMemory(ushort addr)
-		{
-			byte[] data = new byte[1];
-			ReadMemory(addr, data, 0, 1);
-			return data[0];
-		}
+        public byte ReadMemory(ushort addr)
+        {
+            byte[] data = new byte[1];
+            ReadMemory(addr, data, 0, 1);
+            return data[0];
+        }
 
-		public void WriteMemory(ushort addr, byte value)
-		{
-			byte[] data = new byte[1];
-			data[0] = value;
-			WriteMemory(addr, data, 0, 1);
-		}
+        public void WriteMemory(ushort addr, byte value)
+        {
+            byte[] data = new byte[1];
+            data[0] = value;
+            WriteMemory(addr, data, 0, 1);
+        }
 
-		public void ReadMemory(ushort addr, byte[] data, int offset, int length)
-		{
-			lock (m_sync)
-			{
+        public void ReadMemory(ushort addr, byte[] data, int offset, int length)
+        {
+            lock (m_sync)
+            {
                 var memory = Spectrum.BusManager.FindDevice<IMemoryDevice>();
-				ushort ptr = addr;
-				for (int i = 0; i < length; i++, ptr++)
-					data[offset + i] = memory.RDMEM_DBG(ptr);
-			}
-		}
+                ushort ptr = addr;
+                for (int i = 0; i < length; i++, ptr++)
+                    data[offset + i] = memory.RDMEM_DBG(ptr);
+            }
+        }
 
-		public void WriteMemory(ushort addr, byte[] data, int offset, int length)
-		{
-			lock (m_sync)
-			{
+        public void WriteMemory(ushort addr, byte[] data, int offset, int length)
+        {
+            lock (m_sync)
+            {
                 var memory = Spectrum.BusManager.FindDevice<IMemoryDevice>();
-				ushort ptr = addr;
-				for (int i = 0; i < length; i++, ptr++)
-					memory.WRMEM_DBG(ptr, data[offset + i]);
-			}
-			OnUpdateVideo();
-		}
+                ushort ptr = addr;
+                for (int i = 0; i < length; i++, ptr++)
+                    memory.WRMEM_DBG(ptr, data[offset + i]);
+            }
+            OnUpdateVideo();
+        }
 
-		public void AddBreakpoint(Breakpoint bp)
-		{
-			lock (m_sync)
-				Spectrum.AddBreakpoint(bp);
-		}
+        public void AddBreakpoint(Breakpoint bp)
+        {
+            lock (m_sync)
+                Spectrum.AddBreakpoint(bp);
+        }
 
-		public void RemoveBreakpoint(Breakpoint bp)
-		{
-			lock (m_sync)
-				Spectrum.RemoveBreakpoint(bp);
-		}
+        public void RemoveBreakpoint(Breakpoint bp)
+        {
+            lock (m_sync)
+                Spectrum.RemoveBreakpoint(bp);
+        }
 
-		public Breakpoint[] GetBreakpointList()
-		{
-			lock (m_sync)
-				return Spectrum.GetBreakpointList();
-		}
+        public Breakpoint[] GetBreakpointList()
+        {
+            lock (m_sync)
+                return Spectrum.GetBreakpointList();
+        }
 
-		public void ClearBreakpoints()
-		{
-			lock (m_sync)
-				Spectrum.ClearBreakpoints();
-		}
+        public void ClearBreakpoints()
+        {
+            lock (m_sync)
+                Spectrum.ClearBreakpoints();
+        }
 
-		public event EventHandler UpdateState;
-		public event EventHandler Breakpoint;
+        public event EventHandler UpdateState;
+        public event EventHandler Breakpoint;
 
-		public bool IsRunning
-		{
-			get
-			{
-				lock (m_sync)
-					return Spectrum.IsRunning;
-			}
-		}
+        public bool IsRunning
+        {
+            get
+            {
+                lock (m_sync)
+                    return Spectrum.IsRunning;
+            }
+        }
 
-		public Engine.Z80.Z80CPU CPU
-		{
-			get
-			{
-				lock (m_sync)
-					return Spectrum.CPU;
-			}
-		}
+        public Engine.Z80.Z80CPU CPU
+        {
+            get
+            {
+                lock (m_sync)
+                    return Spectrum.CPU;
+            }
+        }
 
-		public int GetFrameTact()
-		{
-			lock (m_sync)
-				return Spectrum.BusManager.GetFrameTact();
-		}
+        public int GetFrameTact()
+        {
+            lock (m_sync)
+                return Spectrum.BusManager.GetFrameTact();
+        }
 
-		public int FrameTactCount
-		{
-			get
-			{
-				lock (m_sync)
-					return Spectrum.BusManager.FrameTactCount;
-			}
-		}
+        public int FrameTactCount
+        {
+            get
+            {
+                lock (m_sync)
+                    return Spectrum.BusManager.FrameTactCount;
+            }
+        }
 
-		public IRzxState RzxState
-		{
-			get
-			{
-				lock (m_sync)
-					return Spectrum.BusManager.RzxHandler;
-			}
-		}
+        public IRzxState RzxState
+        {
+            get
+            {
+                lock (m_sync)
+                    return Spectrum.BusManager.RzxHandler;
+            }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using ZXMAK2.Engine;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Controls.Configuration
 {
@@ -30,7 +31,7 @@ namespace ZXMAK2.Controls.Configuration
 
         public string DeviceName { get { return m_device.Description; } }
         public string DeviceType { get { return m_device.Name; } }
-        
+
         public override void Apply()
         {
         }
