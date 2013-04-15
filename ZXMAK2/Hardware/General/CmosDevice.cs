@@ -18,7 +18,7 @@ namespace ZXMAK2.Hardware.General
 
 		public override void BusInit(IBusManager bmgr)
 		{
-			m_memory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            m_memory = bmgr.FindDevice<IMemoryDevice>();
 			bmgr.SubscribeRDIO(0xF008, 0xB000, readPortBFF7);   // DATA IN
 			bmgr.SubscribeWRIO(0xF008, 0xB000, writePortBFF7);  // DATA OUT
 			bmgr.SubscribeWRIO(0xF008, 0xD000, writePortDFF7);  // REG

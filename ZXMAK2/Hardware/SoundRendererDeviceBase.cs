@@ -22,7 +22,7 @@ namespace ZXMAK2.Hardware
 		{
 			m_sndQueue.Clear();
 			m_cpu = bmgr.CPU;
-			IUlaDevice ula = (IUlaDevice)bmgr.FindDevice(typeof(IUlaDevice));
+            var ula = bmgr.FindDevice<IUlaDevice>();
 			FrameTactCount = ula.FrameTactCount;
 
 			bmgr.SubscribeBeginFrame(BeginFrame);

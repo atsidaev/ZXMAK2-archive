@@ -21,11 +21,11 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 		public override void Deserialize(System.IO.Stream stream)
 		{
-			byte[] data = new byte[stream.Length];
+			var data = new byte[stream.Length];
 			stream.Read(data, 0, data.Length);
-			RzxBlockReader reader = new RzxBlockReader(_spec, new MemoryStream(data));
+			var reader = new RzxBlockReader(_spec, new MemoryStream(data));
 			_spec.BusManager.RzxHandler.Play(reader);
-			IUlaDevice ula = (IUlaDevice)_spec.BusManager.FindDevice(typeof(IUlaDevice));
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
 			ula.ForceRedrawFrame();
 			_spec.RaiseUpdateState();
 		}

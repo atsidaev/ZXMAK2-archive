@@ -17,7 +17,7 @@ namespace ZXMAK2.Hardware.General
 
         public override void BusInit(IBusManager bmgr)
         {
-            m_ay8910 = bmgr.FindDevice(typeof(AY8910)) as AY8910;
+            m_ay8910 = bmgr.FindDevice<AY8910>();
         }
 
         public override void BusConnect()

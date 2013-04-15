@@ -80,13 +80,13 @@ namespace ZXMAK2.Engine
 
 		public override byte ReadMemory(ushort addr)
 		{
-			IMemoryDevice memory = _bus.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            var memory = _bus.FindDevice<IMemoryDevice>();
 			return memory.RDMEM_DBG(addr);
 		}
 
 		public override void WriteMemory(ushort addr, byte value)
 		{
-			IMemoryDevice memory = _bus.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            var memory = _bus.FindDevice<IMemoryDevice>();
 			memory.WRMEM_DBG(addr, value);
 			OnUpdateState();
 		}

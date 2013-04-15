@@ -91,41 +91,29 @@ namespace ZXMAK2.Controls
 
 		public string StartupImage { get; set; }
 
-		protected virtual void OnVmBusConnected(object sender, EventArgs e)
-		{
-			List<BusDeviceBase> list = m_vm.Spectrum.BusManager.FindDevices(typeof(IGuiExtension));
-			list.Sort(delegate(BusDeviceBase x1, BusDeviceBase x2)
-			{
-				if (x1 == x2) return 0;
-				if (x1 is IJtagDevice) return -1;
-				if (x2 is IJtagDevice) return 1;
-				return x2.Name.CompareTo(x1.Name);
-			});
-			foreach (IGuiExtension wfe in list)
-			{
-				try
-				{
-					GuiData guiData = new GuiData(this, menuTools);
-					wfe.AttachGui(guiData);
-				}
-				catch (Exception ex)
-				{
-					LogAgent.Error(ex);
-				}
-			}
-		}
+        protected virtual void OnVmBusConnected(object sender, EventArgs e)
+        {
+            var list = m_vm.Spectrum.BusManager.FindDevices<IGuiExtension>();
+            list.Sort(GuiExtensionNameComparison);
+            foreach (var wfe in list)
+            {
+                try
+                {
+                    var guiData = new GuiData(this, menuTools);
+                    wfe.AttachGui(guiData);
+                }
+                catch (Exception ex)
+                {
+                    LogAgent.Error(ex);
+                }
+            }
+        }
 
 		protected virtual void OnVmBusDisconnect(object sender, EventArgs e)
 		{
-			List<BusDeviceBase> list = m_vm.Spectrum.BusManager.FindDevices(typeof(IGuiExtension));
-			list.Sort(delegate(BusDeviceBase x1, BusDeviceBase x2)
-			{
-				if (x1 == x2) return 0;
-				if (x1 is IJtagDevice) return -1;
-				if (x2 is IJtagDevice) return 1;
-				return x2.Name.CompareTo(x1.Name);
-			});
-			foreach (IGuiExtension wfe in list)
+            var list = m_vm.Spectrum.BusManager.FindDevices<IGuiExtension>();
+            list.Sort(GuiExtensionNameComparison);
+			foreach (var wfe in list)
 			{
 				try
 				{
@@ -137,6 +125,18 @@ namespace ZXMAK2.Controls
 				}
 			}
 		}
+
+        private static int GuiExtensionNameComparison(
+            IGuiExtension x1,
+            IGuiExtension x2)
+        {
+            if (x1 == x2) return 0;
+            if (x1 is IJtagDevice) return -1;
+            if (x2 is IJtagDevice) return 1;
+            var dev1 = (BusDeviceBase)x1;
+            var dev2 = (BusDeviceBase)x2;
+            return dev2.Name.CompareTo(dev1.Name);
+        }
 
 		private bool m_firstShow = true;
 
@@ -257,7 +257,7 @@ namespace ZXMAK2.Controls
 
 			if (e.Alt && e.Control && e.KeyCode == Keys.F8)
 			{
-				ITapeDevice tape = m_vm.Spectrum.BusManager.FindDevice(typeof(ITapeDevice)) as ITapeDevice;
+                var tape = m_vm.Spectrum.BusManager.FindDevice<ITapeDevice>();
 				if (tape != null)
 				{
 					if (tape.IsPlay)

@@ -20,7 +20,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 		protected void UpdateState()
 		{
-			IUlaDevice ula = (IUlaDevice)_spec.BusManager.FindDevice(typeof(IUlaDevice));
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
 			ula.ForceRedrawFrame();
 			_spec.RaiseUpdateState();
 		}
@@ -41,13 +41,13 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 		public int GetFrameTact()
 		{
-			IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
 			return (int)(_spec.CPU.Tact % ula.FrameTactCount);
 		}
 
 		public void SetFrameTact(int frameTact)
 		{
-			IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
 
 			if (frameTact < 0)
 				frameTact = 0;
@@ -61,12 +61,14 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 		public void InitStd128K()
 		{
-			foreach (BusDeviceBase device in _spec.BusManager.FindDevices(typeof(BusDeviceBase)))
-				device.ResetState();
+            foreach (var device in _spec.BusManager.FindDevices<BusDeviceBase>())
+            {
+                device.ResetState();
+            }
 			_spec.DoReset();
-			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
 			memory.SYSEN = false;
-			IBetaDiskDevice betaDisk = _spec.BusManager.FindDevice(typeof(IBetaDiskDevice)) as IBetaDiskDevice;
+            var betaDisk = _spec.BusManager.FindDevice<IBetaDiskDevice>();
 			if (betaDisk != null)
 				betaDisk.DOSEN = false;
 			SetFrameTact(0);

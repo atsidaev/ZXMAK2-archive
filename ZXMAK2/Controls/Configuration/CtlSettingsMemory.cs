@@ -50,21 +50,21 @@ namespace ZXMAK2.Controls.Configuration
 
         public override void Apply()
         {
-            Type type = getType(cbxType.SelectedItem.ToString(), typeof(IMemoryDevice));
+            var type = getType(cbxType.SelectedItem.ToString(), typeof(IMemoryDevice));
 
-            IMemoryDevice memory = (IMemoryDevice)Activator.CreateInstance(type);
-            IMemoryDevice oldMemory = (IMemoryDevice)m_bmgr.FindDevice(typeof(IMemoryDevice));
+            var memory = (IMemoryDevice)Activator.CreateInstance(type);
+            var oldMemory = m_bmgr.FindDevice<IMemoryDevice>();
             if (oldMemory != null && oldMemory.GetType() != memory.GetType())
             {
-                BusDeviceBase busOldMemory = (BusDeviceBase)oldMemory;
-                BusDeviceBase busNewMemory = (BusDeviceBase)memory;
+                var busOldMemory = (BusDeviceBase)oldMemory;
+                var busNewMemory = (BusDeviceBase)memory;
                 if (busOldMemory != null)
                 {
                     m_bmgr.Remove(busOldMemory);
                 }
                 m_bmgr.Add(busNewMemory);
             }
-            Init(m_bmgr, (IMemoryDevice)memory);
+            Init(m_bmgr, memory);
         }
 
         private Type getType(string typeName, Type iface)

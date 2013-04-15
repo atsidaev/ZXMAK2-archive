@@ -51,10 +51,10 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
             InitStd128K();
 
-			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
 			memory.CMR0 = 0x30;	// Disable 128K
 
-			IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
 			ula.PortFE = hdr[27];
 
             int rom48index = memory.GetRomIndex(RomName.ROM_SOS);

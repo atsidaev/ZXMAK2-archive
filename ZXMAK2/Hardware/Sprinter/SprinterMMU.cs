@@ -204,12 +204,20 @@ namespace ZXMAK2.Hardware.Sprinter
             base.BusInit(bmgr);
             this.m_cpu = bmgr.CPU;
 
-            this.m_ulaSprinter = bmgr.FindDevice(typeof(SprinterULA)) as SprinterULA;
-            if (this.m_ulaSprinter != null) this.m_ulaSprinter.VRAM = m_vramPages;
-                else throw new ApplicationException("SprinterULA not found");
-            this.m_SprinterBDI = bmgr.FindDevice(typeof(SprinterBDI)) as SprinterBDI;
-            if (this.m_SprinterBDI == null) 
+            this.m_ulaSprinter = bmgr.FindDevice<SprinterULA>();
+            if (this.m_ulaSprinter != null)
+            {
+                this.m_ulaSprinter.VRAM = m_vramPages;
+            }
+            else
+            {
+                throw new ApplicationException("SprinterULA not found");
+            }
+            this.m_SprinterBDI = bmgr.FindDevice<SprinterBDI>();
+            if (this.m_SprinterBDI == null)
+            {
                 throw new ApplicationException("SprinterBDI not found");
+            }
             bmgr.SubscribeWRIO(0x0000, 0x0000, new BusWriteIoProc(this.WRDCP));  //write to DCP Port
             bmgr.SubscribeRDIO(0x0000, 0x0000, new BusReadIoProc(this.RDDCP));    //read from DCP port
             bmgr.SubscribeWRIO(0x00ff, 0x0082, new BusWriteIoProc(this.writePort82h));  //write PAGE0

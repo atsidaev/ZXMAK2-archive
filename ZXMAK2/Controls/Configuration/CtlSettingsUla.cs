@@ -65,14 +65,14 @@ namespace ZXMAK2.Controls.Configuration
 
         public override void Apply()
         {
-            Type type = getType(cbxType.SelectedItem.ToString(), typeof(IUlaDevice));
+            var type = getType(cbxType.SelectedItem.ToString(), typeof(IUlaDevice));
             
-            IUlaDevice ula = (IUlaDevice)Activator.CreateInstance(type);
-            IUlaDevice oldUla = (IUlaDevice)m_bmgr.FindDevice(typeof(IUlaDevice));
+            var ula = (IUlaDevice)Activator.CreateInstance(type);
+            var oldUla = m_bmgr.FindDevice<IUlaDevice>();
             if (oldUla != null && oldUla.GetType() != ula.GetType())
             {
-                BusDeviceBase busOldUla = (BusDeviceBase)oldUla;
-                BusDeviceBase busNewUla = (BusDeviceBase)ula;
+                var busOldUla = (BusDeviceBase)oldUla;
+                var busNewUla = (BusDeviceBase)ula;
                 if (busOldUla != null)
                 {
                     m_bmgr.Remove(busOldUla);
@@ -86,13 +86,17 @@ namespace ZXMAK2.Controls.Configuration
         private Type getType(string typeName, Type iface)
         {
             foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
                 foreach (Type type in asm.GetTypes())
+                {
                     if (type.IsClass && !type.IsAbstract && iface.IsAssignableFrom(type))
                     {
-                        BusDeviceBase dev = (BusDeviceBase)Activator.CreateInstance(type);
+                        var dev = (BusDeviceBase)Activator.CreateInstance(type);
                         if (dev.Name == typeName)
                             return type;
                     }
+                }
+            }
             return null;
         }
     }

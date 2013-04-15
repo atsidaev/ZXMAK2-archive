@@ -302,8 +302,8 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                     m_spectrum = debugTarget;
                     // ZEK +++
                     bus = ((ZXMAK2.Engine.VirtualMachine)m_spectrum).Spectrum.BusManager;
-                    sprint_mmu = bus.FindDevice(typeof(SprinterMMU)) as SprinterMMU;
-                    sprint_ula = bus.FindDevice(typeof(SprinterULA)) as SprinterULA;
+                    sprint_mmu = bus.FindDevice<SprinterMMU>();
+                    sprint_ula = bus.FindDevice<SprinterULA>();
                     //pevo_bdi = bus.FindDevice(typeof(BDI)) as BDI;
                     // ZEK ---
 

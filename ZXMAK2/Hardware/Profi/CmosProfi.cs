@@ -18,7 +18,7 @@ namespace ZXMAK2.Hardware.Profi
 
 		public override void BusInit(IBusManager bmgr)
 		{
-			m_memory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            m_memory = bmgr.FindDevice<IMemoryDevice>();
 			bmgr.SubscribeWRIO(0x009F, 0x009F, busWriteProfi);
 			bmgr.SubscribeRDIO(0x009F, 0x009F, busReadProfi);
 

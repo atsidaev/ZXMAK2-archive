@@ -21,8 +21,8 @@ namespace ZXMAK2.Hardware.General
 		public override void BusInit(IBusManager bmgr)
 		{
 			m_cpu = bmgr.CPU;
-			IUlaDevice ula = (IUlaDevice)bmgr.FindDevice(typeof(IUlaDevice));
-			IMemoryDevice memory = (IMemoryDevice)bmgr.FindDevice(typeof(IMemoryDevice));
+            var ula = bmgr.FindDevice<IUlaDevice>();
+            var memory = bmgr.FindDevice<IMemoryDevice>();
 			initTiming(m_sampleRate, ula.FrameTactCount);
 
 			if (memory is ZXMAK2.Hardware.Spectrum.MemorySpectrum128 ||

@@ -24,7 +24,7 @@ namespace ZXMAK2.Engine
 		{
 			get
 			{
-				IUlaDevice ula = m_spectrum.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+                var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
 				if (ula != null)
 					return ula.VideoSize;
 				return new Size(320, 240);
@@ -35,7 +35,7 @@ namespace ZXMAK2.Engine
 		{
 			get
 			{
-				IUlaDevice ula = m_spectrum.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+                var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
 				if (ula != null)
 					return ula.VideoHeightScale;
 				return 1F;
@@ -46,7 +46,7 @@ namespace ZXMAK2.Engine
 		{
 			get
 			{
-				IUlaDevice ula = m_spectrum.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+                var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
 				if (ula != null)
 					return ula.VideoBuffer;
 				return m_blankScreen;
@@ -212,7 +212,7 @@ namespace ZXMAK2.Engine
 			m_spectrum.BusManager.IconPause.Visible = !m_spectrum.IsRunning;
 			if (UpdateState != null)
 				UpdateState(this, EventArgs.Empty);
-			IUlaDevice ula = m_spectrum.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+            var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
 			if (ula != null)
 				ula.Flush();
 			OnUpdateVideo();
@@ -244,27 +244,24 @@ namespace ZXMAK2.Engine
 			{
 				m_spectrum.IsRunning = true;
 
-				List<BusDeviceBase> keyboards = m_spectrum.BusManager.FindDevices(typeof(IKeyboardDevice));
-				List<BusDeviceBase> mouses = m_spectrum.BusManager.FindDevices(typeof(IMouseDevice));
+                var keyboards = m_spectrum.BusManager.FindDevices<IKeyboardDevice>();
+                var mouses = m_spectrum.BusManager.FindDevices<IMouseDevice>();
 
 				while (m_spectrum.IsRunning)
 				{
 					if (keyboards.Count > 0)
 					{
 						m_keyboard.Scan();
-						foreach (BusDeviceBase dev in keyboards)
+                        foreach (var kbd in keyboards)
 						{
-							IKeyboardDevice keyboard = dev as IKeyboardDevice;
-							keyboard.KeyboardState = m_keyboard.State;
+							kbd.KeyboardState = m_keyboard.State;
 						}
 					}
-
 					if (mouses.Count > 0)
 					{
 						m_mouse.Scan();
-						foreach (BusDeviceBase dev in mouses)
+						foreach (var mouse in mouses)
 						{
-							IMouseDevice mouse = dev as IMouseDevice;
 							mouse.MouseState = m_mouse.MouseState;
 						}
 					}
@@ -292,11 +289,10 @@ namespace ZXMAK2.Engine
 				return;
 			}
 
-			List<BusDeviceBase> renderers = m_spectrum.BusManager.FindDevices(typeof(ISoundRenderer));
-			List<uint[]> buffers = new List<uint[]>();
-			foreach (BusDeviceBase device in renderers)
+            var renderers = m_spectrum.BusManager.FindDevices<ISoundRenderer>();
+			var buffers = new List<uint[]>();
+            foreach (var renderer in renderers)
 			{
-				ISoundRenderer renderer = device as ISoundRenderer;
 				buffers.Add(renderer.AudioBuffer);
 			}
 			mixBuffers(sndbuf, buffers.ToArray());
@@ -439,7 +435,7 @@ namespace ZXMAK2.Engine
 		{
 			lock (m_sync)
 			{
-				IMemoryDevice memory = Spectrum.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+                var memory = Spectrum.BusManager.FindDevice<IMemoryDevice>();
 				ushort ptr = addr;
 				for (int i = 0; i < length; i++, ptr++)
 					data[offset + i] = memory.RDMEM_DBG(ptr);
@@ -450,7 +446,7 @@ namespace ZXMAK2.Engine
 		{
 			lock (m_sync)
 			{
-				IMemoryDevice memory = Spectrum.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+                var memory = Spectrum.BusManager.FindDevice<IMemoryDevice>();
 				ushort ptr = addr;
 				for (int i = 0; i < length; i++, ptr++)
 					memory.WRMEM_DBG(ptr, data[offset + i]);

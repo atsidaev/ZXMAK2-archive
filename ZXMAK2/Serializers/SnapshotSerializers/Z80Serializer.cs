@@ -86,8 +86,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
             InitStd128K();
 
-			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
-            IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
 
 			// Load registers:
 			_spec.CPU.regs.A = hdr[Z80HDR_A];
@@ -127,11 +127,13 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 			if (version > 1)
 			{
-				if (hdr1[Z80HDR1_IF1PAGED] == 0xFF)
-					LogAgent.Warn("Z80Serializer.loadFromStream: Interface I not implemented, but Interface I ROM required!");
+                if (hdr1[Z80HDR1_IF1PAGED] == 0xFF)
+                {
+                    LogAgent.Warn("Z80Serializer.loadFromStream: Interface I not implemented, but Interface I ROM required!");
+                }
 
 				// Load AY-3-8910 registers
-				IAyDevice aydev = _spec.BusManager.FindDevice(typeof(IAyDevice)) as IAyDevice;
+                var aydev = _spec.BusManager.FindDevice<IAyDevice>();
 				if (aydev != null)
 				{
 					for (int i = 0; i < 16; i++)
@@ -303,8 +305,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 		private void saveToStream(Stream stream)
 		{
-			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
-			IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
 
 			// TODO: align to nonprefix+halt!!!
 			//while (_spec.CPU.FX != OPFX.NONE || _spec.CPU.XFX != OPXFX.NONE)
@@ -371,7 +373,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			hdr1[Z80HDR1_7FFD] = 0x0E;       // ?? dont know what is it, but other emuls doing that (128K only)
 
 			// Save AY registers
-			IAyDevice aydev = _spec.BusManager.FindDevice(typeof(IAyDevice)) as IAyDevice;
+            var aydev = _spec.BusManager.FindDevice<IAyDevice>();
 			if (aydev != null)
 			{
 				byte ayaddr = aydev.ADDR_REG;

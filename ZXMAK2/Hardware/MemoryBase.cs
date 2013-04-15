@@ -16,7 +16,7 @@ namespace ZXMAK2.Hardware
 
 		public override void BusInit(IBusManager bmgr)
 		{
-			m_ula = bmgr.FindDevice(typeof(UlaDeviceBase)) as UlaDeviceBase;
+            m_ula = bmgr.FindDevice<UlaDeviceBase>();
 			bmgr.SubscribeRDMEM(0xC000, 0x0000, ReadMem0000);
 			bmgr.SubscribeRDMEM(0xC000, 0x4000, ReadMem4000);
 			bmgr.SubscribeRDMEM(0xC000, 0x8000, ReadMem8000);

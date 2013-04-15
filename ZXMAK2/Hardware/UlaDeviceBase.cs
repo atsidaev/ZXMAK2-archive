@@ -27,7 +27,7 @@ namespace ZXMAK2.Hardware
             m_videoPage = 5;
 
             CPU = bmgr.CPU;
-            Memory = (IMemoryDevice)bmgr.FindDevice(typeof(IMemoryDevice));
+            Memory = bmgr.FindDevice<IMemoryDevice>();
 
             bmgr.SubscribeWRMEM(0xC000, 0x0000, WriteMem0000);
             bmgr.SubscribeWRMEM(0xC000, 0x4000, WriteMem4000);
