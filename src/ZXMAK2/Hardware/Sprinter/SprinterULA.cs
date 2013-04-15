@@ -12,39 +12,47 @@ namespace ZXMAK2.Hardware.Sprinter
         private byte m_mode;
         private byte m_rgadr;
         private byte[][] m_vram;
-        //private byte
+
+        protected int _flashState = 0;            // flash attr state (0/256)
+        protected int _flashCounter = 0;          // flash attr counter
+
 
         private Z80CPU m_cpu;
 
         public SprinterULA()
         {
-            base.c_ulaLineTime = 0xe0;
-            base.c_ulaFirstPaperLine = 80;
-            base.c_ulaFirstPaperTact = 0x44;
-            base.c_frameTactCount = 0x11800 * 6;//6 - 21MHz
-            base.c_ulaBorderTop = 0x18;
-            base.c_ulaBorderBottom = 0x18;
-            base.c_ulaBorderLeftT = 0x10;
-            base.c_ulaBorderRightT = 0x10;
-            base.c_ulaIntBegin = 0;
-            base.c_ulaIntLength = 0x20;
-            base.c_ulaWidth = ((base.c_ulaBorderLeftT + 0x80) + base.c_ulaBorderRightT) * 2;
-            base.c_ulaHeight = (base.c_ulaBorderTop + 0xc0) + base.c_ulaBorderBottom;
+            Renderer = new SprinterRenderer();
         }
+
+        protected override SpectrumRendererParams CreateSpectrumRendererParams()
+        {
+            var timing = SpectrumRenderer.CreateParams();
+            timing.c_ulaLineTime = 0xe0;
+            timing.c_ulaFirstPaperLine = 80;
+            timing.c_ulaFirstPaperTact = 0x44;
+            timing.c_frameTactCount = 0x11800 * 6;//6 - 21MHz
+            
+            timing.c_ulaBorderTop = 0x18;
+            timing.c_ulaBorderBottom = 0x18;
+            timing.c_ulaBorderLeftT = 0x10;
+            timing.c_ulaBorderRightT = 0x10;
+            
+            timing.c_ulaIntBegin = 0;
+            timing.c_ulaIntLength = 0x20;
+            
+            timing.c_ulaWidth = ((timing.c_ulaBorderLeftT + 0x80) + timing.c_ulaBorderRightT) * 2;
+            timing.c_ulaHeight = (timing.c_ulaBorderTop + 0xc0) + timing.c_ulaBorderBottom;
+            return timing;
+        }
+
         public override string Description
         {
-            get
-            {
-                return ("Sprinter Video Adapter" + Environment.NewLine + "Version 0.1a");
-            }
+            get { return string.Format("Sprinter Video Adapter{0}Version 0.1a", Environment.NewLine); }
         }
 
         public override string Name
         {
-            get
-            {
-                return "Sprinter Video";
-            }
+            get { return "Sprinter Video"; }
         }
         
         #region  -- Bus IO Procs --
@@ -228,21 +236,14 @@ namespace ZXMAK2.Hardware.Sprinter
             }
 
             base.EndFrame();
-        }
-
-        protected override unsafe void fetchVideo(
-            uint* bitmapBufPtr, 
-            int startTact, 
-            int endTact, 
-            UlaStateBase ulaState)
-        {
-/*            if (bitmapBufPtr != null)
+            // flash emulation, because moved to renderer
+            _flashCounter++;
+            if (_flashCounter >= 25)
             {
-
-            }*/
-
+                _flashState ^= 256;
+                _flashCounter = 0;
+            }
         }
-
 
         private void busReset()
         {
@@ -285,22 +286,6 @@ namespace ZXMAK2.Hardware.Sprinter
             set
             {
                 this.m_vram = value;
-            }
-        }
-
-        public override Size VideoSize
-        {
-            get
-            {
-                return new Size(640, 256);
-            }
-        }
-
-        public override float VideoHeightScale
-        {
-            get
-            {
-                return 2;// 1.33f;
             }
         }
 

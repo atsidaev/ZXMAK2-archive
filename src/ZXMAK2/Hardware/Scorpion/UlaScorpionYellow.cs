@@ -3,96 +3,86 @@ using ZXMAK2.Interfaces;
 
 namespace ZXMAK2.Hardware.Scorpion
 {
-	public class UlaScorpion : UlaDeviceBase
-	{
-		#region IBusDevice
+    public class UlaScorpion : UlaDeviceBase
+    {
+        #region IBusDevice
 
-		public override string Name { get { return "Scorpion [Yellow]"; } }
+        public override string Name { get { return "Scorpion [Yellow]"; } }
 
-		public override void BusInit(IBusManager bmgr)
-		{
-			base.BusInit(bmgr);
-			bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, busRDM1);
-			bmgr.SubscribeRDMEM_M1(0xC000, 0x8000, busRDM1);
-			bmgr.SubscribeRDMEM_M1(0xC000, 0xC000, busRDM1);
-		}
+        public override void BusInit(IBusManager bmgr)
+        {
+            base.BusInit(bmgr);
+            bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, busRDM1);
+            bmgr.SubscribeRDMEM_M1(0xC000, 0x8000, busRDM1);
+            bmgr.SubscribeRDMEM_M1(0xC000, 0xC000, busRDM1);
+        }
 
-		#endregion
+        #endregion
 
-		public UlaScorpion()
-		{
-			// Scorpion
-			// Total Size:          448 x 312
-			// Visible Size:        368 x 296 (48+256+64 x 64+192+40)
-			// First Line Border:   0
-			// First Line Paper:    64
-			// Paper Lines:         192
-			// Bottom Border Lines: 40
+        protected override SpectrumRendererParams CreateSpectrumRendererParams()
+        {
+            // Scorpion [Yellow PCB]
+            // Total Size:          448 x 312
+            // Visible Size:        320 x 240 (32+256+32 x 24+192+24)
+            var timing = SpectrumRenderer.CreateParams();
+            timing.c_ulaLineTime = 224;
+            timing.c_ulaFirstPaperLine = 64;
+            timing.c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
+            timing.c_frameTactCount = 69888;//+
+            timing.c_ulaBorder4T = true;
+            timing.c_ulaBorder4Tstage = 3;
 
-			c_ulaLineTime = 224;
-			c_ulaFirstPaperLine = 64;
-			c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
-			c_frameTactCount = 69888;//+
-			c_ulaBorder4T = true;
-			c_ulaBorder4Tstage = 3;
+            timing.c_ulaBorderTop = 24;//64;
+            timing.c_ulaBorderBottom = 24;// 40;
+            timing.c_ulaBorderLeftT = 16;// 24;  //24
+            timing.c_ulaBorderRightT = 16;// 24; //32
 
-			c_ulaBorderTop = 24;//64;
-			c_ulaBorderBottom = 24;// 40;
-			c_ulaBorderLeftT = 16;// 24;  //24
-			c_ulaBorderRightT = 16;// 24; //32
+            timing.c_ulaIntBegin = 64 - 3;
+            timing.c_ulaIntLength = 32;    // according to fuse
 
-			c_ulaIntBegin = 64 - 3;
-			c_ulaIntLength = 32;    // according to fuse
+            timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 128 + timing.c_ulaBorderRightT) * 2;
+            timing.c_ulaHeight = (timing.c_ulaBorderTop + 192 + timing.c_ulaBorderBottom);
+            return timing;
+        }
 
-			c_ulaWidth = (c_ulaBorderLeftT + 128 + c_ulaBorderRightT) * 2;
-			c_ulaHeight = (c_ulaBorderTop + 192 + c_ulaBorderBottom);
-		}
+        #region Bus Handlers
 
-		#region Bus Handlers
+        private void busRDM1(ushort addr, ref byte value)
+        {
+            CPU.Tact += CPU.Tact & 1;
+        }
 
-		private void busRDM1(ushort addr, ref byte value)
-		{
-			CPU.Tact += CPU.Tact & 1;
-		}
+        #endregion
 
-		#endregion
+        #region UlaDeviceBase
 
-		#region UlaDeviceBase
+        protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        {
+            if (!Memory.DOSEN && (addr & 0x23) == (0xFE & 0x23))
+                base.WritePortFE(addr, value, ref iorqge);
+        }
 
-		protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
-		{
-			if (!Memory.DOSEN && (addr & 0x23) == (0xFE & 0x23))
-				base.WritePortFE(addr, value, ref iorqge);
-		}
+        #endregion
+    }
 
-		#endregion
-	}
+    public class UlaScorpionEx : UlaScorpion
+    {
+        public override string Name { get { return "Scorpion [Yellow - extended border]"; } }
 
-	public class UlaScorpionEx : UlaScorpion
-	{
-		#region IBusDevice
+        protected override SpectrumRendererParams CreateSpectrumRendererParams()
+        {
+            // Scorpion [Yellow PCB]
+            // Total Size:          448 x 312
+            // Visible Size:        352 x 296 (48+256+48 x 64+192+40)
+            var timing = base.CreateSpectrumRendererParams();
+            timing.c_ulaBorderTop = 64;
+            timing.c_ulaBorderBottom = 40;
+            timing.c_ulaBorderLeftT = 24;  //24
+            timing.c_ulaBorderRightT = 24; //32
 
-		public override string Name { get { return "Scorpion [Extended Border]"; } }
-
-		#endregion
-
-		public UlaScorpionEx()
-		{
-			// Scorpion
-			// Total Size:          448 x 312
-			// Visible Size:        368 x 296 (48+256+64 x 64+192+40)
-			// First Line Border:   0
-			// First Line Paper:    64
-			// Paper Lines:         192
-			// Bottom Border Lines: 40
-
-			c_ulaBorderTop = 64;
-			c_ulaBorderBottom = 40;
-			c_ulaBorderLeftT = 24;  //24
-			c_ulaBorderRightT = 24; //32
-
-			c_ulaWidth = (c_ulaBorderLeftT + 128 + c_ulaBorderRightT) * 2;
-			c_ulaHeight = (c_ulaBorderTop + 192 + c_ulaBorderBottom);
-		}
-	}
+            timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 128 + timing.c_ulaBorderRightT) * 2;
+            timing.c_ulaHeight = (timing.c_ulaBorderTop + 192 + timing.c_ulaBorderBottom);
+            return timing;
+        }
+    }
 }

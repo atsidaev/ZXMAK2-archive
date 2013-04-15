@@ -323,7 +323,7 @@ namespace ZXMAK2.Controls
 			}
 		}
 
-		private void renderVideo_Click(object sender, EventArgs e)
+		private void renderVideo_DoubleClick(object sender, EventArgs e)
 		{
 			if (renderVideo.Focused && m_mouse != null)
 				m_mouse.StartCapture();

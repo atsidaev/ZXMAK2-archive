@@ -25,29 +25,30 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #endregion
 
-        public UlaSpectrum48_Early()
+        protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
             // ZX Spectrum 48
-            // Total Size:          //+ 448 x 312
-            // Visible Size:        //+ 352 x 303 (48+256+48 x 55+192+56)
+            // Total Size:          448 x 312
+            // Visible Size:        352 x 303 (48+256+48 x 55+192+56)
+            var timing = SpectrumRenderer.CreateParams();
+            timing.c_ulaLineTime = 224;
+            timing.c_ulaFirstPaperLine = 64;
+            timing.c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
+            timing.c_frameTactCount = 69888;
+            timing.c_ulaBorder4T = true;
+            timing.c_ulaBorder4Tstage = 0;
 
-            c_ulaLineTime = 224;
-            c_ulaFirstPaperLine = 64;
-            c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
-            c_frameTactCount = 69888;
-            c_ulaBorder4T = true;
-            c_ulaBorder4Tstage = 0;
+            timing.c_ulaBorderTop = 55;      //56 (at least 48=border, other=retrace or border)
+            timing.c_ulaBorderBottom = 56;   //
+            timing.c_ulaBorderLeftT = 24;    //16T
+            timing.c_ulaBorderRightT = 24;   //32T
 
-            c_ulaBorderTop = 55;      //56 (at least 48=border, other=retrace or border)
-            c_ulaBorderBottom = 56;   //
-            c_ulaBorderLeftT = 24;    //16T
-            c_ulaBorderRightT = 24;   //32T
+            timing.c_ulaIntBegin = 64;
+            timing.c_ulaIntLength = 32;    // according to fuse
 
-            c_ulaIntBegin = 64;
-            c_ulaIntLength = 32;    // according to fuse
-
-            c_ulaWidth = (c_ulaBorderLeftT + 128 + c_ulaBorderRightT) * 2;
-            c_ulaHeight = (c_ulaBorderTop + 192 + c_ulaBorderBottom);
+            timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 128 + timing.c_ulaBorderRightT) * 2;
+            timing.c_ulaHeight = (timing.c_ulaBorderTop + 192 + timing.c_ulaBorderBottom);
+            return timing;
         }
 
 
@@ -115,7 +116,7 @@ namespace ZXMAK2.Hardware.Spectrum
 
         private void contendMemory()
         {
-            int frameTact = (int)(CPU.Tact % c_frameTactCount);
+            int frameTact = (int)(CPU.Tact % FrameTactCount);
             CPU.Tact += m_contention[frameTact];
         }
 
@@ -123,7 +124,7 @@ namespace ZXMAK2.Hardware.Spectrum
         {
             if (IsContended(addr))
             {
-                int frameTact = (int)(CPU.Tact % c_frameTactCount);
+                int frameTact = (int)(CPU.Tact % FrameTactCount);
                 CPU.Tact += m_contention[frameTact];
             }
         }
@@ -131,7 +132,7 @@ namespace ZXMAK2.Hardware.Spectrum
         private void contendPortLate(int addr)
         {
             int shift = 1;
-            int frameTact = (int)((CPU.Tact + shift) % c_frameTactCount);
+            int frameTact = (int)((CPU.Tact + shift) % FrameTactCount);
 
             if (IsPortUla(addr))
             {
@@ -139,47 +140,54 @@ namespace ZXMAK2.Hardware.Spectrum
             }
             else if (IsContended(addr))
             {
-                CPU.Tact += m_contention[frameTact]; frameTact += m_contention[frameTact]; frameTact++; frameTact %= c_frameTactCount;
-                CPU.Tact += m_contention[frameTact]; frameTact += m_contention[frameTact]; frameTact++; frameTact %= c_frameTactCount;
-                CPU.Tact += m_contention[frameTact]; frameTact += m_contention[frameTact]; frameTact++; frameTact %= c_frameTactCount;
+                CPU.Tact += m_contention[frameTact]; frameTact += m_contention[frameTact]; frameTact++; frameTact %= FrameTactCount;
+                CPU.Tact += m_contention[frameTact]; frameTact += m_contention[frameTact]; frameTact++; frameTact %= FrameTactCount;
+                CPU.Tact += m_contention[frameTact]; frameTact += m_contention[frameTact]; frameTact++; frameTact %= FrameTactCount;
             }
         }
 
         protected override void OnTimingChanged()
         {
             base.OnTimingChanged();
-            
+            m_contention = CreateContentionTable(SpectrumRenderer.Params);
+        }
+
+        // TODO: check with UlaSpectrum128_Early, 
+        //      which one should be removed?
+        private static int[] CreateContentionTable(SpectrumRendererParams timing)
+        {
             // build early model table...
-            m_contention = new int[c_frameTactCount];
+            var contention = new int[timing.c_frameTactCount];
             int[] byteContention = new int[] { 6, 5, 4, 3, 2, 1, 0, 0, };
-            for (int t = 0; t < c_frameTactCount; t++)
+            for (int t = 0; t < timing.c_frameTactCount; t++)
             {
-                int shifted = (t + 1) + c_ulaIntBegin;
+                int shifted = (t + 1) + timing.c_ulaIntBegin;
                 // check overflow
                 if (shifted < 0)
-                    shifted += c_frameTactCount;
-                shifted %= c_frameTactCount;
+                    shifted += timing.c_frameTactCount;
+                shifted %= timing.c_frameTactCount;
 
-                m_contention[t] = 0;
-                int line = shifted / c_ulaLineTime;
-                int pix = shifted % c_ulaLineTime;
-                if (line < c_ulaFirstPaperLine || line >= (c_ulaFirstPaperLine + 192))
+                contention[t] = 0;
+                int line = shifted / timing.c_ulaLineTime;
+                int pix = shifted % timing.c_ulaLineTime;
+                if (line < timing.c_ulaFirstPaperLine || line >= (timing.c_ulaFirstPaperLine + 192))
                 {
-                    m_contention[t] = 0;
+                    contention[t] = 0;
                     continue;
                 }
-                int scrPix = pix - c_ulaFirstPaperTact;
+                int scrPix = pix - timing.c_ulaFirstPaperTact;
                 if (scrPix < 0 || scrPix >= 128)
                 {
-                    m_contention[t] = 0;
+                    contention[t] = 0;
                     continue;
                 }
                 int pixByte = scrPix % 8;
 
-                m_contention[t] = byteContention[pixByte];
+                contention[t] = byteContention[pixByte];
             }
+            return contention;
         }
-        
+
         private int[] m_contention;
 
         #endregion
@@ -229,10 +237,12 @@ namespace ZXMAK2.Hardware.Spectrum
     {
         public override string Name { get { return "ZX Spectrum 48 [late model]"; } }
 
-        public UlaSpectrum48()
+        protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
-            c_ulaFirstPaperTact += 1;
-            c_ulaBorder4Tstage = (c_ulaBorder4Tstage + 1) & 3;
+            var timing = base.CreateSpectrumRendererParams();
+            timing.c_ulaFirstPaperTact += 1;
+            timing.c_ulaBorder4Tstage = (timing.c_ulaBorder4Tstage + 1) & 3;
+            return timing;
         }
     }
 }

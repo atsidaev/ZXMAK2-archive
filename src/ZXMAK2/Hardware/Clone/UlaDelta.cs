@@ -1,5 +1,6 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Hardware.Spectrum;
 
 
 namespace ZXMAK2.Hardware.Clone
@@ -28,79 +29,56 @@ namespace ZXMAK2.Hardware.Clone
 
         protected override void WriteMem4000(ushort addr, byte value)
         {
-            int frameTact = (int)(CPU.Tact % c_frameTactCount);
+            int frameTact = (int)(CPU.Tact % FrameTactCount);
             CPU.Tact += m_contention[frameTact];
             base.WriteMem4000(addr, value);
         }
 
         protected void ReadMem4000(ushort addr, ref byte value)
         {
-            int frameTact = (int)(CPU.Tact % c_frameTactCount);
-            CPU.Tact+=m_contention[frameTact];
+            int frameTact = (int)(CPU.Tact % FrameTactCount);
+            CPU.Tact += m_contention[frameTact];
         }
 
         protected void ContendNoMreq(ushort addr)
         {
-            int frameTact = (int)(CPU.Tact % c_frameTactCount);
+            int frameTact = (int)(CPU.Tact % FrameTactCount);
             CPU.Tact += m_contention[frameTact];
         }
 
         #endregion
 
-
-        public UlaDelta()
+        protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
             // Delta-C
             // Total Size:          448 x 320
             // Visible Size:        384 x 304 (72+256+56 x 64+192+48)
+            var timing = SpectrumRenderer.CreateParams();
+            timing.c_ulaLineTime = 224;
+            timing.c_ulaFirstPaperLine = 68;
+            timing.c_ulaFirstPaperTact = 68;
+            timing.c_frameTactCount = 69216;//69888;
 
-            c_ulaLineTime = 224;
-            c_ulaFirstPaperLine = 68;
-            c_ulaFirstPaperTact = 68;
-            c_frameTactCount = 69216;//69888;
+            timing.c_ulaBorderTop = 64;
+            timing.c_ulaBorderBottom = 48;
+            timing.c_ulaBorderLeftT = 24;
+            timing.c_ulaBorderRightT = 24;
 
-            c_ulaBorderTop = 64;
-            c_ulaBorderBottom = 48;
-            c_ulaBorderLeftT = 24;
-            c_ulaBorderRightT = 24;
+            timing.c_ulaIntBegin = 0;
+            timing.c_ulaIntLength = 836;//224;
+            timing.c_ulaFlashPeriod = 8;
 
-            c_ulaIntBegin = 0;
-            c_ulaIntLength = 836;//224;
-            c_ulaFlashPeriod = 8;
-
-            c_ulaWidth = (c_ulaBorderLeftT + 128 + c_ulaBorderRightT) * 2;
-            c_ulaHeight = (c_ulaBorderTop + 192 + c_ulaBorderBottom);
+            timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 128 + timing.c_ulaBorderRightT) * 2;
+            timing.c_ulaHeight = (timing.c_ulaBorderTop + 192 + timing.c_ulaBorderBottom);
+            return timing;
         }
 
         protected override void OnTimingChanged()
         {
             base.OnTimingChanged();
-            m_contention = new int[c_frameTactCount];
-            int[] byteContention = new int[] { 6, 5, 4, 3, 2, 1, 0, 0, };
-            for (int t = 0; t < c_frameTactCount; t++)
-            {
-                int shifted = t - c_ulaIntBegin;
-                if (shifted < 0)
-                    shifted += c_frameTactCount;
-
-                m_contention[shifted] = 0;
-                int line = t / c_ulaLineTime;
-                int pix = t % c_ulaLineTime;
-                if (line < c_ulaFirstPaperLine || line >= (c_ulaFirstPaperLine + 192))
-                {
-                    m_contention[shifted] = 0;
-                    continue;
-                }
-                int scrPix = pix - c_ulaFirstPaperTact + 1;
-                if (scrPix < 0 || scrPix >= 128)
-                {
-                    m_contention[shifted] = 0;
-                    continue;
-                }
-                int pixByte = scrPix % 8;
-
-                m_contention[shifted] = byteContention[pixByte];
-            }
+            m_contention = UlaSpectrum128_Early.CreateContentionTable(
+                SpectrumRenderer.Params,
+                new int[] { 6, 5, 4, 3, 2, 1, 0, 0, });
         }
 
         private int[] m_contention;
