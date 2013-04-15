@@ -319,11 +319,15 @@ namespace Test
 			p128.DoReset();
 			p128.ExecuteFrame();
 			p128.IsRunning = false;
-			foreach (IKeyboardDevice kbd in p128.BusManager.FindDevices(typeof(IKeyboardDevice)))
-				kbd.KeyboardState = new FakeKeyboardState(Key.Y);
+            foreach (var kbd in p128.BusManager.FindDevices<IKeyboardDevice>())
+            {
+                kbd.KeyboardState = new FakeKeyboardState(Key.Y);
+            }
 
-			using (Stream testStream = GetTestStream("zexall.sna"))
-				p128.Loader.GetSerializer(Path.GetExtension("zexall.sna")).Deserialize(testStream);
+            using (Stream testStream = GetTestStream("zexall.sna"))
+            {
+                p128.Loader.GetSerializer(Path.GetExtension("zexall.sna")).Deserialize(testStream);
+            }
 			p128.IsRunning = true;
 			int frame;
 			for (frame = 0; frame < 700000; frame++)

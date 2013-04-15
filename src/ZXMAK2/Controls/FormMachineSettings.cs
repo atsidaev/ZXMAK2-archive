@@ -304,10 +304,12 @@ namespace ZXMAK2.Controls
                         {
                             try
                             {
-                                XmlDocument xml = new XmlDocument();
+                                var xml = new XmlDocument();
                                 using (Stream s = zip.GetInputStream(entry))
+                                {
                                     xml.Load(s);
-                                XmlNode vmNode = xml.SelectSingleNode("/VirtualMachine");
+                                }
+                                var vmNode = xml.SelectSingleNode("/VirtualMachine");
                                 if (vmNode == null)
                                 {
                                     LogAgent.Warn(
@@ -320,7 +322,7 @@ namespace ZXMAK2.Controls
                                 if (vmNode.Attributes["name"] != null)
                                     name = vmNode.Attributes["name"].InnerText;
                                 
-                                ToolStripItem item = ctxMenuWizard.Items.Add(name);
+                                var item = ctxMenuWizard.Items.Add(name);
                                 item.Tag = xml;
                                 item.Click += new EventHandler(ctxMenuWizardItem_Click);
                             }
@@ -342,10 +344,10 @@ namespace ZXMAK2.Controls
             control.Size = pnlSettings.ClientSize;
             control.Visible = false;
             pnlSettings.Controls.Add(control);
-            ConfigScreenControl csc = (ConfigScreenControl)control;
+            var csc = (ConfigScreenControl)control;
             m_ctlList.Insert(index, csc);
             m_devList.Insert(index, device);
-            ListViewItem lvi = new ListViewItem();
+            var lvi = new ListViewItem();
             lvi.Tag = csc;
             lvi.Text = device.Category.ToString();
             lvi.SubItems.Add(device.Name);
@@ -384,19 +386,24 @@ namespace ZXMAK2.Controls
         private UserControl CreateConfigScreenControl(BusManager bmgr, object objTarget)
         {
             foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
                 foreach (Type type in asm.GetTypes())
-                    if (type.IsClass && !type.IsAbstract &&
-                        type!=typeof(CtlSettingsGenericDevice) &&
+                {
+                    if (type.IsClass && 
+                        !type.IsAbstract &&
+                        type != typeof(CtlSettingsGenericDevice) &&
                         typeof(ConfigScreenControl).IsAssignableFrom(type) &&
                         typeof(UserControl).IsAssignableFrom(type))
                     {
-                        MethodInfo mi = type.GetMethod("Init", new Type[] { typeof(BusManager), objTarget.GetType() });
+                        var mi = type.GetMethod("Init", new Type[] { typeof(BusManager), objTarget.GetType() });
                         if (mi == null)
                             continue;
-                        UserControl obj = (UserControl)Activator.CreateInstance(type);
+                        var obj = (UserControl)Activator.CreateInstance(type);
                         mi.Invoke(obj, new object[] { bmgr, objTarget });
                         return obj;
                     }
+                }
+            }
             return null;
         }
         
@@ -408,8 +415,8 @@ namespace ZXMAK2.Controls
             m_workBus = new BusManager();
             m_workBus.Init(new Engine.Z80.Z80CPU(), new ZXMAK2.Serializers.LoadManager(null), true);
             
-            XmlDocument xml = new XmlDocument();
-            XmlNode root = xml.AppendChild(xml.CreateElement("Bus"));
+            var xml = new XmlDocument();
+            var root = xml.AppendChild(xml.CreateElement("Bus"));
             try
             {
                 m_vm.Spectrum.BusManager.SaveConfig(root);
@@ -436,21 +443,21 @@ namespace ZXMAK2.Controls
         private void initWorkBus()
         {
             lstNavigation.Items.Clear();
-            foreach (ConfigScreenControl ctl in m_ctlList)
+            foreach (var ctl in m_ctlList)
             {
                 Controls.Remove(ctl);
                 ctl.Dispose();
             }
             m_ctlList.Clear();
             m_devList.Clear();
-            foreach (BusDeviceBase device in m_workBus.FindDevices(typeof(BusDeviceBase)))
+            foreach (var device in m_workBus.FindDevices<BusDeviceBase>())
             {
                 try
                 {
-                    UserControl control = CreateConfigScreenControl(m_workBus, device);
+                    var control = CreateConfigScreenControl(m_workBus, device);
                     if (control == null)
                     {
-                        CtlSettingsGenericDevice generic = new CtlSettingsGenericDevice();
+                        var generic = new CtlSettingsGenericDevice();
                         generic.Init(m_workBus, device);
                         control = generic;
                     }
@@ -475,9 +482,13 @@ namespace ZXMAK2.Controls
 		private void lstNavigation_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
 		{
             for (int i = 0; i < m_ctlList.Count; i++)
-                ((UserControl)m_ctlList[i]).Visible = e.ItemIndex == i && e.IsSelected;
+            {
+                var ctl = (UserControl)m_ctlList[i];
+                ctl.Visible = e.ItemIndex == i && e.IsSelected;
+            }
             
-            bool allowRemove = e.IsSelected && e.ItemIndex >= 0 && 
+            bool allowRemove = e.IsSelected && 
+                e.ItemIndex >= 0 && 
                 e.ItemIndex < m_ctlList.Count;
             btnAdd.Enabled = true;
             btnRemove.Enabled = allowRemove;
@@ -490,7 +501,9 @@ namespace ZXMAK2.Controls
 			int index = getSelectedIndex();
 			if (index <= 0 || index >= m_devList.Count - 1)
 				return false;
-			BusDeviceBase device = index < lstNavigation.Items.Count - 1 ? m_devList[index] : null;
+			var device = index < lstNavigation.Items.Count - 1 ? 
+                m_devList[index] : 
+                null;
 			if (device == null)
 				return false;
 			if (device is IUlaDevice)
@@ -500,7 +513,9 @@ namespace ZXMAK2.Controls
 			index = index - 1;
 			if (index <= 0 || index >= m_devList.Count - 1)
 				return false;
-			device = index < lstNavigation.Items.Count - 1 ? m_devList[index] : null;
+			device = index < lstNavigation.Items.Count - 1 ? 
+                m_devList[index] : 
+                null;
 			if (device == null)
 				return false;
 			if (device is IUlaDevice)
@@ -515,7 +530,9 @@ namespace ZXMAK2.Controls
 			int index = getSelectedIndex();
 			if (index <= 0 || index >= m_devList.Count - 1)
 				return false;
-			BusDeviceBase device = index < lstNavigation.Items.Count - 1 ? m_devList[index] : null;
+			var device = index < lstNavigation.Items.Count - 1 ? 
+                m_devList[index] : 
+                null;
 			if (device == null)
 				return false;
 			if (device is IUlaDevice)
@@ -525,7 +542,9 @@ namespace ZXMAK2.Controls
 			index = index + 1;
 			if (index <= 0 || index >= m_devList.Count - 1)
 				return false;
-			device = index < lstNavigation.Items.Count - 1 ? m_devList[index] : null;
+			device = index < lstNavigation.Items.Count - 1 ? 
+                m_devList[index] : 
+                null;
 			if (device == null)
 				return false;
 			if (device is IUlaDevice)
@@ -539,9 +558,11 @@ namespace ZXMAK2.Controls
         {
             try
             {
-                foreach (ConfigScreenControl csc in m_ctlList)
+                foreach (var csc in m_ctlList)
+                {
                     csc.Apply();
-                if (m_workBus.FindDevice(typeof(IUlaDevice)) == null)
+                }
+                if (m_workBus.FindDevice<IUlaDevice>() == null)
                 {
                     DialogProvider.Show(
                         "Bad configuration!\n\nPease add ULA device!",
@@ -550,7 +571,7 @@ namespace ZXMAK2.Controls
                         DlgIcon.Error);
                     return;
                 }
-                if (m_workBus.FindDevice(typeof(IMemoryDevice)) == null)
+                if (m_workBus.FindDevice<IMemoryDevice>() == null)
                 {
                     DialogProvider.Show(
                         "Bad configuration!\n\nPease add Memory device!", 
@@ -579,16 +600,16 @@ namespace ZXMAK2.Controls
                 m_vm.DoStop();
 
                 
-                BusManager bmgr = m_vm.Spectrum.BusManager;
+                var bmgr = m_vm.Spectrum.BusManager;
 
                 // workaround to save border color + Reset in case when memory changed
-                IUlaDevice ula = bmgr.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
-                IMemoryDevice oldMemory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+                var ula = bmgr.FindDevice<IUlaDevice>();
+                var oldMemory = bmgr.FindDevice<IMemoryDevice>();
                 int portFE = ula != null ? ula.PortFE : 0x00;
                 bmgr.LoadConfig(root);
-                ula = bmgr.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+                ula = bmgr.FindDevice<IUlaDevice>();
                 ula.PortFE = (byte)portFE;
-                IMemoryDevice memory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+                var memory = bmgr.FindDevice<IMemoryDevice>();
                 if(memory!=oldMemory)
                     m_vm.DoReset();
 
@@ -616,7 +637,7 @@ namespace ZXMAK2.Controls
             if (index >= 0 && index < m_devList.Count)
             {
                 m_workBus.Remove(m_devList[index]);
-                UserControl control = (UserControl)m_ctlList[index];
+                var control = (UserControl)m_ctlList[index];
                 Controls.Remove(control);
                 control.Dispose();
                 m_ctlList.RemoveAt(index);
@@ -639,17 +660,21 @@ namespace ZXMAK2.Controls
         {
             try
             {
-                using (FormAddDeviceWizard wizard = new FormAddDeviceWizard())
+                using (var wizard = new FormAddDeviceWizard())
                 {
                     wizard.IgnoreList = m_devList;
                     if (wizard.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                    {
                         return;
+                    }
 
                     // apply to avoid loss ULA & MEMORY TYPE
-                    foreach (ConfigScreenControl csc in m_ctlList)
+                    foreach (var csc in m_ctlList)
+                    {
                         csc.Apply();
+                    }
                     
-                    BusDeviceBase device = wizard.Device;// (IBusDevice)Activator.CreateInstance(wizard.DeviceType);
+                    var device = wizard.Device;// (IBusDevice)Activator.CreateInstance(wizard.DeviceType);
                     //IBusDevice device = new KeyboardDevice();
                     m_workBus.Add(device);
 
@@ -685,7 +710,9 @@ namespace ZXMAK2.Controls
 		private void btnUp_Click(object sender, EventArgs e)
 		{
 			int indexFrom = getSelectedIndex();
-			BusDeviceBase deviceFrom = indexFrom < lstNavigation.Items.Count - 1 ? m_devList[indexFrom] : null;
+			var deviceFrom = indexFrom < lstNavigation.Items.Count - 1 ? 
+                m_devList[indexFrom] : 
+                null;
 			if (deviceFrom is IUlaDevice)
 				return;
 			if (deviceFrom is IMemoryDevice)
@@ -693,7 +720,9 @@ namespace ZXMAK2.Controls
 			int indexTo = indexFrom - 1;
 			if (indexTo < 0)
 				return;
-			BusDeviceBase deviceTo = indexTo < lstNavigation.Items.Count - 1 ? m_devList[indexTo] : null;
+			var deviceTo = indexTo < lstNavigation.Items.Count - 1 ? 
+                m_devList[indexTo] : 
+                null;
 			if (deviceTo is IUlaDevice)
 				return;
 			if (deviceTo is IMemoryDevice)
@@ -702,13 +731,13 @@ namespace ZXMAK2.Controls
 			deviceFrom.BusOrder = deviceTo.BusOrder;
 			deviceTo.BusOrder = tmp;
 
-			BusDeviceBase device = m_devList[indexFrom];
+			var device = m_devList[indexFrom];
 			m_devList.RemoveAt(indexFrom);
 			m_devList.Insert(indexTo, device);
-			ConfigScreenControl ctl = m_ctlList[indexFrom];
+			var ctl = m_ctlList[indexFrom];
 			m_ctlList.RemoveAt(indexFrom);
 			m_ctlList.Insert(indexTo, ctl);
-			ListViewItem lvi = lstNavigation.Items[indexFrom];
+			var lvi = lstNavigation.Items[indexFrom];
 			lstNavigation.BeginUpdate();
 			lstNavigation.Items.RemoveAt(indexFrom);
 			lstNavigation.Items.Insert(indexTo, lvi);
@@ -720,7 +749,9 @@ namespace ZXMAK2.Controls
 		private void btnDown_Click(object sender, EventArgs e)
 		{
 			int indexFrom = getSelectedIndex();
-			BusDeviceBase deviceFrom = indexFrom < lstNavigation.Items.Count - 1 ? m_devList[indexFrom] : null;
+			var deviceFrom = indexFrom < lstNavigation.Items.Count - 1 ? 
+                m_devList[indexFrom] : 
+                null;
 			if (deviceFrom == null)
 				return;
 			if (deviceFrom is IUlaDevice)
@@ -730,7 +761,9 @@ namespace ZXMAK2.Controls
 			int indexTo = indexFrom + 1;
 			if (indexTo > lstNavigation.Items.Count-1)
 				return;
-			BusDeviceBase deviceTo = indexTo < lstNavigation.Items.Count - 1 ? m_devList[indexTo] : null;
+			var deviceTo = indexTo < lstNavigation.Items.Count - 1 ? 
+                m_devList[indexTo] : 
+                null;
 			if (deviceTo == null)
 				return;
 			if (deviceTo is IUlaDevice)
@@ -741,13 +774,13 @@ namespace ZXMAK2.Controls
 			deviceFrom.BusOrder = deviceTo.BusOrder;
 			deviceTo.BusOrder = tmp;
 
-			BusDeviceBase device = m_devList[indexTo];
+			var device = m_devList[indexTo];
 			m_devList.RemoveAt(indexTo);
 			m_devList.Insert(indexFrom, device);
-			ConfigScreenControl ctl = m_ctlList[indexTo];
+			var ctl = m_ctlList[indexTo];
 			m_ctlList.RemoveAt(indexTo);
 			m_ctlList.Insert(indexFrom, ctl);
-			ListViewItem lvi = lstNavigation.Items[indexTo];
+			var lvi = lstNavigation.Items[indexTo];
 			lstNavigation.BeginUpdate();
 			lstNavigation.Items.RemoveAt(indexTo);
 			lstNavigation.Items.Insert(indexFrom, lvi);
@@ -760,7 +793,8 @@ namespace ZXMAK2.Controls
         {
             if (ctxMenuWizard.Items.Count < 1)
                 return;
-            Point p = new Point(btnWizard.Location.X + btnWizard.Width / 2,
+            var p = new Point(
+                btnWizard.Location.X + btnWizard.Width / 2,
                 btnWizard.Location.Y + btnWizard.Height / 2);
             p = this.PointToScreen(p);
             ctxMenuWizard.Show(p);
@@ -768,17 +802,22 @@ namespace ZXMAK2.Controls
 
         private void ctxMenuWizardItem_Click(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
             if (item == null)
+            {
                 return;
-
-            XmlDocument xml = item.Tag as XmlDocument;
-            XmlNode busNode = xml.SelectSingleNode("/VirtualMachine/Bus");
+            }
+            var xml = item.Tag as XmlDocument;
+            var busNode = xml.SelectSingleNode("/VirtualMachine/Bus");
 
             if (busNode != null)
+            {
                 initConfig(busNode);
+            }
             else
+            {
                 MessageBox.Show("Invalid Configuration File!", "Error");
+            }
         }
 	}
 }

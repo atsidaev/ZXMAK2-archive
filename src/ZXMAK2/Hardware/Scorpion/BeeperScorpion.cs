@@ -14,7 +14,7 @@ namespace ZXMAK2.Hardware.Scorpion
 		public override void BusInit(IBusManager bmgr)
 		{
 			base.BusInit(bmgr);
-			m_memory = (IMemoryDevice)bmgr.FindDevice(typeof(IMemoryDevice));
+            m_memory = bmgr.FindDevice<IMemoryDevice>();
 		}
 
 		#endregion

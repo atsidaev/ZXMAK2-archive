@@ -154,9 +154,9 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			//    chReserved[i] = data[i + offset];
 
             byte pFE = (byte)((chFe & 0xF8) | (chBorder & 7));
-            
-            IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
-            IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
             ula.PortFE = pFE;
             switch(header.MachineId)
             {
@@ -189,7 +189,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			UInt16 wFlags = BitConverter.ToUInt16(data, offset); offset += 2;
 			byte chPageNo = data[offset]; offset += 1;
 
-			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
 			if (chPageNo >= memory.RamPages.Length)
 			{
 				LogAgent.Warn(
@@ -199,7 +199,9 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			}
             byte[] chData = new byte[data.Length - offset];
             for (int i = 0; i < chData.Length; i++)
+            {
                 chData[i] = data[i + offset];
+            }
 
             if ((wFlags & ZXSTRF_COMPRESSED) != 0)
             {
@@ -214,9 +216,11 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
             //using (FileStream fs = new FileStream("_RAMP" + chPageNo.ToString("D2") + ".bin", FileMode.Create, FileAccess.Write, FileShare.Read))
             //    fs.Write(chData, 0, chData.Length);
-			
-		    for (int i = 0; i < 0x4000; i++)
-				memory.RamPages[chPageNo][i] = chData[i];
+
+            for (int i = 0; i < 0x4000; i++)
+            {
+                memory.RamPages[chPageNo][i] = chData[i];
+            }
 		}
 
         #endregion
@@ -236,8 +240,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			int offset = 0;
 			byte chFlags = data[offset]; offset += 1;
 			byte chCurrentRegister = data[offset]; offset += 1;
-            
-			IAyDevice aydev = _spec.BusManager.FindDevice(typeof(IAyDevice)) as IAyDevice;
+
+            var aydev = _spec.BusManager.FindDevice<IAyDevice>();
             if (aydev != null)
 			{
 				for (int i = 0; i < 16; i++)
@@ -267,7 +271,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
         #endregion
         private void applyB128(byte[] data)
         {
-            IBetaDiskDevice betaDisk = _spec.BusManager.FindDevice(typeof(IBetaDiskDevice)) as IBetaDiskDevice;
+            var betaDisk = _spec.BusManager.FindDevice<IBetaDiskDevice>();
             if (betaDisk != null)
             {
                 int offset = 0;
@@ -305,10 +309,10 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         private void saveToStream(Stream stream)
 		{
-			ZXST_Header header = new ZXST_Header();
+			var header = new ZXST_Header();
 
 			// very ugly, because there is no option for custom configuration machine
-			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
 			header.MachineId = MachineId.ZXSTMID_128K;
 			if (memory is ZXMAK2.Hardware.Spectrum.MemoryPlus3)
 			{	
@@ -330,7 +334,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             {
                 header.MachineId = MachineId.ZXSTMID_48K;
             }
-            IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
             if (ula.GetType() == typeof(ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early) ||
                 ula.GetType() == typeof(ZXMAK2.Hardware.Spectrum.UlaSpectrum128_Early))
             {
@@ -362,7 +366,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         private void save_CRTR(Stream stream)
         {
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 byte[] szCreator = Encoding.ASCII.GetBytes("ZXMAK2");
                 UInt16 chMajorVersion = 2;
@@ -424,8 +428,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			int size = 8;
 			StreamHelper.Write(stream, size);
 
-			IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
-			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
 
             byte cmr0 = memory.CMR0;
             byte cmr1 = memory.CMR1;
@@ -446,11 +450,11 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         private void save_RAMP(Stream stream, byte chPageNo, byte[] chData)
 		{
-			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
 
 			UInt16 wFlags = 0;
 
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 ZipLib.Zip.Compression.Streams.DeflaterOutputStream deflater = new ZipLib.Zip.Compression.Streams.DeflaterOutputStream(ms);
                 deflater.Write(chData, 0, chData.Length);
@@ -475,7 +479,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         private void save_AY(Stream stream)
         {
-            IAyDevice aydev = _spec.BusManager.FindDevice(typeof(IAyDevice)) as IAyDevice;
+            var aydev = _spec.BusManager.FindDevice<IAyDevice>();
             if (aydev != null)
             {
                 StreamHelper.Write(stream, Encoding.ASCII.GetBytes("AY\0\0"));
@@ -498,7 +502,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         private void save_B128(Stream stream)
         {
-            IBetaDiskDevice betaDisk = _spec.BusManager.FindDevice(typeof(IBetaDiskDevice)) as IBetaDiskDevice;
+            var betaDisk = _spec.BusManager.FindDevice<IBetaDiskDevice>();
             if (betaDisk != null)
             {
                 int dwFlags =
@@ -514,7 +518,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
                 if (chRomData.Length > 0)
                 {
-                    using (MemoryStream ms = new MemoryStream())
+                    using (var ms = new MemoryStream())
                     {
                         ZipLib.Zip.Compression.Streams.DeflaterOutputStream deflater = new ZipLib.Zip.Compression.Streams.DeflaterOutputStream(ms);
                         deflater.Write(chRomData, 0, chRomData.Length);

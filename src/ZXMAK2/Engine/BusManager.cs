@@ -212,20 +212,28 @@ namespace ZXMAK2.Engine
 			return Path.ChangeExtension(m_machineFile, extension);
 		}
 
-		public BusDeviceBase FindDevice(Type type)
-		{
-			foreach (BusDeviceBase device in m_deviceList)
-				if (type.IsAssignableFrom(device.GetType()))
-					return device;
-			return null;
-		}
+        public T FindDevice<T>() 
+            where T : class
+        {
+            var type = typeof(T);
+            foreach (object device in m_deviceList)
+            {
+                if (type.IsAssignableFrom(device.GetType()))
+                    return (T)device;
+            }
+            return null;
+        }
 
-		public List<BusDeviceBase> FindDevices(Type type)
+        public List<T> FindDevices<T>() 
+            where T : class
 		{
-			List<BusDeviceBase> list = new List<BusDeviceBase>();
-			foreach (BusDeviceBase device in m_deviceList)
-				if (type.IsAssignableFrom(device.GetType()))
-					list.Add(device);
+            var type = typeof(T);
+            var list = new List<T>();
+            foreach (object device in m_deviceList)
+            {
+                if (type.IsAssignableFrom(device.GetType()))
+                    list.Add((T)device);
+            }
 			return list;
 		}
 
@@ -319,14 +327,28 @@ namespace ZXMAK2.Engine
 
 		public void Add(BusDeviceBase device)
 		{
-			if (m_connected)
-				throw new InvalidOperationException("Cannot add device into connected bus!");
-			foreach (BusDeviceBase device2 in m_deviceList)
-				if (device2.GetType() == device.GetType())
-					throw new InvalidOperationException(string.Format("Cannot add device {0}, because this device already exist!", device.Name));
-			if (device is IJtagDevice && FindDevice(typeof(IJtagDevice)) != null)
-				throw new InvalidOperationException(string.Format("Cannot add second instance of JtagDevice! '{0}'", device.Name));
-			IUlaDevice ula = device as IUlaDevice;
+            if (m_connected)
+            {
+                throw new InvalidOperationException("Cannot add device into connected bus!");
+            }
+            foreach (var device2 in m_deviceList)
+            {
+                if (device2.GetType() == device.GetType())
+                {
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "Cannot add device {0}, because this device already exist!", 
+                            device.Name));
+                }
+            }
+            if (device is IJtagDevice && FindDevice<IJtagDevice>() != null)
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Cannot add second instance of JtagDevice! '{0}'",
+                        device.Name));
+            }
+			var ula = device as IUlaDevice;
 			if (ula != null)
 			{
 				if (m_ula != null)
@@ -397,23 +419,25 @@ namespace ZXMAK2.Engine
 			m_intAck = null;
 			m_beginFrame = null;
 			m_endFrame = null;
-			m_deviceList.Sort(new BusDevicePriorityComparison());
-			for (int i = 0; i < m_deviceList.Count; i++)
-				m_deviceList[i].BusOrder = i;
+			m_deviceList.Sort(DevicePriorityComparison);
+            for (int i = 0; i < m_deviceList.Count; i++)
+            {
+                m_deviceList[i].BusOrder = i;
+            }
 			if (m_loadManager != null)
 			{
 				m_loadManager.Clear();
 				m_loadManager.AddStandardSerializers();
 			}
 			m_iconDescList = new IconDescriptor[] { m_iconPause };
-			foreach (BusDeviceBase device in m_deviceList)
+			foreach (var device in m_deviceList)
 			{
 				try { device.BusInit(this); }
 				catch (Exception ex)
 				{ success = false; LogAgent.Error(ex); }
 			}
 			m_frameTactCount = m_ula.FrameTactCount;
-			foreach (BusDeviceBase device in m_deviceList)
+			foreach (var device in m_deviceList)
 			{
 				try { device.BusConnect(); }
 				catch (Exception ex)
@@ -422,7 +446,7 @@ namespace ZXMAK2.Engine
 			OnBeginFrame();
 			if (m_debuggable != null)
 			{
-				IJtagDevice jtag = FindDevice(typeof(IJtagDevice)) as IJtagDevice;
+                var jtag = FindDevice<IJtagDevice>();
 				if (jtag != null)
 					jtag.Attach(m_debuggable);
 			}
@@ -442,11 +466,11 @@ namespace ZXMAK2.Engine
 			m_iconDescList = new IconDescriptor[0];
 			if (m_debuggable != null)
 			{
-				IJtagDevice jtag = FindDevice(typeof(IJtagDevice)) as IJtagDevice;
+                var jtag = FindDevice<IJtagDevice>();
 				if (jtag != null)
 					jtag.Detach();
 			}
-			foreach (BusDeviceBase device in m_deviceList)
+			foreach (var device in m_deviceList)
 			{
 				try
 				{
@@ -478,7 +502,7 @@ namespace ZXMAK2.Engine
 			m_debuggable = dbg;
 			if (m_connected)
 			{
-				IJtagDevice jtag = FindDevice(typeof(IJtagDevice)) as IJtagDevice;
+                var jtag = FindDevice<IJtagDevice>();
 				if (jtag != null)
 					jtag.Attach(m_debuggable);
 			}
@@ -552,16 +576,18 @@ namespace ZXMAK2.Engine
 			//LogAgent.Debug("time begin BusManager.LoadConfig");
 			Disconnect();
 			// store old devices to allow reuse & save state
-			Dictionary<string, BusDeviceBase> oldDevices = new Dictionary<string, BusDeviceBase>();
-			foreach (BusDeviceBase device in m_deviceList)
-				oldDevices.Add(getDeviceKey(device.GetType()), device);
+			var oldDevices = new Dictionary<string, BusDeviceBase>();
+            foreach (BusDeviceBase device in m_deviceList)
+            {
+                oldDevices.Add(getDeviceKey(device.GetType()), device);
+            }
 			Clear();
 			int orderCounter = 0;
 			foreach (XmlNode node in busNode.SelectNodes("Device"))
 			{
 				try
 				{
-					Assembly asm = Assembly.GetExecutingAssembly();
+					var asm = Assembly.GetExecutingAssembly();
 					if (node.Attributes["assembly"] != null)
 					{
 						string assemblyFile = node.Attributes["assembly"].InnerText;
@@ -597,13 +623,18 @@ namespace ZXMAK2.Engine
 						device = (BusDeviceBase)Activator.CreateInstance(type);
 					}
 					int busOrder;
-					if (node.Attributes["busOrder"] == null || int.TryParse(node.Attributes["busOrder"].InnerText, out busOrder))
-						busOrder = orderCounter++;
+                    if (node.Attributes["busOrder"] == null ||
+                        !int.TryParse(node.Attributes["busOrder"].InnerText, out busOrder))
+                    {
+                        busOrder = orderCounter++;
+                    }
 					device.BusOrder = busOrder;
 
-					IConfigurable configurable = device as IConfigurable;
-					if (configurable != null)
-						configurable.LoadConfig(node);
+					var configurable = device as IConfigurable;
+                    if (configurable != null)
+                    {
+                        configurable.LoadConfig(node);
+                    }
 					Add(device);
 				}
 				catch (Exception ex)
@@ -655,33 +686,30 @@ namespace ZXMAK2.Engine
 
 		public void Sort()
 		{
-			m_deviceList.Sort(new BusDevicePriorityComparison());
+			m_deviceList.Sort(DevicePriorityComparison);
 			for (int i = 0; i < m_deviceList.Count; i++)
 				m_deviceList[i].BusOrder = i;
 		}
-	}
 
-	public class BusDevicePriorityComparison : IComparer<BusDeviceBase>, System.Collections.IComparer
-	{
-		public int Compare(BusDeviceBase x, BusDeviceBase y)
-		{
-			if (x == y)
-				return 0;
-			if (x is IUlaDevice)      // should be first
-				return -1;
-			if (x is IMemoryDevice)   // should be last
-				return 1;
-			if (y is IUlaDevice)      // should be first
-				return 1;
-			if (y is IMemoryDevice)   // should be last
-				return -1;
-			// priority for other devices is not implemented yet
-			return x.BusOrder < y.BusOrder ? -1 : x.BusOrder > y.BusOrder ? 1 : 0;
-		}
+        private static int DevicePriorityComparison(
+            BusDeviceBase x, 
+            BusDeviceBase y)
+        {
+            if (x == y)
+                return 0;
+            if (x is IUlaDevice)      // should be first
+                return -1;
+            if (x is IMemoryDevice)   // should be last
+                return 1;
+            if (y is IUlaDevice)      // should be first
+                return 1;
+            if (y is IMemoryDevice)   // should be last
+                return -1;
+            // priority for other devices is not implemented yet
+            return x.BusOrder < y.BusOrder ? 
+                -1 : 
+                x.BusOrder > y.BusOrder ? 1 : 0;
+        }
 
-		public int Compare(object x, object y)
-		{
-			return Compare(x as BusDeviceBase, y as BusDeviceBase);
-		}
 	}
 }

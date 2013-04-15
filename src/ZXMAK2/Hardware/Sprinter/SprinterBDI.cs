@@ -114,7 +114,7 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             m_cpu = bmgr.CPU;
             m_sandbox = bmgr.IsSandbox;
-            m_memory = bmgr.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
+            m_memory = bmgr.FindDevice<IMemoryDevice>();
 
             bmgr.SubscribeRDMEM_M1(0xFF00, 0x3D00, BusReadMem3D00_M1);
             bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, BusReadMemRam);

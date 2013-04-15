@@ -30,7 +30,7 @@ namespace ZXMAK2.Interfaces
 		bool IsSandbox { get; }
 		String GetSatelliteFileName(string extension);
 
-		BusDeviceBase FindDevice(Type type);
+        T FindDevice<T>() where T : class;
 
 		RzxHandler RzxHandler { get; set; }
 	}

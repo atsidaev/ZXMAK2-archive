@@ -38,8 +38,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 		private void loadFromStream(Stream stream)
 		{
-			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
-			IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
 
 			if (stream.Length != 49179 && stream.Length != 131103)
 			{
@@ -131,8 +131,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 		{
 			byte[] regsData = new byte[0x1B];
 
-			IMemoryDevice memory = _spec.BusManager.FindDevice(typeof(IMemoryDevice)) as IMemoryDevice;
-			IUlaDevice ula = _spec.BusManager.FindDevice(typeof(IUlaDevice)) as IUlaDevice;
+            var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
+            var ula = _spec.BusManager.FindDevice<IUlaDevice>();
 
 			ushort tsp = (ushort)(_spec.CPU.regs.SP - 2);
 			regsData[0] = _spec.CPU.regs.I;

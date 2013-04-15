@@ -18,7 +18,7 @@ namespace ZXMAK2.Hardware.Profi
 		{
 			base.BusInit(bmgr);
 			m_cpu = bmgr.CPU;
-			m_ulaProfi = bmgr.FindDevice(typeof(UlaProfi3XX)) as UlaProfi3XX;
+            m_ulaProfi = bmgr.FindDevice<UlaProfi3XX>();
 
 			bmgr.SubscribeWRIO(0x8002, 0x0000, writePort7FFD);
 			bmgr.SubscribeWRIO(0xFFFF, 0xDFFD, writePortDFFD);
