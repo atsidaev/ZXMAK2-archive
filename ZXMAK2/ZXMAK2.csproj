@@ -171,6 +171,9 @@
     <Compile Include="Hardware\Adlers\UI\FormCPU.designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
+    <Compile Include="Hardware\Atm\Atm320Renderer.cs" />
+    <Compile Include="Hardware\Atm\Atm640Renderer.cs" />
+    <Compile Include="Hardware\Atm\AtmTxtRenderer.cs" />
     <Compile Include="Hardware\General\UI\DebugPanels.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -193,6 +196,7 @@
     <Compile Include="Hardware\General\BeeperDevice.cs" />
     <Compile Include="Engine\BusManager.cs" />
     <Compile Include="Hardware\HardwareValueAttribute.cs" />
+    <Compile Include="Hardware\Profi\ProfiRenderer.cs" />
     <Compile Include="Hardware\Quorum\BeeperQuorum.cs" />
     <Compile Include="Hardware\Scorpion\BeeperScorpion.cs" />
     <Compile Include="Hardware\Profi\CmosProfi.cs" />
@@ -206,6 +210,7 @@
     <Compile Include="Hardware\Scorpion\UlaScorpionGreen.cs" />
     <Compile Include="Hardware\SoundRendererDeviceBase.cs" />
     <Compile Include="Hardware\Pentagon\MemoryPentagon1024.cs" />
+    <Compile Include="Hardware\SpectrumRenderer.cs" />
     <Compile Include="Hardware\Spectrum\MemoryPlus3.cs" />
     <Compile Include="Hardware\Atm\MemoryAtm450.cs" />
     <Compile Include="Hardware\Atm\MemoryAtm710.cs" />
@@ -226,11 +231,13 @@
     <Compile Include="Hardware\Clone\UlaLeningrad.cs" />
     <Compile Include="Hardware\Pentagon\UlaPentagon.cs" />
     <Compile Include="Hardware\Profi\UlaProfi5XX.cs" />
+    <Compile Include="Hardware\Spectrum\SpectrumSnowRenderer.cs" />
     <Compile Include="Hardware\Spectrum\UlaSpectrum128.cs" />
     <Compile Include="Hardware\Spectrum\UlaSpectrum48.cs" />
     <Compile Include="Hardware\Spectrum\UlaSpectrum48snow.cs" />
     <Compile Include="Hardware\Clone\ZebestUla.cs" />
     <Compile Include="Engine\IconDescriptor.cs" />
+    <Compile Include="Hardware\Sprinter\SprinterRenderer.cs" />
     <Compile Include="Interfaces\IMachineState.cs" />
     <Compile Include="Interfaces\IBusDevice.cs" />
     <Compile Include="Interfaces\IConfigurable.cs" />
@@ -246,6 +253,7 @@
     <Compile Include="Hardware\General\KempstonMouseDevice.cs" />
     <Compile Include="Hardware\General\KeyboardDevice.cs" />
     <Compile Include="Engine\RzxHandler.cs" />
+    <Compile Include="Interfaces\IUlaRenderer.cs" />
     <Compile Include="Serializers\DiskSerializers\ImgSerializer.cs" />
     <Compile Include="Serializers\ScreenshotSerializers\BmpSerializer.cs" />
     <Compile Include="Serializers\ScreenshotSerializers\JpgSerializer.cs" />
