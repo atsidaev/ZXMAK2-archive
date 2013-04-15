@@ -10,6 +10,7 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
 using ZXMAK2.Hardware.General.UI;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.Sprinter.UI
 {
@@ -31,7 +32,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
 
 
         public bool AllowClose { get; set; }
-        
+
         public DebugForm()
         {
             InitializeComponent();
@@ -146,31 +147,33 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             }
         }
 
-		private bool dasmPanel_CheckBreakpoint(object sender, ushort addr)
-		{
-			foreach (Breakpoint bp in m_spectrum.GetBreakpointList())
-				if (bp.Address.HasValue && bp.Address == addr)
-					return true;
-			return false;
-		}
+        private bool dasmPanel_CheckBreakpoint(object sender, ushort addr)
+        {
+            foreach (var bp in m_spectrum.GetBreakpointList())
+            {
+                if (bp.Address.HasValue && bp.Address == addr)
+                    return true;
+            }
+            return false;
+        }
 
-		private void dasmPanel_SetBreakpoint(object sender, ushort addr)
-		{
-			bool found = false;
-			foreach (Breakpoint bp in m_spectrum.GetBreakpointList())
-			{
-				if (bp.Address.HasValue && bp.Address == addr)
-				{
-					m_spectrum.RemoveBreakpoint(bp);
-					found = true;
-				}
-			}
-			if (!found)
-			{
-				Breakpoint bp = new Breakpoint(addr);
-				m_spectrum.AddBreakpoint(bp);
-			}
-		}
+        private void dasmPanel_SetBreakpoint(object sender, ushort addr)
+        {
+            bool found = false;
+            foreach (var bp in m_spectrum.GetBreakpointList())
+            {
+                if (bp.Address.HasValue && bp.Address == addr)
+                {
+                    m_spectrum.RemoveBreakpoint(bp);
+                    found = true;
+                }
+            }
+            if (!found)
+            {
+                var bp = new Breakpoint(addr);
+                m_spectrum.AddBreakpoint(bp);
+            }
+        }
 
         private void dataPanel_DataClick(object Sender, ushort Addr)
         {
@@ -476,24 +479,24 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                     }
                 }
             }
-            
-/*      Save Video RAM
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.InitialDirectory = ".";
-            dialog.SupportMultiDottedExtensions = true;
-            dialog.Title = "Save Block...";
-            dialog.Filter = "Binary Files (*.bin)|*.bin|All files (*.*)|*.*";
-            dialog.DefaultExt = "";
-            dialog.FileName = "";
-            dialog.OverwritePrompt = true;
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                using (FileStream stream = new FileStream(dialog.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    for (int i = 0; i < sprint_mmu.VRamPages.Length; i++)
-                    stream.Write(sprint_mmu.VRamPages[i], 0, 0x4000);
-                }
-            }*/
+
+            /*      Save Video RAM
+                        SaveFileDialog dialog = new SaveFileDialog();
+                        dialog.InitialDirectory = ".";
+                        dialog.SupportMultiDottedExtensions = true;
+                        dialog.Title = "Save Block...";
+                        dialog.Filter = "Binary Files (*.bin)|*.bin|All files (*.*)|*.*";
+                        dialog.DefaultExt = "";
+                        dialog.FileName = "";
+                        dialog.OverwritePrompt = true;
+                        if (dialog.ShowDialog() == DialogResult.OK)
+                        {
+                            using (FileStream stream = new FileStream(dialog.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                            {
+                                for (int i = 0; i < sprint_mmu.VRamPages.Length; i++)
+                                stream.Write(sprint_mmu.VRamPages[i], 0, 0x4000);
+                            }
+                        }*/
         }
 
         private void spectrum_OnBreakpoint(object sender, EventArgs args)
@@ -612,10 +615,10 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             OutBit("D3(DCP1)", sprint_mmu.SYSPORT, 3);
             OutBit("D4(DCP2)", sprint_mmu.SYSPORT, 4);
             OutBit("D7(P128 ON)", sprint_mmu.SYSPORT, 7);
-            
+
             OutInfo("");
 
-            OutInfo("Port 89(RGADR): "+String.Format("#{0:X2}",sprint_mmu.RGADR));
+            OutInfo("Port 89(RGADR): " + String.Format("#{0:X2}", sprint_mmu.RGADR));
             OutInfo("Port C9(RGMOD): " + String.Format("#{0:X2}", sprint_mmu.RGMOD));
             OutInfo("");
             OutInfo("Port 82(PAGE0): " + String.Format("#{0:X2}", sprint_mmu.PAGE0));
@@ -629,29 +632,29 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             OutInfo("");
 
 
-//            OutBit("D0(ON/OFF)", sprint_mmu.SYSPORT, 0);
+            //            OutBit("D0(ON/OFF)", sprint_mmu.SYSPORT, 0);
 
-/*            // xx77
-            OutInfo("Port XX77---------");
-            OutBit("A14(ENA_PAL)", sprint_mmu.AFF77, 6);
-            OutBit("A8(DIS_MMU)", sprint_mmu.AFF77, 0);
-            OutBit("A9(CPM)", sprint_mmu.AFF77, 1);
-            OutBit("D3(TURBO14)", sprint_mmu.PFF77, 3);
+            /*            // xx77
+                        OutInfo("Port XX77---------");
+                        OutBit("A14(ENA_PAL)", sprint_mmu.AFF77, 6);
+                        OutBit("A8(DIS_MMU)", sprint_mmu.AFF77, 0);
+                        OutBit("A9(CPM)", sprint_mmu.AFF77, 1);
+                        OutBit("D3(TURBO14)", sprint_mmu.PFF77, 3);
 
-            // xxBF
-            OutInfo("Port XXBF---------");
-            OutBit("D0(SHADOW)", sprint_mmu.PXXBF, 0);
-            OutBit("D1(WRFLASH)", sprint_mmu.PXXBF, 1);
-            OutBit("D2(FONTROM)", sprint_mmu.PXXBF, 2);
+                        // xxBF
+                        OutInfo("Port XXBF---------");
+                        OutBit("D0(SHADOW)", sprint_mmu.PXXBF, 0);
+                        OutBit("D1(WRFLASH)", sprint_mmu.PXXBF, 1);
+                        OutBit("D2(FONTROM)", sprint_mmu.PXXBF, 2);
 
-            //7FFD
-            OutInfo("Port 7FFD---------");
-            OutBit("D3(SCREEN)", sprint_mmu.P7FFD, 3);
-            OutBit("D4(MEMMAP)", sprint_mmu.P7FFD, 4);
+                        //7FFD
+                        OutInfo("Port 7FFD---------");
+                        OutBit("D3(SCREEN)", sprint_mmu.P7FFD, 3);
+                        OutBit("D4(MEMMAP)", sprint_mmu.P7FFD, 4);
 
-            if (sprint_mmu.PEFF7_M128)
-                OutBit("D5(LOCK48)", sprint_mmu.P7FFD, 5);
-            */
+                        if (sprint_mmu.PEFF7_M128)
+                            OutBit("D5(LOCK48)", sprint_mmu.P7FFD, 5);
+                        */
             // ZEK ---
         }
 
@@ -675,7 +678,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             if (InputBox.InputValue("Value of 1FFD port", "New value:", "#", "X2", ref num, 0, 0xff))
             {
                 sprint_mmu.CMR1 = (byte)num;
-//                dasmPanel.TopAddress = (ushort)num;
+                //                dasmPanel.TopAddress = (ushort)num;
             }
         }
 
@@ -691,14 +694,15 @@ namespace ZXMAK2.Hardware.Sprinter.UI
 
         private void PentEvoRegs_OnDBLClick(object sender, EventArgs args)
         {
-            switch (PentEvoRegs.SelectedIndex) {
-                    //SYS
+            switch (PentEvoRegs.SelectedIndex)
+            {
+                //SYS
                 case 1: sprint_mmu.SYS = !sprint_mmu.SYS; break;
-                    //RA16
+                //RA16
                 case 2: sprint_mmu.RA16 = !sprint_mmu.RA16; break;
-                    //7FFD
+                //7FFD
                 case 19: Update7FFD(); break;
-                    //1FFD
+                //1FFD
                 case 20: Update1FFD(); break;
             }
             UpdateREGS();

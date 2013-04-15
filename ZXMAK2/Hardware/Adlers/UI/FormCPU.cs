@@ -10,6 +10,7 @@ using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
 using System.Collections.Generic;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
