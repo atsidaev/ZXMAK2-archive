@@ -77,4 +77,9 @@
 	<Model name="Sprinter">
 		<Page name="RAW" image="Sprinter/SP_304.BIN" />
 	</Model>
+	<Model name="ZXBYTE">
+		<Page name="SOS" image="ZXBYTE/DD72-DD73.BIN"/>
+		<Page name="DD66" image="ZXBYTE/DD66_RT5.BIN" />
+		<Page name="DD71" image="ZXBYTE/DD71_RT7.BIN" />
+	</Model>
 </Mapping>

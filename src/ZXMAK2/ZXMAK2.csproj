@@ -175,6 +175,7 @@
     <Compile Include="Hardware\Atm\Atm320Renderer.cs" />
     <Compile Include="Hardware\Atm\Atm640Renderer.cs" />
     <Compile Include="Hardware\Atm\AtmTxtRenderer.cs" />
+    <Compile Include="Hardware\ZXBYTE\MemoryByte.cs" />
     <Compile Include="Hardware\General\UI\DebugPanels.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -238,6 +239,7 @@
     <Compile Include="Hardware\Clone\ZebestUla.cs" />
     <Compile Include="Entities\IconDescriptor.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRenderer.cs" />
+    <Compile Include="Hardware\ZXBYTE\UlaByte.cs" />
     <Compile Include="Interfaces\IMachineState.cs" />
     <Compile Include="Interfaces\IBusManager.cs" />
     <Compile Include="Interfaces\IConfigurable.cs" />
@@ -464,9 +466,9 @@
     <None Include="boot.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="MACHINES.PAK">
+    <Content Include="MACHINES.PAK">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -476,11 +478,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="ROMS.PAK">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Content Include="ZXMAK2.chm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMS.PAK">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
