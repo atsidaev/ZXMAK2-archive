@@ -16,9 +16,38 @@ namespace ZXMAK2.Hardware.Clone
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
+            bmgr.SubscribeRDMEM(0xC000, 0x4000, ReadMem4000);
+            bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, ReadMem4000);
+            bmgr.SubscribeWRMEM(0xC000, 0x4000, WriteMem4000);
+            bmgr.SubscribeRDNOMREQ(0xC000, 0x4000, ContendNoMreq);
+            bmgr.SubscribeWRNOMREQ(0xC000, 0x4000, ContendNoMreq);
         }
 
         #endregion
+
+        #region Bus Handlers
+
+        protected override void WriteMem4000(ushort addr, byte value)
+        {
+            int frameTact = (int)(CPU.Tact % FrameTactCount);
+            CPU.Tact += m_contention[frameTact];
+            base.WriteMem4000(addr, value);
+        }
+
+        protected void ReadMem4000(ushort addr, ref byte value)
+        {
+            int frameTact = (int)(CPU.Tact % FrameTactCount);
+            CPU.Tact += m_contention[frameTact];
+        }
+
+        protected void ContendNoMreq(ushort addr)
+        {
+            int frameTact = (int)(CPU.Tact % FrameTactCount);
+            CPU.Tact += m_contention[frameTact];
+        }
+
+        #endregion
+
 
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
@@ -46,6 +75,16 @@ namespace ZXMAK2.Hardware.Clone
             timing.c_ulaHeight = (timing.c_ulaBorderTop + 192 + timing.c_ulaBorderBottom);
             return timing;
         }
+
+        protected override void OnTimingChanged()
+        {
+            base.OnTimingChanged();
+            m_contention = UlaSpectrum48.CreateContentionTable(
+                SpectrumRenderer.Params,
+                new int[] { 6, 5, 4, 3, 2, 1, 0, 0, });
+        }
+
+        private int[] m_contention;
     }
 
     public class UlaByte_Early : UlaByte_Late
