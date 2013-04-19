@@ -149,16 +149,19 @@ namespace ZXMAK2.Hardware.Spectrum
         protected override void OnTimingChanged()
         {
             base.OnTimingChanged();
-            m_contention = CreateContentionTable(SpectrumRenderer.Params);
+            m_contention = CreateContentionTable(
+                SpectrumRenderer.Params,
+                new int[] { 6, 5, 4, 3, 2, 1, 0, 0, });
         }
 
         // TODO: check with UlaSpectrum128_Early, 
         //      which one should be removed?
-        private static int[] CreateContentionTable(SpectrumRendererParams timing)
+        public static int[] CreateContentionTable(
+            SpectrumRendererParams timing,
+            int[] byteContention)
         {
             // build early model table...
             var contention = new int[timing.c_frameTactCount];
-            int[] byteContention = new int[] { 6, 5, 4, 3, 2, 1, 0, 0, };
             for (int t = 0; t < timing.c_frameTactCount; t++)
             {
                 int shifted = (t + 1) + timing.c_ulaIntBegin;

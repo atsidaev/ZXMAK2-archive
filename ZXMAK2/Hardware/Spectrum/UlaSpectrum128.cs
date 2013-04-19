@@ -176,6 +176,7 @@ namespace ZXMAK2.Hardware.Spectrum
                 new int[] { 6, 5, 4, 3, 2, 1, 0, 0, });
         }
 
+        [Obsolete("Use UlaSpectrum48.CreateContentionTable instead of this")]
         public static int[] CreateContentionTable(
             SpectrumRendererParams timing,
             int[] byteContention)
