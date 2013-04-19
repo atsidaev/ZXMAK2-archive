@@ -76,6 +76,14 @@ namespace ZXMAK2.Hardware.Clone
             return timing;
         }
 
+        protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        {
+            if ((addr & 0x34) == (0xFE & 0x34))
+            {
+                base.WritePortFE(addr, value, ref iorqge);
+            }
+        }
+
         protected override void OnTimingChanged()
         {
             base.OnTimingChanged();
