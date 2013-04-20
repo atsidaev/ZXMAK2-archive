@@ -4,7 +4,7 @@ using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.General
 {
-	public class BeeperDevice : SoundRendererDeviceBase
+	public class BeeperDevice : SoundDeviceBase
 	{
 		#region IBusDevice
 
@@ -34,7 +34,7 @@ namespace ZXMAK2.Hardware.General
 				return;
 			_portFE = value;
 			ushort v = _portFE != 0 ? m_dacValue1 : m_dacValue0;
-			UpdateDAC(v, v);
+			UpdateDac(v, v);
 		}
 
 		#endregion

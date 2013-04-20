@@ -211,7 +211,7 @@
     <Compile Include="Hardware\Quorum\BetaDiskInterfaceQuorum.cs" />
     <Compile Include="Hardware\General\KempstonJoystick.cs" />
     <Compile Include="Hardware\Scorpion\UlaScorpionGreen.cs" />
-    <Compile Include="Hardware\SoundRendererDeviceBase.cs" />
+    <Compile Include="Hardware\SoundDeviceBase.cs" />
     <Compile Include="Hardware\Pentagon\MemoryPentagon1024.cs" />
     <Compile Include="Hardware\SpectrumRenderer.cs" />
     <Compile Include="Hardware\Spectrum\MemoryPlus3.cs" />
