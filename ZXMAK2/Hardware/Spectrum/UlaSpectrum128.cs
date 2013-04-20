@@ -171,43 +171,9 @@ namespace ZXMAK2.Hardware.Spectrum
         protected override void OnTimingChanged()
         {
             base.OnTimingChanged();
-            m_contention = CreateContentionTable(
+            m_contention = UlaSpectrum48.CreateContentionTable(
                 SpectrumRenderer.Params,
                 new int[] { 6, 5, 4, 3, 2, 1, 0, 0, });
-        }
-
-        [Obsolete("Use UlaSpectrum48.CreateContentionTable instead of this")]
-        public static int[] CreateContentionTable(
-            SpectrumRendererParams timing,
-            int[] byteContention)
-        {
-            // build early model table...
-            var contention = new int[timing.c_frameTactCount];
-            for (int t = 0; t < timing.c_frameTactCount; t++)
-            {
-                int shifted = t - timing.c_ulaIntBegin;
-                if (shifted < 0)
-                    shifted += timing.c_frameTactCount;
-
-                contention[shifted] = 0;
-                int line = t / timing.c_ulaLineTime;
-                int pix = t % timing.c_ulaLineTime;
-                if (line < timing.c_ulaFirstPaperLine || line >= (timing.c_ulaFirstPaperLine + 192))
-                {
-                    contention[shifted] = 0;
-                    continue;
-                }
-                int scrPix = pix - timing.c_ulaFirstPaperTact + 1;
-                if (scrPix < 0 || scrPix >= 128)
-                {
-                    contention[shifted] = 0;
-                    continue;
-                }
-                int pixByte = scrPix % 8;
-
-                contention[shifted] = byteContention[pixByte];
-            }
-            return contention;
         }
 
         private int[] m_contention;

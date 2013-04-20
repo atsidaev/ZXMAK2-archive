@@ -76,7 +76,7 @@ namespace ZXMAK2.Hardware.Clone
         protected override void OnTimingChanged()
         {
             base.OnTimingChanged();
-            m_contention = UlaSpectrum128_Early.CreateContentionTable(
+            m_contention = UlaSpectrum48.CreateContentionTable(
                 SpectrumRenderer.Params,
                 new int[] { 6, 5, 4, 3, 2, 1, 0, 0, });
         }

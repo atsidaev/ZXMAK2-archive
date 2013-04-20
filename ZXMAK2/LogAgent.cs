@@ -2,6 +2,7 @@
 using System.Text;
 using System.Diagnostics;
 using ZXMAK2.Logging;
+using System.IO;
 
 namespace ZXMAK2
 {
@@ -107,6 +108,19 @@ namespace ZXMAK2
                 sb.Append("[null]");
             }
             return sb.ToString();
+        }
+
+        [Obsolete("remove call to LogAgent.DumpArray")]
+        public static void DumpArray<T>(string fileName, T[] array)
+        {
+            using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+            using (var wr = new StreamWriter(fs))
+            {
+                for (var i = 0; i < array.Length; i++)
+                {
+                    wr.WriteLine("{0} = {1}", i, array[i]);
+                }
+            }
         }
     }
 }
