@@ -17,7 +17,7 @@ using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.General
 {
-	public class TapeDevice : SoundRendererDeviceBase, ITapeDevice, IGuiExtension
+	public class TapeDevice : SoundDeviceBase, ITapeDevice, IGuiExtension
 	{
 		#region IBusDevice
 
@@ -107,7 +107,7 @@ namespace ZXMAK2.Hardware.General
 			//bmgr.SubscribeRDMEM_M1(0xFFFF, 0x059E, tapeTrap);
 
 			ushort val = tape_bit(m_cpu.Tact) ? m_dacValue1 : m_dacValue0;
-			UpdateDAC(val, val);
+			UpdateDac(val, val);
 
 			ushort addr = m_cpu.regs.PC;
 			if (!UseTraps || !m_memory.IsRom48 || !(addr == 0x056B || addr == 0x059E))
