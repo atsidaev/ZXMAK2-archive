@@ -2,329 +2,354 @@
 /// Author: Alex Makeev
 /// Date: 13.04.2007
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using ZXMAK2.Crc;
 
 namespace ZXMAK2.Entities
 {
-	public class SECHDR
-	{
-		public byte c, s, n, l;
-		public ushort crc1, crc2;
-		public bool c1, c2;     // flags: correct CRCs in address and data
-
-		public int idOffset;    // offset to id in track image
-		public int dataOffset;  // offset to sector data in track image, -1 for no data
-		public int datlen;      // data length
-
-		public long idTime;    // time from begin track to id
-		public long dataTime;  // time from begin track to data
-
-		public SECHDR() { }
-	}
-
-	public class Track
-	{
-		private long _trackTime; // Z80FQ * 60 / RPM; RPM=300, Z80FQ=3500000
-		private long _byteTime;
-		private byte[] _trackImage = null;
-		private byte[] _trackClock = null;
-		private List<SECHDR> _headerList = new List<SECHDR>();
+    public class Track
+    {
+        private long _trackTime; // Z80FQ * 60 / RPM; RPM=300, Z80FQ=3500000
+        private long _byteTime;
+        private byte[] _trackImage = null;
+        private byte[] _trackClock = null;
+        private List<SectorHeader> _headerList = new List<SectorHeader>();
 
 
-		public Track(long trackTime)
-		{
-			_trackTime = trackTime;
+        public Track(long trackTime)
+        {
+            _trackTime = trackTime;
             _byteTime = trackTime / 6400;
-			if (_byteTime < 1)
-				_byteTime = 1;
-		}
+            if (_byteTime < 1)
+            {
+                _byteTime = 1;
+            }
+        }
 
-		public bool sf = false;  // temp for compatibility = need refresh
+        public bool sf = false;  // temp for compatibility = need refresh
 
-		public void RefreshHeaders()
-		{
-			_headerList.Clear();
-			if (_trackImage == null)
-				return;
-			for (int i = 0; i < _trackImage.Length - 8; i++)
-			{
-				if (_trackImage[i] != 0xA1 || _trackImage[i + 1] != 0xFE || !RawTestClock(i))
-					continue;
+        public void RefreshHeaders()
+        {
+            _headerList.Clear();
+            if (_trackImage == null)
+            {
+                return;
+            }
+            for (var i = 0; i < _trackImage.Length - 8; i++)
+            {
+                if (_trackImage[i] != 0xA1 ||
+                    _trackImage[i + 1] != 0xFE ||
+                    !RawTestClock(i))
+                {
+                    continue;
+                }
 
-				SECHDR h = new SECHDR();
-				_headerList.Add(h);
-				h.idOffset = i + 2;
-				h.idTime = h.idOffset * _byteTime;
-				h.c = _trackImage[h.idOffset + 0];
-				h.s = _trackImage[h.idOffset + 1];
-				h.n = _trackImage[h.idOffset + 2];
-				h.l = _trackImage[h.idOffset + 3];
-				h.crc1 = (ushort)(_trackImage[i + 6] | (_trackImage[i + 7] << 8));
-				h.c1 = WD1793_CRC(i + 1, 5) == h.crc1;
-				h.dataOffset = -1; // temp not found
-				h.datlen = 0;
-				if (h.l > 5) continue;
+                var h = new SectorHeader();
+                _headerList.Add(h);
+                h.idOffset = i + 2;
+                h.idTime = h.idOffset * _byteTime;
+                h.c = _trackImage[h.idOffset + 0];
+                h.s = _trackImage[h.idOffset + 1];
+                h.n = _trackImage[h.idOffset + 2];
+                h.l = _trackImage[h.idOffset + 3];
+                h.crc1 = (ushort)(_trackImage[i + 6] | (_trackImage[i + 7] << 8));
+                h.c1 = MakeCrc(i + 1, 5) == h.crc1;
+                h.dataOffset = -1; // temp not found
+                h.datlen = 0;
+                if (h.l > 5)
+                {
+                    continue;
+                }
 
-				int end = _trackImage.Length - 8;  // = min((int)(trklen - 8), i + 8 + 43); // 43-DD, 30-SD
-				for (int j = i + 8; j < end; j++)
-				{
-					if (_trackImage[j] != 0xA1 || !RawTestClock(j) || RawTestClock(j + 1))
-						continue;
+                var end = _trackImage.Length - 8;  // = min((int)(trklen - 8), i + 8 + 43); // 43-DD, 30-SD
+                for (var j = i + 8; j < end; j++)
+                {
+                    if (_trackImage[j] != 0xA1 ||
+                        !RawTestClock(j) ||
+                        RawTestClock(j + 1))
+                    {
+                        continue;
+                    }
 
-					if (_trackImage[j + 1] == 0xF8 || _trackImage[j + 1] == 0xFB)
-					{
-						h.datlen = 128 << h.l;
-						h.dataOffset = j + 2;
-						h.dataTime = h.dataOffset * _byteTime;
-						if ((h.dataOffset + h.datlen + 2) > _trackImage.Length)
-						{
-							h.datlen = _trackImage.Length - h.dataOffset;
-							h.crc2 = (ushort)(WD1793_CRC(h.dataOffset - 1, h.datlen + 1) ^ 0xFFFF);
-							h.c2 = false;
-						}
-						else
-						{
-							h.crc2 = (ushort)(_trackImage[h.dataOffset + h.datlen] | (_trackImage[h.dataOffset + h.datlen + 1] << 8));
-							h.c2 = WD1793_CRC(h.dataOffset - 1, h.datlen + 1) == h.crc2;
-						}
-					}
-					break;
-				}
-			}
-		}
+                    if (_trackImage[j + 1] == 0xF8 || _trackImage[j + 1] == 0xFB)
+                    {
+                        h.datlen = 128 << h.l;
+                        h.dataOffset = j + 2;
+                        h.dataTime = h.dataOffset * _byteTime;
+                        if ((h.dataOffset + h.datlen + 2) > _trackImage.Length)
+                        {
+                            h.datlen = _trackImage.Length - h.dataOffset;
+                            h.crc2 = (ushort)(MakeCrc(h.dataOffset - 1, h.datlen + 1) ^ 0xFFFF);
+                            h.c2 = false;
+                        }
+                        else
+                        {
+                            h.crc2 = (ushort)(_trackImage[h.dataOffset + h.datlen] | (_trackImage[h.dataOffset + h.datlen + 1] << 8));
+                            h.c2 = MakeCrc(h.dataOffset - 1, h.datlen + 1) == h.crc2;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
 
-		public void AssignImage(byte[] trackImage, byte[] trackClock)
-		{
-			if (trackImage.Length <= 0 ||
-			   (trackImage.Length / 8 + (((trackImage.Length & 7) != 0) ? 1 : 0)) != trackClock.Length)
-				throw new InvalidOperationException("Invalid track image length!");
+        public void AssignImage(byte[] trackImage, byte[] trackClock)
+        {
+            if (trackImage.Length <= 0 ||
+               (trackImage.Length / 8 + (((trackImage.Length & 7) != 0) ? 1 : 0)) != trackClock.Length)
+            {
+                throw new InvalidOperationException("Invalid track image length!");
+            }
 
-			_trackImage = trackImage;
-			_trackClock = trackClock;
-			_byteTime = _trackTime / trackImage.Length;
-			if (_byteTime < 1)
-				_byteTime = 1;
+            _trackImage = trackImage;
+            _trackClock = trackClock;
+            _byteTime = _trackTime / trackImage.Length;
+            if (_byteTime < 1)
+                _byteTime = 1;
 
-			RefreshHeaders();
-		}
+            RefreshHeaders();
+        }
 
-		/// <summary>
-		/// Build default sectoring track image and assign it
-		/// </summary>
-		/// <param name="sectors">Sectors info</param>
-		public void AssignSectors(ArrayList sectorList)
-		{
-			byte[][] trackImage = new byte[2][];
+        /// <summary>
+        /// Build default sectoring track image and assign it
+        /// </summary>
+        public void AssignSectors(List<Sector> sectorList)
+        {
+            var trackImage = new byte[2][];
 
-			#region Calculate required track size...
-			
-			int imageSize = 6250;		// recommended track size
+            #region Calculate required track size...
 
-			int SecCount = sectorList.Count;
-			int trkdatalen = 0;
-			foreach(Sector s in sectorList)
-			{
-				trkdatalen += s.GetAdBlockSize();
-				trkdatalen += s.GetDataBlockSize();
-			}
+            var imageSize = 6250;		// recommended track size
 
-			int FreeSpace = imageSize - (trkdatalen + SecCount * (3 + 2));  // 3x4E & 2x00 per sector
-			int FirstGapLen = 1;
-			int SecondGapLen = 1;
-			int ThirdGapLen = 1;
-			int SynchroPauseLen = 1;
+            var secCount = sectorList.Count;
+            var trkdatalen = 0;
+            foreach (var s in sectorList)
+            {
+                trkdatalen += s.GetAdBlockSize();
+                trkdatalen += s.GetDataBlockSize();
+            }
 
-			FreeSpace -= FirstGapLen + SecondGapLen + ThirdGapLen + SynchroPauseLen;
-			if (FreeSpace < 0)
-			{
-				imageSize += -FreeSpace;	// expand track size
-				FreeSpace = 0;
-			}
+            var freeSpace = imageSize - (trkdatalen + secCount * (3 + 2));  // 3x4E & 2x00 per sector
+            var firstGapLen = 1;
+            var secondGapLen = 1;
+            var thirdGapLen = 1;
+            var synchroPauseLen = 1;
 
-			// distribute gaps len and synchropauses length
-			while (FreeSpace > 0)
-			{
-				if (FreeSpace >= (SecCount * 2)) // Synchro for ADMARK & DATA
-					if (SynchroPauseLen < 12)
-					{
-						SynchroPauseLen++;
-						FreeSpace -= SecCount * 2;
-					}
-				if (FreeSpace < SecCount) break;
+            freeSpace -= firstGapLen + secondGapLen + thirdGapLen + synchroPauseLen;
+            if (freeSpace < 0)
+            {
+                imageSize += -freeSpace;	// expand track size
+                freeSpace = 0;
+            }
 
-				if (FirstGapLen < 10) { FirstGapLen++; FreeSpace -= SecCount; }
-				if (FreeSpace < SecCount) break;
-				if (SecondGapLen < 22) { SecondGapLen++; FreeSpace -= SecCount; }
-				if (FreeSpace < SecCount) break;
-				if (ThirdGapLen < 60) { ThirdGapLen++; FreeSpace -= SecCount; }
-				if (FreeSpace < SecCount) break;
+            // distribute gaps len and synchropauses length
+            while (freeSpace > 0)
+            {
+                if (freeSpace >= (secCount * 2)) // Synchro for ADMARK & DATA
+                {
+                    if (synchroPauseLen < 12)
+                    {
+                        synchroPauseLen++;
+                        freeSpace -= secCount * 2;
+                    }
+                }
+                if (freeSpace < secCount)
+                {
+                    break;
+                }
 
-				if ((SynchroPauseLen >= 12) && (FirstGapLen >= 10) &&
-					(SecondGapLen >= 22) && (ThirdGapLen >= 60))
-					break;
-			}
+                if (firstGapLen < 10) { firstGapLen++; freeSpace -= secCount; }
+                if (freeSpace < secCount) break;
+                if (secondGapLen < 22) { secondGapLen++; freeSpace -= secCount; }
+                if (freeSpace < secCount) break;
+                if (thirdGapLen < 60) { thirdGapLen++; freeSpace -= secCount; }
+                if (freeSpace < secCount) break;
 
-			if (FreeSpace < 0)
-			{
-				imageSize += -FreeSpace;	// small expand track size
-				FreeSpace = 0;
-			}
-			
-			#endregion
+                if ((synchroPauseLen >= 12) && (firstGapLen >= 10) &&
+                    (secondGapLen >= 22) && (thirdGapLen >= 60))
+                {
+                    break;
+                }
+            }
 
-			#region Format track...
-			trackImage[0] = new byte[imageSize];
-			trackImage[1] = new byte[trackImage[0].Length / 8 + (((trackImage[0].Length & 7) != 0) ? 1 : 0)];
+            if (freeSpace < 0)
+            {
+                imageSize += -freeSpace;	// small expand track size
+                freeSpace = 0;
+            }
 
-			int r, tptr = 0;
-			foreach(Sector sector in sectorList)
-			{
-				for (r = 0; r < FirstGapLen; r++)			// First gap
-				{
-					trackImage[0][tptr] = 0x4E;
-					trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
-					tptr++;
-				}
-				for (r = 0; r < SynchroPauseLen; r++)       // Synchropause
-				{
-					trackImage[0][tptr] = 0x00;
-					trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
-					tptr++;
-				}
-				if (sector.AdPresent)						// address block
-				{
-					byte[][] block = sector.CreateAdBlock();
-					for (r = 0; r < sector.GetAdBlockSize(); r++)
-					{
-						trackImage[0][tptr] = block[0][r];
-						if((block[1][r/8] & (1 << (r & 7)))!=0)
-							trackImage[1][tptr / 8] |= (byte)(1 << (tptr & 7));
-						else
-							trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
-						tptr++;
-					}
-				}
-				for (r = 0; r < SecondGapLen; r++)		// Second gap
-				{
-					trackImage[0][tptr] = 0x4E;
-					trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
-					tptr++;
-				}
-				for (r = 0; r < SynchroPauseLen; r++)		// Synchropause
-				{
-					trackImage[0][tptr] = 0x00;
-					trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
-					tptr++;
-				}
-				if (sector.DataPresent)						// data array block
-				{
-					byte[][] block = sector.CreateDataBlock();
-					for (r = 0; r < sector.GetDataBlockSize(); r++)
-					{
-						trackImage[0][tptr] = block[0][r];
-						if ((block[1][r / 8] & (1 << (r & 7))) != 0)
-							trackImage[1][tptr / 8] |= (byte)(1 << (tptr & 7));
-						else
-							trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
-						tptr++;
-					}
-				}
-				for (r = 0; r < ThirdGapLen; r++)        // Third gap
-				{
-					trackImage[0][tptr] = 0x4E;
-					trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
-					tptr++;
-				}
-			}
-			// unused track space
-			for (int eoftrk = tptr; eoftrk < trackImage[0].Length; eoftrk++)
-			{
-				trackImage[0][tptr] = 0x4E;
-				trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
-				tptr++;
-			}
-			#endregion
+            #endregion
 
-			AssignImage(trackImage[0], trackImage[1]);
-		}
+            #region Format track...
+            trackImage[0] = new byte[imageSize];
+            trackImage[1] = new byte[trackImage[0].Length / 8 + (((trackImage[0].Length & 7) != 0) ? 1 : 0)];
 
-		public bool RawTestClock(int pos)
-		{
-			if (_trackClock == null)
-				return false;
-			return (_trackClock[pos / 8] & (1 << (pos & 7))) != 0;
-		}
-		public void RawWrite(int pos, byte value, bool clock)
-		{
-			if (_trackImage == null)
-				return;
-			_trackImage[pos] = value;
-			if (clock)
-				_trackClock[pos / 8] |= (byte)(1 << (pos & 7));
-			else
-				_trackClock[pos / 8] &= (byte)(~(1 << (pos & 7)));
-		}
-		public byte RawRead(int pos)
-		{
-			if (_trackImage == null)
-				return 0;
-			return _trackImage[pos];
-		}
-		
+            var tptr = 0;
+            foreach (var sector in sectorList)
+            {
+                for (var r = 0; r < firstGapLen; r++)			// First gap
+                {
+                    trackImage[0][tptr] = 0x4E;
+                    trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
+                    tptr++;
+                }
+                for (var r = 0; r < synchroPauseLen; r++)       // Synchropause
+                {
+                    trackImage[0][tptr] = 0x00;
+                    trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
+                    tptr++;
+                }
+                if (sector.AdPresent)						// address block
+                {
+                    var block = sector.CreateAdBlock();
+                    for (var r = 0; r < sector.GetAdBlockSize(); r++)
+                    {
+                        trackImage[0][tptr] = block[0][r];
+                        if ((block[1][r / 8] & (1 << (r & 7))) != 0)
+                            trackImage[1][tptr / 8] |= (byte)(1 << (tptr & 7));
+                        else
+                            trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
+                        tptr++;
+                    }
+                }
+                for (var r = 0; r < secondGapLen; r++)		// Second gap
+                {
+                    trackImage[0][tptr] = 0x4E;
+                    trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
+                    tptr++;
+                }
+                for (var r = 0; r < synchroPauseLen; r++)		// Synchropause
+                {
+                    trackImage[0][tptr] = 0x00;
+                    trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
+                    tptr++;
+                }
+                if (sector.DataPresent)						// data array block
+                {
+                    var block = sector.CreateDataBlock();
+                    for (var r = 0; r < sector.GetDataBlockSize(); r++)
+                    {
+                        trackImage[0][tptr] = block[0][r];
+                        if ((block[1][r / 8] & (1 << (r & 7))) != 0)
+                            trackImage[1][tptr / 8] |= (byte)(1 << (tptr & 7));
+                        else
+                            trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
+                        tptr++;
+                    }
+                }
+                for (var r = 0; r < thirdGapLen; r++)        // Third gap
+                {
+                    trackImage[0][tptr] = 0x4E;
+                    trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
+                    tptr++;
+                }
+            }
+            // unused track space
+            for (var eoftrk = tptr; eoftrk < trackImage[0].Length; eoftrk++)
+            {
+                trackImage[0][tptr] = 0x4E;
+                trackImage[1][tptr / 8] &= (byte)~(1 << (tptr & 7));
+                tptr++;
+            }
+            #endregion
+
+            AssignImage(trackImage[0], trackImage[1]);
+        }
+
+        public bool RawTestClock(int pos)
+        {
+            if (_trackClock == null)
+            {
+                return false;
+            }
+            return (_trackClock[pos / 8] & (1 << (pos & 7))) != 0;
+        }
+
+        public void RawWrite(int pos, byte value, bool clock)
+        {
+            if (_trackImage == null)
+            {
+                return;
+            }
+            _trackImage[pos] = value;
+            if (clock)
+            {
+                _trackClock[pos / 8] |= (byte)(1 << (pos & 7));
+            }
+            else
+            {
+                _trackClock[pos / 8] &= (byte)(~(1 << (pos & 7)));
+            }
+        }
+
+        public byte RawRead(int pos)
+        {
+            if (_trackImage == null)
+            {
+                return 0;
+            }
+            return _trackImage[pos];
+        }
+
         /// <summary>
         /// RawLength
         /// </summary>
         public int trklen
-		{
-			get
-			{
-				if (_trackImage == null)
-					return 6400;
-				return _trackImage.Length;
-			}
-		}
-		public byte[][] RawImage { get { return new byte[2][] { _trackImage, _trackClock }; } }
+        {
+            get
+            {
+                if (_trackImage == null)
+                {
+                    return 6400;
+                }
+                return _trackImage.Length;
+            }
+        }
 
-		/// <summary>
-		/// ByteTime
-		/// </summary>
-        public long ts_byte { get { return _byteTime; } }
+        public byte[][] RawImage
+        {
+            get { return new[] { _trackImage, _trackClock }; }
+        }
 
-		public List<SECHDR> HeaderList { get { return _headerList; } }
+        /// <summary>
+        /// ByteTime
+        /// </summary>
+        public long ts_byte
+        {
+            get { return _byteTime; }
+        }
 
-		//public int GetHeadPos(long time)
-		//{
-		//   if (_trackImage == null)
-		//      return (int)(_trackTime / 2);
-		//   int pos = (int)((time % _trackTime) / _byteTime);
-		//   if (pos > _trackImage.Length)
-		//      pos = 0;
-		//   return pos;
-		//}
+        public List<SectorHeader> HeaderList
+        {
+            get { return _headerList; }
+        }
 
-		#region UTILS
-		/// <summary>
-		/// Calculate WD1793 CRC, using initial value for 0xA1,0xA1,0xA1 !!!
-		/// </summary>
-		/// <param name="startIndex">Start index in track image</param>
-		/// <param name="size">Size of block</param>
-		public ushort WD1793_CRC(int startIndex, int size) // precalc 0xA1,0xA1,0xA1 !!!
-		{
-			if (_trackImage == null)
-				return 0;
-			int j;
-			uint crc = 0xCDB4;
-			while (size-- > 0)
-			{
-				crc ^= (uint)((_trackImage[startIndex++]) << 8);
-				for (j = 8; j != 0; j--) // todo: rewrite with pre-calc'ed table
-				{
-					if (((crc *= 2) & 0x10000) != 0) crc ^= 0x1021; // bit representation of x^12+x^5+1
-				}
-			}
-			return (ushort)(((crc & 0xFF00) >> 8) | ((crc & 0x00FF) << 8));
-		}
-		#endregion
-	}
+        //public int GetHeadPos(long time)
+        //{
+        //   if (_trackImage == null)
+        //      return (int)(_trackTime / 2);
+        //   int pos = (int)((time % _trackTime) / _byteTime);
+        //   if (pos > _trackImage.Length)
+        //      pos = 0;
+        //   return pos;
+        //}
+
+        #region UTILS
+
+        /// <summary>
+        /// Calculate WD1793 CRC, using initial value for 0xA1,0xA1,0xA1 !!!
+        /// </summary>
+        /// <param name="startIndex">Start index in track image</param>
+        /// <param name="size">Size of block</param>
+        public ushort MakeCrc(int startIndex, int size)
+        {
+            if (_trackImage == null)
+            {
+                return 0;
+            }
+            return CrcVg93.Calc3xA1(_trackImage, startIndex, size);
+        }
+
+        #endregion
+    }
 }

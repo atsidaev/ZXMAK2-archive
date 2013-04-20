@@ -95,6 +95,9 @@
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Crc\CrcUdi.cs" />
+    <Compile Include="Crc\CrcTd0.cs" />
+    <Compile Include="Crc\CrcVg93.cs" />
     <Compile Include="Entities\Breakpoint.cs" />
     <Compile Include="Controls\Configuration\ConfigScreenControl.cs">
       <SubType>UserControl</SubType>
@@ -160,6 +163,7 @@
     <Compile Include="Entities\RzxFrame.cs" />
     <Compile Include="Entities\BusDeviceCategory.cs" />
     <Compile Include="Entities\BusDeviceDescriptor.cs" />
+    <Compile Include="Entities\SectorHeader.cs" />
     <Compile Include="Hardware\Adlers\Debugger.cs" />
     <Compile Include="Hardware\Adlers\UI\DebuggerManager.cs" />
     <Compile Include="Hardware\Adlers\UI\DebugPanels.cs">

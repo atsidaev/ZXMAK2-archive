@@ -8,6 +8,7 @@ using ZXMAK2.Engine.Z80;
 using ZXMAK2.Entities;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Serializers;
+using ZXMAK2.Crc;
 
 
 namespace ZXMAK2.Hardware.Sprinter
@@ -1038,7 +1039,7 @@ namespace ZXMAK2.Hardware.Sprinter
                                     sc[memi] = fdd[drive].t.RawRead(rwptr - len + memi);
                                 //memcpy(sc, trkcache.trkd, 0, rwptr - len, len);
                             }
-                            uint crc = wd93_crc(sc, 0, len);
+                            uint crc = CrcVg93.Calc3xA1(sc, 0, len);
                             fdd[drive].t.RawWrite(rwptr++, (byte)crc, false);
                             fdd[drive].t.RawWrite(rwptr++, (byte)(crc >> 8), false);
                             fdd[drive].t.RawWrite(rwptr, 0xFF, false);
@@ -1097,7 +1098,7 @@ namespace ZXMAK2.Hardware.Sprinter
                         }
                         if (data == 0xF7)
                         {
-                            _crc = fdd[drive].t.WD1793_CRC(start_crc, rwptr - start_crc);
+                            _crc = fdd[drive].t.MakeCrc(start_crc, rwptr - start_crc);
                             _byte = (byte)(_crc & 0xFF);
                         }
                         fdd[drive].t.RawWrite(rwptr++, _byte, marker);
@@ -1332,22 +1333,6 @@ namespace ZXMAK2.Hardware.Sprinter
         }
 
         #endregion
-
-
-        static public ushort wd93_crc(byte[] data, int startIndex, int size)
-        {
-            int j;
-            uint crc = 0xCDB4;
-            while (size-- > 0)
-            {
-                crc ^= (uint)((data[startIndex++]) << 8);
-                for (j = 8; j != 0; j--) // todo: rewrite with pre-calc'ed table
-                {
-                    if (((crc *= 2) & 0x10000) != 0) crc ^= 0x1021; // bit representation of x^12+x^5+1
-                }
-            }
-            return (ushort)(((crc & 0xFF00) >> 8) | ((crc & 0x00FF) << 8));
-        }
     }
 
 }

@@ -58,8 +58,10 @@ namespace ZXMAK2.Controls.Configuration
             string fileName = txtPath.Text;
             if (fileName != string.Empty)
             {
-				if (!File.Exists(Path.GetFullPath(fileName)) && chkPresent.Checked)
+                if (!File.Exists(Path.GetFullPath(fileName)) && chkPresent.Checked)
+                {
                     throw new FileNotFoundException(string.Format("File not found: \"{0}\"", fileName));
+                }
                 fileName = Path.GetFullPath(fileName);
             }
             
