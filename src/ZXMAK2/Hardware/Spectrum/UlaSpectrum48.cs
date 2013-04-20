@@ -154,8 +154,6 @@ namespace ZXMAK2.Hardware.Spectrum
                 new int[] { 6, 5, 4, 3, 2, 1, 0, 0, });
         }
 
-        // TODO: check with UlaSpectrum128_Early, 
-        //      which one should be removed?
         public static int[] CreateContentionTable(
             SpectrumRendererParams timing,
             int[] byteContention)
