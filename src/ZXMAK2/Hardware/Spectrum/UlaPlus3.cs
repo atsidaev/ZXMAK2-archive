@@ -119,7 +119,7 @@ namespace ZXMAK2.Hardware.Spectrum
         protected override void OnTimingChanged()
         {
             base.OnTimingChanged();
-            m_contention = UlaSpectrum128_Early.CreateContentionTable(
+            m_contention = UlaSpectrum48.CreateContentionTable(
                 SpectrumRenderer.Params,
                 new int[] { 1, 0, 7, 6, 5, 4, 3, 2, });
         }
