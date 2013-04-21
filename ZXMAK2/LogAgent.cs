@@ -122,5 +122,18 @@ namespace ZXMAK2
                 }
             }
         }
+
+        [Obsolete("remove call to LogAgent.DumpAppend")]
+        public static void DumpAppend(
+            string fileName, 
+            string format, 
+            params object[] args)
+        {
+            using (var fs = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.Read))
+            using (var wr = new StreamWriter(fs))
+            {
+                wr.WriteLine(format, args);
+            }
+        }
     }
 }
