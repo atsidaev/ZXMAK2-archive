@@ -74,8 +74,14 @@ namespace ZXMAK2.Hardware.Profi
             set
             {
                 base.Memory = value;
-                ProfiRenderer.MemoryCpmUlaBw = Memory.RamPages[m_pageBw];
-                ProfiRenderer.MemoryCpmUlaClr = Memory.RamPages[m_pageClr];
+                var pageBw = Memory.RamPages.Length > m_pageBw ?
+                    Memory.RamPages[m_pageBw] :
+                    new byte[0x4000];
+                var pageClr = Memory.RamPages.Length > m_pageClr ?
+                    Memory.RamPages[m_pageClr] :
+                    new byte[0x4000];
+                ProfiRenderer.MemoryCpmUlaBw = pageBw;
+                ProfiRenderer.MemoryCpmUlaClr = pageClr;
             }
         }
 
