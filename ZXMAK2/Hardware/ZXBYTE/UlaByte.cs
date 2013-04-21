@@ -1,6 +1,7 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Hardware.Spectrum;
+using System.Collections.Generic;
 
 
 namespace ZXMAK2.Hardware.Clone
@@ -61,7 +62,7 @@ namespace ZXMAK2.Hardware.Clone
             var timing = SpectrumRenderer.CreateParams();
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 64;
-            timing.c_ulaFirstPaperTact = 56;//54; // +-2?
+            timing.c_ulaFirstPaperTact = 56;
             timing.c_frameTactCount = 69888;
             timing.c_ulaBorder4T = true;
             timing.c_ulaBorder4Tstage = 0;
@@ -72,7 +73,7 @@ namespace ZXMAK2.Hardware.Clone
             timing.c_ulaBorderRightT = 16;
 
             timing.c_ulaIntBegin = 0;
-            timing.c_ulaIntLength = 42;//32;
+            timing.c_ulaIntLength = 33;
             timing.c_ulaFlashPeriod = 25;
 
             timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 128 + timing.c_ulaBorderRightT) * 2;
@@ -106,133 +107,126 @@ namespace ZXMAK2.Hardware.Clone
             byte[] romDd10,
             byte[] romDd11)
         {
-            var contention = new int[rendererParams.c_frameTactCount];
-            //LogAgent.DumpAppend(
-            //    "_dd10log.txt",
-            //    "tact =\thsync\tpre34\tblclk\tlatch\thretr\tvsync\tpre56\tibclk\tvretr");
-            //LogAgent.DumpAppend(
-            //    "_dd10log.txt",
-            //    "tact =\tvsync\tpre56\tilclk\tvretr");
+            // Simulate full ULA signals according to DD10/DD11 ROM
+            // Catch INT and then start scanning until second INT...
+            // Store contentions to the list and then check frame length
             const int dd3dd4set = 0x280 >> 1;
             const int dd5dd6set = 0x0F0;
             var dd10addr = dd3dd4set;
             var dd11addr = dd5dd6set;
-            var contAddr = 0;
-            var lastPre34 = (romDd10[dd3dd4set] & 2) == 0;
-            var lastPre56 = (romDd11[dd5dd6set] & 2) == 0;
-            var lastRetrace = (romDd10[dd3dd4set] & 0x80) == 0;
-            var lastResetTime = 0;
-            var lastResetTime2 = 0;
+            var lastHsync = (romDd10[dd3dd4set & 0x1FF] & 0x01) != 0;
             var intgt = true;
-            for (var i = 0; i < contention.Length; i++)
+            var scanning = false;
+            var scanning2 = false;
+            var contention = new List<int>();
+            var scanTact = 0;
+            var contIndex = 0;
+            while (true)
             {
+                {
+                    var vsync = (romDd11[dd11addr & 0x1FF] & 1) != 0;
+                    var pre56 = (romDd11[dd11addr & 0x1FF] & 2) != 0;
+                    var hlock = (romDd11[dd11addr & 0x1FF] & 0x10) != 0;
+                    var vretr = (romDd11[dd11addr & 0x1FF] & 0x20) != 0;
+                    var bus75 = (romDd11[dd11addr & 0x1FF] & 0x80) != 0;
+
+                    var dd10val = romDd10[dd10addr & 0x1FF];
+                    var dd11val = romDd11[dd11addr & 0x1FF];
+                    // D0 - ССИ (horizontal sync pulse)
+                    var hsync = (dd10val & 1) != 0;
+                    // D1 - preload DD3/DD4
+                    var pre34 = (dd10val & 2) != 0;
+                    // D2 - BUS20 = A1 for DD38-DD41 (vram address generator)
+                    // D3 - RAS
+                    // D4 - CAS
+                    // D5 - BUS23 = block CLK when BUS23=1 and mem access #4000-7FFF
+                    var blclk = (dd10val & 0x20) != 0;
+                    // D6 - BUS24 = attr/pixel latch, BUS24=0 -> attr latch
+                    var latch = (dd10val & 0x40) != 0;
+                    // D7 - BUS142 = horizontal retrace
+                    var hretr = (dd10val & 0x80) != 0;
+
+                    if (hretr)                      // TM2 - always set on S=0
+                    {
+                        intgt = true;
+                    }
+                    else if (hsync && !lastHsync)   // TM2 - capture D on UP CLK transition
+                    {
+                        intgt = false;
+                    }
+                    var intrq = intgt | bus75;
+
+                    var bus23 = blclk && !hlock;
+
+                    lastHsync = hsync;
+
+                    if (!scanning && !intrq)
+                    {
+                        scanning = true;
+                    }
+                    if (scanning && intrq)
+                    {
+                        scanning2 = true;
+                    }
+                    if (scanning2 && !intrq)
+                    {
+                        break;
+                    }
+                    if (scanning)
+                    {
+                        contention.Add(0);
+                        if (blclk && !hlock)
+                        {
+                            for (var j = contIndex; j <= scanTact; j++)
+                            {
+                                contention[j]++;
+                            }
+                        }
+                        else
+                        {
+                            contIndex = scanTact + 1;
+                        }
+                        scanTact++;
+                    }
+                }
+                // Counters DD3/DD4, DD5/DD6 simulation
                 for (var j = 0; j < 2; j++)
                 {
+                    // DD2=#E=>#F -> UP-DOWN transition on DD3-C
+                    // DD2=#F=>#0 -> DOWN-UP transition on DD3-C
+                    // DD3/DD4-C DOWN-UP transition = increment or load
+                    var pre34 = (romDd10[dd10addr & 0x1FF] & 2) == 0;
+                    var lastVblank = (romDd10[dd10addr & 0x1FF] & 0x80) == 0;
                     dd10addr++;
-                    if ((romDd10[dd10addr & 0x1FF] & 2) != 0 && !lastPre34)
+                    var dd3c = (dd10addr & 7) == 0;
+                    var dd4c = dd3c && (dd10addr & 0x78) == 0;
+                    if (dd3c && pre34)
                     {
-                        //LogAgent.DumpAppend("_dd10log.txt", "RESET DD10 dt={0}", i - lastResetTime);
-                        lastResetTime = i;
-                        dd10addr = (dd10addr & 7) | dd3dd4set;
+                        dd10addr = (dd10addr & 0x187) | (dd3dd4set & 0x078);
                     }
-                    if ((romDd10[dd10addr & 0x1FF] & 0x80) == 0 && lastRetrace)
+                    if (dd4c && pre34)
                     {
-                        //LogAgent.DumpAppend("_dd10log.txt", "INC DD5DD6");
+                        dd10addr = (dd10addr & 0x07F) | (dd3dd4set & 0x180);
+                    }
+                    // DD5/DD6 - load always when PE=0
+                    // increment on +1 DOWN-UP transition
+                    var pre56 = (romDd11[dd11addr & 0x1FF] & 2) == 0;
+                    var vblank = (romDd10[dd10addr & 0x1FF] & 0x80) == 0;
+                    if (pre56)
+                    {
+                        dd11addr = (dd11addr & 0x100) | (dd5dd6set & 0xFF);
+                    }
+                    else if (vblank && !lastVblank)
+                    {
                         dd11addr++;
-                        if ((romDd11[dd11addr & 0x1FF] & 2) != 0 && !lastPre56)
-                        {
-                            var dt = i - lastResetTime2;
-                            //LogAgent.DumpAppend("_dd10log.txt", "RESET DD11 dt={0} [{1} lines]", dt, dt / 224);
-                            lastResetTime2 = i;
-                            dd11addr = (dd11addr & 0x100) | dd5dd6set;
-                        }
-                        //var vsync = (m_dd11[dd11addr & 0x1FF] & 1) != 0;
-                        //var pre56 = (m_dd11[dd11addr & 0x1FF] & 2) != 0;
-                        //var ibclk = (m_dd11[dd11addr & 0x1FF] & 0x10) != 0;
-                        //var vretr = (m_dd11[dd11addr & 0x1FF] & 0x20) != 0;
-                        //LogAgent.DumpAppend(
-                        //    "_dd10log.txt",
-                        //    "{0} =\t{1}\t{2}\t{3}\t{4}",
-                        //    i,
-                        //    vsync ? 1 : 0,
-                        //    pre56 ? 1 : 0,
-                        //    ibclk ? 1 : 0,
-                        //    vretr ? 1 : 0);
                     }
-                    lastPre34 = (romDd10[dd10addr & 0x1FF] & 2) != 0;
-                    lastPre56 = (romDd11[dd11addr & 0x1FF] & 2) != 0;
-                    lastRetrace = (romDd10[dd10addr & 0x1FF] & 0x80) != 0;
-                }
-
-                var vsync = (romDd11[dd11addr & 0x1FF] & 1) != 0;
-                var pre56 = (romDd11[dd11addr & 0x1FF] & 2) != 0;
-                var ibclk = (romDd11[dd11addr & 0x1FF] & 0x10) != 0;
-                var vretr = (romDd11[dd11addr & 0x1FF] & 0x20) != 0;
-                var bus75 = (romDd11[dd11addr & 0x1FF] & 0x80) != 0;
-
-                var dd10val = romDd10[dd10addr & 0x1FF];
-                var dd11val = romDd11[dd11addr & 0x1FF];
-                // D0 - ССИ (horizontal sync pulse)
-                var hsync = (dd10val & 1) != 0;
-                // D1 - preload DD3/DD4
-                var pre34 = (dd10val & 2) != 0;
-                // D2 - BUS20 = A1 for DD38-DD41 (vram address generator)
-                // D3 - RAS
-                // D4 - CAS
-                // D5 - BUS23 = block CLK when BUS23=1 and mem access #4000-7FFF
-                var blclk = (dd10val & 0x20) != 0;
-                // D6 - BUS24 = attr/pixel latch, BUS24=0 -> attr latch
-                var latch = (dd10val & 0x40) != 0;
-                // D7 - BUS142 = horizontal retrace
-                var hretr = (dd10val & 0x80) != 0;
-
-                if (hretr)
-                {
-                    intgt = true;
-                }
-                else if (!hsync)
-                {
-                    intgt = false;
-                }
-                var intrq = intgt | bus75;
-
-                //LogAgent.DumpAppend(
-                //    "_dd10log.txt",
-                //    "{0} =\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}",
-                //    i,
-                //    hsync ? 1 : 0,
-                //    pre34 ? 1 : 0,
-                //    blclk ? 1 : 0,
-                //    latch ? 1 : 0,
-                //    hretr ? 1 : 0,
-                //    vsync ? 1 : 0,
-                //    pre56 ? 1 : 0,
-                //    ibclk ? 1 : 0,
-                //    vretr ? 1 : 0,
-                //    intrq ? 1 : 0);
-
-
-                //LogAgent.DumpAppend(
-                //    "_dd10log.txt",
-                //    "{0} =\t{1}\t{2}",
-                //    i,
-                //    blclk ? 1 : 0,
-                //    ibclk ? 1 : 0);
-                contention[i] = 0;
-                if (blclk && !ibclk)
-                {
-                    for (var j = contAddr; j <= i; j++)
-                    {
-                        contention[j]++;
-                    }
-                }
-                else
-                {
-                    contAddr = i + 1;
                 }
             }
-            //LogAgent.DumpArray("_contDD10.txt", m_contention);
-            return contention;
+            if (contention.Count != rendererParams.c_frameTactCount)
+            {
+                throw new ArgumentException("Invalid frame length!");
+            }
+            return contention.ToArray();
         }
 
         private int[] m_contention;
