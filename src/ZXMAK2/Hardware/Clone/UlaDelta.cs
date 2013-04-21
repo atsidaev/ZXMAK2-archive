@@ -18,9 +18,8 @@ namespace ZXMAK2.Hardware.Clone
             base.BusInit(bmgr);
             bmgr.SubscribeRDMEM(0xC000, 0x4000, ReadMem4000);
             bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, ReadMem4000);
-            bmgr.SubscribeWRMEM(0xC000, 0x4000, WriteMem4000);
-            bmgr.SubscribeRDNOMREQ(0xC000, 0x4000, ContendNoMreq);
-            bmgr.SubscribeWRNOMREQ(0xC000, 0x4000, ContendNoMreq);
+            bmgr.SubscribeRDNOMREQ(0xC000, 0x4000, NoMreq4000);
+            bmgr.SubscribeWRNOMREQ(0xC000, 0x4000, NoMreq4000);
         }
 
         #endregion
@@ -40,7 +39,7 @@ namespace ZXMAK2.Hardware.Clone
             CPU.Tact += m_contention[frameTact];
         }
 
-        protected void ContendNoMreq(ushort addr)
+        protected void NoMreq4000(ushort addr)
         {
             int frameTact = (int)(CPU.Tact % FrameTactCount);
             CPU.Tact += m_contention[frameTact];
