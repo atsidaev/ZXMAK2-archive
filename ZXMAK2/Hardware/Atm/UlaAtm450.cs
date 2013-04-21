@@ -44,8 +44,12 @@ namespace ZXMAK2.Hardware.Atm
             set
             {
                 base.Memory = value;
-                var pageAt = Memory.RamPages[m_videoPage == 5 ? 1 : 3];
-                var pageBw = Memory.RamPages[m_videoPage];
+                var pageAt = Memory.RamPages.Length > 3 ?
+                    Memory.RamPages[m_videoPage == 5 ? 1 : 3] :
+                    new byte[0x4000];
+                var pageBw = Memory.RamPages.Length > m_videoPage ?
+                    Memory.RamPages[m_videoPage] :
+                    new byte[0x4000];
                 Atm320Renderer.MemoryPage0 = pageAt;
                 Atm320Renderer.MemoryPage1 = pageBw;
                 Atm640Renderer.MemoryPageAt = pageAt;
