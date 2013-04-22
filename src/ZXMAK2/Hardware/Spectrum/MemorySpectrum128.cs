@@ -15,7 +15,7 @@ namespace ZXMAK2.Hardware.Spectrum
             base.BusInit(bmgr);
 			bmgr.SubscribeWRIO(0x8002, 0x0000, writePort7FFD);
             bmgr.SubscribeRDIO(0x8002, 0x0000, readPort7FFD);
-            bmgr.SubscribeRESET(busReset);
+            bmgr.SubscribeRESET(BusReset);
         }
 
         #endregion
@@ -75,7 +75,7 @@ namespace ZXMAK2.Hardware.Spectrum
                 CMR0 = value;// (byte)((CMR0 & 0x20) | (value & ~0x20));
         }
 
-        private void busReset()
+        protected virtual void BusReset()
         {
             CMR0 = 0;
         }

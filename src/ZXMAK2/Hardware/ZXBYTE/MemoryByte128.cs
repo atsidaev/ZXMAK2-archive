@@ -6,11 +6,11 @@ using ZXMAK2.Hardware.Spectrum;
 
 namespace ZXMAK2.Hardware.ZXBYTE
 {
-    public class MemoryByte : MemorySpectrum128, IGuiExtension
+    public class MemoryByte128 : MemorySpectrum128, IGuiExtension
     {
         #region IBusDevice
 
-        public override string Name { get { return "BYTE 48K"; } }
+        public override string Name { get { return "BYTE 128K"; } }
         public override string Description { get { return "Memory Module \"Byte\" 48K\r\nVersion 1.0"; } }
 
         #endregion
@@ -23,24 +23,11 @@ namespace ZXMAK2.Hardware.ZXBYTE
 
         #region MemoryBase
 
-        public override bool IsMap48 { get { return true; } }
-
-        public override byte CMR0
-        {
-            get { return 0x30; }
-            set { UpdateMapping(); }
-        }
-
-        public override byte CMR1
-        {
-            get { return 0x00; }
-            set { UpdateMapping(); }
-        }
-
         protected override void BusReset()
         {
             base.BusReset();
             m_rd1f = 0;
+            CMR0 = 0x10;
         }
 
         protected override void LoadRom()
@@ -68,6 +55,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
         protected override void ReadMem0000(ushort addr, ref byte value)
         {
             if (m_rd1f != 0 && 
+                (CMR0 & 0x10) != 0 && 
                 !DOSEN)
             {
                 var adr66 = ((addr >> 7) & 0xFF) | ((m_sovmest << 8) & 0x100);
@@ -84,9 +72,10 @@ namespace ZXMAK2.Hardware.ZXBYTE
 
         public override byte RDMEM_DBG(ushort addr)
         {
-            if (addr < 0x4000 &&
+            if (addr < 0x4000 && 
                 m_rd1f != 0 && 
-                !DOSEN)
+                !DOSEN && 
+                (CMR0 & 0x10) != 0)
             {
                 var adr66 = ((addr >> 7) & 0xFF) | ((m_sovmest << 8) & 0x100);
                 var dat66 = m_dd66[adr66];
@@ -105,7 +94,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
 
         private void BusReadPort1F(ushort addr, ref byte value, ref bool iorqge)
         {
-            if (!DOSEN)
+            if (!DOSEN && (CMR0 & 0x10) != 0)
             {
                 m_rd1f = 1;
             }
