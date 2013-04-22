@@ -2,14 +2,14 @@
 using ZXMAK2.Interfaces;
 using ZXMAK2.Hardware.General;
 
-namespace ZXMAK2.Hardware.Scorpion
+namespace ZXMAK2.Hardware.ZXBYTE
 {
-    public class BeeperScorpion : BeeperDevice
+    public class BeeperByte : BeeperDevice
     {
         #region IBusDevice
 
-        public override string Name { get { return "Scorpion Beeper"; } }
-        public override string Description { get { return "Scorpion ZS Beeper\r\nPort: #FE\r\nMask: #23"; } }
+        public override string Name { get { return "BYTE Beeper"; } }
+        public override string Description { get { return "BYTE Beeper\r\nPort: #FE\r\nMask: #35"; } }
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -23,7 +23,7 @@ namespace ZXMAK2.Hardware.Scorpion
 
         protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
         {
-            if (!m_memory.DOSEN && (addr & 0x23) == (0xFE & 0x23))
+            if (!m_memory.DOSEN && (addr & 0x35) == (0xFE & 0x35))
             {
                 base.WritePortFE(addr, value, ref iorqge);
             }

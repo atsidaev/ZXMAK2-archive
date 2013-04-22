@@ -4,7 +4,7 @@ using ZXMAK2.Hardware.Spectrum;
 using System.Collections.Generic;
 
 
-namespace ZXMAK2.Hardware.Clone
+namespace ZXMAK2.Hardware.ZXBYTE
 {
     public class UlaByte_Late : UlaDeviceBase
     {

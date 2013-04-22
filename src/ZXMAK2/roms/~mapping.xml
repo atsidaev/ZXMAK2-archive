@@ -82,4 +82,9 @@
 		<Page name="DD66" image="ZXBYTE/DD66_RT5.BIN" />
 		<Page name="DD71" image="ZXBYTE/DD71_RT7.BIN" />
 	</Model>
+	<Model name="ZXBYTE128">
+		<Page name="SOS" image="ZXBYTE/DD72-DD73.BIN"/>
+		<Page name="DD66" image="ZXBYTE/DD66_RT5.BIN" />
+		<Page name="DD71" image="ZXBYTE/DD71_RT7.BIN" />
+	</Model>
 </Mapping>
