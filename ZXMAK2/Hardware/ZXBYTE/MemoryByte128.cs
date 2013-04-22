@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Hardware.Spectrum;
 
@@ -11,7 +9,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
         #region IBusDevice
 
         public override string Name { get { return "BYTE 128K"; } }
-        public override string Description { get { return "Memory Module \"Byte\" 48K\r\nVersion 1.0"; } }
+        public override string Description { get { return "Memory Module \"Byte\" 128K\r\nVersion 1.2"; } }
 
         #endregion
 
@@ -33,7 +31,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
         protected override void LoadRom()
         {
             base.LoadRom();
-            LoadRomPack("ZXBYTE");
+            LoadRomPack("ZXBYTE128");
         }
 
         protected override void OnLoadRomPage(string pageName, byte[] data)
@@ -54,8 +52,8 @@ namespace ZXMAK2.Hardware.ZXBYTE
 
         protected override void ReadMem0000(ushort addr, ref byte value)
         {
-            if (m_rd1f != 0 && 
-                (CMR0 & 0x10) != 0 && 
+            if (m_rd1f != 0 &&
+                (CMR0 & 0x10) != 0 &&
                 !DOSEN)
             {
                 var adr66 = ((addr >> 7) & 0xFF) | ((m_sovmest << 8) & 0x100);
@@ -72,9 +70,9 @@ namespace ZXMAK2.Hardware.ZXBYTE
 
         public override byte RDMEM_DBG(ushort addr)
         {
-            if (addr < 0x4000 && 
-                m_rd1f != 0 && 
-                !DOSEN && 
+            if (addr < 0x4000 &&
+                m_rd1f != 0 &&
+                !DOSEN &&
                 (CMR0 & 0x10) != 0)
             {
                 var adr66 = ((addr >> 7) & 0xFF) | ((m_sovmest << 8) & 0x100);
