@@ -10,8 +10,8 @@ namespace ZXMAK2.Hardware.Clone
     {
         #region IBusDevice
 
-        public override string Name { get { return "Byte [late model]"; } }
-        public override string Description { get { return "БАЙТ [late model]\r\nVersion 1.0"; } }
+        public override string Name { get { return "BYTE [late model]"; } }
+        public override string Description { get { return "BYTE [late model]\r\nVersion 1.3"; } }
 
         public UlaByte_Late()
         {
@@ -257,8 +257,8 @@ namespace ZXMAK2.Hardware.Clone
     {
         #region IBusDevice
 
-        public override string Name { get { return "Byte [early model]"; } }
-        public override string Description { get { return "БАЙТ [early model]\r\nVersion 1.0"; } }
+        public override string Name { get { return "BYTE [early model]"; } }
+        public override string Description { get { return "BYTE [early model]\r\nVersion 1.0"; } }
 
 
         public override void BusInit(IBusManager bmgr)

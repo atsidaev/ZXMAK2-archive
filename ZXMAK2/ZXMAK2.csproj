@@ -179,6 +179,7 @@
     <Compile Include="Hardware\Atm\Atm320Renderer.cs" />
     <Compile Include="Hardware\Atm\Atm640Renderer.cs" />
     <Compile Include="Hardware\Atm\AtmTxtRenderer.cs" />
+    <Compile Include="Hardware\ZXBYTE\MemoryByte128.cs" />
     <Compile Include="Hardware\ZXBYTE\MemoryByte.cs" />
     <Compile Include="Hardware\General\UI\DebugPanels.cs">
       <SubType>Component</SubType>
