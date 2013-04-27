@@ -232,8 +232,8 @@ namespace ZXMAK2.Controls
                         m_surfaceSize.Width,
                         m_surfaceSize.Height);
                     var dstLocation = new PointF(
-                        (wndSize.Width - dstSize.Width) / 2F,
-                        (wndSize.Height - dstSize.Height) / 2F);
+                        (float)Math.Floor((wndSize.Width - dstSize.Width) / 2F),
+                        (float)Math.Floor((wndSize.Height - dstSize.Height) / 2F));
                     m_sprite.Draw2D(
                        m_texture,
                        srcRect,
