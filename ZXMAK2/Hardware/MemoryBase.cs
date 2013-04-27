@@ -153,8 +153,10 @@ namespace ZXMAK2.Hardware
 
         public MemoryBase()
         {
-            for (int i = 0; i < m_romImages.Length; i++)
+            for (var i = 0; i < m_romImages.Length; i++)
+            {
                 m_romImages[i] = new byte[0x4000];
+            }
         }
 
         public byte[] Window0000 { get { return MapRead0000; } }
@@ -259,6 +261,13 @@ namespace ZXMAK2.Hardware
 
         protected virtual void LoadRom()
         {
+            for (var i = 0; i < RomPages.Length; i++)
+            {
+                for (var j = 0; j < RomPages[i].Length; j++)
+                {
+                    m_romImages[i][j] = 0xFF;
+                }
+            }
             LoadRomPack("Default");
         }
 
