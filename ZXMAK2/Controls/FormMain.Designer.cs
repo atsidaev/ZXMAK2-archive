@@ -46,7 +46,10 @@
             this.menuViewSeparator1 = new System.Windows.Forms.MenuItem();
             this.menuViewSmoothing = new System.Windows.Forms.MenuItem();
             this.menuViewNoFlic = new System.Windows.Forms.MenuItem();
-            this.menuViewKeepProportion = new System.Windows.Forms.MenuItem();
+            this.menuViewScaleMode = new System.Windows.Forms.MenuItem();
+            this.menuViewScaleModeStretch = new System.Windows.Forms.MenuItem();
+            this.menuViewScaleModeKeepProportion = new System.Windows.Forms.MenuItem();
+            this.menuViewScaleModeFixedPixelSize = new System.Windows.Forms.MenuItem();
             this.menuViewVBlankSync = new System.Windows.Forms.MenuItem();
             this.menuViewDisplayIcon = new System.Windows.Forms.MenuItem();
             this.menuViewDebugInfo = new System.Windows.Forms.MenuItem();
@@ -119,7 +122,7 @@
             this.menuViewSeparator1,
             this.menuViewSmoothing,
             this.menuViewNoFlic,
-            this.menuViewKeepProportion,
+            this.menuViewScaleMode,
             this.menuViewVBlankSync,
             this.menuViewDisplayIcon,
             this.menuViewDebugInfo});
@@ -189,11 +192,32 @@
             this.menuViewNoFlic.Text = "No Flic";
             this.menuViewNoFlic.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
-            // menuViewKeepProportion
+            // menuViewScaleMode
             // 
-            this.menuViewKeepProportion.Index = 6;
-            this.menuViewKeepProportion.Text = "Keep Proportion";
-            this.menuViewKeepProportion.Click += new System.EventHandler(this.menuViewRender_Click);
+            this.menuViewScaleMode.Index = 6;
+            this.menuViewScaleMode.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuViewScaleModeStretch,
+            this.menuViewScaleModeKeepProportion,
+            this.menuViewScaleModeFixedPixelSize});
+            this.menuViewScaleMode.Text = "Scale";
+            // 
+            // menuViewScaleModeStretch
+            // 
+            this.menuViewScaleModeStretch.Index = 0;
+            this.menuViewScaleModeStretch.Text = "Stretch";
+            this.menuViewScaleModeStretch.Click += new System.EventHandler(this.menuViewRender_Click);
+            // 
+            // menuViewScaleModeKeepProportion
+            // 
+            this.menuViewScaleModeKeepProportion.Index = 1;
+            this.menuViewScaleModeKeepProportion.Text = "Keep Proportion";
+            this.menuViewScaleModeKeepProportion.Click += new System.EventHandler(this.menuViewRender_Click);
+            // 
+            // menuViewScaleModeFixedPixelSize
+            // 
+            this.menuViewScaleModeFixedPixelSize.Index = 2;
+            this.menuViewScaleModeFixedPixelSize.Text = "Fixed Pixel Size";
+            this.menuViewScaleModeFixedPixelSize.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewVBlankSync
             // 
@@ -282,7 +306,7 @@
             this.menuHelpAbout});
             this.menuHelp.Text = "Help";
             // 
-            // menuHelpGeneral
+            // menuHelpViewHelp
             // 
             this.menuHelpViewHelp.Index = 0;
             this.menuHelpViewHelp.Text = "View Help";
@@ -307,15 +331,12 @@
             // 
             // renderVideo
             // 
-            this.renderVideo.DebugStartTact = 0;
             this.renderVideo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.renderVideo.Location = new System.Drawing.Point(0, 0);
             this.renderVideo.Name = "renderVideo";
-            this.renderVideo.NoFlic = false;
             this.renderVideo.Size = new System.Drawing.Size(640, 421);
             this.renderVideo.TabIndex = 0;
             this.renderVideo.Text = "renderVideo";
-            this.renderVideo.VBlankSync = false;
             this.renderVideo.DeviceReset += new System.EventHandler(this.renderVideo_DeviceReset);
             this.renderVideo.SizeChanged += new System.EventHandler(this.renderVideo_SizeChanged);
             this.renderVideo.DoubleClick += new System.EventHandler(this.renderVideo_DoubleClick);
@@ -360,7 +381,7 @@
         private System.Windows.Forms.MenuItem menuViewSizeX4;
         private System.Windows.Forms.MenuItem menuViewSeparator1;
         private System.Windows.Forms.MenuItem menuViewSmoothing;
-        private System.Windows.Forms.MenuItem menuViewKeepProportion;
+        private System.Windows.Forms.MenuItem menuViewScaleMode;
         private System.Windows.Forms.MenuItem menuViewVBlankSync;
         private System.Windows.Forms.MenuItem menuViewDisplayIcon;
         private System.Windows.Forms.MenuItem menuViewDebugInfo;
@@ -379,6 +400,9 @@
         private System.Windows.Forms.MenuItem menuHelpKeyboard;
         private System.Windows.Forms.MenuItem menuHelpSeparator1;
         private System.Windows.Forms.MenuItem menuHelpAbout;
+        private System.Windows.Forms.MenuItem menuViewScaleModeStretch;
+        private System.Windows.Forms.MenuItem menuViewScaleModeKeepProportion;
+        private System.Windows.Forms.MenuItem menuViewScaleModeFixedPixelSize;
     }
 }
 

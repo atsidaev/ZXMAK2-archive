@@ -8,75 +8,88 @@ using Microsoft.DirectX.Direct3D;
 using ZXMAK2.Engine;
 using System.Collections.Generic;
 using ZXMAK2.Entities;
+using System.Diagnostics;
 
 
 namespace ZXMAK2.Controls
 {
     public class RenderVideo : Render3D
     {
-        private Sprite _sprite = null;
-        private Texture _texture = null;
+        private Sprite m_sprite = null;
+        private Texture m_texture = null;
         private Size m_surfaceSize = new Size(0, 0);
         private Size m_textureSize = new Size(0, 0);
         private float m_surfaceHeightScale = 1F;
 
-        private Sprite _iconSprite = null;
-        private Microsoft.DirectX.Direct3D.Font _font = null;
-
-
-        public bool Smoothing = false;
-        public bool KeepProportion = false;
-        public bool DebugInfo = false;
-        public unsafe bool NoFlic
-        {
-            get { return m_drawFilter == drawFrame_noflic; }
-            set { m_drawFilter = value ? (DrawFilterDelegate)drawFrame_noflic : (DrawFilterDelegate)drawFrame; }
-        }
-
-        public bool IconDisk = false;
-        public bool DisplayIcon = true;
+        private Sprite m_iconSprite = null;
+        private Microsoft.DirectX.Direct3D.Font m_font = null;
 
         private unsafe DrawFilterDelegate m_drawFilter;
         private unsafe delegate void DrawFilterDelegate(int* dstBuffer, int* srcBuffer);
 
+        #region Properties
+
+        public bool Smoothing { get; set; }
+        public ScaleMode ScaleMode { get; set; }
+        public bool DebugInfo { get; set; }
+
+        public unsafe bool NoFlic
+        {
+            get { return m_drawFilter == drawFrame_noflic; }
+            set
+            {
+                m_drawFilter = value ?
+                    (DrawFilterDelegate)drawFrame_noflic :
+                    (DrawFilterDelegate)drawFrame;
+            }
+        }
+
+        public bool IconDisk { get; set; }
+        public bool DisplayIcon { get; set; }
+
+        #endregion Properties
+
+
         public unsafe RenderVideo()
         {
             m_drawFilter = drawFrame;
+            DisplayIcon = true;
+            ScaleMode = ScaleMode.FixedPixelSize;
         }
 
         protected override void OnCreateDevice()
         {
             base.OnCreateDevice();
-            _sprite = new Sprite(D3D);
-            _iconSprite = new Sprite(D3D);
+            m_sprite = new Sprite(D3D);
+            m_iconSprite = new Sprite(D3D);
         }
 
         protected override void OnDestroyDevice()
         {
-            if (_texture != null)
+            if (m_texture != null)
             {
-                _texture.Dispose();
-                _texture = null;
+                m_texture.Dispose();
+                m_texture = null;
             }
-            foreach (IconTextureWrapper itw in m_iconWrapperDict.Values)
+            foreach (var textureWrapper in m_iconWrapperDict.Values)
             {
-                itw.Dispose();
+                textureWrapper.Dispose();
             }
             m_iconWrapperDict.Clear();
-            if (_sprite != null)
+            if (m_sprite != null)
             {
-                _sprite.Dispose();
-                _sprite = null;
+                m_sprite.Dispose();
+                m_sprite = null;
             }
-            if (_iconSprite != null)
+            if (m_iconSprite != null)
             {
-                _iconSprite.Dispose();
-                _iconSprite = null;
+                m_iconSprite.Dispose();
+                m_iconSprite = null;
             }
-            if (_font != null)
+            if (m_font != null)
             {
-                _font.Dispose();
-                _font = null;
+                m_font.Dispose();
+                m_font = null;
             }
             base.OnDestroyDevice();
         }
@@ -86,7 +99,9 @@ namespace ZXMAK2.Controls
             lock (SyncRoot)
             {
                 if (D3D == null)
+                {
                     return;
+                }
                 try
                 {
                     m_surfaceHeightScale = surfaceHeightScale;
@@ -94,12 +109,12 @@ namespace ZXMAK2.Controls
                     {
                         initTextures(surfaceSize);
                     }
-                    if (_texture != null)
+                    if (m_texture != null)
                     {
-                        using (GraphicsStream gs = _texture.LockRectangle(0, LockFlags.None))
+                        using (GraphicsStream gs = m_texture.LockRectangle(0, LockFlags.None))
                             fixed (int* srcPtr = surfaceBuffer)
                                 m_drawFilter((int*)gs.InternalData, srcPtr);
-                        _texture.UnlockRectangle(0);
+                        m_texture.UnlockRectangle(0);
                     }
                 }
                 catch (Exception ex)
@@ -115,15 +130,17 @@ namespace ZXMAK2.Controls
             lock (SyncRoot)
             {
                 if (D3D == null)
+                {
                     return;
+                }
                 //base.ResizeContext(surfaceSize);
                 int potSize = getPotSize(surfaceSize);
-                if (_texture != null)
+                if (m_texture != null)
                 {
-                    _texture.Dispose();
-                    _texture = null;
+                    m_texture.Dispose();
+                    m_texture = null;
                 }
-                _texture = new Texture(D3D, potSize, potSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+                m_texture = new Texture(D3D, potSize, potSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                 m_textureSize = new System.Drawing.Size(potSize, potSize);
                 m_surfaceSize = surfaceSize;
                 initIconTextures();
@@ -132,14 +149,21 @@ namespace ZXMAK2.Controls
 
         private void initIconTextures()
         {
-            foreach (IconTextureWrapper itw in m_iconWrapperDict.Values)
-                itw.Load(D3D);
-            if (_font != null)
+            foreach (var textureWrapper in m_iconWrapperDict.Values)
             {
-                _font.Dispose();
-                _font = null;
+                textureWrapper.Load(D3D);
             }
-            _font = new Microsoft.DirectX.Direct3D.Font(D3D, new System.Drawing.Font("Microsoft Sans Serif", 10f/*8.25f*/, System.Drawing.FontStyle.Bold, GraphicsUnit.Pixel));
+            if (m_font != null)
+            {
+                m_font.Dispose();
+                m_font = null;
+            }
+            var gdiFont = new System.Drawing.Font(
+                "Microsoft Sans Serif",
+                10f/*8.25f*/,
+                System.Drawing.FontStyle.Bold,
+                GraphicsUnit.Pixel);
+            m_font = new Microsoft.DirectX.Direct3D.Font(D3D, gdiFont);
         }
 
         private long lastTick = 0;
@@ -149,9 +173,9 @@ namespace ZXMAK2.Controls
         {
             lock (SyncRoot)
             {
-                if (_texture != null)
+                if (m_texture != null)
                 {
-                    _sprite.Begin(SpriteFlags.None);
+                    m_sprite.Begin(SpriteFlags.None);
 
                     ////if (d3d.DeviceCaps.TextureFilterCaps.SupportsMinifyAnisotropic)
                     ////if (device.DeviceCaps.TextureFilterCaps.SupportsMagnifyAnisotropic)
@@ -161,60 +185,82 @@ namespace ZXMAK2.Controls
                     //D3D.SamplerState[0].MinFilter = TextureFilter.Anisotropic;
                     //D3D.SamplerState[0].MagFilter = TextureFilter.Linear;
 
-                    //TODO: Add video output option "Enable filter"
                     if (!Smoothing)
                     {
                         D3D.SamplerState[0].MinFilter = TextureFilter.None;
                         D3D.SamplerState[0].MagFilter = TextureFilter.None;
                     }
 
-                    Rectangle srcRect = new Rectangle(0, 0, m_surfaceSize.Width, m_surfaceSize.Height);
-                    RectangleF dstRect = new RectangleF(
-                        0,
-                        0,
+                    var wndSize = new SizeF(
                         D3D.PresentationParameters.BackBufferWidth,
                         D3D.PresentationParameters.BackBufferHeight);
+                    var dstSize = new SizeF(
+                        m_surfaceSize.Width,
+                        m_surfaceSize.Height * m_surfaceHeightScale);
 
-
-                    if (KeepProportion && srcRect.Width > 0 && srcRect.Height > 0)
+                    if (dstSize.Width > 0 &&
+                        dstSize.Height > 0)
                     {
-                        float srcWidth = (float)srcRect.Width;
-                        float srcHeight = (float)srcRect.Height * m_surfaceHeightScale;
-
-                        float rx = (float)dstRect.Width / srcWidth;
-                        float ry = (float)dstRect.Height / srcHeight;
-                        float width = dstRect.Width;
-                        float height = dstRect.Height;
-                        if (rx > ry)
-                            width = width * ry / rx;
-                        else if (rx < ry)
-                            height = height * rx / ry;
-                        dstRect = new RectangleF((dstRect.Width - width) / 2, (dstRect.Height - height) / 2, width, height);
+                        var rx = wndSize.Width / dstSize.Width;
+                        var ry = wndSize.Height / dstSize.Height;
+                        if (ScaleMode == ScaleMode.FixedPixelSize)
+                        {
+                            rx = (float)Math.Floor(rx);
+                            ry = (float)Math.Floor(ry);
+                            rx = rx < 1F ? 1F : rx;
+                            ry = ry < 1F ? 1F : ry;
+                        }
+                        else if (ScaleMode == ScaleMode.KeepProportion)
+                        {
+                            if (rx > ry)
+                            {
+                                rx = (wndSize.Width * ry / rx) / dstSize.Width;
+                            }
+                            else if (rx < ry)
+                            {
+                                ry = (wndSize.Height * rx / ry) / dstSize.Height;
+                            }
+                        }
+                        dstSize = new SizeF(
+                            dstSize.Width * rx,
+                            dstSize.Height * ry);
                     }
 
-                    _sprite.Draw2D(
-                       _texture,
+                    var srcRect = new Rectangle(
+                        0,
+                        0,
+                        m_surfaceSize.Width,
+                        m_surfaceSize.Height);
+                    var dstLocation = new PointF(
+                        (wndSize.Width - dstSize.Width) / 2F,
+                        (wndSize.Height - dstSize.Height) / 2F);
+                    m_sprite.Draw2D(
+                       m_texture,
                        srcRect,
-                       dstRect.Size,
-                       dstRect.Location,
+                       dstSize,
+                       dstLocation,
                        0x00FFFFFF);
 
                     //D3D.SamplerState[0].MinFilter = min;
                     //D3D.SamplerState[0].MagFilter = mag;
 
-                    _sprite.End();
+                    m_sprite.End();
 
                     if (DebugInfo)
                     {
-                        float fps = 0;
-                        long tick = System.Diagnostics.Stopwatch.GetTimestamp();
-                        long dt = tick - lastTick;
+                        var fps = 0F;
+                        var tick = Stopwatch.GetTimestamp();
+                        var dt = tick - lastTick;
                         if (lastTick != 0 && dt > 0)
-                            fps = System.Diagnostics.Stopwatch.Frequency / dt;
+                        {
+                            fps = Stopwatch.Frequency / dt;
+                        }
                         if (fps > 0)
+                        {
                             lastFps += 0.3F * (fps - lastFps);
+                        }
                         lastTick = tick;
-                        string textValue = string.Format(
+                        var textValue = string.Format(
                             "Render FPS: {0:F1}\nDevice FPS: {1}\nBack: [{2}, {3}]\nClient: [{4}, {5}]\nSurface: [{6}, {7}]\nFrameStart: {8}T",
                             lastFps,
                             D3D.DisplayMode.RefreshRate,
@@ -225,30 +271,39 @@ namespace ZXMAK2.Controls
                             m_surfaceSize.Width,
                             m_surfaceSize.Height,
                             m_debugFrameStart);
-                        Rectangle textRect = _font.MeasureString(null, textValue, DrawTextFormat.NoClip, Color.Yellow);
-                        _font.DrawText(null, textValue, textRect, DrawTextFormat.NoClip, Color.Yellow);
+                        var textRect = m_font.MeasureString(
+                            null,
+                            textValue,
+                            DrawTextFormat.NoClip,
+                            Color.Yellow);
+                        m_font.DrawText(
+                            null,
+                            textValue,
+                            textRect,
+                            DrawTextFormat.NoClip,
+                            Color.Yellow);
                     }
 
                     if (DisplayIcon)
                     {
-                        SizeF devIconSize = new SizeF(
+                        var devIconSize = new SizeF(
                             D3D.PresentationParameters.BackBufferWidth / 20,
                             D3D.PresentationParameters.BackBufferHeight / 15);
-                        int iconNumber = 1;
-                        foreach (IconTextureWrapper itw in m_iconWrapperDict.Values)
+                        var iconNumber = 1;
+                        foreach (var itw in m_iconWrapperDict.Values)
                         {
                             if (itw.Visible && itw.Texture != null)
                             {
-                                Rectangle iconRect = new Rectangle(new Point(0, 0), itw.Size);
-                                PointF devIconPos = new PointF(D3D.PresentationParameters.BackBufferWidth - devIconSize.Width * iconNumber, 0);
-                                _iconSprite.Begin(SpriteFlags.AlphaBlend);
-                                _iconSprite.Draw2D(
+                                var iconRect = new Rectangle(new Point(0, 0), itw.Size);
+                                var devIconPos = new PointF(D3D.PresentationParameters.BackBufferWidth - devIconSize.Width * iconNumber, 0);
+                                m_iconSprite.Begin(SpriteFlags.AlphaBlend);
+                                m_iconSprite.Draw2D(
                                    itw.Texture,
                                    iconRect,
                                    devIconSize,
                                    devIconPos,
                                    Color.FromArgb(255, 255, 255, 255));
-                                _iconSprite.End();
+                                m_iconSprite.End();
                                 iconNumber++;
                             }
                         }
@@ -257,60 +312,73 @@ namespace ZXMAK2.Controls
             }
         }
 
-        private unsafe void drawFrame(int* dstBuffer, int* srcBuffer)
+        private unsafe void drawFrame(int* pDstBuffer, int* pSrcBuffer)
         {
-            for (int y = 0; y < m_surfaceSize.Height; y++)
+            for (var y = 0; y < m_surfaceSize.Height; y++)
             {
-                int* srcLine = srcBuffer + m_surfaceSize.Width * y;
-                int* dstLine = dstBuffer + m_textureSize.Width * y;
-                for (int i = 0; i < m_surfaceSize.Width; i++)
+                var srcLine = pSrcBuffer + m_surfaceSize.Width * y;
+                var dstLine = pDstBuffer + m_textureSize.Width * y;
+                for (var i = 0; i < m_surfaceSize.Width; i++)
+                {
                     dstLine[i] = srcLine[i];
+                }
             }
         }
 
         private int[] m_lastBuffer = new int[0];
 
-        private unsafe void drawFrame_noflic(int* dstBuffer, int* srcBuffer)
+        private unsafe void drawFrame_noflic(int* pDstBuffer, int* pSrcBuffer)
         {
-            int size = m_surfaceSize.Height * m_surfaceSize.Width;
+            var size = m_surfaceSize.Height * m_surfaceSize.Width;
             if (m_lastBuffer.Length < size)
+            {
                 m_lastBuffer = new int[size];
-            fixed (int* srcBuffer2 = m_lastBuffer)
-                for (int y = 0; y < m_surfaceSize.Height; y++)
+            }
+            fixed (int* pSrcBuffer2 = m_lastBuffer)
+            {
+                for (var y = 0; y < m_surfaceSize.Height; y++)
                 {
-                    int surfaceOffset = m_surfaceSize.Width * y;
-                    int* pSrcArray1 = srcBuffer + surfaceOffset;
-                    int* pSrcArray2 = srcBuffer2 + surfaceOffset;
-                    int* pDstArray = dstBuffer + m_textureSize.Width * y;
-                    for (int i = 0; i < m_surfaceSize.Width; i++)
+                    var surfaceOffset = m_surfaceSize.Width * y;
+                    var pSrcArray1 = pSrcBuffer + surfaceOffset;
+                    var pSrcArray2 = pSrcBuffer2 + surfaceOffset;
+                    var pDstArray = pDstBuffer + m_textureSize.Width * y;
+                    for (var i = 0; i < m_surfaceSize.Width; i++)
                     {
-                        int src1 = pSrcArray1[i];
-                        int src2 = pSrcArray2[i];
-                        int r1 = (((src1 >> 16) & 0xFF) + ((src2 >> 16) & 0xFF)) / 2;
-                        int g1 = (((src1 >> 8) & 0xFF) + ((src2 >> 8) & 0xFF)) / 2;
-                        int b1 = (((src1 >> 0) & 0xFF) + ((src2 >> 0) & 0xFF)) / 2;
+                        var src1 = pSrcArray1[i];
+                        var src2 = pSrcArray2[i];
+                        var r1 = (((src1 >> 16) & 0xFF) + ((src2 >> 16) & 0xFF)) / 2;
+                        var g1 = (((src1 >> 8) & 0xFF) + ((src2 >> 8) & 0xFF)) / 2;
+                        var b1 = (((src1 >> 0) & 0xFF) + ((src2 >> 0) & 0xFF)) / 2;
                         pSrcArray2[i] = src1;
                         pDstArray[i] = -16777216 | (r1 << 16) | (g1 << 8) | b1;
                     }
                 }
+            }
         }
 
         private static int getPotSize(Size surfaceSize)
         {
             // Create POT texture (e.g. 512x512) to render NPOT image (e.g. 320x240),
             // because NPOT textures is not supported on some videocards
-            int size = surfaceSize.Width > surfaceSize.Height ? surfaceSize.Width : surfaceSize.Height;
-            int potSize;
-            for (int power = 1; (potSize = pow(2, power)) < size; power++) ;
+            var size = surfaceSize.Width > surfaceSize.Height ?
+                surfaceSize.Width :
+                surfaceSize.Height;
+            var potSize = 0;
+            for (var power = 1; potSize < size; power++)
+            {
+                potSize = pow(2, power);
+            }
             return potSize;
         }
 
         private static int pow(int value, int power)
         {
-            int result = value;
-            for (int i = 0; i < power; i++)
+            var result = value;
+            for (var i = 0; i < power; i++)
+            {
                 result *= value;
-            return result;// 65535;
+            }
+            return result;
         }
 
         private int m_debugFrameStart = 0;
@@ -355,6 +423,13 @@ namespace ZXMAK2.Controls
                 }
             }
         }
+    }
+
+    public enum ScaleMode
+    {
+        Stretch = 0,
+        KeepProportion,
+        FixedPixelSize,
     }
 
     internal class IconTextureWrapper : IDisposable
