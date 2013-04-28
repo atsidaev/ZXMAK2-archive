@@ -265,7 +265,7 @@ namespace ZXMAK2.Hardware
             {
                 for (var j = 0; j < RomPages[i].Length; j++)
                 {
-                    m_romImages[i][j] = 0xFF;
+                    RomPages[i][j] = 0xFF;
                 }
             }
             LoadRomPack("Default");
