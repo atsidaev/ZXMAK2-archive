@@ -749,7 +749,6 @@ namespace ZXMAK2.Controls
             {
                 LogAgent.Error(ex);
             }
-            ClientSize = new Size(640, 480);
         }
 
         private void saveRenderSetting()
