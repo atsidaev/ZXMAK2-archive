@@ -67,8 +67,8 @@ namespace ZXMAK2.Hardware.ZXBYTE
             timing.c_ulaBorder4T = true;
             timing.c_ulaBorder4Tstage = 0;
 
-            timing.c_ulaBorderTop = 24;
-            timing.c_ulaBorderBottom = 24;
+            timing.c_ulaBorderTop = 32;
+            timing.c_ulaBorderBottom = 32;
             timing.c_ulaBorderLeftT = 16;
             timing.c_ulaBorderRightT = 16;
 

@@ -117,15 +117,15 @@ namespace ZXMAK2.Hardware.Profi
             // Visible Size:        640 x 240 (64+512+64 x 0+240+0)
             // SYNCGEN: SAMX6 (original)
             var timing = SpectrumRenderer.CreateParams();
+            timing.c_frameTactCount = 69888;	// 59904 for profi mode (312x192)
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 56;
-            timing.c_ulaFirstPaperTact = 42;
-            timing.c_frameTactCount = 69888;	// 59904 for profi mode (312x192)
+            timing.c_ulaFirstPaperTact = 39;//42;
             timing.c_ulaBorder4T = false;   // TODO: check?
             timing.c_ulaBorder4Tstage = 1;  // TODO: check?
 
-            timing.c_ulaBorderTop = 24;
-            timing.c_ulaBorderBottom = 24;
+            timing.c_ulaBorderTop = 32;
+            timing.c_ulaBorderBottom = 32;
             timing.c_ulaBorderLeftT = 16;
             timing.c_ulaBorderRightT = 16;
 

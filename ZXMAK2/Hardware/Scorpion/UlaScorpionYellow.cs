@@ -28,16 +28,16 @@ namespace ZXMAK2.Hardware.Scorpion
             timing.c_frameTactCount = 69888;//+
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 64;
-            timing.c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
+            timing.c_ulaFirstPaperTact = 61;// 64;      // 64 [40sync+24border+128scr+32border]
             timing.c_ulaBorder4T = true;
-            timing.c_ulaBorder4Tstage = 3;
+            timing.c_ulaBorder4Tstage = 0;
 
-            timing.c_ulaBorderTop = 24;//64;
-            timing.c_ulaBorderBottom = 24;// 40;
+            timing.c_ulaBorderTop = 32;//64;
+            timing.c_ulaBorderBottom = 32;// 40;
             timing.c_ulaBorderLeftT = 16;// 24;  //24
             timing.c_ulaBorderRightT = 16;// 24; //32
 
-            timing.c_ulaIntBegin = 64 - 3;
+            timing.c_ulaIntBegin = 61;
             timing.c_ulaIntLength = 32;    // according to fuse
 
             timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 128 + timing.c_ulaBorderRightT) * 2;

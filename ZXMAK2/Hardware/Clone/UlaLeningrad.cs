@@ -40,10 +40,10 @@ namespace ZXMAK2.Hardware.Clone
             timing.c_frameTactCount = 69888;   // +
             timing.c_ulaLineTime = 224;        // +
             timing.c_ulaFirstPaperLine = 64;   // +
-            timing.c_ulaFirstPaperTact = 64;
+            timing.c_ulaFirstPaperTact = 61;//64;
 
-            timing.c_ulaBorderTop = 24;// 48;
-            timing.c_ulaBorderBottom = 24;// 48;
+            timing.c_ulaBorderTop = 32;// 48;
+            timing.c_ulaBorderBottom = 32;// 48;
             timing.c_ulaBorderLeftT = 16;// 32;      // +
             timing.c_ulaBorderRightT = 16;// 32;     // +
 

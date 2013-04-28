@@ -17,14 +17,14 @@ namespace ZXMAK2.Hardware.Pentagon
             timing.c_frameTactCount = 71680;
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 80;
-            timing.c_ulaFirstPaperTact = 68;      // 68 [32sync+36border+128scr+28border]
+            timing.c_ulaFirstPaperTact = 65;// 68;      // 68 [32sync+36border+128scr+28border]
             timing.c_ulaBorder4T = false;   // TODO: check?
             timing.c_ulaBorder4Tstage = 1;  // TODO: check?
 
-            timing.c_ulaBorderTop = 24;//64;
-            timing.c_ulaBorderBottom = 24;//48;
-            timing.c_ulaBorderLeftT = 16;//28; //36;
-            timing.c_ulaBorderRightT = 16;// 28;
+            timing.c_ulaBorderTop = 32;
+            timing.c_ulaBorderBottom = 32;
+            timing.c_ulaBorderLeftT = 16;
+            timing.c_ulaBorderRightT = 16;
 
             timing.c_ulaIntBegin = 0;
             timing.c_ulaIntLength = 32;

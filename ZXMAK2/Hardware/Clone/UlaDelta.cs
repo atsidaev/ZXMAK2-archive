@@ -55,11 +55,11 @@ namespace ZXMAK2.Hardware.Clone
             var timing = SpectrumRenderer.CreateParams();
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 68;
-            timing.c_ulaFirstPaperTact = 68;
+            timing.c_ulaFirstPaperTact = 65;// 68;
             timing.c_frameTactCount = 69216;//69888;
 
-            timing.c_ulaBorderTop = 64;
-            timing.c_ulaBorderBottom = 48;
+            timing.c_ulaBorderTop = 32;
+            timing.c_ulaBorderBottom = 32;
             timing.c_ulaBorderLeftT = 24;
             timing.c_ulaBorderRightT = 24;
 

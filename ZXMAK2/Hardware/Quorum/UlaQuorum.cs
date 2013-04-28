@@ -18,11 +18,11 @@ namespace ZXMAK2.Hardware.Quorum
             var timing = SpectrumRenderer.CreateParams();
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 80;      // proof???80
-            timing.c_ulaFirstPaperTact = 68;      // proof???68 [32sync+36border+128scr+28border]
+            timing.c_ulaFirstPaperTact = 65;// 68;      // proof???68 [32sync+36border+128scr+28border]
             timing.c_frameTactCount = 69888;      // for pentagon mod = 71680
 
-            timing.c_ulaBorderTop = 24;//64;
-            timing.c_ulaBorderBottom = 24;//40;
+            timing.c_ulaBorderTop = 32;//64;
+            timing.c_ulaBorderBottom = 32;//40;
             timing.c_ulaBorderLeftT = 16;
             timing.c_ulaBorderRightT = 16;
 
