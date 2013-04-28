@@ -14,10 +14,10 @@ namespace ZXMAK2.Hardware.Pentagon
             // Total Size:          448 x 320
             // Visible Size:        384 x 304 (72+256+56 x 64+192+48)
             var timing = SpectrumRenderer.CreateParams();
+            timing.c_frameTactCount = 71680;
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 80;
             timing.c_ulaFirstPaperTact = 68;      // 68 [32sync+36border+128scr+28border]
-            timing.c_frameTactCount = 71680;
             timing.c_ulaBorder4T = false;   // TODO: check?
             timing.c_ulaBorder4Tstage = 1;  // TODO: check?
 
