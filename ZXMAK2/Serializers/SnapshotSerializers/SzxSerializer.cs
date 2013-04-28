@@ -9,63 +9,63 @@ using ZXMAK2.Engine;
 
 namespace ZXMAK2.Serializers.SnapshotSerializers
 {
-	public class SzxSerializer : SnapshotSerializerBase
-	{
-		public SzxSerializer(SpectrumBase spec)
+    public class SzxSerializer : SnapshotSerializerBase
+    {
+        public SzxSerializer(SpectrumBase spec)
             : base(spec)
-		{
-		}
+        {
+        }
 
-		#region FormatSerializer
+        #region FormatSerializer
 
-		public override string FormatExtension { get { return "SZX"; } }
+        public override string FormatExtension { get { return "SZX"; } }
 
-		public override bool CanDeserialize { get { return true; } }
-		public override bool CanSerialize { get { return true; } }
+        public override bool CanDeserialize { get { return true; } }
+        public override bool CanSerialize { get { return true; } }
 
-		public override void Deserialize(Stream stream)
-		{
-			loadFromStream(stream);
-			UpdateState();
-		}
+        public override void Deserialize(Stream stream)
+        {
+            loadFromStream(stream);
+            UpdateState();
+        }
 
-		public override void Serialize(Stream stream)
-		{
-			saveToStream(stream);
-		}
+        public override void Serialize(Stream stream)
+        {
+            saveToStream(stream);
+        }
 
-		#endregion
+        #endregion
 
-		#region Load
+        #region Load
 
-		private void loadFromStream(Stream stream)
-		{
-			ZXST_Header header = new ZXST_Header();
-			header.Deserialize(stream);
+        private void loadFromStream(Stream stream)
+        {
+            ZXST_Header header = new ZXST_Header();
+            header.Deserialize(stream);
 
-			if (header.MajorVersion != 1)
-				throw new NotSupportedException(string.Format("Sorry, but MajorVersion={0} is not supported", header.MajorVersion));
+            if (header.MajorVersion != 1)
+                throw new NotSupportedException(string.Format("Sorry, but MajorVersion={0} is not supported", header.MajorVersion));
 
             //int num = 0;
 
-			InitStd128K();
-			bool eof = false;
-			do
-			{
-				byte[] data = new byte[8];
-				eof |= stream.Read(data, 0, data.Length) != data.Length;
-				
-				UInt32 id = BitConverter.ToUInt32(data, 0);
-				UInt32 size = BitConverter.ToUInt32(data, 4);
-				data = new byte[size];
-				eof |= stream.Read(data, 0, data.Length) != data.Length;
+            InitStd128K();
+            bool eof = false;
+            do
+            {
+                byte[] data = new byte[8];
+                eof |= stream.Read(data, 0, data.Length) != data.Length;
+
+                UInt32 id = BitConverter.ToUInt32(data, 0);
+                UInt32 size = BitConverter.ToUInt32(data, 4);
+                data = new byte[size];
+                eof |= stream.Read(data, 0, data.Length) != data.Length;
 
                 if (!eof)
                 {
                     string strId = Encoding.ASCII.GetString(BitConverter.GetBytes(id));
                     //using (FileStream fs = new FileStream((num++).ToString("D2")+"_" + strId.Replace('\0', '_') + ".block", FileMode.Create, FileAccess.Write, FileShare.Read))
                     //    fs.Write(data, 0, data.Length);
-                    
+
                     switch (strId)
                     {
                         case "Z80R":
@@ -90,48 +90,48 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                             break;
                     }
                 }
-			}
-			while (!eof);
-		}
+            }
+            while (!eof);
+        }
 
         #region Z80R
 
         private const int ZXSTZF_EILAST = 1;
-		private const int ZXSTZF_HALTED = 2;
+        private const int ZXSTZF_HALTED = 2;
 
-		#region Comment
-		/// <summary>
-		/// ZXSTZ80REGS
-		/// </summary>
-		#endregion
-		private void apply_Z80R(byte[] data)
-		{
-			int offset = 0;
-			_spec.CPU.regs.AF = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs.BC = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs.DE = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs.HL = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs._AF = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs._BC = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs._DE = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs._HL = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs.IX = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs.IY = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs.SP = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs.PC = BitConverter.ToUInt16(data, offset); offset += 2;
-			_spec.CPU.regs.I = data[offset]; offset += 1;
-			_spec.CPU.regs.R = data[offset]; offset += 1;
-			_spec.CPU.IFF1 = data[offset] != 0; offset += 1;
-			_spec.CPU.IFF2 = data[offset] != 0; offset += 1;
-			_spec.CPU.IM = data[offset]; offset += 1;
-			SetFrameTact(BitConverter.ToInt32(data, offset)); offset += 4;
-			byte holdIntReqCycles = data[offset]; offset += 1;	// interrupt active tact counter
-			byte flags = data[offset]; offset += 1;
-			_spec.CPU.regs.MW = BitConverter.ToUInt16(data, offset); offset += 1;	   // appears in v1.4!
+        #region Comment
+        /// <summary>
+        /// ZXSTZ80REGS
+        /// </summary>
+        #endregion
+        private void apply_Z80R(byte[] data)
+        {
+            int offset = 0;
+            _spec.CPU.regs.AF = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs.BC = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs.DE = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs.HL = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs._AF = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs._BC = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs._DE = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs._HL = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs.IX = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs.IY = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs.SP = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs.PC = BitConverter.ToUInt16(data, offset); offset += 2;
+            _spec.CPU.regs.I = data[offset]; offset += 1;
+            _spec.CPU.regs.R = data[offset]; offset += 1;
+            _spec.CPU.IFF1 = data[offset] != 0; offset += 1;
+            _spec.CPU.IFF2 = data[offset] != 0; offset += 1;
+            _spec.CPU.IM = data[offset]; offset += 1;
+            SetFrameTact(BitConverter.ToInt32(data, offset)); offset += 4;
+            byte holdIntReqCycles = data[offset]; offset += 1;	// interrupt active tact counter
+            byte flags = data[offset]; offset += 1;
+            _spec.CPU.regs.MW = BitConverter.ToUInt16(data, offset); offset += 1;	   // appears in v1.4!
 
-			_spec.CPU.BINT = (flags & ZXSTZF_EILAST) != 0;
-			_spec.CPU.HALTED = (flags & ZXSTZF_HALTED) != 0;
-		}
+            _spec.CPU.BINT = (flags & ZXSTZF_EILAST) != 0;
+            _spec.CPU.HALTED = (flags & ZXSTZF_HALTED) != 0;
+        }
 
         #endregion
 
@@ -139,26 +139,26 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         #region Comment
         /// <summary>
-		/// ZXSTSPECREGS - The Spectrum's ULA state specifying the current border colour, memory paging status etc.
-		/// </summary>
-		#endregion
+        /// ZXSTSPECREGS - The Spectrum's ULA state specifying the current border colour, memory paging status etc.
+        /// </summary>
+        #endregion
         private void apply_SPCR(byte[] data, ZXST_Header header)
-		{
-			int offset = 0;
-			byte chBorder = data[offset]; offset += 1;
-			byte ch7ffd = data[offset]; offset += 1;
-			byte ch1ffd = data[offset]; offset += 1;		   // #1ffd/#effd
-			byte chFe = data[offset]; offset += 1;			   // Only bits 3 and 4 (the MIC and EAR bits) are guaranteed to be valid.
-			//byte[] chReserved = new byte[4];
-			//for (int i = 0; i < 4; i++)
-			//    chReserved[i] = data[i + offset];
+        {
+            int offset = 0;
+            byte chBorder = data[offset]; offset += 1;
+            byte ch7ffd = data[offset]; offset += 1;
+            byte ch1ffd = data[offset]; offset += 1;		   // #1ffd/#effd
+            byte chFe = data[offset]; offset += 1;			   // Only bits 3 and 4 (the MIC and EAR bits) are guaranteed to be valid.
+            //byte[] chReserved = new byte[4];
+            //for (int i = 0; i < 4; i++)
+            //    chReserved[i] = data[i + offset];
 
             byte pFE = (byte)((chFe & 0xF8) | (chBorder & 7));
 
             var ula = _spec.BusManager.FindDevice<IUlaDevice>();
             var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
             ula.PortFE = pFE;
-            switch(header.MachineId)
+            switch (header.MachineId)
             {
                 case MachineId.ZXSTMID_16K:
                 case MachineId.ZXSTMID_48K:
@@ -166,11 +166,11 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                     memory.CMR1 = 0;
                     break;
                 default:
-                    memory.CMR0 =   ch7ffd;
+                    memory.CMR0 = ch7ffd;
                     memory.CMR1 = ch1ffd;
                     break;
             }
-		}
+        }
 
         #endregion
 
@@ -178,25 +178,25 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         private const int ZXSTRF_COMPRESSED = 1;
 
-		#region Comment
-		/// <summary>
-		/// ZXSTRAMPAGE - 16KB RAM page blocks, depending on the specific Spectrum model.
-		/// </summary>
-		#endregion
-		private void apply_RAMP(byte[] data)
-		{
-			int offset = 0;
-			UInt16 wFlags = BitConverter.ToUInt16(data, offset); offset += 2;
-			byte chPageNo = data[offset]; offset += 1;
+        #region Comment
+        /// <summary>
+        /// ZXSTRAMPAGE - 16KB RAM page blocks, depending on the specific Spectrum model.
+        /// </summary>
+        #endregion
+        private void apply_RAMP(byte[] data)
+        {
+            int offset = 0;
+            UInt16 wFlags = BitConverter.ToUInt16(data, offset); offset += 2;
+            byte chPageNo = data[offset]; offset += 1;
 
             var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
-			if (chPageNo >= memory.RamPages.Length)
-			{
-				LogAgent.Warn(
-                    "SzxSerializer: skip block 'RAMP' chPageNo={0} (incompatible)", 
+            if (chPageNo >= memory.RamPages.Length)
+            {
+                LogAgent.Warn(
+                    "SzxSerializer: skip block 'RAMP' chPageNo={0} (incompatible)",
                     chPageNo);
-				return;
-			}
+                return;
+            }
             byte[] chData = new byte[data.Length - offset];
             for (int i = 0; i < chData.Length; i++)
             {
@@ -221,37 +221,37 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             {
                 memory.RamPages[chPageNo][i] = chData[i];
             }
-		}
+        }
 
         #endregion
 
         #region AY
 
         private const int ZXSTAYF_FULLERBOX = 1;
-		private const int ZXSTAYF_128AY = 2;
+        private const int ZXSTAYF_128AY = 2;
 
-		#region Comment
-		/// <summary>
-		/// ZXSTAYBLOCK - The state of the AY chip
-		/// </summary>
-		#endregion
-		private void apply_AY(byte[] data)
-		{
-			int offset = 0;
-			byte chFlags = data[offset]; offset += 1;
-			byte chCurrentRegister = data[offset]; offset += 1;
+        #region Comment
+        /// <summary>
+        /// ZXSTAYBLOCK - The state of the AY chip
+        /// </summary>
+        #endregion
+        private void apply_AY(byte[] data)
+        {
+            int offset = 0;
+            byte chFlags = data[offset]; offset += 1;
+            byte chCurrentRegister = data[offset]; offset += 1;
 
             var aydev = _spec.BusManager.FindDevice<IAyDevice>();
             if (aydev != null)
-			{
-				for (int i = 0; i < 16; i++)
-				{
-					aydev.ADDR_REG = (byte)i;
-					aydev.DATA_REG = data[i + offset];
-				}
-				aydev.ADDR_REG = chCurrentRegister;
-			}
-		}
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    aydev.ADDR_REG = (byte)i;
+                    aydev.DATA_REG = data[i + offset];
+                }
+                aydev.ADDR_REG = chCurrentRegister;
+            }
+        }
 
         #endregion
 
@@ -282,7 +282,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                 byte chSectorReg = data[offset]; offset += 1;
                 byte chDataReg = data[offset]; offset += 1;
                 byte chStatusReg = data[offset]; offset += 1;
-                byte[] chRomData = new byte[data.Length-offset];
+                byte[] chRomData = new byte[data.Length - offset];
                 for (int i = 0; i < chRomData.Length; i++)
                     chRomData[i] = data[i + offset];
 
@@ -308,28 +308,36 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
         #region Save
 
         private void saveToStream(Stream stream)
-		{
-			var header = new ZXST_Header();
+        {
+            var header = new ZXST_Header();
 
-			// very ugly, because there is no option for custom configuration machine
+            // very ugly, because there is no option for custom configuration machine
             var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
-			header.MachineId = MachineId.ZXSTMID_128K;
-			if (memory is ZXMAK2.Hardware.Spectrum.MemoryPlus3)
-			{	
-				header.MachineId = MachineId.ZXSTMID_PLUS3;
-			}
-			else if (memory.RamPages.Length != 8)
-			{
-				header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
-				if (memory is ZXMAK2.Hardware.Pentagon.MemoryPentagon512)
-					header.MachineId = MachineId.ZXSTMID_PENTAGON512;
-				else if (memory is ZXMAK2.Hardware.Pentagon.MemoryPentagon1024)
-					header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
-				else if (memory is ZXMAK2.Hardware.Scorpion.MemoryScorpion1024)
-					header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
-				else if (memory is ZXMAK2.Hardware.Scorpion.MemoryScorpion256)
-					header.MachineId = MachineId.ZXSTMID_SCORPION;
-			}
+            header.MachineId = MachineId.ZXSTMID_128K;
+            if (memory is ZXMAK2.Hardware.Pentagon.MemoryPentagon128)
+            {
+                header.MachineId = MachineId.ZXSTMID_PENTAGON128;
+            }
+            else if (memory is ZXMAK2.Hardware.Spectrum.MemorySpectrum128)
+            {
+                header.MachineId = MachineId.ZXSTMID_128K;
+            }
+            else if (memory is ZXMAK2.Hardware.Spectrum.MemoryPlus3)
+            {
+                header.MachineId = MachineId.ZXSTMID_PLUS3;
+            }
+            else if (memory.RamPages.Length != 8)
+            {
+                header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
+                if (memory is ZXMAK2.Hardware.Pentagon.MemoryPentagon512)
+                    header.MachineId = MachineId.ZXSTMID_PENTAGON512;
+                else if (memory is ZXMAK2.Hardware.Pentagon.MemoryPentagon1024)
+                    header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
+                else if (memory is ZXMAK2.Hardware.Scorpion.MemoryScorpion1024)
+                    header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
+                else if (memory is ZXMAK2.Hardware.Scorpion.MemoryScorpion256)
+                    header.MachineId = MachineId.ZXSTMID_SCORPION;
+            }
             else if (memory.IsMap48)
             {
                 header.MachineId = MachineId.ZXSTMID_48K;
@@ -340,20 +348,20 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             {
                 header.Flags = (byte)(header.Flags & ~ZXSTMF_ALTERNATETIMINGS);
             }
-			header.Serialize(stream);
+            header.Serialize(stream);
 
             save_CRTR(stream);
-			save_Z80R(stream);
-			save_SPCR(stream, header);
+            save_Z80R(stream);
+            save_SPCR(stream, header);
             switch (header.MachineId)
             {
                 case MachineId.ZXSTMID_16K:
                     save_RAMP(stream, 5, memory.RamPages[memory.Map48[1]]);
                     break;
                 case MachineId.ZXSTMID_48K:
-					save_RAMP(stream, 5, memory.RamPages[memory.Map48[1]]);
-					save_RAMP(stream, 2, memory.RamPages[memory.Map48[2]]);
-					save_RAMP(stream, 0, memory.RamPages[memory.Map48[3]]);
+                    save_RAMP(stream, 5, memory.RamPages[memory.Map48[1]]);
+                    save_RAMP(stream, 2, memory.RamPages[memory.Map48[2]]);
+                    save_RAMP(stream, 0, memory.RamPages[memory.Map48[3]]);
                     break;
                 default:
                     for (int i = 0; i < memory.RamPages.Length; i++)
@@ -362,7 +370,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             }
             save_AY(stream);
             save_B128(stream);
-		}
+        }
 
         private void save_CRTR(Stream stream)
         {
@@ -381,7 +389,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                 StreamHelper.Write(ms, chData);
 
                 byte[] blockData = ms.ToArray();
-                
+
                 StreamHelper.Write(stream, Encoding.ASCII.GetBytes("CRTR"));
                 int size = blockData.Length;
                 StreamHelper.Write(stream, size);
@@ -389,44 +397,44 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             }
         }
 
-		private void save_Z80R(Stream stream)
-		{
-			StreamHelper.Write(stream, Encoding.ASCII.GetBytes("Z80R"));
-			int size = 37;
-			StreamHelper.Write(stream, size);
+        private void save_Z80R(Stream stream)
+        {
+            StreamHelper.Write(stream, Encoding.ASCII.GetBytes("Z80R"));
+            int size = 37;
+            StreamHelper.Write(stream, size);
 
-			StreamHelper.Write(stream, _spec.CPU.regs.AF);
-			StreamHelper.Write(stream, _spec.CPU.regs.BC);
-			StreamHelper.Write(stream, _spec.CPU.regs.DE);
-			StreamHelper.Write(stream, _spec.CPU.regs.HL);
-			StreamHelper.Write(stream, _spec.CPU.regs._AF);
-			StreamHelper.Write(stream, _spec.CPU.regs._BC);
-			StreamHelper.Write(stream, _spec.CPU.regs._DE);
-			StreamHelper.Write(stream, _spec.CPU.regs._HL);
-			StreamHelper.Write(stream, _spec.CPU.regs.IX);
-			StreamHelper.Write(stream, _spec.CPU.regs.IY);
-			StreamHelper.Write(stream, _spec.CPU.regs.SP);
-			StreamHelper.Write(stream, _spec.CPU.regs.PC);
-			StreamHelper.Write(stream, _spec.CPU.regs.I);
-			StreamHelper.Write(stream, _spec.CPU.regs.R);
-			StreamHelper.Write(stream, (byte)(_spec.CPU.IFF1 ? 1 : 0));
-			StreamHelper.Write(stream, (byte)(_spec.CPU.IFF2 ? 1 : 0));
-			StreamHelper.Write(stream, _spec.CPU.IM);
-			StreamHelper.Write(stream, (int)base.GetFrameTact());
-			byte holdIntReqCycles = 0;
-			StreamHelper.Write(stream, holdIntReqCycles);
-			byte flags = (byte)(
-				(_spec.CPU.BINT? ZXSTZF_EILAST:0) |
-				(_spec.CPU.HALTED? ZXSTZF_HALTED:0));
-			StreamHelper.Write(stream, flags);
-			StreamHelper.Write(stream, _spec.CPU.regs.MW);
-		}
+            StreamHelper.Write(stream, _spec.CPU.regs.AF);
+            StreamHelper.Write(stream, _spec.CPU.regs.BC);
+            StreamHelper.Write(stream, _spec.CPU.regs.DE);
+            StreamHelper.Write(stream, _spec.CPU.regs.HL);
+            StreamHelper.Write(stream, _spec.CPU.regs._AF);
+            StreamHelper.Write(stream, _spec.CPU.regs._BC);
+            StreamHelper.Write(stream, _spec.CPU.regs._DE);
+            StreamHelper.Write(stream, _spec.CPU.regs._HL);
+            StreamHelper.Write(stream, _spec.CPU.regs.IX);
+            StreamHelper.Write(stream, _spec.CPU.regs.IY);
+            StreamHelper.Write(stream, _spec.CPU.regs.SP);
+            StreamHelper.Write(stream, _spec.CPU.regs.PC);
+            StreamHelper.Write(stream, _spec.CPU.regs.I);
+            StreamHelper.Write(stream, _spec.CPU.regs.R);
+            StreamHelper.Write(stream, (byte)(_spec.CPU.IFF1 ? 1 : 0));
+            StreamHelper.Write(stream, (byte)(_spec.CPU.IFF2 ? 1 : 0));
+            StreamHelper.Write(stream, _spec.CPU.IM);
+            StreamHelper.Write(stream, (int)base.GetFrameTact());
+            byte holdIntReqCycles = 0;
+            StreamHelper.Write(stream, holdIntReqCycles);
+            byte flags = (byte)(
+                (_spec.CPU.BINT ? ZXSTZF_EILAST : 0) |
+                (_spec.CPU.HALTED ? ZXSTZF_HALTED : 0));
+            StreamHelper.Write(stream, flags);
+            StreamHelper.Write(stream, _spec.CPU.regs.MW);
+        }
 
         private void save_SPCR(Stream stream, ZXST_Header header)
-		{
-			StreamHelper.Write(stream, Encoding.ASCII.GetBytes("SPCR"));
-			int size = 8;
-			StreamHelper.Write(stream, size);
+        {
+            StreamHelper.Write(stream, Encoding.ASCII.GetBytes("SPCR"));
+            int size = 8;
+            StreamHelper.Write(stream, size);
 
             var ula = _spec.BusManager.FindDevice<IUlaDevice>();
             var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
@@ -441,18 +449,18 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                     cmr1 = 0x00;
                     break;
             }
-            StreamHelper.Write(stream, (byte)(ula.PortFE&7));				// chBorder
+            StreamHelper.Write(stream, (byte)(ula.PortFE & 7));				// chBorder
             StreamHelper.Write(stream, (byte)(cmr0));			            // ch7ffd
-			StreamHelper.Write(stream, (byte)(cmr1));				        // ch1ffd  TODO: port 1ffd/effd
-			StreamHelper.Write(stream, (byte)(ula.PortFE & 0xF8));			// chFe
-			StreamHelper.Write(stream, new byte[4]);						// chReserved[4]
-		}
+            StreamHelper.Write(stream, (byte)(cmr1));				        // ch1ffd  TODO: port 1ffd/effd
+            StreamHelper.Write(stream, (byte)(ula.PortFE & 0xF8));			// chFe
+            StreamHelper.Write(stream, new byte[4]);						// chReserved[4]
+        }
 
         private void save_RAMP(Stream stream, byte chPageNo, byte[] chData)
-		{
+        {
             var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
 
-			UInt16 wFlags = 0;
+            UInt16 wFlags = 0;
 
             using (var ms = new MemoryStream())
             {
@@ -468,14 +476,14 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                 }
             }
 
-			StreamHelper.Write(stream, Encoding.ASCII.GetBytes("RAMP"));
-			int size = 3 + chData.Length;
-			StreamHelper.Write(stream, size);
+            StreamHelper.Write(stream, Encoding.ASCII.GetBytes("RAMP"));
+            int size = 3 + chData.Length;
+            StreamHelper.Write(stream, size);
 
-			StreamHelper.Write(stream, wFlags);
-			StreamHelper.Write(stream, chPageNo);
-			StreamHelper.Write(stream, chData);
-		}
+            StreamHelper.Write(stream, wFlags);
+            StreamHelper.Write(stream, chPageNo);
+            StreamHelper.Write(stream, chData);
+        }
 
         private void save_AY(Stream stream)
         {
@@ -507,7 +515,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             {
                 int dwFlags =
                     (betaDisk.DOSEN ? ZXSTBETAF_PAGED : 0);
-                
+
                 byte chNumDrives = 0;
                 byte chSysReg = 0x3f;
                 byte chTrackReg = 0;
@@ -548,163 +556,163 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             }
         }
 
-		#endregion
+        #endregion
 
-		#region Struct
+        #region Struct
 
-		private enum MachineId : byte
-		{
-			ZXSTMID_16K         = 0,
-			ZXSTMID_48K         = 1,
-			ZXSTMID_128K        = 2,
-			ZXSTMID_PLUS2       = 3,
-			ZXSTMID_PLUS2A      = 4,
-			ZXSTMID_PLUS3       = 5,
-			ZXSTMID_PLUS3E      = 6,
-			ZXSTMID_PENTAGON128 = 7,
-			ZXSTMID_TC2048      = 8,
-			ZXSTMID_TC2068      = 9,
-			ZXSTMID_SCORPION    = 10,
-			ZXSTMID_SE          = 11,
-			ZXSTMID_TS2068      = 12,
-			ZXSTMID_PENTAGON512 = 13,
-			ZXSTMID_PENTAGON1024= 14,
-			ZXSTMID_NTSC48K     = 15,
-			ZXSTMID_128KE       = 16,			
-		}
+        private enum MachineId : byte
+        {
+            ZXSTMID_16K = 0,
+            ZXSTMID_48K = 1,
+            ZXSTMID_128K = 2,
+            ZXSTMID_PLUS2 = 3,
+            ZXSTMID_PLUS2A = 4,
+            ZXSTMID_PLUS3 = 5,
+            ZXSTMID_PLUS3E = 6,
+            ZXSTMID_PENTAGON128 = 7,
+            ZXSTMID_TC2048 = 8,
+            ZXSTMID_TC2068 = 9,
+            ZXSTMID_SCORPION = 10,
+            ZXSTMID_SE = 11,
+            ZXSTMID_TS2068 = 12,
+            ZXSTMID_PENTAGON512 = 13,
+            ZXSTMID_PENTAGON1024 = 14,
+            ZXSTMID_NTSC48K = 15,
+            ZXSTMID_128KE = 16,
+        }
 
-		private const int ZXSTMF_ALTERNATETIMINGS = 1;
+        private const int ZXSTMF_ALTERNATETIMINGS = 1;
 
-		private class ZXST_Header
-		{
-			public uint Magic = 0x5453585A;	// ZXST
-			public byte MajorVersion = 1;
-			public byte MinorVersion = 4;
-			public MachineId MachineId = MachineId.ZXSTMID_PENTAGON128;
-			public byte Flags = ZXSTMF_ALTERNATETIMINGS;					  // use late model
+        private class ZXST_Header
+        {
+            public uint Magic = 0x5453585A;	// ZXST
+            public byte MajorVersion = 1;
+            public byte MinorVersion = 4;
+            public MachineId MachineId = MachineId.ZXSTMID_PENTAGON128;
+            public byte Flags = ZXSTMF_ALTERNATETIMINGS;					  // use late model
 
-			public void Serialize(Stream stream)
-			{
-				StreamHelper.Write(stream, Magic);
-				StreamHelper.Write(stream, MajorVersion);
-				StreamHelper.Write(stream, MinorVersion);
-				StreamHelper.Write(stream, (byte)MachineId);
-				StreamHelper.Write(stream, Flags);
-			}
+            public void Serialize(Stream stream)
+            {
+                StreamHelper.Write(stream, Magic);
+                StreamHelper.Write(stream, MajorVersion);
+                StreamHelper.Write(stream, MinorVersion);
+                StreamHelper.Write(stream, (byte)MachineId);
+                StreamHelper.Write(stream, Flags);
+            }
 
-			public void Deserialize(Stream stream)
-			{
-				StreamHelper.Read(stream, out Magic);
-				StreamHelper.Read(stream, out MajorVersion);
-				StreamHelper.Read(stream, out MinorVersion);
-				byte mId;
-				StreamHelper.Read(stream, out mId);
-				MachineId = (MachineId)mId;
-				StreamHelper.Read(stream, out Flags);
-			}
-		}
+            public void Deserialize(Stream stream)
+            {
+                StreamHelper.Read(stream, out Magic);
+                StreamHelper.Read(stream, out MajorVersion);
+                StreamHelper.Read(stream, out MinorVersion);
+                byte mId;
+                StreamHelper.Read(stream, out mId);
+                MachineId = (MachineId)mId;
+                StreamHelper.Read(stream, out Flags);
+            }
+        }
 
-		#endregion
+        #endregion
 
         #region Links
 
         //http://stackoverflow.com/questions/70347/zlib-compatible-compression-streams
         //http://weblogs.asp.net/astopford/archive/2004/10/31/250092.aspx
 
-        
+
         #endregion
     }
 
     #region StreamHelper
     public static class StreamHelper
-	{
-		public static void Write(Stream stream, Int32 value)
-		{
-			byte[] data = BitConverter.GetBytes(value);
-			stream.Write(data, 0, data.Length);
-		}
+    {
+        public static void Write(Stream stream, Int32 value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            stream.Write(data, 0, data.Length);
+        }
 
-		public static void Write(Stream stream, UInt32 value)
-		{
-			byte[] data = BitConverter.GetBytes(value);
-			stream.Write(data, 0, data.Length);
-		}
+        public static void Write(Stream stream, UInt32 value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            stream.Write(data, 0, data.Length);
+        }
 
-		public static void Write(Stream stream, Int16 value)
-		{
-			byte[] data = BitConverter.GetBytes(value);
-			stream.Write(data, 0, data.Length);
-		}
+        public static void Write(Stream stream, Int16 value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            stream.Write(data, 0, data.Length);
+        }
 
-		public static void Write(Stream stream, UInt16 value)
-		{
-			byte[] data = BitConverter.GetBytes(value);
-			stream.Write(data, 0, data.Length);
-		}
+        public static void Write(Stream stream, UInt16 value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            stream.Write(data, 0, data.Length);
+        }
 
-		public static void Write(Stream stream, Byte value)
-		{
-			byte[] data = new byte[1];
-			data[0] = value;
-			stream.Write(data, 0, data.Length);
-		}
+        public static void Write(Stream stream, Byte value)
+        {
+            byte[] data = new byte[1];
+            data[0] = value;
+            stream.Write(data, 0, data.Length);
+        }
 
-		public static void Write(Stream stream, SByte value)
-		{
-			byte[] data = new byte[1];
-			data[0] = (byte)value;
-			stream.Write(data, 0, data.Length);
-		}
+        public static void Write(Stream stream, SByte value)
+        {
+            byte[] data = new byte[1];
+            data[0] = (byte)value;
+            stream.Write(data, 0, data.Length);
+        }
 
-		public static void Write(Stream stream, byte[] value)
-		{
-			stream.Write(value, 0, value.Length);
-		}
+        public static void Write(Stream stream, byte[] value)
+        {
+            stream.Write(value, 0, value.Length);
+        }
 
 
-		public static void Read(Stream stream, out Int32 value)
-		{
-			byte[] data = new byte[4];
-			stream.Read(data, 0, data.Length);
+        public static void Read(Stream stream, out Int32 value)
+        {
+            byte[] data = new byte[4];
+            stream.Read(data, 0, data.Length);
             //if (!BitConverter.IsLittleEndian)
             //    Array.Reverse(data);
-			value = BitConverter.ToInt32(data, 0);
-		}
+            value = BitConverter.ToInt32(data, 0);
+        }
 
-		public static void Read(Stream stream, out UInt32 value)
-		{
-			byte[] data = new byte[4];
-			stream.Read(data, 0, data.Length);
-			value = BitConverter.ToUInt32(data, 0);
-		}
+        public static void Read(Stream stream, out UInt32 value)
+        {
+            byte[] data = new byte[4];
+            stream.Read(data, 0, data.Length);
+            value = BitConverter.ToUInt32(data, 0);
+        }
 
-		public static void Read(Stream stream, out Int16 value)
-		{
-			byte[] data = new byte[2];
-			stream.Read(data, 0, data.Length);
-			value = BitConverter.ToInt16(data, 0);
-		}
+        public static void Read(Stream stream, out Int16 value)
+        {
+            byte[] data = new byte[2];
+            stream.Read(data, 0, data.Length);
+            value = BitConverter.ToInt16(data, 0);
+        }
 
-		public static void Read(Stream stream, out UInt16 value)
-		{
-			byte[] data = new byte[2];
-			stream.Read(data, 0, data.Length);
-			value = BitConverter.ToUInt16(data, 0);
-		}
+        public static void Read(Stream stream, out UInt16 value)
+        {
+            byte[] data = new byte[2];
+            stream.Read(data, 0, data.Length);
+            value = BitConverter.ToUInt16(data, 0);
+        }
 
-		public static void Read(Stream stream, out Byte value)
-		{
-			byte[] data = new byte[1];
-			stream.Read(data, 0, data.Length);
-			value = data[0];
-		}
+        public static void Read(Stream stream, out Byte value)
+        {
+            byte[] data = new byte[1];
+            stream.Read(data, 0, data.Length);
+            value = data[0];
+        }
 
-		public static void Read(Stream stream, out SByte value)
-		{
-			byte[] data = new byte[1];
-			stream.Read(data, 0, data.Length);
-			value = (sbyte)data[0];
-		}
+        public static void Read(Stream stream, out SByte value)
+        {
+            byte[] data = new byte[1];
+            stream.Read(data, 0, data.Length);
+            value = (sbyte)data[0];
+        }
 
         public static void Read(Stream stream, byte[] value)
         {
