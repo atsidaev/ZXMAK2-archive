@@ -795,6 +795,12 @@ namespace ZXMAK2.Controls
                         menuViewScaleModeKeepProportion.Checked = scaleMode == ScaleMode.KeepProportion;
                         menuViewScaleModeFixedPixelSize.Checked = scaleMode == ScaleMode.FixedPixelSize;
                     }
+                    else
+                    {
+                        menuViewScaleModeStretch.Checked = false;
+                        menuViewScaleModeKeepProportion.Checked = false;
+                        menuViewScaleModeFixedPixelSize.Checked = true;
+                    }
                     if (objSync != null && objSync is int)
                         menuViewVBlankSync.Checked = (int)objSync != 0;
                     if (objIcon != null && objIcon is int)
