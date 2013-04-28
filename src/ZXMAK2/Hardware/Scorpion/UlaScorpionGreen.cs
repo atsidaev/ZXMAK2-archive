@@ -26,7 +26,7 @@ namespace ZXMAK2.Hardware.Scorpion
             timing.c_ulaBorderLeftT = 16;
             timing.c_ulaBorderRightT = 16;
 
-            timing.c_ulaIntBegin = 64 - 3;
+            timing.c_ulaIntBegin = 61;
             timing.c_ulaIntLength = 32;    // according to fuse
 
             timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 128 + timing.c_ulaBorderRightT) * 2;
