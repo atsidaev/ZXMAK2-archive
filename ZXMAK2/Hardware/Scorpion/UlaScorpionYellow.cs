@@ -25,10 +25,10 @@ namespace ZXMAK2.Hardware.Scorpion
             // Total Size:          448 x 312
             // Visible Size:        320 x 240 (32+256+32 x 24+192+24)
             var timing = SpectrumRenderer.CreateParams();
+            timing.c_frameTactCount = 69888;//+
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 64;
             timing.c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
-            timing.c_frameTactCount = 69888;//+
             timing.c_ulaBorder4T = true;
             timing.c_ulaBorder4Tstage = 3;
 
