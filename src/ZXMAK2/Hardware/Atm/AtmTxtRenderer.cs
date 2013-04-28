@@ -217,12 +217,11 @@ namespace ZXMAK2.Hardware.Atm
             timing.c_ulaFirstPaperLine = 56;
             timing.c_ulaFirstPaperTact = 32;
 
-            timing.c_ulaBorderTop = 0;
-            timing.c_ulaBorderBottom = 0;
+            timing.c_ulaBorderTop = 20;
+            timing.c_ulaBorderBottom = 20;
             timing.c_ulaBorderLeftT = 0;
             timing.c_ulaBorderRightT = 0;
 
-            timing.c_ulaIntBegin = 0;
             timing.c_ulaIntLength = 32;
 
             timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 160 + timing.c_ulaBorderRightT) * 4;

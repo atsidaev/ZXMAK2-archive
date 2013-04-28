@@ -9,10 +9,12 @@ namespace ZXMAK2.Hardware
 {
     public class SpectrumRendererParams
     {
+        public int c_frameTactCount;
         public int c_ulaLineTime;
         public int c_ulaFirstPaperLine;
         public int c_ulaFirstPaperTact;
-        public int c_frameTactCount;
+        public bool c_ulaBorder4T;
+        public int c_ulaBorder4Tstage;
 
         public int c_ulaBorderTop;
         public int c_ulaBorderBottom;
@@ -21,9 +23,6 @@ namespace ZXMAK2.Hardware
 
         public int c_ulaIntBegin;
         public int c_ulaIntLength;
-
-        public bool c_ulaBorder4T;
-        public int c_ulaBorder4Tstage;
         public int c_ulaFlashPeriod;
 
         public int c_ulaWidth;
@@ -295,8 +294,8 @@ namespace ZXMAK2.Hardware
 
         public SpectrumRenderer()
         {
-            Params = CreateParams();
-            Palette = CreatePalette();
+            //Params = CreateParams();
+            //Palette = CreatePalette();
         }
 
         /// <summary>
@@ -308,17 +307,17 @@ namespace ZXMAK2.Hardware
             // Total Size:          448 x 320
             // Visible Size:        320 x 240 (32+256+32 x 24+192+24)
             var timing = new SpectrumRendererParams();
+            timing.c_frameTactCount = 71680;
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 80;
             timing.c_ulaFirstPaperTact = 68;      // 68 [32sync+36border+128scr+28border]
-            timing.c_frameTactCount = 71680;
             timing.c_ulaBorder4T = false;
             timing.c_ulaBorder4Tstage = 1;
 
-            timing.c_ulaBorderTop = 24;//64;
-            timing.c_ulaBorderBottom = 24;//48;
-            timing.c_ulaBorderLeftT = 16;//36;
-            timing.c_ulaBorderRightT = 16;//28;
+            timing.c_ulaBorderTop = 24;
+            timing.c_ulaBorderBottom = 24;
+            timing.c_ulaBorderLeftT = 16;
+            timing.c_ulaBorderRightT = 16;
 
             timing.c_ulaIntBegin = 0;
             timing.c_ulaIntLength = 32;
@@ -345,6 +344,16 @@ namespace ZXMAK2.Hardware
 
         public static void ValidateParams(SpectrumRendererParams timing)
         {
+            if (timing.c_ulaIntBegin <= -timing.c_frameTactCount ||
+                timing.c_ulaIntBegin >= timing.c_frameTactCount)
+            {
+                throw new ArgumentException("ulaIntBegin");
+            }
+            if (timing.c_ulaIntLength <= -timing.c_frameTactCount ||
+                timing.c_ulaIntLength >= timing.c_frameTactCount)
+            {
+                throw new ArgumentException("ulaIntLength");
+            }
             if (timing.c_ulaWidth != (timing.c_ulaBorderLeftT + 128 + timing.c_ulaBorderRightT) * 2 ||
                 timing.c_ulaHeight != (timing.c_ulaBorderTop + 192 + timing.c_ulaBorderBottom))
             {
@@ -356,7 +365,7 @@ namespace ZXMAK2.Hardware
             }
             if (timing.c_frameTactCount < timing.c_ulaLineTime * 192)
             {
-                throw new ArgumentException("frameTactCount");
+                throw new ArgumentException("frameTactCount/ulaLineTime");
             }
             //...
         }
@@ -364,182 +373,177 @@ namespace ZXMAK2.Hardware
         protected virtual void OnParamsChanged()
         {
             // rebuild tables...
-            int pitchWidth = Params.c_ulaWidth;
             m_ulaLineOffset = new int[Params.c_frameTactCount];
             m_ulaAddrBw = new int[Params.c_frameTactCount];
             m_ulaAddrAt = new int[Params.c_frameTactCount];
             m_ulaAction = new UlaAction[Params.c_frameTactCount];
 
-            int takt = 0;
-            for (int line = 0; line < Params.c_frameTactCount / Params.c_ulaLineTime; line++)
-                for (int pix = 0; pix < Params.c_ulaLineTime; pix++, takt++)
+            for (var tact = 0; tact < Params.c_frameTactCount; tact++)
+            {
+                var tactScreen = tact + Params.c_ulaIntBegin;
+                if (tactScreen < 0)
                 {
-                    if ((line >= (Params.c_ulaFirstPaperLine - Params.c_ulaBorderTop)) && (line < (Params.c_ulaFirstPaperLine + 192 + Params.c_ulaBorderBottom)) &&
-                        (pix >= (Params.c_ulaFirstPaperTact - Params.c_ulaBorderLeftT)) && (pix < (Params.c_ulaFirstPaperTact + 128 + Params.c_ulaBorderRightT)))
-                    {
-                        // visibleArea (vertical)
-                        if ((line >= Params.c_ulaFirstPaperLine) && (line < (Params.c_ulaFirstPaperLine + 192)) &&
-                            (pix >= Params.c_ulaFirstPaperTact) && (pix < (Params.c_ulaFirstPaperTact + 128)))
-                        {
-                            // paper
-                            int sx, sy, ap, vp;
-                            int scrPix = pix - Params.c_ulaFirstPaperTact;
-                            switch (scrPix & 7)
-                            {
-                                case 0:
-                                    m_ulaAction[takt] = UlaAction.Shift1AndFetchB2;   // shift 1 + fetch B2
-
-                                    sx = pix + 4 - Params.c_ulaFirstPaperTact;  // +4 = prefetch!
-                                    sy = line - Params.c_ulaFirstPaperLine;
-                                    sx >>= 2;
-                                    ap = sx | ((sy >> 3) << 5);
-                                    vp = sx | (sy << 5);
-                                    m_ulaAddrBw[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                                    //_ulaAddrAT[takt] = 6144 + ap;
-                                    break;
-                                case 1:
-                                    m_ulaAction[takt] = UlaAction.Shift1AndFetchA2;   // shift 1 + fetch A2
-
-                                    sx = pix + 3 - Params.c_ulaFirstPaperTact;  // +3 = prefetch!
-                                    sy = line - Params.c_ulaFirstPaperLine;
-                                    sx >>= 2;
-                                    ap = sx | ((sy >> 3) << 5);
-                                    vp = sx | (sy << 5);
-                                    //_ulaAddrBW[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                                    m_ulaAddrAt[takt] = 6144 + ap;
-                                    break;
-                                case 2:
-                                    m_ulaAction[takt] = UlaAction.Shift1;   // shift 1
-                                    break;
-                                case 3:
-                                    m_ulaAction[takt] = UlaAction.Shift1Last;   // shift 1 (last)
-                                    break;
-                                case 4:
-                                    m_ulaAction[takt] = UlaAction.Shift2;   // shift 2
-                                    break;
-                                case 5:
-                                    m_ulaAction[takt] = UlaAction.Shift2;   // shift 2
-                                    break;
-                                case 6:
-                                    if (pix < (Params.c_ulaFirstPaperTact + 128 - 2))
-                                    {
-                                        m_ulaAction[takt] = UlaAction.Shift2AndFetchB1;   // shift 2 + fetch B2
-                                    }
-                                    else
-                                    {
-                                        m_ulaAction[takt] = UlaAction.Shift2;             // shift 2
-                                    }
-
-                                    sx = pix + 2 - Params.c_ulaFirstPaperTact;  // +2 = prefetch!
-                                    sy = line - Params.c_ulaFirstPaperLine;
-                                    sx >>= 2;
-                                    ap = sx | ((sy >> 3) << 5);
-                                    vp = sx | (sy << 5);
-                                    m_ulaAddrBw[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                                    //_ulaAddrAT[takt] = 6144 + ap;
-                                    break;
-                                case 7:
-                                    if (pix < (Params.c_ulaFirstPaperTact + 128 - 2))
-                                    {
-                                        //???
-                                        m_ulaAction[takt] = UlaAction.Shift2AndFetchA1;   // shift 2 + fetch A2
-                                    }
-                                    else
-                                    {
-                                        m_ulaAction[takt] = UlaAction.Shift2;             // shift 2
-                                    }
-
-                                    sx = pix + 1 - Params.c_ulaFirstPaperTact;  // +1 = prefetch!
-                                    sy = line - Params.c_ulaFirstPaperLine;
-                                    sx >>= 2;
-                                    ap = sx | ((sy >> 3) << 5);
-                                    vp = sx | (sy << 5);
-                                    //_ulaAddrBW[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                                    m_ulaAddrAt[takt] = 6144 + ap;
-                                    break;
-                            }
-                        }
-                        else if ((line >= Params.c_ulaFirstPaperLine) && (line < (Params.c_ulaFirstPaperLine + 192)) &&
-                                 (pix == (Params.c_ulaFirstPaperTact - 2)))  // border & fetch B1
-                        {
-                            m_ulaAction[takt] = UlaAction.BorderAndFetchB1; // border & fetch B1
-
-                            int sx = pix + 2 - Params.c_ulaFirstPaperTact;  // +2 = prefetch!
-                            int sy = line - Params.c_ulaFirstPaperLine;
-                            sx >>= 2;
-                            int ap = sx | ((sy >> 3) << 5);
-                            int vp = sx | (sy << 5);
-                            m_ulaAddrBw[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                            //_ulaAddrAT[takt] = 6144 + ap;
-                        }
-                        else if ((line >= Params.c_ulaFirstPaperLine) && (line < (Params.c_ulaFirstPaperLine + 192)) &&
-                                 (pix == (Params.c_ulaFirstPaperTact - 1)))  // border & fetch A1
-                        {
-                            m_ulaAction[takt] = UlaAction.BorderAndFetchA1; // border & fetch A1
-
-                            int sx = pix + 1 - Params.c_ulaFirstPaperTact;  // +1 = prefetch!
-                            int sy = line - Params.c_ulaFirstPaperLine;
-                            sx >>= 2;
-                            int ap = sx | ((sy >> 3) << 5);
-                            int vp = sx | (sy << 5);
-                            //_ulaAddrBW[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                            m_ulaAddrAt[takt] = 6144 + ap;
-                        }
-                        else
-                        {
-                            m_ulaAction[takt] = UlaAction.Border; // border
-                        }
-
-                        int wy = line - (Params.c_ulaFirstPaperLine - Params.c_ulaBorderTop);
-                        int wx = (pix - (Params.c_ulaFirstPaperTact - Params.c_ulaBorderLeftT)) * 2;
-                        m_ulaLineOffset[takt] = wy * pitchWidth + wx;
-                        //(videoParams.LinePitch * (videoParams.Height - 240) / 2) + ((videoParams.Width - 320) / 2); // if texture size > 320x240 -> center image 
-                    }
-                    else
-                    {
-                        m_ulaAction[takt] = UlaAction.None;
-                    }
+                    tactScreen += Params.c_frameTactCount;
                 }
-
-            ShiftTable(ref m_ulaAction, Params.c_ulaIntBegin);
-            ShiftTable(ref m_ulaAddrBw, Params.c_ulaIntBegin);
-            ShiftTable(ref m_ulaAddrAt, Params.c_ulaIntBegin);
-            ShiftTable(ref m_ulaLineOffset, Params.c_ulaIntBegin);
-
+                else if (tactScreen >= Params.c_frameTactCount)
+                {
+                    tactScreen -= Params.c_frameTactCount;
+                }
+                CalcTableItem(
+                    tact,
+                    tactScreen / Params.c_ulaLineTime,
+                    tactScreen % Params.c_ulaLineTime);
+            }
             //{
-            //    XmlDocument xml = new XmlDocument();
-            //    XmlNode root = xml.AppendChild(xml.CreateElement("ULA"));
-            //    for (int i = 0; i < c_frameTactCount; i++)
+            //    var xml = new System.Xml.XmlDocument();
+            //    var root = xml.AppendChild(xml.CreateElement("ULA"));
+            //    for (var i = 0; i < Params.c_frameTactCount; i++)
             //    {
-            //        XmlElement xe = xml.CreateElement("Item");
-            //        xe.SetAttribute("tact", i.ToString());
-            //        xe.SetAttribute("do", _ulaDo[i].ToString("D2"));
-            //        xe.SetAttribute("offset", _ulaLineOffset[i].ToString("D6"));
-            //        xe.SetAttribute("y", (_ulaLineOffset[i] / pitchWidth).ToString("D3"));
-            //        xe.SetAttribute("x", (_ulaLineOffset[i] % pitchWidth).ToString("D3"));
+            //        var xe = xml.CreateElement("Item");
+            //        xe.SetAttribute("tact", i.ToString("D5"));
+            //        xe.SetAttribute("offset", m_ulaLineOffset[i].ToString("D6"));
+            //        xe.SetAttribute("y", (m_ulaLineOffset[i] / Params.c_ulaWidth).ToString("D3"));
+            //        xe.SetAttribute("x", (m_ulaLineOffset[i] % Params.c_ulaWidth).ToString("D3"));
+            //        xe.SetAttribute("addrBw", m_ulaAddrBw[i].ToString("X4"));
+            //        xe.SetAttribute("addrAt", m_ulaAddrAt[i].ToString("X4"));
+            //        xe.SetAttribute("action", m_ulaAction[i].ToString());
             //        root.AppendChild(xe);
             //    }
-            //    xml.Save("_ulaDo.xml");
-            //    //byte[] tmp = new byte[c_frameTactCount];
-            //    //for (int i = 0; i < tmp.Length; i++)
-            //    //    tmp[i] = (byte)_ulaDo[i];
-            //    //using (FileStream fs = new FileStream("_ulaDo.dat", FileMode.Create, FileAccess.Write, FileShare.Read))
-            //    //    fs.Write(tmp, 0, tmp.Length);
+            //    xml.Save("_ulaAction.xml");
             //}
         }
 
-        protected void ShiftTable<T>(ref T[] table, int shift)
+        /// <summary>
+        /// Calculate table item
+        /// </summary>
+        /// <param name="item">item number</param>
+        /// <param name="line">TV line number</param>
+        /// <param name="pix">TV pixel pair number</param>
+        private void CalcTableItem(int item, int line, int pix)
         {
-            var shiftedTable = new T[table.Length];
-            for (int i = 0; i < table.Length; i++)
+            m_ulaAction[item] = UlaAction.None;
+            int pitchWidth = Params.c_ulaWidth;
+
+            if ((line >= (Params.c_ulaFirstPaperLine - Params.c_ulaBorderTop)) && (line < (Params.c_ulaFirstPaperLine + 192 + Params.c_ulaBorderBottom)) &&
+                (pix >= (Params.c_ulaFirstPaperTact - Params.c_ulaBorderLeftT)) && (pix < (Params.c_ulaFirstPaperTact + 128 + Params.c_ulaBorderRightT)))
             {
-                int shiftedIndex = i - shift;
-                if (shiftedIndex < 0)
-                    shiftedIndex += table.Length;
-                shiftedIndex %= table.Length;
-                shiftedTable[shiftedIndex] = table[i];
+                // visibleArea (vertical)
+                if ((line >= Params.c_ulaFirstPaperLine) && (line < (Params.c_ulaFirstPaperLine + 192)) &&
+                    (pix >= Params.c_ulaFirstPaperTact) && (pix < (Params.c_ulaFirstPaperTact + 128)))
+                {
+                    // paper
+                    int sx, sy, ap, vp;
+                    int scrPix = pix - Params.c_ulaFirstPaperTact;
+                    switch (scrPix & 7)
+                    {
+                        case 0:
+                            m_ulaAction[item] = UlaAction.Shift1AndFetchB2;   // shift 1 + fetch B2
+
+                            sx = pix + 4 - Params.c_ulaFirstPaperTact;  // +4 = prefetch!
+                            sy = line - Params.c_ulaFirstPaperLine;
+                            sx >>= 2;
+                            ap = sx | ((sy >> 3) << 5);
+                            vp = sx | (sy << 5);
+                            m_ulaAddrBw[item] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
+                            //_ulaAddrAT[takt] = 6144 + ap;
+                            break;
+                        case 1:
+                            m_ulaAction[item] = UlaAction.Shift1AndFetchA2;   // shift 1 + fetch A2
+
+                            sx = pix + 3 - Params.c_ulaFirstPaperTact;  // +3 = prefetch!
+                            sy = line - Params.c_ulaFirstPaperLine;
+                            sx >>= 2;
+                            ap = sx | ((sy >> 3) << 5);
+                            vp = sx | (sy << 5);
+                            //_ulaAddrBW[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
+                            m_ulaAddrAt[item] = 6144 + ap;
+                            break;
+                        case 2:
+                            m_ulaAction[item] = UlaAction.Shift1;   // shift 1
+                            break;
+                        case 3:
+                            m_ulaAction[item] = UlaAction.Shift1Last;   // shift 1 (last)
+                            break;
+                        case 4:
+                            m_ulaAction[item] = UlaAction.Shift2;   // shift 2
+                            break;
+                        case 5:
+                            m_ulaAction[item] = UlaAction.Shift2;   // shift 2
+                            break;
+                        case 6:
+                            if (pix < (Params.c_ulaFirstPaperTact + 128 - 2))
+                            {
+                                m_ulaAction[item] = UlaAction.Shift2AndFetchB1;   // shift 2 + fetch B2
+                            }
+                            else
+                            {
+                                m_ulaAction[item] = UlaAction.Shift2;             // shift 2
+                            }
+
+                            sx = pix + 2 - Params.c_ulaFirstPaperTact;  // +2 = prefetch!
+                            sy = line - Params.c_ulaFirstPaperLine;
+                            sx >>= 2;
+                            ap = sx | ((sy >> 3) << 5);
+                            vp = sx | (sy << 5);
+                            m_ulaAddrBw[item] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
+                            //_ulaAddrAT[takt] = 6144 + ap;
+                            break;
+                        case 7:
+                            if (pix < (Params.c_ulaFirstPaperTact + 128 - 2))
+                            {
+                                //???
+                                m_ulaAction[item] = UlaAction.Shift2AndFetchA1;   // shift 2 + fetch A2
+                            }
+                            else
+                            {
+                                m_ulaAction[item] = UlaAction.Shift2;             // shift 2
+                            }
+
+                            sx = pix + 1 - Params.c_ulaFirstPaperTact;  // +1 = prefetch!
+                            sy = line - Params.c_ulaFirstPaperLine;
+                            sx >>= 2;
+                            ap = sx | ((sy >> 3) << 5);
+                            vp = sx | (sy << 5);
+                            //_ulaAddrBW[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
+                            m_ulaAddrAt[item] = 6144 + ap;
+                            break;
+                    }
+                }
+                else if ((line >= Params.c_ulaFirstPaperLine) && (line < (Params.c_ulaFirstPaperLine + 192)) &&
+                         (pix == (Params.c_ulaFirstPaperTact - 2)))  // border & fetch B1
+                {
+                    m_ulaAction[item] = UlaAction.BorderAndFetchB1; // border & fetch B1
+
+                    int sx = pix + 2 - Params.c_ulaFirstPaperTact;  // +2 = prefetch!
+                    int sy = line - Params.c_ulaFirstPaperLine;
+                    sx >>= 2;
+                    int ap = sx | ((sy >> 3) << 5);
+                    int vp = sx | (sy << 5);
+                    m_ulaAddrBw[item] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
+                    //_ulaAddrAT[takt] = 6144 + ap;
+                }
+                else if ((line >= Params.c_ulaFirstPaperLine) && (line < (Params.c_ulaFirstPaperLine + 192)) &&
+                         (pix == (Params.c_ulaFirstPaperTact - 1)))  // border & fetch A1
+                {
+                    m_ulaAction[item] = UlaAction.BorderAndFetchA1; // border & fetch A1
+
+                    int sx = pix + 1 - Params.c_ulaFirstPaperTact;  // +1 = prefetch!
+                    int sy = line - Params.c_ulaFirstPaperLine;
+                    sx >>= 2;
+                    int ap = sx | ((sy >> 3) << 5);
+                    int vp = sx | (sy << 5);
+                    //_ulaAddrBW[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
+                    m_ulaAddrAt[item] = 6144 + ap;
+                }
+                else
+                {
+                    m_ulaAction[item] = UlaAction.Border; // border
+                }
+
+                int wy = line - (Params.c_ulaFirstPaperLine - Params.c_ulaBorderTop);
+                int wx = (pix - (Params.c_ulaFirstPaperTact - Params.c_ulaBorderLeftT)) * 2;
+                m_ulaLineOffset[item] = wy * pitchWidth + wx;
             }
-            table = shiftedTable;
         }
 
         protected virtual void OnPaletteChanged()

@@ -37,10 +37,10 @@ namespace ZXMAK2.Hardware.Clone
             // 224 = 128T scr + 32T right + 32T HSync + 32T left
             // 312 = 192 scr + 40 bottom + 16 VSync + 64 top border
             var timing = SpectrumRenderer.CreateParams();
+            timing.c_frameTactCount = 69888;   // +
             timing.c_ulaLineTime = 224;        // +
             timing.c_ulaFirstPaperLine = 64;   // +
             timing.c_ulaFirstPaperTact = 64;
-            timing.c_frameTactCount = 69888;   // +
 
             timing.c_ulaBorderTop = 24;// 48;
             timing.c_ulaBorderBottom = 24;// 48;
