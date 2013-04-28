@@ -98,7 +98,7 @@ namespace ZXMAK2.Hardware
             int page8000,
             int pageC000)
         {
-            UpdateState((int)((CPU.Tact + 3) % FrameTactCount));
+            UpdateState((int)(CPU.Tact % FrameTactCount));
             m_videoPage = videoPage;
             m_page0000 = page0000;
             m_page4000 = page4000;
@@ -137,7 +137,7 @@ namespace ZXMAK2.Hardware
 
         protected virtual void WritePortFE(ushort addr, byte value, ref bool iorqge)
         {
-            UpdateState((int)((CPU.Tact + 3) % FrameTactCount));
+            UpdateState((int)(CPU.Tact % FrameTactCount));
             PortFE = value;
         }
 

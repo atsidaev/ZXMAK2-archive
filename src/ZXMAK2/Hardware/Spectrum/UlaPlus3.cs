@@ -43,10 +43,10 @@ namespace ZXMAK2.Hardware.Spectrum
             timing.c_ulaBorder4T = true;
             timing.c_ulaBorder4Tstage = 2;
 
-            timing.c_ulaBorderTop = 55;      //56
-            timing.c_ulaBorderBottom = 56;   //
-            timing.c_ulaBorderLeftT = 24;    //16T
-            timing.c_ulaBorderRightT = 24;   //32T
+            timing.c_ulaBorderTop = 32;      //55
+            timing.c_ulaBorderBottom = 32;   //56
+            timing.c_ulaBorderLeftT = 16;    //16T
+            timing.c_ulaBorderRightT = 16;   //32T
 
             timing.c_ulaIntBegin = 64 + 2;
             timing.c_ulaIntLength = 32;    // according to fuse

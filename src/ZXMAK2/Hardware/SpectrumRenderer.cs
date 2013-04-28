@@ -310,7 +310,7 @@ namespace ZXMAK2.Hardware
             timing.c_frameTactCount = 71680;
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 80;
-            timing.c_ulaFirstPaperTact = 68;      // 68 [32sync+36border+128scr+28border]
+            timing.c_ulaFirstPaperTact = 65;// 68;      // 68 [32sync+36border+128scr+28border]
             timing.c_ulaBorder4T = false;
             timing.c_ulaBorder4Tstage = 1;
 

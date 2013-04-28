@@ -16,13 +16,13 @@ namespace ZXMAK2.Hardware.Scorpion
             var timing = SpectrumRenderer.CreateParams();
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 64;
-            timing.c_ulaFirstPaperTact = 64;      // ?64 [40sync+24border+128scr+32border]
+            timing.c_ulaFirstPaperTact = 61;//64;      // ?64 [40sync+24border+128scr+32border]
             timing.c_frameTactCount = 70784;
             timing.c_ulaBorder4T = true;
             timing.c_ulaBorder4Tstage = 3;
 
-            timing.c_ulaBorderTop = 24;
-            timing.c_ulaBorderBottom = 24;
+            timing.c_ulaBorderTop = 32;
+            timing.c_ulaBorderBottom = 32;
             timing.c_ulaBorderLeftT = 16;
             timing.c_ulaBorderRightT = 16;
 
