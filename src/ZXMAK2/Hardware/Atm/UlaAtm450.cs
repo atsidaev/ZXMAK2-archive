@@ -121,10 +121,10 @@ namespace ZXMAK2.Hardware.Atm
             // Total Size:          448 x 312
             // Visible Size:        320 x 240 (32+256+32 x 24+192+24)
             var timing = SpectrumRenderer.CreateParams();
+            timing.c_frameTactCount = 69888;
             timing.c_ulaLineTime = 224;
             timing.c_ulaFirstPaperLine = 80;      // proof???80
             timing.c_ulaFirstPaperTact = 68;      // proof???68 [32sync+36border+128scr+28border]
-            timing.c_frameTactCount = 69888;
 
             timing.c_ulaBorderTop = 24;//64;
             timing.c_ulaBorderBottom = 24;// 40;

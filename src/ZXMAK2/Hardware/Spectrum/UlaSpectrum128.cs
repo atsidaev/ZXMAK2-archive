@@ -40,10 +40,10 @@ namespace ZXMAK2.Hardware.Spectrum
             // Total Size:          456 x 311
             // Visible Size:        352 x 303 (48+256+48 x 55+192+56)
             var timing = SpectrumRenderer.CreateParams();
+            timing.c_frameTactCount = 70908;
             timing.c_ulaLineTime = 228;
             timing.c_ulaFirstPaperLine = 63;
             timing.c_ulaFirstPaperTact = 64;      // 64 [40sync+24border+128scr+32border]
-            timing.c_frameTactCount = 70908;
             timing.c_ulaBorder4T = true;
             timing.c_ulaBorder4Tstage = 2;
 
