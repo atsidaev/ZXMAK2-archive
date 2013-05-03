@@ -60,8 +60,8 @@ namespace ZXMAK2.Hardware.Clone
 
             timing.c_ulaBorderTop = 32;
             timing.c_ulaBorderBottom = 32;
-            timing.c_ulaBorderLeftT = 24;
-            timing.c_ulaBorderRightT = 24;
+            timing.c_ulaBorderLeftT = 16;
+            timing.c_ulaBorderRightT = 16;
 
             timing.c_ulaIntBegin = 0;
             timing.c_ulaIntLength = 836;//224;
