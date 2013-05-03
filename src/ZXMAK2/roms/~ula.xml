@@ -1,0 +1,5 @@
+<Mapping>
+	<Rom name="ATM-SGEN" image="ATM/atm_sgen.rom" />
+	<Rom name="ZXBYTE-DD10" image="ZXBYTE/DD10_RT5.bin" />
+	<Rom name="ZXBYTE-DD11" image="ZXBYTE/DD11_RT5.bin" />
+</Mapping>

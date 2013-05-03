@@ -26,7 +26,7 @@ namespace ZXMAK2.Hardware.Pentagon
 
         public override byte[][] RamPages { get { return m_ramPages; } }
 
-		public override bool IsMap48 { get { return m_lock; } }
+        public override bool IsMap48 { get { return m_lock; } }
 
         protected override void UpdateMapping()
         {
@@ -49,17 +49,11 @@ namespace ZXMAK2.Hardware.Pentagon
             MapWrite8000 = MapRead8000;
             MapWriteC000 = MapReadC000;
 
-			Map48[0] = romPage;
-			Map48[1] = 5;
-			Map48[2] = 2;
-			Map48[3] = ramPage;
-		}
-
-		protected override void LoadRom()
-		{
-			base.LoadRom();
-			LoadRomPack("Pentagon");
-		}
+            Map48[0] = romPage;
+            Map48[1] = 5;
+            Map48[2] = 2;
+            Map48[3] = ramPage;
+        }
 
         #endregion
 
@@ -69,9 +63,12 @@ namespace ZXMAK2.Hardware.Pentagon
         private bool m_lock = false;
 
         public MemoryPentagon128()
+            : base("Pentagon")
         {
-            for (int i = 0; i < m_ramPages.Length; i++)
+            for (var i = 0; i < m_ramPages.Length; i++)
+            {
                 m_ramPages[i] = new byte[0x4000];
+            }
         }
 
         #region Bus Handlers

@@ -237,11 +237,11 @@ namespace ZXMAK2.Hardware.ZXBYTE
         {
             try
             {
-                using (var stream = MemoryBase.GetRomFileStream("ZXBYTE/DD10_RT5.bin"))
+                using (var stream = RomPack.GetUlaRomStream("ZXBYTE-DD10"))
                 {
                     stream.Read(m_dd10, 0, m_dd10.Length);
                 }
-                using (var stream = MemoryBase.GetRomFileStream("ZXBYTE/DD11_RT5.bin"))
+                using (var stream = RomPack.GetUlaRomStream("ZXBYTE-DD11"))
                 {
                     stream.Read(m_dd11, 0, m_dd10.Length);
                 }
