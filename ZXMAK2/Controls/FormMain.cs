@@ -803,7 +803,13 @@ namespace ZXMAK2.Controls
                     if (objSync != null && objSync is int)
                         menuViewVBlankSync.Checked = (int)objSync != 0;
                     if (objIcon != null && objIcon is int)
+                    {
                         menuViewDisplayIcon.Checked = (int)objIcon != 0;
+                    }
+                    else
+                    {
+                        menuViewDisplayIcon.Checked = true;
+                    }
                     applyRenderSetting();
                 }
             }
