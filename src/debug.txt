@@ -2,6 +2,8 @@
 Disable stop on the following exceptions:
 Microsoft.DirectX.DirectInput.OtherApplicationHasPriorityException
 Microsoft.DirectX.DirectInput.InputLostFocusException
+Microsoft.DirectX.DirectInput.NotAcquiredException
+Microsoft.DirectX.DirectInput.InputLostException
 
 
 debugger bug:
