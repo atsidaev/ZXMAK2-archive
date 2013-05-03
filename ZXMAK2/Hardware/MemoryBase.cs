@@ -8,11 +8,14 @@ using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware
 {
-    public abstract class MemoryBase : BusDeviceBase, IMemoryDevice, IGuiExtension
+    public abstract class MemoryBase : BusDeviceBase, IMemoryDevice, IConfigurable, IGuiExtension
     {
         #region IBusDevice Members
 
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Memory; } }
+        public override BusDeviceCategory Category
+        {
+            get { return BusDeviceCategory.Memory; }
+        }
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -34,7 +37,7 @@ namespace ZXMAK2.Hardware
 
         public override void BusConnect()
         {
-            LoadRom();
+            LoadRomSet();
             UpdateMapping();
         }
 
@@ -80,8 +83,15 @@ namespace ZXMAK2.Hardware
             }
         }
 
-        public abstract byte[][] RamPages { get; }
-        public virtual byte[][] RomPages { get { return m_romImages; } }
+        public abstract byte[][] RamPages
+        {
+            get;
+        }
+
+        public virtual byte[][] RomPages
+        {
+            get { return m_romImages; }
+        }
 
         public virtual byte CMR0
         {
@@ -135,10 +145,20 @@ namespace ZXMAK2.Hardware
             }
         }
 
-        public virtual bool IsMap48 { get { return false; } }
-        public int[] Map48 { get { return m_map48; } }
+        public virtual bool IsMap48
+        {
+            get { return false; }
+        }
 
-        public virtual bool IsRom48 { get { return MapRead0000 == RomPages[GetRomIndex(RomName.ROM_SOS)]; } }
+        public int[] Map48
+        {
+            get { return m_map48; }
+        }
+
+        public virtual bool IsRom48
+        {
+            get { return MapRead0000 == RomPages[GetRomIndex(RomName.ROM_SOS)]; }
+        }
 
         #endregion
 
@@ -149,10 +169,12 @@ namespace ZXMAK2.Hardware
         private byte m_cmr0 = 0;
         private byte m_cmr1 = 0;
         protected UlaDeviceBase m_ula;
+        protected String m_romSetName;
 
 
-        public MemoryBase()
+        public MemoryBase(String romSetName)
         {
+            m_romSetName = romSetName;// "Default";
             for (var i = 0; i < m_romImages.Length; i++)
             {
                 m_romImages[i] = new byte[0x4000];
@@ -171,7 +193,7 @@ namespace ZXMAK2.Hardware
             m_sysen = false;
             m_cmr0 = 0;
             m_cmr1 = 0;
-            LoadRom();
+            LoadRomSet();
             UpdateMapping();
             base.ResetState();
         }
@@ -259,7 +281,7 @@ namespace ZXMAK2.Hardware
 
         #region Rom Loader
 
-        protected virtual void LoadRom()
+        private void LoadRomSet()
         {
             for (var i = 0; i < RomPages.Length; i++)
             {
@@ -268,77 +290,15 @@ namespace ZXMAK2.Hardware
                     RomPages[i][j] = 0xFF;
                 }
             }
-            LoadRomPack("Default");
-        }
-
-        protected void LoadRomPack(string modelName)
-        {
-            try
+            foreach (var page in RomPack.GetRomSet(m_romSetName))
             {
-                XmlDocument mapping = new XmlDocument();
-                using (Stream stream = GetRomFileStream("~mapping.xml"))
-                    mapping.Load(stream);
-                foreach (XmlNode modelNode in mapping.SelectNodes("/Mapping/Model"))
-                    if (modelNode.Attributes["name"] != null && string.Compare(modelName, modelNode.Attributes["name"].InnerText) == 0)
-                    {
-                        loadRomModelSection(modelNode);
-                        break;
-                    }
-            }
-            catch (Exception ex)
-            {
-                LogAgent.Error(ex);
-                return;
-            }
-        }
-
-
-        private void loadRomModelSection(XmlNode modelNode)
-        {
-            foreach (XmlNode pageNode in modelNode.SelectNodes("Page"))
-            {
-                if (pageNode.Attributes["name"] == null || pageNode.Attributes["image"] == null)
-                {
-                    LogAgent.Warn("ROM mapping contains invalid Page node attribute \"name\" or \"image\" is missing");
-                    continue;
-                }
-                string pageName = pageNode.Attributes["name"].InnerText;
-                string pageImage = pageNode.Attributes["image"].InnerText;
-                try
-                {
-                    int fileOffset = 0;
-                    int fileLength = (int)GetRomFileLength(pageImage);
-                    if (pageNode.Attributes["offset"] != null)
-                    {
-                        fileOffset = Utils.ParseSpectrumInt(pageNode.Attributes["offset"].InnerText);
-                        fileLength -= fileOffset;
-                    }
-                    if (pageNode.Attributes["length"] != null)
-                        fileLength = Utils.ParseSpectrumInt(pageNode.Attributes["length"].InnerText);
-
-                    byte[] data = new byte[fileLength];
-                    using (Stream stream = GetRomFileStream(pageImage))
-                    {
-                        stream.Seek(fileOffset, SeekOrigin.Begin);
-                        stream.Read(data, 0, data.Length);
-                    }
-                    OnLoadRomPage(pageName, data);
-                }
-                catch (Exception ex)
-                {
-                    LogAgent.Error(ex);
-                    LogAgent.Error(
-                        "ROM load failed, model=\"{0}\", page=\"{1}\", image=\"{2}\"",
-                        modelNode.Attributes["name"].InnerText,
-                        pageName,
-                        pageImage);
-                }
+                OnLoadRomPage(page.Name, page.Content);
             }
         }
 
         protected virtual void OnLoadRomPage(string pageName, byte[] data)
         {
-            int pageNo = -1;
+            var pageNo = -1;
             switch (pageName.ToUpper())
             {
                 case "128": pageNo = GetRomIndex(RomName.ROM_128); break;
@@ -347,16 +307,25 @@ namespace ZXMAK2.Hardware
                 case "SYS": pageNo = GetRomIndex(RomName.ROM_SYS); break;
                 case "RAW":
                     {
-                        int capLen = (data.Length / 0x4000) * 0x4000;
+                        var capLen = (data.Length / 0x4000) * 0x4000;
                         if ((data.Length % 0x4000) != 0)
-                            capLen += 0x4000;
-                        byte[] capRom = new byte[capLen];
-                        for (int i = 0; i < capRom.Length; i++)
-                            capRom[i] = 0xFF;	// non flashed area
-                        Array.Copy(data, 0, capRom, 0, data.Length);
-                        for (int i = 0; i < RomPages.Length; i++)
                         {
-                            Array.Copy(capRom, (i * 0x4000) % capLen, RomPages[i], 0, 0x4000);
+                            capLen += 0x4000;
+                        }
+                        var capRom = new byte[capLen];
+                        for (var i = 0; i < capRom.Length; i++)
+                        {
+                            capRom[i] = 0xFF;	// non flashed area
+                        }
+                        Array.Copy(data, 0, capRom, 0, data.Length);
+                        for (var i = 0; i < RomPages.Length; i++)
+                        {
+                            Array.Copy(
+                                capRom,
+                                (i * 0x4000) % capLen,
+                                RomPages[i],
+                                0,
+                                0x4000);
                         }
                     }
                     return;
@@ -365,74 +334,30 @@ namespace ZXMAK2.Hardware
             }
             if (pageNo >= 0)
             {
-                int length = 0x4000;
+                var length = 0x4000;
                 if (data.Length < length)
+                {
                     length = data.Length;
+                }
                 Array.Copy(data, 0, RomPages[pageNo], 0, length);
             }
         }
 
-        public static long GetRomFileLength(string fileName)
-        {
-            string folderName = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
-            // override
-            string romsFolderName = Path.Combine(folderName, "roms");
-            if (Directory.Exists(romsFolderName))
-            {
-                string romsFileName = Path.Combine(romsFolderName, fileName);
-                if (File.Exists(romsFileName))
-                    return new FileInfo(romsFileName).Length;
-            }
-
-            string pakFileName = Path.Combine(folderName, "Roms.PAK");
-
-            using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(pakFileName))
-                foreach (ZipLib.Zip.ZipEntry entry in zip)
-                    if (entry.IsFile &&
-                        entry.CanDecompress &&
-                        string.Compare(entry.Name, fileName, true) == 0)
-                    {
-                        return entry.Size;
-                    }
-            throw new FileNotFoundException(string.Format("ROM file not found: {0}", fileName));
-        }
-
-        public static Stream GetRomFileStream(string fileName)
-        {
-            string folderName = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
-            // override
-            string romsFolderName = Path.Combine(folderName, "roms");
-            if (Directory.Exists(romsFolderName))
-            {
-                string romsFileName = Path.Combine(romsFolderName, fileName);
-                if (File.Exists(romsFileName))
-                    using (FileStream fs = new FileStream(romsFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        byte[] fileData = new byte[fs.Length];
-                        fs.Read(fileData, 0, fileData.Length);
-                        return new MemoryStream(fileData);
-                    }
-            }
-
-            string pakFileName = Path.Combine(folderName, "Roms.PAK");
-
-            using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(pakFileName))
-                foreach (ZipLib.Zip.ZipEntry entry in zip)
-                    if (entry.IsFile &&
-                        entry.CanDecompress &&
-                        string.Compare(entry.Name, fileName, true) == 0)
-                    {
-                        byte[] fileData = new byte[entry.Size];
-                        using (Stream s = zip.GetInputStream(entry))
-                            s.Read(fileData, 0, fileData.Length);
-                        return new MemoryStream(fileData);
-                    }
-            throw new FileNotFoundException(string.Format("ROM file not found: {0}", fileName));
-        }
-
         #endregion
+
+        #region IConfigurable
+
+        public virtual void LoadConfig(XmlNode itemNode)
+        {
+            m_romSetName = Utils.GetXmlAttributeAsString(itemNode, "romSet", m_romSetName);
+        }
+
+        public virtual void SaveConfig(XmlNode itemNode)
+        {
+            Utils.SetXmlAttribute(itemNode, "romSet", m_romSetName);
+        }
+
+        #endregion IConfigurable
 
         #region IGuiExtension Members
 

@@ -13,7 +13,7 @@ namespace ZXMAK2.Hardware.Spectrum
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-			bmgr.SubscribeWRIO(0x8002, 0x0000, writePort7FFD);
+            bmgr.SubscribeWRIO(0x8002, 0x0000, writePort7FFD);
             bmgr.SubscribeRDIO(0x8002, 0x0000, readPort7FFD);
             bmgr.SubscribeRESET(BusReset);
         }
@@ -24,19 +24,19 @@ namespace ZXMAK2.Hardware.Spectrum
 
         public override byte[][] RamPages { get { return m_ramPages; } }
 
-		public override bool IsMap48 { get { return m_lock; } }
+        public override bool IsMap48 { get { return m_lock; } }
 
         protected override void UpdateMapping()
         {
             m_lock = (CMR0 & 0x20) != 0;
             int ramPage = CMR0 & 7;
             int romPage = (CMR0 & 0x10) >> 4;
-			int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
+            int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 
             if (DOSEN)      // trdos or 48/128
                 romPage = 2;
 
-			m_ula.SetPageMapping(videoPage, -1, 5, 2, ramPage);
+            m_ula.SetPageMapping(videoPage, -1, 5, 2, ramPage);
             MapRead0000 = RomPages[romPage];
             MapRead4000 = RamPages[5];
             MapRead8000 = RamPages[2];
@@ -47,17 +47,11 @@ namespace ZXMAK2.Hardware.Spectrum
             MapWrite8000 = MapRead8000;
             MapWriteC000 = MapReadC000;
 
-			Map48[0] = romPage;
-			Map48[1] = 5;
-			Map48[2] = 2;
-			Map48[3] = ramPage;
-		}
-
-        protected override void LoadRom()
-        {
-            base.LoadRom();
-			LoadRomPack("ZX128");
-		}
+            Map48[0] = romPage;
+            Map48[1] = 5;
+            Map48[2] = 2;
+            Map48[3] = ramPage;
+        }
 
         #endregion
 
@@ -82,15 +76,23 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #endregion
 
-       
-		private byte[][] m_ramPages = new byte[8][];
-		private byte[] m_trashPage = new byte[0x4000];
-		private bool m_lock = false;
+
+        private byte[][] m_ramPages = new byte[8][];
+        private byte[] m_trashPage = new byte[0x4000];
+        private bool m_lock = false;
+
+        public MemorySpectrum128(String romSetName)
+            : base(romSetName)
+        {
+            for (var i = 0; i < m_ramPages.Length; i++)
+            {
+                m_ramPages[i] = new byte[0x4000];
+            }
+        }
 
         public MemorySpectrum128()
+            : this("ZX128")
         {
-            for (int i = 0; i < m_ramPages.Length; i++)
-                m_ramPages[i] = new byte[0x4000];
         }
     }
 }

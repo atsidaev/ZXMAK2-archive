@@ -28,12 +28,6 @@ namespace ZXMAK2.Hardware.ZXBYTE
             CMR0 = 0x10;
         }
 
-        protected override void LoadRom()
-        {
-            base.LoadRom();
-            LoadRomPack("ZXBYTE128");
-        }
-
         protected override void OnLoadRomPage(string pageName, byte[] data)
         {
             if (pageName == "DD66")
@@ -105,6 +99,10 @@ namespace ZXMAK2.Hardware.ZXBYTE
         private byte[] m_dd66 = new byte[512];
         private byte[] m_dd71 = new byte[2048];
 
+        public MemoryByte128()
+            : base("ZXBYTE128")
+        {
+        }
 
         #region IGuiExtension Members
 

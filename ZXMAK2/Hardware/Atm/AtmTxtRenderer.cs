@@ -310,7 +310,7 @@ namespace ZXMAK2.Hardware.Atm
         {
             try
             {
-                using (Stream stream = MemoryBase.GetRomFileStream("atm_sgen.rom"))
+                using (var stream = RomPack.GetUlaRomStream("ATM-SGEN"))
                 {
                     stream.Read(m_ulaSGEN, 0, m_ulaSGEN.Length);
                 }

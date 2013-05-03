@@ -37,11 +37,11 @@ namespace ZXMAK2.Hardware.Lec
                 romPage = 2;
 
             m_ula.SetPageMapping(
-                videoPage, 
-                allram ? ramPageLec * 2 : -1, 
-                allram ? ramPageLec * 2 + 1 : 32, 
-                15*2, 
-                15*2+1);
+                videoPage,
+                allram ? ramPageLec * 2 : -1,
+                allram ? ramPageLec * 2 + 1 : 32,
+                15 * 2,
+                15 * 2 + 1);
             MapRead0000 = allram ? RamPages[ramPageLec * 2] : RomPages[romPage];
             MapRead4000 = allram ? RamPages[ramPageLec * 2 + 1] : RamPages[32];
             MapRead8000 = RamPages[15 * 2];
@@ -51,12 +51,6 @@ namespace ZXMAK2.Hardware.Lec
             MapWrite4000 = MapRead4000;
             MapWrite8000 = MapRead8000;
             MapWriteC000 = MapReadC000;
-        }
-
-        protected override void LoadRom()
-        {
-            base.LoadRom();
-            LoadRomPack("LEC");
         }
 
         #endregion
@@ -75,13 +69,16 @@ namespace ZXMAK2.Hardware.Lec
 
         #endregion
 
-        private byte[][] m_ramPages = new byte[32+1][];
+        private byte[][] m_ramPages = new byte[32 + 1][];
         private byte[] m_trashPage = new byte[0x4000];
 
         public MemoryLec48528()
+            : base("LEC")
         {
-            for (int i = 0; i < m_ramPages.Length; i++)
+            for (var i = 0; i < m_ramPages.Length; i++)
+            {
                 m_ramPages[i] = new byte[0x4000];
+            }
         }
     }
 }

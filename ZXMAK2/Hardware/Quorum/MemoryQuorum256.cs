@@ -15,7 +15,7 @@ namespace ZXMAK2.Hardware.Quorum
         {
             base.BusInit(bmgr);
             m_cpu = bmgr.CPU;
-            
+
             bmgr.SubscribeWRIO(0x801A, 0x7FFD & 0x801A, busWritePort7FFD);
             bmgr.SubscribeWRIO(0x0099, 0x0000 & 0x0099, busWritePort0000);
             bmgr.SubscribeRESET(busReset);
@@ -28,7 +28,7 @@ namespace ZXMAK2.Hardware.Quorum
 
         public override byte[][] RamPages { get { return m_ramPages; } }
 
-		public override bool IsMap48 { get { return false; } }
+        public override bool IsMap48 { get { return false; } }
 
         private const int Q_F_RAM = 0x01;
         private const int Q_RAM_8 = 0x08;
@@ -39,11 +39,11 @@ namespace ZXMAK2.Hardware.Quorum
         protected override void UpdateMapping()
         {
             m_lock = false;// (CMR0 & 0x20) != 0;
-            
+
             int ramPage = CMR0 & 7;
             ramPage |= ((CMR0 & 0xC0) >> 3);
             ramPage &= 0x0F;     //256K
-            
+
             int romPage = (CMR0 & 0x10) >> 4;
             int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 
@@ -57,34 +57,28 @@ namespace ZXMAK2.Hardware.Quorum
             if (SYSEN)
                 romPage = 3;
 
-            m_ula.SetPageMapping(videoPage, (norom&&!blkwr)? ramPage0000 : -1, 5, 2, ramPage);
-            MapRead0000 = norom? RamPages[ramPage0000] : RomPages[romPage];
+            m_ula.SetPageMapping(videoPage, (norom && !blkwr) ? ramPage0000 : -1, 5, 2, ramPage);
+            MapRead0000 = norom ? RamPages[ramPage0000] : RomPages[romPage];
             MapRead4000 = RamPages[5];
             MapRead8000 = RamPages[2];
             MapReadC000 = RamPages[ramPage];
 
-            MapWrite0000 = (norom&&!blkwr)? RamPages[ramPage0000] : m_trashPage;
+            MapWrite0000 = (norom && !blkwr) ? RamPages[ramPage0000] : m_trashPage;
             MapWrite4000 = MapRead4000;
             MapWrite8000 = MapRead8000;
             MapWriteC000 = MapReadC000;
         }
 
-        protected override void LoadRom()
-        {
-            base.LoadRom();
-			LoadRomPack("Quorum");
-		}
-
         public override bool SYSEN
         {
             get { return (CMR1 & Q_B_ROM) == 0; }
-            set 
+            set
             {
                 if (value)
                     CMR1 |= Q_B_ROM;
                 else
                     CMR1 &= Q_B_ROM ^ 0xFF;
-                UpdateMapping(); 
+                UpdateMapping();
             }
         }
 
@@ -124,11 +118,14 @@ namespace ZXMAK2.Hardware.Quorum
         private Z80CPU m_cpu;
         private bool m_lock = false;
 
-        
+
         public MemoryQuorum256()
+            : base("Quorum")
         {
-            for (int i = 0; i < m_ramPages.Length; i++)
+            for (var i = 0; i < m_ramPages.Length; i++)
+            {
                 m_ramPages[i] = new byte[0x4000];
+            }
         }
     }
 }

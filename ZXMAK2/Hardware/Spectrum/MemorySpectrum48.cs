@@ -14,7 +14,12 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #region MemoryBase
 
-		public override bool IsMap48 { get { return true; } }
+        public MemorySpectrum48()
+            : base("ZX48")
+        {
+        }
+
+        public override bool IsMap48 { get { return true; } }
 
         public override byte CMR0
         {
@@ -27,12 +32,6 @@ namespace ZXMAK2.Hardware.Spectrum
             get { return 0x00; }
             set { UpdateMapping(); }
         }
-
-        protected override void LoadRom()
-        {
-            base.LoadRom();
-			LoadRomPack("ZX48");
-		}
 
         #endregion
     }

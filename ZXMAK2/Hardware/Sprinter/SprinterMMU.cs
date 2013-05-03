@@ -84,9 +84,9 @@ namespace ZXMAK2.Hardware.Sprinter
         dcpRAM0 = 0xE8,         //RAM Page (окно 0000-3fff)
         dcpRAM1 = 0xE9,         //RAM Page (окно 4000-7fff)
         dcpRAM2 = 0xEA,         //RAM Page (окно 8000-bfff)
-        dcpROMSys   =   0xEB,       //ROM page SYSTEM
+        dcpROMSys = 0xEB,       //ROM page SYSTEM
         dcpRAMCache = 0xEC,     //RAM page CACHE
-        dcpROMSysAlt    = 0xEF, //ROM Page SYSTEM'
+        dcpROMSysAlt = 0xEF, //ROM Page SYSTEM'
         dcpRAMPage0 = 0xF0,     //RAM Pages (окно C000-FFFF)
         dcpRAMPage1 = 0xF1,     //RAM Pages (окно C000-FFFF)
         dcpRAMPage2 = 0xF2,     //RAM Pages (окно C000-FFFF)
@@ -103,12 +103,12 @@ namespace ZXMAK2.Hardware.Sprinter
         dcpRAMPageD = 0xFD,     //RAM Pages (окно C000-FFFF)
         dcpRAMPageE = 0xFE,     //RAM Pages (окно C000-FFFF)
         dcpRAMPageF = 0xFF      //RAM Pages (окно C000-FFFF)
-        
+
     }
 
     public enum AccelCMD
     {
-        Invalid= -1,
+        Invalid = -1,
         Off = 1,     //ld b,b    выкл акселератор
         On = 2,      //ld d,d    вкл акселератор, указать размер блока
         Fill = 3,    //ld c,c    
@@ -159,8 +159,8 @@ namespace ZXMAK2.Hardware.Sprinter
         private bool m_acc_enable;
         private bool m_acc_on;
 
-//        private bool m_acc_wait_cmd;
-  //      private bool m_acc_wait_data;
+        //        private bool m_acc_wait_cmd;
+        //      private bool m_acc_wait_data;
 
         private AccelCMD m_acc_mode;
         private AccelSubCMD m_acc_submode;
@@ -172,13 +172,14 @@ namespace ZXMAK2.Hardware.Sprinter
         private ushort m_opaddr;
 #endif
 
-//        System.Windows.Forms.ListBox lb;
+        //        System.Windows.Forms.ListBox lb;
 
         private Z80CPU m_cpu;
         private SprinterULA m_ulaSprinter;
         private SprinterBDI m_SprinterBDI;
 
         public SprinterMMU()
+            : base("Sprinter")
         {
             for (int i = 0; i < this.m_ramPages.Length; i++)
             {
@@ -240,7 +241,7 @@ namespace ZXMAK2.Hardware.Sprinter
             bmgr.SubscribeRDIO(0x00ff, 0x00E9, new BusReadIoProc(this.readPortE9h));  //read E9h
             bmgr.SubscribeRDIO(0x00ff, 0x00C9, new BusReadIoProc(this.readPortC9h));  //read C9h
             bmgr.SubscribeWRMEM(0xC000, 0x0000, new BusWriteProc(this.WriteMem0000));  //write 
-            bmgr.SubscribeWRMEM(0xC000,0x4000, new BusWriteProc(this.WriteMem4000));  //write 
+            bmgr.SubscribeWRMEM(0xC000, 0x4000, new BusWriteProc(this.WriteMem4000));  //write 
             bmgr.SubscribeWRMEM(0xC000, 0x8000, new BusWriteProc(this.WriteMem8000));  //write 
             bmgr.SubscribeWRMEM(0xC000, 0xC000, new BusWriteProc(this.WriteMemC000));  //write
             bmgr.SubscribeRDMEM(0xC000, 0x0000, new BusReadProc(this.ReadMem0000));  //read
@@ -264,7 +265,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private void AccelRead(ushort addr, ref byte value)
         {
-            if (m_acc_enable && m_acc_on && (m_acc_mode!=AccelCMD.Off))
+            if (m_acc_enable && m_acc_on && (m_acc_mode != AccelCMD.Off))
             {
                 ;
                 switch (m_acc_mode)
@@ -272,7 +273,7 @@ namespace ZXMAK2.Hardware.Sprinter
                     case AccelCMD.On:           //LD D,D
                         {
                             if (value != 0) m_acc_buf_size = value;
-                                else m_acc_buf_size = 256;
+                            else m_acc_buf_size = 256;
                         } break;
 
                     case AccelCMD.CopyBlok:     //LD L,L
@@ -326,8 +327,9 @@ namespace ZXMAK2.Hardware.Sprinter
                                     case 0x8000: this.ReadMem8000((ushort)(addr), ref tmp); break;
                                     case 0xc000: this.ReadMemC000((ushort)(addr), ref tmp); break;
                                 }
-                                switch (m_acc_submode) {
-                                    case AccelSubCMD.None:m_acc_buf[i] = tmp;//RDMEM_DBG((ushort)(addr + i));
+                                switch (m_acc_submode)
+                                {
+                                    case AccelSubCMD.None: m_acc_buf[i] = tmp;//RDMEM_DBG((ushort)(addr + i));
                                         break;
                                     case AccelSubCMD.XORBlok: m_acc_buf[i] ^= tmp; break;
                                     case AccelSubCMD.ORBlok: m_acc_buf[i] |= tmp; break;
@@ -343,7 +345,7 @@ namespace ZXMAK2.Hardware.Sprinter
                             for (int i = 0; i < m_acc_buf_size; i++)
                                 m_port_y++;
                         } break;
-                        
+
                 }
             }
         }
@@ -371,7 +373,7 @@ namespace ZXMAK2.Hardware.Sprinter
                                     case 0x8000: this.WriteMem8000((ushort)(addr), m_acc_buf[i]); break;
                                     case 0xc000: this.WriteMemC000((ushort)(addr), m_acc_buf[i]); break;
                                 }
-//                                VRamPages[(m_port_y & 0xf0) >> 4][(m_port_y & 0x0f) * 1024 + (addr & 0x3FF)] = m_acc_buf[i];
+                                //                                VRamPages[(m_port_y & 0xf0) >> 4][(m_port_y & 0x0f) * 1024 + (addr & 0x3FF)] = m_acc_buf[i];
                                 m_port_y++;
                             }
                         } break;
@@ -388,8 +390,8 @@ namespace ZXMAK2.Hardware.Sprinter
 
                                 }
                                 //WRMEM_DBG((ushort)(addr + i), m_acc_buf[i]);
-                                
-//                                m_acc_buf[i] = RDMEM_DBG((ushort)(addr + i));
+
+                                //                                m_acc_buf[i] = RDMEM_DBG((ushort)(addr + i));
                             }
                         } break;
 
@@ -426,13 +428,13 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-/*        private void GetAccelDATA(ushort addr, ref byte value)
-        {
-            if (m_acc_enable && m_acc_on && m_acc_wait_data)
-            {
-                ;
-            }
-        }*/
+        /*        private void GetAccelDATA(ushort addr, ref byte value)
+                {
+                    if (m_acc_enable && m_acc_on && m_acc_wait_data)
+                    {
+                        ;
+                    }
+                }*/
 
         private void Accelerator(ushort addr, ref byte value)
         {
@@ -440,20 +442,20 @@ namespace ZXMAK2.Hardware.Sprinter
             {
                 switch (this.RDMEM_DBG(addr))
                 {
-                        //Accelerator off - ld b,b
+                    //Accelerator off - ld b,b
                     case 0x40:
                         {
-//                            m_acc_on = false;
-//                            m_acc_wait_cmd = false;
+                            //                            m_acc_on = false;
+                            //                            m_acc_wait_cmd = false;
                             m_acc_mode = AccelCMD.Off;
                             m_acc_submode = AccelSubCMD.None;
                         }
                         break;
-                        //Accelerator on - ld d,d
+                    //Accelerator on - ld d,d
                     case 0x52:
                         {
                             m_acc_on = true;
-//                            m_acc_wait_cmd = true;
+                            //                            m_acc_wait_cmd = true;
                             m_acc_mode = AccelCMD.On;
                             m_acc_submode = AccelSubCMD.None;
                         }
@@ -497,7 +499,7 @@ namespace ZXMAK2.Hardware.Sprinter
                         {
                             m_acc_on = true;
                             m_acc_submode = AccelSubCMD.XORBlok;
-                        }break;
+                        } break;
                     case 0xB6:
                         {
                             m_acc_on = true;
@@ -536,10 +538,10 @@ namespace ZXMAK2.Hardware.Sprinter
                         iorqge = false;
                     }
 
-/*                    switch (m_ramPages[0x40][dcpadr])
-                    {
-                        case DCPports.dcpROMSysAlt: 
-                    }*/
+                    /*                    switch (m_ramPages[0x40][dcpadr])
+                                        {
+                                            case DCPports.dcpROMSysAlt: 
+                                        }*/
                 }
 #if Debug
                 if (!iorqge)
@@ -649,11 +651,11 @@ namespace ZXMAK2.Hardware.Sprinter
                 // 0x50 - нормальная запись
                 // 3 бит номера - разрешение записи байта #FF в видео ОЗУ
                 // 2 бит номера - разрешение записи в основное ОЗУ
-                if (((m_page1 & 8) == 0) || (((m_page1 & 8) != 0) && (value!=0xFF))) 
+                if (((m_page1 & 8) == 0) || (((m_page1 & 8) != 0) && (value != 0xFF)))
                     m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr] = value;
                 if ((m_page1 & 4) == 0)
                 {
-                 //   this.MapWrite4000[addr & 0x3fff] = value;
+                    //   this.MapWrite4000[addr & 0x3fff] = value;
                     m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr] = value;
                 }
             }
@@ -665,14 +667,16 @@ namespace ZXMAK2.Hardware.Sprinter
                 {
                     //бит 6==0, значит вывод в видео-озу в спектрумовском режиме разрешен
                     //необходимо транспонировать адрес спектрумовского экрана в адрес спринтеровского озу
-                    byte vrampg = (byte)((addr & 0xf0)>>4);
+                    byte vrampg = (byte)((addr & 0xf0) >> 4);
                     ushort vrampg_row = (ushort)((addr & 0x0f) * 1024);
                     ushort vrampg_col = (ushort)((addr & 0x1f00) >> 8);
-                    
+
                     if ((addr & 0x3fff) <= 0x1fff)
                     {
-                        m_vramPages[vrampg][vrampg_row+vrampg_col+(m_vblok4000*32)] = value;
-                    } else {
+                        m_vramPages[vrampg][vrampg_row + vrampg_col + (m_vblok4000 * 32)] = value;
+                    }
+                    else
+                    {
                         if ((m_port_y & 128) == 0)
                             m_vramPages[vrampg][vrampg_row + vrampg_col + (((m_vblok4000 + 1) & 31) * 32)] = value;
                     }
@@ -734,7 +738,7 @@ namespace ZXMAK2.Hardware.Sprinter
             else
             {
                 //Нет проверки на открытие спектрумовской графической страницы!!!
-                
+
 
                 this.MapWriteC000[addr & 0x3fff] = value;
                 if (((this.CMR0 & 7) == 5) || ((this.CMR0 & 7) == 7))
@@ -779,12 +783,12 @@ namespace ZXMAK2.Hardware.Sprinter
                 // 3 бит номера - разрешение записи байта #FF в видео ОЗУ
                 // 2 бит номера - разрешение записи в основное ОЗУ
                 value = m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr];
-                    //m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr];
+                //m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr];
             }
             else
             {
                 base.ReadMemC000(addr, ref value);
-                 //value = this.MapReadC000[addr & 0x3fff];
+                //value = this.MapReadC000[addr & 0x3fff];
             }
         }
 
@@ -827,7 +831,7 @@ namespace ZXMAK2.Hardware.Sprinter
                 // 3 бит номера - разрешение записи байта #FF в видео ОЗУ
                 // 2 бит номера - разрешение записи в основное ОЗУ
                 value = m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr];
-                    //m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr];
+                //m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr];
             }
             else
             {
@@ -865,18 +869,18 @@ namespace ZXMAK2.Hardware.Sprinter
                 m_ulaSprinter.RGADR = value;
 
                 //Перепроверить!!! тут в TASM происходит глюк непонятный
-/*                if ((this.CMR0 & 2) == 0)
-                {
-                    m_vblok4000 = (byte)(value & 31);
-                    m_vblokC000 = (byte)((m_vblok4000 + 1) & 31);//((value & 31) + 1)
-                }
-                else
-                {
-                    m_vblokC000 = (byte)(value & 31);
-                    m_vblok4000 = (byte)((m_vblokC000 + 1) & 31);//((value & 31) + 1);
-                }*/
+                /*                if ((this.CMR0 & 2) == 0)
+                                {
+                                    m_vblok4000 = (byte)(value & 31);
+                                    m_vblokC000 = (byte)((m_vblok4000 + 1) & 31);//((value & 31) + 1)
+                                }
+                                else
+                                {
+                                    m_vblokC000 = (byte)(value & 31);
+                                    m_vblok4000 = (byte)((m_vblokC000 + 1) & 31);//((value & 31) + 1);
+                                }*/
                 m_vblok4000 = (byte)(value & 31);
-                m_vblokC000 = (byte)((value & 31)^1);
+                m_vblokC000 = (byte)((value & 31) ^ 1);
 #if Debug
                 LogPort(addr, value);
 #endif
@@ -899,7 +903,7 @@ namespace ZXMAK2.Hardware.Sprinter
                 iorqge = false;
                 m_port_videomode = value;
                 m_ulaSprinter.RGMOD = value;
-                
+
 #if Debug
                 LogPort(addr, value);
 #endif
@@ -965,25 +969,25 @@ namespace ZXMAK2.Hardware.Sprinter
                 m_sysport = value;
                 //Если в порт 0x7C/0x3C записано значение 01, то включается ROM Expansion
                 if ((addr & 64) == 64) this.m_romA16 = (value & 0x03) == 0x01;//) ? true : false;
-//                Logger.GetLogger().LogMessage(String.Format("Write to port #{0:X4} value #{1:X2}", addr, value));
+                //                Logger.GetLogger().LogMessage(String.Format("Write to port #{0:X4} value #{1:X2}", addr, value));
 
-//                this.lb.Items.Add(String.Format("Write to port #{0:X4} value #{1:X2}", addr, value));
+                //                this.lb.Items.Add(String.Format("Write to port #{0:X4} value #{1:X2}", addr, value));
                 this.m_sys = (addr & 64) == 0;//) ? true : false;
 #if Debug
                 LogPort(addr, value);
                 Logger.GetLogger().LogMessage(String.Format("State: SYS - {0}, AROM16 - {1}", this.m_sys, this.m_romA16));
 #endif
-                
-//                this.lb.Items.Add(String.Format("State: SYS - {0}, AROM16 - {1}", this.m_sys, this.m_romA16));
+
+                //                this.lb.Items.Add(String.Format("State: SYS - {0}, AROM16 - {1}", this.m_sys, this.m_romA16));
                 if ((value & 0x04) != 0)
                 {
-                    m_SprinterBDI.OpenPorts = ((value & 0x1C)==0x1C?true:false);
+                    m_SprinterBDI.OpenPorts = ((value & 0x1C) == 0x1C ? true : false);
                 }
                 this.UpdateMapping();
 
-//                if ((value & 0x03) == 1) this.m_rom_exp = true;
-//                    else this.m_rom_exp = false;
-//                this.m_1ffd = value;
+                //                if ((value & 0x03) == 1) this.m_rom_exp = true;
+                //                    else this.m_rom_exp = false;
+                //                this.m_1ffd = value;
             }
         }
 
@@ -1129,7 +1133,7 @@ namespace ZXMAK2.Hardware.Sprinter
                     this.UpdateMapping();
                     m_firstread = false;
                 }
-              //  MessageBox.Show("Reading from PAGE3 Port: "+Convert.ToString(this.PAGE3));
+                //  MessageBox.Show("Reading from PAGE3 Port: "+Convert.ToString(this.PAGE3));
                 value = this.PAGE3;
             }
         }
@@ -1145,25 +1149,16 @@ namespace ZXMAK2.Hardware.Sprinter
                 LogPort(addr, value);
 #endif
 
-              //  MessageBox.Show("Write to PAGE3 Port: " + Convert.ToString(value));
+                //  MessageBox.Show("Write to PAGE3 Port: " + Convert.ToString(value));
             }
         }
 
         #endregion
 
-        #region -- Load ROM --
-        
-		protected override void LoadRom()
-        {
-            base.LoadRomPack("Sprinter");
-        }
-
-        #endregion 
-
         protected override void UpdateMapping()
         {
             if (((this.CMR1 & 0x01) == 1) && (this.m_sys))
-//            if ((this.CMR1 & 0x01) == 1)
+            //            if ((this.CMR1 & 0x01) == 1)
             {
                 //Вкл ОЗУ в 0й сектор адресного пространства (вместо ПЗУ)
                 base.MapRead0000 = this.RamPages[this.PAGE0];
@@ -1186,19 +1181,19 @@ namespace ZXMAK2.Hardware.Sprinter
                     //                    index = index | ( ((this.DOSEN) ? 1:0) & ((this.CMR1 & 1) & )
 
                     //int videoPage = ((this.CMR0 & 8) == 0) ? 5 : 7;
-//                    if (((this.CMR1 & 0x01) == 0) && (!this.m_sys))
+                    //                    if (((this.CMR1 & 0x01) == 0) && (!this.m_sys))
                     m_romindex = 0;
-//                    if (((this.CMR1 & 0x01) == 1) || (!this.m_sys))
-//                        m_romindex = 8;
+                    //                    if (((this.CMR1 & 0x01) == 1) || (!this.m_sys))
+                    //                        m_romindex = 8;
                     m_romindex += (byte)((this.m_romA16) ? 0 : 8);
-                        
+
                     //m_romindex = (byte)((this.m_sys == false) ? 8 : 0);
 
-/*                    if (((this.CMR1 & 1) == 0) || (!this.m_sys)) {
-                        if (this.m_romA16) m_romindex += 4;
-                    }*/
+                    /*                    if (((this.CMR1 & 1) == 0) || (!this.m_sys)) {
+                                            if (this.m_romA16) m_romindex += 4;
+                                        }*/
 
-//                    if (this.m_romA16 && !(((this.CMR1 & 1) == 1) && this.m_sys)) m_romindex += 4;
+                    //                    if (this.m_romA16 && !(((this.CMR1 & 1) == 1) && this.m_sys)) m_romindex += 4;
 
                     base.MapRead0000 = this.RomPages[m_romindex];
                     base.MapWrite0000 = this.m_trashPage;
@@ -1211,7 +1206,8 @@ namespace ZXMAK2.Hardware.Sprinter
             if ((PAGE1 >= 0x50) && (PAGE1 <= 0x5F))
             {
                 base.MapWrite4000 = m_trashPage;
-            } else base.MapWrite4000 = base.MapRead4000;
+            }
+            else base.MapWrite4000 = base.MapRead4000;
             if ((PAGE2 >= 0x50) && (PAGE2 <= 0x5F))
             {
                 base.MapWrite8000 = m_trashPage;
@@ -1226,7 +1222,7 @@ namespace ZXMAK2.Hardware.Sprinter
             base.Map48[0] = 0;
             base.Map48[1] = this.PAGE1;
             base.Map48[2] = this.PAGE2;
-            base.Map48[3] = this.PAGE3;            
+            base.Map48[3] = this.PAGE3;
         }
 
         #region -- RAM and ROM --
