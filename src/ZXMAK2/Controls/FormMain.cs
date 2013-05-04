@@ -150,13 +150,17 @@ namespace ZXMAK2.Controls
                 m_firstShow = false;
                 try
                 {
-                    //ClientSize = new Size(m_vm.Spectrum.Ula.VideoSize.Width * 2, m_vm.Spectrum.Ula.VideoSize.Height * 2);
-                    string appName = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
-                    string fileName = Path.ChangeExtension(appName, ".vmz");
+                    var fileName = Path.Combine(
+                        Utils.GetAppDataFolder(),
+                        "ZXMAK2.vmz");
                     if (File.Exists(fileName))
+                    {
                         m_vm.OpenConfig(fileName);
+                    }
                     else
+                    {
                         m_vm.SaveConfigAs(fileName);
+                    }
                     if (StartupImage != null)
                     {
                         string imageName = m_vm.Spectrum.Loader.OpenFileName(StartupImage, true);
