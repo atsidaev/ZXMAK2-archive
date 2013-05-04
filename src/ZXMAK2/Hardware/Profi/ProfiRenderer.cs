@@ -14,6 +14,8 @@ namespace ZXMAK2.Hardware.Profi
         public int c_ulaFirstPaperTact;		// tact for left pixel in line
         public int c_frameTactCount;	        // 59904 for profi mode (312x192)
 
+        public int c_ulaBorderTop;
+        public int c_ulaBorderBottom;
         public int c_ulaBorderLeftT;
         public int c_ulaBorderRightT;
 
@@ -244,19 +246,21 @@ namespace ZXMAK2.Hardware.Profi
             var timing = new ProfiRendererParams();
             timing.c_frameTactCount = 69888;	// 59904 for profi mode (312x192)
 
-            timing.c_ulaIntBegin = 0;
+            timing.c_ulaIntBegin = 16+3;
             timing.c_ulaIntLength = 32 + 7;	// TODO: needs approve
 
             // profi mode timings...
             timing.c_ulaLineTime = 192;			// tacts per line
-            timing.c_ulaFirstPaperLine = 72 * 192;	// tact for left top pixel
-            timing.c_ulaFirstPaperTact = 8;			// tact for left pixel in line
+            timing.c_ulaFirstPaperLine = 72;/* * 192*/;	// tact for left top pixel
+            timing.c_ulaFirstPaperTact = 8+16;			// tact for left pixel in line
+            timing.c_ulaBorderTop = 8;
+            timing.c_ulaBorderBottom = 8;
             timing.c_ulaBorderLeftT = 16;			// real 3.xx=6
             timing.c_ulaBorderRightT = 16;		    // real 3.xx=10
             timing.c_ulaProfiColor = false;
 
             timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 128 + timing.c_ulaBorderRightT) * 4;
-            timing.c_ulaHeight = 240;
+            timing.c_ulaHeight = timing.c_ulaBorderTop + 240 + timing.c_ulaBorderBottom;
             return timing;
         }
 
@@ -287,69 +291,101 @@ namespace ZXMAK2.Hardware.Profi
             m_ulaBwOffset = new int[Params.c_frameTactCount];
             m_ulaVideoOffset = new int[Params.c_frameTactCount];
 
-            for (int tact = 0; tact < Params.c_frameTactCount; tact++)
+            for (var tact = 0; tact < Params.c_frameTactCount; tact++)
             {
-                int scrtact = tact - (Params.c_ulaFirstPaperLine + Params.c_ulaFirstPaperTact - Params.c_ulaBorderLeftT);
-
-                int line = scrtact / Params.c_ulaLineTime;
-                if (line < 0 || line >= Params.c_ulaHeight)
+                var tactScreen = tact + Params.c_ulaIntBegin;
+                if (tactScreen < 0)
                 {
-                    m_ulaAction[tact] = UlaAction.None;
-                    continue;
+                    tactScreen += Params.c_frameTactCount;
                 }
-
-                int lineTact = scrtact % Params.c_ulaLineTime;
-                if (lineTact < 0 || lineTact >= (Params.c_ulaBorderLeftT + 128 + Params.c_ulaBorderRightT))
+                else if (tactScreen >= Params.c_frameTactCount)
                 {
-                    m_ulaAction[tact] = UlaAction.None;
-                    continue;
+                    tactScreen -= Params.c_frameTactCount;
                 }
+                CalcTableItem(
+                    tact,
+                    tactScreen / Params.c_ulaLineTime,
+                    tactScreen % Params.c_ulaLineTime);
+            }
+        }
 
-                if (lineTact < Params.c_ulaBorderLeftT || lineTact >= (Params.c_ulaBorderLeftT + 128))
-                {
-                    m_ulaVideoOffset[tact] = line * Params.c_ulaWidth + lineTact * 4;
-                    if (m_ulaVideoOffset[tact] < 0 || m_ulaVideoOffset[tact] >= (1024 * 768 - 4))
-                    {
-                        throw new IndexOutOfRangeException();
-                    }
-                    m_ulaAction[tact] = UlaAction.Profi32_0;
-                    continue;
-                }
-                lineTact -= Params.c_ulaBorderLeftT;
-
-
-                int x4 = lineTact;// -_ulaProfiLineBeginTact;
-                if (x4 < 0 || x4 >= 512 / 4)
-                {
-                    m_ulaAction[tact] = UlaAction.None;
-                    continue;
-                }
-
-                m_ulaVideoOffset[tact] = line * Params.c_ulaWidth + Params.c_ulaBorderLeftT * 4 + x4 * 4;
-                if (m_ulaVideoOffset[tact] < 0 || m_ulaVideoOffset[tact] >= (1024 * 768 - 4))
+        private void CalcTableItem(int item, int line, int lineTact)
+        {
+            m_ulaAction[item] = UlaAction.None;
+            line -= Params.c_ulaFirstPaperLine - Params.c_ulaBorderTop;
+            lineTact -= Params.c_ulaFirstPaperTact - Params.c_ulaBorderLeftT;
+            if (line < 0 || 
+                line >= (Params.c_ulaBorderTop+240+Params.c_ulaBorderBottom))
+            {
+                return;
+            }
+            if (lineTact < 0 || 
+                lineTact >= (Params.c_ulaBorderLeftT + 128 + Params.c_ulaBorderRightT))
+            {
+                return;
+            }
+            if (line < Params.c_ulaBorderTop || 
+                line >= (Params.c_ulaBorderTop+240))
+            {
+                // top/bottom border
+                m_ulaVideoOffset[item] = line * Params.c_ulaWidth + lineTact * 4;
+                if (m_ulaVideoOffset[item] < 0 ||
+                    m_ulaVideoOffset[item] >= (1024 * 768 - 4))
                 {
                     throw new IndexOutOfRangeException();
                 }
-
-                int __PixCOFF = 2048 * (line >> 6) +
-                    256 * (line & 0x07) +
-                    ((line & 0x38) << 2);
-
-                if ((x4 & 2) == 0)
-                    m_ulaBwOffset[tact] = __PixCOFF + x4 / 4 + 8192;
-                else
-                    m_ulaBwOffset[tact] = __PixCOFF + x4 / 4;
-
-
-                if ((x4 & 1) == 0)
-                    m_ulaAction[tact] = Params.c_ulaProfiColor ?
-                        UlaAction.Profi32_1_CLR :
-                        UlaAction.Profi32_1_BNW;
-                else
-                    m_ulaAction[tact] = Params.c_ulaProfiColor ?
-                        UlaAction.Profi32_2_CLR :
-                        UlaAction.Profi32_2_BNW;
+                m_ulaAction[item] = UlaAction.Profi32_0;
+                return;
             }
+
+            if (lineTact < Params.c_ulaBorderLeftT || 
+                lineTact >= (Params.c_ulaBorderLeftT + 128))
+            {
+                // left/right border
+                m_ulaVideoOffset[item] = line * Params.c_ulaWidth + lineTact * 4;
+                if (m_ulaVideoOffset[item] < 0 || 
+                    m_ulaVideoOffset[item] >= (1024 * 768 - 4))
+                {
+                    throw new IndexOutOfRangeException();
+                }
+                m_ulaAction[item] = UlaAction.Profi32_0;
+                return;
+            }
+            lineTact -= Params.c_ulaBorderLeftT;
+
+            int x4 = lineTact;// -_ulaProfiLineBeginTact;
+            if (x4 < 0 || x4 >= 512 / 4)
+            {
+                m_ulaAction[item] = UlaAction.None;
+                return;
+            }
+
+            m_ulaVideoOffset[item] = line * Params.c_ulaWidth + Params.c_ulaBorderLeftT * 4 + x4 * 4;
+            if (m_ulaVideoOffset[item] < 0 || 
+                m_ulaVideoOffset[item] >= (1024 * 768 - 4))
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            line -= Params.c_ulaBorderTop;
+            var pixCoff = 2048 * (line >> 6) +
+                256 * (line & 0x07) +
+                ((line & 0x38) << 2);
+
+            if ((x4 & 2) == 0)
+                m_ulaBwOffset[item] = pixCoff + x4 / 4 + 8192;
+            else
+                m_ulaBwOffset[item] = pixCoff + x4 / 4;
+
+
+            if ((x4 & 1) == 0)
+                m_ulaAction[item] = Params.c_ulaProfiColor ?
+                    UlaAction.Profi32_1_CLR :
+                    UlaAction.Profi32_1_BNW;
+            else
+                m_ulaAction[item] = Params.c_ulaProfiColor ?
+                    UlaAction.Profi32_2_CLR :
+                    UlaAction.Profi32_2_BNW;
         }
 
         private void OnPaletteChanged()
