@@ -68,6 +68,43 @@ namespace ZXMAK2.Hardware.Pentagon
             for (var i = 0; i < m_ramPages.Length; i++)
             {
                 m_ramPages[i] = new byte[0x4000];
+                // Pentagon - A3, A6, A7, false
+                // Delta-C - A0, A6, A8, true
+                FillRamPowerOn(m_ramPages[i], 3, 6, 7, false);
+            }
+        }
+
+        protected static void FillRamPowerOn(
+            byte[] ramPage,
+            int b0,
+            int b1,
+            int b2,
+            bool inverse)
+        {
+            for (var j = 0; j < 0x4000; j++)
+            {
+                var value = (((j >> b0) ^ (j >> b1) ^ (j >> b2)) & 1) == 0 ?
+                    0x00 : 0xFF;
+                if (inverse)
+                {
+                    value ^= 0xFF;
+                }
+                ramPage[j] = (byte)value;
+            }
+            var random = new Random();
+            for (var j = 0; j < 256; j++)
+            {
+                if (random.Next(100) > 97)
+                {
+                    var rnd = (byte)random.Next(256);
+                    for (var k = j; k < 0x4000; k += 256)
+                    {
+                        if (random.Next(100) > 25)
+                        {
+                            ramPage[k] = rnd;
+                        }
+                    }
+                }
             }
         }
 
