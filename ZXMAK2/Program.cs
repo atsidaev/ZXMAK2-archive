@@ -16,26 +16,47 @@ namespace ZXMAK2
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			LogAgent.Start();
-			try
-			{
-				using (FormMain form = new FormMain())
-				{
-					form.Show();
-					form.InitWnd();
-					if (args.Length > 0 && File.Exists(args[0]))
-						form.StartupImage = Path.GetFullPath(args[0]);
-					Application.Run(form);
-				}
-			}
-			catch (Exception ex)
-			{
-				LogAgent.Error(ex);
-				MessageBox.Show(
-					string.Format("{0}\n\n{1}", ex.GetType(), ex.Message),
-					"ZXMAK2",
-					MessageBoxButtons.OK,
-					MessageBoxIcon.Error);
-			}
+            try
+            {
+                using (FormMain form = new FormMain())
+                {
+                    form.Show();
+                    form.InitWnd();
+                    if (args.Length > 0 && File.Exists(args[0]))
+                        form.StartupImage = Path.GetFullPath(args[0]);
+                    Application.Run(form);
+                }
+            }
+            catch (System.IO.FileNotFoundException ex)
+            {
+                LogAgent.Error(ex);
+                if (!ex.FileName.Contains("Microsoft.DirectX"))
+                {
+                    MessageBox.Show(
+                        string.Format("{0}\n\n{1}", ex.GetType(), ex.Message),
+                        "ZXMAK2",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        string.Format(
+                        "{0}\n\n{1}\n\nPlease install DirectX End-User Runtime and try again!", ex.GetType(), ex.Message),
+                        "ZXMAK2",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                MessageBox.Show(
+                    string.Format("{0}\n\n{1}", ex.GetType(), ex.Message),
+                    "ZXMAK2",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
 			finally
 			{
 				LogAgent.Finish();
