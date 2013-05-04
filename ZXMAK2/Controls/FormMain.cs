@@ -222,14 +222,23 @@ namespace ZXMAK2.Controls
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (e.Alt && e.Control && m_mouse != null)
+            if (m_mouse.IsCaptured)
+            {
+                e.SuppressKeyPress = true;
+            }
+
+            if (e.Alt && e.Control)
+            {
                 m_mouse.StopCapture();
+            }
 
             // FULLSCREEN
             if (e.Alt && e.KeyCode == Keys.Enter)
             {
                 if (e.Alt)
+                {
                     Fullscreen = !Fullscreen;
+                }
                 e.Handled = true;
                 return;
             }
@@ -246,9 +255,13 @@ namespace ZXMAK2.Controls
             if (e.KeyCode == Keys.Pause)
             {
                 if (m_vm.IsRunning)
+                {
                     m_vm.DoStop();
+                }
                 else
+                {
                     m_vm.DoRun();
+                }
                 e.Handled = true;
                 return;
             }
@@ -266,9 +279,13 @@ namespace ZXMAK2.Controls
                 if (tape != null)
                 {
                     if (tape.IsPlay)
+                    {
                         tape.Stop();
+                    }
                     else
+                    {
                         tape.Play();
+                    }
                     e.Handled = true;
                     return;
                 }
@@ -330,8 +347,13 @@ namespace ZXMAK2.Controls
 
         private void renderVideo_DoubleClick(object sender, EventArgs e)
         {
-            if (renderVideo.Focused && m_mouse != null)
-                m_mouse.StartCapture();
+            if (renderVideo.Focused)
+            {
+                if (m_mouse != null)
+                {
+                    m_mouse.StartCapture();
+                }
+            }
         }
 
         private void renderVideo_MouseMove(object sender, MouseEventArgs e)
