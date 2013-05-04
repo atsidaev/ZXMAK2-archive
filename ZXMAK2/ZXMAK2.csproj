@@ -92,9 +92,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\DragDataWrapper.cs" />
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\WebDownloader.cs" />
     <Compile Include="Crc\CrcUdi.cs" />
     <Compile Include="Crc\CrcTd0.cs" />
     <Compile Include="Crc\CrcVg93.cs" />
