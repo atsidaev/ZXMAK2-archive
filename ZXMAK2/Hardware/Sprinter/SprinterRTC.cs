@@ -9,213 +9,214 @@ using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.Sprinter
 {
-	public class SprinterRTC : BusDeviceBase
-	{
-		#region IBusDevice Members
+    public class SprinterRTC : BusDeviceBase
+    {
+        #region IBusDevice Members
 
-		public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
-		public override string Description { get { return "Sprinter RTC"; } }
-		public override string Name { get { return "Sprinter RTC"; } }
+        public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
+        public override string Description { get { return "Sprinter RTC"; } }
+        public override string Name { get { return "Sprinter RTC"; } }
 
-		public override void BusInit(IBusManager bmgr)
-		{
-			m_sandbox = bmgr.IsSandbox;
-			m_bus = bmgr;
+        public override void BusInit(IBusManager bmgr)
+        {
+            m_sandbox = bmgr.IsSandbox;
+            m_bus = bmgr;
 
-			m_bus.SubscribeRESET(Reset);
-			m_bus.SubscribeWRIO(0xFFFF, 0xBFBD, CMOS_DWR);  //CMOS_DWR
-			m_bus.SubscribeWRIO(0xFFFF, 0xDFBD, CMOS_AWR);  //CMOS_AWR
-			m_bus.SubscribeRDIO(0xFFFF, 0xFFBD, CMOS_DRD);  //CMOS_DRD
+            m_bus.SubscribeRESET(Reset);
+            m_bus.SubscribeWRIO(0xFFFF, 0xBFBD, CMOS_DWR);  //CMOS_DWR
+            m_bus.SubscribeWRIO(0xFFFF, 0xDFBD, CMOS_AWR);  //CMOS_AWR
+            m_bus.SubscribeRDIO(0xFFFF, 0xFFBD, CMOS_DRD);  //CMOS_DRD
 
-			m_fileName = bmgr.GetSatelliteFileName("cmos");
-		}
+            m_fileName = bmgr.GetSatelliteFileName("cmos");
+        }
 
-		public override void BusConnect()
-		{
-			if (!m_sandbox && m_fileName != null)
-				load(m_fileName);
-		}
+        public override void BusConnect()
+        {
+            if (!m_sandbox && m_fileName != null)
+                load(m_fileName);
+        }
 
-		public override void BusDisconnect()
-		{
-			if (!m_sandbox && m_fileName != null)
-				save(m_fileName);
-		}
+        public override void BusDisconnect()
+        {
+            if (!m_sandbox && m_fileName != null)
+                save(m_fileName);
+        }
 
-		#endregion
+        #endregion
 
-		private IBusManager m_bus;
-		private bool m_sandbox;
-		private byte[] m_eeprom = new byte[256];
-		private byte m_addr;
+        private IBusManager m_bus;
+        private bool m_sandbox;
+        private byte[] m_eeprom = new byte[256];
+        private byte m_addr;
 
-		private void load(string fileName)
-		{
-			try
-			{
-				FileInfo fileInfo = new FileInfo(fileName);
-				for (int i = 0; i < m_eeprom.Length; i++)
-					m_eeprom[i]=0x00;
-				if (!fileInfo.Exists)
-					return;
-				using (FileStream eepromFile = File.Open(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
-				{
-					int count = eepromFile.Read(m_eeprom, 0, m_eeprom.Length);
-					if (count < m_eeprom.Length)
-					{
-						LogAgent.Warn("CMOS image truncated - {0} bytes instead of {1}", count, m_eeprom.Length);
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				LogAgent.Error(ex);
-			}
-		}
+        private void load(string fileName)
+        {
+            try
+            {
+                FileInfo fileInfo = new FileInfo(fileName);
+                for (int i = 0; i < m_eeprom.Length; i++)
+                    m_eeprom[i] = 0x00;
+                if (!fileInfo.Exists)
+                    return;
+                using (FileStream eepromFile = File.Open(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    int count = eepromFile.Read(m_eeprom, 0, m_eeprom.Length);
+                    if (count < m_eeprom.Length)
+                    {
+                        LogAgent.Warn("CMOS image truncated - {0} bytes instead of {1}", count, m_eeprom.Length);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+        }
 
-		private void save(string fileName)
-		{
-			try
-			{
-				FileInfo fileInfo = new FileInfo(fileName);
-				if (fileInfo.IsReadOnly)
-				{
-					LogAgent.Warn("CMOS image is not written to disk because it is write protected");
-					return;
-				}
-				using (FileStream eepromFile = File.Open(fileInfo.FullName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
-				{
-					eepromFile.Write(m_eeprom, 0, m_eeprom.Length);
-					eepromFile.Flush();
-				}
-			}
-			catch (Exception ex)
-			{
-				LogAgent.Error(ex);
-			}
-		}
-
-
-		#region Bus
-
-		void Reset()
-		{
-			m_addr = 0;
-		}
+        private void save(string fileName)
+        {
+            try
+            {
+                FileInfo fileInfo = new FileInfo(fileName);
+                if (fileInfo.Exists && fileInfo.IsReadOnly)
+                {
+                    LogAgent.Info("CMOS file: {0}", fileName);
+                    LogAgent.Warn("CMOS image is not written to disk because it is write protected");
+                    return;
+                }
+                using (FileStream eepromFile = File.Open(fileInfo.FullName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
+                {
+                    eepromFile.Write(m_eeprom, 0, m_eeprom.Length);
+                    eepromFile.Flush();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+        }
 
 
-		/// <summary>
-		/// RTC control port
-		/// </summary>
-		/// <param name="addr"></param>
-		/// <param name="val"></param>
-		/// <param name="iorqge"></param>
+        #region Bus
+
+        void Reset()
+        {
+            m_addr = 0;
+        }
 
 
-		/// <summary>
-		/// RTC address port
-		/// </summary>
-		/// <param name="addr"></param>
-		/// <param name="val"></param>
-		/// <param name="iorqge"></param>
-		void CMOS_AWR(ushort addr, byte val, ref bool iorqge)
-		{
-			this.m_addr = val;
-		}
-
-		/// <summary>
-		/// RTC write data port
-		/// </summary>
-		/// <param name="addr"></param>
-		/// <param name="val"></param>
-		/// <param name="iorqge"></param>
-		void CMOS_DWR(ushort addr, byte val, ref bool iorqge)
-		{
-			WrCMOS(val);
-		}
-
-		/// <summary>
-		/// RTC read data port
-		/// </summary>
-		/// <param name="addr"></param>
-		/// <param name="val"></param>
-		/// <param name="iorqge"></param>
-		void CMOS_DRD(ushort addr, ref byte val, ref bool iorqge)
-		{
-			val = RdCMOS();
-		}
-
-		#endregion
+        /// <summary>
+        /// RTC control port
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <param name="val"></param>
+        /// <param name="iorqge"></param>
 
 
-		#region RTC emu
+        /// <summary>
+        /// RTC address port
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <param name="val"></param>
+        /// <param name="iorqge"></param>
+        void CMOS_AWR(ushort addr, byte val, ref bool iorqge)
+        {
+            this.m_addr = val;
+        }
 
-		DateTime dt = DateTime.Now;
-		bool UF = false;
-		private string m_fileName = null;
+        /// <summary>
+        /// RTC write data port
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <param name="val"></param>
+        /// <param name="iorqge"></param>
+        void CMOS_DWR(ushort addr, byte val, ref bool iorqge)
+        {
+            WrCMOS(val);
+        }
 
-		byte RdCMOS()
-		{
-			var curDt = DateTime.Now;
+        /// <summary>
+        /// RTC read data port
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <param name="val"></param>
+        /// <param name="iorqge"></param>
+        void CMOS_DRD(ushort addr, ref byte val, ref bool iorqge)
+        {
+            val = RdCMOS();
+        }
 
-			if (curDt.Subtract(dt).Seconds > 0 || curDt.Millisecond / 500 != dt.Millisecond / 500)
-			{
-				dt = curDt;
-				UF = true;
-			}
+        #endregion
 
-			switch (m_addr)
-			{
-				case 0x00:
-					return BDC(dt.Second);
-				case 0x02:
-					return BDC(dt.Minute);
-				case 0x04:
-					return BDC(dt.Hour);
-				case 0x06:
-					return (byte)(dt.DayOfWeek);
-				case 0x07:
-					return BDC(dt.Day);
-				case 0x08:
-					return BDC(dt.Month);
-				case 0x09:
-					return BDC(dt.Year % 100);
-				case 0x0A:
-					return 0x00;
-				case 0x0B:
-					return 0x02;
-				case 0x0C:
-					var res = (byte)(UF ? 0x1C : 0x0C);
-					UF = false;
-					return res;
-				case 0x0D:
-					return 0x80;
 
-				default:
-					return m_eeprom[m_addr];
-			}
-		}
+        #region RTC emu
 
-		void WrCMOS(byte val)
-		{
-			if (m_addr < 0xF0)
-				m_eeprom[m_addr] = val;
-		}
+        DateTime dt = DateTime.Now;
+        bool UF = false;
+        private string m_fileName = null;
 
-		byte BDC(int val)
-		{
-			var res = val;
+        byte RdCMOS()
+        {
+            var curDt = DateTime.Now;
 
-			if ((m_eeprom[11] & 4) == 0)
-			{
-				var rem = 0;
-				res = Math.DivRem(val, 10, out rem);
-				res = (res * 16 + rem);
-			}
+            if (curDt.Subtract(dt).Seconds > 0 || curDt.Millisecond / 500 != dt.Millisecond / 500)
+            {
+                dt = curDt;
+                UF = true;
+            }
 
-			return (byte)res;
-		}
+            switch (m_addr)
+            {
+                case 0x00:
+                    return BDC(dt.Second);
+                case 0x02:
+                    return BDC(dt.Minute);
+                case 0x04:
+                    return BDC(dt.Hour);
+                case 0x06:
+                    return (byte)(dt.DayOfWeek);
+                case 0x07:
+                    return BDC(dt.Day);
+                case 0x08:
+                    return BDC(dt.Month);
+                case 0x09:
+                    return BDC(dt.Year % 100);
+                case 0x0A:
+                    return 0x00;
+                case 0x0B:
+                    return 0x02;
+                case 0x0C:
+                    var res = (byte)(UF ? 0x1C : 0x0C);
+                    UF = false;
+                    return res;
+                case 0x0D:
+                    return 0x80;
 
-		#endregion
-	}
+                default:
+                    return m_eeprom[m_addr];
+            }
+        }
+
+        void WrCMOS(byte val)
+        {
+            if (m_addr < 0xF0)
+                m_eeprom[m_addr] = val;
+        }
+
+        byte BDC(int val)
+        {
+            var res = val;
+
+            if ((m_eeprom[11] & 4) == 0)
+            {
+                var rem = 0;
+                res = Math.DivRem(val, 10, out rem);
+                res = (res * 16 + rem);
+            }
+
+            return (byte)res;
+        }
+
+        #endregion
+    }
 }
