@@ -8,9 +8,6 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.ComponentModel;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Mime;
-using System.Collections.Specialized;
 using Microsoft.Win32;
 
 using ZXMAK2.Engine;
@@ -916,11 +913,11 @@ namespace ZXMAK2.Controls
         {
             try
             {
-                string fileName = string.Empty;
-                byte[] data = downloadUri(uri, out fileName);
-                using (MemoryStream ms = new MemoryStream(data))
+                var downloader = new WebDownloader();
+                var webFile = downloader.Download(uri);
+                using (MemoryStream ms = new MemoryStream(webFile.Content))
                 {
-                    OpenStream(fileName, ms);
+                    OpenStream(webFile.FileName, ms);
                 }
             }
             catch (Exception ex)
@@ -928,103 +925,6 @@ namespace ZXMAK2.Controls
                 LogAgent.Error(ex);
                 DialogProvider.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
             }
-        }
-
-        private byte[] downloadUri(Uri uri, out string fileName)
-        {
-            WebRequest webRequest = WebRequest.Create(uri);
-            webRequest.Timeout = 15000;
-            //webRequest.Credentials = new NetworkCredential("anonymous", "User@");
-            WebResponse webResponse = webRequest.GetResponse();
-            try
-            {
-                fileName = Path.GetFileName(webResponse.ResponseUri.LocalPath);
-                if (webResponse.Headers["Content-Disposition"] != null)
-                {
-                    string dispName = getContentFileName(
-                        webResponse.Headers["Content-Disposition"]);
-                    if (!string.IsNullOrEmpty(dispName))
-                        fileName = dispName;
-                    // fix name...
-                    foreach (char c in Path.GetInvalidFileNameChars())
-                    {
-                        fileName = fileName.Replace(new string(c, 1), string.Empty);
-                    }
-                }
-                using (Stream stream = webResponse.GetResponseStream())
-                {
-                    byte[] data = webResponse.ContentLength >= 0 ?
-                        downloadStream(stream, webResponse.ContentLength, webRequest.Timeout) :
-                        downloadStreamNoLength(stream, webRequest.Timeout);
-                    return data;
-                }
-            }
-            finally
-            {
-                webResponse.Close();
-            }
-        }
-
-        private string getContentFileName(string header)
-        {
-            if (string.IsNullOrEmpty(header))
-                return null;
-            try
-            {
-                ContentDisposition contDisp = new ContentDisposition(header);
-                if (!string.IsNullOrEmpty(contDisp.FileName))
-                    return contDisp.FileName;
-            }
-            catch (Exception ex)
-            {
-                LogAgent.Error(ex);
-            }
-            LogAgent.Warn("content-disposition bad format: {0}", header);
-            try
-            {
-                ContentDispositionEx contDisp = new ContentDispositionEx(header);
-                if (!string.IsNullOrEmpty(contDisp.FileName))
-                    return contDisp.FileName;
-            }
-            catch (Exception ex)
-            {
-                LogAgent.Error(ex);
-            }
-            return null;
-        }
-
-        private byte[] downloadStream(Stream stream, long length, int timeOut)
-        {
-            byte[] data = new byte[length];
-            long read = 0;
-            int tickCount = Environment.TickCount;
-            while (read < length)
-            {
-                read += stream.Read(data, (int)read, (int)(length - read));
-                if ((Environment.TickCount - tickCount) > timeOut)
-                    throw new TimeoutException("Download timeout error!");
-            }
-            return data;
-        }
-
-        private byte[] downloadStreamNoLength(Stream stream, int timeOut)
-        {
-            List<byte> list = new List<byte>();
-            byte[] readBuffer = new byte[0x10000];
-            int tickCount = Environment.TickCount;
-            while (true)
-            {
-                if ((Environment.TickCount - tickCount) > timeOut)
-                    throw new TimeoutException("Download timeout error!");
-                int len = stream.Read(readBuffer, 0, readBuffer.Length);
-                if (len == 0)
-                {
-                    break;
-                }
-                for (int i = 0; i < len; i++)
-                    list.Add(readBuffer[i]);
-            }
-            return list.ToArray();
         }
 
         private void OpenStream(string fileName, Stream fileStream)
@@ -1060,128 +960,5 @@ namespace ZXMAK2.Controls
 
         private delegate void OpenFileHandler(string fileName, bool readOnly);
         private delegate void OpenUriHandler(Uri fileUri);
-    }
-
-    internal class DragDataWrapper
-    {
-        private IDataObject m_dataObject;
-        public DragDataWrapper(IDataObject dataObject)
-        {
-            m_dataObject = dataObject;
-        }
-
-        public bool IsFileDrop { get { return m_dataObject.GetDataPresent(DataFormatEx.FileDrop); } }
-        public bool IsLinkDrop { get { return m_dataObject.GetDataPresent(DataFormatEx.Uri); } }
-
-        public string GetFilePath()
-        {
-            object objData = m_dataObject.GetData(DataFormatEx.FileDrop);
-            string[] fileArray = getStringArray(objData as Array);
-            return fileArray.Length == 1 ? fileArray[0] : string.Empty;
-        }
-
-        public string GetLinkUri()
-        {
-            object objData = m_dataObject.GetData(DataFormatEx.Uri);
-            string fileUri = string.Empty;
-            using (MemoryStream ms = objData as MemoryStream)
-            {
-                byte[] data = new byte[ms.Length];
-                ms.Read(data, 0, data.Length);
-                int length;
-                for (length = 0; length < data.Length; length++)
-                    if (data[length] == 0)
-                        break;
-                fileUri = Encoding.ASCII.GetString(data, 0, length);
-            }
-            return fileUri.Trim();
-        }
-
-        private static string[] getStringArray(Array dataArray)
-        {
-            List<String> list = new List<string>();
-            if (dataArray != null)
-            {
-                foreach (string value in dataArray)
-                    list.Add(value);
-            }
-            return list.ToArray();
-        }
-
-        private static class DataFormatEx
-        {
-            public static string FileDrop = DataFormats.FileDrop;
-            public static string Uri = "UniformResourceLocator";
-        }
-    }
-
-    public class ContentDispositionEx
-    {
-        private StringDictionary m_params = new StringDictionary();
-        private string m_dispType;
-
-        public ContentDispositionEx(string rawValue)
-        {
-            Parse(rawValue);
-        }
-
-        protected virtual void Parse(string rawValue)
-        {
-            m_params.Clear();
-            string[] keyPairs = rawValue.Split(';');
-            m_dispType = keyPairs[0];
-
-            for (int i = 1; i < keyPairs.Length; i++)
-            {
-                string keyPair = keyPairs[i];
-                int index = keyPair.IndexOf('=');
-                if (index < 0)
-                {
-                    LogAgent.Error(
-                        "ContentDispositionEx.Parse: invalid key pair '{0}'",
-                        keyPair);
-                    continue;
-                }
-                string key = keyPair.Substring(0, index).Trim();
-                string value = keyPair.Substring(index + 1).Trim();
-                if (value.StartsWith("\"") && value.EndsWith("\"") && value.Length > 1)
-                {
-                    value = value.Substring(1, value.Length - 1);
-                    value = value.Replace("\\\"", "\"").Trim();
-                }
-                key = key.ToLower();
-                m_params[key] = value;
-            }
-        }
-
-        public string DispositionType
-        {
-            get { return m_dispType; }
-            set { m_dispType = value; }
-        }
-
-        public string FileName
-        {
-            get { return m_params["filename"]; }
-            set { m_params["filename"] = value; }
-        }
-
-        public long Size
-        {
-            get { return m_params.ContainsKey("size") ? Convert.ToInt64(m_params["size"]) : -1; }
-            set { if (value < 0) m_params.Remove("size"); else m_params["size"] = Convert.ToString(value); }
-        }
-
-        //public DateTime CreationDate
-        //{
-        //    get { return ParseDateRFC822(m_params["creation-date"]); }
-        //    set { m_params["creation-date"] = ToStringDateRFC822(value); }
-        //}
-
-        //public DateTime ModificationDate
-        //{
-        //    get { return ParseDateRFC822(m_params["modification-date"]); }
-        //    set { m_params["modification-date"] = ToStringDateRFC822(value); }
-        //}
     }
 }
