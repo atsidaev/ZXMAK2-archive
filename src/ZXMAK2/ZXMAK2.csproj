@@ -134,10 +134,10 @@
     <Compile Include="Controls\Configuration\CtlSettingsGenericSound.Designer.cs">
       <DependentUpon>CtlSettingsGenericSound.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Configuration\FormAddDeviceWizard.cs">
+    <Compile Include="Controls\FormAddDeviceWizard.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\Configuration\FormAddDeviceWizard.Designer.cs">
+    <Compile Include="Controls\FormAddDeviceWizard.Designer.cs">
       <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\Debugger\FormMemoryMap.cs">
@@ -420,7 +420,7 @@
     <EmbeddedResource Include="Controls\Configuration\CtlSettingsGenericSound.resx">
       <DependentUpon>CtlSettingsGenericSound.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Configuration\FormAddDeviceWizard.resx">
+    <EmbeddedResource Include="Controls\FormAddDeviceWizard.resx">
       <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>

@@ -5,8 +5,10 @@ using ZXMAK2.Engine;
 
 namespace ZXMAK2.Controls.Configuration
 {
-    public abstract class ConfigScreenControl : UserControl
+    public class ConfigScreenControl : UserControl
     {
-        public abstract void Apply();
+        public virtual void Apply()
+        {
+        }
     }
 }

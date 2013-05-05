@@ -166,6 +166,29 @@ namespace ZXMAK2.Hardware
             }
             return list;
         }
+
+        public static IEnumerable<String> GetRomSetNames()
+        {
+            var list = new List<String>();
+            try
+            {
+                var mapping = new XmlDocument();
+                using (Stream stream = RomPack.GetImageStream("~mapping.xml"))
+                {
+                    mapping.Load(stream);
+                }
+                foreach (XmlNode romSetNode in mapping.SelectNodes("/Mapping/RomSet"))
+                {
+                    var romSet = Utils.GetXmlAttributeAsString(romSetNode, "name", string.Empty);
+                    list.Add(romSet);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+            return list;
+        }
     }
 
     public class RomPage

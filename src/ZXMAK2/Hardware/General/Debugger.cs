@@ -1,7 +1,7 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
-using UI=ZXMAK2.Controls.Debugger;
+using UI = ZXMAK2.Controls.Debugger;
 using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.General
@@ -14,7 +14,7 @@ namespace ZXMAK2.Hardware.General
 
         public override string Name { get { return "Debugger"; } }
         public override string Description { get { return "Default Debugger"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
+        public override BusDeviceCategory Category { get { return BusDeviceCategory.Debugger; } }
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -48,8 +48,8 @@ namespace ZXMAK2.Hardware.General
         #region IGuiExtension Members
 
         private GuiData m_guiData;
-		private System.Windows.Forms.MenuItem m_subMenuItem;
-		private UI.FormCpu m_form;
+        private System.Windows.Forms.MenuItem m_subMenuItem;
+        private UI.FormCpu m_form;
 
         public void AttachGui(GuiData guiData)
         {
@@ -91,7 +91,7 @@ namespace ZXMAK2.Hardware.General
             {
                 if (m_form == null)
                 {
-					m_form = new UI.FormCpu();
+                    m_form = new UI.FormCpu();
                     m_form.Init(m_target);
                     m_form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg)
                     {

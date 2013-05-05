@@ -126,5 +126,18 @@ namespace ZXMAK2.Engine
             }
             return list;
         }
+
+        public IEnumerable<BusDeviceDescriptor> SelectByType<T>()
+        {
+            var list = new List<BusDeviceDescriptor>();
+            foreach (var bdd in Descriptors)
+            {
+                if (typeof(T).IsAssignableFrom(bdd.Type))
+                {
+                    list.Add(bdd);
+                }
+            }
+            return list;
+        }
     }
 }
