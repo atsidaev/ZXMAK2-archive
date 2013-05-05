@@ -44,12 +44,12 @@
             this.menuViewWindowed = new System.Windows.Forms.MenuItem();
             this.menuViewFullscreen = new System.Windows.Forms.MenuItem();
             this.menuViewSeparator1 = new System.Windows.Forms.MenuItem();
-            this.menuViewSmoothing = new System.Windows.Forms.MenuItem();
-            this.menuViewNoFlic = new System.Windows.Forms.MenuItem();
             this.menuViewScaleMode = new System.Windows.Forms.MenuItem();
             this.menuViewScaleModeStretch = new System.Windows.Forms.MenuItem();
             this.menuViewScaleModeKeepProportion = new System.Windows.Forms.MenuItem();
             this.menuViewScaleModeFixedPixelSize = new System.Windows.Forms.MenuItem();
+            this.menuViewSmoothing = new System.Windows.Forms.MenuItem();
+            this.menuViewNoFlic = new System.Windows.Forms.MenuItem();
             this.menuViewVBlankSync = new System.Windows.Forms.MenuItem();
             this.menuViewDisplayIcon = new System.Windows.Forms.MenuItem();
             this.menuViewDebugInfo = new System.Windows.Forms.MenuItem();
@@ -68,6 +68,7 @@
             this.menuHelpSeparator1 = new System.Windows.Forms.MenuItem();
             this.menuHelpAbout = new System.Windows.Forms.MenuItem();
             this.renderVideo = new ZXMAK2.Controls.RenderVideo();
+            this.menuViewSeparator2 = new System.Windows.Forms.MenuItem();
             this.SuspendLayout();
             // 
             // menuMain
@@ -121,6 +122,7 @@
             this.menuViewFullscreen,
             this.menuViewSeparator1,
             this.menuViewScaleMode,
+            this.menuViewSeparator2,
             this.menuViewSmoothing,
             this.menuViewNoFlic,
             this.menuViewVBlankSync,
@@ -180,18 +182,6 @@
             this.menuViewSeparator1.Index = 3;
             this.menuViewSeparator1.Text = "-";
             // 
-            // menuViewSmoothing
-            // 
-            this.menuViewSmoothing.Index = 5;
-            this.menuViewSmoothing.Text = "Smoothing";
-            this.menuViewSmoothing.Click += new System.EventHandler(this.menuViewRender_Click);
-            // 
-            // menuViewNoFlic
-            // 
-            this.menuViewNoFlic.Index = 6;
-            this.menuViewNoFlic.Text = "No Flic";
-            this.menuViewNoFlic.Click += new System.EventHandler(this.menuViewRender_Click);
-            // 
             // menuViewScaleMode
             // 
             this.menuViewScaleMode.Index = 4;
@@ -219,21 +209,33 @@
             this.menuViewScaleModeFixedPixelSize.Text = "Fixed Pixel Size";
             this.menuViewScaleModeFixedPixelSize.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
+            // menuViewSmoothing
+            // 
+            this.menuViewSmoothing.Index = 6;
+            this.menuViewSmoothing.Text = "Smoothing";
+            this.menuViewSmoothing.Click += new System.EventHandler(this.menuViewRender_Click);
+            // 
+            // menuViewNoFlic
+            // 
+            this.menuViewNoFlic.Index = 7;
+            this.menuViewNoFlic.Text = "No Flic";
+            this.menuViewNoFlic.Click += new System.EventHandler(this.menuViewRender_Click);
+            // 
             // menuViewVBlankSync
             // 
-            this.menuViewVBlankSync.Index = 7;
+            this.menuViewVBlankSync.Index = 8;
             this.menuViewVBlankSync.Text = "VBlank Sync";
             this.menuViewVBlankSync.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewDisplayIcon
             // 
-            this.menuViewDisplayIcon.Index = 8;
+            this.menuViewDisplayIcon.Index = 9;
             this.menuViewDisplayIcon.Text = "Display Icons";
             this.menuViewDisplayIcon.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewDebugInfo
             // 
-            this.menuViewDebugInfo.Index = 9;
+            this.menuViewDebugInfo.Index = 10;
             this.menuViewDebugInfo.Text = "Debug Info";
             this.menuViewDebugInfo.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
@@ -342,6 +344,11 @@
             this.renderVideo.DoubleClick += new System.EventHandler(this.renderVideo_DoubleClick);
             this.renderVideo.MouseMove += new System.Windows.Forms.MouseEventHandler(this.renderVideo_MouseMove);
             // 
+            // menuViewSeparator2
+            // 
+            this.menuViewSeparator2.Index = 5;
+            this.menuViewSeparator2.Text = "-";
+            // 
             // FormMain
             // 
             this.AllowDrop = true;
@@ -403,6 +410,7 @@
         private System.Windows.Forms.MenuItem menuViewScaleModeStretch;
         private System.Windows.Forms.MenuItem menuViewScaleModeKeepProportion;
         private System.Windows.Forms.MenuItem menuViewScaleModeFixedPixelSize;
+        private System.Windows.Forms.MenuItem menuViewSeparator2;
     }
 }
 
