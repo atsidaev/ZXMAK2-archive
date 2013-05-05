@@ -134,14 +134,4 @@ namespace ZXMAK2.Hardware.Profi
         {
         }
     }
-
-    public class MemoryProfi3XX : MemoryProfi1024
-    {
-        public override string Name { get { return "PROFI+ [3.xx]"; } }
-
-        public MemoryProfi3XX()
-            : base("Profi3XX")
-        {
-        }
-    }
 }
