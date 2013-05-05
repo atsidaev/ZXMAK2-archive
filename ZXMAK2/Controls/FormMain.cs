@@ -637,9 +637,11 @@ namespace ZXMAK2.Controls
             menuViewDisplayIcon.Checked = sender == menuViewDisplayIcon ? !menuViewDisplayIcon.Checked : menuViewDisplayIcon.Checked;
             menuViewDebugInfo.Checked = sender == menuViewDebugInfo ? !menuViewDebugInfo.Checked : menuViewDebugInfo.Checked;
 
-            var scaleMode = sender == menuViewScaleModeStretch ? ScaleMode.Stretch :
+            var scaleMode = 
+                sender == menuViewScaleModeStretch ? ScaleMode.Stretch :
                 sender == menuViewScaleModeKeepProportion ? ScaleMode.KeepProportion :
-                ScaleMode.FixedPixelSize;
+                sender == menuViewScaleModeFixedPixelSize ? ScaleMode.FixedPixelSize :
+                GetSelectedScaleMode();
             menuViewScaleModeStretch.Checked = scaleMode == ScaleMode.Stretch;
             menuViewScaleModeKeepProportion.Checked = scaleMode == ScaleMode.KeepProportion;
             menuViewScaleModeFixedPixelSize.Checked = scaleMode == ScaleMode.FixedPixelSize;
@@ -655,14 +657,20 @@ namespace ZXMAK2.Controls
             applyRenderSetting();
         }
 
+        private ScaleMode GetSelectedScaleMode()
+        {
+            return
+                menuViewScaleModeStretch.Checked ? ScaleMode.Stretch :
+                menuViewScaleModeKeepProportion.Checked ? ScaleMode.KeepProportion :
+                menuViewScaleModeFixedPixelSize.Checked ? ScaleMode.FixedPixelSize :
+                ScaleMode.FixedPixelSize;   // default value
+        }
+
         private void applyRenderSetting()
         {
-            var scaleMode = menuViewScaleModeStretch.Checked ? ScaleMode.Stretch :
-                menuViewScaleModeKeepProportion.Checked ? ScaleMode.KeepProportion :
-                ScaleMode.FixedPixelSize;
             renderVideo.Smoothing = menuViewSmoothing.Checked;
             renderVideo.NoFlic = menuViewNoFlic.Checked;
-            renderVideo.ScaleMode = scaleMode;
+            renderVideo.ScaleMode = GetSelectedScaleMode();
             renderVideo.VBlankSync = menuViewVBlankSync.Checked && !menuVmMaximumSpeed.Checked;
             renderVideo.DisplayIcon = menuViewDisplayIcon.Checked;
             renderVideo.DebugInfo = menuViewDebugInfo.Checked;

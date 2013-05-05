@@ -120,9 +120,9 @@
             this.menuViewWindowed,
             this.menuViewFullscreen,
             this.menuViewSeparator1,
+            this.menuViewScaleMode,
             this.menuViewSmoothing,
             this.menuViewNoFlic,
-            this.menuViewScaleMode,
             this.menuViewVBlankSync,
             this.menuViewDisplayIcon,
             this.menuViewDebugInfo});
@@ -182,19 +182,19 @@
             // 
             // menuViewSmoothing
             // 
-            this.menuViewSmoothing.Index = 4;
+            this.menuViewSmoothing.Index = 5;
             this.menuViewSmoothing.Text = "Smoothing";
             this.menuViewSmoothing.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewNoFlic
             // 
-            this.menuViewNoFlic.Index = 5;
+            this.menuViewNoFlic.Index = 6;
             this.menuViewNoFlic.Text = "No Flic";
             this.menuViewNoFlic.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewScaleMode
             // 
-            this.menuViewScaleMode.Index = 6;
+            this.menuViewScaleMode.Index = 4;
             this.menuViewScaleMode.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuViewScaleModeStretch,
             this.menuViewScaleModeKeepProportion,
@@ -334,7 +334,7 @@
             this.renderVideo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.renderVideo.Location = new System.Drawing.Point(0, 0);
             this.renderVideo.Name = "renderVideo";
-            this.renderVideo.Size = new System.Drawing.Size(640, 421);
+            this.renderVideo.Size = new System.Drawing.Size(640, 512);
             this.renderVideo.TabIndex = 0;
             this.renderVideo.Text = "renderVideo";
             this.renderVideo.DeviceReset += new System.EventHandler(this.renderVideo_DeviceReset);
