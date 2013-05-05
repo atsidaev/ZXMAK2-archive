@@ -15,38 +15,21 @@ namespace ZXMAK2.Controls.Configuration
     {
         private BusManager m_bmgr;
         private UlaDeviceBase m_device;
+        private DeviceEnumerator m_deviceEnumerator = new DeviceEnumerator();
 
         public CtlSettingsUla()
         {
             InitializeComponent();
-            initTypeList();
+            m_deviceEnumerator.Refresh();
+            BindTypeList();
         }
 
-        private void initTypeList()
+        private void BindTypeList()
         {
             cbxType.Items.Clear();
-            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var bdd in m_deviceEnumerator.SelectByType<IUlaDevice>())
             {
-                try
-                {
-                    foreach (Type type in asm.GetTypes())
-                    {
-                        if (type.IsClass && !type.IsAbstract && typeof(IUlaDevice).IsAssignableFrom(type))
-                        {
-                            var dev = (BusDeviceBase)Activator.CreateInstance(type);
-                            cbxType.Items.Add(dev.Name);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogAgent.Error(ex);
-                    DialogProvider.Show(
-                        string.Format("Bad plugin assembly: {0}", asm.Location),
-                        "ERROR",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
-                }
+                cbxType.Items.Add(bdd);
             }
             cbxType.Sorted = true;
         }
@@ -58,19 +41,24 @@ namespace ZXMAK2.Controls.Configuration
 
             cbxType.SelectedIndex = -1;
             if (m_device != null)
+            {
                 for (int i = 0; i < cbxType.Items.Count; i++)
-                    if (m_device.Name == (string)cbxType.Items[i])
+                {
+                    var bdd = (BusDeviceDescriptor)cbxType.Items[i];
+                    if (m_device.GetType() == bdd.Type)
                     {
                         cbxType.SelectedIndex = i;
                         break;
                     }
+                }
+            }
         }
 
         public override void Apply()
         {
-            var type = getType(cbxType.SelectedItem.ToString(), typeof(IUlaDevice));
+            var bdd = (BusDeviceDescriptor)cbxType.SelectedItem;
 
-            var ula = (IUlaDevice)Activator.CreateInstance(type);
+            var ula = (IUlaDevice)Activator.CreateInstance(bdd.Type);
             var oldUla = m_bmgr.FindDevice<IUlaDevice>();
             if (oldUla != null && oldUla.GetType() != ula.GetType())
             {
@@ -84,23 +72,6 @@ namespace ZXMAK2.Controls.Configuration
                 m_bmgr.Add(busNewUla);
             }
             Init(m_bmgr, (UlaDeviceBase)ula);
-        }
-
-        private Type getType(string typeName, Type iface)
-        {
-            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                foreach (Type type in asm.GetTypes())
-                {
-                    if (type.IsClass && !type.IsAbstract && iface.IsAssignableFrom(type))
-                    {
-                        var dev = (BusDeviceBase)Activator.CreateInstance(type);
-                        if (dev.Name == typeName)
-                            return type;
-                    }
-                }
-            }
-            return null;
         }
     }
 }

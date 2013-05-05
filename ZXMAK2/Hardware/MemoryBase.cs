@@ -181,6 +181,16 @@ namespace ZXMAK2.Hardware
             }
         }
 
+        public String RomSetName
+        {
+            get { return m_romSetName; }
+            set
+            {
+                m_romSetName = value;
+                LoadRomSet();
+            }
+        }
+
         public byte[] Window0000 { get { return MapRead0000; } }
         public byte[] Window4000 { get { return MapRead4000; } }
         public byte[] Window8000 { get { return MapRead8000; } }

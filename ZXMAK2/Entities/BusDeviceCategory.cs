@@ -14,6 +14,7 @@ namespace ZXMAK2.Entities
         Tape,
         Keyboard,
         Mouse,
+        Debugger,
         Other,
     }
 }

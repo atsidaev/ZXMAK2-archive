@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.groupBox = new System.Windows.Forms.GroupBox();
+            this.lblRomSet = new System.Windows.Forms.Label();
+            this.cbxRomSet = new System.Windows.Forms.ComboBox();
             this.lblType = new System.Windows.Forms.Label();
             this.cbxType = new System.Windows.Forms.ComboBox();
             this.groupBox.SuspendLayout();
@@ -36,6 +38,8 @@
             // 
             // groupBox
             // 
+            this.groupBox.Controls.Add(this.lblRomSet);
+            this.groupBox.Controls.Add(this.cbxRomSet);
             this.groupBox.Controls.Add(this.lblType);
             this.groupBox.Controls.Add(this.cbxType);
             this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -45,6 +49,24 @@
             this.groupBox.TabIndex = 1;
             this.groupBox.TabStop = false;
             this.groupBox.Text = "Memory Settings:";
+            // 
+            // lblRomSet
+            // 
+            this.lblRomSet.AutoSize = true;
+            this.lblRomSet.Location = new System.Drawing.Point(6, 73);
+            this.lblRomSet.Name = "lblRomSet";
+            this.lblRomSet.Size = new System.Drawing.Size(52, 13);
+            this.lblRomSet.TabIndex = 3;
+            this.lblRomSet.Text = "ROM-set:";
+            // 
+            // cbxRomSet
+            // 
+            this.cbxRomSet.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxRomSet.FormattingEnabled = true;
+            this.cbxRomSet.Location = new System.Drawing.Point(6, 89);
+            this.cbxRomSet.Name = "cbxRomSet";
+            this.cbxRomSet.Size = new System.Drawing.Size(177, 21);
+            this.cbxRomSet.TabIndex = 2;
             // 
             // lblType
             // 
@@ -63,13 +85,14 @@
             this.cbxType.Name = "cbxType";
             this.cbxType.Size = new System.Drawing.Size(177, 21);
             this.cbxType.TabIndex = 0;
+            this.cbxType.SelectedIndexChanged += new System.EventHandler(this.cbxType_SelectedIndexChanged);
             // 
-            // ControlSettingsMemory
+            // CtlSettingsMemory
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBox);
-            this.Name = "ControlSettingsMemory";
+            this.Name = "CtlSettingsMemory";
             this.Size = new System.Drawing.Size(300, 150);
             this.groupBox.ResumeLayout(false);
             this.groupBox.PerformLayout();
@@ -82,5 +105,7 @@
         private System.Windows.Forms.GroupBox groupBox;
         private System.Windows.Forms.Label lblType;
         private System.Windows.Forms.ComboBox cbxType;
+        private System.Windows.Forms.Label lblRomSet;
+        private System.Windows.Forms.ComboBox cbxRomSet;
     }
 }

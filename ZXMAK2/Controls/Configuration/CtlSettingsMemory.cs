@@ -6,6 +6,7 @@ using System.Reflection;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
+using ZXMAK2.Hardware;
 
 namespace ZXMAK2.Controls.Configuration
 {
@@ -13,28 +14,30 @@ namespace ZXMAK2.Controls.Configuration
     {
         private BusManager m_bmgr;
         private IMemoryDevice m_device;
+        private DeviceEnumerator m_deviceEnumerator = new DeviceEnumerator();
 
         public CtlSettingsMemory()
         {
             InitializeComponent();
-            initTypeList();
+            m_deviceEnumerator.Refresh();
+            BindTypeList();
         }
 
-        private void initTypeList()
+        private void BindTypeList()
         {
             cbxType.Items.Clear();
-            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var bdd in m_deviceEnumerator.SelectByType<IMemoryDevice>())
             {
-                foreach (Type type in asm.GetTypes())
-                {
-                    if (type.IsClass && !type.IsAbstract && typeof(IMemoryDevice).IsAssignableFrom(type))
-                    {
-                        var dev = (BusDeviceBase)Activator.CreateInstance(type);
-                        cbxType.Items.Add(dev.Name);
-                    }
-                }
+                cbxType.Items.Add(bdd);
             }
             cbxType.Sorted = true;
+
+            cbxRomSet.Items.Clear();
+            foreach (var name in RomPack.GetRomSetNames())
+            {
+                cbxRomSet.Items.Add(name);
+            }
+            cbxRomSet.Sorted = true;
         }
 
         public void Init(BusManager bmgr, IMemoryDevice device)
@@ -42,47 +45,72 @@ namespace ZXMAK2.Controls.Configuration
             m_bmgr = bmgr;
             m_device = device;
 
-            BusDeviceBase busDevice = (BusDeviceBase)device;
+            var busDevice = (BusDeviceBase)device;
             cbxType.SelectedIndex = -1;
-            if (m_device != null)
-                for (int i = 0; i < cbxType.Items.Count; i++)
-                    if (busDevice.Name == (string)cbxType.Items[i])
+            if (busDevice != null)
+            {
+                for (var i = 0; i < cbxType.Items.Count; i++)
+                {
+                    var bdd = (BusDeviceDescriptor)cbxType.Items[i];
+                    if (busDevice.GetType() == bdd.Type)
                     {
                         cbxType.SelectedIndex = i;
                         break;
                     }
+                }
+            }
+            cbxType_SelectedIndexChanged(this, EventArgs.Empty);
         }
 
         public override void Apply()
         {
-            var type = getType(cbxType.SelectedItem.ToString(), typeof(IMemoryDevice));
+            var bdd = (BusDeviceDescriptor)cbxType.SelectedItem;
 
-            var memory = (IMemoryDevice)Activator.CreateInstance(type);
-            var oldMemory = m_bmgr.FindDevice<IMemoryDevice>();
-            if (oldMemory != null && oldMemory.GetType() != memory.GetType())
+            var memory = m_bmgr.FindDevice<IMemoryDevice>();
+            if (memory != null && 
+                memory.GetType() != bdd.Type)
             {
-                var busOldMemory = (BusDeviceBase)oldMemory;
-                var busNewMemory = (BusDeviceBase)memory;
-                if (busOldMemory != null)
-                {
-                    m_bmgr.Remove(busOldMemory);
-                }
-                m_bmgr.Add(busNewMemory);
+                m_bmgr.Remove((BusDeviceBase)memory);
+                memory = (IMemoryDevice)Activator.CreateInstance(bdd.Type);
+                m_bmgr.Add((BusDeviceBase)memory);
+            }
+            var memoryBase = memory as MemoryBase;
+            if (memoryBase != null && cbxRomSet.SelectedItem!=null)
+            {
+                memoryBase.RomSetName = (String)cbxRomSet.SelectedItem;
             }
             Init(m_bmgr, memory);
         }
 
-        private Type getType(string typeName, Type iface)
+        private void cbxType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
-                foreach (Type type in asm.GetTypes())
-                    if (type.IsClass && !type.IsAbstract && iface.IsAssignableFrom(type))
-                    {
-                        BusDeviceBase dev = (BusDeviceBase)Activator.CreateInstance(type);
-                        if (dev.Name == typeName)
-                            return type;
-                    }
-            return null;
+            var bdd = (BusDeviceDescriptor)cbxType.SelectedItem;
+
+            if (bdd==null || 
+                !typeof(MemoryBase).IsAssignableFrom(bdd.Type))
+            {
+                lblRomSet.Visible = false;
+                cbxRomSet.Visible = false;
+                return;
+            }
+            MemoryBase memory = null;
+            if (bdd.Type == m_device.GetType())
+            {
+                memory = (MemoryBase)m_device;
+            }
+            if (memory == null)
+            {
+                memory = (MemoryBase)Activator.CreateInstance(bdd.Type);
+            }
+            cbxRomSet.SelectedIndex = -1;
+            for (var i = 0; i < cbxRomSet.Items.Count; i++)
+            {
+                if (memory.RomSetName == (String)cbxRomSet.Items[i])
+                {
+                    cbxRomSet.SelectedIndex = i;
+                    break;
+                }
+            }
         }
     }
 }
