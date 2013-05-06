@@ -41,7 +41,7 @@ namespace ZXMAK2.Hardware.Pentagon
 
         protected override void OnVolumeChanged(int oldVolume, int newVolume)
         {
-            m_mult = ((0xFFFF / 0xFF) * newVolume) / 100;
+            m_mult = (0xFFFF * newVolume) / (100 * 0xFF);
         }
     }
 }
