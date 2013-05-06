@@ -9,7 +9,7 @@ namespace ZXMAK2.Hardware.Pentagon
         #region IBusDevice
 
         public override string Name { get { return "PENTAGON COVOX"; } }
-        public override string Description { get { return "PENTAGON COVOX \n\rPort #FB - covox"; } }
+        public override string Description { get { return "PENTAGON COVOX \r\nPort #FB - covox"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Sound; } }
 
         public override void BusInit(IBusManager bmgr)
