@@ -30,6 +30,7 @@ namespace ZXMAK2.Engine
         private BusNoMreqProc[] m_mapWriteNoMreq;
         private BusCycleProc m_preCycle;
         private BusSignalProc m_reset;
+        private BusRqProc m_nmiRq;
         private BusSignalProc m_nmiAck;
         private BusSignalProc m_intAck;
         private BusFrameEventHandler m_beginFrame;
@@ -41,6 +42,7 @@ namespace ZXMAK2.Engine
         public event EventHandler BusConnected;
         public event EventHandler BusDisconnect;
 
+        private int m_pendingNmi;
         public RzxHandler RzxHandler { get; set; }
         public IconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
         public IconDescriptor IconPause { get { return m_iconPause; } }
@@ -91,6 +93,7 @@ namespace ZXMAK2.Engine
             m_mapWriteMemory = null;
             m_mapWritePort = null;
             m_reset = null;
+            m_nmiRq = null;
             m_nmiAck = null;
             m_intAck = null;
             m_preCycle = null;
@@ -160,12 +163,17 @@ namespace ZXMAK2.Engine
             m_reset += proc;
         }
 
-        void IBusManager.SubscribeNMIACK(BusSignalProc proc)
+        void IBusManager.SubscribeNmiRq(BusRqProc proc)
+        {
+            m_nmiRq += proc;
+        }
+
+        void IBusManager.SubscribeNmiAck(BusSignalProc proc)
         {
             m_nmiAck += proc;
         }
 
-        void IBusManager.SubscribeINTACK(BusSignalProc proc)
+        void IBusManager.SubscribeIntAck(BusSignalProc proc)
         {
             m_intAck += proc;
         }
@@ -305,6 +313,7 @@ namespace ZXMAK2.Engine
 
         private void RESET()
         {
+            m_pendingNmi = 0;
             RzxHandler.Reset();
             if (m_reset != null)
                 m_reset();
@@ -391,6 +400,7 @@ namespace ZXMAK2.Engine
             m_mapWriteNoMreq = null;
             m_preCycle = null;
             m_reset = null;
+            m_nmiRq = null;
             m_nmiAck = null;
             m_intAck = null;
             m_beginFrame = null;
@@ -416,6 +426,7 @@ namespace ZXMAK2.Engine
             m_mapWriteNoMreq = new BusNoMreqProc[0x10000];
             m_preCycle = null;
             m_reset = null;
+            m_nmiRq = null;
             m_nmiAck = null;
             m_intAck = null;
             m_beginFrame = null;
@@ -558,9 +569,30 @@ namespace ZXMAK2.Engine
             m_cpu.INT = RzxHandler.IsPlayback ?
                 RzxHandler.CheckInt(frameTact) :
                 m_ula.CheckInt(frameTact);
+            if (m_pendingNmi > 0)
+            {
+                m_pendingNmi--;
+                //var allow = true;
+                var e = new BusCancelArgs();
+                if (m_nmiRq != null)
+                {
+                    m_nmiRq(e);
+                }
+                if (!e.Cancel)
+                {
+                    m_cpu.NMI = true;
+                    m_pendingNmi = 0;
+                }
+            }
+            else
+            {
+                m_cpu.NMI = false;
+            }
 
             if (m_preCycle != null)
+            {
                 m_preCycle(frameTact);
+            }
             m_cpu.ExecCycle();
         }
 
@@ -712,5 +744,9 @@ namespace ZXMAK2.Engine
                 x.BusOrder > y.BusOrder ? 1 : 0;
         }
 
+        public void RequestNmi(int timeOut)
+        {
+            m_pendingNmi = timeOut;
+        }
     }
 }

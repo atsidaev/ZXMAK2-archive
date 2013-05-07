@@ -18,8 +18,9 @@ namespace ZXMAK2.Hardware.Quorum
 
             bmgr.SubscribeWRIO(0x801A, 0x7FFD & 0x801A, busWritePort7FFD);
             bmgr.SubscribeWRIO(0x0099, 0x0000 & 0x0099, busWritePort0000);
-            bmgr.SubscribeRESET(busReset);
-            bmgr.SubscribeNMIACK(busNmi);
+            bmgr.SubscribeRESET(BusReset);
+            bmgr.SubscribeNmiRq(BusNmiRq);
+            bmgr.SubscribeNmiAck(BusNmiAck);
         }
 
         #endregion
@@ -99,13 +100,18 @@ namespace ZXMAK2.Hardware.Quorum
             CMR1 = value;
         }
 
-        private void busReset()
+        private void BusReset()
         {
             CMR0 = 0;
             CMR1 = 0;
         }
 
-        private void busNmi()
+        private void BusNmiRq(BusCancelArgs e)
+        {
+            e.Cancel = (m_cpu.regs.PC&0xC000) == 0;
+        }
+        
+        private void BusNmiAck()
         {
             CMR1 = 0;
         }

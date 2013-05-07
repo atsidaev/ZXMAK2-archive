@@ -125,7 +125,8 @@ namespace ZXMAK2.Hardware.Sprinter
             BusSubscribeWD93IO(bmgr);
 
             bmgr.SubscribeRESET(BusReset);
-            bmgr.SubscribeNMIACK(BusNmi);
+            bmgr.SubscribeNmiRq(BusNmiRq);
+            bmgr.SubscribeNmiAck(BusNmiAck);
 
             foreach (FormatSerializer fs in FDD[0].SerializeManager.GetSerializers())
                 bmgr.AddSerializer(fs);
@@ -351,7 +352,12 @@ namespace ZXMAK2.Hardware.Sprinter
             DOSEN = false;
         }
 
-        protected virtual void BusNmi()
+        protected virtual void BusNmiRq(BusCancelArgs e)
+        {
+            e.Cancel = DOSEN;
+        }
+
+        protected virtual void BusNmiAck()
         {
             DOSEN = true;
         }

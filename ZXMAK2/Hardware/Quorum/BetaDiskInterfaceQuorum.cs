@@ -81,7 +81,11 @@ namespace ZXMAK2.Hardware.Quorum
             }
         }
 
-        protected override void BusNmi()
+        protected override void BusNmiRq(BusCancelArgs e)
+        {
+        }
+
+        protected override void BusNmiAck()
         {
         }
 
