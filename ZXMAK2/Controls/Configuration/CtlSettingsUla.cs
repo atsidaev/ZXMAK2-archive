@@ -15,19 +15,17 @@ namespace ZXMAK2.Controls.Configuration
     {
         private BusManager m_bmgr;
         private UlaDeviceBase m_device;
-        private DeviceEnumerator m_deviceEnumerator = new DeviceEnumerator();
 
         public CtlSettingsUla()
         {
             InitializeComponent();
-            m_deviceEnumerator.Refresh();
             BindTypeList();
         }
 
         private void BindTypeList()
         {
             cbxType.Items.Clear();
-            foreach (var bdd in m_deviceEnumerator.SelectByType<IUlaDevice>())
+            foreach (var bdd in DeviceEnumerator.SelectByType<IUlaDevice>())
             {
                 cbxType.Items.Add(bdd);
             }

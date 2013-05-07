@@ -13,8 +13,6 @@ namespace ZXMAK2.Controls
 {
     public partial class FormAddDeviceWizard : Form
     {
-        private DeviceEnumerator m_deviceEnumerator = new DeviceEnumerator();
-
         public FormAddDeviceWizard()
         {
             InitializeComponent();
@@ -24,7 +22,6 @@ namespace ZXMAK2.Controls
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            m_deviceEnumerator.Refresh();
             BindCategoryList();
             tabControl_SelectedIndexChanged(this, EventArgs.Empty);
         }
@@ -125,7 +122,7 @@ namespace ZXMAK2.Controls
             lstCategory.Items.Clear();
             lstCategory.SelectedIndices.Clear();
             var list = new List<BusDeviceCategory>();
-            foreach (var bdd in m_deviceEnumerator.SelectWithout(GetIgnoreTypes()))
+            foreach (var bdd in DeviceEnumerator.SelectWithout(GetIgnoreTypes()))
             {
                 if (!list.Contains(bdd.Category))
                 {
@@ -155,7 +152,7 @@ namespace ZXMAK2.Controls
             }
             var category = (BusDeviceCategory)lstCategory.Items[catIndex].Tag;
             var list = new List<BusDeviceDescriptor>();
-            list.AddRange(m_deviceEnumerator.SelectByCategoryWithout(category, GetIgnoreTypes()));
+            list.AddRange(DeviceEnumerator.SelectByCategoryWithout(category, GetIgnoreTypes()));
             list.Sort(DeviceNameComparison);
             foreach (var bdd in list)
             {
