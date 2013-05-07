@@ -16,7 +16,7 @@ namespace ZXMAK2.Hardware.Lec
         public override void BusInit(Interfaces.IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeWRIO(0x8002, 0x00FD & 0x8002, busWriteBdiHack);
+            bmgr.SubscribeWrIo(0x8002, 0x00FD & 0x8002, busWriteBdiHack);
         }
 
         #endregion

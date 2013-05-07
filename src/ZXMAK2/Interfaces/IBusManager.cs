@@ -9,14 +9,14 @@ namespace ZXMAK2.Interfaces
 {
 	public interface IBusManager
 	{
-		void SubscribeRDMEM_M1(int addrMask, int maskedValue, BusReadProc proc);
-		void SubscribeRDMEM(int addrMask, int maskedValue, BusReadProc proc);
-		void SubscribeWRMEM(int addrMask, int maskedValue, BusWriteProc proc);
-		void SubscribeRDIO(int addrMask, int maskedValue, BusReadIoProc proc);
-		void SubscribeWRIO(int addrMask, int maskedValue, BusWriteIoProc proc);
-		void SubscribeRDNOMREQ(int addrMask, int maskedValue, BusNoMreqProc proc);
-		void SubscribeWRNOMREQ(int addrMask, int maskedValue, BusNoMreqProc proc);
-		void SubscribeRESET(BusSignalProc proc);
+		void SubscribeRdMemM1(int addrMask, int maskedValue, BusReadProc proc);
+		void SubscribeRdMem(int addrMask, int maskedValue, BusReadProc proc);
+		void SubscribeWrMem(int addrMask, int maskedValue, BusWriteProc proc);
+		void SubscribeRdIo(int addrMask, int maskedValue, BusReadIoProc proc);
+		void SubscribeWrIo(int addrMask, int maskedValue, BusWriteIoProc proc);
+		void SubscribeRdNoMreq(int addrMask, int maskedValue, BusNoMreqProc proc);
+		void SubscribeWrNoMreq(int addrMask, int maskedValue, BusNoMreqProc proc);
+		void SubscribeReset(BusSignalProc proc);
         void SubscribeNmiRq(BusRqProc proc);
         void SubscribeNmiAck(BusSignalProc proc);
 		void SubscribeIntAck(BusSignalProc proc);

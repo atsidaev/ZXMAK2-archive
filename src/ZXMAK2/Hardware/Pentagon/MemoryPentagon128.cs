@@ -16,8 +16,8 @@ namespace ZXMAK2.Hardware.Pentagon
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeWRIO(0x8002, 0x0000, writePort7FFD);
-            bmgr.SubscribeRESET(busReset);
+            bmgr.SubscribeWrIo(0x8002, 0x0000, writePort7FFD);
+            bmgr.SubscribeReset(busReset);
         }
 
         #endregion

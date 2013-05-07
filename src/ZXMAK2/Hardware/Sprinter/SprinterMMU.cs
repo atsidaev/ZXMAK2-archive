@@ -219,44 +219,44 @@ namespace ZXMAK2.Hardware.Sprinter
             {
                 throw new ApplicationException("SprinterBDI not found");
             }
-            bmgr.SubscribeWRIO(0x0000, 0x0000, new BusWriteIoProc(this.WRDCP));  //write to DCP Port
-            bmgr.SubscribeRDIO(0x0000, 0x0000, new BusReadIoProc(this.RDDCP));    //read from DCP port
-            bmgr.SubscribeWRIO(0x00ff, 0x0082, new BusWriteIoProc(this.writePort82h));  //write PAGE0
-            bmgr.SubscribeRDIO(0x00ff, 0x0082, new BusReadIoProc(this.readPort82h));    //read PAGE0
-            bmgr.SubscribeWRIO(0x00ff, 0x00A2, new BusWriteIoProc(this.writePortA2h));  //write PAGE1
-            bmgr.SubscribeRDIO(0x00ff, 0x00A2, new BusReadIoProc(this.readPortA2h));    //read PAGE1
-            bmgr.SubscribeWRIO(0x00ff, 0x00C2, new BusWriteIoProc(this.writePortC2h));  //write PAGE2
-            bmgr.SubscribeRDIO(0x00ff, 0x00C2, new BusReadIoProc(this.readPortC2h));    //read PAGE2
-            bmgr.SubscribeWRIO(0x00ff, 0x00E2, new BusWriteIoProc(this.writePortE2h));  //write PAGE3
-            bmgr.SubscribeRDIO(0x00ff, 0x00E2, new BusReadIoProc(this.readPortE2h));    //read PAGE3
-            bmgr.SubscribeWRIO(0xd027, 0x5025, new BusWriteIoProc(this.writePort7FFDh));    //write 7FFDh
-            bmgr.SubscribeWRIO(0xd027, 0x1025, new BusWriteIoProc(this.writePort1FFDh));  //write 1FFDh
-            bmgr.SubscribeRDIO(0x00ff, 0x00fb, new BusReadIoProc(this.readPortFBh));  //read FBh  Open Cash
-            bmgr.SubscribeRDIO(0x00ff, 0x007b, new BusReadIoProc(this.readPort7Bh));  //read 7Bh  Close Cash
-            bmgr.SubscribeWRIO(0x00BD, 0x003c, new BusWriteIoProc(this.writePort7Ch));  //write 7Ch
-            bmgr.SubscribeWRIO(0x00FF, 0x0089, new BusWriteIoProc(this.writePort89h));  //write PORTY
-            bmgr.SubscribeWRIO(0x00FF, 0x00C9, new BusWriteIoProc(this.writePortC9h));  //write C9h
-            bmgr.SubscribeWRIO(0x00FF, 0x00E9, new BusWriteIoProc(this.writePortE9h));  //write E9h
-            bmgr.SubscribeRDIO(0x00ff, 0x0089, new BusReadIoProc(this.readPort89h));  //read PORTY
-            bmgr.SubscribeRDIO(0x00ff, 0x00E9, new BusReadIoProc(this.readPortE9h));  //read E9h
-            bmgr.SubscribeRDIO(0x00ff, 0x00C9, new BusReadIoProc(this.readPortC9h));  //read C9h
-            bmgr.SubscribeWRMEM(0xC000, 0x0000, new BusWriteProc(this.WriteMem0000));  //write 
-            bmgr.SubscribeWRMEM(0xC000, 0x4000, new BusWriteProc(this.WriteMem4000));  //write 
-            bmgr.SubscribeWRMEM(0xC000, 0x8000, new BusWriteProc(this.WriteMem8000));  //write 
-            bmgr.SubscribeWRMEM(0xC000, 0xC000, new BusWriteProc(this.WriteMemC000));  //write
-            bmgr.SubscribeRDMEM(0xC000, 0x0000, new BusReadProc(this.ReadMem0000));  //read
-            bmgr.SubscribeRDMEM(0xC000, 0x8000, new BusReadProc(this.ReadMem8000));  //read
-            bmgr.SubscribeRDMEM(0xC000, 0xC000, new BusReadProc(this.ReadMemC000));  //read
-            bmgr.SubscribeRDMEM(0xC000, 0x4000, new BusReadProc(this.ReadMem4000));  //read
-            bmgr.SubscribeRDIO(0xFFFF, 0, new BusReadIoProc(this.readPort00h));  //read 0
-            bmgr.SubscribeRDMEM_M1(0x0000, 0x0000, new BusReadProc(this.Accelerator));
-            bmgr.SubscribeRDMEM(0x0000, 0x0000, new BusReadProc(this.AccelRead));
-            bmgr.SubscribeWRMEM(0x0000, 0x0000, new BusWriteProc(this.AccelWrite));
+            bmgr.SubscribeWrIo(0x0000, 0x0000, new BusWriteIoProc(this.WRDCP));  //write to DCP Port
+            bmgr.SubscribeRdIo(0x0000, 0x0000, new BusReadIoProc(this.RDDCP));    //read from DCP port
+            bmgr.SubscribeWrIo(0x00ff, 0x0082, new BusWriteIoProc(this.writePort82h));  //write PAGE0
+            bmgr.SubscribeRdIo(0x00ff, 0x0082, new BusReadIoProc(this.readPort82h));    //read PAGE0
+            bmgr.SubscribeWrIo(0x00ff, 0x00A2, new BusWriteIoProc(this.writePortA2h));  //write PAGE1
+            bmgr.SubscribeRdIo(0x00ff, 0x00A2, new BusReadIoProc(this.readPortA2h));    //read PAGE1
+            bmgr.SubscribeWrIo(0x00ff, 0x00C2, new BusWriteIoProc(this.writePortC2h));  //write PAGE2
+            bmgr.SubscribeRdIo(0x00ff, 0x00C2, new BusReadIoProc(this.readPortC2h));    //read PAGE2
+            bmgr.SubscribeWrIo(0x00ff, 0x00E2, new BusWriteIoProc(this.writePortE2h));  //write PAGE3
+            bmgr.SubscribeRdIo(0x00ff, 0x00E2, new BusReadIoProc(this.readPortE2h));    //read PAGE3
+            bmgr.SubscribeWrIo(0xd027, 0x5025, new BusWriteIoProc(this.writePort7FFDh));    //write 7FFDh
+            bmgr.SubscribeWrIo(0xd027, 0x1025, new BusWriteIoProc(this.writePort1FFDh));  //write 1FFDh
+            bmgr.SubscribeRdIo(0x00ff, 0x00fb, new BusReadIoProc(this.readPortFBh));  //read FBh  Open Cash
+            bmgr.SubscribeRdIo(0x00ff, 0x007b, new BusReadIoProc(this.readPort7Bh));  //read 7Bh  Close Cash
+            bmgr.SubscribeWrIo(0x00BD, 0x003c, new BusWriteIoProc(this.writePort7Ch));  //write 7Ch
+            bmgr.SubscribeWrIo(0x00FF, 0x0089, new BusWriteIoProc(this.writePort89h));  //write PORTY
+            bmgr.SubscribeWrIo(0x00FF, 0x00C9, new BusWriteIoProc(this.writePortC9h));  //write C9h
+            bmgr.SubscribeWrIo(0x00FF, 0x00E9, new BusWriteIoProc(this.writePortE9h));  //write E9h
+            bmgr.SubscribeRdIo(0x00ff, 0x0089, new BusReadIoProc(this.readPort89h));  //read PORTY
+            bmgr.SubscribeRdIo(0x00ff, 0x00E9, new BusReadIoProc(this.readPortE9h));  //read E9h
+            bmgr.SubscribeRdIo(0x00ff, 0x00C9, new BusReadIoProc(this.readPortC9h));  //read C9h
+            bmgr.SubscribeWrMem(0xC000, 0x0000, new BusWriteProc(this.WriteMem0000));  //write 
+            bmgr.SubscribeWrMem(0xC000, 0x4000, new BusWriteProc(this.WriteMem4000));  //write 
+            bmgr.SubscribeWrMem(0xC000, 0x8000, new BusWriteProc(this.WriteMem8000));  //write 
+            bmgr.SubscribeWrMem(0xC000, 0xC000, new BusWriteProc(this.WriteMemC000));  //write
+            bmgr.SubscribeRdMem(0xC000, 0x0000, new BusReadProc(this.ReadMem0000));  //read
+            bmgr.SubscribeRdMem(0xC000, 0x8000, new BusReadProc(this.ReadMem8000));  //read
+            bmgr.SubscribeRdMem(0xC000, 0xC000, new BusReadProc(this.ReadMemC000));  //read
+            bmgr.SubscribeRdMem(0xC000, 0x4000, new BusReadProc(this.ReadMem4000));  //read
+            bmgr.SubscribeRdIo(0xFFFF, 0, new BusReadIoProc(this.readPort00h));  //read 0
+            bmgr.SubscribeRdMemM1(0x0000, 0x0000, new BusReadProc(this.Accelerator));
+            bmgr.SubscribeRdMem(0x0000, 0x0000, new BusReadProc(this.AccelRead));
+            bmgr.SubscribeWrMem(0x0000, 0x0000, new BusWriteProc(this.AccelWrite));
 
 #if Debug
             bmgr.SubscribeRDMEM_M1(0x0000, 0x0000, new BusReadProc(this.readRamM1));  //read operator from memory
 #endif
-            bmgr.SubscribeRESET(new BusSignalProc(this.busReset));
+            bmgr.SubscribeReset(new BusSignalProc(this.busReset));
 
 
         }

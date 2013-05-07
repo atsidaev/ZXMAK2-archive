@@ -16,9 +16,9 @@ namespace ZXMAK2.Hardware.Quorum
             base.BusInit(bmgr);
             m_cpu = bmgr.CPU;
 
-            bmgr.SubscribeWRIO(0x801A, 0x7FFD & 0x801A, busWritePort7FFD);
-            bmgr.SubscribeWRIO(0x0099, 0x0000 & 0x0099, busWritePort0000);
-            bmgr.SubscribeRESET(BusReset);
+            bmgr.SubscribeWrIo(0x801A, 0x7FFD & 0x801A, busWritePort7FFD);
+            bmgr.SubscribeWrIo(0x0099, 0x0000 & 0x0099, busWritePort0000);
+            bmgr.SubscribeReset(BusReset);
             bmgr.SubscribeNmiRq(BusNmiRq);
             bmgr.SubscribeNmiAck(BusNmiAck);
         }

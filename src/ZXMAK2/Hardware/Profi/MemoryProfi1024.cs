@@ -20,13 +20,13 @@ namespace ZXMAK2.Hardware.Profi
             m_cpu = bmgr.CPU;
             m_ulaProfi = bmgr.FindDevice<UlaProfi3XX>();
 
-            bmgr.SubscribeWRIO(0x8002, 0x0000, writePort7FFD);
-            bmgr.SubscribeWRIO(0xFFFF, 0xDFFD, writePortDFFD);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, readRamM1);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0x8000, readRamM1);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0xC000, readRamM1);
+            bmgr.SubscribeWrIo(0x8002, 0x0000, writePort7FFD);
+            bmgr.SubscribeWrIo(0xFFFF, 0xDFFD, writePortDFFD);
+            bmgr.SubscribeRdMemM1(0xC000, 0x4000, readRamM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x8000, readRamM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0xC000, readRamM1);
 
-            bmgr.SubscribeRESET(busReset);
+            bmgr.SubscribeReset(busReset);
         }
 
         #endregion

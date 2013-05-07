@@ -18,16 +18,16 @@ namespace ZXMAK2.Hardware.Atm
             m_cpu = bmgr.CPU;
             m_ulaAtm = base.m_ula as UlaAtm450;
 
-            bmgr.SubscribeRDIO(0x0001, 0x0000, busReadPortFE);      // bit Z emulation
-            bmgr.SubscribeWRIO(0x0001, 0x0000, busWritePortFE);
-            bmgr.SubscribeRDIO(0x0004, 0x00FB & 0x0004, busReadPortFB);   // CPSYS [(addr & 0x7F)==0x7B]
+            bmgr.SubscribeRdIo(0x0001, 0x0000, busReadPortFE);      // bit Z emulation
+            bmgr.SubscribeWrIo(0x0001, 0x0000, busWritePortFE);
+            bmgr.SubscribeRdIo(0x0004, 0x00FB & 0x0004, busReadPortFB);   // CPSYS [(addr & 0x7F)==0x7B]
 
-            bmgr.SubscribeWRIO(0x8202, 0x7FFD & 0x8202, busWritePort7FFD);
-            bmgr.SubscribeWRIO(0x8202, 0xFDFD & 0x8202, busWritePortFDFD);
+            bmgr.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, busWritePort7FFD);
+            bmgr.SubscribeWrIo(0x8202, 0xFDFD & 0x8202, busWritePortFDFD);
 
-            bmgr.SubscribeWRIO(0x8202, 0x7DFD & 0x8202, busWritePort7DFD); // atm_writepal(val);
+            bmgr.SubscribeWrIo(0x8202, 0x7DFD & 0x8202, busWritePort7DFD); // atm_writepal(val);
 
-            bmgr.SubscribeRESET(busReset);
+            bmgr.SubscribeReset(busReset);
         }
 
         #endregion

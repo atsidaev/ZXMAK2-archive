@@ -15,7 +15,7 @@ namespace ZXMAK2.Hardware.General
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeRDIO(0x00e0, 0x0000, readPort1F);
+            bmgr.SubscribeRdIo(0x00e0, 0x0000, readPort1F);
         }
 
         public override void BusConnect()

@@ -17,8 +17,8 @@ namespace ZXMAK2.Hardware.Profi
             base.BusInit(bmgr);
             m_memory = bmgr.FindDevice<IMemoryDevice>();
 
-            bmgr.SubscribeWRIO(0x00FF, 0x003F, WritePortR);
-            bmgr.SubscribeWRIO(0x00FF, 0x005F, WritePortL);
+            bmgr.SubscribeWrIo(0x00FF, 0x003F, WritePortR);
+            bmgr.SubscribeWrIo(0x00FF, 0x005F, WritePortL);
         }
 
         #endregion

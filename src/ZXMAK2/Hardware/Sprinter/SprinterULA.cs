@@ -61,7 +61,7 @@ namespace ZXMAK2.Hardware.Sprinter
             base.BusInit(bmgr);
             this.m_cpu = bmgr.CPU;
             //bmgr.SubscribeWRIO(0x00FF, 0x0089, new BusWriteIoProc(this.writePort89h));  //write 89h
-            bmgr.SubscribeRESET(new BusSignalProc(this.busReset));
+            bmgr.SubscribeReset(new BusSignalProc(this.busReset));
 
         }
 

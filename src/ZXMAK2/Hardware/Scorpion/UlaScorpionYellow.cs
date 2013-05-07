@@ -12,9 +12,9 @@ namespace ZXMAK2.Hardware.Scorpion
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, busRDM1);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0x8000, busRDM1);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0xC000, busRDM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x4000, busRDM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x8000, busRDM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0xC000, busRDM1);
         }
 
         #endregion

@@ -28,19 +28,19 @@ namespace ZXMAK2.Hardware.General
             if (memory is ZXMAK2.Hardware.Spectrum.MemorySpectrum128 ||
                 memory is ZXMAK2.Hardware.Spectrum.MemoryPlus3)
             {
-                bmgr.SubscribeWRIO(0xC002, 0xC000, writePortAddr);   // #FFFD (reg#)
-                bmgr.SubscribeRDIO(0xC002, 0xC000, readPortData);    // #FFFD (rd data/reg#)
-                bmgr.SubscribeWRIO(0xC002, 0x8000, writePortData);   // #BFFD (data)
+                bmgr.SubscribeWrIo(0xC002, 0xC000, writePortAddr);   // #FFFD (reg#)
+                bmgr.SubscribeRdIo(0xC002, 0xC000, readPortData);    // #FFFD (rd data/reg#)
+                bmgr.SubscribeWrIo(0xC002, 0x8000, writePortData);   // #BFFD (data)
             }
             else
             {
-                bmgr.SubscribeWRIO(0xC0FF, 0xC0FD, writePortAddr);   // #FFFD (reg#)
-                bmgr.SubscribeRDIO(0xC0FF, 0xC0FD, readPortData);    // #FFFD (rd data/reg#)
-                bmgr.SubscribeWRIO(0xC0FF, 0x80FD, writePortData);   // #BFFD (data)
+                bmgr.SubscribeWrIo(0xC0FF, 0xC0FD, writePortAddr);   // #FFFD (reg#)
+                bmgr.SubscribeRdIo(0xC0FF, 0xC0FD, readPortData);    // #FFFD (rd data/reg#)
+                bmgr.SubscribeWrIo(0xC0FF, 0x80FD, writePortData);   // #BFFD (data)
             }
 
 
-            bmgr.SubscribeRESET(busReset);
+            bmgr.SubscribeReset(busReset);
 
             bmgr.SubscribeBeginFrame(BeginFrame);
             bmgr.SubscribeEndFrame(EndFrame);

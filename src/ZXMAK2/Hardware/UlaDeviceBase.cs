@@ -29,12 +29,12 @@ namespace ZXMAK2.Hardware
             CPU = bmgr.CPU;
             Memory = bmgr.FindDevice<IMemoryDevice>();
 
-            bmgr.SubscribeWRMEM(0xC000, 0x0000, WriteMem0000);
-            bmgr.SubscribeWRMEM(0xC000, 0x4000, WriteMem4000);
-            bmgr.SubscribeWRMEM(0xC000, 0x8000, WriteMem8000);
-            bmgr.SubscribeWRMEM(0xC000, 0xC000, WriteMemC000);
+            bmgr.SubscribeWrMem(0xC000, 0x0000, WriteMem0000);
+            bmgr.SubscribeWrMem(0xC000, 0x4000, WriteMem4000);
+            bmgr.SubscribeWrMem(0xC000, 0x8000, WriteMem8000);
+            bmgr.SubscribeWrMem(0xC000, 0xC000, WriteMemC000);
 
-            bmgr.SubscribeWRIO(0x0001, 0x0000, WritePortFE);
+            bmgr.SubscribeWrIo(0x0001, 0x0000, WritePortFE);
 
             bmgr.SubscribeBeginFrame(BeginFrame);
             bmgr.SubscribeEndFrame(EndFrame);

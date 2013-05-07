@@ -31,8 +31,8 @@ namespace ZXMAK2.Hardware.Quorum
         public override void BusInit(IBusManager bmgr)
         {
             m_busManager = bmgr;
-            bmgr.SubscribeRDIO(0x99, 0x98, readPortFE);
-            bmgr.SubscribeRDIO(0x99, 0x18, readPort7E);
+            bmgr.SubscribeRdIo(0x99, 0x98, readPortFE);
+            bmgr.SubscribeRdIo(0x99, 0x18, readPort7E);
 
             m_cpu = bmgr.CPU;
         }

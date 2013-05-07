@@ -18,18 +18,18 @@ namespace ZXMAK2.Hardware.Spectrum
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeRDMEM(0xC000, 0x4000, ReadMem4000);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, ReadMem4000);
-            bmgr.SubscribeRDMEM(0xC000, 0xC000, ReadMemC000);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0xC000, ReadMemC000);
+            bmgr.SubscribeRdMem(0xC000, 0x4000, ReadMem4000);
+            bmgr.SubscribeRdMemM1(0xC000, 0x4000, ReadMem4000);
+            bmgr.SubscribeRdMem(0xC000, 0xC000, ReadMemC000);
+            bmgr.SubscribeRdMemM1(0xC000, 0xC000, ReadMemC000);
 
-            bmgr.SubscribeRDNOMREQ(0xC000, 0x4000, ContendNoMreq);
-            bmgr.SubscribeWRNOMREQ(0xC000, 0x4000, ContendNoMreq);
-            bmgr.SubscribeRDNOMREQ(0xC000, 0xC000, ContendNoMreq);
-            bmgr.SubscribeWRNOMREQ(0xC000, 0xC000, ContendNoMreq);
+            bmgr.SubscribeRdNoMreq(0xC000, 0x4000, ContendNoMreq);
+            bmgr.SubscribeWrNoMreq(0xC000, 0x4000, ContendNoMreq);
+            bmgr.SubscribeRdNoMreq(0xC000, 0xC000, ContendNoMreq);
+            bmgr.SubscribeWrNoMreq(0xC000, 0xC000, ContendNoMreq);
 
-            bmgr.SubscribeRDIO(0x0000, 0x0000, ReadPortAll);
-            bmgr.SubscribeWRIO(0x0000, 0x0000, WritePortAll);
+            bmgr.SubscribeRdIo(0x0000, 0x0000, ReadPortAll);
+            bmgr.SubscribeWrIo(0x0000, 0x0000, WritePortAll);
         }
 
         #endregion

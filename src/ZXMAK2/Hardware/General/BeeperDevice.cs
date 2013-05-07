@@ -16,7 +16,7 @@ namespace ZXMAK2.Hardware.General
 		{
 			base.BusInit(bmgr);
 
-			bmgr.SubscribeWRIO(0x0001, 0x0000, WritePortFE);
+			bmgr.SubscribeWrIo(0x0001, 0x0000, WritePortFE);
 		}
 
 		#endregion
