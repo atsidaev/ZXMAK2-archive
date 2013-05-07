@@ -17,7 +17,7 @@ namespace ZXMAK2.Hardware.Pentagon
             base.BusInit(bmgr);
             m_memory = bmgr.FindDevice<IMemoryDevice>();
 
-            bmgr.SubscribeWRIO(0x0004, 0x00FB & 0x0004, WritePort);
+            bmgr.SubscribeWrIo(0x0004, 0x00FB & 0x0004, WritePort);
         }
 
         #endregion

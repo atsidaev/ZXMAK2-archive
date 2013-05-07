@@ -17,11 +17,11 @@ namespace ZXMAK2.Hardware.Scorpion
         {
             base.BusInit(bmgr);
             m_cpu = bmgr.CPU;
-            bmgr.SubscribeWRIO(0xD027, 0x5025, busWritePort7FFD);
-            bmgr.SubscribeWRIO(0xD027, 0x1025, busWritePort1FFD);
+            bmgr.SubscribeWrIo(0xD027, 0x5025, busWritePort7FFD);
+            bmgr.SubscribeWrIo(0xD027, 0x1025, busWritePort1FFD);
             bmgr.SubscribeNmiRq(BusNmiRq);
             bmgr.SubscribeNmiAck(BusNmiAck);
-            bmgr.SubscribeRESET(BusReset);
+            bmgr.SubscribeReset(BusReset);
         }
 
         #endregion
@@ -204,8 +204,8 @@ namespace ZXMAK2.Hardware.Scorpion
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeRDMEM_M1(0xFFF0, 0x0100, busProfRomGate);
-            bmgr.SubscribeRDMEM(0xFFF0, 0x0100, busProfRomGate);
+            bmgr.SubscribeRdMemM1(0xFFF0, 0x0100, busProfRomGate);
+            bmgr.SubscribeRdMem(0xFFF0, 0x0100, busProfRomGate);
         }
 
         #endregion

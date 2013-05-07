@@ -18,15 +18,15 @@ namespace ZXMAK2.Hardware.Atm
             m_cpu = bmgr.CPU;
             m_ulaAtm = base.m_ula as UlaAtm450;
 
-            bmgr.SubscribeRDIO(0x0001, 0x0000, busReadPortFE);					// bit Z emulation
-            bmgr.SubscribeWRIO(0x009F, 0x00FF & 0x009F, busWritePortXXFF_PAL);	// atm_writepal(val);
-            bmgr.SubscribeRDIO(0x8202, 0x7FFD & 0x8202, busReadPort7FFD);					// bit Z emulation
+            bmgr.SubscribeRdIo(0x0001, 0x0000, busReadPortFE);					// bit Z emulation
+            bmgr.SubscribeWrIo(0x009F, 0x00FF & 0x009F, busWritePortXXFF_PAL);	// atm_writepal(val);
+            bmgr.SubscribeRdIo(0x8202, 0x7FFD & 0x8202, busReadPort7FFD);					// bit Z emulation
 
-            bmgr.SubscribeWRIO(0x00FF, 0xFF77 & 0x00FF, busWritePortFF77_SYS);
-            bmgr.SubscribeWRIO(0x00FF, 0x3FF7 & 0x00FF, busWritePortXFF7_WND);	//ATM3 mask=0x3FFF
-            bmgr.SubscribeWRIO(0x8202, 0x7FFD & 0x8202, busWritePort7FFD_128);
+            bmgr.SubscribeWrIo(0x00FF, 0xFF77 & 0x00FF, busWritePortFF77_SYS);
+            bmgr.SubscribeWrIo(0x00FF, 0x3FF7 & 0x00FF, busWritePortXFF7_WND);	//ATM3 mask=0x3FFF
+            bmgr.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, busWritePort7FFD_128);
 
-            bmgr.SubscribeRESET(busReset);
+            bmgr.SubscribeReset(busReset);
         }
 
 

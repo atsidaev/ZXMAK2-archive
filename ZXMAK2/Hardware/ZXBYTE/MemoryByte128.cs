@@ -16,7 +16,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeRDIO(0x75, 0x1F & 0x75, BusReadPort1F);
+            bmgr.SubscribeRdIo(0x75, 0x1F & 0x75, BusReadPort1F);
         }
 
         #region MemoryBase

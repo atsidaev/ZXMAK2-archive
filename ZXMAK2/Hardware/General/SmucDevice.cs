@@ -24,23 +24,23 @@ namespace ZXMAK2.Hardware.General
 		{
             m_memory = bmgr.FindDevice<IMemoryDevice>();
 
-			bmgr.SubscribeRESET(busReset);
+			bmgr.SubscribeReset(busReset);
 
 			const int mask = 0xB8E7;//0xA044;
-			bmgr.SubscribeRDIO(mask, 0x5FBA & mask, readVer);
-			bmgr.SubscribeRDIO(mask, 0x5FBE & mask, readRev);
-			bmgr.SubscribeRDIO(mask, 0x7FBA & mask, readFdd);
-			bmgr.SubscribeRDIO(mask, 0x7FBE & mask, readPic);
-			bmgr.SubscribeRDIO(mask, 0xDFBA & mask, readRtc);
-			bmgr.SubscribeRDIO(mask, 0xD8BE & mask, readIdeHi);
-			bmgr.SubscribeRDIO(mask, 0xFFBA & mask, readSys);
-			bmgr.SubscribeRDIO(mask, 0xFFBE & mask, readIde);
+			bmgr.SubscribeRdIo(mask, 0x5FBA & mask, readVer);
+			bmgr.SubscribeRdIo(mask, 0x5FBE & mask, readRev);
+			bmgr.SubscribeRdIo(mask, 0x7FBA & mask, readFdd);
+			bmgr.SubscribeRdIo(mask, 0x7FBE & mask, readPic);
+			bmgr.SubscribeRdIo(mask, 0xDFBA & mask, readRtc);
+			bmgr.SubscribeRdIo(mask, 0xD8BE & mask, readIdeHi);
+			bmgr.SubscribeRdIo(mask, 0xFFBA & mask, readSys);
+			bmgr.SubscribeRdIo(mask, 0xFFBE & mask, readIde);
 
-			bmgr.SubscribeWRIO(mask, 0x7FBA & mask, writeFdd);
-			bmgr.SubscribeWRIO(mask, 0xDFBA & mask, writeRtc);
-			bmgr.SubscribeWRIO(mask, 0xD8BE & mask, writeIdeHi);
-			bmgr.SubscribeWRIO(mask, 0xFFBA & mask, writeSys);
-			bmgr.SubscribeWRIO(mask, 0xFFBE & mask, writeIde);
+			bmgr.SubscribeWrIo(mask, 0x7FBA & mask, writeFdd);
+			bmgr.SubscribeWrIo(mask, 0xDFBA & mask, writeRtc);
+			bmgr.SubscribeWrIo(mask, 0xD8BE & mask, writeIdeHi);
+			bmgr.SubscribeWrIo(mask, 0xFFBA & mask, writeSys);
+			bmgr.SubscribeWrIo(mask, 0xFFBE & mask, writeIde);
 
 			bmgr.SubscribeBeginFrame(BusBeginFrame);
 			bmgr.SubscribeEndFrame(BusEndFrame);

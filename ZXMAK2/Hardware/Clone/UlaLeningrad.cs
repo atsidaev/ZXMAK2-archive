@@ -14,7 +14,7 @@ namespace ZXMAK2.Hardware.Clone
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeRDMEM_M1(0x0000, 0x0000, busM1);
+            bmgr.SubscribeRdMemM1(0x0000, 0x0000, busM1);
         }
 
         #endregion

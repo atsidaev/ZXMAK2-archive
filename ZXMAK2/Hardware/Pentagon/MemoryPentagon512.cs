@@ -17,12 +17,12 @@ namespace ZXMAK2.Hardware.Pentagon
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeWRIO(0x8002, 0x0000, writePort7FFD);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, BusReadMemRam);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0x8000, BusReadMemRam);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0xC000, BusReadMemRam);
+            bmgr.SubscribeWrIo(0x8002, 0x0000, writePort7FFD);
+            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRam);
+            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRam);
+            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRam);
             bmgr.SubscribeNmiAck(BusNmiAck);
-            bmgr.SubscribeRESET(BusReset);
+            bmgr.SubscribeReset(BusReset);
         }
 
         #endregion

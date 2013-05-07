@@ -22,10 +22,10 @@ namespace ZXMAK2.Hardware.Sprinter
             m_sandbox = bmgr.IsSandbox;
             m_bus = bmgr;
 
-            m_bus.SubscribeRESET(Reset);
-            m_bus.SubscribeWRIO(0xFFFF, 0xBFBD, CMOS_DWR);  //CMOS_DWR
-            m_bus.SubscribeWRIO(0xFFFF, 0xDFBD, CMOS_AWR);  //CMOS_AWR
-            m_bus.SubscribeRDIO(0xFFFF, 0xFFBD, CMOS_DRD);  //CMOS_DRD
+            m_bus.SubscribeReset(Reset);
+            m_bus.SubscribeWrIo(0xFFFF, 0xBFBD, CMOS_DWR);  //CMOS_DWR
+            m_bus.SubscribeWrIo(0xFFFF, 0xDFBD, CMOS_AWR);  //CMOS_AWR
+            m_bus.SubscribeRdIo(0xFFFF, 0xFFBD, CMOS_DRD);  //CMOS_DRD
 
             m_fileName = bmgr.GetSatelliteFileName("cmos");
         }

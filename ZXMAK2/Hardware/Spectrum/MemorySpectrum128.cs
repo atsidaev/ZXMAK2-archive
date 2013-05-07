@@ -13,9 +13,9 @@ namespace ZXMAK2.Hardware.Spectrum
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeWRIO(0x8002, 0x0000, writePort7FFD);
-            bmgr.SubscribeRDIO(0x8002, 0x0000, readPort7FFD);
-            bmgr.SubscribeRESET(BusReset);
+            bmgr.SubscribeWrIo(0x8002, 0x0000, writePort7FFD);
+            bmgr.SubscribeRdIo(0x8002, 0x0000, readPort7FFD);
+            bmgr.SubscribeReset(BusReset);
         }
 
         #endregion

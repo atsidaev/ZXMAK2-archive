@@ -13,7 +13,7 @@ namespace ZXMAK2.Hardware.Profi
         public override void BusInit(Interfaces.IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeRESET(busReset);
+            bmgr.SubscribeReset(busReset);
         }
 
         #endregion

@@ -25,10 +25,10 @@ namespace ZXMAK2.Hardware.Profi
             // #C3 - SEC
             // #E3 - DAT
             // #3F - SYS
-            bmgr.SubscribeWRIO(0x9F, 0x83 & 0x9F, BusWritePortFdcEx);
-            bmgr.SubscribeRDIO(0x9F, 0x83 & 0x9F, BusReadPortFdcEx);
-            bmgr.SubscribeWRIO(0xFF, 0x3F, BusWritePortSysEx);
-            bmgr.SubscribeRDIO(0xFF, 0x3F, BusReadPortSysEx);
+            bmgr.SubscribeWrIo(0x9F, 0x83 & 0x9F, BusWritePortFdcEx);
+            bmgr.SubscribeRdIo(0x9F, 0x83 & 0x9F, BusReadPortFdcEx);
+            bmgr.SubscribeWrIo(0xFF, 0x3F, BusWritePortSysEx);
+            bmgr.SubscribeRdIo(0xFF, 0x3F, BusReadPortSysEx);
         }
 
         protected override void BusWritePortFdc(ushort addr, byte value, ref bool iorqge)

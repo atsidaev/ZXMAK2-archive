@@ -104,49 +104,49 @@ namespace ZXMAK2.Engine
 
         #region IBusManager
 
-        void IBusManager.SubscribeRDMEM_M1(int addrMask, int maskedValue, BusReadProc proc)
+        void IBusManager.SubscribeRdMemM1(int addrMask, int maskedValue, BusReadProc proc)
         {
             for (int addr = 0; addr < 0x10000; addr++)
                 if ((addr & addrMask) == maskedValue)
                     m_mapReadMemoryM1[addr] += proc;
         }
 
-        void IBusManager.SubscribeRDMEM(int addrMask, int maskedValue, BusReadProc proc)
+        void IBusManager.SubscribeRdMem(int addrMask, int maskedValue, BusReadProc proc)
         {
             for (int addr = 0; addr < 0x10000; addr++)
                 if ((addr & addrMask) == maskedValue)
                     m_mapReadMemory[addr] += proc;
         }
 
-        void IBusManager.SubscribeWRMEM(int addrMask, int maskedValue, BusWriteProc proc)
+        void IBusManager.SubscribeWrMem(int addrMask, int maskedValue, BusWriteProc proc)
         {
             for (int addr = 0; addr < 0x10000; addr++)
                 if ((addr & addrMask) == maskedValue)
                     m_mapWriteMemory[addr] += proc;
         }
 
-        void IBusManager.SubscribeRDIO(int addrMask, int maskedValue, BusReadIoProc proc)
+        void IBusManager.SubscribeRdIo(int addrMask, int maskedValue, BusReadIoProc proc)
         {
             for (int addr = 0; addr < 0x10000; addr++)
                 if ((addr & addrMask) == maskedValue)
                     m_mapReadPort[addr] += proc;
         }
 
-        void IBusManager.SubscribeWRIO(int addrMask, int maskedValue, BusWriteIoProc proc)
+        void IBusManager.SubscribeWrIo(int addrMask, int maskedValue, BusWriteIoProc proc)
         {
             for (int addr = 0; addr < 0x10000; addr++)
                 if ((addr & addrMask) == maskedValue)
                     m_mapWritePort[addr] += proc;
         }
 
-        void IBusManager.SubscribeRDNOMREQ(int addrMask, int maskedValue, BusNoMreqProc proc)
+        void IBusManager.SubscribeRdNoMreq(int addrMask, int maskedValue, BusNoMreqProc proc)
         {
             for (int addr = 0; addr < 0x10000; addr++)
                 if ((addr & addrMask) == maskedValue)
                     m_mapReadNoMreq[addr] += proc;
         }
 
-        void IBusManager.SubscribeWRNOMREQ(int addrMask, int maskedValue, BusNoMreqProc proc)
+        void IBusManager.SubscribeWrNoMreq(int addrMask, int maskedValue, BusNoMreqProc proc)
         {
             for (int addr = 0; addr < 0x10000; addr++)
                 if ((addr & addrMask) == maskedValue)
@@ -158,7 +158,7 @@ namespace ZXMAK2.Engine
             m_preCycle += proc;
         }
 
-        void IBusManager.SubscribeRESET(BusSignalProc proc)
+        void IBusManager.SubscribeReset(BusSignalProc proc)
         {
             m_reset += proc;
         }

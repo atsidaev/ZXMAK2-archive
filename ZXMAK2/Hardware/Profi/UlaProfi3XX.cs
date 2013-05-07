@@ -16,7 +16,7 @@ namespace ZXMAK2.Hardware.Profi
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeRDIO(0x0000, 0x0000, ReadPortAll);
+            bmgr.SubscribeRdIo(0x0000, 0x0000, ReadPortAll);
         }
 
         #endregion

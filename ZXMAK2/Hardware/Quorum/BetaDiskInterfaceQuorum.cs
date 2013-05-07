@@ -23,10 +23,10 @@ namespace ZXMAK2.Hardware.Quorum
             // #82 - SEC
             // #83 - DAT
             // #85 - SYS
-            bmgr.SubscribeWRIO(0x9C, 0x80 & 0x9C, BusWritePortFdc);
-            bmgr.SubscribeRDIO(0x9C, 0x80 & 0x9C, BusReadPortFdc);
-            bmgr.SubscribeWRIO(0x9F, 0x85 & 0x9F, BusWritePortSys);
-            bmgr.SubscribeRDIO(0x9F, 0x85 & 0x9F, BusReadPortSys);
+            bmgr.SubscribeWrIo(0x9C, 0x80 & 0x9C, BusWritePortFdc);
+            bmgr.SubscribeRdIo(0x9C, 0x80 & 0x9C, BusReadPortFdc);
+            bmgr.SubscribeWrIo(0x9F, 0x85 & 0x9F, BusWritePortSys);
+            bmgr.SubscribeRdIo(0x9F, 0x85 & 0x9F, BusReadPortSys);
         }
 
         protected override void BusWritePortFdc(ushort addr, byte value, ref bool iorqge)

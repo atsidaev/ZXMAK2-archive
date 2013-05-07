@@ -31,7 +31,7 @@ namespace ZXMAK2.Hardware.General
 			m_cpu = bmgr.CPU;
             m_memory = bmgr.FindDevice<IMemoryDevice>();
 
-			bmgr.SubscribeRDIO(0x0001, 0x0000, readPortFE);
+			bmgr.SubscribeRdIo(0x0001, 0x0000, readPortFE);
 
 			bmgr.SubscribePreCycle(busPreCycle);
 

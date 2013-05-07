@@ -88,16 +88,16 @@ namespace ZXMAK2.Hardware.General
             m_sandbox = bmgr.IsSandbox;
             m_memory = bmgr.FindDevice<IMemoryDevice>();
 
-            bmgr.SubscribeRDMEM_M1(0xFF00, 0x3D00, BusReadMem3D00_M1);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, BusReadMemRam);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0x8000, BusReadMemRam);
-            bmgr.SubscribeRDMEM_M1(0xC000, 0xC000, BusReadMemRam);
+            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRam);
+            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRam);
+            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRam);
             bmgr.SubscribeBeginFrame(BusBeginFrame);
             bmgr.SubscribeEndFrame(BusEndFrame);
 
             BusSubscribeWD93IO(bmgr);
 
-            bmgr.SubscribeRESET(BusReset);
+            bmgr.SubscribeReset(BusReset);
             bmgr.SubscribeNmiRq(BusNmiRq);
             bmgr.SubscribeNmiAck(BusNmiAck);
 
@@ -227,10 +227,10 @@ namespace ZXMAK2.Hardware.General
 
         protected virtual void BusSubscribeWD93IO(IBusManager bmgr)
         {
-            bmgr.SubscribeWRIO(0x83, 0x1F & 0x83, BusWritePortFdc);
-            bmgr.SubscribeRDIO(0x83, 0x1F & 0x83, BusReadPortFdc);
-            bmgr.SubscribeWRIO(0x83, 0xFF & 0x83, BusWritePortSys);
-            bmgr.SubscribeRDIO(0x83, 0xFF & 0x83, BusReadPortSys);
+            bmgr.SubscribeWrIo(0x83, 0x1F & 0x83, BusWritePortFdc);
+            bmgr.SubscribeRdIo(0x83, 0x1F & 0x83, BusReadPortFdc);
+            bmgr.SubscribeWrIo(0x83, 0xFF & 0x83, BusWritePortSys);
+            bmgr.SubscribeRdIo(0x83, 0xFF & 0x83, BusReadPortSys);
         }
 
         protected virtual void BusReadMem3D00_M1(ushort addr, ref byte value)
