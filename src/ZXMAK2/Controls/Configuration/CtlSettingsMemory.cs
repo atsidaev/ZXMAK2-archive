@@ -14,19 +14,17 @@ namespace ZXMAK2.Controls.Configuration
     {
         private BusManager m_bmgr;
         private IMemoryDevice m_device;
-        private DeviceEnumerator m_deviceEnumerator = new DeviceEnumerator();
 
         public CtlSettingsMemory()
         {
             InitializeComponent();
-            m_deviceEnumerator.Refresh();
             BindTypeList();
         }
 
         private void BindTypeList()
         {
             cbxType.Items.Clear();
-            foreach (var bdd in m_deviceEnumerator.SelectByType<IMemoryDevice>())
+            foreach (var bdd in DeviceEnumerator.SelectByType<IMemoryDevice>())
             {
                 cbxType.Items.Add(bdd);
             }

@@ -1,82 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Interfaces;
-using ZXMAK2.Entities;
 using System.IO;
 using System.Reflection;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
+
 
 namespace ZXMAK2.Engine
 {
-    public class DeviceEnumerator
+    public static class DeviceEnumerator
     {
-        public void Refresh()
+        private static readonly object s_syncRoot = new object();
+        private static IList<BusDeviceDescriptor> s_descriptors;
+
+        public static IList<BusDeviceDescriptor> Descriptors
         {
-            PreLoadPlugins();
-            var listDescriptors = new List<BusDeviceDescriptor>();
-            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            get
             {
-                try
+                lock (s_syncRoot)
                 {
-                    foreach (var type in asm.GetTypes())
+                    if (s_descriptors == null)
                     {
-                        if (type.IsClass && 
-                            !type.IsAbstract && 
-                            typeof(BusDeviceBase).IsAssignableFrom(type))
-                        {
-                            try
-                            {
-                                BusDeviceBase device = (BusDeviceBase)Activator.CreateInstance(type);
-                                var bdd = new BusDeviceDescriptor(
-                                    type,
-                                    device.Category,
-                                    device.Name,
-                                    device.Description);
-                                listDescriptors.Add(bdd);
-                            }
-                            catch (Exception ex)
-                            {
-                                LogAgent.Error(ex);
-                            }
-                        }
+                        Refresh();
                     }
                 }
-                catch (Exception ex)
-                {
-                    LogAgent.Error(ex);
-                }
+                return s_descriptors;
             }
-            Descriptors = listDescriptors;
         }
-
-        private void PreLoadPlugins()
+        
+        public static void Refresh()
         {
-            var folderName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            folderName = Path.Combine(folderName, "Plugins");
-            if (Directory.Exists(folderName))
+            lock (s_syncRoot)
             {
-                foreach (var fileName in Directory.GetFiles(folderName, "*.dll", SearchOption.AllDirectories))
+                PreLoadPlugins();
+                var listDescriptors = new List<BusDeviceDescriptor>();
+                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
                 {
                     try
                     {
-                        var asm = Assembly.LoadFrom(fileName);
+                        foreach (var type in asm.GetTypes())
+                        {
+                            if (type.IsClass &&
+                                !type.IsAbstract &&
+                                typeof(BusDeviceBase).IsAssignableFrom(type))
+                            {
+                                try
+                                {
+                                    BusDeviceBase device = (BusDeviceBase)Activator.CreateInstance(type);
+                                    var bdd = new BusDeviceDescriptor(
+                                        type,
+                                        device.Category,
+                                        device.Name,
+                                        device.Description);
+                                    listDescriptors.Add(bdd);
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogAgent.Error(ex);
+                                }
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
                         LogAgent.Error(ex);
-                        DialogProvider.Show(
-                            string.Format("Load plugin failed!\n\n{0}", fileName),
-                            "WARNING",
-                            DlgButtonSet.OK,
-                            DlgIcon.Warning);
                     }
                 }
+                s_descriptors = listDescriptors;
             }
         }
-        
-        public IList<BusDeviceDescriptor> Descriptors { get; private set; }
 
-        public IEnumerable<BusDeviceDescriptor> SelectWithout(
+        public static IEnumerable<BusDeviceDescriptor> SelectWithout(
             IEnumerable<Type> ignoreList)
         {
             var list = new List<BusDeviceDescriptor>();
@@ -99,7 +93,7 @@ namespace ZXMAK2.Engine
             return list;
         }
 
-        public IEnumerable<BusDeviceDescriptor> SelectByCategoryWithout(
+        public static IEnumerable<BusDeviceDescriptor> SelectByCategoryWithout(
             BusDeviceCategory category, 
             IEnumerable<Type> ignoreList)
         {
@@ -127,7 +121,7 @@ namespace ZXMAK2.Engine
             return list;
         }
 
-        public IEnumerable<BusDeviceDescriptor> SelectByType<T>()
+        public static IEnumerable<BusDeviceDescriptor> SelectByType<T>()
         {
             var list = new List<BusDeviceDescriptor>();
             foreach (var bdd in Descriptors)
@@ -139,5 +133,34 @@ namespace ZXMAK2.Engine
             }
             return list;
         }
+
+        #region Private
+
+        private static void PreLoadPlugins()
+        {
+            var folderName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            folderName = Path.Combine(folderName, "Plugins");
+            if (Directory.Exists(folderName))
+            {
+                foreach (var fileName in Directory.GetFiles(folderName, "*.dll", SearchOption.AllDirectories))
+                {
+                    try
+                    {
+                        var asm = Assembly.LoadFrom(fileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogAgent.Error(ex);
+                        DialogProvider.Show(
+                            string.Format("Load plugin failed!\n\n{0}", fileName),
+                            "WARNING",
+                            DlgButtonSet.OK,
+                            DlgIcon.Warning);
+                    }
+                }
+            }
+        }
+
+        #endregion Private
     }
 }
