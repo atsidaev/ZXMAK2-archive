@@ -17,8 +17,9 @@ namespace ZXMAK2.Interfaces
 		void SubscribeRDNOMREQ(int addrMask, int maskedValue, BusNoMreqProc proc);
 		void SubscribeWRNOMREQ(int addrMask, int maskedValue, BusNoMreqProc proc);
 		void SubscribeRESET(BusSignalProc proc);
-		void SubscribeNMIACK(BusSignalProc proc);
-		void SubscribeINTACK(BusSignalProc proc);
+        void SubscribeNmiRq(BusRqProc proc);
+        void SubscribeNmiAck(BusSignalProc proc);
+		void SubscribeIntAck(BusSignalProc proc);
 
 		void SubscribePreCycle(BusCycleProc proc);
 		void SubscribeBeginFrame(BusFrameEventHandler handler);
@@ -34,6 +35,8 @@ namespace ZXMAK2.Interfaces
         T FindDevice<T>() where T : class;
 
 		RzxHandler RzxHandler { get; set; }
+
+        void RequestNmi(int timeOut);
 	}
 
 	public delegate void BusReadProc(ushort addr, ref byte value);
@@ -41,7 +44,24 @@ namespace ZXMAK2.Interfaces
 	public delegate void BusReadIoProc(ushort addr, ref byte value, ref bool iorqge);
 	public delegate void BusWriteIoProc(ushort addr, byte value, ref bool iorqge);
 	public delegate void BusNoMreqProc(ushort addr);
+    public delegate void BusRqProc(BusCancelArgs e);
 	public delegate void BusCycleProc(int frameTact);
 	public delegate void BusSignalProc();
 	public delegate void BusFrameEventHandler();
+
+    public class BusCancelArgs
+    {
+        private bool m_cancel;
+
+        public BusCancelArgs()
+        {
+            m_cancel = false;
+        }
+
+        public bool Cancel
+        {
+            get { return m_cancel; }
+            set { m_cancel = m_cancel | value; }
+        }
+    }
 }

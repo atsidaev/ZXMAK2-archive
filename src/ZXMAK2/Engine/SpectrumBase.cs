@@ -67,9 +67,10 @@ namespace ZXMAK2.Engine
 
         protected void Nmi()
         {
-            CPU.NMI = true;
-            OnExecCycle();
-            CPU.NMI = false;
+            BusManager.RequestNmi(BusManager.FrameTactCount * 25);
+            //CPU.NMI = true;
+            //OnExecCycle();
+            //CPU.NMI = false;
         }
 
 

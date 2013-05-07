@@ -11,7 +11,9 @@ namespace ZXMAK2.Hardware.Quorum
         private long m_intState;
         private UInt64 m_extState;
         private IKeyboardState m_keyboardState;
+        private IBusManager m_busManager;
         private Z80CPU m_cpu;
+        private bool m_nmiTriggered;
 
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }
         public override string Name { get { return "Quorum Keyboard"; } }
@@ -28,17 +30,11 @@ namespace ZXMAK2.Hardware.Quorum
 
         public override void BusInit(IBusManager bmgr)
         {
+            m_busManager = bmgr;
             bmgr.SubscribeRDIO(0x99, 0x98, readPortFE);
             bmgr.SubscribeRDIO(0x99, 0x18, readPort7E);
 
-            bmgr.SubscribeNMIACK(NMIACK);
-
             m_cpu = bmgr.CPU;
-        }
-
-        private void NMIACK()
-        {
-            m_cpu.NMI = false;
         }
 
         private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
@@ -130,7 +126,15 @@ namespace ZXMAK2.Hardware.Quorum
             ulong num = 0;
             if (state[Key.F11])
             {
-                m_cpu.NMI = true;
+                if (!m_nmiTriggered)
+                {
+                    m_nmiTriggered = true;
+                    m_busManager.RequestNmi(50000);
+                }
+            }
+            else
+            {
+                m_nmiTriggered = false;
             }
             if (state[Key.F12])
             {

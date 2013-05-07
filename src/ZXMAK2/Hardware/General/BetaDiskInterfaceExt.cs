@@ -60,7 +60,11 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        protected override void BusNmi()
+        protected override void BusNmiRq(BusCancelArgs e)
+        {
+        }
+
+        protected override void BusNmiAck()
         {
         }
 

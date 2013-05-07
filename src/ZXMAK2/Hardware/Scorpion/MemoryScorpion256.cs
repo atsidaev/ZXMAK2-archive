@@ -1,6 +1,7 @@
 ﻿using System;
 
 using ZXMAK2.Interfaces;
+using ZXMAK2.Engine.Z80;
 
 
 namespace ZXMAK2.Hardware.Scorpion
@@ -15,10 +16,12 @@ namespace ZXMAK2.Hardware.Scorpion
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
+            m_cpu = bmgr.CPU;
             bmgr.SubscribeWRIO(0xD027, 0x5025, busWritePort7FFD);
             bmgr.SubscribeWRIO(0xD027, 0x1025, busWritePort1FFD);
-            bmgr.SubscribeNMIACK(busNmi);
-            bmgr.SubscribeRESET(busReset);
+            bmgr.SubscribeNmiRq(BusNmiRq);
+            bmgr.SubscribeNmiAck(BusNmiAck);
+            bmgr.SubscribeRESET(BusReset);
         }
 
         #endregion
@@ -116,20 +119,22 @@ namespace ZXMAK2.Hardware.Scorpion
             CMR1 = value;
         }
 
-        private void busReset()
+        private void BusReset()
         {
             CMR1 = 0;
             CMR0 = 0;
         }
 
-        private void busNmi()
+        private void BusNmiRq(BusCancelArgs e)
         {
             // check DOSEN to avoid conflict with BDI
-            if (!DOSEN)
-            {
-                // enable shadow rom
-                CMR1 |= 0x02;
-            }
+            e.Cancel = DOSEN || (m_cpu.regs.PC & 0xC000) == 0;
+        }
+
+        private void BusNmiAck()
+        {
+            // enable shadow rom
+            CMR1 |= 0x02;
         }
 
         #endregion
@@ -138,6 +143,7 @@ namespace ZXMAK2.Hardware.Scorpion
         protected byte[][] m_ramPages = new byte[16][];
         private byte[] m_trashPage = new byte[0x4000];
         private bool m_lock = false;
+        private Z80CPU m_cpu;
 
 
         public MemoryScorpion256(String romSetName)

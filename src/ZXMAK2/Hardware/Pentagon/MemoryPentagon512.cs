@@ -21,8 +21,8 @@ namespace ZXMAK2.Hardware.Pentagon
             bmgr.SubscribeRDMEM_M1(0xC000, 0x4000, BusReadMemRam);
             bmgr.SubscribeRDMEM_M1(0xC000, 0x8000, BusReadMemRam);
             bmgr.SubscribeRDMEM_M1(0xC000, 0xC000, BusReadMemRam);
-            bmgr.SubscribeNMIACK(busNmi);
-            bmgr.SubscribeRESET(busReset);
+            bmgr.SubscribeNmiAck(BusNmiAck);
+            bmgr.SubscribeRESET(BusReset);
         }
 
         #endregion
@@ -94,17 +94,19 @@ namespace ZXMAK2.Hardware.Pentagon
                 CMR0 = value;
         }
 
-        private void busNmi()
+        private void BusNmiRq(BusCancelArgs e)
         {
             // check DOSEN to avoid conflict with BDI
-            if (!DOSEN)
-            {
-                // enable shadow rom
-                SYSEN = EnableShadow;//true;
-            }
+            e.Cancel = DOSEN;
         }
 
-        private void busReset()
+        private void BusNmiAck()
+        {
+            // enable shadow rom
+            SYSEN = EnableShadow;//true;
+        }
+
+        private void BusReset()
         {
             SYSEN = EnableShadow;//true;
             CMR0 = 0;
