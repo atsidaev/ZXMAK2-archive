@@ -49,5 +49,40 @@ namespace ZXMAK2.Controls.Debugger
                     return string.Format("RAM #{0:X2}", i);
             return CS_UNKNOWN;
         }
+
+        private void lblCmrValue0_DoubleClick(object sender, EventArgs e)
+        {
+            var value = m_memory.CMR0;
+            if (EditValue(ref value, "CMR0"))
+            {
+                m_memory.CMR0 = value;
+            }
+        }
+
+        private void lblCmrValue1_DoubleClick(object sender, EventArgs e)
+        {
+            var value = m_memory.CMR1;
+            if (EditValue(ref value, "CMR1"))
+            {
+                m_memory.CMR1 = value;
+            }
+        }
+
+        private bool EditValue(ref byte value, string valueName)
+        {
+            int iValue = value;
+            if (!InputBox.InputValue(
+                string.Format("Change {0}", valueName),
+                string.Format("New {0} value", valueName),
+                "#{0:X2}",
+                ref iValue,
+                0,
+                255))
+            {
+                return false;
+            }
+            value = (byte)iValue;
+            return true;
+        }
     }
 }
