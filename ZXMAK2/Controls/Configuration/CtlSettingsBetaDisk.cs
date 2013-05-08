@@ -16,7 +16,7 @@ namespace ZXMAK2.Controls.Configuration
     {
         private BusManager m_bmgr;
         private BetaDiskInterface m_device;
-        
+
         public CtlSettingsBetaDisk()
         {
             InitializeComponent();
@@ -55,16 +55,19 @@ namespace ZXMAK2.Controls.Configuration
 
         private void applyDrive(DiskImage diskImage, CheckBox chkPresent, TextBox txtPath, CheckBox chkProtect)
         {
-            string fileName = txtPath.Text;
+            var fileName = txtPath.Text;
             if (fileName != string.Empty)
             {
-                if (!File.Exists(Path.GetFullPath(fileName)) && chkPresent.Checked)
+                if (!File.Exists(Path.GetFullPath(fileName)) &&
+                    chkPresent.Checked)
                 {
-                    throw new FileNotFoundException(string.Format("File not found: \"{0}\"", fileName));
+                    throw new FileNotFoundException(
+                        string.Format(
+                            "File not found: \"{0}\"",
+                            fileName));
                 }
                 fileName = Path.GetFullPath(fileName);
             }
-            
             diskImage.Present = chkPresent.Checked;
             diskImage.FileName = fileName;
             diskImage.IsWP = chkProtect.Checked;
@@ -72,13 +75,13 @@ namespace ZXMAK2.Controls.Configuration
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
-            int drive = sender == btnBrowseD ? 3 :
+            var drive = sender == btnBrowseD ? 3 :
                 sender == btnBrowseC ? 2 :
                 sender == btnBrowseB ? 1 : 0;
-            TextBox[] pathTxt = new TextBox[] { txtPathA, txtPathB, txtPathC, txtPathD };
-            CheckBox[] wpChk = new CheckBox[] { chkProtectA, chkProtectB, chkProtectC, chkProtectD };
+            var pathTxt = new[] { txtPathA, txtPathB, txtPathC, txtPathD };
+            var wpChk = new[] { chkProtectA, chkProtectB, chkProtectC, chkProtectD };
 
-            OpenFileDialog loadDialog = new OpenFileDialog();
+            var loadDialog = new OpenFileDialog();
             loadDialog.InitialDirectory = ".";
             loadDialog.SupportMultiDottedExtensions = true;
             loadDialog.Title = "Open...";
@@ -89,8 +92,10 @@ namespace ZXMAK2.Controls.Configuration
             loadDialog.ReadOnlyChecked = true;
             loadDialog.CheckFileExists = true;
             loadDialog.FileOk += new CancelEventHandler(loadDialog_FileOk);
-            if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
-
+            if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
             pathTxt[drive].Text = loadDialog.FileName;
             pathTxt[drive].SelectionStart = pathTxt[drive].Text.Length;
             wpChk[drive].Checked = loadDialog.ReadOnlyChecked;
@@ -108,6 +113,11 @@ namespace ZXMAK2.Controls.Configuration
             updateEnabled();
         }
 
+        private void txtPath_TextChanged(object sender, EventArgs e)
+        {
+            updateEnabled();
+        }
+
         private void updateEnabled()
         {
             setEnabled(txtPathA, chkProtectA, btnBrowseA, chkPresentA);
@@ -116,10 +126,20 @@ namespace ZXMAK2.Controls.Configuration
             setEnabled(txtPathD, chkProtectD, btnBrowseD, chkPresentD);
         }
 
-        private void setEnabled(TextBox txtPath, CheckBox chkProtect, Button btnBrowse, CheckBox chkPresent)
+        private void setEnabled(
+            TextBox txtPath,
+            CheckBox chkProtect,
+            Button btnBrowse,
+            CheckBox chkPresent)
         {
+            var isZip = txtPath.Text != string.Empty &&
+                string.Compare(Path.GetExtension(txtPath.Text), ".ZIP", true) == 0;
             txtPath.Enabled = chkPresent.Checked;
-            chkProtect.Enabled = chkPresent.Checked;
+            chkProtect.Enabled = chkPresent.Checked && !isZip;
+            if (isZip)
+            {
+                chkProtect.Checked = true;
+            }
             btnBrowse.Enabled = chkPresent.Checked;
         }
     }

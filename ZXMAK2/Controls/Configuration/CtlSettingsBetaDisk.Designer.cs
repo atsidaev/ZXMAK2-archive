@@ -189,12 +189,13 @@
             // 
             // txtPathD
             // 
-            this.txtPathD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtPathD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPathD.Location = new System.Drawing.Point(16, 206);
             this.txtPathD.Name = "txtPathD";
             this.txtPathD.Size = new System.Drawing.Size(240, 20);
             this.txtPathD.TabIndex = 10;
+            this.txtPathD.TextChanged += new System.EventHandler(this.txtPath_TextChanged);
             // 
             // btnBrowseC
             // 
@@ -209,12 +210,13 @@
             // 
             // txtPathC
             // 
-            this.txtPathC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtPathC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPathC.Location = new System.Drawing.Point(16, 166);
             this.txtPathC.Name = "txtPathC";
             this.txtPathC.Size = new System.Drawing.Size(240, 20);
             this.txtPathC.TabIndex = 7;
+            this.txtPathC.TextChanged += new System.EventHandler(this.txtPath_TextChanged);
             // 
             // btnBrowseB
             // 
@@ -229,12 +231,13 @@
             // 
             // txtPathB
             // 
-            this.txtPathB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtPathB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPathB.Location = new System.Drawing.Point(16, 126);
             this.txtPathB.Name = "txtPathB";
             this.txtPathB.Size = new System.Drawing.Size(240, 20);
             this.txtPathB.TabIndex = 4;
+            this.txtPathB.TextChanged += new System.EventHandler(this.txtPath_TextChanged);
             // 
             // btnBrowseA
             // 
@@ -249,12 +252,13 @@
             // 
             // txtPathA
             // 
-            this.txtPathA.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtPathA.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPathA.Location = new System.Drawing.Point(16, 86);
             this.txtPathA.Name = "txtPathA";
             this.txtPathA.Size = new System.Drawing.Size(240, 20);
             this.txtPathA.TabIndex = 1;
+            this.txtPathA.TextChanged += new System.EventHandler(this.txtPath_TextChanged);
             // 
             // chkNoDelay
             // 
