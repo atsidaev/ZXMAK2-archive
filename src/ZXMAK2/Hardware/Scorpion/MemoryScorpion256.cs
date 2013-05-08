@@ -16,8 +16,8 @@ namespace ZXMAK2.Hardware.Scorpion
         {
             base.BusInit(bmgr);
             m_cpu = bmgr.CPU;
-            bmgr.SubscribeWrIo(0xD027, 0x5025, busWritePort7FFD);
-            bmgr.SubscribeWrIo(0xD027, 0x1025, busWritePort1FFD);
+            bmgr.SubscribeWrIo(0xD027, 0x7FFD & 0xD027, BusWritePort7FFD);
+            bmgr.SubscribeWrIo(0xD027, 0x1FFD & 0xD027, BusWritePort1FFD);
             bmgr.SubscribeNmiRq(BusNmiRq);
             bmgr.SubscribeNmiAck(BusNmiAck);
             bmgr.SubscribeReset(BusReset);
@@ -101,7 +101,7 @@ namespace ZXMAK2.Hardware.Scorpion
 
         #region Bus Handlers
 
-        private void busWritePort7FFD(ushort addr, byte value, ref bool iorqge)
+        private void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
         {
             if (!iorqge)
                 return;
@@ -110,7 +110,7 @@ namespace ZXMAK2.Hardware.Scorpion
                 CMR0 = value;
         }
 
-        private void busWritePort1FFD(ushort addr, byte value, ref bool iorqge)
+        private void BusWritePort1FFD(ushort addr, byte value, ref bool iorqge)
         {
             if (!iorqge)
                 return;
@@ -126,14 +126,12 @@ namespace ZXMAK2.Hardware.Scorpion
 
         private void BusNmiRq(BusCancelArgs e)
         {
-            // check DOSEN to avoid conflict with BDI
-            e.Cancel = DOSEN || (m_cpu.regs.PC & 0xC000) == 0;
+            e.Cancel = (m_cpu.regs.PC & 0xC000) == 0;
         }
 
         private void BusNmiAck()
         {
-            // enable shadow rom
-            CMR1 |= 0x02;
+            DOSEN = true;
         }
 
         #endregion
