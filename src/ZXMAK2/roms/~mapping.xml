@@ -1,10 +1,4 @@
 <Mapping>
-	<RomSet name="Default">
-		<Page name="128" image="ZX128/128-0.rom"/>
-		<Page name="SOS" image="ZX128/128-1.rom"/>
-		<Page name="DOS" image="TRDOS/trdos.rom"/>
-		<!--<Page name="SYS" image="shadow.rom"/>-->
-	</RomSet>
 	<RomSet name="ZX48">
 		<Page name="SOS" image="ZX048/48.rom" offset="0x0000" length="0x4000"/>
 		<Page name="DOS" image="TRDOS/trdos.rom"/>
@@ -21,56 +15,32 @@
 		<Page name="SOS" image="PLUS3/plus3-3.rom"/>
 	</RomSet>
 	<RomSet name="ATM450">
-		<Page name="128" image="ATM/atm103rs.rom" offset="0x8000" />
-		<Page name="SOS" image="ATM/atm103rs.rom" offset="0xC000" />
-		<Page name="DOS" image="ATM/atm103rs.rom" offset="0x4000" />
-		<Page name="SYS" image="ATM/atm103rs.rom" offset="0x0000" />
+		<Page name="RAW" image="ATM/atm103rs.rom" />
 	</RomSet>
 	<RomSet name="ATM710">
 		<Page name="RAW" image="ATM/bios_1_07_13.rom" offset="0" />
 	</RomSet>
+	<RomSet name="ATM1-TEST">
+		<Page name="RAW" image="ATM/atm1test.rom" offset="0" />
+	</RomSet>
+	<RomSet name="ATM1-TEST2">
+		<Page name="RAW" image="ATM/Atmtest3.rom" offset="0" />
+	</RomSet>
 	<RomSet name="Pentagon">
-		<Page name="128" image="PENTAGON/pentagon.rom" offset="0x0000" />
-		<Page name="SOS" image="PENTAGON/pentagon.rom" offset="0x4000" />
-		<Page name="DOS" image="TRDOS/trdos.rom"/>
-	</RomSet>
-	<RomSet name="Pentagon512">
-		<Page name="128" image="PENTAGON/pentagon.rom" offset="0x0000" />
-		<Page name="SOS" image="PENTAGON/pentagon.rom" offset="0x4000" />
+		<Page name="RAW" image="PENTAGON/pentagon.rom" />
 		<Page name="DOS" image="TRDOS/trdos.rom"/>
 		<Page name="SYS" image="PENTAGON/gluck.rom" />
 	</RomSet>
-	<RomSet name="Pentagon1024">
-		<Page name="128" image="PENTAGON/pentagon.rom" offset="0x0000" />
-		<Page name="SOS" image="PENTAGON/pentagon.rom" offset="0x4000" />
-		<Page name="DOS" image="TRDOS/trdos.rom"/>
-		<Page name="SYS" image="PENTAGON/gluck.rom" />
-	</RomSet>
-	<RomSet name="Profi">
-		<Page name="128" image="PROFI/PROF-M.ROM" offset="0x8000" />
-		<Page name="SOS" image="PROFI/PROF-M.ROM" offset="0xC000" />
-		<Page name="DOS" image="PROFI/PROF-M.ROM" offset="0x4000" />
-		<Page name="SYS" image="PROFI/PROF-M.ROM" offset="0x0000" />
+	<RomSet name="PROFI">
+		<Page name="RAW" image="PROFI/PROF-M.ROM" />
 	</RomSet>
 	<RomSet name="Profi3XX">
-		<Page name="128" image="PROFI/profi_v10.rom" offset="0x8000" />
-		<Page name="SOS" image="PROFI/profi_v10.rom" offset="0xC000" />
-		<Page name="DOS" image="PROFI/profi_v10.rom" offset="0x4000" />
-		<Page name="SYS" image="PROFI/profi_v10.rom" offset="0x0000" />
+		<Page name="RAW" image="PROFI/profi_v10.rom" />
 	</RomSet>
 	<RomSet name="Quorum">
-		<Page name="128" image="QUORUM/QU7V42.rom" offset="0x8000" />
-		<Page name="SOS" image="QUORUM/QU7V42.rom" offset="0xC000" />
-		<Page name="DOS" image="QUORUM/QU7V42.rom" offset="0x4000" />
-		<Page name="SYS" image="QUORUM/QU7V42.rom" offset="0x0000" />
+		<Page name="RAW" image="QUORUM/QU7V42.rom" />
 	</RomSet>
 	<RomSet name="Scorpion">
-<!--
-		<Page name="128" image="SCORPION/scorp295.rom" offset="0x0000" />
-		<Page name="SOS" image="SCORPION/scorp295.rom" offset="0x4000" />
-		<Page name="DOS" image="SCORPION/scorp295.rom" offset="0xC000" />
-		<Page name="SYS" image="SCORPION/scorp295.rom" offset="0x8000" />
--->
 		<Page name="RAW" image="SCORPION/scorp295.rom" />		
 	</RomSet>
 	<RomSet name="Scorpion-ProfRom">
@@ -85,15 +55,9 @@
 	</RomSet>
 	<RomSet name="ZXBYTE">
 		<Page name="SOS" image="ZXBYTE/DD72-DD73.BIN"/>
+		<Page name="DOS" image="TRDOS/trdos.rom"/>
 		<Page name="DD66" image="ZXBYTE/DD66_RT5.BIN" />
 		<Page name="DD71" image="ZXBYTE/DD71_RT7.BIN" />
-		<Page name="DOS" image="TRDOS/trdos.rom"/>
-	</RomSet>
-	<RomSet name="ZXBYTE128">
-		<Page name="SOS" image="ZXBYTE/DD72-DD73.BIN"/>
-		<Page name="DD66" image="ZXBYTE/DD66_RT5.BIN" />
-		<Page name="DD71" image="ZXBYTE/DD71_RT7.BIN" />
-		<Page name="DOS" image="TRDOS/trdos.rom"/>
 	</RomSet>
 	<RomSet name="Delta-C">
 		<Page name="SOS" image="DELTA/Delta-c.rom" />
