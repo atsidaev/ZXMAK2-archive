@@ -615,7 +615,7 @@ namespace ZXMAK2.Engine
                 oldDevices.Add(getDeviceKey(device.GetType()), device);
             }
             Clear();
-            int orderCounter = 0;
+            var orderCounter = 0;
             foreach (XmlNode node in busNode.SelectNodes("Device"))
             {
                 try
@@ -655,13 +655,7 @@ namespace ZXMAK2.Engine
                         //create new
                         device = (BusDeviceBase)Activator.CreateInstance(type);
                     }
-                    int busOrder;
-                    if (node.Attributes["busOrder"] == null ||
-                        !int.TryParse(node.Attributes["busOrder"].InnerText, out busOrder))
-                    {
-                        busOrder = orderCounter++;
-                    }
-                    device.BusOrder = busOrder;
+                    device.BusOrder = orderCounter++;
 
                     var configurable = device as IConfigurable;
                     if (configurable != null)
@@ -680,6 +674,7 @@ namespace ZXMAK2.Engine
                         DlgIcon.Error);
                 }
             }
+            Sort();
             Connect();
             //LogAgent.Debug("time end BusManager.LoadConfig");
         }
@@ -701,13 +696,16 @@ namespace ZXMAK2.Engine
                 {
                     XmlElement xe = busNode.OwnerDocument.CreateElement("Device");
                     if (device.GetType().Assembly != Assembly.GetExecutingAssembly())
+                    {
                         xe.SetAttribute("assembly", device.GetType().Assembly.Location);
+                    }
                     xe.SetAttribute("type", device.GetType().FullName);
-                    xe.SetAttribute("busOrder", device.BusOrder.ToString());
                     XmlNode node = busNode.AppendChild(xe);
                     IConfigurable configurable = device as IConfigurable;
                     if (configurable != null)
+                    {
                         configurable.SaveConfig(node);
+                    }
                 }
                 catch (Exception ex)
                 {

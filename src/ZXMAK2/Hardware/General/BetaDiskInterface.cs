@@ -141,25 +141,22 @@ namespace ZXMAK2.Hardware.General
         {
             NoDelay = Utils.GetXmlAttributeAsBool(itemNode, "noDelay", false);
             LogIO = Utils.GetXmlAttributeAsBool(itemNode, "logIO", false);
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
-                FDD[i].FileName = string.Empty;
-                FDD[i].IsWP = true;
-                FDD[i].Present = false;
-            }
-            foreach (XmlNode node in itemNode.SelectNodes("Drive"))
-            {
-                int index = Utils.GetXmlAttributeAsInt32(node, "index", 0);
-                string fileName = Utils.GetXmlAttributeAsString(node, "fileName", string.Empty);
-                bool inserted = Utils.GetXmlAttributeAsBool(node, "inserted", false);
-                bool readOnly = Utils.GetXmlAttributeAsBool(node, "readOnly", true);
-                if (index >= 0 && index <= 3)
+                var inserted = false;
+                var readOnly = true;
+                var fileName = string.Empty;
+                var node = itemNode.SelectSingleNode(string.Format("Drive[@index='{0}']", i));
+                if (node != null)
                 {
-                    // will be opened on Connect
-                    FDD[index].FileName = fileName;
-                    FDD[index].IsWP = readOnly;
-                    FDD[index].Present = inserted;
+                    inserted = Utils.GetXmlAttributeAsBool(node, "inserted", inserted);
+                    readOnly = Utils.GetXmlAttributeAsBool(node, "readOnly", readOnly);
+                    fileName = Utils.GetXmlAttributeAsString(node, "fileName", fileName);
                 }
+                // will be opened on Connect
+                FDD[i].FileName = fileName;
+                FDD[i].IsWP = readOnly;
+                FDD[i].Present = inserted;
             }
         }
 
@@ -167,14 +164,19 @@ namespace ZXMAK2.Hardware.General
         {
             Utils.SetXmlAttribute(itemNode, "noDelay", NoDelay);
             Utils.SetXmlAttribute(itemNode, "logIO", LogIO);
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
-                XmlNode xn = itemNode.AppendChild(itemNode.OwnerDocument.CreateElement("Drive"));
-                Utils.SetXmlAttribute(xn, "index", i);
-                if (!string.IsNullOrEmpty(FDD[i].FileName))
-                    Utils.SetXmlAttribute(xn, "fileName", FDD[i].FileName);
-                Utils.SetXmlAttribute(xn, "readOnly", FDD[i].IsWP.ToString());
-                Utils.SetXmlAttribute(xn, "inserted", FDD[i].Present.ToString());
+                if (FDD[i].Present)
+                {
+                    XmlNode xn = itemNode.AppendChild(itemNode.OwnerDocument.CreateElement("Drive"));
+                    Utils.SetXmlAttribute(xn, "index", i);
+                    Utils.SetXmlAttribute(xn, "inserted", FDD[i].Present);
+                    Utils.SetXmlAttribute(xn, "readOnly", FDD[i].IsWP);
+                    if (!string.IsNullOrEmpty(FDD[i].FileName))
+                    {
+                        Utils.SetXmlAttribute(xn, "fileName", FDD[i].FileName);
+                    }
+                }
             }
         }
 
