@@ -221,18 +221,7 @@ namespace ZXMAK2.Hardware
             return string.Format("#{0:X2}", pageNo);
         }
 
-        public virtual int GetRomIndex(RomName romId)
-        {
-            switch (romId)
-            {
-                case RomName.ROM_128: return 0;
-                case RomName.ROM_SOS: return 1;
-                case RomName.ROM_DOS: return 2;
-                case RomName.ROM_SYS: return 3;
-            }
-            LogAgent.Error("Unknown RomName: {0}", romId);
-            throw new InvalidOperationException("Unknown RomName");
-        }
+        public abstract int GetRomIndex(RomName romId);
 
         #region RD/WR MEM
 

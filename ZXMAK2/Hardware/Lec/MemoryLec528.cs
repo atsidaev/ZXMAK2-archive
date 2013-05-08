@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ZXMAK2.Interfaces;
 
 namespace ZXMAK2.Hardware.Lec
 {
@@ -30,11 +31,11 @@ namespace ZXMAK2.Hardware.Lec
         {
             bool allram = (CMR1 & 0x80) != 0;
             int ramPageLec = ((CMR1 >> 4) & 7) | (CMR1 & 8);
-            int romPage = 1;
+            int romPage = GetRomIndex(RomName.ROM_SOS);
             int videoPage = 32;
 
             if (DOSEN)      // trdos or 48/128
-                romPage = 2;
+                romPage = GetRomIndex(RomName.ROM_DOS);
 
             m_ula.SetPageMapping(
                 videoPage,
@@ -51,6 +52,19 @@ namespace ZXMAK2.Hardware.Lec
             MapWrite4000 = MapRead4000;
             MapWrite8000 = MapRead8000;
             MapWriteC000 = MapReadC000;
+        }
+
+        public override int GetRomIndex(RomName romId)
+        {
+            switch (romId)
+            {
+                case RomName.ROM_128: return 0;
+                case RomName.ROM_SOS: return 1;
+                case RomName.ROM_DOS: return 2;
+                case RomName.ROM_SYS: return 3;
+            }
+            LogAgent.Error("Unknown RomName: {0}", romId);
+            throw new InvalidOperationException("Unknown RomName");
         }
 
         #endregion
