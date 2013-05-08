@@ -121,7 +121,7 @@ namespace ZXMAK2.Hardware
                 {
                     var romSet = Utils.GetXmlAttributeAsString(romSetNode, "name", string.Empty);
                     if (romSet == string.Empty ||
-                        string.Compare(romSetName, romSet) != 0)
+                        string.Compare(romSetName, romSet, true) != 0)
                     {
                         continue;
                     }

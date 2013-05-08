@@ -103,7 +103,7 @@ namespace ZXMAK2.Controls.Configuration
             cbxRomSet.SelectedIndex = -1;
             for (var i = 0; i < cbxRomSet.Items.Count; i++)
             {
-                if (memory.RomSetName == (String)cbxRomSet.Items[i])
+                if (string.Compare(memory.RomSetName, (String)cbxRomSet.Items[i], true) == 0)
                 {
                     cbxRomSet.SelectedIndex = i;
                     break;
