@@ -186,12 +186,8 @@ namespace ZXMAK2.Hardware.General
 
         public bool DOSEN
         {
-            get { return m_dosen; }
-            set
-            {
-                m_dosen = value;
-                m_memory.DOSEN = value;
-            }
+            get { return m_memory.DOSEN; }
+            set { m_memory.DOSEN = value; }
         }
 
         public DiskImage[] FDD
@@ -327,7 +323,6 @@ namespace ZXMAK2.Hardware.General
         protected IMemoryDevice m_memory;
 
         private bool m_sandbox = false;
-        private bool m_dosen = false;
         private bool m_ledDiskRd = false;
         private bool m_ledDiskWr = false;
         private bool m_logIO = false;
