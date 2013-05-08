@@ -11,6 +11,7 @@ using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
 using ZXMAK2.Hardware.General.UI;
 using ZXMAK2.Entities;
+using ZXMAK2.Controls;
 
 namespace ZXMAK2.Hardware.Sprinter.UI
 {
@@ -41,7 +42,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void ChangeReg(ref ushort p, string reg)
         {
             int num = p;
-            if (InputBox.InputValue("Change Register " + reg, "New value:", "#", "X4", ref num, 0, 0xffff))
+            if (InputBox.InputValue("Change Register " + reg, "New value:", "#{0:X4}", ref num, 0, 0xffff))
             {
                 p = (ushort)num;
                 UpdateCPU(false);
@@ -178,7 +179,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void dataPanel_DataClick(object Sender, ushort Addr)
         {
             int num = m_spectrum.ReadMemory(Addr);
-            if (InputBox.InputValue("POKE #" + Addr.ToString("X4"), "Value:", "#", "X2", ref num, 0, 0xff))
+            if (InputBox.InputValue("POKE #" + Addr.ToString("X4"), "Value:", "#{0:X2}", ref num, 0, 0xff))
             {
                 m_spectrum.WriteMemory(Addr, (byte)num);
                 UpdateCPU(false);
@@ -361,7 +362,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                     case 7:
                         {
                             int frameTact = m_spectrum.GetFrameTact();
-                            if (InputBox.InputValue("Frame Tact", "New Frame Tact:", "", "D", ref frameTact, 0, m_spectrum.FrameTactCount))
+                            if (InputBox.InputValue("Frame Tact", "New Frame Tact:", "{0}", ref frameTact, 0, m_spectrum.FrameTactCount))
                             {
                                 int num2 = frameTact - m_spectrum.GetFrameTact();
                                 if (num2 < 0)
@@ -387,7 +388,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void menuItemDasmGotoADDR_Click(object sender, EventArgs e)
         {
             int num = 0;
-            if (InputBox.InputValue("Disassembly Address", "New Address:", "#", "X4", ref num, 0, 0xffff))
+            if (InputBox.InputValue("Disassembly Address", "New Address:", "#{0:X4}", ref num, 0, 0xffff))
             {
                 dasmPanel.TopAddress = (ushort)num;
             }
@@ -409,7 +410,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void menuItemDataGotoADDR_Click(object sender, EventArgs e)
         {
             int topAddress = dataPanel.TopAddress;
-            if (InputBox.InputValue("Data Panel Address", "New Address:", "#", "X4", ref topAddress, 0, 0xffff))
+            if (InputBox.InputValue("Data Panel Address", "New Address:", "#{0:X4}", ref topAddress, 0, 0xffff))
             {
                 dataPanel.TopAddress = (ushort)topAddress;
             }
@@ -424,7 +425,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void menuItemDataSetColumnCount_Click(object sender, EventArgs e)
         {
             int colCount = dataPanel.ColCount;
-            if (InputBox.InputValue("Data Panel Columns", "Column Count:", "", "", ref colCount, 1, 0x20))
+            if (InputBox.InputValue("Data Panel Columns", "Column Count:", "{0}", ref colCount, 1, 0x20))
             {
                 dataPanel.ColCount = colCount;
             }
@@ -445,7 +446,9 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             {
                 FileInfo info = new FileInfo(dialog.FileName);
                 s_len = (int)info.Length;
-                if (((s_len >= 1) && InputBox.InputValue("Load Block", "Memory Address:", "#", "X4", ref s_addr, 0, 0xffff)) && InputBox.InputValue("Load Block", "Block Length:", "#", "X4", ref s_len, 0, 0x10000))
+                if (((s_len >= 1) && 
+                    InputBox.InputValue("Load Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xffff)) &&
+                    InputBox.InputValue("Load Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
                 {
                     byte[] buffer = new byte[s_len];
                     using (FileStream stream = new FileStream(dialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -459,7 +462,8 @@ namespace ZXMAK2.Hardware.Sprinter.UI
 
         private void menuSaveBlock_Click(object sender, EventArgs e)
         {
-            if (InputBox.InputValue("Save Block", "Memory Address:", "#", "X4", ref s_addr, 0, 0xffff) && InputBox.InputValue("Save Block", "Block Length:", "#", "X4", ref s_len, 0, 0x10000))
+            if (InputBox.InputValue("Save Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xffff) &&
+                InputBox.InputValue("Save Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
             {
                 SaveFileDialog dialog = new SaveFileDialog();
                 dialog.InitialDirectory = ".";
@@ -675,7 +679,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void Update1FFD()
         {
             int num = sprint_mmu.CMR1;
-            if (InputBox.InputValue("Value of 1FFD port", "New value:", "#", "X2", ref num, 0, 0xff))
+            if (InputBox.InputValue("Value of 1FFD port", "New value:", "#{0:X2}", ref num, 0, 0xff))
             {
                 sprint_mmu.CMR1 = (byte)num;
                 //                dasmPanel.TopAddress = (ushort)num;
@@ -685,7 +689,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void Update7FFD()
         {
             int num = sprint_mmu.CMR0;
-            if (InputBox.InputValue("Value of 7FFD port", "New value:", "#", "X2", ref num, 0, 0xff))
+            if (InputBox.InputValue("Value of 7FFD port", "New value:", "#{0:X2}", ref num, 0, 0xff))
             {
                 sprint_mmu.CMR0 = (byte)num;
                 //                dasmPanel.TopAddress = (ushort)num;

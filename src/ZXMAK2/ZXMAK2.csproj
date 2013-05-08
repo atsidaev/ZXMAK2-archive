@@ -93,6 +93,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\DragDataWrapper.cs" />
+    <Compile Include="Controls\InputBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
     </Compile>
