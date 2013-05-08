@@ -45,7 +45,9 @@ namespace ZXMAK2.Hardware.Quorum
             ramPage |= ((CMR0 & 0xC0) >> 3);
             ramPage &= 0x0F;     //256K
 
-            int romPage = (CMR0 & 0x10) >> 4;
+            int romPage = (CMR0 & 0x10) != 0 ?
+                GetRomIndex(RomName.ROM_SOS) :
+                GetRomIndex(RomName.ROM_128);
             int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 
             bool blkwr = (CMR1 & Q_BLK_WR) != 0;
@@ -54,9 +56,9 @@ namespace ZXMAK2.Hardware.Quorum
             //bool dosPort = (CMR1 & Q_TR_DOS) == 0;
 
             if (DOSEN)      // trdos or 48/128
-                romPage = 2;
+                romPage = GetRomIndex(RomName.ROM_DOS);
             if (SYSEN)
-                romPage = 3;
+                romPage = GetRomIndex(RomName.ROM_SYS);
 
             m_ula.SetPageMapping(videoPage, (norom && !blkwr) ? ramPage0000 : -1, 5, 2, ramPage);
             MapRead0000 = norom ? RamPages[ramPage0000] : RomPages[romPage];
@@ -81,6 +83,19 @@ namespace ZXMAK2.Hardware.Quorum
                     CMR1 &= Q_B_ROM ^ 0xFF;
                 UpdateMapping();
             }
+        }
+
+        public override int GetRomIndex(RomName romId)
+        {
+            switch (romId)
+            {
+                case RomName.ROM_128: return 2;
+                case RomName.ROM_SOS: return 3;
+                case RomName.ROM_DOS: return 1;
+                case RomName.ROM_SYS: return 0;
+            }
+            LogAgent.Error("Unknown RomName: {0}", romId);
+            throw new InvalidOperationException("Unknown RomName");
         }
 
         #endregion
