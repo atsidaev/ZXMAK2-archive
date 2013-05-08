@@ -75,11 +75,13 @@ namespace ZXMAK2.Hardware.Scorpion
 
         protected virtual int GetRomPage()
         {
-            int romPage = (CMR0 & 0x10) >> 4;
+            int romPage = (CMR0 & 0x10) != 0 ?
+                GetRomIndex(RomName.ROM_SOS) :
+                GetRomIndex(RomName.ROM_128);
             if (DOSEN)      // trdos or 48/128
-                romPage = 3;
+                romPage = GetRomIndex(RomName.ROM_DOS);
             if (SYSEN)
-                romPage = 2;
+                romPage = GetRomIndex(RomName.ROM_SYS);
             return romPage;
         }
 
