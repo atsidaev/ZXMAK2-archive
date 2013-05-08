@@ -73,6 +73,7 @@
             this.lblCmrValue0.TabIndex = 2;
             this.lblCmrValue0.Text = "#00";
             this.lblCmrValue0.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblCmrValue0.DoubleClick += new System.EventHandler(this.lblCmrValue0_DoubleClick);
             // 
             // lblCmrValue1
             // 
@@ -83,6 +84,7 @@
             this.lblCmrValue1.TabIndex = 3;
             this.lblCmrValue1.Text = "#00";
             this.lblCmrValue1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblCmrValue1.DoubleClick += new System.EventHandler(this.lblCmrValue1_DoubleClick);
             // 
             // lblWnd0000
             // 
