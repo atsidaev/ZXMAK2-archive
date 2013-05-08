@@ -145,7 +145,7 @@ namespace ZXMAK2.Hardware.Profi
         }
 
         public MemoryProfi1024()
-            : this("Profi")
+            : this("PROFI")
         {
         }
     }
