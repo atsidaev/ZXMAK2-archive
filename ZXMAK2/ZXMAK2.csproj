@@ -184,6 +184,8 @@
     <Compile Include="Hardware\Atm\Atm320Renderer.cs" />
     <Compile Include="Hardware\Atm\Atm640Renderer.cs" />
     <Compile Include="Hardware\Atm\AtmTxtRenderer.cs" />
+    <Compile Include="Hardware\IC\NvramChip.cs" />
+    <Compile Include="Hardware\IC\RtcChip.cs" />
     <Compile Include="Hardware\Pentagon\CovoxPentagon.cs" />
     <Compile Include="Hardware\Profi\CovoxProfi.cs" />
     <Compile Include="Hardware\RomPack.cs" />
