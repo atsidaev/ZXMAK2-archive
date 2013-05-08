@@ -41,13 +41,15 @@ namespace ZXMAK2.Hardware.Profi
         {
             m_lock = ((CMR0 & 0x20) != 0);
             int ramPage = CMR0 & 7;
-            int romPage = (CMR0 & 0x10) >> 4;
+            int romPage = (CMR0 & 0x10) != 0 ? 
+                GetRomIndex(RomName.ROM_SOS) : 
+                GetRomIndex(RomName.ROM_128);
             int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 
             if (DOSEN)      // trdos or 48/128
-                romPage = 2;
+                romPage = GetRomIndex(RomName.ROM_DOS);// 2;
             if (SYSEN)
-                romPage = 3;
+                romPage = GetRomIndex(RomName.ROM_SYS);// 3;
 
             int sega = CMR1 & 7;
             bool norom = (CMR1 & 0x10) != 0;
@@ -74,6 +76,19 @@ namespace ZXMAK2.Hardware.Profi
             MapWrite4000 = MapRead4000;
             MapWrite8000 = MapRead8000;
             MapWriteC000 = MapReadC000;
+        }
+
+        public override int GetRomIndex(RomName romId)
+        {
+            switch (romId)
+            {
+                case RomName.ROM_128: return 2;
+                case RomName.ROM_SOS: return 3;
+                case RomName.ROM_DOS: return 1;
+                case RomName.ROM_SYS: return 0;
+            }
+            LogAgent.Error("Unknown RomName: {0}", romId);
+            throw new InvalidOperationException("Unknown RomName");
         }
 
         #endregion

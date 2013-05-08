@@ -100,7 +100,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
         private byte[] m_dd71 = new byte[2048];
 
         public MemoryByte128()
-            : base("ZXBYTE128")
+            : base("ZXBYTE")
         {
         }
 
