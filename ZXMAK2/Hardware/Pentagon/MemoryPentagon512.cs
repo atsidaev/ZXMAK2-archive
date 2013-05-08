@@ -136,7 +136,7 @@ namespace ZXMAK2.Hardware.Pentagon
 
 
         public MemoryPentagon512()
-            : base("Pentagon512")
+            : base("Pentagon")
         {
             EnableShadow = true;
             for (var i = 0; i < m_ramPages.Length; i++)
