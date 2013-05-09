@@ -42,7 +42,7 @@ namespace ZXMAK2.Hardware.IC
             {
                 for (var i = 0; i < m_ram.Length; i++)
                 {
-                    m_ram[i] = 0xFF;
+                    m_ram[i] = (byte)(i <= 0xD ? 0x00 : 0xFF);
                 }
                 if (File.Exists(fileName))
                 {

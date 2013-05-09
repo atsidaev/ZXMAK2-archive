@@ -222,7 +222,7 @@
     <Compile Include="Hardware\Profi\CmosProfi.cs" />
     <Compile Include="Hardware\General\Debugger.cs" />
     <Compile Include="Hardware\Lec\BetaDiskInterfaceLec.cs" />
-    <Compile Include="Hardware\General\CmosDevice.cs" />
+    <Compile Include="Hardware\General\CmosGluck.cs" />
     <Compile Include="Hardware\Profi\BetaDiskInterfaceProfi.cs" />
     <Compile Include="Hardware\General\BetaDiskInterfaceExt.cs" />
     <Compile Include="Hardware\Quorum\BetaDiskInterfaceQuorum.cs" />
