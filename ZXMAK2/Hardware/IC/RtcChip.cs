@@ -5,13 +5,36 @@ using System.IO;
 
 namespace ZXMAK2.Hardware.IC
 {
+    /// <summary>
+    /// RTC IC emulator
+    /// </summary>
     public class RtcChip
     {
-        private byte m_addr = 0;
-        private byte[] m_ram = new byte[256];
-        private DateTime m_dateTime = DateTime.Now;
-        private bool m_uf = false;
+        private RtcChipType m_chipType;
+        private byte m_addrMask;
+        private byte m_addr;
+        private byte[] m_ram = new byte[0x80];
+        private DateTime m_dateTime;
+        private bool m_uf;
+        private bool m_af;
+        private bool m_pf;
+        private int m_seconds;
 
+
+        public RtcChip(RtcChipType chipType)
+        {
+            m_dateTime = DateTime.Now;
+            m_chipType = chipType;
+            m_addrMask = 0;
+            if (m_chipType == RtcChipType.DS1285)
+            {
+                m_addrMask = 0x3F;
+            }
+            if (m_chipType == RtcChipType.DS12885)
+            {
+                m_addrMask = 0x7F;
+            }
+        }
 
         public void Load(string fileName)
         {
@@ -19,7 +42,7 @@ namespace ZXMAK2.Hardware.IC
             {
                 for (var i = 0; i < m_ram.Length; i++)
                 {
-                    m_ram[i] = 0x00;
+                    m_ram[i] = 0xFF;
                 }
                 if (File.Exists(fileName))
                 {
@@ -60,80 +83,110 @@ namespace ZXMAK2.Hardware.IC
             m_addr = value;
         }
 
-        public void ReadAddr(ref byte value)
-        {
-        }
-
         public void WriteData(byte value)
         {
-            if (m_addr < 0xF0)
-            {
-                m_ram[m_addr] = value;
-            }
+            m_ram[m_addr & m_addrMask] = value;
         }
 
         public void ReadData(ref byte value)
         {
-            var curDt = DateTime.Now;
+            int reg = m_addr & m_addrMask;
 
-            if (curDt.Subtract(m_dateTime).Seconds > 0 || 
-                curDt.Millisecond / 500 != m_dateTime.Millisecond / 500)
+            if (((1 << reg) & ((1 << 0) | (1 << 2) | (1 << 4) | (1 << 6) | (1 << 7) | (1 << 8) | (1 << 9) | (1 << 0xA) | (1 << 0xC))) != 0)
             {
-                m_dateTime = curDt;
-                m_uf = true;
+                m_dateTime = DateTime.Now;
+                if (m_dateTime.Second != m_seconds)
+                {
+                    m_uf = true;
+                    m_seconds = m_dateTime.Second;
+                }
             }
-            switch (m_addr)
+            var uip = !IsSetMode && m_dateTime.Millisecond >= 997;
+            switch (reg)
             {
-                case 0x00:
-                    value = Bdc(m_dateTime.Second);
+                case 0: value = Bcd(m_dateTime.Second); break;
+                case 2: value = Bcd(m_dateTime.Minute); break;
+                case 4:
+                    int hours = m_dateTime.Hour;
+                    var pm = 0x00;
+                    if (!IsFormat24)
+                    {
+                        if (hours == 0)
+                        {
+                            hours = 12;
+                        }
+                        else if (hours == 12)
+                        {
+                            pm = 0x80;
+                        }
+                        else if (hours > 12)
+                        {
+                            hours -= 12;
+                            pm = 0x80;
+                        }
+                    }
+                    value = (byte)(Bcd(m_dateTime.Hour) | pm);
                     break;
-                case 0x02:
-                    value = Bdc(m_dateTime.Minute);
+                case 6:
+                    var dayOfWeek = (int)m_dateTime.DayOfWeek + 1;
+                    value = (byte)dayOfWeek;
                     break;
-                case 0x04:
-                    value = Bdc(m_dateTime.Hour);
+                case 7: value = Bcd(m_dateTime.Day); break;
+                case 8: value = Bcd(m_dateTime.Month); break;
+                case 9: value = Bcd(m_dateTime.Year % 100); break;
+                case 0xA:
+                    value = (byte)((m_ram[0xA] & 0x7F) | (uip ? 0x80 : 0));
                     break;
-                case 0x06:
-                    value = (byte)(m_dateTime.DayOfWeek);
-                    break;
-                case 0x07:
-                    value = Bdc(m_dateTime.Day);
-                    break;
-                case 0x08:
-                    value = Bdc(m_dateTime.Month);
-                    break;
-                case 0x09:
-                    value = Bdc(m_dateTime.Year % 100);
-                    break;
-                case 0x0A:
-                    value = 0x00;
-                    break;
-                case 0x0B:
-                    value = 0x02;
-                    break;
-                case 0x0C:
-                    value = (byte)(m_uf ? 0x1C : 0x0C);
+                case 0xB: value = m_ram[0xB]; break;
+                case 0xC:
+                    value = 0;
+                    if (m_uf) value |= 0x10;
+                    if (m_af) value |= 0x20;
+                    if (m_pf) value |= 0x40;
+                    if ((value & (m_ram[0xB] & 0x70)) != 0) value |= 0x80;
                     m_uf = false;
+                    m_af = false;
+                    m_pf = false;
                     break;
-                case 0x0D:
-                    value = 0x80;
-                    break;
-                default:
-                    value = m_ram[m_addr];
-                    break;
+                case 0xD: value = 0x80; break;
+                default: value = m_ram[reg]; break;
             }
         }
 
-        private byte Bdc(int val)
+        private bool IsFormat24
         {
-            int res = val;
-            if ((m_ram[11] & 4) == 0)
-            {
-                int rem = 0;
-                res = Math.DivRem(val, 10, out rem);
-                res = (res * 16 + rem);
-            }
-            return (byte)res;
+            get { return (m_ram[0x0B] & 2) != 0; }
         }
+
+        private bool IsFormatBcd
+        {
+            get { return (m_ram[0x0B] & 4) == 0; }
+        }
+
+        private bool IsSetMode
+        {
+            get { return (m_ram[0x0B] & 0x80) != 0; }
+        }
+
+        private byte Bcd(int binary)
+        {
+            if (IsFormatBcd)
+            {
+                binary = (binary % 10) + 0x10 * ((binary / 10) % 10);
+            }
+            return (byte)binary;
+        }
+    }
+
+    public enum RtcChipType
+    {
+        /// <summary>
+        /// DS1285/MC146818/KR512VI1
+        /// </summary>
+        DS1285 = 0,
+        /// <summary>
+        /// DS12885
+        /// </summary>
+        DS12885,
     }
 }
