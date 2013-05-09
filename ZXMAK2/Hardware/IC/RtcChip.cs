@@ -85,12 +85,27 @@ namespace ZXMAK2.Hardware.IC
 
         public void WriteData(byte value)
         {
-            m_ram[m_addr & m_addrMask] = value;
+            var reg = m_addr & m_addrMask;
+            if (value > 0xD)
+            {
+                m_ram[reg] = value;
+                return;
+            }
+            switch (reg)
+            {
+                case 6:
+                    value = (byte)(((value - 1) & 7) % 7);
+                    m_ram[reg] = GetDelta((int)m_dateTime.DayOfWeek, value, 7);
+                    break;
+                default:
+                    m_ram[reg] = value;
+                    break;
+            }
         }
 
         public void ReadData(ref byte value)
         {
-            int reg = m_addr & m_addrMask;
+            var reg = m_addr & m_addrMask;
 
             if (((1 << reg) & ((1 << 0) | (1 << 2) | (1 << 4) | (1 << 6) | (1 << 7) | (1 << 8) | (1 << 9) | (1 << 0xA) | (1 << 0xC))) != 0)
             {
@@ -128,7 +143,7 @@ namespace ZXMAK2.Hardware.IC
                     value = (byte)(Bcd(m_dateTime.Hour) | pm);
                     break;
                 case 6:
-                    var dayOfWeek = (int)m_dateTime.DayOfWeek + 1;
+                    var dayOfWeek = 1 + (((int)m_dateTime.DayOfWeek + m_ram[6]) % 7);
                     value = (byte)dayOfWeek;
                     break;
                 case 7: value = Bcd(m_dateTime.Day); break;
@@ -175,6 +190,18 @@ namespace ZXMAK2.Hardware.IC
                 binary = (binary % 10) + 0x10 * ((binary / 10) % 10);
             }
             return (byte)binary;
+        }
+
+        private byte GetDelta(int curVal, int newVal, int basis)
+        {
+            if (newVal < curVal)
+            {
+                return (byte)(basis + (basis-(curVal - newVal)));
+            }
+            else
+            {
+                return (byte)((newVal - curVal) % basis);
+            }
         }
     }
 
