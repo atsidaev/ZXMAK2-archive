@@ -247,8 +247,10 @@ namespace ZXMAK2.Hardware.Atm
 
         private void busWritePort7FFD_128(ushort addr, byte value, ref bool iorqge)
         {
-            if (m_lock || DOSEN)
+            if (m_lock)
+            {
                 return;
+            }
             CMR0 = value;
         }
 
