@@ -37,6 +37,9 @@
 	<RomSet name="Profi3XX">
 		<Page name="RAW" image="PROFI/profi_v10.rom" />
 	</RomSet>
+	<RomSet name="PROFI-v450-HC">
+		<Page name="RAW" image="PROFI/profi_v450.ROM" />
+	</RomSet>
 	<RomSet name="Quorum">
 		<Page name="RAW" image="QUORUM/QU7V42.rom" />
 	</RomSet>
@@ -45,6 +48,9 @@
 	</RomSet>
 	<RomSet name="Scorpion-ProfRom">
 		<Page name="RAW" image="SCORPION/scorp256.rom" offset="0" />
+	</RomSet>
+	<RomSet name="Scorpion-TEST">
+		<Page name="RAW" image="SCORPION/TESTSC.512" offset="0" />
 	</RomSet>
 	<RomSet name="LEC">
 		<Page name="SOS" image="LEC/LEC24.ROM"/>
