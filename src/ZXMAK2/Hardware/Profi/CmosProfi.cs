@@ -19,6 +19,7 @@ namespace ZXMAK2.Hardware.Profi
 
         public override void BusInit(IBusManager bmgr)
         {
+            m_isSandBox = bmgr.IsSandbox;
             m_memory = bmgr.FindDevice<IMemoryDevice>();
             bmgr.SubscribeWrIo(0x009F, 0x009F, BusWriteRtc);
             bmgr.SubscribeRdIo(0x009F, 0x009F, BusReadRtc);
@@ -28,7 +29,7 @@ namespace ZXMAK2.Hardware.Profi
 
         public override void BusConnect()
         {
-            if (m_fileName != null)
+            if (!m_isSandBox && m_fileName != null)
             {
                 m_rtc.Load(m_fileName);
             }
@@ -36,7 +37,7 @@ namespace ZXMAK2.Hardware.Profi
 
         public override void BusDisconnect()
         {
-            if (m_fileName != null)
+            if (!m_isSandBox && m_fileName != null)
             {
                 m_rtc.Save(m_fileName);
             }
@@ -44,6 +45,7 @@ namespace ZXMAK2.Hardware.Profi
 
         #endregion
 
+        private bool m_isSandBox;
         private IMemoryDevice m_memory;
         private RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
         private string m_fileName = null;

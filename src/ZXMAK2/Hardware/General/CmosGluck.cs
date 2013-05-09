@@ -19,17 +19,17 @@ namespace ZXMAK2.Hardware.General
 
         public override void BusInit(IBusManager bmgr)
         {
-            m_memory = bmgr.FindDevice<IMemoryDevice>();
-            bmgr.SubscribeRdIo(0xF008, 0xB000, ReadPortData);   // DATA IN
-            bmgr.SubscribeWrIo(0xF008, 0xB000, WritePortData);  // DATA OUT
-            bmgr.SubscribeWrIo(0xF008, 0xD000, WritePortAddr);  // REG
+            m_isSandBox = bmgr.IsSandbox;
+            bmgr.SubscribeRdIo(0xF008, 0xB000, BusReadData);   // DATA IN
+            bmgr.SubscribeWrIo(0xF008, 0xB000, BusWriteData);  // DATA OUT
+            bmgr.SubscribeWrIo(0xF008, 0xD000, BusWriteAddr);  // REG
 
             m_fileName = bmgr.GetSatelliteFileName("cmos");
         }
 
         public override void BusConnect()
         {
-            if (m_fileName != null)
+            if (!m_isSandBox && m_fileName != null)
             {
                 m_rtc.Load(m_fileName);
             }
@@ -37,7 +37,7 @@ namespace ZXMAK2.Hardware.General
 
         public override void BusDisconnect()
         {
-            if (m_fileName != null)
+            if (!m_isSandBox && m_fileName != null)
             {
                 m_rtc.Save(m_fileName);
             }
@@ -46,14 +46,14 @@ namespace ZXMAK2.Hardware.General
         #endregion
 
 
-        private IMemoryDevice m_memory;
+        private bool m_isSandBox;
         private RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
         private string m_fileName = null;
 
 
         #region Bus Handlers
 
-        private void WritePortAddr(ushort addr, byte value, ref bool iorqge)
+        private void BusWriteAddr(ushort addr, byte value, ref bool iorqge)
         {
             if (!iorqge)
             {
@@ -63,7 +63,7 @@ namespace ZXMAK2.Hardware.General
             m_rtc.WriteAddr(value);
         }
 
-        private void WritePortData(ushort addr, byte value, ref bool iorqge)
+        private void BusWriteData(ushort addr, byte value, ref bool iorqge)
         {
             if (!iorqge)
             {
@@ -73,7 +73,7 @@ namespace ZXMAK2.Hardware.General
             m_rtc.WriteData(value);
         }
 
-        private void ReadPortData(ushort addr, ref byte value, ref bool iorqge)
+        private void BusReadData(ushort addr, ref byte value, ref bool iorqge)
         {
             if (!iorqge)
             {
