@@ -44,6 +44,8 @@ namespace ZXMAK2.Hardware.IC
                 {
                     m_ram[i] = (byte)(i <= 0xD ? 0x00 : 0xFF);
                 }
+                m_ram[0xA] = 0x27;  // enable clock
+                m_ram[0xB] = 0x07;  // 24/binary/daylight saving
                 if (File.Exists(fileName))
                 {
                     using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
