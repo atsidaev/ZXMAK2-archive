@@ -62,6 +62,12 @@ namespace ZXMAK2.Hardware.IC
         {
             try
             {
+                var fileInfo = new FileInfo(fileName);
+                if (fileInfo.Exists && fileInfo.IsReadOnly)
+                {
+                    LogAgent.Warn("The CMOS image could not be written to disk because marked with read only attribute: {0}", fileName);
+                    return;
+                }
                 using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
                 {
                     fs.Write(m_ram, 0, m_ram.Length);
