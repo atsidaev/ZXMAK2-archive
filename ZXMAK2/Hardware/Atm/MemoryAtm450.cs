@@ -121,7 +121,10 @@ namespace ZXMAK2.Hardware.Atm
                     m_aFE = 0x80 | 0x60;
                     m_aFB = 0x7F;
                 }
-                if (((m_aFE ^ old_aFE) & 0x40) != 0) atm_memswap();
+                if (((m_aFE ^ old_aFE) & 0x40) != 0)
+                {
+                    atm_memswap();
+                }
                 UpdateMapping();
             }
         }
@@ -160,8 +163,14 @@ namespace ZXMAK2.Hardware.Atm
             addr &= 0x00FF;
             byte old_aFE = m_aFE;
             m_aFE = (byte)addr;
-            if (((addr ^ old_aFE) & 0x40) != 0) atm_memswap();
-            if (((addr ^ old_aFE) & 0x80) != 0) UpdateMapping();
+            if (((addr ^ old_aFE) & 0x40) != 0)
+            {
+                atm_memswap();
+            }
+            if (((addr ^ old_aFE) & 0x80) != 0)
+            {
+                UpdateMapping();
+            }
         }
 
         private void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
@@ -251,11 +260,13 @@ namespace ZXMAK2.Hardware.Atm
         {
             // PAL hardware gives 3 zeros in secret short time intervals
             if (m_ula.FrameTactCount < 80000)
-            { // NORMAL SPEED mode
+            { 
+                // NORMAL SPEED mode
                 if ((uint)(t - 7200) < 40 || (uint)(t - 7284) < 40 || (uint)(t - 7326) < 40) return 0;
             }
             else
-            { // TURBO mode
+            { 
+                // TURBO mode
                 if ((uint)(t - 21514) < 40 || (uint)(t - 21703) < 80 || (uint)(t - 21808) < 40) return 0;
             }
             return 0x80;
