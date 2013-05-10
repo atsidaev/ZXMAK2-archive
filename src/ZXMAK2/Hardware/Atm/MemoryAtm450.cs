@@ -18,16 +18,16 @@ namespace ZXMAK2.Hardware.Atm
             m_cpu = bmgr.CPU;
             m_ulaAtm = base.m_ula as UlaAtm450;
 
-            bmgr.SubscribeRdIo(0x0001, 0x0000, busReadPortFE);      // bit Z emulation
-            bmgr.SubscribeWrIo(0x0001, 0x0000, busWritePortFE);
-            bmgr.SubscribeRdIo(0x0004, 0x00FB & 0x0004, busReadPortFB);   // CPSYS [(addr & 0x7F)==0x7B]
+            bmgr.SubscribeRdIo(0x0001, 0x0000, BusReadPortFE);      // bit Z emulation
+            bmgr.SubscribeWrIo(0x0001, 0x0000, BusWritePortFE);
+            bmgr.SubscribeRdIo(0x0004, 0x00FB & 0x0004, BusReadPortFB);   // CPSYS [(addr & 0x7F)==0x7B]
 
-            bmgr.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, busWritePort7FFD);
-            bmgr.SubscribeWrIo(0x8202, 0xFDFD & 0x8202, busWritePortFDFD);
+            bmgr.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD);
+            bmgr.SubscribeWrIo(0x8202, 0xFDFD & 0x8202, BusWritePortFDFD);
 
-            bmgr.SubscribeWrIo(0x8202, 0x7DFD & 0x8202, busWritePort7DFD); // atm_writepal(val);
+            bmgr.SubscribeWrIo(0x8202, 0x7DFD & 0x8202, BusWritePort7DFD); // atm_writepal(val);
 
-            bmgr.SubscribeReset(busReset);
+            bmgr.SubscribeReset(BusReset);
         }
 
         #endregion
@@ -143,19 +143,19 @@ namespace ZXMAK2.Hardware.Atm
 
         #region Bus Handlers
 
-        private void busReadPortFE(ushort addr, ref byte value, ref bool iorqge)
+        private void BusReadPortFE(ushort addr, ref byte value, ref bool iorqge)
         {
             value &= 0x7F;
             value |= atm450_z((int)(m_cpu.Tact % m_ula.FrameTactCount));
         }
 
-        private void busReadPortFB(ushort addr, ref byte value, ref bool iorqge)
+        private void BusReadPortFB(ushort addr, ref byte value, ref bool iorqge)
         {
             m_aFB = (byte)addr;
             UpdateMapping();
         }
 
-        private void busWritePortFE(ushort addr, byte value, ref bool iorqge)
+        private void BusWritePortFE(ushort addr, byte value, ref bool iorqge)
         {
             addr &= 0x00FF;
             byte old_aFE = m_aFE;
@@ -164,30 +164,29 @@ namespace ZXMAK2.Hardware.Atm
             if (((addr ^ old_aFE) & 0x80) != 0) UpdateMapping();
         }
 
-        private void busWritePort7FFD(ushort addr, byte value, ref bool iorqge)
+        private void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
         {
-            if (DOSEN)
+            if (m_lock)
+            {
                 return;
-            if (!m_lock)
-                CMR0 = value;
+            }
+            CMR0 = value;
         }
 
-        private void busWritePortFDFD(ushort addr, byte value, ref bool iorqge)
+        private void BusWritePortFDFD(ushort addr, byte value, ref bool iorqge)
         {
-            if (DOSEN)
-                return;
             CMR1 = value;
         }
 
-        private void busWritePort7DFD(ushort addr, byte value, ref bool iorqge)
+        private void BusWritePort7DFD(ushort addr, byte value, ref bool iorqge)
         {
-            if (DOSEN)
-                return;
             if (m_ulaAtm != null)
+            {
                 m_ulaAtm.SetPaletteAtm(value);
+            }
         }
 
-        private void busReset()
+        private void BusReset()
         {
             CMR0 = 0;
             CMR1 = 0;
