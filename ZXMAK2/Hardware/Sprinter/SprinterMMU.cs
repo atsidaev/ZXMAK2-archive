@@ -176,7 +176,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private Z80CPU m_cpu;
         private SprinterULA m_ulaSprinter;
-        private SprinterBDI m_SprinterBDI;
+        private SprinterFdd m_SprinterBDI;
 
         public SprinterMMU()
             : base("Sprinter")
@@ -228,7 +228,7 @@ namespace ZXMAK2.Hardware.Sprinter
             {
                 throw new ApplicationException("SprinterULA not found");
             }
-            this.m_SprinterBDI = bmgr.FindDevice<SprinterBDI>();
+            this.m_SprinterBDI = bmgr.FindDevice<SprinterFdd>();
             if (this.m_SprinterBDI == null)
             {
                 throw new ApplicationException("SprinterBDI not found");

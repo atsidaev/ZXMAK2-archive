@@ -17,19 +17,19 @@ namespace ZXMAK2.Hardware.Sprinter.UI
     public partial class CtlSettingsBetaDisk : ConfigScreenControl
     {
         private BusManager m_bmgr;
-        private SprinterBDI m_device;
+        private SprinterFdd m_device;
         
         public CtlSettingsBetaDisk()
         {
             InitializeComponent();
         }
 
-        public void Init(BusManager bmgr, SprinterBDI device)
+        public void Init(BusManager bmgr, SprinterFdd device)
         {
             m_bmgr = bmgr;
             m_device = device;
             chkNoDelay.Checked = m_device.NoDelay;
-            chkLogIO.Checked = m_device.LogIO;
+            chkLogIO.Checked = m_device.LogIo;
             initDrive(m_device.FDD[0], chkPresentA, txtPathA, chkProtectA);
             initDrive(m_device.FDD[1], chkPresentB, txtPathB, chkProtectB);
 //            initDrive(m_device.FDD[2], chkPresentC, txtPathC, chkProtectC);
@@ -39,7 +39,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         public override void Apply()
         {
             m_device.NoDelay = chkNoDelay.Checked;
-            m_device.LogIO = chkLogIO.Checked;
+            m_device.LogIo = chkLogIO.Checked;
             applyDrive(m_device.FDD[0], chkPresentA, txtPathA, chkProtectA);
             applyDrive(m_device.FDD[1], chkPresentB, txtPathB, chkProtectB);
 //            applyDrive(m_device.FDD[2], chkPresentC, txtPathC, chkProtectC);

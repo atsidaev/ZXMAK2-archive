@@ -9,6 +9,17 @@ namespace ZXMAK2.Hardware.Profi
 {
     public class MemoryProfi1024 : MemoryBase
     {
+        #region Fields
+
+        private Z80CPU m_cpu;
+        private byte[][] m_ramPages = new byte[64][];
+        private byte[] m_trashPage = new byte[0x4000];
+        private UlaProfi3XX m_ulaProfi;
+        private bool m_lock = false;
+        
+        #endregion Fields
+
+
         #region IBusDevice
 
         public override string Name { get { return "PROFI+ 1024K"; } }
@@ -16,17 +27,23 @@ namespace ZXMAK2.Hardware.Profi
 
         public override void BusInit(IBusManager bmgr)
         {
-            base.BusInit(bmgr);
             m_cpu = bmgr.CPU;
             m_ulaProfi = bmgr.FindDevice<UlaProfi3XX>();
 
-            bmgr.SubscribeWrIo(0x8002, 0x0000, writePort7FFD);
-            bmgr.SubscribeWrIo(0xFFFF, 0xDFFD, writePortDFFD);
-            bmgr.SubscribeRdMemM1(0xC000, 0x4000, readRamM1);
-            bmgr.SubscribeRdMemM1(0xC000, 0x8000, readRamM1);
-            bmgr.SubscribeRdMemM1(0xC000, 0xC000, readRamM1);
+            bmgr.SubscribeWrIo(0x8002, 0x0000, BusWritePort7FFD);
+            bmgr.SubscribeWrIo(0xFFFF, 0xDFFD, BusWritePortDFFD);
 
-            bmgr.SubscribeReset(busReset);
+            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
+            bmgr.SubscribeReset(BusReset);
+            bmgr.SubscribeNmiRq(BusNmiRq);
+            bmgr.SubscribeNmiAck(BusNmiAck);
+
+            // Subscribe before MemoryBase.BusInit 
+            // to handle memory switches before read
+            base.BusInit(bmgr);
         }
 
         #endregion
@@ -95,7 +112,7 @@ namespace ZXMAK2.Hardware.Profi
 
         #region Bus Handlers
 
-        private void writePort7FFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
         {
             if (!iorqge)
                 return;
@@ -104,7 +121,7 @@ namespace ZXMAK2.Hardware.Profi
                 CMR0 = value;
         }
 
-        private void writePortDFFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortDFFD(ushort addr, byte value, ref bool iorqge)
         {
             if (!iorqge)
                 return;
@@ -112,27 +129,46 @@ namespace ZXMAK2.Hardware.Profi
             CMR1 = value;
         }
 
-        private void readRamM1(ushort addr, ref byte value)
+        protected virtual void BusReadMem3D00_M1(ushort addr, ref byte value)
         {
-            if (SYSEN)
-                SYSEN = false;
+            if (!DOSEN && IsRom48)
+            {
+                DOSEN = true;
+            }
         }
 
-        private void busReset()
+        protected virtual void BusReadMemRamM1(ushort addr, ref byte value)
+        {
+            if (SYSEN)
+            {
+                SYSEN = false;
+            }
+            if (DOSEN)
+            {
+                DOSEN = false;
+            }
+        }
+
+        protected virtual void BusReset()
         {
             CMR1 = 0;
             CMR0 = 0;
             SYSEN = true;
+            DOSEN = false;
         }
 
+        protected virtual void BusNmiRq(BusCancelArgs e)
+        {
+            e.Cancel = !IsRom48;
+        }
+
+        protected virtual void BusNmiAck()
+        {
+            DOSEN = true;
+        }
+
+
         #endregion
-
-
-        private byte[][] m_ramPages = new byte[64][];
-        private byte[] m_trashPage = new byte[0x4000];
-        private Z80CPU m_cpu;
-        private UlaProfi3XX m_ulaProfi;
-        private bool m_lock = false;
 
 
         public MemoryProfi1024(String romSetName)

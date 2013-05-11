@@ -6,6 +6,21 @@ namespace ZXMAK2.Hardware.Atm
 {
     public class MemoryAtm450 : MemoryBase
     {
+        #region Fields
+
+        protected Z80CPU m_cpu;
+        private byte[][] m_ramPages = new byte[32][];
+        private byte[] m_trashPage = new byte[0x4000];
+        private bool m_lock = false;
+        private UlaAtm450 m_ulaAtm;
+        private byte m_aFE = 0x80;
+        private byte m_aFB = 0x80;
+
+        private bool m_cfg_mem_swap = true;  // ATM 7.10 hi-res video modes swap RAM/CPU address bus A5-A7<=>A8-A10
+        
+        #endregion Fields
+
+
         #region IBusDevice
 
         public override string Name { get { return "ATM450 512K"; } }
@@ -13,10 +28,8 @@ namespace ZXMAK2.Hardware.Atm
 
         public override void BusInit(IBusManager bmgr)
         {
-            base.BusInit(bmgr);
-
             m_cpu = bmgr.CPU;
-            m_ulaAtm = base.m_ula as UlaAtm450;
+            m_ulaAtm = bmgr.FindDevice<UlaAtm450>();
 
             bmgr.SubscribeRdIo(0x0001, 0x0000, BusReadPortFE);      // bit Z emulation
             bmgr.SubscribeWrIo(0x0001, 0x0000, BusWritePortFE);
@@ -27,7 +40,15 @@ namespace ZXMAK2.Hardware.Atm
 
             bmgr.SubscribeWrIo(0x8202, 0x7DFD & 0x8202, BusWritePort7DFD); // atm_writepal(val);
 
+            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
             bmgr.SubscribeReset(BusReset);
+
+            // Subscribe before MemoryBase.BusInit 
+            // to handle memory switches before read
+            base.BusInit(bmgr);
         }
 
         #endregion
@@ -146,19 +167,19 @@ namespace ZXMAK2.Hardware.Atm
 
         #region Bus Handlers
 
-        private void BusReadPortFE(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPortFE(ushort addr, ref byte value, ref bool iorqge)
         {
             value &= 0x7F;
             value |= atm450_z((int)(m_cpu.Tact % m_ula.FrameTactCount));
         }
 
-        private void BusReadPortFB(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPortFB(ushort addr, ref byte value, ref bool iorqge)
         {
             m_aFB = (byte)addr;
             UpdateMapping();
         }
 
-        private void BusWritePortFE(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortFE(ushort addr, byte value, ref bool iorqge)
         {
             addr &= 0x00FF;
             byte old_aFE = m_aFE;
@@ -173,7 +194,7 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        private void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
         {
             if (m_lock)
             {
@@ -182,12 +203,12 @@ namespace ZXMAK2.Hardware.Atm
             CMR0 = value;
         }
 
-        private void BusWritePortFDFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortFDFD(ushort addr, byte value, ref bool iorqge)
         {
             CMR1 = value;
         }
 
-        private void BusWritePort7DFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7DFD(ushort addr, byte value, ref bool iorqge)
         {
             if (m_ulaAtm != null)
             {
@@ -195,10 +216,27 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        private void BusReset()
+        protected virtual void BusReadMem3D00_M1(ushort addr, ref byte value)
+        {
+            if (!DOSEN && IsRom48)
+            {
+                DOSEN = true;
+            }
+        }
+
+        protected virtual void BusReadMemRamM1(ushort addr, ref byte value)
+        {
+            if (DOSEN)
+            {
+                DOSEN = false;
+            }
+        }
+
+        protected virtual void BusReset()
         {
             CMR0 = 0;
             CMR1 = 0;
+            DOSEN = false;
 
             byte old_aFE = m_aFE;
             //RM_DOS
@@ -216,17 +254,6 @@ namespace ZXMAK2.Hardware.Atm
         }
 
         #endregion
-
-        private byte[][] m_ramPages = new byte[32][];
-        private byte[] m_trashPage = new byte[0x4000];
-        private bool m_lock = false;
-        private Z80CPU m_cpu;
-        private UlaAtm450 m_ulaAtm;
-        private byte m_aFE = 0x80;
-        private byte m_aFB = 0x80;
-
-
-        private bool m_cfg_mem_swap = true;  // ATM 7.10 hi-res video modes swap RAM/CPU address bus A5-A7<=>A8-A10
 
 
         public MemoryAtm450()

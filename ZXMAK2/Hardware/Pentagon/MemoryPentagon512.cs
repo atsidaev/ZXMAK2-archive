@@ -9,6 +9,15 @@ namespace ZXMAK2.Hardware.Pentagon
 {
     public class MemoryPentagon512 : MemoryBase
     {
+        #region Fields
+
+        private byte[][] m_ramPages = new byte[32][];
+        private byte[] m_trashPage = new byte[0x4000];
+        private bool m_lock = false;
+
+        #endregion Fields
+
+
         #region IBusDevice
 
         public override string Name { get { return "Pentagon 512K"; } }
@@ -16,13 +25,18 @@ namespace ZXMAK2.Hardware.Pentagon
 
         public override void BusInit(IBusManager bmgr)
         {
-            base.BusInit(bmgr);
             bmgr.SubscribeWrIo(0x8002, 0x0000, writePort7FFD);
-            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRam);
-            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRam);
-            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRam);
+
+            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
             bmgr.SubscribeNmiAck(BusNmiAck);
             bmgr.SubscribeReset(BusReset);
+
+            // Subscribe before MemoryBase.BusInit 
+            // to handle memory switches before read
+            base.BusInit(bmgr);
         }
 
         #endregion
@@ -81,10 +95,24 @@ namespace ZXMAK2.Hardware.Pentagon
             throw new InvalidOperationException("Unknown RomName");
         }
 
-        protected virtual void BusReadMemRam(ushort addr, ref byte value)
+        protected virtual void BusReadMem3D00_M1(ushort addr, ref byte value)
+        {
+            if (!DOSEN && IsRom48)
+            {
+                DOSEN = true;
+            }
+        }
+
+        protected virtual void BusReadMemRamM1(ushort addr, ref byte value)
         {
             if (SYSEN)
+            {
                 SYSEN = false;
+            }
+            if (DOSEN)
+            {
+                DOSEN = false;
+            }
         }
 
         public override void LoadConfig(XmlNode itemNode)
@@ -130,9 +158,6 @@ namespace ZXMAK2.Hardware.Pentagon
         #endregion Bus Handlers
 
 
-        private byte[][] m_ramPages = new byte[32][];
-        private byte[] m_trashPage = new byte[0x4000];
-        private bool m_lock = false;
 
 
         public MemoryPentagon512()

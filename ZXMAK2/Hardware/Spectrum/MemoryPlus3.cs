@@ -5,6 +5,15 @@ namespace ZXMAK2.Hardware.Spectrum
 {
     public class MemoryPlus3 : MemoryBase
     {
+        #region Fields
+
+        private byte[][] m_ramPages = new byte[8][];
+        private byte[] m_trashPage = new byte[0x4000];
+        private bool m_lock = false;
+
+        #endregion Fields
+
+        
         #region IBusDevice
 
         public override string Name { get { return "ZX Spectrum +3"; } }
@@ -12,10 +21,13 @@ namespace ZXMAK2.Hardware.Spectrum
 
         public override void BusInit(IBusManager bmgr)
         {
+            bmgr.SubscribeWrIo(0xC002, 0x4000, BusWritePort7FFD);
+            bmgr.SubscribeWrIo(0xF002, 0x1000, BusWritePort1FFD);
+            bmgr.SubscribeReset(BusReset);
+
+            // Subscribe before MemoryBase.BusInit 
+            // to handle memory switches before read
             base.BusInit(bmgr);
-            bmgr.SubscribeWrIo(0xC002, 0x4000, writePort7FFD);
-            bmgr.SubscribeWrIo(0xF002, 0x1000, writePort1FFD);
-            bmgr.SubscribeReset(busReset);
         }
 
         #endregion
@@ -112,18 +124,18 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #region Bus Handlers
 
-        private void writePort7FFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
         {
             if (!m_lock)
                 CMR0 = value;
         }
 
-        private void writePort1FFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort1FFD(ushort addr, byte value, ref bool iorqge)
         {
             CMR1 = value;
         }
 
-        private void busReset()
+        protected virtual void BusReset()
         {
             CMR0 = 0;
             CMR1 = 0;
@@ -131,10 +143,6 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #endregion
 
-
-        private byte[][] m_ramPages = new byte[8][];
-        private byte[] m_trashPage = new byte[0x4000];
-        private bool m_lock = false;
 
         public MemoryPlus3()
             : base("PLUS3")
