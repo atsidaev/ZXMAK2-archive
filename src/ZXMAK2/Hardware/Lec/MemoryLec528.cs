@@ -14,9 +14,12 @@ namespace ZXMAK2.Hardware.Lec
 
         public override void BusInit(Interfaces.IBusManager bmgr)
         {
+            bmgr.SubscribeWrIo(0x0002, 0x00FD & 0x0002, BusWriteCmr1);
+            bmgr.SubscribeReset(BusReset);
+
+            // Subscribe before MemoryBase.BusInit 
+            // to handle memory switches before read
             base.BusInit(bmgr);
-            bmgr.SubscribeWrIo(0x0002, 0x00FD & 0x0002, busWriteCMR1);
-            bmgr.SubscribeReset(busReset);
         }
 
         #endregion
@@ -71,12 +74,12 @@ namespace ZXMAK2.Hardware.Lec
 
         #region Bus Handlers
 
-        private void busWriteCMR1(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWriteCmr1(ushort addr, byte value, ref bool iorqge)
         {
             CMR1 = value;
         }
 
-        private void busReset()
+        protected virtual void BusReset()
         {
             CMR1 = 0;
         }

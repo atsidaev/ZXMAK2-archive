@@ -1,21 +1,30 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Hardware.General;
+using ZXMAK2.Hardware.IC;
 
 namespace ZXMAK2.Hardware.Quorum
 {
-    public class BetaDiskInterfaceQuorum : BetaDiskInterface
+    public class FddControllerQuorum : FddController
     {
-        #region IBusDevice
+        #region Fields
 
-        public override string Name { get { return "BDI QUORUM"; } }
-        public override string Description { get { return "Beta Disk Interface + QUORUM mod"; } }
+        private static readonly int[] s_drvDecode = new int[] { 3, 0, 1, 3 };
 
         #endregion
 
+        
+        #region IBusDevice
+
+        public override string Name { get { return "FDD QUORUM"; } }
+        public override string Description { get { return "FDD controller WD1793 with QUORUM port activation"; } }
+
+        #endregion
+
+        
         #region BetaDiskInterface
 
-        protected override void BusSubscribeWD93IO(IBusManager bmgr)
+        protected override void OnSubscribeIo(IBusManager bmgr)
         {
             // mask - #9F
             // #80 - CMD
@@ -23,74 +32,72 @@ namespace ZXMAK2.Hardware.Quorum
             // #82 - SEC
             // #83 - DAT
             // #85 - SYS
-            bmgr.SubscribeWrIo(0x9C, 0x80 & 0x9C, BusWritePortFdc);
-            bmgr.SubscribeRdIo(0x9C, 0x80 & 0x9C, BusReadPortFdc);
-            bmgr.SubscribeWrIo(0x9F, 0x85 & 0x9F, BusWritePortSys);
-            bmgr.SubscribeRdIo(0x9F, 0x85 & 0x9F, BusReadPortSys);
+            bmgr.SubscribeWrIo(0x9C, 0x80 & 0x9C, BusWriteFdc);
+            bmgr.SubscribeRdIo(0x9C, 0x80 & 0x9C, BusReadFdc);
+            bmgr.SubscribeWrIo(0x9F, 0x85 & 0x9F, BusWriteSys);
+            bmgr.SubscribeRdIo(0x9F, 0x85 & 0x9F, BusReadSys);
         }
 
-        protected override void BusWritePortFdc(ushort addr, byte value, ref bool iorqge)
+        protected override void BusWriteFdc(ushort addr, byte value, ref bool iorqge)
         {
             if (!iorqge)
+            {
                 return;
+            }
             bool dos = true;//m_memory.CMR1 & 0x80; // Q_TR_DOS
             if (dos)
             {
                 iorqge = false;
                 int fdcReg = addr & 0x03;
-                SetReg((WD93REG)fdcReg, value);
+                m_wd.Write(m_cpu.Tact, (WD93REG)fdcReg, value);
             }
         }
 
-        protected override void BusReadPortFdc(ushort addr, ref byte value, ref bool iorqge)
+        protected override void BusReadFdc(ushort addr, ref byte value, ref bool iorqge)
         {
             if (!iorqge)
+            {
                 return;
+            }
             bool dos = true;//m_memory.CMR1 & 0x80; // Q_TR_DOS
             if (dos)
             {
                 iorqge = false;
                 int fdcReg = addr & 0x03;
-                value = GetReg((WD93REG)fdcReg);
+                value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
             }
         }
 
-        protected override void BusWritePortSys(ushort addr, byte value, ref bool iorqge)
+        protected override void BusWriteSys(ushort addr, byte value, ref bool iorqge)
         {
             if (!iorqge)
+            {
                 return;
+            }
             bool dos = true;//m_memory.CMR1 & 0x80; // Q_TR_DOS
             if (dos)
             {
                 iorqge = false;
                 int drv = s_drvDecode[value & 3];
                 drv = ((value & ~3) ^ 0x10) | drv;
-                SetReg(WD93REG.SYS, (byte)drv);
+                m_wd.Write(m_cpu.Tact, WD93REG.SYS, (byte)drv);
             }
         }
 
-        protected override void BusReadPortSys(ushort addr, ref byte value, ref bool iorqge)
+        protected override void BusReadSys(ushort addr, ref byte value, ref bool iorqge)
         {
             if (!iorqge)
+            {
                 return;
+            }
             bool dos = true;//m_memory.CMR1 & 0x80; // Q_TR_DOS
             if (dos)
             {
                 iorqge = false;
-                value = GetReg(WD93REG.SYS);
+                value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
             }
         }
 
-        protected override void BusNmiRq(BusCancelArgs e)
-        {
-        }
-
-        protected override void BusNmiAck()
-        {
-        }
-
         #endregion
-
-        private static readonly int[] s_drvDecode = new int[] { 3, 0, 1, 3 };
     }
 }

@@ -15,46 +15,74 @@ namespace ZXMAK2.Controls.Configuration
     public partial class CtlSettingsBetaDisk : ConfigScreenControl
     {
         private BusManager m_bmgr;
-        private BetaDiskInterface m_device;
+        private IBetaDiskDevice m_device;
 
         public CtlSettingsBetaDisk()
         {
             InitializeComponent();
         }
 
-        public void Init(BusManager bmgr, BetaDiskInterface device)
+        public void Init(BusManager bmgr, IBetaDiskDevice device)
         {
             m_bmgr = bmgr;
             m_device = device;
             chkNoDelay.Checked = m_device.NoDelay;
-            chkLogIO.Checked = m_device.LogIO;
-            initDrive(m_device.FDD[0], chkPresentA, txtPathA, chkProtectA);
-            initDrive(m_device.FDD[1], chkPresentB, txtPathB, chkProtectB);
-            initDrive(m_device.FDD[2], chkPresentC, txtPathC, chkProtectC);
-            initDrive(m_device.FDD[3], chkPresentD, txtPathD, chkProtectD);
+            chkLogIO.Checked = m_device.LogIo;
+            initDrive(GetImage(0), chkPresentA, txtPathA, chkProtectA, btnBrowseA);
+            initDrive(GetImage(1), chkPresentB, txtPathB, chkProtectB, btnBrowseB);
+            initDrive(GetImage(2), chkPresentC, txtPathC, chkProtectC, btnBrowseC);
+            initDrive(GetImage(3), chkPresentD, txtPathD, chkProtectD, btnBrowseD);
+        }
+
+        private DiskImage GetImage(int index)
+        {
+            return m_device.FDD.Length > index ? m_device.FDD[index] : null;
         }
 
         public override void Apply()
         {
             m_device.NoDelay = chkNoDelay.Checked;
-            m_device.LogIO = chkLogIO.Checked;
-            applyDrive(m_device.FDD[0], chkPresentA, txtPathA, chkProtectA);
-            applyDrive(m_device.FDD[1], chkPresentB, txtPathB, chkProtectB);
-            applyDrive(m_device.FDD[2], chkPresentC, txtPathC, chkProtectC);
-            applyDrive(m_device.FDD[3], chkPresentD, txtPathD, chkProtectD);
+            m_device.LogIo = chkLogIO.Checked;
+            applyDrive(GetImage(0), chkPresentA, txtPathA, chkProtectA);
+            applyDrive(GetImage(1), chkPresentB, txtPathB, chkProtectB);
+            applyDrive(GetImage(2), chkPresentC, txtPathC, chkProtectC);
+            applyDrive(GetImage(3), chkPresentD, txtPathD, chkProtectD);
         }
 
-        private void initDrive(DiskImage diskImage, CheckBox chkPresent, TextBox txtPath, CheckBox chkProtect)
+        private void initDrive(
+            DiskImage diskImage, 
+            CheckBox chkPresent, 
+            TextBox txtPath, 
+            CheckBox chkProtect,
+            Button btnBrowse)
         {
-            chkPresent.Checked = diskImage.Present;
-            txtPath.Text = diskImage.FileName;
-            txtPath.SelectionStart = txtPath.Text.Length;
-            chkProtect.Checked = diskImage.IsWP;
-            updateEnabled();
+            if (diskImage != null)
+            {
+                chkPresent.Visible = true;
+                chkProtect.Visible = true;
+                txtPath.Visible = true;
+                btnBrowse.Visible = true;
+                chkPresent.Checked = diskImage.Present;
+                txtPath.Text = diskImage.FileName;
+                txtPath.SelectionStart = txtPath.Text.Length;
+                chkProtect.Checked = diskImage.IsWP;
+                updateEnabled();
+            }
+            else
+            {
+                chkPresent.Visible = false;
+                chkProtect.Visible = false;
+                txtPath.Visible = false;
+                btnBrowse.Visible = false;
+            }
         }
 
         private void applyDrive(DiskImage diskImage, CheckBox chkPresent, TextBox txtPath, CheckBox chkProtect)
         {
+            if (diskImage == null)
+            {
+                return;
+            }
             var fileName = txtPath.Text;
             if (fileName != string.Empty)
             {

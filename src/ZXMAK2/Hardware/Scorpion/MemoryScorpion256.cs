@@ -7,6 +7,16 @@ namespace ZXMAK2.Hardware.Scorpion
 {
     public class MemoryScorpion256 : MemoryBase
     {
+        #region Fields
+
+        private Z80CPU m_cpu;
+        protected byte[][] m_ramPages = new byte[16][];
+        private byte[] m_trashPage = new byte[0x4000];
+        private bool m_lock = false;
+
+        #endregion Fields
+
+
         #region IBusDevice
 
         public override string Name { get { return "Scorpion 256K"; } }
@@ -14,13 +24,21 @@ namespace ZXMAK2.Hardware.Scorpion
 
         public override void BusInit(IBusManager bmgr)
         {
-            base.BusInit(bmgr);
             m_cpu = bmgr.CPU;
             bmgr.SubscribeWrIo(0xD027, 0x7FFD & 0xD027, BusWritePort7FFD);
             bmgr.SubscribeWrIo(0xD027, 0x1FFD & 0xD027, BusWritePort1FFD);
+
+            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
+            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
             bmgr.SubscribeNmiRq(BusNmiRq);
             bmgr.SubscribeNmiAck(BusNmiAck);
             bmgr.SubscribeReset(BusReset);
+
+            // Subscribe before MemoryBase.BusInit 
+            // to handle memory switches before read
+            base.BusInit(bmgr);
         }
 
         #endregion
@@ -120,8 +138,25 @@ namespace ZXMAK2.Hardware.Scorpion
             CMR1 = value;
         }
 
+        protected virtual void BusReadMem3D00_M1(ushort addr, ref byte value)
+        {
+            if (IsRom48)
+            {
+                DOSEN = true;
+            }
+        }
+
+        protected virtual void BusReadMemRamM1(ushort addr, ref byte value)
+        {
+            if (DOSEN)
+            {
+                DOSEN = false;
+            }
+        }
+
         private void BusReset()
         {
+            DOSEN = false;
             CMR1 = 0;
             CMR0 = 0;
         }
@@ -137,12 +172,6 @@ namespace ZXMAK2.Hardware.Scorpion
         }
 
         #endregion
-
-
-        protected byte[][] m_ramPages = new byte[16][];
-        private byte[] m_trashPage = new byte[0x4000];
-        private bool m_lock = false;
-        private Z80CPU m_cpu;
 
 
         public MemoryScorpion256(String romSetName)

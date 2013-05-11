@@ -6,6 +6,27 @@ namespace ZXMAK2.Hardware.Quorum
 {
     public class MemoryQuorum256 : MemoryBase
     {
+        #region Constants
+
+        private const int Q_F_RAM = 0x01;
+        private const int Q_RAM_8 = 0x08;
+        private const int Q_B_ROM = 0x20;
+        private const int Q_BLK_WR = 0x40;
+        private const int Q_TR_DOS = 0x80;
+
+        #endregion Constants
+
+
+        #region Fields
+
+        private Z80CPU m_cpu;
+        private byte[][] m_ramPages = new byte[16][];
+        private byte[] m_trashPage = new byte[0x4000];
+        private bool m_lock = false;
+
+        #endregion Fields
+
+
         #region IBusDevice
 
         public override string Name { get { return "QUORUM 256K"; } }
@@ -13,14 +34,23 @@ namespace ZXMAK2.Hardware.Quorum
 
         public override void BusInit(IBusManager bmgr)
         {
-            base.BusInit(bmgr);
             m_cpu = bmgr.CPU;
 
-            bmgr.SubscribeWrIo(0x801A, 0x7FFD & 0x801A, busWritePort7FFD);
-            bmgr.SubscribeWrIo(0x0099, 0x0000 & 0x0099, busWritePort0000);
+            bmgr.SubscribeWrIo(0x801A, 0x7FFD & 0x801A, BusWritePort7FFD);
+            bmgr.SubscribeWrIo(0x0099, 0x0000 & 0x0099, BusWritePort0000);
+
+            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRam);
+            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRam);
+            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRam);
+            
             bmgr.SubscribeReset(BusReset);
             bmgr.SubscribeNmiRq(BusNmiRq);
             bmgr.SubscribeNmiAck(BusNmiAck);
+
+            // Subscribe before MemoryBase.BusInit 
+            // to handle memory switches before read
+            base.BusInit(bmgr);
         }
 
         #endregion
@@ -29,13 +59,15 @@ namespace ZXMAK2.Hardware.Quorum
 
         public override byte[][] RamPages { get { return m_ramPages; } }
 
-        public override bool IsMap48 { get { return false; } }
+        public override bool IsMap48 
+        { 
+            get { return false; } 
+        }
 
-        private const int Q_F_RAM = 0x01;
-        private const int Q_RAM_8 = 0x08;
-        private const int Q_B_ROM = 0x20;
-        private const int Q_BLK_WR = 0x40;
-        private const int Q_TR_DOS = 0x80;
+        public override bool IsRom48
+        { 
+            get { return (CMR0 & 0x10) != 0; }
+        }
 
         protected override void UpdateMapping()
         {
@@ -100,44 +132,57 @@ namespace ZXMAK2.Hardware.Quorum
 
         #endregion
 
-        #region Bus Handlers
+        
+        #region Private
 
-        private void busWritePort7FFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
         {
             //LogAgent.Info("PC: #{0:X4}  CMR0 <- #{1:X2} {2}", m_cpu.regs.PC, value, m_lock ? "[locked]" : string.Empty);
             if (!m_lock)
+            {
                 CMR0 = value;
+            }
         }
 
-        private void busWritePort0000(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort0000(ushort addr, byte value, ref bool iorqge)
         {
             //LogAgent.Info("PC: #{0:X4}  CMR1 <- #{1:X2}", m_cpu.regs.PC, value);
             CMR1 = value;
         }
 
-        private void BusReset()
+        protected virtual void BusReadMem3D00_M1(ushort addr, ref byte value)
+        {
+            if (IsRom48)
+            {
+                DOSEN = true;
+            }
+        }
+
+        protected virtual void BusReadMemRam(ushort addr, ref byte value)
+        {
+            if (DOSEN)
+            {
+                DOSEN = false;
+            }
+        }
+
+        protected virtual void BusReset()
         {
             CMR0 = 0;
             CMR1 = 0;
         }
 
-        private void BusNmiRq(BusCancelArgs e)
+        protected virtual void BusNmiRq(BusCancelArgs e)
         {
             e.Cancel = (m_cpu.regs.PC&0xC000) == 0;
         }
-        
-        private void BusNmiAck()
+
+        protected virtual void BusNmiAck()
         {
             CMR1 = 0;
         }
 
         #endregion
-
-
-        private byte[][] m_ramPages = new byte[16][];
-        private byte[] m_trashPage = new byte[0x4000];
-        private Z80CPU m_cpu;
-        private bool m_lock = false;
 
 
         public MemoryQuorum256()

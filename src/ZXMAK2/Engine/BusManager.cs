@@ -256,6 +256,12 @@ namespace ZXMAK2.Engine
             byte result = m_cpu.BUS;
             if (proc != null)
                 proc(addr, ref result);
+            //LogAgent.Info(
+            //    "{0:D3}-{1:D6}: #{2:X4} = #{3:X2}",
+            //    m_cpu.Tact / m_ula.FrameTactCount,
+            //    m_cpu.Tact % m_ula.FrameTactCount,
+            //    m_cpu.regs.PC,
+            //    result);
             return result;
         }
 

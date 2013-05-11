@@ -12,16 +12,19 @@ namespace ZXMAK2.Hardware.Scorpion
 
         public override void BusInit(IBusManager bmgr)
         {
+            bmgr.SubscribeRdMemM1(0xFFF0, 0x0100, BusProfRomGate);
+            bmgr.SubscribeRdMem(0xFFF0, 0x0100, BusProfRomGate);
+
+            // Subscribe before MemoryBase.BusInit 
+            // to handle memory switches before read
             base.BusInit(bmgr);
-            bmgr.SubscribeRdMemM1(0xFFF0, 0x0100, busProfRomGate);
-            bmgr.SubscribeRdMem(0xFFF0, 0x0100, busProfRomGate);
         }
 
         #endregion
 
         #region Bus Handlers
 
-        protected virtual void busProfRomGate(ushort addr, ref byte value)
+        protected virtual void BusProfRomGate(ushort addr, ref byte value)
         {
             if (!SYSEN)	// 2, 6, А, Е
                 return;

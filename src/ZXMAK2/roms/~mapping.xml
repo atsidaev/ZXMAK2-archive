@@ -18,13 +18,22 @@
 		<Page name="RAW" image="ATM/atm103rs.rom" />
 	</RomSet>
 	<RomSet name="ATM710">
-		<Page name="RAW" image="ATM/bios_1_07_13.rom" offset="0" />
+		<Page name="RAW" image="ATM/bios_1_07_13.rom" />
 	</RomSet>
-	<RomSet name="ATM1-TEST">
-		<Page name="RAW" image="ATM/atm1test.rom" offset="0" />
+	<RomSet name="ATM710-xbios135">
+		<Page name="RAW" image="ATM/xbios135.rom" />
 	</RomSet>
-	<RomSet name="ATM1-TEST2">
-		<Page name="RAW" image="ATM/Atmtest3.rom" offset="0" />
+	<RomSet name="ATM710-091">
+		<Page name="RAW" image="ATM/ATM091.bin" />
+	</RomSet>
+	<RomSet name="ATM450-TEST">
+		<Page name="RAW" image="ATM/atm1test.rom" />
+	</RomSet>
+	<RomSet name="ATM450-TEST2">
+		<Page name="RAW" image="ATM/Atmtest3.rom" />
+	</RomSet>
+	<RomSet name="ATM710-TEST CHRV">
+		<Page name="RAW" image="ATM/testatm.rom"  />
 	</RomSet>
 	<RomSet name="Pentagon">
 		<Page name="RAW" image="PENTAGON/pentagon.rom" />

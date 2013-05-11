@@ -69,9 +69,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             _spec.DoReset();
             var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
             memory.SYSEN = false;
-            var betaDisk = _spec.BusManager.FindDevice<IBetaDiskDevice>();
-            if (betaDisk != null)
-                betaDisk.DOSEN = false;
+            memory.DOSEN = false;
             SetFrameTact(0);
         }
     }
