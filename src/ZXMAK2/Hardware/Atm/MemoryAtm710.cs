@@ -6,6 +6,22 @@ namespace ZXMAK2.Hardware.Atm
 {
     public class MemoryAtm710 : MemoryBase
     {
+        #region Fields
+
+        protected Z80CPU m_cpu;
+        private byte[][] m_ramPages;
+        protected byte[][] m_romPages;
+        private byte[] m_trashPage = new byte[0x4000];
+        private bool m_lock = false;
+        private UlaAtm450 m_ulaAtm;
+
+        private int m_aFF77;
+        private int m_pFF77;
+        private int[] m_ru2 = new int[8]; // ATM 7.10 / ATM3(4Mb) memory map
+        
+        #endregion Fields
+
+
         #region IBusDevice
 
         public override string Name { get { return "ATM710 1024K"; } }
@@ -13,10 +29,8 @@ namespace ZXMAK2.Hardware.Atm
 
         public override void BusInit(IBusManager bmgr)
         {
-            base.BusInit(bmgr);
-
             m_cpu = bmgr.CPU;
-            m_ulaAtm = base.m_ula as UlaAtm450;
+            m_ulaAtm = bmgr.FindDevice<UlaAtm450>();
 
             bmgr.SubscribeRdIo(0x0001, 0x0000, BusReadPortFE);					// bit Z emulation
             bmgr.SubscribeWrIo(0x009F, 0x00FF & 0x009F, BusWritePortXXFF_PAL);	// atm_writepal(val);
@@ -30,9 +44,38 @@ namespace ZXMAK2.Hardware.Atm
             //bmgr.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD_128);
             bmgr.SubscribeWrIo(0x8002, 0x7FFD & 0x8002, BusWritePort7FFD_128);
 
+            bmgr.SubscribeRdMemM1(0x0000, 0x0000, BusReadM1);
+
             bmgr.SubscribeReset(BusReset);
+
+            // Subscribe before MemoryBase.BusInit 
+            // to handle memory switches before read
+            base.BusInit(bmgr);
         }
 
+        protected virtual void BusReadM1(ushort addr, ref byte value)
+        {
+            //var map = new byte[][] { 
+            //    MapRead0000, MapRead4000, 
+            //    MapRead8000, MapReadC000 };
+            //LogAgent.Info(
+            //    "{0:D3}-{1:D6}: #{2:X4} = #{3:X2}",
+            //    m_cpu.Tact / m_ula.FrameTactCount,
+            //    m_cpu.Tact % m_ula.FrameTactCount,
+            //    addr,
+            //    map[addr >> 14][addr & 0x3FFF]);
+            var index = (addr >> 14) + ((CMR0 & 0x10) >> 2);
+            var w = m_ru2[index] ^ 0xFF;
+            var isRam = (w & 0x40) == 0;
+            if (isRam)
+            {
+                DOSEN = SYSEN;
+            }
+            else if (index != 0 && (addr & 0x3F00) == 0x3D00) //ROM2 & RAM & dosgate
+            {
+                DOSEN = true;
+            }
+        }
 
         #endregion
 
@@ -92,9 +135,9 @@ namespace ZXMAK2.Hardware.Atm
             {
                 int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
                 int romMask = RomPages.Length - 1;
-                if (romMask > 0x3F)
+                if (romMask > 0x07)
                 {
-                    romMask = 0x3F;
+                    romMask = 0x07;
                 }
                 int ramMask = RamPages.Length - 1;
                 if (ramMask > 0x3F)
@@ -102,23 +145,25 @@ namespace ZXMAK2.Hardware.Atm
                     ramMask = 0x3F;
                 }
 
-                int index = ((CMR0 & 0x10) >> 2);
-                int w0 = m_pXFF7[index + 0];
-                int w1 = m_pXFF7[index + 1];
-                int w2 = m_pXFF7[index + 2];
-                int w3 = m_pXFF7[index + 3];
-                int romPage0 = (w0 & 0x80) != 0 ? (w0 & romMask & 0xFE) | (DOSEN | SYSEN ? 1 : 0) : w0 & romMask;
-                int romPage1 = (w1 & 0x80) != 0 ? (w1 & romMask & 0xFE) | (DOSEN | SYSEN ? 1 : 0) : w1 & romMask;
-                int romPage2 = (w2 & 0x80) != 0 ? (w2 & romMask & 0xFE) | (DOSEN | SYSEN ? 1 : 0) : w2 & romMask;
-                int romPage3 = (w3 & 0x80) != 0 ? (w3 & romMask & 0xFE) | (DOSEN | SYSEN ? 1 : 0) : w3 & romMask;
-                int ramPage0 = (w0 & 0x80) != 0 ? (w0 & ramMask & 0xF8) | (CMR0 & 7) : w0 & ramMask;
-                int ramPage1 = (w1 & 0x80) != 0 ? (w1 & ramMask & 0xF8) | (CMR0 & 7) : w1 & ramMask;
-                int ramPage2 = (w2 & 0x80) != 0 ? (w2 & ramMask & 0xF8) | (CMR0 & 7) : w2 & ramMask;
-                int ramPage3 = (w3 & 0x80) != 0 ? (w3 & ramMask & 0xF8) | (CMR0 & 7) : w3 & ramMask;
-                bool isRam0 = (w0 & 0x40) != 0;
-                bool isRam1 = (w1 & 0x40) != 0;
-                bool isRam2 = (w2 & 0x40) != 0;
-                bool isRam3 = (w3 & 0x40) != 0;
+                var index = (CMR0 & 0x10) >> 2;
+                var w0 = m_ru2[index + 0] ^ 0xFF;
+                var w1 = m_ru2[index + 1] ^ 0xFF;
+                var w2 = m_ru2[index + 2] ^ 0xFF;
+                var w3 = m_ru2[index + 3] ^ 0xFF;
+                var kpa0 = CMR0 & 7;
+                var kpa8 = (DOSEN | SYSEN) ? 1 : 0;
+                var romPage0 = ((w0 & 0x80) == 0 ? kpa8 | (w0 & 6) : w0 & 7) & romMask;
+                var romPage1 = ((w1 & 0x80) == 0 ? kpa8 | (w1 & 6) : w1 & 7) & romMask;
+                var romPage2 = ((w2 & 0x80) == 0 ? kpa8 | (w2 & 6) : w2 & 7) & romMask;
+                var romPage3 = ((w3 & 0x80) == 0 ? kpa8 | (w3 & 6) : w3 & 7) & romMask;
+                var ramPage0 = ((w0 & 0x80) == 0 ? (w0 & 0x38) | kpa0 : w0 & 0x3F) & ramMask;
+                var ramPage1 = ((w1 & 0x80) == 0 ? (w1 & 0x38) | kpa0 : w1 & 0x3F) & ramMask;
+                var ramPage2 = ((w2 & 0x80) == 0 ? (w2 & 0x38) | kpa0 : w2 & 0x3F) & ramMask;
+                var ramPage3 = ((w3 & 0x80) == 0 ? (w3 & 0x38) | kpa0 : w3 & 0x3F) & ramMask;
+                var isRam0 = (w0 & 0x40) == 0;
+                var isRam1 = (w1 & 0x40) == 0;
+                var isRam2 = (w2 & 0x40) == 0;
+                var isRam3 = (w3 & 0x40) == 0;
 
                 if (m_ulaAtm != null)
                 {
@@ -172,7 +217,7 @@ namespace ZXMAK2.Hardware.Atm
         public override bool SYSEN
         {
             get { return (m_aFF77 & 0x200) == 0; }
-            set { m_aFF77 = (m_aFF77 & ~0x200) | (value ? 0x0000 : 0x0200); UpdateMapping(); }
+            set { m_aFF77 = (m_aFF77 & ~0x200) | (value ? 0x0000 : 0x0200); if (value) DOSEN = true; UpdateMapping(); }
         }
 
         [HardwareValue("PEN2", Description = "Enable palette change through port #FF")]
@@ -198,15 +243,7 @@ namespace ZXMAK2.Hardware.Atm
 
         public override bool DOSEN
         {
-            set
-            {
-                if ((m_pXFF7[(CMR0 & 0x10) >> 2] & 0x80) == 0)
-                {
-                    return;
-                }
-                // TODO: check on real ATM, if true then optimize all checks DOSEN | SYSEN with simple DOSEN
-                base.DOSEN = value | SYSEN;
-            }
+            set { base.DOSEN = value | SYSEN; }
         }
 
         #endregion
@@ -249,6 +286,7 @@ namespace ZXMAK2.Hardware.Atm
             {
                 m_pFF77 = value;
                 m_aFF77 = addr;
+                if (SYSEN) DOSEN = true;
                 UpdateMapping();
                 //cpu.int_gate = (comp.pFF77 & 0x20) != false;
                 //set_banks();
@@ -259,7 +297,7 @@ namespace ZXMAK2.Hardware.Atm
         {
             if (DOSEN || SYSEN)
             {
-                m_pXFF7[((CMR0 & 0x10) >> 2) | ((addr >> 14) & 3)] = value ^ 0x3F; //(((value & 0xC0) << 2) | (value & 0x3F)) ^ 0x33F;
+                m_ru2[((CMR0 & 0x10) >> 2) | ((addr >> 14) & 3)] = value;
                 UpdateMapping();
             }
         }
@@ -277,7 +315,7 @@ namespace ZXMAK2.Hardware.Atm
         {
             m_aFF77 = 0;
             m_pFF77 = 0;
-
+            DOSEN = SYSEN;
             //m_pFF77 = (m_pFF77 & 0xF8) | 3; // set video mode
 
             CMR0 = 0;
@@ -292,17 +330,6 @@ namespace ZXMAK2.Hardware.Atm
         }
 
         #endregion
-
-        private byte[][] m_ramPages;
-        protected byte[][] m_romPages;
-        private byte[] m_trashPage = new byte[0x4000];
-        private bool m_lock = false;
-        private Z80CPU m_cpu;
-        private UlaAtm450 m_ulaAtm;
-
-        private int m_aFF77;
-        private int m_pFF77;
-        private int[] m_pXFF7 = new int[8]; // ATM 7.10 / ATM3(4Mb) memory map
 
 
         public MemoryAtm710()
