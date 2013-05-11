@@ -24,7 +24,11 @@ namespace ZXMAK2.Hardware.Atm
 
             bmgr.SubscribeWrIo(0x00FF, 0xFF77 & 0x00FF, BusWritePortFF77_SYS);
             bmgr.SubscribeWrIo(0x00FF, 0x3FF7 & 0x00FF, BusWritePortXFF7_WND);	//ATM3 mask=0x3FFF
-            bmgr.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD_128);
+            
+            // fix for #7FFD (original ATM710 mask is #8202)
+            // http://www.nedopc.com/ATMZAK/atm710re.htm#re11
+            //bmgr.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD_128);
+            bmgr.SubscribeWrIo(0x8002, 0x7FFD & 0x8002, BusWritePort7FFD_128);
 
             bmgr.SubscribeReset(BusReset);
         }
@@ -200,7 +204,8 @@ namespace ZXMAK2.Hardware.Atm
                 {
                     return;
                 }
-                base.DOSEN = value;
+                // TODO: check on real ATM, if true then optimize all checks DOSEN | SYSEN with simple DOSEN
+                base.DOSEN = value | SYSEN;
             }
         }
 
