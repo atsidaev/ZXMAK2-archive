@@ -17,7 +17,6 @@ namespace ZXMAK2.Hardware.General
         protected Z80CPU m_cpu;
         protected IMemoryDevice m_memory;
         protected Wd1793 m_wd = new Wd1793();
-        protected bool m_logIo = false;
 
         #endregion
 
@@ -38,6 +37,7 @@ namespace ZXMAK2.Hardware.General
             bmgr.RegisterIcon(m_iconWr);
             bmgr.SubscribeBeginFrame(BusBeginFrame);
             bmgr.SubscribeEndFrame(BusEndFrame);
+            
             OnSubscribeIo(bmgr);
 
             foreach (var fs in m_wd.FDD[0].SerializeManager.GetSerializers())
@@ -138,11 +138,7 @@ namespace ZXMAK2.Hardware.General
             set { m_wd.NoDelay = value; }
         }
 
-        public bool LogIo
-        {
-            get { return m_logIo; }
-            set { m_logIo = value; }
-        }
+        public bool LogIo { get; set; }
 
         #endregion
 
