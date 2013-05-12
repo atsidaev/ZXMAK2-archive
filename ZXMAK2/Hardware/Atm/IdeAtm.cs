@@ -6,9 +6,6 @@ using ZXMAK2.Hardware.IC;
 
 namespace ZXMAK2.Hardware.Atm
 {
-    /// <summary>
-    /// http://zx.pk.ru/attachment.php?attachmentid=13640&d=1254911208
-    /// </summary>
     public class IdeAtm : BusDeviceBase
     {
         #region Fields
