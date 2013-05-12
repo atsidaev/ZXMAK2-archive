@@ -186,6 +186,7 @@
     <Compile Include="Hardware\Atm\KeyboardAtm.cs" />
     <Compile Include="Hardware\Atm\AtmTxtRenderer.cs" />
     <Compile Include="Hardware\General\FddController.cs" />
+    <Compile Include="Hardware\IC\AtaPort.cs" />
     <Compile Include="Hardware\IC\NvramChip.cs" />
     <Compile Include="Hardware\IC\RtcChip.cs" />
     <Compile Include="Hardware\IC\Wd1793.cs" />

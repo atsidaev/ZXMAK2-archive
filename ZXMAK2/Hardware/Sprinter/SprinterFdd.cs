@@ -34,7 +34,7 @@ namespace ZXMAK2.Hardware.Sprinter
         #region BusDeviceBase
 
         public override string Description { get { return "Sprinter FDD controller WD1793"; } }
-        public override string Name { get { return "SPRINTER FDD"; } }
+        public override string Name { get { return "FDD SPRINTER"; } }
         public override BusDeviceCategory Category {  get { return BusDeviceCategory.Disk; } }
 
         public override void BusInit(IBusManager bmgr)
