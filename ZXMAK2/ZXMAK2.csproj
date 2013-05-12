@@ -183,6 +183,7 @@
     </Compile>
     <Compile Include="Hardware\Atm\Atm320Renderer.cs" />
     <Compile Include="Hardware\Atm\Atm640Renderer.cs" />
+    <Compile Include="Hardware\Atm\IdeAtm.cs" />
     <Compile Include="Hardware\Atm\KeyboardAtm.cs" />
     <Compile Include="Hardware\Atm\AtmTxtRenderer.cs" />
     <Compile Include="Hardware\General\FddController.cs" />
