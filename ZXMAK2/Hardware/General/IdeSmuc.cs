@@ -99,12 +99,12 @@ namespace ZXMAK2.Hardware.General
 
         protected virtual void BusBeginFrame()
         {
-            m_ata.dev[0].Led = m_ata.dev[1].Led = false;
+            m_ata.LedIo = false;
         }
 
         protected virtual void BusEndFrame()
         {
-            m_iconHdd.Visible = m_ata.dev[0].Led || m_ata.dev[1].Led;
+            m_iconHdd.Visible = m_ata.LedIo;
         }
 
         protected virtual void BusReset()

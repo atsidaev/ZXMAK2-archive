@@ -89,6 +89,12 @@ namespace ZXMAK2.Hardware.IC
                 LogAgent.Error(ex);
             }
         }
+
+        public bool LedIo
+        {
+            get { return dev[0].Led || dev[1].Led; }
+            set { dev[0].Led = dev[1].Led = value; }
+        }
     }
 
     /// <summary>
