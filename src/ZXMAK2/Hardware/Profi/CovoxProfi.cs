@@ -8,8 +8,8 @@ namespace ZXMAK2.Hardware.Profi
     {
         #region IBusDevice
 
-        public override string Name { get { return "PROFI COVOX"; } }
-        public override string Description { get { return "PROFI COVOX \r\n#3F - right channel\r\n#5F - left channel"; } }
+        public override string Name { get { return "COVOX PROFI"; } }
+        public override string Description { get { return "COVOX PROFI \r\n#3F - right channel\r\n#5F - left channel"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Sound; } }
 
         public override void BusInit(IBusManager bmgr)

@@ -8,8 +8,8 @@ namespace ZXMAK2.Hardware.General
 	{
 		#region IBusDevice
 
-		public override string Name { get { return "Standard Beeper"; } }
-		public override string Description { get { return "Simple Standard Beeper"; } }
+		public override string Name { get { return "BEEPER"; } }
+		public override string Description { get { return "Standard Beeper"; } }
 		public override BusDeviceCategory Category { get { return BusDeviceCategory.Sound; } }
 
 		public override void BusInit(IBusManager bmgr)

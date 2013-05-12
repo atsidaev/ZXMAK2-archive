@@ -7,8 +7,8 @@ namespace ZXMAK2.Hardware.Quorum
     {
         #region IBusDevice
 
-        public override string Name { get { return "Quorum Beeper"; } }
-        public override string Description { get { return "Simple Quorum Beeper"; } }
+        public override string Name { get { return "BEEPER QUORUM"; } }
+        public override string Description { get { return "Quorum Beeper\r\nPort: #FE\r\nMask: #99"; } }
 
         #endregion
 

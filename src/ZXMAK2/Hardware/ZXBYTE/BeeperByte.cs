@@ -8,7 +8,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
     {
         #region IBusDevice
 
-        public override string Name { get { return "BYTE Beeper"; } }
+        public override string Name { get { return "BEEPER BYTE"; } }
         public override string Description { get { return "BYTE Beeper\r\nPort: #FE\r\nMask: #35"; } }
 
         public override void BusInit(IBusManager bmgr)
