@@ -232,4 +232,52 @@ namespace ZXMAK2.Hardware.Atm
         Std256x192 = 3,
         Txt080x025 = 6,
     }
+
+    public class UlaAtmTurbo : UlaAtm450
+    {
+        public override string Name
+        {
+            get { return base.Name + " [turbo]"; }
+        }
+        
+        protected override void OnRendererInit()
+        {
+            SpectrumRenderer.Params = CreateSpectrumRendererParams();
+            SpectrumRenderer.Palette = SpectrumRenderer.CreatePalette();
+            Atm320Renderer.Params = CreateParams320();
+            Atm320Renderer.Palette = Atm320Renderer.CreatePalette();
+            Atm640Renderer.Params = CreateParams640();
+            Atm640Renderer.Palette = Atm640Renderer.CreatePalette();
+            AtmTxtRenderer.Params = CreateParamsTxt();
+            AtmTxtRenderer.Palette = AtmTxtRenderer.CreatePalette();
+        }
+
+        protected override SpectrumRendererParams CreateSpectrumRendererParams()
+        {
+            var timing = base.CreateSpectrumRendererParams();
+            timing.c_frameTactCount *= 2;
+            return timing;
+        }
+        
+        private Atm320RendererParams CreateParams320()
+        {
+            var timing = Atm320Renderer.CreateParams();
+            timing.c_frameTactCount *= 2;
+            return timing;
+        }
+
+        private Atm640RendererParams CreateParams640()
+        {
+            var timing = Atm640Renderer.CreateParams();
+            timing.c_frameTactCount *= 2;
+            return timing;
+        }
+
+        private AtmTxtRendererParams CreateParamsTxt()
+        {
+            var timing = AtmTxtRenderer.CreateParams();
+            timing.c_frameTactCount *= 2;
+            return timing;
+        }
+    }
 }
