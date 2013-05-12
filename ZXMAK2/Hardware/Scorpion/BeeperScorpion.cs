@@ -8,7 +8,7 @@ namespace ZXMAK2.Hardware.Scorpion
     {
         #region IBusDevice
 
-        public override string Name { get { return "Scorpion Beeper"; } }
+        public override string Name { get { return "BEEPER SCORPION"; } }
         public override string Description { get { return "Scorpion ZS Beeper\r\nPort: #FE\r\nMask: #23"; } }
 
         public override void BusInit(IBusManager bmgr)

@@ -2,14 +2,14 @@
 using ZXMAK2.Entities;
 
 
-namespace ZXMAK2.Hardware.Pentagon
+namespace ZXMAK2.Hardware.Scorpion
 {
-    public class CovoxPentagon : SoundDeviceBase
+    public class CovoxScorpion : SoundDeviceBase
     {
         #region IBusDevice
 
-        public override string Name { get { return "COVOX PENTAGON"; } }
-        public override string Description { get { return "COVOX PENTAGON \r\nPort #FB - covox"; } }
+        public override string Name { get { return "COVOX SCORPION"; } }
+        public override string Description { get { return "COVOX SCORPION \r\nPort #DD - covox"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Sound; } }
 
         public override void BusInit(IBusManager bmgr)
@@ -17,8 +17,7 @@ namespace ZXMAK2.Hardware.Pentagon
             base.BusInit(bmgr);
             m_memory = bmgr.FindDevice<IMemoryDevice>();
 
-            //bmgr.SubscribeWrIo(0x0004, 0x00FB & 0x0004, WritePort);
-            bmgr.SubscribeWrIo(0x00FF, 0x00FB, WritePort);
+            bmgr.SubscribeWrIo(0x00FF, 0x00DD, WritePort);
         }
 
         #endregion

@@ -207,10 +207,12 @@ namespace ZXMAK2.Hardware.General
 
         protected virtual void OnSubscribeIo(IBusManager bmgr)
         {
-            bmgr.SubscribeWrIo(0x83, 0x1F & 0x83, BusWriteFdc);
-            bmgr.SubscribeRdIo(0x83, 0x1F & 0x83, BusReadFdc);
-            bmgr.SubscribeWrIo(0x83, 0xFF & 0x83, BusWriteSys);
-            bmgr.SubscribeRdIo(0x83, 0xFF & 0x83, BusReadSys);
+            //var mask = 0x83;
+            var mask = 0x87; // original #83 conflicts with port #FB (covox)
+            bmgr.SubscribeWrIo(mask, 0x1F & mask, BusWriteFdc);
+            bmgr.SubscribeRdIo(mask, 0x1F & mask, BusReadFdc);
+            bmgr.SubscribeWrIo(mask, 0xFF & mask, BusWriteSys);
+            bmgr.SubscribeRdIo(mask, 0xFF & mask, BusReadSys);
         }
 
         protected virtual void BusBeginFrame()
