@@ -13,7 +13,7 @@ namespace ZXMAK2.Hardware.Profi
     {
         #region IBusDevice Members
 
-        public override string Name { get { return "PROFI CMOS"; } }
+        public override string Name { get { return "CMOS PROFI"; } }
         public override string Description { get { return "PROFI CMOS device\nPort:\t#9F"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
 

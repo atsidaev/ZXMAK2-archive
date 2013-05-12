@@ -10,7 +10,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
         public override string Description { get { return "Sprinter RTC"; } }
-        public override string Name { get { return "Sprinter RTC"; } }
+        public override string Name { get { return "CMOS SPRINTER"; } }
 
         public override void BusInit(IBusManager bmgr)
         {

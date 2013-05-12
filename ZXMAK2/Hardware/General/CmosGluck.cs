@@ -13,7 +13,7 @@ namespace ZXMAK2.Hardware.General
     {
         #region IBusDevice Members
 
-        public override string Name { get { return "GLUCK CMOS"; } }
+        public override string Name { get { return "CMOS GLUCK"; } }
         public override string Description { get { return "GLUCK CMOS device\r\nPorts:\r\n#DFF7=address (w)\r\n#BFF7=data (r/w)"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
 
