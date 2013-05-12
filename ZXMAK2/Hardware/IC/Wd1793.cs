@@ -93,10 +93,14 @@ namespace ZXMAK2.Hardware.IC
 
         #region Public
 
-        public Wd1793()
+        public Wd1793(int driveCount)
         {
+            if (driveCount < 1 || driveCount > 4)
+            {
+                throw new ArgumentException("driveCount");
+            }
             drive = 0;
-            fdd = new DiskImage[4];
+            fdd = new DiskImage[driveCount];
             for (int i = 0; i < fdd.Length; i++)
             {
                 DiskImage di = new DiskImage();
@@ -109,6 +113,11 @@ namespace ZXMAK2.Hardware.IC
             //fdd[i].set_appendboot(NULL);
 
             wd93_nodelay = false;
+        }
+        
+        public Wd1793()
+            : this(4)
+        {
         }
 
         public void Write(long tact, WD93REG reg, byte value)
@@ -218,7 +227,7 @@ namespace ZXMAK2.Hardware.IC
                 case WD93REG.SYS:
                     LedRd = true;
                     //system = value;
-                    drive = value & 3;
+                    drive = (value & 3) % fdd.Length;
                     side = 1 & ~(value >> 4);
                     fdd[drive].HeadSide = side;
                     //seldrive->t.clear();
