@@ -208,7 +208,8 @@ namespace ZXMAK2.Hardware.General
         protected virtual void OnSubscribeIo(IBusManager bmgr)
         {
             //var mask = 0x83;
-            var mask = 0x87; // original #83 conflicts with port #FB (covox)
+            //var mask = 0x87;  // original #83 conflicts with port #FB (covox)
+            var mask = 0x97;    // #87 conflicts with port #CF (IDE ATM)
             bmgr.SubscribeWrIo(mask, 0x1F & mask, BusWriteFdc);
             bmgr.SubscribeRdIo(mask, 0x1F & mask, BusReadFdc);
             bmgr.SubscribeWrIo(mask, 0xFF & mask, BusWriteSys);
