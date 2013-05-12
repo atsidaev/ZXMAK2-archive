@@ -248,7 +248,7 @@
     <Compile Include="Hardware\Quorum\MemoryQuorum256.cs" />
     <Compile Include="Hardware\Quorum\KeyboardQuorum.cs" />
     <Compile Include="Hardware\Spectrum\PrinterPlus3.cs" />
-    <Compile Include="Hardware\General\SmucDevice.cs" />
+    <Compile Include="Hardware\General\IdeSmuc.cs" />
     <Compile Include="Hardware\Clone\UlaDelta.cs" />
     <Compile Include="Hardware\Clone\UlaLeningrad.cs" />
     <Compile Include="Hardware\Pentagon\UlaPentagon.cs" />
