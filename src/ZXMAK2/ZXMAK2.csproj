@@ -359,12 +359,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Engine\VirtualMachine.cs" />
-    <Compile Include="Hardware\Sprinter\UI\CtlSettingsBetaDisk.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Hardware\Sprinter\UI\CtlSettingsBetaDisk.designer.cs">
-      <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
-    </Compile>
     <Compile Include="Hardware\Sprinter\UI\DebugForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -478,9 +472,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Hardware\Sprinter\UI\CtlSettingsBetaDisk.resx">
-      <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Hardware\Sprinter\UI\DebugForm.resx">
       <DependentUpon>DebugForm.cs</DependentUpon>
     </EmbeddedResource>
