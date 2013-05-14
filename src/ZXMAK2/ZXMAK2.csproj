@@ -196,6 +196,7 @@
     <Compile Include="Hardware\RomPack.cs" />
     <Compile Include="Hardware\Scorpion\MemoryScorpionProfRom256.cs" />
     <Compile Include="Hardware\Scorpion\CovoxScorpion.cs" />
+    <Compile Include="Hardware\Sprinter\IdeSprinter.cs" />
     <Compile Include="Hardware\ZXBYTE\BeeperByte.cs" />
     <Compile Include="Hardware\ZXBYTE\MemoryByte128.cs" />
     <Compile Include="Hardware\ZXBYTE\MemoryByte.cs" />
