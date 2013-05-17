@@ -16,7 +16,7 @@ namespace ZXMAK2.Hardware.Sprinter
         private IconDescriptor m_iconHdd = new IconDescriptor("HDD", Utils.GetIconStream("hdd.png"));
         private AtaPort m_ata = new AtaPort();
         private string m_ideFileName;
-        private byte m_ide_wr_hi;
+        private byte m_ide_wr_lo;
         private byte m_ide_rd_hi;
 
         #endregion Fields
@@ -140,16 +140,16 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            if ((addr & 0x0100) != 0)
+            if ((addr & 0x0100) == 0)
             {
-                m_ide_wr_hi = value;
+                m_ide_wr_lo = value;
                 if (LogIo)
                 {
                     LogAgent.Info("IDE WR DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
                 }
                 return;
             }
-            var data = value | (m_ide_wr_hi << 8);
+            var data = (value << 8) | m_ide_wr_lo; //value | (m_ide_wr_hi << 8);
             if (LogIo)
             {
                 LogAgent.Info("IDE WR DATA LO: #{0:X2} @ PC=#{1:X4} [{2:X4}]", value, m_cpu.regs.PC, data);
