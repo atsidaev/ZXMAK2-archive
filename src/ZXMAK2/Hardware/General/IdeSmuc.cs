@@ -2,6 +2,8 @@
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware.IC;
+using System.Xml;
+using ZXMAK2.Engine.Z80;
 
 
 namespace ZXMAK2.Hardware.General
@@ -9,11 +11,12 @@ namespace ZXMAK2.Hardware.General
     /// <summary>
     /// http://zx.pk.ru/attachment.php?attachmentid=13640&d=1254911208
     /// </summary>
-    public class IdeSmuc : BusDeviceBase
+    public class IdeSmuc : BusDeviceBase, IConfigurable
     {
         #region Fields
 
         private bool m_sandbox = false;
+        private Z80CPU m_cpu;
         private IconDescriptor m_iconHdd = new IconDescriptor("HDD", Utils.GetIconStream("hdd.png"));
         private IMemoryDevice m_memory = null;
         private AtaPort m_ata = new AtaPort();
@@ -39,6 +42,7 @@ namespace ZXMAK2.Hardware.General
         public override void BusInit(IBusManager bmgr)
         {
             m_sandbox = bmgr.IsSandbox;
+            m_cpu = bmgr.CPU;
             m_memory = bmgr.FindDevice<IMemoryDevice>();
 
             m_rtcFileName = bmgr.GetSatelliteFileName("cmos");
@@ -90,6 +94,32 @@ namespace ZXMAK2.Hardware.General
                 if (m_nvramFileName != null)
                     m_nvram.Save(m_nvramFileName);
             }
+        }
+
+        #endregion
+
+
+        #region IConfigurable
+
+        public void LoadConfig(XmlNode itemNode)
+        {
+            LogIo = Utils.GetXmlAttributeAsBool(itemNode, "logIo", false);
+        }
+
+        public void SaveConfig(XmlNode itemNode)
+        {
+            Utils.SetXmlAttribute(itemNode, "logIo", LogIo);
+        }
+
+        #endregion
+
+
+        #region Properties
+
+        public bool LogIo
+        {
+            get { return m_ata.LogIo; }
+            set { m_ata.LogIo = value; }
         }
 
         #endregion
@@ -170,6 +200,10 @@ namespace ZXMAK2.Hardware.General
                 return;
             iorqge = false;
             value = m_ide_rd_hi;
+            if (LogIo)
+            {
+                LogAgent.Info("IDE RD DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+            }
         }
 
         protected virtual void ReadSys(ushort addr, ref byte value, ref bool iorqge)
@@ -180,6 +214,10 @@ namespace ZXMAK2.Hardware.General
             value = m_nvram.Read();
             value &= 0x7F;
             value |= (byte)(m_ata.read_intrq() & 0x80);
+            if (LogIo)
+            {
+                LogAgent.Info("IDE RD SYS: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+            }
         }
 
         protected virtual void ReadIde(ushort addr, ref byte value, ref bool iorqge)
@@ -196,15 +234,19 @@ namespace ZXMAK2.Hardware.General
                     UInt16 rd = m_ata.ReadData();
                     m_ide_rd_hi = (byte)(rd >> 8);
                     value = (byte)rd;
+                    if (LogIo)
+                    {
+                        LogAgent.Info("IDE RD DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, rd);
+                    }
                 }
                 else
                 {
-                    value = m_ata.Read((AtaReg)ab);
+                    value = AtaRead((AtaReg)ab);
                 }
             }
             else if (/*ab==6*/ (ab & 1) == 0)
             {
-                value = m_ata.Read(AtaReg.ControlAltStatus);
+                value = AtaRead(AtaReg.ControlAltStatus);
             }
         }
 
@@ -238,6 +280,10 @@ namespace ZXMAK2.Hardware.General
                 return;
             iorqge = false;
 
+            if (LogIo)
+            {
+                LogAgent.Info("IDE WR DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+            }
             m_ide_wr_hi = value;
         }
 
@@ -247,8 +293,14 @@ namespace ZXMAK2.Hardware.General
                 return;
             iorqge = false;
 
+            if (LogIo)
+            {
+                LogAgent.Info("IDE WR SYS: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+            }
             if ((value & 1) != 0)
+            {
                 m_ata.Reset();
+            }
             m_nvram.Write(value);
             m_sys = value;
         }
@@ -264,17 +316,41 @@ namespace ZXMAK2.Hardware.General
             {
                 if (ab == 0)
                 {
-                    m_ata.WriteData((UInt16)((m_ide_wr_hi << 8) | value));
+                    var data = (UInt16)((m_ide_wr_hi << 8) | value);
+                    if (LogIo)
+                    {
+                        LogAgent.Info("IDE WR DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, data);
+                    }
+                    m_ata.WriteData(data);
                 }
                 else
                 {
-                    m_ata.Write((AtaReg)ab, value);
+                    AtaWrite((AtaReg)ab, value);
                 }
             }
             else if (/*ab==6*/ (ab & 1) == 0)
             {
-                m_ata.Write(AtaReg.ControlAltStatus, value);
+                AtaWrite(AtaReg.ControlAltStatus, value);
             }
+        }
+
+        private void AtaWrite(AtaReg ataReg, byte value)
+        {
+            if (LogIo)
+            {
+                LogAgent.Info("IDE WR {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
+            }
+            m_ata.Write(ataReg, value);
+        }
+
+        private byte AtaRead(AtaReg ataReg)
+        {
+            var value = m_ata.Read(ataReg);
+            if (LogIo)
+            {
+                LogAgent.Info("IDE RD {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
+            }
+            return value;
         }
 
         #endregion
