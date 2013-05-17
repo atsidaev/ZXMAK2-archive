@@ -145,14 +145,14 @@ namespace ZXMAK2.Hardware.Sprinter
                 m_ide_wr_lo = value;
                 if (LogIo)
                 {
-                    LogAgent.Info("IDE WR DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+                    LogAgent.Info("IDE WR DATA LO: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
                 }
                 return;
             }
             var data = (value << 8) | m_ide_wr_lo; //value | (m_ide_wr_hi << 8);
             if (LogIo)
             {
-                LogAgent.Info("IDE WR DATA LO: #{0:X2} @ PC=#{1:X4} [{2:X4}]", value, m_cpu.regs.PC, data);
+                LogAgent.Info("IDE WR DATA HI: #{0:X2} @ PC=#{1:X4} [{2:X4}]", value, m_cpu.regs.PC, data);
             }
             m_ata.WriteData((ushort)data);
         }
