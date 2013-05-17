@@ -6,6 +6,66 @@ using System.Text;
 
 namespace ZXMAK2.Hardware.IC
 {
+    public enum AtaReg
+    {
+        /// <summary>
+        /// Error information register when read. 
+        /// The write precompensation register when written.
+        /// [/CS0,/CS1]=01, [A2-A0]=001
+        /// </summary>
+        FeatureError = 1,
+        /// <summary>
+        /// Sector counter register.
+        /// This register could be used to make multi-sector transfers. You'd have to write the number of sectors to transfer in this register.
+        /// [/CS0,/CS1]=01, [A2-A0]=010
+        /// </summary>
+        SectorCount = 2,
+        /// <summary>
+        /// Start sector register. 
+        /// This register holds the start sector of the current track to start reading/ writing to.
+        /// [/CS0,/CS1]=01, [A2-A0]=011
+        /// </summary>
+        SectorNumber = 3,
+        /// <summary>
+        /// Low byte of the cylinder number. 
+        /// This register holds low byte of the cylinder number for a disk transfer.
+        /// [/CS0,/CS1]=01, [A2-A0]=100
+        /// </summary>
+        CylinderLow = 4,
+        /// <summary>
+        /// High two bits of the cylinder number. 
+        /// The traditional IDE interface allows only cylinder numbers in the range 0..1023. 
+        /// This register gets the two upper bits of this number.
+        /// [/CS0,/CS1]=01, [A2-A0]=101
+        /// </summary>
+        CylinderHigh = 5,
+        /// <summary>
+        /// Head and device select register. 
+        /// The bits 3..0 of this register hold the head number (0..15) for a transfer. 
+        /// The bit 4 is to be written 0 for access to the IDE master device, 1 for access to the IDE slave device. 
+        /// The bits 7..5 are fixed at 101B in the traditional interface.
+        /// [/CS0,/CS1]=01, [A2-A0]=110
+        /// </summary>
+        DriveHead = 6,
+        /// <summary>
+        /// Command/status register. 
+        /// When written the IDE device regards the data you write to this register as a command. 
+        /// When read you get the status of the IDE device. 
+        /// Reading this register also clears any interrupts from the IDE device to the controller.
+        /// [/CS0,/CS1]=01, [A2-A0]=111
+        /// </summary>
+        CommandStatus = 7,
+        /// <summary>
+        /// Second status register/interrupt and reset register. 
+        /// When read this register gives you the same status byte as the primary ([/CS0,/CS1]=01, [A2..A0]=111) status register. 
+        /// The only difference is that reading this register does not clear the interrupt from the IDE device when read. 
+        /// When written you can enable/disable the interrupts the IDE device generates. 
+        /// Also you can give a software reset to the IDE device.
+        /// [/CS0,/CS1]=10, [A2-A0]=110
+        /// </summary>
+        ControlAltStatus = 8,
+    }
+    
     public class AtaPort
     {
         public AtaDevice[] dev;
@@ -18,7 +78,7 @@ namespace ZXMAK2.Hardware.IC
 			};
             dev[0].device_id = 0;
             dev[1].device_id = 0x10;
-            reset();
+            Reset();
             for (var i = 0; i < dev.Length; i++)
             {
                 var cfg = new IdeDiskDescriptor();
@@ -26,35 +86,35 @@ namespace ZXMAK2.Hardware.IC
             }
         }
 
-        public void reset()
+        public void Reset()
         {
             //LogAgent.Debug("AtaPort.reset");
             dev[0].reset(RESET_TYPE.RESET_HARD);
             dev[1].reset(RESET_TYPE.RESET_HARD);
         }
 
-        public byte read(int n_reg)
+        public byte Read(AtaReg n_reg)
         {
             byte result = (byte)(dev[0].read(n_reg) & dev[1].read(n_reg));
             //LogAgent.Debug("AtaPort.read({0}) = 0x{1:X2}", n_reg, result);
             return result;
         }
 
-        public UInt16 read_data()
+        public UInt16 ReadData()
         {
             UInt16 result = (UInt16)(dev[0].read_data() & dev[1].read_data());
             //LogAgent.Debug("AtaPort.read_data() = 0x{0:X4}", result);
             return result;
         }
 
-        public void write(int n_reg, byte data)
+        public void Write(AtaReg n_reg, byte data)
         {
             //LogAgent.Debug("AtaPort.write({0}, 0x{1:X2})", n_reg, data);
             dev[0].write(n_reg, data);
             dev[1].write(n_reg, data);
         }
 
-        public void write_data(UInt16 data)
+        public void WriteData(UInt16 data)
         {
             //LogAgent.Debug("AtaPort.write_data(0x{0:X4})", data);
             dev[0].write_data(data);
@@ -167,7 +227,7 @@ namespace ZXMAK2.Hardware.IC
         }
 
 
-        public byte read(int n_reg)
+        public byte read(AtaReg n_reg)
         {
             if (!loaded())
                 return 0xFF;
@@ -176,11 +236,12 @@ namespace ZXMAK2.Hardware.IC
                 return 0xFF;
             }
 
-            if (n_reg == 7)
+            if (n_reg == AtaReg.CommandStatus)
                 intrq = false;
-            if (n_reg == 8)
-                n_reg = 7; // read alt.status -> read status
-            if (n_reg == 7 || (reg.status & HD_STATUS.STATUS_BSY) != 0)
+            if (n_reg == AtaReg.ControlAltStatus)
+                n_reg = AtaReg.CommandStatus; // read alt.status -> read status
+            if (n_reg == AtaReg.CommandStatus || 
+                (reg.status & HD_STATUS.STATUS_BSY) != 0)
             {
                 //	   printf("state=%d\n",state); //Alone Coder
                 return (byte)reg.status;
@@ -188,23 +249,23 @@ namespace ZXMAK2.Hardware.IC
             // BSY = 0
             //// if (reg.status & STATUS_DRQ) return 0xFF;    // DRQ.  ATA-5: registers should not be queried while DRQ=1, but programs do this!
             // DRQ = 0
-            return regs[n_reg];
+            return regs[(int)n_reg];
         }
 
-        public void write(int n_reg, byte data)
+        public void write(AtaReg n_reg, byte data)
         {
             //   printf("dev=%d, reg=%d, data=%02X\n", device_id, n_reg, data);
             if (!loaded())
                 return;
-            if (n_reg == 1)
+            if (n_reg == AtaReg.FeatureError)
             {
                 reg.feat = data;
                 return;
             }
 
-            if (n_reg != 7)
+            if (n_reg != AtaReg.CommandStatus)
             {
-                regs[n_reg] = data;
+                regs[(int)n_reg] = data;
                 if ((reg.control & HD_CONTROL.CONTROL_SRST) != 0)
                 {
                     //          printf("dev=%d, reset\n", device_id);
@@ -214,8 +275,11 @@ namespace ZXMAK2.Hardware.IC
             }
 
             // execute command!
-            if (((reg.devhead ^ device_id) & 0x10) != 0 && data != 0x90)
+            if (((reg.devhead ^ device_id) & 0x10) != 0 &&
+                data != 0x90)
+            {
                 return;
+            }
             if ((reg.status & HD_STATUS.STATUS_DRDY) == 0 && !atapi)
             {
                 LogAgent.Warn("hdd not ready cmd = #{0:X2} (ignored)", data);

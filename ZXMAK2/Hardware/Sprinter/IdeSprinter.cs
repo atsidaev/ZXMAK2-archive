@@ -103,14 +103,6 @@ namespace ZXMAK2.Hardware.Sprinter
         }
 
 
-        private const int ATA_REG_ERROR = 1;
-        private const int ATA_REG_COUNT = 2;
-        private const int ATA_REG_SECTR = 3;
-        private const int ATA_REG_CYLLO = 4;
-        private const int ATA_REG_CYLHI = 5;
-        private const int ATA_REG_CNTRL = 6;
-        private const int ATA_REG_COMND = 7;
-
         protected virtual void WriteIdeData(ushort addr, byte value, ref bool iorqge)
         {
             if (!iorqge)
@@ -125,7 +117,7 @@ namespace ZXMAK2.Hardware.Sprinter
                 return;
             }
             var data = value | (m_ide_wr_hi << 8);
-            m_ata.write_data((ushort)data);
+            m_ata.WriteData((ushort)data);
         }
 
         protected virtual void ReadIdeData(ushort addr, ref byte value, ref bool iorqge)
@@ -141,7 +133,7 @@ namespace ZXMAK2.Hardware.Sprinter
                 value = m_ide_rd_hi;
                 return;
             }
-            var data = m_ata.read_data();
+            var data = m_ata.ReadData();
             m_ide_rd_hi = (byte)(data >> 8);
             value = (byte)data;
         }
@@ -154,7 +146,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.write(ATA_REG_ERROR, value);
+            m_ata.Write(AtaReg.FeatureError, value);
         }
 
         protected virtual void ReadIdeError(ushort addr, ref byte value, ref bool iorqge)
@@ -165,7 +157,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.read(ATA_REG_ERROR);
+            value = m_ata.Read(AtaReg.FeatureError);
         }
 
         protected virtual void WriteIdeCounter(ushort addr, byte value, ref bool iorqge)
@@ -176,7 +168,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.write(ATA_REG_COUNT, value);
+            m_ata.Write(AtaReg.SectorCount, value);
         }
 
         protected virtual void ReadIdeCounter(ushort addr, ref byte value, ref bool iorqge)
@@ -187,7 +179,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.read(ATA_REG_COUNT);
+            value = m_ata.Read(AtaReg.SectorCount);
         }
 
         protected virtual void WriteIdeSector(ushort addr, byte value, ref bool iorqge)
@@ -198,7 +190,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.write(ATA_REG_SECTR, value);
+            m_ata.Write(AtaReg.SectorNumber, value);
         }
 
         protected virtual void ReadIdeSector(ushort addr, ref byte value, ref bool iorqge)
@@ -209,7 +201,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.read(ATA_REG_SECTR);
+            value = m_ata.Read(AtaReg.SectorNumber);
         }
 
         protected virtual void WriteIdeCylHi(ushort addr, byte value, ref bool iorqge)
@@ -220,7 +212,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.write(ATA_REG_CYLHI, value);
+            m_ata.Write(AtaReg.CylinderHigh, value);
         }
 
         protected virtual void ReadIdeCylHi(ushort addr, ref byte value, ref bool iorqge)
@@ -231,7 +223,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.read(ATA_REG_CYLHI);
+            value = m_ata.Read(AtaReg.CylinderHigh);
         }
 
         protected virtual void WriteIdeCylLo(ushort addr, byte value, ref bool iorqge)
@@ -242,7 +234,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.write(ATA_REG_CYLLO, value);
+            m_ata.Write(AtaReg.CylinderLow, value);
         }
 
         protected virtual void ReadIdeCylLo(ushort addr, ref byte value, ref bool iorqge)
@@ -253,7 +245,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.read(ATA_REG_CYLLO);
+            value = m_ata.Read(AtaReg.CylinderLow);
         }
 
         protected virtual void WriteIdeControl(ushort addr, byte value, ref bool iorqge)
@@ -264,7 +256,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.write(ATA_REG_CNTRL, value);
+            m_ata.Write(AtaReg.DriveHead, value);
         }
 
         protected virtual void ReadIdeControl(ushort addr, ref byte value, ref bool iorqge)
@@ -275,7 +267,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.read(ATA_REG_CNTRL);
+            value = m_ata.Read(AtaReg.DriveHead);
         }
 
         protected virtual void WriteIdeCommand(ushort addr, byte value, ref bool iorqge)
@@ -286,7 +278,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.write(ATA_REG_COMND, value);
+            m_ata.Write(AtaReg.CommandStatus, value);
         }
 
         protected virtual void ReadIdeCommand(ushort addr, ref byte value, ref bool iorqge)
@@ -297,7 +289,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.read(ATA_REG_COMND);
+            value = m_ata.Read(AtaReg.CommandStatus);
         }
 
 
