@@ -79,11 +79,8 @@ namespace ZXMAK2.Hardware.IC
             dev[0].device_id = 0;
             dev[1].device_id = 0x10;
             Reset();
-            for (var i = 0; i < dev.Length; i++)
-            {
-                var cfg = new IdeDiskDescriptor();
-                dev[i].configure(cfg);
-            }
+            dev[0].configure(new IdeDiskDescriptor());
+            dev[1].configure(new IdeDiskDescriptor());
         }
 
         public void Reset()
@@ -152,8 +149,14 @@ namespace ZXMAK2.Hardware.IC
 
         public bool LedIo
         {
-            get { return dev[0].Led || dev[1].Led; }
-            set { dev[0].Led = dev[1].Led = value; }
+            get { return dev[0].LedIo || dev[1].LedIo; }
+            set { dev[0].LedIo = dev[1].LedIo = value; }
+        }
+
+        public bool LogIo
+        {
+            get { return dev[0].LogIo || dev[1].LogIo; }
+            set { dev[0].LogIo = dev[1].LogIo = value; }
         }
     }
 
@@ -179,7 +182,8 @@ namespace ZXMAK2.Hardware.IC
 
         public ATA_PASSER ata_p = new ATA_PASSER();
         //ATAPI_PASSER atapi_p;
-        public bool Led = false;
+        public bool LedIo;
+        public bool LogIo;
 
         public bool loaded()
         {
@@ -309,7 +313,7 @@ namespace ZXMAK2.Hardware.IC
             if (/* (reg.status & (STATUS_DRQ | STATUS_BSY)) != STATUS_DRQ ||*/ transptr >= transcount)
                 return 0xFFFF;
 
-            Led = true;
+            LedIo = true;
             // DRQ=1, BSY=0, data present
             UInt16 result = (UInt16)(transbf[transptr * 2] | (transbf[transptr * 2 + 1] << 8));
             transptr++;
@@ -345,7 +349,7 @@ namespace ZXMAK2.Hardware.IC
             if (/* (reg.status & (STATUS_DRQ | STATUS_BSY)) != STATUS_DRQ ||*/ transptr >= transcount)
                 return;
 
-            Led = true;
+            LedIo = true;
             transbf[transptr * 2] = (byte)data;
             transbf[transptr * 2 + 1] = (byte)(data >> 8);
             transptr++;
@@ -601,6 +605,10 @@ namespace ZXMAK2.Hardware.IC
                 //      printf("chs %4d/%02d/%02d: %8d\n", *(unsigned short*)(regs+4), (reg.devhead & 0x0F), reg.sec, pos);
             }
             //printf("[seek %I64d]", ((__int64)pos) << 9);
+            if (LogIo)
+            {
+                LogAgent.Info("IDE HDD SEEK lba={0} [fileOffset=#{1:X8}]", pos, ((long)pos) << 9);
+            }
             if (!ata_p.seek(pos))
             {
                 reg.status = HD_STATUS.STATUS_DRDY | HD_STATUS.STATUS_DF | HD_STATUS.STATUS_ERR;
@@ -718,6 +726,10 @@ namespace ZXMAK2.Hardware.IC
             if (!seek())
                 return;
 
+            if (LogIo)
+            {
+                LogAgent.Info("IDE HDD READ SECTOR ****************************************************************");
+            }
             if (!ata_p.read_sector(transbf, 0))
             {
                 reg.status = HD_STATUS.STATUS_DRDY | HD_STATUS.STATUS_DSC | HD_STATUS.STATUS_ERR;
@@ -778,6 +790,10 @@ namespace ZXMAK2.Hardware.IC
             if (!seek())
                 return;
 
+            if (LogIo)
+            {
+                LogAgent.Info("IDE HDD WRITE SECTOR ***************************************************************");
+            }
             if (!ata_p.write_sector(transbf, 0))
             {
                 reg.status = HD_STATUS.STATUS_DRDY | HD_STATUS.STATUS_DSC | HD_STATUS.STATUS_ERR;

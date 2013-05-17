@@ -106,7 +106,11 @@ namespace ZXMAK2.Hardware.Sprinter
 
         #region Properties
 
-        public bool LogIo { get; set; }
+        public bool LogIo 
+        {
+            get { return m_ata.LogIo; }
+            set { m_ata.LogIo = value; } 
+        }
 
         #endregion
 
