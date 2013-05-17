@@ -193,18 +193,18 @@ namespace ZXMAK2.Hardware.General
             {
                 if (ab == 0)
                 {
-                    UInt16 rd = m_ata.read_data();
+                    UInt16 rd = m_ata.ReadData();
                     m_ide_rd_hi = (byte)(rd >> 8);
                     value = (byte)rd;
                 }
                 else
                 {
-                    value = m_ata.read(ab);
+                    value = m_ata.Read((AtaReg)ab);
                 }
             }
             else if (/*ab==6*/ (ab & 1) == 0)
             {
-                value = m_ata.read(8);
+                value = m_ata.Read(AtaReg.ControlAltStatus);
             }
         }
 
@@ -248,7 +248,7 @@ namespace ZXMAK2.Hardware.General
             iorqge = false;
 
             if ((value & 1) != 0)
-                m_ata.reset();
+                m_ata.Reset();
             m_nvram.Write(value);
             m_sys = value;
         }
@@ -263,13 +263,17 @@ namespace ZXMAK2.Hardware.General
             if ((m_sys & 0x80) == 0)
             {
                 if (ab == 0)
-                    m_ata.write_data((UInt16)((m_ide_wr_hi << 8) | value));
+                {
+                    m_ata.WriteData((UInt16)((m_ide_wr_hi << 8) | value));
+                }
                 else
-                    m_ata.write(ab, value);
+                {
+                    m_ata.Write((AtaReg)ab, value);
+                }
             }
             else if (/*ab==6*/ (ab & 1) == 0)
             {
-                m_ata.write(8, value);
+                m_ata.Write(AtaReg.ControlAltStatus, value);
             }
         }
 

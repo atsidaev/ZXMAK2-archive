@@ -99,12 +99,12 @@ namespace ZXMAK2.Hardware.Atm
             addr &= 7;
             if (addr != 0)
             {
-                m_ata.write(addr, value);
+                m_ata.Write((AtaReg)addr, value);
             }
             else
             {
                 var data = value | (m_ide_wr_hi << 8);
-                m_ata.write_data((ushort)data);
+                m_ata.WriteData((ushort)data);
             }
             // ??m_ata.reset();
         }
@@ -126,11 +126,11 @@ namespace ZXMAK2.Hardware.Atm
             addr &= 7;
             if (addr != 0)
             {
-                value = m_ata.read(addr);
+                value = m_ata.Read((AtaReg)addr);
             }
             else
             {
-                var data = m_ata.read_data();
+                var data = m_ata.ReadData();
                 m_ide_rd_hi = (byte)(data >> 8);
                 value = (byte)data;
             }
