@@ -813,7 +813,7 @@ namespace ZXMAK2.Hardware.IC
             transcount = 0x100;
             state = HD_STATE.S_WRITE_SECTORS;
             reg.err = HD_ERROR.ERR_NONE;
-            reg.status = HD_STATUS.STATUS_DRQ | HD_STATUS.STATUS_DSC;
+            reg.status = HD_STATUS.STATUS_DRDY | HD_STATUS.STATUS_DRQ | HD_STATUS.STATUS_DSC;
         }
 
         public void format_track()
