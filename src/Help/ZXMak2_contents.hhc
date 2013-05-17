@@ -22,6 +22,10 @@
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Commands">
+			<param name="Local" value="Commands.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Window parts">
 			<param name="Local" value="DebuggerWindowParts.html">
 			</OBJECT>
