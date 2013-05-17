@@ -46,7 +46,7 @@ namespace ZXMAK2.Hardware.IC
         /// The bits 7..5 are fixed at 101B in the traditional interface.
         /// [/CS0,/CS1]=01, [A2-A0]=110
         /// </summary>
-        DriveHead = 6,
+        HeadAndDrive = 6,
         /// <summary>
         /// Command/status register. 
         /// When written the IDE device regards the data you write to this register as a command. 

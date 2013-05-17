@@ -2,15 +2,17 @@
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware.IC;
 using ZXMAK2.Engine.Z80;
+using System.Xml;
 
 
 namespace ZXMAK2.Hardware.Sprinter
 {
-    public class IdeSprinter : BusDeviceBase
+    public class IdeSprinter : BusDeviceBase, IConfigurable
     {
         #region Fields
 
         private bool m_sandbox = false;
+        private Z80CPU m_cpu;
         private IconDescriptor m_iconHdd = new IconDescriptor("HDD", Utils.GetIconStream("hdd.png"));
         private AtaPort m_ata = new AtaPort();
         private string m_ideFileName;
@@ -19,7 +21,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         #endregion Fields
 
-
+        
         #region IBusDevice Members
 
         public override string Name { get { return "IDE SPRINTER"; } }
@@ -29,6 +31,7 @@ namespace ZXMAK2.Hardware.Sprinter
         public override void BusInit(IBusManager bmgr)
         {
             m_sandbox = bmgr.IsSandbox;
+            m_cpu = bmgr.CPU;
 
             m_ideFileName = bmgr.GetSatelliteFileName("vmide");
 
@@ -85,6 +88,28 @@ namespace ZXMAK2.Hardware.Sprinter
 
         #endregion
 
+        
+        #region IConfigurable
+
+        public void LoadConfig(XmlNode itemNode)
+        {
+            LogIo = Utils.GetXmlAttributeAsBool(itemNode, "logIo", false);
+        }
+
+        public void SaveConfig(XmlNode itemNode)
+        {
+            Utils.SetXmlAttribute(itemNode, "logIo", LogIo);
+        }
+
+        #endregion
+
+
+        #region Properties
+
+        public bool LogIo { get; set; }
+
+        #endregion
+
 
         #region Private
 
@@ -114,9 +139,17 @@ namespace ZXMAK2.Hardware.Sprinter
             if ((addr & 0x0100) != 0)
             {
                 m_ide_wr_hi = value;
+                if (LogIo)
+                {
+                    LogAgent.Info("IDE WR DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+                }
                 return;
             }
             var data = value | (m_ide_wr_hi << 8);
+            if (LogIo)
+            {
+                LogAgent.Info("IDE WR DATA LO: #{0:X2} @ PC=#{1:X4} [{2:X4}]", value, m_cpu.regs.PC, data);
+            }
             m_ata.WriteData((ushort)data);
         }
 
@@ -131,11 +164,19 @@ namespace ZXMAK2.Hardware.Sprinter
             if ((addr & 0x0100) != 0)
             {
                 value = m_ide_rd_hi;
+                if (LogIo)
+                {
+                    LogAgent.Info("IDE RD DATA HI: #{0:X2} @ PC=#{1:X4}", m_ide_rd_hi, m_cpu.regs.PC);
+                }
                 return;
             }
             var data = m_ata.ReadData();
             m_ide_rd_hi = (byte)(data >> 8);
             value = (byte)data;
+            if (LogIo)
+            {
+                LogAgent.Info("IDE RD DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, data);
+            }
         }
 
         protected virtual void WriteIdeError(ushort addr, byte value, ref bool iorqge)
@@ -145,8 +186,8 @@ namespace ZXMAK2.Hardware.Sprinter
                 return;
             }
             iorqge = false;
-
-            m_ata.Write(AtaReg.FeatureError, value);
+            
+            AtaWrite(AtaReg.FeatureError, value);
         }
 
         protected virtual void ReadIdeError(ushort addr, ref byte value, ref bool iorqge)
@@ -157,7 +198,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.Read(AtaReg.FeatureError);
+            value = AtaRead(AtaReg.FeatureError);
         }
 
         protected virtual void WriteIdeCounter(ushort addr, byte value, ref bool iorqge)
@@ -168,7 +209,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.Write(AtaReg.SectorCount, value);
+            AtaWrite(AtaReg.SectorCount, value);
         }
 
         protected virtual void ReadIdeCounter(ushort addr, ref byte value, ref bool iorqge)
@@ -179,7 +220,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.Read(AtaReg.SectorCount);
+            value = AtaRead(AtaReg.SectorCount);
         }
 
         protected virtual void WriteIdeSector(ushort addr, byte value, ref bool iorqge)
@@ -190,7 +231,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.Write(AtaReg.SectorNumber, value);
+            AtaWrite(AtaReg.SectorNumber, value);
         }
 
         protected virtual void ReadIdeSector(ushort addr, ref byte value, ref bool iorqge)
@@ -201,7 +242,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.Read(AtaReg.SectorNumber);
+            value = AtaRead(AtaReg.SectorNumber);
         }
 
         protected virtual void WriteIdeCylHi(ushort addr, byte value, ref bool iorqge)
@@ -212,7 +253,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.Write(AtaReg.CylinderHigh, value);
+            AtaWrite(AtaReg.CylinderHigh, value);
         }
 
         protected virtual void ReadIdeCylHi(ushort addr, ref byte value, ref bool iorqge)
@@ -223,7 +264,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.Read(AtaReg.CylinderHigh);
+            value = AtaRead(AtaReg.CylinderHigh);
         }
 
         protected virtual void WriteIdeCylLo(ushort addr, byte value, ref bool iorqge)
@@ -234,7 +275,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.Write(AtaReg.CylinderLow, value);
+            AtaWrite(AtaReg.CylinderLow, value);
         }
 
         protected virtual void ReadIdeCylLo(ushort addr, ref byte value, ref bool iorqge)
@@ -245,7 +286,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.Read(AtaReg.CylinderLow);
+            value = AtaRead(AtaReg.CylinderLow);
         }
 
         protected virtual void WriteIdeControl(ushort addr, byte value, ref bool iorqge)
@@ -256,7 +297,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.Write(AtaReg.DriveHead, value);
+            AtaWrite(AtaReg.HeadAndDrive, value);
         }
 
         protected virtual void ReadIdeControl(ushort addr, ref byte value, ref bool iorqge)
@@ -267,7 +308,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.Read(AtaReg.DriveHead);
+            value = AtaRead(AtaReg.HeadAndDrive);
         }
 
         protected virtual void WriteIdeCommand(ushort addr, byte value, ref bool iorqge)
@@ -278,7 +319,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            m_ata.Write(AtaReg.CommandStatus, value);
+            AtaWrite(AtaReg.CommandStatus, value);
         }
 
         protected virtual void ReadIdeCommand(ushort addr, ref byte value, ref bool iorqge)
@@ -289,10 +330,28 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             iorqge = false;
 
-            value = m_ata.Read(AtaReg.CommandStatus);
+            value = AtaRead(AtaReg.CommandStatus);
         }
 
 
+        private void AtaWrite(AtaReg ataReg, byte value)
+        {
+            if (LogIo)
+            {
+                LogAgent.Info("IDE WR {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
+            }
+            m_ata.Write(ataReg, value);
+        }
+
+        private byte AtaRead(AtaReg ataReg)
+        {
+            var value = m_ata.Read(ataReg);
+            if (LogIo)
+            {
+                LogAgent.Info("IDE RD {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
+            }
+            return value;
+        }
 
         //--
         // ??m_ata.reset();
