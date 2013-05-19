@@ -50,7 +50,6 @@ namespace ZXMAK2.Hardware.Evo
 
         protected virtual void OnSubscribeIo(IBusManager bmgr)
         {
-            //bmgr.SubscribeRdIo(0x0001, 0x0000, BusReadPortFE);					// bit Z emulation
             bmgr.SubscribeWrIo(0x00FF, 0x00FF & 0x00FF, BusWritePortXXFF_PAL);	// atm_writepal(val);
 
             bmgr.SubscribeWrIo(0x00FF, 0xFF77 & 0x00FF, BusWritePortXX77_SYS);
@@ -77,7 +76,7 @@ namespace ZXMAK2.Hardware.Evo
             var isRam = (w & 0x40) == 0;
             if (isRam)
             {
-                DOSEN = SYSEN;
+                DOSEN = CPM;
             }
             else if (index != 0 && (addr & 0x3F00) == 0x3D00) //ROM2 & RAM & dosgate
             {
@@ -108,7 +107,6 @@ namespace ZXMAK2.Hardware.Evo
 
         protected override void UpdateMapping()
         {
-            //m_cpu.Break = true;
             m_lock = (CMR0 & 0x20) != 0;
             if (PEN)
             {
@@ -161,6 +159,14 @@ namespace ZXMAK2.Hardware.Evo
                 var w1 = m_ru2[index + 1] ^ 0x3FF;
                 var w2 = m_ru2[index + 2] ^ 0x3FF;
                 var w3 = m_ru2[index + 3] ^ 0x3FF;
+                var isRam0 = (w0 & 0x40) == 0;
+                var isRam1 = (w1 & 0x40) == 0;
+                var isRam2 = (w2 & 0x40) == 0;
+                var isRam3 = (w3 & 0x40) == 0;
+                var isDos0 = (w0 & 0x80) == 0;
+                var isDos1 = (w1 & 0x80) == 0;
+                var isDos2 = (w2 & 0x80) == 0;
+                var isDos3 = (w3 & 0x80) == 0;
                 var kpa0 = CMR0 & 7;
                 var kpa0mask = 0x38;
                 if (!ZX128)
@@ -170,19 +176,15 @@ namespace ZXMAK2.Hardware.Evo
                     //kpa0 = (byte)((CMR0 & 0xE0) >> 2 | (CMR0 & 0x7));
                     kpa0mask = 0xC0;
                 }
-                var kpa8 = (DOSEN | SYSEN) ? 1 : 0;
-                var romPage0 = ((w0 & 0x80) == 0 ? kpa8 | (w0 & 0x3E) : w0 & 0x3F) & romMask;
-                var romPage1 = ((w1 & 0x80) == 0 ? kpa8 | (w1 & 0x3E) : w1 & 0x3F) & romMask;
-                var romPage2 = ((w2 & 0x80) == 0 ? kpa8 | (w2 & 0x3E) : w2 & 0x3F) & romMask;
-                var romPage3 = ((w3 & 0x80) == 0 ? kpa8 | (w3 & 0x3E) : w3 & 0x3F) & romMask;
-                var ramPage0 = (((w0 & 0x80) == 0 ? (w0 & kpa0mask) | kpa0 : (w0 & 0x3F)) | ((w0 >> 2) & 0xC0)) & ramMask;
-                var ramPage1 = (((w1 & 0x80) == 0 ? (w1 & kpa0mask) | kpa0 : (w1 & 0x3F)) | ((w1 >> 2) & 0xC0)) & ramMask;
-                var ramPage2 = (((w2 & 0x80) == 0 ? (w2 & kpa0mask) | kpa0 : (w2 & 0x3F)) | ((w2 >> 2) & 0xC0)) & ramMask;
-                var ramPage3 = (((w3 & 0x80) == 0 ? (w3 & kpa0mask) | kpa0 : (w3 & 0x3F)) | ((w3 >> 2) & 0xC0)) & ramMask;
-                var isRam0 = (w0 & 0x40) == 0;
-                var isRam1 = (w1 & 0x40) == 0;
-                var isRam2 = (w2 & 0x40) == 0;
-                var isRam3 = (w3 & 0x40) == 0;
+                var kpa8 = DOSEN ? 1 : 0;
+                var romPage0 = (isDos0 ? kpa8 | (w0 & 0x3E) : w0 & 0x3F) & romMask;
+                var romPage1 = (isDos1 ? kpa8 | (w1 & 0x3E) : w1 & 0x3F) & romMask;
+                var romPage2 = (isDos2 ? kpa8 | (w2 & 0x3E) : w2 & 0x3F) & romMask;
+                var romPage3 = (isDos3 ? kpa8 | (w3 & 0x3E) : w3 & 0x3F) & romMask;
+                var ramPage0 = ((isDos0 ? (w0 & kpa0mask) | kpa0 : (w0 & 0x3F)) | ((w0 >> 2) & 0xC0)) & ramMask;
+                var ramPage1 = ((isDos1 ? (w1 & kpa0mask) | kpa0 : (w1 & 0x3F)) | ((w1 >> 2) & 0xC0)) & ramMask;
+                var ramPage2 = ((isDos2 ? (w2 & kpa0mask) | kpa0 : (w2 & 0x3F)) | ((w2 >> 2) & 0xC0)) & ramMask;
+                var ramPage3 = ((isDos3 ? (w3 & kpa0mask) | kpa0 : (w3 & 0x3F)) | ((w3 >> 2) & 0xC0)) & ramMask;
 
                 if (W0RAM0)
                 {
@@ -239,7 +241,7 @@ namespace ZXMAK2.Hardware.Evo
         }
 
         [HardwareValue("CPM", Description = "Enable continous access for extended ports and TRDOS ROM")]
-        public override bool SYSEN
+        public bool CPM
         {
             get { return (m_aFF77 & 0x200) == 0; }
             set { m_aFF77 = (m_aFF77 & ~0x200) | (value ? 0x0000 : 0x0200); if (value) DOSEN = true; UpdateMapping(); }
@@ -311,28 +313,22 @@ namespace ZXMAK2.Hardware.Evo
 
         public override bool DOSEN
         {
-            set { base.DOSEN = value | SYSEN; }
+            set { base.DOSEN = value | CPM; }
+        }
+
+        public override bool SYSEN
+        {
+            get { return SHADOW; }
+            set { SHADOW = value; }
         }
 
         #endregion
 
         #region Bus Handlers
 
-        protected virtual void BusReadPortFE(ushort addr, ref byte value, ref bool iorqge)
-        {
-            // bit Z emulation
-            value &= 0xDF;
-            int frameLength = m_ula.FrameTactCount;
-            int frameTact = (int)(m_cpu.Tact % frameLength);
-            if (atm710_z(frameTact, frameLength))
-            {
-                value |= 0x20;
-            }
-        }
-
         protected virtual void BusWritePortXXFF_PAL(ushort addr, byte value, ref bool iorqge)
         {
-            if ((DOSEN || SYSEN || SHADOW) && PEN2 && m_ulaAtm != null)
+            if ((DOSEN || SHADOW) && PEN2 && m_ulaAtm != null)
             {
                 m_ulaAtm.SetPaletteAtm2(value);
             }
@@ -340,11 +336,11 @@ namespace ZXMAK2.Hardware.Evo
 
         protected virtual void BusWritePortXX77_SYS(ushort addr, byte value, ref bool iorqge) // ATM2
         {
-            if (DOSEN || SYSEN || SHADOW)
+            if (DOSEN || SHADOW)
             {
                 m_pFF77 = value;
                 m_aFF77 = addr;
-                if (SYSEN) DOSEN = true;
+                if (CPM) DOSEN = true;
                 UpdateMapping();
                 //cpu.int_gate = (comp.pFF77 & 0x20) != false;
                 //set_banks();
@@ -353,7 +349,7 @@ namespace ZXMAK2.Hardware.Evo
 
         protected virtual void BusWritePortXFF7_WND(ushort addr, byte value, ref bool iorqge) // ATM2
         {
-            if (DOSEN || SYSEN || SHADOW)
+            if (DOSEN || SHADOW)
             {
                 var wnd = ((CMR0 & 0x10) >> 2) | ((addr >> 14) & 3);
                 if ((addr & 0x0800) != 0)
@@ -409,13 +405,13 @@ namespace ZXMAK2.Hardware.Evo
                 case 0x05:
                 case 0x06:
                 case 0x07:
-                    value = (byte)(GetPage((addr & 7) >> 8) ^ 0xFF);
+                    value = (byte)(GetCfgPage((addr & 7) >> 8) ^ 0xFF);
                     break;
                 case 0x08:
-                    value = (byte)GetIsRam();
+                    value = (byte)GetCfgIsRam();
                     break;
                 case 0x09:
-                    value = (byte)GetIsDos();
+                    value = (byte)GetCfgIsDos();
                     break;
                 case 0x0A:
                     value = CMR0;
@@ -433,7 +429,7 @@ namespace ZXMAK2.Hardware.Evo
             }
         }
 
-        private int GetIsDos()
+        private int GetCfgIsDos()
         {
             var value = 0;
             var mask = 0x01;
@@ -449,7 +445,7 @@ namespace ZXMAK2.Hardware.Evo
             return value;
         }
 
-        private int GetIsRam()
+        private int GetCfgIsRam()
         {
             var value = 0;
             var mask = 0x01;
@@ -465,7 +461,7 @@ namespace ZXMAK2.Hardware.Evo
             return value;
         }
 
-        private int GetPage(int index)
+        private int GetCfgPage(int index)
         {
             var romMask = RomPages.Length - 1;
             if (romMask > 0x1F)
@@ -482,7 +478,7 @@ namespace ZXMAK2.Hardware.Evo
             // in the high byte of m_ru2[wnd]
             var w = m_ru2[index] ^ 0x3FF;
             var kpa0 = CMR0 & 7;
-            var kpa8 = (DOSEN | SYSEN) ? 1 : 0;
+            var kpa8 = DOSEN ? 1 : 0;
             var isDos = (w & 0x80) == 0;
             var isRam = (w & 0x40) == 0;
             var romPage = (isDos ? kpa8 | (w & 0x3E) : w & 0x3F) & romMask;
@@ -501,7 +497,7 @@ namespace ZXMAK2.Hardware.Evo
             m_pFF77 = 3;        // RESET: D3=0, D2..D0=011
             m_pXXBF = 0;        // RESET=0
             m_pEFF7 = 0;        // RESET=0
-            DOSEN = SYSEN;
+            DOSEN = CPM;
 
             CMR0 = 0;
             CMR1 = 0;
@@ -517,10 +513,10 @@ namespace ZXMAK2.Hardware.Evo
             m_aFF77 = 0xFF77;
             m_pFF77 = 0x00AB;
             Array.Copy(
-                new byte[] { 0x99, 0x7a, 0x7d, 0xff, 0x9b, 0x7a, 0x7d, 0xff },
+                new int[] { 0x381, 0x37a, 0x37d, 0x3ff, 0x383, 0x37a, 0x37d, 0x3ff },
                 m_ru2,
                 m_ru2.Length);
-            DOSEN = SYSEN;
+            DOSEN = CPM;
         }
 
         #endregion
@@ -550,40 +546,5 @@ namespace ZXMAK2.Hardware.Evo
                 m_romPages[i] = new byte[0x4000];
             }
         }
-
-        #region Private methods
-
-        private void atm_memswap()
-        {
-            //if (!m_cfg_mem_swap) return;
-            byte[] buffer = new byte[2048];
-            for (int subPage = 0; subPage < m_ramPages.Length * 2; subPage++)
-            {
-                byte[] bankPage = m_ramPages[subPage / 2];
-                int bankIndex = (subPage % 2) * 2048;
-                for (int addr = 0; addr < 2048; addr++)
-                    buffer[addr] = bankPage[bankIndex + (addr & 0x1F) + ((addr >> 3) & 0xE0) + ((addr << 3) & 0x700)];
-                for (int addr = 0; addr < 2048; addr++)
-                    bankPage[bankIndex + addr] = buffer[addr];
-            }
-        }
-
-        private bool atm710_z(int frameTact, int frameLength)
-        {
-            // PAL hardware gives 3 zeros in secret short time intervals
-            if (frameLength < 80000)
-            {
-                // NORMAL SPEED mode
-                if ((uint)(frameTact - 7200) < 40 || (uint)(frameTact - 7284) < 40 || (uint)(frameTact - 7326) < 40) return false;
-            }
-            else
-            {
-                // TURBO mode
-                if ((uint)(frameTact - 21514) < 40 || (uint)(frameTact - 21703) < 80 || (uint)(frameTact - 21808) < 40) return false;
-            }
-            return true;
-        }
-
-        #endregion
     }
 }
