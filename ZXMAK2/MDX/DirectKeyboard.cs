@@ -9,7 +9,7 @@ using ZXMAK2.Interfaces;
 
 namespace ZXMAK2.MDX
 {
-	public class DirectKeyboard : IDisposable
+	public class DirectKeyboard : IHostKeyboard, IDisposable
 	{
 		private Form _form;
 		private bool kbdActive = false;

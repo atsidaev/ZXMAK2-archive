@@ -6,12 +6,13 @@ using System.Collections;
 using System.Threading;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectSound;
+using ZXMAK2.Interfaces;
 
 
 
 namespace ZXMAK2.MDX
 {
-	public unsafe class DirectSound : IDisposable
+	public unsafe class DirectSound : IHostSound, IDisposable
 	{
 		private Device _device = null;
 		private SecondaryBuffer _soundBuffer = null;
