@@ -1,6 +1,7 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
+using ZXMAK2.Attributes;
 
 namespace ZXMAK2.Hardware.Atm
 {
