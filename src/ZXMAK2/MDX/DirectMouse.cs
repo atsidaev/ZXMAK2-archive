@@ -4,11 +4,12 @@
 using System;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectInput;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.MDX
 {
-    public class DirectMouse : IDisposable
+    public class DirectMouse : IHostMouse, IDisposable
     {
         private Form m_form;
         private bool m_active = false;
@@ -16,7 +17,7 @@ namespace ZXMAK2.MDX
         private MouseStateWrapper m_state = new MouseStateWrapper();
 
         
-        public ZXMAK2.Interfaces.IMouseState MouseState
+        public IMouseState MouseState
         {
             get { return m_state; }
         }
@@ -111,7 +112,7 @@ namespace ZXMAK2.MDX
             }
         }
 
-        private class MouseStateWrapper : ZXMAK2.Interfaces.IMouseState
+        private class MouseStateWrapper : IMouseState
         {
             private int m_x = 0;
             private int m_y = 0;

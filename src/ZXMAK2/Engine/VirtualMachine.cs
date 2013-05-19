@@ -56,11 +56,14 @@ namespace ZXMAK2.Engine
 
         public event EventHandler UpdateVideo;
 
-        public unsafe VirtualMachine(DirectKeyboard keyboard, DirectMouse mouse, DirectSound sound)
+        public unsafe VirtualMachine(
+            IHostKeyboard keyboard, 
+            IHostMouse mouse, 
+            IHostSound sound)
         {
-            this.m_keyboard = keyboard;
-            this.m_mouse = mouse;
-            this.m_sound = sound;
+            m_hostKeyboard = keyboard;
+            m_hostMouse = mouse;
+            m_hostSound = sound;
             m_spectrum = new SpectrumConcrete();
             m_spectrum.UpdateState += OnUpdateState;
             m_spectrum.Breakpoint += OnBreakpoint;
@@ -180,11 +183,11 @@ namespace ZXMAK2.Engine
         {
             if (!MaxSpeed)
             {
-                byte[] sndbuf = m_sound.LockBuffer();
+                byte[] sndbuf = m_hostSound.LockBuffer();
                 while (m_spectrum.IsRunning && sndbuf == null)
                 {
                     Thread.Sleep(1);
-                    sndbuf = m_sound.LockBuffer();
+                    sndbuf = m_hostSound.LockBuffer();
                 }
                 if (sndbuf != null)
                 {
@@ -194,7 +197,7 @@ namespace ZXMAK2.Engine
                     }
                     finally
                     {
-                        m_sound.UnlockBuffer(sndbuf);
+                        m_hostSound.UnlockBuffer(sndbuf);
                     }
                 }
                 else
@@ -232,9 +235,9 @@ namespace ZXMAK2.Engine
         public SpectrumBase Spectrum { get { return m_spectrum; } }
 
         private SpectrumBase m_spectrum;
-        private DirectKeyboard m_keyboard;
-        private DirectMouse m_mouse;
-        private unsafe DirectSound m_sound;
+        private IHostKeyboard m_hostKeyboard;
+        private IHostMouse m_hostMouse;
+        private IHostSound m_hostSound;
 
         public int DebugFrameStartTact { get { return Spectrum.FrameStartTact; } }
         public bool MaxSpeed = false;
@@ -252,18 +255,18 @@ namespace ZXMAK2.Engine
                 {
                     if (keyboards.Count > 0)
                     {
-                        m_keyboard.Scan();
+                        m_hostKeyboard.Scan();
                         foreach (var kbd in keyboards)
                         {
-                            kbd.KeyboardState = m_keyboard.State;
+                            kbd.KeyboardState = m_hostKeyboard.State;
                         }
                     }
                     if (mouses.Count > 0)
                     {
-                        m_mouse.Scan();
+                        m_hostMouse.Scan();
                         foreach (var mouse in mouses)
                         {
-                            mouse.MouseState = m_mouse.MouseState;
+                            mouse.MouseState = m_hostMouse.MouseState;
                         }
                     }
                     m_spectrum.ExecuteFrame();
