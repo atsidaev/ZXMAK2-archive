@@ -11,8 +11,8 @@ namespace ZXMAK2.Hardware.General
     {
         #region IBusDevice
 
-        public override string Name { get { return "Standard Keyboard"; } }
-        public override string Description { get { return "Standard Spectrum Keyboard"; } }
+        public override string Name { get { return "KEYBOARD"; } }
+        public override string Description { get { return "Standard Spectrum Keyboard\r\nPort: #FE\r\nMask: #01"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }
 
         public override void BusInit(IBusManager bmgr)

@@ -16,7 +16,7 @@ namespace ZXMAK2.Hardware.Quorum
         private bool m_nmiTriggered;
 
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }
-        public override string Name { get { return "Quorum Keyboard"; } }
+        public override string Name { get { return "KEYBOARD QUORUM"; } }
         public override string Description { get { return "Quorum extended keyboard\n\n(c) Eltaron"; } }
 
 

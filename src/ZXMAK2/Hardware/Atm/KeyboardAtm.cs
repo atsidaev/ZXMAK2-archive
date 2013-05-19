@@ -8,8 +8,8 @@ namespace ZXMAK2.Hardware.Atm
     {
         #region IBusDevice
 
-        public override string Name { get { return "ATM Keyboard"; } }
-        public override string Description { get { return "ATM Keyboard\r\nPort #FE\r\nMask #05"; } }
+        public override string Name { get { return "KEYBOARD ATM"; } }
+        public override string Description { get { return "ATM Keyboard\r\nPort: #FE\r\nMask: #05"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }
 
         public override void BusInit(IBusManager bmgr)

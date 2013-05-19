@@ -10,8 +10,8 @@ namespace ZXMAK2.Hardware.Profi
     {
         #region IBusDevice
 
-        public override string Name { get { return "PROFI Keyboard"; } }
-        public override string Description { get { return "PROFI Keyboard with extended keys"; } }
+        public override string Name { get { return "KEYBOARD PROFI"; } }
+        public override string Description { get { return "PROFI Keyboard with extended keys\r\nPort: #FE\r\nMask: #01"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }
 
         public override void BusInit(IBusManager bmgr)

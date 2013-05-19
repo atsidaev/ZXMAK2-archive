@@ -154,22 +154,14 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-        public override string Description
-        {
-            get
-            {
-                return "Standart Sprinter Mouse";
-            }
-        }
-
         public override string Name
         {
-            get
-            {
-                return "Sprinter Mouse";
-            }
+            get { return "MOUSE SPRINTER"; }
         }
 
-
+        public override string Description
+        {
+            get { return "Standart Sprinter Mouse"; }
+        }
     }
 }

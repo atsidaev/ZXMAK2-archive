@@ -11,7 +11,7 @@ namespace ZXMAK2.Hardware.General
     {
         #region IBusDevice Members
 
-        public override string Name { get { return "AY Mouse"; } }
+        public override string Name { get { return "MOUSE AY"; } }
         public override string Description { get { return "AY Mouse based on V.M.G. extension"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Mouse; } }
 
