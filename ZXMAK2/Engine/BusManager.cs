@@ -43,6 +43,7 @@ namespace ZXMAK2.Engine
         public event EventHandler BusDisconnect;
 
         private int m_pendingNmi;
+        private long m_pendingNmiLastTact;
         public RzxHandler RzxHandler { get; set; }
         public IconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
         public IconDescriptor IconPause { get { return m_iconPause; } }
@@ -577,8 +578,9 @@ namespace ZXMAK2.Engine
                 m_ula.CheckInt(frameTact);
             if (m_pendingNmi > 0)
             {
-                m_pendingNmi--;
-                //var allow = true;
+                var delta = (int)(m_cpu.Tact - m_pendingNmiLastTact);
+                m_pendingNmiLastTact = m_cpu.Tact;
+                m_pendingNmi -= delta;
                 var e = new BusCancelArgs();
                 if (m_nmiRq != null)
                 {
@@ -750,6 +752,7 @@ namespace ZXMAK2.Engine
 
         public void RequestNmi(int timeOut)
         {
+            m_pendingNmiLastTact = m_cpu.Tact;
             m_pendingNmi = timeOut;
         }
     }
