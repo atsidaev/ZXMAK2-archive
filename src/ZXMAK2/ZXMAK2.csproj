@@ -189,6 +189,10 @@
     <Compile Include="Hardware\Atm\IdeAtm.cs" />
     <Compile Include="Hardware\Atm\KeyboardAtm.cs" />
     <Compile Include="Hardware\Atm\AtmTxtRenderer.cs" />
+    <Compile Include="Hardware\Evo\CmosPentEvo.cs" />
+    <Compile Include="Hardware\Evo\FddPentEvo.cs" />
+    <Compile Include="Hardware\Evo\KeyboardPentEvo.cs" />
+    <Compile Include="Hardware\Evo\MemoryPentEvo.cs" />
     <Compile Include="Hardware\General\FddController.cs" />
     <Compile Include="Hardware\IC\AtaPort.cs" />
     <Compile Include="Hardware\IC\NvramChip.cs" />
@@ -233,8 +237,8 @@
     <Compile Include="Hardware\General\Debugger.cs" />
     <Compile Include="Hardware\Lec\BetaDiskInterfaceLec.cs" />
     <Compile Include="Hardware\General\CmosGluck.cs" />
-    <Compile Include="Hardware\Profi\BetaDiskInterfaceProfi.cs" />
-    <Compile Include="Hardware\Quorum\BetaDiskInterfaceQuorum.cs" />
+    <Compile Include="Hardware\Profi\FddControllerProfi.cs" />
+    <Compile Include="Hardware\Quorum\FddControllerQuorum.cs" />
     <Compile Include="Hardware\General\KempstonJoystick.cs" />
     <Compile Include="Hardware\Scorpion\UlaScorpionGreen.cs" />
     <Compile Include="Hardware\SoundDeviceBase.cs" />
