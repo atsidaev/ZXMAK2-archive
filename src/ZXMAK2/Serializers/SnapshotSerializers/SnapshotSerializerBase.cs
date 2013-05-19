@@ -62,11 +62,11 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         public void InitStd128K()
         {
+            _spec.DoReset();
             foreach (var device in _spec.BusManager.FindDevices<BusDeviceBase>())
             {
                 device.ResetState();
             }
-            _spec.DoReset();
             var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
             memory.SYSEN = false;
             memory.DOSEN = false;
