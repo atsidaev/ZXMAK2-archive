@@ -224,7 +224,7 @@
     <Compile Include="Hardware\General\AyMouseDevice.cs" />
     <Compile Include="Hardware\General\BeeperDevice.cs" />
     <Compile Include="Engine\BusManager.cs" />
-    <Compile Include="Hardware\HardwareValueAttribute.cs" />
+    <Compile Include="Attributes\HardwareValueAttribute.cs" />
     <Compile Include="Hardware\Profi\KeyboardProfi.cs" />
     <Compile Include="Hardware\Profi\ProfiRenderer.cs" />
     <Compile Include="Hardware\Quorum\BeeperQuorum.cs" />
