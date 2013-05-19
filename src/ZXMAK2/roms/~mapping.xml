@@ -78,4 +78,7 @@
 		<Page name="SOS" image="DELTA/Delta-c.rom" />
 		<Page name="DOS" image="TRDOS/trdos.rom"/>
 	</RomSet>
+	<RomSet name="PentEvo">
+		<Page name="RAW" image="EVO/zxevo.rom"/>
+	</RomSet>
 </Mapping>
