@@ -2,16 +2,16 @@
 
 namespace ZXMAK2.Attributes
 {
-	[AttributeUsage(System.AttributeTargets.Property)]
+	[AttributeUsage(AttributeTargets.Property)]
 	public class HardwareValueAttribute : Attribute
 	{
-		private string m_name;
-		public string Description;
+        public string Name { get; private set; }
+        public string Description { get; set; }
 
 
 		public HardwareValueAttribute(string name)
 		{
-			m_name = name;
+			Name = name;
 		}
 	}
 }
