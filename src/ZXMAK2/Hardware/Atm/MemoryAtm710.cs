@@ -33,25 +33,29 @@ namespace ZXMAK2.Hardware.Atm
             m_cpu = bmgr.CPU;
             m_ulaAtm = bmgr.FindDevice<UlaAtm450>();
 
+            OnSubscribeIo(bmgr);
+
+            bmgr.SubscribeRdMemM1(0x0000, 0x0000, BusReadM1);
+            bmgr.SubscribeReset(BusReset);
+
+            // Subscribe before MemoryBase.BusInit 
+            // to handle memory switches before read
+            base.BusInit(bmgr);
+        }
+
+        protected virtual void OnSubscribeIo(IBusManager bmgr)
+        {
             bmgr.SubscribeRdIo(0x0001, 0x0000, BusReadPortFE);					// bit Z emulation
             bmgr.SubscribeWrIo(0x009F, 0x00FF & 0x009F, BusWritePortXXFF_PAL);	// atm_writepal(val);
-            bmgr.SubscribeRdIo(0x8202, 0x7FFD & 0x8202, BusReadPort7FFD);					// bit Z emulation
+            bmgr.SubscribeRdIo(0x8202, 0x7FFD & 0x8202, BusReadPort7FFD);		// ADC ready emulation
 
-            bmgr.SubscribeWrIo(0x00FF, 0xFF77 & 0x00FF, BusWritePortFF77_SYS);
+            bmgr.SubscribeWrIo(0x00FF, 0xFF77 & 0x00FF, BusWritePortXX77_SYS);
             bmgr.SubscribeWrIo(0x00FF, 0x3FF7 & 0x00FF, BusWritePortXFF7_WND);	//ATM3 mask=0x3FFF
             
             // fix for #7FFD (original ATM710 mask is #8202)
             // http://www.nedopc.com/ATMZAK/atm710re.htm#re11
             //bmgr.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD_128);
             bmgr.SubscribeWrIo(0x8002, 0x7FFD & 0x8002, BusWritePort7FFD_128);
-
-            bmgr.SubscribeRdMemM1(0x0000, 0x0000, BusReadM1);
-
-            bmgr.SubscribeReset(BusReset);
-
-            // Subscribe before MemoryBase.BusInit 
-            // to handle memory switches before read
-            base.BusInit(bmgr);
         }
 
         protected virtual void BusReadM1(ushort addr, ref byte value)
@@ -251,7 +255,7 @@ namespace ZXMAK2.Hardware.Atm
 
         #region Bus Handlers
 
-        private void BusReadPortFE(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPortFE(ushort addr, ref byte value, ref bool iorqge)
         {
             // bit Z emulation
             value &= 0xDF;
@@ -263,7 +267,7 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        private void BusWritePortXXFF_PAL(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortXXFF_PAL(ushort addr, byte value, ref bool iorqge)
         {
             if ((DOSEN || SYSEN) && PEN2 && m_ulaAtm != null)
             {
@@ -271,7 +275,7 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        private void BusReadPort7FFD(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPort7FFD(ushort addr, ref byte value, ref bool iorqge)
         {
             if (iorqge && (DOSEN || SYSEN))
             {
@@ -281,7 +285,7 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        private void BusWritePortFF77_SYS(ushort addr, byte value, ref bool iorqge) // ATM2
+        protected virtual void BusWritePortXX77_SYS(ushort addr, byte value, ref bool iorqge) // ATM2
         {
             if (DOSEN || SYSEN)
             {
@@ -294,7 +298,7 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        private void BusWritePortXFF7_WND(ushort addr, byte value, ref bool iorqge) // ATM2
+        protected virtual void BusWritePortXFF7_WND(ushort addr, byte value, ref bool iorqge) // ATM2
         {
             if (DOSEN || SYSEN)
             {
@@ -303,7 +307,7 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        private void BusWritePort7FFD_128(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD_128(ushort addr, byte value, ref bool iorqge)
         {
             if (m_lock)
             {
@@ -312,7 +316,7 @@ namespace ZXMAK2.Hardware.Atm
             CMR0 = value;
         }
 
-        private void BusReset()
+        protected virtual void BusReset()
         {
             m_aFF77 = 0;
             m_pFF77 = 0;
@@ -342,10 +346,15 @@ namespace ZXMAK2.Hardware.Atm
         #endregion
 
 
-        public MemoryAtm710()
-            : base("ATM710")
+        public MemoryAtm710(String romSetName)
+            : base(romSetName)
         {
             Init();
+        }
+
+        public MemoryAtm710()
+            : this("ATM710")
+        {
         }
 
         protected virtual void Init()
