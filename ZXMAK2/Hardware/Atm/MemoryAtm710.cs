@@ -327,6 +327,15 @@ namespace ZXMAK2.Hardware.Atm
         {
             base.ResetState();
             BusReset();
+            
+            // Init 128K
+            m_aFF77 = 0xFF77;
+            m_pFF77 = 0x00AB;
+            Array.Copy(
+                new byte[] { 0x99, 0x7a, 0x7d, 0xff, 0x9b, 0x7a, 0x7d, 0xff },
+                m_ru2,
+                m_ru2.Length);
+            DOSEN = SYSEN;
         }
 
         #endregion
