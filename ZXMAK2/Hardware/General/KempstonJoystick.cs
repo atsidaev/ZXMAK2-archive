@@ -9,7 +9,7 @@ namespace ZXMAK2.Hardware.General
     {
         #region IBusDevice
 
-        public override string Name { get { return "Kempston Joystick (Stub)"; } }
+        public override string Name { get { return "JOYSTICK KEMPSTON (Stub)"; } }
         public override string Description { get { return "Standard Spectrum Joystick\n\nWARNING: This is Stub device (port emulation only)!\nSorry, real joystick read is not implemented yet"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
 

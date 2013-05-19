@@ -353,21 +353,14 @@ namespace ZXMAK2.Hardware.Sprinter
             
         }
 
-        public override string Description
-        {
-            get
-            {
-                return "Sprinter AT Keyboard";
-            }
-        }
-
         public override string Name
         {
-            get
-            {
-                return "Sprinter AT Keyboard";
-            }
+            get { return "KEYBOARD SPRINTER"; }
         }
 
+        public override string Description 
+        { 
+            get { return "Sprinter AT Keyboard"; }
+        }
     }
 }

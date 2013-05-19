@@ -11,7 +11,7 @@ namespace ZXMAK2.Hardware.Adlers
 
         #region BusDeviceBase
 
-        public override string Name { get { return "Debugger Adlers"; } }
+        public override string Name { get { return "DEBUGGER ADLERS"; } }
         public override string Description { get { return "Debugger Adlers"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Debugger; } }
 

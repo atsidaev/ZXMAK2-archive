@@ -12,7 +12,7 @@ namespace ZXMAK2.Hardware.General
 
         #region BusDeviceBase
 
-        public override string Name { get { return "Debugger"; } }
+        public override string Name { get { return "DEBUGGER"; } }
         public override string Description { get { return "Default Debugger"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Debugger; } }
 

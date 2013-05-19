@@ -21,7 +21,7 @@ namespace ZXMAK2.Hardware.General
 	{
 		#region IBusDevice
 
-		public override string Name { get { return "Tape Player"; } }
+		public override string Name { get { return "TAPE PLAYER"; } }
 		public override string Description { get { return "Generic Tape Device"; } }
 		public override BusDeviceCategory Category { get { return BusDeviceCategory.Tape; } }
 

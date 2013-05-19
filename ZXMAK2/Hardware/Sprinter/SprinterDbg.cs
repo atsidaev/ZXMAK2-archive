@@ -51,9 +51,15 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Debugger; } }
 
-        public override string Description { get { return "Sprinter debugger"; } }
+        public override string Name
+        {
+            get { return "DEBUGGER SPRINTER"; }
+        }
 
-        public override string Name { get { return "Sprinter debugger"; } }
+        public override string Description 
+        { 
+            get { return "Sprinter debugger"; } 
+        }
 
         #endregion
 

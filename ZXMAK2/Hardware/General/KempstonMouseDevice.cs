@@ -11,7 +11,7 @@ namespace ZXMAK2.Hardware.General
     {
         #region IBusDevice Members
 
-        public override string Name { get { return "Kempston Mouse"; } }
+        public override string Name { get { return "MOUSE KEMPSTON"; } }
         public override string Description { get { return "Standard Kempston Mouse\n#FADF - buttons\n#FBDF - X coord\n#FFDF - Y coord"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Mouse; } }
 
