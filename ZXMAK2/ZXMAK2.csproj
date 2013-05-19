@@ -191,6 +191,7 @@
     <Compile Include="Hardware\Atm\AtmTxtRenderer.cs" />
     <Compile Include="Hardware\Evo\CmosPentEvo.cs" />
     <Compile Include="Hardware\Evo\FddPentEvo.cs" />
+    <Compile Include="Hardware\Evo\IdePentEvo.cs" />
     <Compile Include="Hardware\Evo\KeyboardPentEvo.cs" />
     <Compile Include="Hardware\Evo\MemoryPentEvo.cs" />
     <Compile Include="Hardware\General\FddController.cs" />
