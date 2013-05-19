@@ -315,7 +315,7 @@
     <Compile Include="Entities\SimpleSector.cs" />
     <Compile Include="Entities\Track.cs" />
     <Compile Include="Hardware\General\BetaDiskInterface.cs" />
-    <Compile Include="Interfaces\IAY8910Device.cs" />
+    <Compile Include="Interfaces\IAyDevice.cs" />
     <Compile Include="Interfaces\IBetaDiskDevice.cs" />
     <Compile Include="Interfaces\ITapeDevice.cs" />
     <Compile Include="Serializers\DiskLoadManager.cs" />
