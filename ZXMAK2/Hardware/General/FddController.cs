@@ -205,6 +205,11 @@ namespace ZXMAK2.Hardware.General
 
         #region Private
 
+        public virtual bool IsActive
+        {
+            get { return m_memory.DOSEN || m_memory.SYSEN; }
+        }
+
         protected virtual void OnSubscribeIo(IBusManager bmgr)
         {
             //var mask = 0x83;
@@ -234,7 +239,7 @@ namespace ZXMAK2.Hardware.General
             {
                 return;
             }
-            if (m_memory.DOSEN || m_memory.SYSEN)
+            if (IsActive)
             {
                 iorqge = false;
                 int fdcReg = (addr & 0x60) >> 5;
@@ -249,7 +254,7 @@ namespace ZXMAK2.Hardware.General
             {
                 return;
             }
-            if (m_memory.DOSEN || m_memory.SYSEN)
+            if (IsActive)
             {
                 iorqge = false;
                 int fdcReg = (addr & 0x60) >> 5;
@@ -264,7 +269,7 @@ namespace ZXMAK2.Hardware.General
             {
                 return;
             }
-            if (m_memory.DOSEN || m_memory.SYSEN)
+            if (IsActive)
             {
                 iorqge = false;
                 LogIoWrite(m_cpu.Tact, WD93REG.SYS, value);
@@ -278,7 +283,7 @@ namespace ZXMAK2.Hardware.General
             {
                 return;
             }
-            if (m_memory.DOSEN || m_memory.SYSEN)
+            if (IsActive)
             {
                 iorqge = false;
                 value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
