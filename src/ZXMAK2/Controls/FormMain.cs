@@ -31,7 +31,6 @@ namespace ZXMAK2.Controls
         private Point m_location;
         private Size m_size;
         private FormBorderStyle m_style;
-        private bool m_topMost;
 
 
         public FormMain()
@@ -692,7 +691,6 @@ namespace ZXMAK2.Controls
                     if (value)
                     {
                         m_style = FormBorderStyle;
-                        m_topMost = TopMost;
                         m_location = Location;
                         m_size = ClientSize;
 
