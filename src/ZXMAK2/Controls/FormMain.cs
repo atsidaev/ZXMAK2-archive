@@ -32,6 +32,7 @@ namespace ZXMAK2.Controls
         private Size m_size;
         private FormBorderStyle m_style;
 
+        private String m_lastDir = ".";
 
         public FormMain()
         {
@@ -436,7 +437,7 @@ namespace ZXMAK2.Controls
         {
             using (OpenFileDialog loadDialog = new OpenFileDialog())
             {
-                loadDialog.InitialDirectory = ".";
+                loadDialog.InitialDirectory = m_lastDir;
                 loadDialog.SupportMultiDottedExtensions = true;
                 loadDialog.Title = "Open...";
                 loadDialog.Filter = m_vm.Spectrum.Loader.GetOpenExtFilter();
@@ -449,6 +450,8 @@ namespace ZXMAK2.Controls
                 if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     return;
                 OpenFile(loadDialog.FileName, loadDialog.ReadOnlyChecked);
+
+                m_lastDir = Path.GetFullPath(loadDialog.FileName);
             }
         }
 
