@@ -110,6 +110,7 @@ namespace ZXMAK2.Engine
             {
                 m_isConfigUpdate = false;
             }
+            DoReset();
         }
 
         public void SaveConfigXml(XmlNode parent)
