@@ -92,6 +92,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\HardwareSwitchAttribute.cs" />
     <Compile Include="Controls\DragDataWrapper.cs" />
     <Compile Include="Controls\InputBox.cs">
       <SubType>Form</SubType>
@@ -276,7 +277,6 @@
     <Compile Include="Interfaces\IHostSound.cs" />
     <Compile Include="Interfaces\IMachineState.cs" />
     <Compile Include="Interfaces\IBusManager.cs" />
-    <Compile Include="Interfaces\IConfigurable.cs" />
     <Compile Include="Interfaces\IDebuggable.cs" />
     <Compile Include="Interfaces\IJtagDevice.cs" />
     <Compile Include="Interfaces\IKeyboardDevice.cs" />

@@ -422,9 +422,9 @@ namespace ZXMAK2.Controls
             var root = xml.AppendChild(xml.CreateElement("Bus"));
             try
             {
-                m_vm.Spectrum.BusManager.SaveConfig(root);
+                m_vm.Spectrum.BusManager.SaveConfigXml(root);
 
-                m_workBus.LoadConfig(root);
+                m_workBus.LoadConfigXml(root);
                 m_workBus.Disconnect();
                 initWorkBus();
             }
@@ -438,7 +438,7 @@ namespace ZXMAK2.Controls
         {
             m_workBus.Disconnect();
             m_workBus.Clear();
-            m_workBus.LoadConfig(busNode);
+            m_workBus.LoadConfigXml(busNode);
             m_workBus.Disconnect();
             initWorkBus();
         }
@@ -597,7 +597,7 @@ namespace ZXMAK2.Controls
 
                 XmlDocument xml = new XmlDocument();
                 XmlNode root = xml.AppendChild(xml.CreateElement("Bus"));
-                m_workBus.SaveConfig(root);
+                m_workBus.SaveConfigXml(root);
 
                 bool running = m_vm.IsRunning;
                 m_vm.DoStop();
@@ -609,7 +609,7 @@ namespace ZXMAK2.Controls
                 var ula = bmgr.FindDevice<IUlaDevice>();
                 var oldMemory = bmgr.FindDevice<IMemoryDevice>();
                 int portFE = ula != null ? ula.PortFE : 0x00;
-                bmgr.LoadConfig(root);
+                bmgr.LoadConfigXml(root);
                 ula = bmgr.FindDevice<IUlaDevice>();
                 ula.PortFE = (byte)portFE;
                 var memory = bmgr.FindDevice<IMemoryDevice>();

@@ -62,19 +62,7 @@ namespace ZXMAK2.Engine
             _cpu.RST = true;
             _cpu.ExecCycle();
             _cpu.RST = false;
-        }
-
-        public override void Load(XmlNode busNode)
-        {
-            _bus.LoadConfig(busNode);
-            _cpu.RST = true;
-            _cpu.ExecCycle();
-            _cpu.RST = false;
-        }
-
-        public override void Save(XmlNode busNode)
-        {
-            _bus.SaveConfig(busNode);
+            _cpu.Tact = 0;
         }
 
         #region debugger methods

@@ -10,7 +10,7 @@ using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.General
 {
-    public class AY8910 : BusDeviceBase, ISoundRenderer, IConfigurable, IAyDevice
+    public class AY8910 : BusDeviceBase, ISoundRenderer, IAyDevice
     {
         #region IBusDevice
 
@@ -54,6 +54,18 @@ namespace ZXMAK2.Hardware.General
         {
         }
 
+        protected override void OnConfigLoad(XmlNode itemNode)
+        {
+            base.OnConfigLoad(itemNode);
+            Volume = Utils.GetXmlAttributeAsInt32(itemNode, "volume", Volume);
+        }
+
+        protected override void OnConfigSave(XmlNode itemNode)
+        {
+            base.OnConfigSave(itemNode);
+            Utils.SetXmlAttribute(itemNode, "volume", Volume);
+        }
+
         #endregion
 
         #region ISoundRenderer
@@ -73,6 +85,7 @@ namespace ZXMAK2.Hardware.General
                 if (value > 100)
                     value = 100;
                 m_volume = value;
+                OnConfigChanged();
 
                 int VolumeAY = (32767/*9000*/ * m_volume) / 100;
                 ushort[] vol_table = s_volumeTable;
@@ -89,21 +102,6 @@ namespace ZXMAK2.Hardware.General
         }
 
         #endregion
-
-        #region IConfigurable Members
-
-        public virtual void LoadConfig(XmlNode itemNode)
-        {
-            Volume = Utils.GetXmlAttributeAsInt32(itemNode, "volume", Volume);
-        }
-
-        public virtual void SaveConfig(XmlNode itemNode)
-        {
-            Utils.SetXmlAttribute(itemNode, "volume", Volume);
-        }
-
-        #endregion
-
 
         #region IAY8910Device
 

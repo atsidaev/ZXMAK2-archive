@@ -41,6 +41,7 @@ namespace ZXMAK2.Engine
         public event BusFrameEventHandler FrameReady;
         public event EventHandler BusConnected;
         public event EventHandler BusDisconnect;
+        public event EventHandler ConfigChanged;
 
         private int m_pendingNmi;
         private long m_pendingNmiLastTact;
@@ -458,6 +459,7 @@ namespace ZXMAK2.Engine
             m_frameTactCount = m_ula.FrameTactCount;
             foreach (var device in m_deviceList)
             {
+                device.ConfigChanged += Device_OnConfigChanged;
                 try { device.BusConnect(); }
                 catch (Exception ex)
                 { success = false; LogAgent.Error(ex); }
@@ -491,6 +493,7 @@ namespace ZXMAK2.Engine
             }
             foreach (var device in m_deviceList)
             {
+                device.ConfigChanged -= Device_OnConfigChanged;
                 try
                 {
                     device.BusDisconnect();
@@ -504,14 +507,29 @@ namespace ZXMAK2.Engine
 
         protected virtual void OnBusConnected()
         {
-            if (BusConnected != null)
-                BusConnected(this, EventArgs.Empty);
+            var handler = BusConnected;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
 
         protected virtual void OnBusDisconnect()
         {
-            if (BusDisconnect != null)
-                BusDisconnect(this, EventArgs.Empty);
+            var handler = BusDisconnect;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        protected virtual void Device_OnConfigChanged(object sender, EventArgs e)
+        {
+            var handler = ConfigChanged;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
 
         internal void SetDebuggable(IDebuggable dbg)
@@ -543,8 +561,12 @@ namespace ZXMAK2.Engine
                 return;
             }
             m_frameOpened = true;
-            if (m_beginFrame != null)
-                m_beginFrame();
+
+            var beginHandler = m_beginFrame;
+            if (beginHandler != null)
+            {
+                beginHandler();
+            }
         }
 
         private void OnEndFrame()
@@ -555,10 +577,17 @@ namespace ZXMAK2.Engine
                 return;
             }
             m_frameOpened = false;
-            if (m_endFrame != null)
-                m_endFrame();
-            if (FrameReady != null)
-                FrameReady();
+            
+            var endHandler = m_endFrame;
+            if (endHandler != null)
+            {
+                endHandler();
+            }
+            var readyHandler = FrameReady;
+            if (readyHandler != null)
+            {
+                readyHandler();
+            }
         }
 
         private int m_lastFrameTact = int.MaxValue;
@@ -612,7 +641,7 @@ namespace ZXMAK2.Engine
 
         public int FrameTactCount { get { return m_frameTactCount;/*m_ula.FrameTactCount*/; } }
 
-        public void LoadConfig(XmlNode busNode)
+        public void LoadConfigXml(XmlNode busNode)
         {
             //LogAgent.Debug("time begin BusManager.LoadConfig");
             Disconnect();
@@ -665,11 +694,7 @@ namespace ZXMAK2.Engine
                     }
                     device.BusOrder = orderCounter++;
 
-                    var configurable = device as IConfigurable;
-                    if (configurable != null)
-                    {
-                        configurable.LoadConfig(node);
-                    }
+                    device.LoadConfigXml(node);
                     Add(device);
                 }
                 catch (Exception ex)
@@ -695,7 +720,7 @@ namespace ZXMAK2.Engine
             return string.Format("{0}|{1}", asm, type.FullName);
         }
 
-        public void SaveConfig(XmlNode busNode)
+        public void SaveConfigXml(XmlNode busNode)
         {
             //LogAgent.Debug("time begin BusManager.SaveConfig");
             foreach (BusDeviceBase device in m_deviceList)
@@ -709,11 +734,7 @@ namespace ZXMAK2.Engine
                     }
                     xe.SetAttribute("type", device.GetType().FullName);
                     XmlNode node = busNode.AppendChild(xe);
-                    IConfigurable configurable = device as IConfigurable;
-                    if (configurable != null)
-                    {
-                        configurable.SaveConfig(node);
-                    }
+                    device.SaveConfigXml(node);
                 }
                 catch (Exception ex)
                 {

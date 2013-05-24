@@ -68,6 +68,7 @@ namespace ZXMAK2.Engine
             m_spectrum.UpdateState += OnUpdateState;
             m_spectrum.Breakpoint += OnBreakpoint;
             m_spectrum.UpdateFrame += OnUpdateFrame;
+            m_spectrum.BusManager.ConfigChanged += BusManager_OnConfigChanged;
         }
 
         public void Init()
@@ -79,10 +80,10 @@ namespace ZXMAK2.Engine
 
         private string m_name = "ZX Spectrum Clone";
         private string m_description = "N/A";
+        private bool m_isConfigUpdate;
 
-        public void Load(XmlNode parent)
+        public void LoadConfigXml(XmlNode parent)
         {
-
             XmlNode infoNode = parent.SelectSingleNode("Info");
             XmlNode busNode = parent.SelectSingleNode("Bus");
             if (busNode == null)
@@ -100,10 +101,18 @@ namespace ZXMAK2.Engine
                 if (infoNode.Attributes["description"] != null)
                     m_description = infoNode.Attributes["description"].InnerText;
             }
-            m_spectrum.Load(busNode);
+            m_isConfigUpdate = true;
+            try
+            {
+                m_spectrum.BusManager.LoadConfigXml(busNode);
+            }
+            finally
+            {
+                m_isConfigUpdate = false;
+            }
         }
 
-        public void Save(XmlNode parent)
+        public void SaveConfigXml(XmlNode parent)
         {
             XmlElement xeInfo = parent.OwnerDocument.CreateElement("Info");
             if (m_name != "ZX Spectrum Clone")
@@ -113,7 +122,23 @@ namespace ZXMAK2.Engine
             parent.AppendChild(xeInfo);
             XmlElement xeBus = parent.OwnerDocument.CreateElement("Bus");
             XmlNode busNode = parent.AppendChild(xeBus);
-            m_spectrum.Save(busNode);
+            m_isConfigUpdate = true;
+            try
+            {
+                m_spectrum.BusManager.SaveConfigXml(busNode);
+            }
+            finally
+            {
+                m_isConfigUpdate = false;
+            }
+        }
+
+        private void BusManager_OnConfigChanged(object sender, EventArgs e)
+        {
+            if (!m_isConfigUpdate)
+            {
+                SaveConfig();    
+            }
         }
 
         #region Open/Save Config
@@ -134,8 +159,12 @@ namespace ZXMAK2.Engine
         public void SaveConfig()
         {
             if (!string.IsNullOrEmpty(m_configFileName))
+            {
                 using (Stream stream = new FileStream(m_configFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                {
                     SaveConfig(stream);
+                }
+            }
         }
 
         public void SaveConfigAs(string fileName)
@@ -151,23 +180,22 @@ namespace ZXMAK2.Engine
 
         public void OpenConfig(Stream stream)
         {
-            XmlDocument xml = new XmlDocument();
+            var xml = new XmlDocument();
             xml.Load(stream);
-            XmlNode root = xml.SelectSingleNode("/VirtualMachine");
+            var root = xml.SelectSingleNode("/VirtualMachine");
             if (root == null)
             {
                 LogAgent.Error("Invalid Machine Configuration File");
                 throw new ArgumentException("Invalid Machine Configuration File");
             }
-            Load(root);
+            LoadConfigXml(root);
         }
 
         public void SaveConfig(Stream stream)
         {
-            XmlDocument xml = new XmlDocument();
-            XmlNode root = xml.AppendChild(xml.CreateElement("VirtualMachine"));
-            Save(root);
-
+            var xml = new XmlDocument();
+            var root = xml.AppendChild(xml.CreateElement("VirtualMachine"));
+            SaveConfigXml(root);
             xml.Save(stream);
         }
 

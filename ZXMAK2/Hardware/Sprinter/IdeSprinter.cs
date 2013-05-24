@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace ZXMAK2.Hardware.Sprinter
 {
-    public class IdeSprinter : BusDeviceBase, IConfigurable
+    public class IdeSprinter : BusDeviceBase
     {
         #region Fields
 
@@ -86,24 +86,21 @@ namespace ZXMAK2.Hardware.Sprinter
             //}
         }
 
-        #endregion
-
-        
-        #region IConfigurable
-
-        public void LoadConfig(XmlNode itemNode)
+        protected override void OnConfigLoad(XmlNode itemNode)
         {
+            base.OnConfigLoad(itemNode);
             LogIo = Utils.GetXmlAttributeAsBool(itemNode, "logIo", false);
         }
 
-        public void SaveConfig(XmlNode itemNode)
+        protected override void OnConfigSave(XmlNode itemNode)
         {
+            base.OnConfigSave(itemNode);
             Utils.SetXmlAttribute(itemNode, "logIo", LogIo);
         }
 
         #endregion
 
-
+        
         #region Properties
 
         public bool LogIo 

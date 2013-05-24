@@ -146,10 +146,6 @@ namespace ZXMAK2.Engine
             m_tactLimitStepOver = 71680 * 50 * 5;
         }
 
-        public abstract void Load(XmlNode busNode);
-        public abstract void Save(XmlNode busNode);
-
-
         public virtual void Dispose()
         {
         }

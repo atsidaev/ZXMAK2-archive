@@ -8,7 +8,7 @@ using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware
 {
-    public abstract class MemoryBase : BusDeviceBase, IMemoryDevice, IConfigurable, IGuiExtension
+    public abstract class MemoryBase : BusDeviceBase, IMemoryDevice, IGuiExtension
     {
         #region IBusDevice Members
 
@@ -43,6 +43,18 @@ namespace ZXMAK2.Hardware
 
         public override void BusDisconnect()
         {
+        }
+
+        protected override void OnConfigLoad(XmlNode itemNode)
+        {
+            base.OnConfigLoad(itemNode);
+            RomSetName = Utils.GetXmlAttributeAsString(itemNode, "romSet", RomSetName);
+        }
+
+        protected override void OnConfigSave(XmlNode itemNode)
+        {
+            base.OnConfigSave(itemNode);
+            Utils.SetXmlAttribute(itemNode, "romSet", RomSetName);
         }
 
         #endregion
@@ -187,6 +199,7 @@ namespace ZXMAK2.Hardware
             set
             {
                 m_romSetName = value;
+                OnConfigChanged();
                 LoadRomSet();
             }
         }
@@ -343,20 +356,6 @@ namespace ZXMAK2.Hardware
         }
 
         #endregion
-
-        #region IConfigurable
-
-        public virtual void LoadConfig(XmlNode itemNode)
-        {
-            m_romSetName = Utils.GetXmlAttributeAsString(itemNode, "romSet", m_romSetName);
-        }
-
-        public virtual void SaveConfig(XmlNode itemNode)
-        {
-            Utils.SetXmlAttribute(itemNode, "romSet", m_romSetName);
-        }
-
-        #endregion IConfigurable
 
         #region IGuiExtension Members
 

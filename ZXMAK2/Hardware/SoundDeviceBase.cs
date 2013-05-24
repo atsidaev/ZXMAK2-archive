@@ -11,7 +11,7 @@ using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware
 {
-	public abstract class SoundDeviceBase : BusDeviceBase, ISoundRenderer, IConfigurable
+	public abstract class SoundDeviceBase : BusDeviceBase, ISoundRenderer
 	{
 		#region IBusDevice
 
@@ -40,9 +40,22 @@ namespace ZXMAK2.Hardware
 			//m_wavWriter.Dispose();
 		}
 
+        protected override void OnConfigLoad(XmlNode itemNode)
+        {
+            base.OnConfigLoad(itemNode);
+            Volume = Utils.GetXmlAttributeAsInt32(itemNode, "volume", Volume);
+        }
+
+        protected override void OnConfigSave(XmlNode itemNode)
+        {
+            base.OnConfigSave(itemNode);
+            Utils.SetXmlAttribute(itemNode, "volume", Volume);
+        }
+
 		#endregion
 
-		#region ISoundRenderer
+		
+        #region ISoundRenderer
 
 		public uint[] AudioBuffer
 		{
@@ -64,22 +77,9 @@ namespace ZXMAK2.Hardware
 					value = 100;
 				int oldVolume = m_volume;
 				m_volume = value;
-				OnVolumeChanged(oldVolume, m_volume);
+                OnConfigChanged();
+                OnVolumeChanged(oldVolume, m_volume);
 			}
-		}
-
-		#endregion
-
-		#region IConfigurable Members
-
-		public virtual void LoadConfig(XmlNode itemNode)
-		{
-			Volume = Utils.GetXmlAttributeAsInt32(itemNode, "volume", Volume);
-		}
-
-		public virtual void SaveConfig(XmlNode itemNode)
-		{
-			Utils.SetXmlAttribute(itemNode, "volume", Volume);
 		}
 
 		#endregion
