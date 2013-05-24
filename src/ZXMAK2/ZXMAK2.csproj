@@ -195,10 +195,15 @@
     <Compile Include="Hardware\Evo\IdePentEvo.cs" />
     <Compile Include="Hardware\Evo\KeyboardPentEvo.cs" />
     <Compile Include="Hardware\Evo\MemoryPentEvo.cs" />
+    <Compile Include="Hardware\Evo\ZsdPentEvo.cs" />
     <Compile Include="Hardware\General\FddController.cs" />
     <Compile Include="Hardware\IC\AtaPort.cs" />
     <Compile Include="Hardware\IC\NvramChip.cs" />
     <Compile Include="Hardware\IC\RtcChip.cs" />
+    <Compile Include="Hardware\IC\SecureDigital\SdCard.cs" />
+    <Compile Include="Hardware\IC\SecureDigital\SdCommand.cs" />
+    <Compile Include="Hardware\IC\SecureDigital\SdState.cs" />
+    <Compile Include="Hardware\IC\SecureDigital\SdStatus.cs" />
     <Compile Include="Hardware\IC\Wd1793.cs" />
     <Compile Include="Hardware\Pentagon\CovoxPentagon.cs" />
     <Compile Include="Hardware\Profi\CovoxProfi.cs" />
