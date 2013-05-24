@@ -7,7 +7,7 @@ using ZXMAK2.Hardware.IC;
 
 namespace ZXMAK2.Hardware.Evo
 {
-    public class IdePentEvo : BusDeviceBase, IConfigurable
+    public class IdePentEvo : BusDeviceBase
     {
         #region Fields
 
@@ -69,18 +69,15 @@ namespace ZXMAK2.Hardware.Evo
             //}
         }
 
-        #endregion
-
-
-        #region IConfigurable
-
-        public void LoadConfig(XmlNode itemNode)
+        protected override void OnConfigLoad(XmlNode itemNode)
         {
+            base.OnConfigLoad(itemNode);
             LogIo = Utils.GetXmlAttributeAsBool(itemNode, "logIo", false);
         }
 
-        public void SaveConfig(XmlNode itemNode)
+        protected override void OnConfigSave(XmlNode itemNode)
         {
+            base.OnConfigSave(itemNode);
             Utils.SetXmlAttribute(itemNode, "logIo", LogIo);
         }
 
@@ -159,7 +156,7 @@ namespace ZXMAK2.Hardware.Evo
             }
             addr >>= 5;
             addr &= 7;
-            if (addr != null)
+            if (addr != 0)
             {
                 AtaWrite((AtaReg)addr, data);
             }

@@ -1,17 +1,27 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Hardware.Spectrum;
+using ZXMAK2.Attributes;
+using System.Xml;
 
 namespace ZXMAK2.Hardware.ZXBYTE
 {
     public class MemoryByte128 : MemorySpectrum128, IGuiExtension
     {
+        #region Fields
+
+        private int m_sovmest = 1; // COBMECT="OFF"
+        private int m_rd1f = 0;
+        private byte[] m_dd66 = new byte[512];
+        private byte[] m_dd71 = new byte[2048];
+        
+        #endregion
+
+
         #region IBusDevice
 
         public override string Name { get { return "BYTE 128K"; } }
         public override string Description { get { return "Memory Module \"Byte\" 128K\r\nVersion 1.2"; } }
-
-        #endregion
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -21,6 +31,21 @@ namespace ZXMAK2.Hardware.ZXBYTE
             // to handle memory switches before read
             base.BusInit(bmgr);
         }
+
+        protected override void OnConfigLoad(XmlNode itemNode)
+        {
+            base.OnConfigLoad(itemNode);
+            COBMECT = Utils.GetXmlAttributeAsBool(itemNode, "enableCobmect", COBMECT);
+        }
+
+        protected override void OnConfigSave(XmlNode itemNode)
+        {
+            base.OnConfigSave(itemNode);
+            Utils.SetXmlAttribute(itemNode, "enableCobmect", COBMECT);
+        }
+
+        #endregion
+
 
         #region MemoryBase
 
@@ -97,10 +122,21 @@ namespace ZXMAK2.Hardware.ZXBYTE
 
         #endregion
 
-        private int m_sovmest = 1; // COBMECT="OFF"
-        private int m_rd1f = 0;
-        private byte[] m_dd66 = new byte[512];
-        private byte[] m_dd71 = new byte[2048];
+
+        [HardwareSwitch("COBMECT", Description = "Enable Spectrum compatible mode")]
+        public bool COBMECT
+        {
+            get { return m_sovmest == 0; }
+            set 
+            {
+                var iValue = value ? 0 : 1;
+                if (m_sovmest != iValue)
+                {
+                    m_sovmest = iValue;
+                    OnConfigChanged();
+                }
+            }
+        }
 
         public MemoryByte128()
             : base("ZXBYTE")
@@ -122,7 +158,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
                 if (menuItem != null)
                 {
                     m_subMenuItem = new System.Windows.Forms.MenuItem("BYTE \"COBMECT.\"", menu_Click);
-                    m_subMenuItem.Checked = m_sovmest == 0;
+                    m_subMenuItem.Checked = COBMECT;
                     menuItem.MenuItems.Add(m_subMenuItem);
                 }
             }
@@ -147,8 +183,8 @@ namespace ZXMAK2.Hardware.ZXBYTE
         {
             if (m_guiData.MainWindow is System.Windows.Forms.Form)
             {
-                m_sovmest ^= 1;
-                m_subMenuItem.Checked = m_sovmest == 0;
+                COBMECT = !COBMECT;
+                m_subMenuItem.Checked = COBMECT;
             }
         }
         #endregion IGuiExtension Members

@@ -8,7 +8,7 @@ using ZXMAK2.Hardware.IC;
 
 namespace ZXMAK2.Hardware.Sprinter
 {
-    public class SprinterFdd : BusDeviceBase, IConfigurable, IBetaDiskDevice
+    public class SprinterFdd : BusDeviceBase, IBetaDiskDevice
     {
         #region Fields
 
@@ -87,13 +87,9 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-        #endregion
-
-
-        #region IConfigurable
-
-        public void LoadConfig(XmlNode itemNode)
+        protected override void OnConfigLoad(XmlNode itemNode)
         {
+            base.OnConfigLoad(itemNode);
             NoDelay = Utils.GetXmlAttributeAsBool(itemNode, "noDelay", false);
             LogIo = Utils.GetXmlAttributeAsBool(itemNode, "logIo", false);
             for (var i = 0; i < m_wd.FDD.Length; i++)
@@ -115,8 +111,9 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-        public void SaveConfig(XmlNode itemNode)
+        protected override void OnConfigSave(XmlNode itemNode)
         {
+            base.OnConfigSave(itemNode);
             Utils.SetXmlAttribute(itemNode, "noDelay", NoDelay);
             Utils.SetXmlAttribute(itemNode, "logIo", LogIo);
             for (var i = 0; i < m_wd.FDD.Length; i++)

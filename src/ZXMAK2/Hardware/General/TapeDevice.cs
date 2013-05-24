@@ -42,6 +42,20 @@ namespace ZXMAK2.Hardware.General
 			bmgr.RegisterIcon(m_iconTape);
 		}
 
+        protected override void OnConfigLoad(XmlNode itemNode)
+        {
+            base.OnConfigLoad(itemNode);
+            UseTraps = Utils.GetXmlAttributeAsBool(itemNode, "useTraps", UseTraps);
+            UseAutoPlay = Utils.GetXmlAttributeAsBool(itemNode, "useAutoPlay", UseAutoPlay);
+        }
+
+        protected override void OnConfigSave(XmlNode itemNode)
+        {
+            base.OnConfigSave(itemNode);
+            Utils.SetXmlAttribute(itemNode, "useTraps", UseTraps);
+            Utils.SetXmlAttribute(itemNode, "useAutoPlay", UseAutoPlay);
+        }
+
 		#endregion
 
 		#region ITapeDevice
@@ -49,31 +63,13 @@ namespace ZXMAK2.Hardware.General
 		public bool UseTraps
 		{
 			get { return m_trapsAllowed; }
-			set { m_trapsAllowed = value; }
+            set { m_trapsAllowed = value; OnConfigChanged(); }
 		}
 
 		public bool UseAutoPlay
 		{
 			get { return m_autoPlay; }
-			set { m_autoPlay = value; detectorReset(); }
-		}
-
-		#endregion
-
-		#region IConfigurable
-
-		public override void LoadConfig(XmlNode itemNode)
-		{
-			base.LoadConfig(itemNode);
-			UseTraps = Utils.GetXmlAttributeAsBool(itemNode, "useTraps", UseTraps);
-			UseAutoPlay = Utils.GetXmlAttributeAsBool(itemNode, "useAutoPlay", UseAutoPlay);
-		}
-
-		public override void SaveConfig(XmlNode itemNode)
-		{
-			base.SaveConfig(itemNode);
-			Utils.SetXmlAttribute(itemNode, "useTraps", UseTraps);
-			Utils.SetXmlAttribute(itemNode, "useAutoPlay", UseAutoPlay);
+            set { m_autoPlay = value; OnConfigChanged(); detectorReset(); }
 		}
 
 		#endregion

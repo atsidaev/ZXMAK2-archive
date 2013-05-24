@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace ZXMAK2.Hardware.Atm
 {
-    public class IdeAtm : BusDeviceBase, IConfigurable
+    public class IdeAtm : BusDeviceBase
     {
         #region Fields
 
@@ -67,18 +67,15 @@ namespace ZXMAK2.Hardware.Atm
             //}
         }
 
-        #endregion
-
-
-        #region IConfigurable
-
-        public void LoadConfig(XmlNode itemNode)
+        protected override void OnConfigLoad(XmlNode itemNode)
         {
+            base.OnConfigLoad(itemNode);
             LogIo = Utils.GetXmlAttributeAsBool(itemNode, "logIo", false);
         }
 
-        public void SaveConfig(XmlNode itemNode)
+        protected override void OnConfigSave(XmlNode itemNode)
         {
+            base.OnConfigSave(itemNode);
             Utils.SetXmlAttribute(itemNode, "logIo", LogIo);
         }
 

@@ -11,7 +11,7 @@ namespace ZXMAK2.Hardware.General
     /// <summary>
     /// http://zx.pk.ru/attachment.php?attachmentid=13640&d=1254911208
     /// </summary>
-    public class IdeSmuc : BusDeviceBase, IConfigurable
+    public class IdeSmuc : BusDeviceBase
     {
         #region Fields
 
@@ -96,18 +96,15 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        #endregion
-
-
-        #region IConfigurable
-
-        public void LoadConfig(XmlNode itemNode)
+        protected override void OnConfigLoad(XmlNode itemNode)
         {
+            base.OnConfigLoad(itemNode);
             LogIo = Utils.GetXmlAttributeAsBool(itemNode, "logIo", false);
         }
 
-        public void SaveConfig(XmlNode itemNode)
+        protected override void OnConfigSave(XmlNode itemNode)
         {
+            base.OnConfigSave(itemNode);
             Utils.SetXmlAttribute(itemNode, "logIo", LogIo);
         }
 
@@ -119,7 +116,7 @@ namespace ZXMAK2.Hardware.General
         public bool LogIo
         {
             get { return m_ata.LogIo; }
-            set { m_ata.LogIo = value; }
+            set { m_ata.LogIo = value; OnConfigChanged(); }
         }
 
         #endregion

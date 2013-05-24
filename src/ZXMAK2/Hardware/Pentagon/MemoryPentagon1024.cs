@@ -11,6 +11,7 @@ namespace ZXMAK2.Hardware.Pentagon
     {
         #region Fields
 
+        private bool m_enableShadow;
         private byte[][] m_ramPages = new byte[64][];
         private byte[] m_trashPage = new byte[0x4000];
         private bool m_lock = false;
@@ -39,6 +40,18 @@ namespace ZXMAK2.Hardware.Pentagon
             // Subscribe before MemoryBase.BusInit 
             // to handle memory switches before read
             base.BusInit(bmgr);
+        }
+
+        protected override void OnConfigLoad(XmlNode itemNode)
+        {
+            base.OnConfigLoad(itemNode);
+            EnableShadow = Utils.GetXmlAttributeAsBool(itemNode, "enableShadow", EnableShadow);
+        }
+
+        protected override void OnConfigSave(XmlNode itemNode)
+        {
+            base.OnConfigSave(itemNode);
+            Utils.SetXmlAttribute(itemNode, "enableShadow", EnableShadow);
         }
 
         #endregion
@@ -122,18 +135,6 @@ namespace ZXMAK2.Hardware.Pentagon
             }
         }
 
-        public override void LoadConfig(XmlNode itemNode)
-        {
-            base.LoadConfig(itemNode);
-            EnableShadow = Utils.GetXmlAttributeAsBool(itemNode, "enableShadow", EnableShadow);
-        }
-
-        public override void SaveConfig(XmlNode itemNode)
-        {
-            base.SaveConfig(itemNode);
-            Utils.SetXmlAttribute(itemNode, "enableShadow", EnableShadow);
-        }
-
         #endregion
 
         #region Bus Handlers
@@ -183,6 +184,10 @@ namespace ZXMAK2.Hardware.Pentagon
             }
         }
 
-        public bool EnableShadow { get; set; }
+        public bool EnableShadow
+        {
+            get { return m_enableShadow; }
+            set { m_enableShadow = value; OnConfigChanged(); }
+        }
     }
 }
