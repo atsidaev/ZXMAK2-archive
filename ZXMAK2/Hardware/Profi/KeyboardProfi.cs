@@ -8,6 +8,22 @@ namespace ZXMAK2.Hardware.Profi
 {
     public class KeyboardProfi : BusDeviceBase, IKeyboardDevice
     {
+        #region Fields
+
+        private const long ExtKeyMask = 0x10000000000;
+
+        private IMemoryDevice m_memory;
+        private IKeyboardState m_keyboardState;
+
+        /// <summary>
+        /// Spectrum keyboard state. 
+        /// Each 5 bits represents: #7FFE, #BFFE, #DFFE, #EFFE, #F7FE, #FBFE, #FDFE, #FEFE.
+        /// </summary>
+        private long m_intState = 0;
+
+        #endregion Fields
+
+
         #region IBusDevice
 
         public override string Name { get { return "KEYBOARD PROFI"; } }
@@ -17,7 +33,7 @@ namespace ZXMAK2.Hardware.Profi
         public override void BusInit(IBusManager bmgr)
         {
             m_memory = bmgr.FindDevice<IMemoryDevice>();
-            bmgr.SubscribeRdIo(0x0001, 0x0000, readPortFE);
+            bmgr.SubscribeRdIo(0x67, 0xFE & 0x67, ReadPortFE);
         }
 
         public override void BusConnect()
@@ -30,22 +46,30 @@ namespace ZXMAK2.Hardware.Profi
 
         #endregion IBusDevice
 
+
         #region IKeyboardDevice
 
         public IKeyboardState KeyboardState
         {
             get { return m_keyboardState; }
-            set { m_keyboardState = value; m_intState = scanState(m_keyboardState); }
+            set
+            {
+                m_keyboardState = value;
+                m_intState = scanState(m_keyboardState);
+            }
         }
 
         #endregion
 
+
         #region Bus Handlers
 
-        private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadPortFE(ushort addr, ref byte value, ref bool iorqge)
         {
             if (!iorqge || m_memory.DOSEN)
+            {
                 return;
+            }
             //iorqge = false;
             value &= (m_intState & ExtKeyMask) != 0 ?
                 (byte)0xC0 :
@@ -55,16 +79,6 @@ namespace ZXMAK2.Hardware.Profi
 
         #endregion
 
-        private IMemoryDevice m_memory;
-        private IKeyboardState m_keyboardState = null;
-
-        /// <summary>
-        /// Spectrum keyboard state. 
-        /// Each 5 bits represents: #7FFE, #BFFE, #DFFE, #EFFE, #F7FE, #FBFE, #FDFE, #FEFE.
-        /// </summary>
-        private long m_intState = 0;
-
-        private const long ExtKeyMask = 0x10000000000;
 
         /// <summary>
         /// Scans keyboard state for specified port

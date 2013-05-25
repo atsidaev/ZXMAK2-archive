@@ -9,6 +9,17 @@ namespace ZXMAK2.Hardware.Profi
 {
     public class UlaProfi3XX : UlaDeviceBase
     {
+        #region Fields
+
+        private bool m_profiMode = false;
+        private int m_pageBw = 4;
+        private int m_pageClr = 0x38;
+
+        protected ProfiRenderer ProfiRenderer = new ProfiRenderer();
+
+        #endregion Fields
+
+
         #region IBusDevice
 
         public override string Name { get { return "PROFI 3.xx"; } }
@@ -55,6 +66,15 @@ namespace ZXMAK2.Hardware.Profi
                 base.WriteMemC000(addr, value);
         }
 
+        protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        {
+            if ((addr & 0x67) != (0xFE & 0x67) || Memory.DOSEN)
+            {
+                return;
+            }
+            base.WritePortFE(addr, value, ref iorqge);
+        }
+
         protected virtual void ReadPortAll(ushort addr, ref byte value, ref bool iorqge)
         {
             if ((addr & 0xFF) == 0xFF)
@@ -87,11 +107,6 @@ namespace ZXMAK2.Hardware.Profi
 
         #endregion
 
-        private bool m_profiMode = false;
-        private int m_pageBw = 4;
-        private int m_pageClr = 0x38;
-
-        protected ProfiRenderer ProfiRenderer = new ProfiRenderer();
 
         public UlaProfi3XX()
         {
