@@ -16,24 +16,44 @@ namespace ZXMAK2.Hardware.Profi
 
         #endregion
 
-        
+
         #region Private
+
+        protected virtual bool IsNormalMode
+        {
+            get
+            {
+                var cpm = (m_memory.CMR1 & 0x20) != 0;
+                var rom48 = (m_memory.CMR0 & 0x10) != 0;
+                var csNormal = ((cpm && !rom48) || (!cpm && m_memory.SYSEN));
+                return csNormal;
+            }
+        }
+
+        protected virtual bool IsExtendedMode
+        {
+            get
+            {
+                var cpm = (m_memory.CMR1 & 0x20) != 0;
+                var rom48 = (m_memory.CMR0 & 0x10) != 0;
+                var csExtended = cpm && rom48;
+                return csExtended;
+            }
+        }
 
         public override bool IsActive
         {
-            get 
-            {
-                bool cpm = (m_memory.CMR1 & 0x20) != 0;
-                bool rom48 = (m_memory.CMR0 & 0x10) != 0;
-                bool csNormal = ((cpm && !rom48) || (!cpm && m_memory.SYSEN));
-                //bool csExtend = cpm && rom48;
-                return base.IsActive || csNormal; 
-            }
+            get { return base.IsActive || IsNormalMode; }
         }
 
         protected override void OnSubscribeIo(IBusManager bmgr)
         {
-            base.OnSubscribeIo(bmgr);
+            bmgr.SubscribeWrIo(0x9F, 0x1F & 0x9F, BusWriteFdc);
+            bmgr.SubscribeRdIo(0x9F, 0x1F & 0x9F, BusReadFdc);
+            bmgr.SubscribeWrIo(0x9F, 0xFF & 0x9F, BusWriteSys);
+            bmgr.SubscribeRdIo(0x9F, 0xFF & 0x9F, BusReadSys);
+
+            // ExtendedMode:
             // #83 - CMD
             // #A3 - TRK
             // #C3 - SEC
@@ -47,68 +67,48 @@ namespace ZXMAK2.Hardware.Profi
 
         protected void BusWriteFdcEx(ushort addr, byte value, ref bool iorqge)
         {
-            if (!iorqge)
+            if (!iorqge || !IsExtendedMode)
             {
                 return;
             }
-            bool cpm = (m_memory.CMR1 & 0x20) != 0;
-            bool rom48 = (m_memory.CMR0 & 0x10) != 0;
-            bool csExtend = cpm && rom48;
-            if (csExtend)
-            {
-                iorqge = false;
-                int fdcReg = (addr & 0x60) >> 5;
-                m_wd.Write(m_cpu.Tact, (WD93REG)fdcReg, value);
-            }
+            iorqge = false;
+
+            var fdcReg = (addr & 0x60) >> 5;
+            m_wd.Write(m_cpu.Tact, (WD93REG)fdcReg, value);
         }
 
         protected void BusReadFdcEx(ushort addr, ref byte value, ref bool iorqge)
         {
-            if (!iorqge)
+            if (!iorqge || !IsExtendedMode)
             {
                 return;
             }
-            bool cpm = (m_memory.CMR1 & 0x20) != 0;
-            bool rom48 = (m_memory.CMR0 & 0x10) != 0;
-            bool csExtend = cpm && rom48;
-            if (csExtend)
-            {
-                iorqge = false;
-                int fdcReg = (addr & 0x60) >> 5;
-                value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
-            }
+            iorqge = false;
+
+            var fdcReg = (addr & 0x60) >> 5;
+            value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
         }
 
         protected void BusWriteSysEx(ushort addr, byte value, ref bool iorqge)
         {
-            if (!iorqge)
+            if (!iorqge || !IsExtendedMode)
             {
                 return;
             }
-            bool cpm = (m_memory.CMR1 & 0x20) != 0;
-            bool rom48 = (m_memory.CMR0 & 0x10) != 0;
-            bool csExtend = cpm && rom48;
-            if (csExtend)
-            {
-                iorqge = false;
-                m_wd.Write(m_cpu.Tact, WD93REG.SYS, value);
-            }
+            iorqge = false;
+
+            m_wd.Write(m_cpu.Tact, WD93REG.SYS, value);
         }
 
         protected void BusReadSysEx(ushort addr, ref byte value, ref bool iorqge)
         {
-            if (!iorqge)
+            if (!iorqge || !IsExtendedMode)
             {
                 return;
             }
-            bool cpm = (m_memory.CMR1 & 0x20) != 0;
-            bool rom48 = (m_memory.CMR0 & 0x10) != 0;
-            bool csExtend = cpm && rom48;
-            if (csExtend)
-            {
-                iorqge = false;
-                value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
-            }
+            iorqge = false;
+
+            value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
         }
 
         #endregion

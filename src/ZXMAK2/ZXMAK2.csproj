@@ -207,6 +207,7 @@
     <Compile Include="Hardware\IC\Wd1793.cs" />
     <Compile Include="Hardware\Pentagon\CovoxPentagon.cs" />
     <Compile Include="Hardware\Profi\CovoxProfi.cs" />
+    <Compile Include="Hardware\Profi\IdeProfi.cs" />
     <Compile Include="Hardware\RomPack.cs" />
     <Compile Include="Hardware\Scorpion\MemoryScorpionProfRom256.cs" />
     <Compile Include="Hardware\Scorpion\CovoxScorpion.cs" />
