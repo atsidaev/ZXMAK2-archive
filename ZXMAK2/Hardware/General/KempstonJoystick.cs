@@ -23,7 +23,7 @@ namespace ZXMAK2.Hardware.General
         public override void BusInit(IBusManager bmgr)
         {
             m_memory = bmgr.FindDevice<IMemoryDevice>();
-            bmgr.SubscribeRdIo(0x00e0, 0x0000, readPort1F);
+            bmgr.SubscribeRdIo(0x00e0, 0x0000, ReadPort1F);
         }
 
         public override void BusConnect()
@@ -37,9 +37,9 @@ namespace ZXMAK2.Hardware.General
         #endregion IBusDevice
 
 
-		private void readPort1F(ushort addr, ref byte value, ref bool iorqge)
+		protected virtual void ReadPort1F(ushort addr, ref byte value, ref bool iorqge)
         {
-            if (!iorqge && !m_memory.DOSEN)
+            if (!iorqge || m_memory.DOSEN)
             {
                 return;
             }
