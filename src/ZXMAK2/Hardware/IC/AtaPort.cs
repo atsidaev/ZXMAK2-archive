@@ -43,7 +43,8 @@ namespace ZXMAK2.Hardware.IC
         /// Head and device select register. 
         /// The bits 3..0 of this register hold the head number (0..15) for a transfer. 
         /// The bit 4 is to be written 0 for access to the IDE master device, 1 for access to the IDE slave device. 
-        /// The bits 7..5 are fixed at 101B in the traditional interface.
+        /// The bit 6 selects between CHS (0) and LBA (1) addressing mode.
+        /// The bits 7 and 5 are fixed at 1x1B in the traditional interface.
         /// [/CS0,/CS1]=01, [A2-A0]=110
         /// </summary>
         HeadAndDrive = 6,
@@ -65,7 +66,7 @@ namespace ZXMAK2.Hardware.IC
         /// </summary>
         ControlAltStatus = 8,
     }
-    
+
     public class AtaPort
     {
         public AtaDevice[] dev;
@@ -244,7 +245,7 @@ namespace ZXMAK2.Hardware.IC
                 intrq = false;
             if (n_reg == AtaReg.ControlAltStatus)
                 n_reg = AtaReg.CommandStatus; // read alt.status -> read status
-            if (n_reg == AtaReg.CommandStatus || 
+            if (n_reg == AtaReg.CommandStatus ||
                 (reg.status & HD_STATUS.STATUS_BSY) != 0)
             {
                 //	   printf("state=%d\n",state); //Alone Coder
@@ -577,8 +578,7 @@ namespace ZXMAK2.Hardware.IC
             uint pos;
             if ((reg.devhead & 0x40) != 0)
             {
-                //Original C++:
-                //pos = *(unsigned*)(regs + 3) & 0x0FFFFFFF;
+                // LBA mode
                 long tmp = regs[3] | (regs[4] << 8) | (regs[5] << 16) | (regs[6] << 24);
                 pos = (uint)(tmp & 0x0FFFFFFF);
                 if (pos >= lba)
@@ -593,6 +593,7 @@ namespace ZXMAK2.Hardware.IC
             }
             else
             {
+                // CHS mode
                 if (reg.cyl >= c || (uint)(reg.devhead & 0x0F) >= h || reg.sec > s || reg.sec == 0)
                 {
                     //          printf("seek error: chs %4d/%02d/%02d\n", *(unsigned short*)(regs+4), (reg.devhead & 0x0F), reg.sec);
@@ -813,6 +814,8 @@ namespace ZXMAK2.Hardware.IC
             transcount = 0x100;
             state = HD_STATE.S_WRITE_SECTORS;
             reg.err = HD_ERROR.ERR_NONE;
+            // Alex: DRDY added for SPRINTER 
+            ///Missing DRDY produce not ready error on write operation
             reg.status = HD_STATUS.STATUS_DRDY | HD_STATUS.STATUS_DRQ | HD_STATUS.STATUS_DSC;
         }
 
@@ -963,6 +966,18 @@ namespace ZXMAK2.Hardware.IC
         public byte cmd { get { return __regs[10]; } set { __regs[10] = value; } }
         // reserved
         public byte reserved { get { return __regs[11]; } set { __regs[11] = value; } }
+
+        public AtaRegsUnion()
+        {
+            __regs[(int)AtaReg.FeatureError] = 0x00;
+            __regs[(int)AtaReg.SectorCount] = 0x01;
+            __regs[(int)AtaReg.SectorNumber] = 0x01;
+            __regs[(int)AtaReg.CylinderLow] = 0x00;
+            __regs[(int)AtaReg.CylinderHigh] = 0x00;
+            __regs[(int)AtaReg.HeadAndDrive] = 0xA0;
+            __regs[(int)AtaReg.CommandStatus] = 0x00;
+            __regs[(int)AtaReg.ControlAltStatus] = 0x00;
+        }
     }
 
     public class IdeDiskDescriptor
