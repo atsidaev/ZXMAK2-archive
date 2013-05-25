@@ -9,6 +9,13 @@ namespace ZXMAK2.Hardware.General
 {
     public class KempstonMouseDevice : BusDeviceBase, IMouseDevice
     {
+        #region Fields
+
+        private IMemoryDevice m_memory;
+        
+        #endregion Fields
+
+
         #region IBusDevice Members
 
         public override string Name { get { return "MOUSE KEMPSTON"; } }
@@ -17,9 +24,11 @@ namespace ZXMAK2.Hardware.General
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeRdIo(0xFFFF, 0xFADF, readPortFADF);
-            bmgr.SubscribeRdIo(0xFFFF, 0xFBDF, readPortFBDF);
-            bmgr.SubscribeRdIo(0xFFFF, 0xFFDF, readPortFFDF);
+            m_memory = bmgr.FindDevice<IMemoryDevice>();
+            var mask = 0xFFFF;// 0x05FF;
+            bmgr.SubscribeRdIo(mask, 0xFADF & mask, ReadPortBtn);
+            bmgr.SubscribeRdIo(mask, 0xFBDF & mask, ReadPortX);
+            bmgr.SubscribeRdIo(mask, 0xFFDF & mask, ReadPortY);
         }
 
         public override void BusConnect()
@@ -34,45 +43,49 @@ namespace ZXMAK2.Hardware.General
 
         #region IMouseDevice Members
 
-		public IMouseState MouseState
-		{
-			get { return m_mouseState; }
-			set { m_mouseState = value; }
-		}
+		public IMouseState MouseState { get; set; }
 		
         #endregion
 
 		
-		private IMouseState m_mouseState = null;
 
 
         #region Private
 
-		private void readPortFADF(ushort addr, ref byte value, ref bool iorqge)
+		private void ReadPortBtn(ushort addr, ref byte value, ref bool iorqge)
         {
-			if (!iorqge)
-				return;
+            if (!iorqge || m_memory.DOSEN)
+            {
+                return;
+            }
 			iorqge = false;
-			int b = MouseState != null ? MouseState.Buttons : 0;
+			
+            var b = MouseState != null ? MouseState.Buttons : 0;
 			b = ((b & 1) << 1) | ((b & 2) >> 1) | (b & 0xFC);			// D0 - right, D1 - left, D2 - middle
 			value = (byte)(b ^ 0xFF);     //  Kempston mouse buttons
         }
 
-		private void readPortFBDF(ushort addr, ref byte value, ref bool iorqge)
+		private void ReadPortX(ushort addr, ref byte value, ref bool iorqge)
         {
-			if (!iorqge)
-				return;
+            if (!iorqge || m_memory.DOSEN)
+            {
+                return;
+            }
 			iorqge = false;
-			int x = MouseState != null ? MouseState.X : 0;
-			value = (byte)(x / 3);			//  Kempston mouse X        
+			
+            var x = MouseState != null ? MouseState.X : 0;
+            value = (byte)(x / 3);			//  Kempston mouse X        
         }
 
-		private void readPortFFDF(ushort addr, ref byte value, ref bool iorqge)
+		private void ReadPortY(ushort addr, ref byte value, ref bool iorqge)
         {
-			if (!iorqge)
-				return;
+            if (!iorqge || m_memory.DOSEN)
+            {
+                return;
+            }
 			iorqge = false;
-			int y = MouseState != null ? MouseState.Y : 0;
+			
+            var y = MouseState != null ? MouseState.Y : 0;
 			value = (byte)(-y / 3);			//	Kempston mouse Y
         }
 
