@@ -21,29 +21,27 @@ namespace ZXMAK2.Hardware.Profi
 
         protected virtual bool IsNormalMode
         {
-            get
+            get 
             {
                 var cpm = (m_memory.CMR1 & 0x20) != 0;
                 var rom48 = (m_memory.CMR0 & 0x10) != 0;
-                var csNormal = ((cpm && !rom48) || (!cpm && m_memory.SYSEN));
-                return csNormal;
+                return ((cpm && !rom48) || (!cpm && m_memory.SYSEN)); 
             }
         }
 
         protected virtual bool IsExtendedMode
         {
-            get
+            get 
             {
                 var cpm = (m_memory.CMR1 & 0x20) != 0;
                 var rom48 = (m_memory.CMR0 & 0x10) != 0;
-                var csExtended = cpm && rom48;
-                return csExtended;
+                return cpm && rom48; 
             }
         }
 
         public override bool IsActive
         {
-            get { return base.IsActive || IsNormalMode; }
+            get { return m_memory.DOSEN || IsNormalMode; }
         }
 
         protected override void OnSubscribeIo(IBusManager bmgr)
