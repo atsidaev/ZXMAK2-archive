@@ -297,6 +297,7 @@
     <Compile Include="Hardware\General\KeyboardDevice.cs" />
     <Compile Include="Engine\RzxHandler.cs" />
     <Compile Include="Interfaces\IUlaRenderer.cs" />
+    <Compile Include="Serializers\DiskSerializers\ProSerializer.cs" />
     <Compile Include="Serializers\DiskSerializers\ImgSerializer.cs" />
     <Compile Include="Serializers\ScreenshotSerializers\BmpSerializer.cs" />
     <Compile Include="Serializers\ScreenshotSerializers\JpgSerializer.cs" />
