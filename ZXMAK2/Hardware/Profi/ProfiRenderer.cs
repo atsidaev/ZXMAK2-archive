@@ -231,7 +231,7 @@ namespace ZXMAK2.Hardware.Profi
         public ProfiRenderer()
         {
             Params = CreateParams();
-            Palette = CreatePalette();
+            Palette = SpectrumRenderer.CreatePalette();
         }
 
         /// <summary>
@@ -262,20 +262,6 @@ namespace ZXMAK2.Hardware.Profi
             timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 128 + timing.c_ulaBorderRightT) * 4;
             timing.c_ulaHeight = timing.c_ulaBorderTop + 240 + timing.c_ulaBorderBottom;
             return timing;
-        }
-
-        /// <summary>
-        /// Create default palette
-        /// </summary>
-        public static uint[] CreatePalette()
-        {
-            return new uint[16]
-            { 
-                0xFF000000, 0xFF0000AA, 0xFFAA0000, 0xFFAA00AA, 
-                0xFF00AA00, 0xFF00AAAA, 0xFFAAAA00, 0xFFAAAAAA,
-                0xFF000000, 0xFF0000FF, 0xFFFF0000, 0xFFFF00FF, 
-                0xFF00FF00, 0xFF00FFFF, 0xFFFFFF00, 0xFFFFFFFF,
-            };
         }
 
 

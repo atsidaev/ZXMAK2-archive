@@ -9,6 +9,33 @@ namespace ZXMAK2.Hardware.Atm
 {
     public class UlaAtm450 : UlaDeviceBase
     {
+        #region Fields
+
+        private int m_extBorderIndex = 0;
+        private int m_borderAttr = 0;
+        private AtmVideoMode m_mode = AtmVideoMode.Std256x192;
+        private byte[] m_trashPage = new byte[0x4000];
+
+        protected Atm320Renderer Atm320Renderer = new Atm320Renderer();
+        protected Atm640Renderer Atm640Renderer = new Atm640Renderer();
+        protected AtmTxtRenderer AtmTxtRenderer = new AtmTxtRenderer();
+
+        protected EvoTxtRenderer EvoTxtRenderer = new EvoTxtRenderer();
+        protected EvoHwmRenderer EvoHwmRenderer = new EvoHwmRenderer();
+        protected EvoA16Renderer EvoA16Renderer = new EvoA16Renderer();
+
+
+        private readonly byte[] m_atm_pal = new byte[16];
+        private readonly uint[] m_atm_pal_map = new uint[0x100];
+        private readonly byte[] m_pal_startup = new byte[]
+        {
+            0xFF, 0xFE, 0xFD, 0xFC, 0xFB, 0xFA, 0xF9, 0xF8, 
+            0xFF, 0xF6, 0xED, 0xE4, 0xDB, 0xD2, 0xC9, 0xC0,
+        };
+
+        #endregion
+
+
         #region IBusDevice
 
         public override string Name { get { return "ATM"; } }
@@ -20,6 +47,7 @@ namespace ZXMAK2.Hardware.Atm
         }
 
         #endregion
+
 
         #region UlaDeviceBase
 
@@ -44,22 +72,12 @@ namespace ZXMAK2.Hardware.Atm
             set
             {
                 base.Memory = value;
-                var pageAt = Memory.RamPages.Length > 3 ?
-                    Memory.RamPages[m_videoPage == 5 ? 1 : 3] :
-                    new byte[0x4000];
-                var pageBw = Memory.RamPages.Length > m_videoPage ?
-                    Memory.RamPages[m_videoPage] :
-                    new byte[0x4000];
-                Atm320Renderer.MemoryPage0 = pageAt;
-                Atm320Renderer.MemoryPage1 = pageBw;
-                Atm640Renderer.MemoryPageAt = pageAt;
-                Atm640Renderer.MemoryPageBw = pageBw;
-                AtmTxtRenderer.MemoryPageAt = pageAt;
-                AtmTxtRenderer.MemoryPageBw = pageBw;
+                UpdateVideoPage(m_videoPage);
             }
         }
 
         #endregion
+
 
         #region Bus Handlers
 
@@ -76,26 +94,13 @@ namespace ZXMAK2.Hardware.Atm
             Atm320Renderer.Palette = newPalette;
             Atm640Renderer.Palette = newPalette;
             AtmTxtRenderer.Palette = newPalette;
+            EvoTxtRenderer.Palette = newPalette;
+            EvoHwmRenderer.Palette = newPalette;
+            EvoA16Renderer.Palette = newPalette;
         }
 
         #endregion
 
-        private int m_extBorderIndex = 0;
-        private int m_borderAttr = 0;
-        private AtmVideoMode m_mode = AtmVideoMode.Std256x192;
-
-        private readonly byte[] m_atm_pal = new byte[16];
-        private readonly uint[] m_atm_pal_map = new uint[0x100];
-        private readonly byte[] m_pal_startup = new byte[]
-        {
-            0xFF, 0xFE, 0xFD, 0xFC, 0xFB, 0xFA, 0xF9, 0xF8, 
-            0xFF, 0xF6, 0xED, 0xE4, 0xDB, 0xD2, 0xC9, 0xC0,
-        };
-
-
-        protected Atm320Renderer Atm320Renderer = new Atm320Renderer();
-        protected Atm640Renderer Atm640Renderer = new Atm640Renderer();
-        protected AtmTxtRenderer AtmTxtRenderer = new AtmTxtRenderer();
 
 
         public UlaAtm450()
@@ -105,14 +110,22 @@ namespace ZXMAK2.Hardware.Atm
 
         protected override void OnRendererInit()
         {
+            var palette = SpectrumRenderer.CreatePalette();
+            SpectrumRenderer.Palette = palette;
+            Atm320Renderer.Palette = palette;
+            Atm640Renderer.Palette = palette;
+            AtmTxtRenderer.Palette = palette;
+            EvoTxtRenderer.Palette = palette;
+            EvoHwmRenderer.Palette = palette;
+            EvoA16Renderer.Palette = palette;
+
             SpectrumRenderer.Params = CreateSpectrumRendererParams();
-            SpectrumRenderer.Palette = SpectrumRenderer.CreatePalette();
             Atm320Renderer.Params = Atm320Renderer.CreateParams();
-            Atm320Renderer.Palette = Atm320Renderer.CreatePalette();
             Atm640Renderer.Params = Atm640Renderer.CreateParams();
-            Atm640Renderer.Palette = Atm640Renderer.CreatePalette();
             AtmTxtRenderer.Params = AtmTxtRenderer.CreateParams();
-            AtmTxtRenderer.Palette = AtmTxtRenderer.CreatePalette();
+            EvoTxtRenderer.Params = AtmTxtRenderer.Params;
+            EvoHwmRenderer.Params = SpectrumRenderer.Params;
+            EvoA16Renderer.Params = SpectrumRenderer.Params;
         }
 
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
@@ -151,7 +164,7 @@ namespace ZXMAK2.Hardware.Atm
             Renderer = SpectrumRenderer;
         }
 
-        public void SetPageMappingAtm(
+        public virtual void SetPageMappingAtm(
             AtmVideoMode mode,
             int videoPage,
             int page0000,
@@ -167,15 +180,41 @@ namespace ZXMAK2.Hardware.Atm
                 case AtmVideoMode.Hwm640x200: Renderer = Atm640Renderer; break;
                 case AtmVideoMode.Std256x192: Renderer = SpectrumRenderer; break;
                 case AtmVideoMode.Txt080x025: Renderer = AtmTxtRenderer; break;
+
+                case AtmVideoMode.EvoText080: Renderer = EvoTxtRenderer; break;
+                case AtmVideoMode.Evo256x192: Renderer = EvoHwmRenderer; break;
+                case AtmVideoMode.EvoAlco16c: Renderer = EvoA16Renderer; break;
+
+                default: Renderer = SpectrumRenderer; break;
             }
-            var pageAt = Memory.RamPages[videoPage == 5 ? 1 : 3];
-            var pageBw = Memory.RamPages[videoPage];
+            UpdateVideoPage(videoPage);
+        }
+
+        private void UpdateVideoPage(int videoPage)
+        {
+            var pageAt = Memory.RamPages.Length > 3 ?
+                Memory.RamPages[videoPage == 5 ? 1 : 3] :
+                m_trashPage;
+            var pageBw = Memory.RamPages.Length > videoPage ?
+                Memory.RamPages[videoPage] :
+                m_trashPage;
             Atm320Renderer.MemoryPage0 = pageAt;
             Atm320Renderer.MemoryPage1 = pageBw;
             Atm640Renderer.MemoryPageAt = pageAt;
             Atm640Renderer.MemoryPageBw = pageBw;
             AtmTxtRenderer.MemoryPageAt = pageAt;
             AtmTxtRenderer.MemoryPageBw = pageBw;
+
+            var pageEvoTxt = Memory.RamPages.Length > 10 ?
+                Memory.RamPages[videoPage == 5 ? 8 : 10] :
+                m_trashPage;
+            var pageEvoA16 = Memory.RamPages.Length > 6 ?
+                Memory.RamPages[videoPage == 5 ? 4 : 6] :
+                m_trashPage;
+            EvoTxtRenderer.MemoryPage = pageEvoTxt;
+            EvoHwmRenderer.MemoryPage = pageBw;
+            EvoA16Renderer.MemoryPage0 = pageEvoA16;
+            EvoA16Renderer.MemoryPage1 = pageBw;
         }
 
         public void SetPaletteAtm(byte value)
@@ -227,10 +266,16 @@ namespace ZXMAK2.Hardware.Atm
 
     public enum AtmVideoMode
     {
+        // ATM 1/2:
         Ega320x200 = 0,
         Hwm640x200 = 2,
         Std256x192 = 3,
         Txt080x025 = 6,
+
+        // PENTEVO:
+        EvoText080 = 7,
+        Evo256x192 = 3 | (2 << 3),
+        EvoAlco16c = 3 | (1 << 3),
     }
 
     public class UlaAtmTurbo : UlaAtm450
@@ -239,45 +284,19 @@ namespace ZXMAK2.Hardware.Atm
         {
             get { return base.Name + " [turbo]"; }
         }
-        
+
         protected override void OnRendererInit()
         {
-            SpectrumRenderer.Params = CreateSpectrumRendererParams();
-            SpectrumRenderer.Palette = SpectrumRenderer.CreatePalette();
-            Atm320Renderer.Params = CreateParams320();
-            Atm320Renderer.Palette = Atm320Renderer.CreatePalette();
-            Atm640Renderer.Params = CreateParams640();
-            Atm640Renderer.Palette = Atm640Renderer.CreatePalette();
-            AtmTxtRenderer.Params = CreateParamsTxt();
-            AtmTxtRenderer.Palette = AtmTxtRenderer.CreatePalette();
-        }
+            base.OnRendererInit();
 
-        protected override SpectrumRendererParams CreateSpectrumRendererParams()
-        {
-            var timing = base.CreateSpectrumRendererParams();
-            timing.c_frameTactCount *= 2;
-            return timing;
-        }
-        
-        private Atm320RendererParams CreateParams320()
-        {
-            var timing = Atm320Renderer.CreateParams();
-            timing.c_frameTactCount *= 2;
-            return timing;
-        }
+            SpectrumRenderer.Params.c_frameTactCount *= 2;
+            Atm320Renderer.Params.c_frameTactCount *= 2;
+            Atm640Renderer.Params.c_frameTactCount *= 2;
+            AtmTxtRenderer.Params.c_frameTactCount *= 2;
 
-        private Atm640RendererParams CreateParams640()
-        {
-            var timing = Atm640Renderer.CreateParams();
-            timing.c_frameTactCount *= 2;
-            return timing;
-        }
-
-        private AtmTxtRendererParams CreateParamsTxt()
-        {
-            var timing = AtmTxtRenderer.CreateParams();
-            timing.c_frameTactCount *= 2;
-            return timing;
+            EvoTxtRenderer.Params.c_frameTactCount *= 2;
+            EvoHwmRenderer.Params.c_frameTactCount *= 2;
+            EvoA16Renderer.Params.c_frameTactCount *= 2;
         }
     }
 }

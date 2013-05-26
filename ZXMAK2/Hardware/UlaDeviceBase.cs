@@ -13,6 +13,25 @@ namespace ZXMAK2.Hardware
 {
     public abstract class UlaDeviceBase : BusDeviceBase, IUlaDevice
     {
+        #region Fields
+
+        protected Z80CPU CPU;
+        private int[] m_bitmapBuffer = new int[1024 * 768];
+        private IMemoryDevice m_memory;
+        private int m_lastFrameTact = 0;         // last processed tact
+        private byte m_portFe = 0;
+
+        protected int m_videoPage = 5;
+        protected int m_page0000 = -1;
+        protected int m_page4000 = 5;
+        protected int m_page8000 = 2;
+        protected int m_pageC000 = 0;
+        protected SpectrumRenderer SpectrumRenderer = new SpectrumRenderer();
+        protected IUlaRenderer Renderer { get; set; }
+
+        #endregion Fields
+
+        
         #region IBusDevice
 
         public override string Description { get { return "UlaDeviceBase based ULA"; } }
@@ -57,25 +76,6 @@ namespace ZXMAK2.Hardware
         #endregion
 
 
-        protected Z80CPU CPU;
-
-        #region Private
-
-        private int[] m_bitmapBuffer = new int[1024 * 768];
-        private IMemoryDevice m_memory;
-        private int m_lastFrameTact = 0;         // last processed tact
-        private byte m_portFe = 0;
-
-        protected int m_videoPage = 5;
-        protected int m_page0000 = -1;
-        protected int m_page4000 = 5;
-        protected int m_page8000 = 2;
-        protected int m_pageC000 = 0;
-        protected SpectrumRenderer SpectrumRenderer = new SpectrumRenderer();
-        protected IUlaRenderer Renderer { get; set; }
-
-
-        #endregion
 
         public UlaDeviceBase()
         {
@@ -104,7 +104,7 @@ namespace ZXMAK2.Hardware
             m_page4000 = page4000;
             m_page8000 = page8000;
             m_pageC000 = pageC000;
-            SpectrumRenderer.UlaMemory = m_memory.RamPages[videoPage];
+            SpectrumRenderer.MemoryPage = m_memory.RamPages[videoPage];
         }
 
 
@@ -163,7 +163,7 @@ namespace ZXMAK2.Hardware
                 m_memory = value;
                 if (Memory.RamPages.Length < 8)
                     throw new ArgumentException(string.Format("Incompatible Memory Type: {0}", Memory.GetType()));
-                SpectrumRenderer.UlaMemory = Memory.RamPages[m_videoPage];
+                SpectrumRenderer.MemoryPage = Memory.RamPages[m_videoPage];
             }
         }
 

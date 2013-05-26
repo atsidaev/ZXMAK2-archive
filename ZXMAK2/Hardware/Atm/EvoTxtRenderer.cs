@@ -1,32 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.IO;
+using System.Drawing;
 using ZXMAK2.Interfaces;
+
 
 namespace ZXMAK2.Hardware.Atm
 {
-    public class AtmTxtRendererParams
-    {
-        public int c_ulaLineTime;
-        public int c_ulaFirstPaperLine;
-        public int c_ulaFirstPaperTact;
-        public int c_frameTactCount;
-
-        public int c_ulaBorderTop;
-        public int c_ulaBorderBottom;
-        public int c_ulaBorderLeftT;
-        public int c_ulaBorderRightT;
-
-        public int c_ulaIntBegin;
-        public int c_ulaIntLength;
-
-        public int c_ulaWidth;
-        public int c_ulaHeight;
-    }
-
-    public class AtmTxtRenderer : IUlaRenderer
+    public class EvoTxtRenderer : IUlaRenderer
     {
         private AtmTxtRendererParams m_params;
         private uint[] m_palette;
@@ -43,8 +23,7 @@ namespace ZXMAK2.Hardware.Atm
         protected UlaAction[] m_ulaAction;
 
 
-        protected byte[] m_memoryPageAt;
-        protected byte[] m_memoryPageBw;
+        protected byte[] m_memoryPage;
         protected int m_borderIndex = 0;    // current border index
         protected uint m_borderColor = 0;   // current border color
 
@@ -53,7 +32,7 @@ namespace ZXMAK2.Hardware.Atm
 
         public Size VideoSize
         {
-            get { return new System.Drawing.Size(Params.c_ulaWidth, Params.c_ulaHeight); }
+            get { return new Size(Params.c_ulaWidth, Params.c_ulaHeight); }
         }
 
         public virtual int FrameLength
@@ -121,8 +100,8 @@ namespace ZXMAK2.Hardware.Atm
                             var addrBw = m_ulaAddrTXT640BW[tact];
                             var addrAt = m_ulaAddrTXT640AT[tact];
                             var addrCg = m_ulaAddrTXT640CG[tact];
-                            var bw = m_ulaSGEN[(m_memoryPageBw[addrBw] << 3) + addrCg];
-                            var at = m_memoryPageAt[addrAt];
+                            var bw = m_ulaSGEN[(m_memoryPage[addrBw] << 3) + addrCg];
+                            var at = m_memoryPage[addrAt];
                             var ink = m_ink[at];
                             var paper = m_paper[at];
                             var offset = m_videoOffset[tact];
@@ -145,23 +124,20 @@ namespace ZXMAK2.Hardware.Atm
 
         public virtual void LoadScreenData(Stream stream)
         {
-            stream.Read(MemoryPageAt, 0, 0x4000);
-            stream.Read(MemoryPageBw, 0, 0x4000);
+            stream.Read(MemoryPage, 0, 0x4000);
         }
 
         public virtual void SaveScreenData(Stream stream)
         {
-            stream.Write(MemoryPageAt, 0, 0x4000);
-            stream.Write(MemoryPageBw, 0, 0x4000);
+            stream.Write(MemoryPage, 0, 0x4000);
         }
 
         public virtual IUlaRenderer Clone()
         {
-            var renderer = new AtmTxtRenderer();
+            var renderer = new EvoTxtRenderer();
             renderer.Params = this.Params;
             renderer.Palette = this.Palette;
-            renderer.MemoryPageAt = this.MemoryPageAt;
-            renderer.MemoryPageBw = this.MemoryPageBw;
+            renderer.MemoryPage = this.MemoryPage;
             renderer.UpdateBorder(this.m_borderIndex);
             return renderer;
         }
@@ -182,51 +158,20 @@ namespace ZXMAK2.Hardware.Atm
             set { m_palette = value; UpdateBorder(m_borderIndex); OnPaletteChanged(); }
         }
 
-        public byte[] MemoryPageAt
+        public byte[] MemoryPage
         {
-            get { return m_memoryPageAt; }
-            set { m_memoryPageAt = value; }
-        }
-
-        public byte[] MemoryPageBw
-        {
-            get { return m_memoryPageBw; }
-            set { m_memoryPageBw = value; }
+            get { return m_memoryPage; }
+            set { m_memoryPage = value; }
         }
 
         #endregion
 
 
-        public AtmTxtRenderer()
+        public EvoTxtRenderer()
         {
             InitStaticTables();
-            Params = CreateParams();
+            Params = AtmTxtRenderer.CreateParams();
             Palette = SpectrumRenderer.CreatePalette();
-        }
-
-        /// <summary>
-        /// Create default renderer params (ATM1 v4.50)
-        /// </summary>
-        public static AtmTxtRendererParams CreateParams()
-        {
-            // ATM1 v4.50
-            // Total Size:          640 x 200 (TXT: 80 x 25)
-            var timing = new AtmTxtRendererParams();
-            timing.c_frameTactCount = 69888;
-            timing.c_ulaLineTime = 224;
-            timing.c_ulaFirstPaperLine = 56;
-            timing.c_ulaFirstPaperTact = 32;
-
-            timing.c_ulaBorderTop = 28;
-            timing.c_ulaBorderBottom = 28;
-            timing.c_ulaBorderLeftT = 0;
-            timing.c_ulaBorderRightT = 0;
-
-            timing.c_ulaIntLength = 32;
-
-            timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 160 + timing.c_ulaBorderRightT) * 4;
-            timing.c_ulaHeight = timing.c_ulaBorderTop + 200 + timing.c_ulaBorderBottom;
-            return timing;
         }
 
         public static void ValidateParams(AtmTxtRendererParams timing)
@@ -256,8 +201,8 @@ namespace ZXMAK2.Hardware.Atm
                     m_videoOffset[tact] = Params.c_ulaWidth * zy + 4 * zx;
                     m_memoryMask[tact] = (x & 1) == 0 ? 0x80 : 0x08;
                     x = x / 2;
-                    var pageOffsetBw = (x & 1) == 0 ? 0x01C0 : 0x21C0;
-                    var pageOffsetAt = ((x + 1) & 1) == 0 ? 0x01C0 : 0x21C0;
+                    var pageOffsetBw = (x & 1) == 0 ? 0x01C0 : 0x11C0;
+                    var pageOffsetAt = ((x + 1) & 1) == 0 ? 0x21C0 : 0x31C0;
                     pageOffsetBw += x >> 1;
                     pageOffsetAt += (x + 1) >> 1;
                     pageOffsetBw += (y >> 3) * 64;

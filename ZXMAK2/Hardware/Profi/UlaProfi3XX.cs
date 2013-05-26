@@ -114,10 +114,11 @@ namespace ZXMAK2.Hardware.Profi
 
         protected override void OnRendererInit()
         {
+            var palette = SpectrumRenderer.CreatePalette();
+            SpectrumRenderer.Palette = palette;
+            ProfiRenderer.Palette = palette;
             SpectrumRenderer.Params = CreateSpectrumRendererParams();
-            SpectrumRenderer.Palette = SpectrumRenderer.CreatePalette();
             ProfiRenderer.Params = CreateProfiRendererParams();
-            ProfiRenderer.Palette = ProfiRenderer.CreatePalette();
         }
 
         protected virtual ProfiRendererParams CreateProfiRendererParams()

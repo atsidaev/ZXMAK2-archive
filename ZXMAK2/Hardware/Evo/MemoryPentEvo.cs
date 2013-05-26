@@ -30,7 +30,7 @@ namespace ZXMAK2.Hardware.Evo
 
         #region IBusDevice
 
-        public override string Name { get { return "PentEvo [new]"; } }
+        public override string Name { get { return "PentEvo"; } }
         public override string Description { get { return "PentEvo 4096K Memory Manager"; } }
 
         public override void BusInit(IBusManager bmgr)
@@ -114,7 +114,12 @@ namespace ZXMAK2.Hardware.Evo
                 if (m_ulaAtm != null)
                 {
                     m_ulaAtm.SetPageMappingAtm(
-                        RG, videoPage, -1, -1, -1, -1);
+                        (AtmVideoMode)(RG | (RGEX<<3)), 
+                        videoPage, 
+                        -1, 
+                        -1, 
+                        -1, 
+                        -1);
                 }
                 else
                 {
@@ -195,7 +200,7 @@ namespace ZXMAK2.Hardware.Evo
                 if (m_ulaAtm != null)
                 {
                     m_ulaAtm.SetPageMappingAtm(
-                        RG,
+                        (AtmVideoMode)(RG | (RGEX << 3)),
                         videoPage,
                         isRam0 ? ramPage0 : -1,
                         isRam1 ? ramPage1 : -1,
@@ -255,10 +260,10 @@ namespace ZXMAK2.Hardware.Evo
         }
 
         [HardwareValue("RG", Description = "Video mode")]
-        public AtmVideoMode RG
+        public int RG
         {
-            get { return (AtmVideoMode)(m_pFF77 & 7); }
-            set { m_pFF77 = (m_pFF77 & 0xF8) | ((int)value & 7); UpdateMapping(); }
+            get { return m_pFF77 & 7; }
+            set { m_pFF77 = (m_pFF77 & 0xF8) | (value & 7); UpdateMapping(); }
         }
 
         [HardwareValue("Z_I", Description = "Enable HSYNC interrupts")]
