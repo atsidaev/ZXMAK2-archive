@@ -41,7 +41,7 @@ namespace ZXMAK2.Hardware
         protected readonly uint[] m_ulaInk = new uint[256 * 2];
         protected readonly uint[] m_ulaPaper = new uint[256 * 2];
 
-        protected byte[] m_ulaMemory;              // current video ram bank
+        protected byte[] m_memoryPage;              // current video ram bank
         protected int m_flashState = 0;            // flash attr state (0/256)
         protected int m_flashCounter = 0;          // flash attr counter
         protected int m_borderIndex = 0;            // current border value
@@ -99,12 +99,12 @@ namespace ZXMAK2.Hardware
                 case UlaAction.BorderAndFetchB1:
                 case UlaAction.Shift1AndFetchB2:
                 case UlaAction.Shift2AndFetchB1:
-                    value = m_ulaMemory[m_ulaAddrBw[frameTact]];
+                    value = m_memoryPage[m_ulaAddrBw[frameTact]];
                     break;
                 case UlaAction.BorderAndFetchA1:
                 case UlaAction.Shift1AndFetchA2:
                 case UlaAction.Shift2AndFetchA1:
-                    value = m_ulaMemory[m_ulaAddrAt[frameTact]];
+                    value = m_memoryPage[m_ulaAddrAt[frameTact]];
                     break;
             }
         }
@@ -146,7 +146,7 @@ namespace ZXMAK2.Hardware
                             var offset = m_ulaLineOffset[takt];
                             bufPtr[offset] = m_fetchBorder;
                             bufPtr[offset + 1] = m_fetchBorder;
-                            m_fetchB1 = m_ulaMemory[m_ulaAddrBw[takt]];
+                            m_fetchB1 = m_memoryPage[m_ulaAddrBw[takt]];
                         }
                         break;
                     case UlaAction.BorderAndFetchA1:
@@ -154,7 +154,7 @@ namespace ZXMAK2.Hardware
                             var offset = m_ulaLineOffset[takt];
                             bufPtr[offset] = m_fetchBorder;
                             bufPtr[offset + 1] = m_fetchBorder;
-                            m_fetchA1 = m_ulaMemory[m_ulaAddrAt[takt]];
+                            m_fetchA1 = m_memoryPage[m_ulaAddrAt[takt]];
                             m_fetchInk = m_ulaInk[m_fetchA1 + m_flashState];
                             m_fetchPaper = m_ulaPaper[m_fetchA1 + m_flashState];
                         }
@@ -165,7 +165,7 @@ namespace ZXMAK2.Hardware
                             bufPtr[offset] = ((m_fetchB1 & 0x80) != 0) ? m_fetchInk : m_fetchPaper;
                             bufPtr[offset + 1] = ((m_fetchB1 & 0x40) != 0) ? m_fetchInk : m_fetchPaper;
                             m_fetchB1 <<= 2;
-                            m_fetchB2 = m_ulaMemory[m_ulaAddrBw[takt]];
+                            m_fetchB2 = m_memoryPage[m_ulaAddrBw[takt]];
                         }
                         break;
                     case UlaAction.Shift1AndFetchA2:
@@ -174,7 +174,7 @@ namespace ZXMAK2.Hardware
                             bufPtr[offset] = ((m_fetchB1 & 0x80) != 0) ? m_fetchInk : m_fetchPaper;
                             bufPtr[offset + 1] = ((m_fetchB1 & 0x40) != 0) ? m_fetchInk : m_fetchPaper;
                             m_fetchB1 <<= 2;
-                            m_fetchA2 = m_ulaMemory[m_ulaAddrAt[takt]];
+                            m_fetchA2 = m_memoryPage[m_ulaAddrAt[takt]];
                         }
                         break;
                     case UlaAction.Shift1:
@@ -209,7 +209,7 @@ namespace ZXMAK2.Hardware
                             bufPtr[offset] = ((m_fetchB2 & 0x80) != 0) ? m_fetchInk : m_fetchPaper;
                             bufPtr[offset + 1] = ((m_fetchB2 & 0x40) != 0) ? m_fetchInk : m_fetchPaper;
                             m_fetchB2 <<= 2;
-                            m_fetchB1 = m_ulaMemory[m_ulaAddrBw[takt]];
+                            m_fetchB1 = m_memoryPage[m_ulaAddrBw[takt]];
                         }
                         break;
                     case UlaAction.Shift2AndFetchA1:
@@ -218,7 +218,7 @@ namespace ZXMAK2.Hardware
                             bufPtr[offset] = ((m_fetchB2 & 0x80) != 0) ? m_fetchInk : m_fetchPaper;
                             bufPtr[offset + 1] = ((m_fetchB2 & 0x40) != 0) ? m_fetchInk : m_fetchPaper;
                             m_fetchB2 <<= 2;
-                            m_fetchA1 = m_ulaMemory[m_ulaAddrAt[takt]];
+                            m_fetchA1 = m_memoryPage[m_ulaAddrAt[takt]];
                             m_fetchInk = m_ulaInk[m_fetchA1 + m_flashState];
                             m_fetchPaper = m_ulaPaper[m_fetchA1 + m_flashState];
                         }
@@ -239,12 +239,12 @@ namespace ZXMAK2.Hardware
 
         public virtual void LoadScreenData(Stream stream)
         {
-            stream.Read(UlaMemory, 0, 6912);
+            stream.Read(MemoryPage, 0, 6912);
         }
 
         public virtual void SaveScreenData(Stream stream)
         {
-            stream.Write(UlaMemory, 0, 6912);
+            stream.Write(MemoryPage, 0, 6912);
         }
 
         public virtual IUlaRenderer Clone()
@@ -252,7 +252,7 @@ namespace ZXMAK2.Hardware
             var renderer = new SpectrumRenderer();
             renderer.Params = this.Params;
             renderer.Palette = this.Palette;
-            renderer.UlaMemory = this.UlaMemory;
+            renderer.MemoryPage = this.MemoryPage;
             renderer.m_flashState = this.m_flashState;
             renderer.m_flashCounter = this.m_flashCounter;
             renderer.UpdateBorder(this.m_borderIndex);
@@ -283,10 +283,10 @@ namespace ZXMAK2.Hardware
             set { m_palette = value; UpdateBorder(m_borderIndex); OnPaletteChanged(); }
         }
 
-        public byte[] UlaMemory
+        public byte[] MemoryPage
         {
-            get { return m_ulaMemory; }
-            set { m_ulaMemory = value; }
+            get { return m_memoryPage; }
+            set { m_memoryPage = value; }
         }
 
         #endregion
@@ -314,8 +314,8 @@ namespace ZXMAK2.Hardware
             timing.c_ulaBorder4T = false;
             timing.c_ulaBorder4Tstage = 1;
 
-            timing.c_ulaBorderTop = 24;
-            timing.c_ulaBorderBottom = 24;
+            timing.c_ulaBorderTop = 32;
+            timing.c_ulaBorderBottom = 32;
             timing.c_ulaBorderLeftT = 16;
             timing.c_ulaBorderRightT = 16;
 
@@ -424,6 +424,9 @@ namespace ZXMAK2.Hardware
             m_ulaAction[item] = UlaAction.None;
             int pitchWidth = Params.c_ulaWidth;
 
+            int scrPix = pix - Params.c_ulaFirstPaperTact;
+            int scrLin = line - Params.c_ulaFirstPaperLine;
+
             if ((line >= (Params.c_ulaFirstPaperLine - Params.c_ulaBorderTop)) && (line < (Params.c_ulaFirstPaperLine + 192 + Params.c_ulaBorderBottom)) &&
                 (pix >= (Params.c_ulaFirstPaperTact - Params.c_ulaBorderLeftT)) && (pix < (Params.c_ulaFirstPaperTact + 128 + Params.c_ulaBorderRightT)))
             {
@@ -431,32 +434,18 @@ namespace ZXMAK2.Hardware
                 if ((line >= Params.c_ulaFirstPaperLine) && (line < (Params.c_ulaFirstPaperLine + 192)) &&
                     (pix >= Params.c_ulaFirstPaperTact) && (pix < (Params.c_ulaFirstPaperTact + 128)))
                 {
-                    // paper
-                    int sx, sy, ap, vp;
-                    int scrPix = pix - Params.c_ulaFirstPaperTact;
+                    // pixel area
                     switch (scrPix & 7)
                     {
                         case 0:
                             m_ulaAction[item] = UlaAction.Shift1AndFetchB2;   // shift 1 + fetch B2
-
-                            sx = pix + 4 - Params.c_ulaFirstPaperTact;  // +4 = prefetch!
-                            sy = line - Params.c_ulaFirstPaperLine;
-                            sx >>= 2;
-                            ap = sx | ((sy >> 3) << 5);
-                            vp = sx | (sy << 5);
-                            m_ulaAddrBw[item] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                            //_ulaAddrAT[takt] = 6144 + ap;
+                            // +4 = prefetch!
+                            m_ulaAddrBw[item] = CalcTableAddrBw(scrPix + 4, scrLin);
                             break;
                         case 1:
                             m_ulaAction[item] = UlaAction.Shift1AndFetchA2;   // shift 1 + fetch A2
-
-                            sx = pix + 3 - Params.c_ulaFirstPaperTact;  // +3 = prefetch!
-                            sy = line - Params.c_ulaFirstPaperLine;
-                            sx >>= 2;
-                            ap = sx | ((sy >> 3) << 5);
-                            vp = sx | (sy << 5);
-                            //_ulaAddrBW[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                            m_ulaAddrAt[item] = 6144 + ap;
+                            // +3 = prefetch!
+                            m_ulaAddrAt[item] = CalcTableAddrAt(scrPix + 3, scrLin);
                             break;
                         case 2:
                             m_ulaAction[item] = UlaAction.Shift1;   // shift 1
@@ -480,13 +469,8 @@ namespace ZXMAK2.Hardware
                                 m_ulaAction[item] = UlaAction.Shift2;             // shift 2
                             }
 
-                            sx = pix + 2 - Params.c_ulaFirstPaperTact;  // +2 = prefetch!
-                            sy = line - Params.c_ulaFirstPaperLine;
-                            sx >>= 2;
-                            ap = sx | ((sy >> 3) << 5);
-                            vp = sx | (sy << 5);
-                            m_ulaAddrBw[item] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                            //_ulaAddrAT[takt] = 6144 + ap;
+                            // +2 = prefetch!
+                            m_ulaAddrBw[item] = CalcTableAddrBw(scrPix + 2, scrLin);
                             break;
                         case 7:
                             if (pix < (Params.c_ulaFirstPaperTact + 128 - 2))
@@ -499,13 +483,8 @@ namespace ZXMAK2.Hardware
                                 m_ulaAction[item] = UlaAction.Shift2;             // shift 2
                             }
 
-                            sx = pix + 1 - Params.c_ulaFirstPaperTact;  // +1 = prefetch!
-                            sy = line - Params.c_ulaFirstPaperLine;
-                            sx >>= 2;
-                            ap = sx | ((sy >> 3) << 5);
-                            vp = sx | (sy << 5);
-                            //_ulaAddrBW[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                            m_ulaAddrAt[item] = 6144 + ap;
+                            // +1 = prefetch!
+                            m_ulaAddrAt[item] = CalcTableAddrAt(scrPix + 1, scrLin);
                             break;
                     }
                 }
@@ -513,27 +492,15 @@ namespace ZXMAK2.Hardware
                          (pix == (Params.c_ulaFirstPaperTact - 2)))  // border & fetch B1
                 {
                     m_ulaAction[item] = UlaAction.BorderAndFetchB1; // border & fetch B1
-
-                    int sx = pix + 2 - Params.c_ulaFirstPaperTact;  // +2 = prefetch!
-                    int sy = line - Params.c_ulaFirstPaperLine;
-                    sx >>= 2;
-                    int ap = sx | ((sy >> 3) << 5);
-                    int vp = sx | (sy << 5);
-                    m_ulaAddrBw[item] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                    //_ulaAddrAT[takt] = 6144 + ap;
+                    // +2 = prefetch!
+                    m_ulaAddrBw[item] = CalcTableAddrBw(scrPix + 2, scrLin);
                 }
                 else if ((line >= Params.c_ulaFirstPaperLine) && (line < (Params.c_ulaFirstPaperLine + 192)) &&
                          (pix == (Params.c_ulaFirstPaperTact - 1)))  // border & fetch A1
                 {
                     m_ulaAction[item] = UlaAction.BorderAndFetchA1; // border & fetch A1
-
-                    int sx = pix + 1 - Params.c_ulaFirstPaperTact;  // +1 = prefetch!
-                    int sy = line - Params.c_ulaFirstPaperLine;
-                    sx >>= 2;
-                    int ap = sx | ((sy >> 3) << 5);
-                    int vp = sx | (sy << 5);
-                    //_ulaAddrBW[takt] = (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
-                    m_ulaAddrAt[item] = 6144 + ap;
+                    // +1 = prefetch!
+                    m_ulaAddrAt[item] = CalcTableAddrAt(scrPix + 1, scrLin);
                 }
                 else
                 {
@@ -544,6 +511,30 @@ namespace ZXMAK2.Hardware
                 int wx = (pix - (Params.c_ulaFirstPaperTact - Params.c_ulaBorderLeftT)) * 2;
                 m_ulaLineOffset[item] = wy * pitchWidth + wx;
             }
+        }
+
+        /// <summary>
+        /// Calculate pixel fetch address
+        /// </summary>
+        /// <param name="sx">Pixel area tact (x/2)</param>
+        /// <param name="sy">Pixel area line</param>
+        protected virtual int CalcTableAddrBw(int sx, int sy)
+        {
+            sx >>= 2;
+            var vp = sx | (sy << 5);
+            return (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
+        }
+
+        /// <summary>
+        /// Calculate attribute fetch address
+        /// </summary>
+        /// <param name="sx">Pixel area tact (x/2)</param>
+        /// <param name="sy">Pixel area line</param>
+        protected virtual int CalcTableAddrAt(int sx, int sy)
+        {
+            sx >>= 2;
+            var ap = sx | ((sy >> 3) << 5);
+            return 6144 + ap;
         }
 
         protected virtual void OnPaletteChanged()

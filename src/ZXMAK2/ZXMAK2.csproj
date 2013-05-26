@@ -187,6 +187,9 @@
     </Compile>
     <Compile Include="Hardware\Atm\Atm320Renderer.cs" />
     <Compile Include="Hardware\Atm\Atm640Renderer.cs" />
+    <Compile Include="Hardware\Atm\EvoA16Renderer.cs" />
+    <Compile Include="Hardware\Atm\EvoHwmRenderer.cs" />
+    <Compile Include="Hardware\Atm\EvoTxtRenderer.cs" />
     <Compile Include="Hardware\Atm\IdeAtm.cs" />
     <Compile Include="Hardware\Atm\KeyboardAtm.cs" />
     <Compile Include="Hardware\Atm\AtmTxtRenderer.cs" />
@@ -195,6 +198,7 @@
     <Compile Include="Hardware\Evo\IdePentEvo.cs" />
     <Compile Include="Hardware\Evo\KeyboardPentEvo.cs" />
     <Compile Include="Hardware\Evo\MemoryPentEvo.cs" />
+    <Compile Include="Hardware\Evo\UlaPentEvo.cs" />
     <Compile Include="Hardware\Evo\ZsdPentEvo.cs" />
     <Compile Include="Hardware\General\FddController.cs" />
     <Compile Include="Hardware\IC\AtaPort.cs" />

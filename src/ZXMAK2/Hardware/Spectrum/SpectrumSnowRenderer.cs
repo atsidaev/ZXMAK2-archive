@@ -60,7 +60,7 @@ namespace ZXMAK2.Hardware.Spectrum
                             var offset = m_ulaLineOffset[takt];
                             bufPtr[offset] = m_fetchBorder;
                             bufPtr[offset + 1] = m_fetchBorder;
-                            m_fetchB1 = m_ulaMemory[m_ulaAddrBw[takt]];
+                            m_fetchB1 = m_memoryPage[m_ulaAddrBw[takt]];
                         }
                         break;
                     case UlaAction.BorderAndFetchA1:
@@ -68,7 +68,7 @@ namespace ZXMAK2.Hardware.Spectrum
                             var offset = m_ulaLineOffset[takt];
                             bufPtr[offset] = m_fetchBorder;
                             bufPtr[offset + 1] = m_fetchBorder;
-                            m_fetchA1 = m_ulaMemory[m_ulaAddrAt[takt]];
+                            m_fetchA1 = m_memoryPage[m_ulaAddrAt[takt]];
                             m_fetchInk = m_ulaInk[m_fetchA1 + m_flashState];
                             m_fetchPaper = m_ulaPaper[m_fetchA1 + m_flashState];
                         }
@@ -79,7 +79,7 @@ namespace ZXMAK2.Hardware.Spectrum
                             bufPtr[offset] = ((m_fetchB1 & 0x80) != 0) ? m_fetchInk : m_fetchPaper;
                             bufPtr[offset + 1] = ((m_fetchB1 & 0x40) != 0) ? m_fetchInk : m_fetchPaper;
                             m_fetchB1 <<= 2;
-                            m_fetchB2 = m_ulaMemory[m_ulaAddrBw[takt]];
+                            m_fetchB2 = m_memoryPage[m_ulaAddrBw[takt]];
                         }
                         break;
                     case UlaAction.Shift1AndFetchA2:
@@ -88,7 +88,7 @@ namespace ZXMAK2.Hardware.Spectrum
                             bufPtr[offset] = ((m_fetchB1 & 0x80) != 0) ? m_fetchInk : m_fetchPaper;
                             bufPtr[offset + 1] = ((m_fetchB1 & 0x40) != 0) ? m_fetchInk : m_fetchPaper;
                             m_fetchB1 <<= 2;
-                            m_fetchA2 = m_ulaMemory[m_ulaAddrAt[takt]];
+                            m_fetchA2 = m_memoryPage[m_ulaAddrAt[takt]];
                         }
                         break;
                     case UlaAction.Shift1:
@@ -123,7 +123,7 @@ namespace ZXMAK2.Hardware.Spectrum
                             bufPtr[offset] = ((m_fetchB2 & 0x80) != 0) ? m_fetchInk : m_fetchPaper;
                             bufPtr[offset + 1] = ((m_fetchB2 & 0x40) != 0) ? m_fetchInk : m_fetchPaper;
                             m_fetchB2 <<= 2;
-                            m_fetchB1 = m_ulaMemory[m_ulaAddrBw[takt]];
+                            m_fetchB1 = m_memoryPage[m_ulaAddrBw[takt]];
                         }
                         break;
                     case UlaAction.Shift2AndFetchA1:
@@ -132,7 +132,7 @@ namespace ZXMAK2.Hardware.Spectrum
                             bufPtr[offset] = ((m_fetchB2 & 0x80) != 0) ? m_fetchInk : m_fetchPaper;
                             bufPtr[offset + 1] = ((m_fetchB2 & 0x40) != 0) ? m_fetchInk : m_fetchPaper;
                             m_fetchB2 <<= 2;
-                            m_fetchA1 = m_ulaMemory[m_ulaAddrAt[takt]];
+                            m_fetchA1 = m_memoryPage[m_ulaAddrAt[takt]];
                             m_fetchInk = m_ulaInk[m_fetchA1 + m_flashState];
                             m_fetchPaper = m_ulaPaper[m_fetchA1 + m_flashState];
                         }
@@ -147,7 +147,7 @@ namespace ZXMAK2.Hardware.Spectrum
                         addr = (addr & 0x3F00) | (m_ulaNoise & 0x00FF);
                     else if ((m_ulaNoise & 3) != 0)
                         addr = ((addr - 1) & 0xFF) | (addr & 0x3F00);
-                    m_fetchB1 = m_ulaMemory[addr];
+                    m_fetchB1 = m_memoryPage[addr];
                     m_ulaNoise = (((m_ulaNoise >> 16) ^ (m_ulaNoise >> 13)) & 1) ^ ((m_ulaNoise << 1) + 1);
                 }
                 if (Snow > 0 && ulaDo == UlaAction.Shift1AndFetchB2)
@@ -158,7 +158,7 @@ namespace ZXMAK2.Hardware.Spectrum
                         addr = (addr & 0x3F00) | (m_ulaNoise & 0x00FF);
                     else if ((m_ulaNoise & 3) != 0)
                         addr = ((addr - 1) & 0xFF) | (addr & 0x3F00);
-                    m_fetchB2 = m_ulaMemory[addr];
+                    m_fetchB2 = m_memoryPage[addr];
                     m_ulaNoise = (((m_ulaNoise >> 16) ^ (m_ulaNoise >> 13)) & 1) ^ ((m_ulaNoise << 1) + 1);
                 }
                 if (Snow > 0 && ulaDo == UlaAction.Shift2AndFetchB1)
@@ -169,7 +169,7 @@ namespace ZXMAK2.Hardware.Spectrum
                         addr = (addr & 0x3F00) | (m_ulaNoise & 0x00FF);
                     else if ((m_ulaNoise & 3) != 0)
                         addr = ((addr - 1) & 0xFF) | (addr & 0x3F00);
-                    m_fetchB1 = m_ulaMemory[addr];
+                    m_fetchB1 = m_memoryPage[addr];
                     m_ulaNoise = (((m_ulaNoise >> 16) ^ (m_ulaNoise >> 13)) & 1) ^ ((m_ulaNoise << 1) + 1);
                 }
             }
@@ -180,7 +180,7 @@ namespace ZXMAK2.Hardware.Spectrum
             var renderer = new SpectrumSnowRenderer();
             renderer.Params = this.Params;
             renderer.Palette = this.Palette;
-            renderer.UlaMemory = this.UlaMemory;
+            renderer.MemoryPage = this.MemoryPage;
             renderer.m_flashState = this.m_flashState;
             renderer.m_flashCounter = this.m_flashCounter;
             renderer.UpdateBorder(this.m_borderIndex);

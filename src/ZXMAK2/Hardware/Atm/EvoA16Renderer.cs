@@ -7,40 +7,22 @@ using ZXMAK2.Interfaces;
 
 namespace ZXMAK2.Hardware.Atm
 {
-    public class Atm640RendererParams
+    public class EvoA16Renderer : IUlaRenderer
     {
-        public int c_ulaLineTime;
-        public int c_ulaFirstPaperLine;
-        public int c_ulaFirstPaperTact;
-        public int c_frameTactCount;
-
-        public int c_ulaBorderTop;
-        public int c_ulaBorderBottom;
-        public int c_ulaBorderLeftT;
-        public int c_ulaBorderRightT;
-
-        public int c_ulaIntBegin;
-        public int c_ulaIntLength;
-
-        public int c_ulaWidth;
-        public int c_ulaHeight;
-    }
-
-    public class Atm640Renderer : IUlaRenderer
-    {
-        private Atm640RendererParams m_params;
+        private SpectrumRendererParams m_params;
         private uint[] m_palette;
+        private byte[] m_atm_pal = new byte[16];
 
         private int[] m_videoOffset;
         private int[] m_memoryOffset;
-        private int[] m_memoryMask;
-        private readonly uint[] m_ink = new uint[0x100];
-        private readonly uint[] m_paper = new uint[0x100];
+        private bool[] m_memoryPage;
+        private readonly uint[] m_ink0 = new uint[0x100];
+        private readonly uint[] m_ink1 = new uint[0x100];
         protected UlaAction[] m_ulaAction;
 
 
-        protected byte[] m_memoryPageAt;
-        protected byte[] m_memoryPageBw;
+        protected byte[] m_memoryPage0;
+        protected byte[] m_memoryPage1;
         protected int m_borderIndex = 0;    // current border index
         protected uint m_borderColor = 0;   // current border color
 
@@ -64,7 +46,7 @@ namespace ZXMAK2.Hardware.Atm
 
         public virtual float PixelHeightRatio
         {
-            get { return 2F; }
+            get { return 1F; }
         }
 
         public virtual void UpdateBorder(int value)
@@ -106,27 +88,19 @@ namespace ZXMAK2.Hardware.Atm
                     case UlaAction.Border:
                         {
                             var offset = m_videoOffset[tact];
-                            bufPtr[offset + 0] = m_borderColor;
+                            bufPtr[offset] = m_borderColor;
                             bufPtr[offset + 1] = m_borderColor;
-                            bufPtr[offset + 2] = m_borderColor;
-                            bufPtr[offset + 3] = m_borderColor;
                         }
                         break;
                     case UlaAction.Paper:
                         {
                             var addr = m_memoryOffset[tact];
-                            var bw = m_memoryPageBw[addr];
-                            var at = m_memoryPageAt[addr];
-                            var ink = m_ink[at];
-                            var paper = m_paper[at];
+                            var bw = m_memoryPage[tact] ?
+                                m_memoryPage0[addr] :
+                                m_memoryPage1[addr];
                             var offset = m_videoOffset[tact];
-                            var mask = m_memoryMask[tact];
-                            for (var i = 0; i < 4; i++, mask >>= 1)
-                            {
-                                bufPtr[offset + i] = (bw & mask) != 0 ?
-                                    ink :
-                                    paper;
-                            }
+                            bufPtr[offset] = m_ink0[bw];
+                            bufPtr[offset + 1] = m_ink1[bw];
                         }
                         break;
                 }
@@ -139,23 +113,23 @@ namespace ZXMAK2.Hardware.Atm
 
         public virtual void LoadScreenData(Stream stream)
         {
-            stream.Read(MemoryPageAt, 0, 0x4000);
-            stream.Read(MemoryPageBw, 0, 0x4000);
+            stream.Read(MemoryPage0, 0, 0x4000);
+            stream.Read(MemoryPage1, 0, 0x4000);
         }
 
         public virtual void SaveScreenData(Stream stream)
         {
-            stream.Write(MemoryPageAt, 0, 0x4000);
-            stream.Write(MemoryPageBw, 0, 0x4000);
+            stream.Write(MemoryPage0, 0, 0x4000);
+            stream.Write(MemoryPage1, 0, 0x4000);
         }
 
         public virtual IUlaRenderer Clone()
         {
-            var renderer = new Atm640Renderer();
+            var renderer = new EvoA16Renderer();
             renderer.Params = this.Params;
             renderer.Palette = this.Palette;
-            renderer.MemoryPageAt = this.MemoryPageAt;
-            renderer.MemoryPageBw = this.MemoryPageBw;
+            renderer.MemoryPage0 = this.MemoryPage0;
+            renderer.MemoryPage1 = this.MemoryPage1;
             renderer.UpdateBorder(this.m_borderIndex);
             return renderer;
         }
@@ -164,7 +138,7 @@ namespace ZXMAK2.Hardware.Atm
 
         #region Public
 
-        public Atm640RendererParams Params
+        public SpectrumRendererParams Params
         {
             get { return m_params; }
             set { ValidateParams(value); m_params = value; OnParamsChanged(); }
@@ -176,53 +150,28 @@ namespace ZXMAK2.Hardware.Atm
             set { m_palette = value; UpdateBorder(m_borderIndex); OnPaletteChanged(); }
         }
 
-        public byte[] MemoryPageAt
+        public byte[] MemoryPage0
         {
-            get { return m_memoryPageAt; }
-            set { m_memoryPageAt = value; }
+            get { return m_memoryPage0; }
+            set { m_memoryPage0 = value; }
         }
 
-        public byte[] MemoryPageBw
+        public byte[] MemoryPage1
         {
-            get { return m_memoryPageBw; }
-            set { m_memoryPageBw = value; }
+            get { return m_memoryPage1; }
+            set { m_memoryPage1 = value; }
         }
 
         #endregion
 
 
-        public Atm640Renderer()
+        public EvoA16Renderer()
         {
-            Params = CreateParams();
+            Params = SpectrumRenderer.CreateParams();
             Palette = SpectrumRenderer.CreatePalette();
         }
 
-        /// <summary>
-        /// Create default renderer params (ATM1 v4.50)
-        /// </summary>
-        public static Atm640RendererParams CreateParams()
-        {
-            // ATM1 v4.50
-            // Total Size:          640 x 200
-            var timing = new Atm640RendererParams();
-            timing.c_frameTactCount = 69888;
-            timing.c_ulaLineTime = 224;
-            timing.c_ulaFirstPaperLine = 56;
-            timing.c_ulaFirstPaperTact = 32;
-
-            timing.c_ulaBorderTop = 28;
-            timing.c_ulaBorderBottom = 28;
-            timing.c_ulaBorderLeftT = 0;
-            timing.c_ulaBorderRightT = 0;
-
-            timing.c_ulaIntLength = 32;
-
-            timing.c_ulaWidth = (timing.c_ulaBorderLeftT + 160 + timing.c_ulaBorderRightT) * 4;
-            timing.c_ulaHeight = timing.c_ulaBorderTop + 200 + timing.c_ulaBorderBottom;
-            return timing;
-        }
-
-        public static void ValidateParams(Atm640RendererParams timing)
+        public static void ValidateParams(SpectrumRendererParams timing)
         {
             //...
         }
@@ -232,7 +181,7 @@ namespace ZXMAK2.Hardware.Atm
             m_ulaAction = new UlaAction[Params.c_frameTactCount];
             m_videoOffset = new int[Params.c_frameTactCount];
             m_memoryOffset = new int[Params.c_frameTactCount];
-            m_memoryMask = new int[Params.c_frameTactCount];
+            m_memoryPage = new bool[Params.c_frameTactCount];
             for (var tact = 0; tact < m_ulaAction.Length; tact++)
             {
                 var tvy = tact / Params.c_ulaLineTime;
@@ -241,21 +190,26 @@ namespace ZXMAK2.Hardware.Atm
                 var zx = tvx - (Params.c_ulaFirstPaperTact - Params.c_ulaBorderLeftT);
                 var y = zy - Params.c_ulaBorderTop;
                 var x = zx - Params.c_ulaBorderLeftT;
-                if (y >= 0 && y < 200 && x >= 0 && x < 160)
+                if (y >= 0 && y < 192 && x >= 0 && x < 128)
                 {
                     m_ulaAction[tact] = UlaAction.Paper;
-                    m_videoOffset[tact] = Params.c_ulaWidth * zy + 4 * zx;
-                    m_memoryMask[tact] = (x & 1) == 0 ? 0x80 : 0x08;
-                    x /= 2;
-                    m_memoryOffset[tact] = (y * 80 + x) / 2 + 0x2000 * ((y * 80 + x) & 1);
+                    m_videoOffset[tact] = Params.c_ulaWidth * zy + 2 * zx;
+                    switch (x & 3)
+                    {
+                        case 0: m_memoryOffset[tact] = 0x0000 + CalcTableAddrBw(x, y); break; //  y * 128 / 4 + x / 4
+                        case 1: m_memoryOffset[tact] = 0x0000 + CalcTableAddrBw(x, y); break;
+                        case 2: m_memoryOffset[tact] = 0x2000 + CalcTableAddrBw(x, y); break;
+                        case 3: m_memoryOffset[tact] = 0x2000 + CalcTableAddrBw(x, y); break;
+                    }
+                    m_memoryPage[tact] = (x & 1) == 0;
                 }
                 else if (zy >= 0 &&
-                    zy < (200 + Params.c_ulaBorderTop + Params.c_ulaBorderBottom) &&
+                    zy < (192 + Params.c_ulaBorderTop + Params.c_ulaBorderBottom) &&
                     zx >= 0 &&
-                    zx < (160 + Params.c_ulaBorderLeftT + Params.c_ulaBorderRightT))
+                    zx < (128 + Params.c_ulaBorderLeftT + Params.c_ulaBorderRightT))
                 {
                     m_ulaAction[tact] = UlaAction.Border;
-                    m_videoOffset[tact] = Params.c_ulaWidth * zy + 4 * zx;
+                    m_videoOffset[tact] = Params.c_ulaWidth * zy + 2 * zx;
                 }
                 else
                 {
@@ -264,14 +218,26 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
+        /// <summary>
+        /// Calculate pixel fetch address
+        /// </summary>
+        /// <param name="sx">Pixel area tact (x/2)</param>
+        /// <param name="sy">Pixel area line</param>
+        protected virtual int CalcTableAddrBw(int sx, int sy)
+        {
+            sx >>= 2;
+            var vp = sx | (sy << 5);
+            return (vp & 0x181F) | ((vp & 0x0700) >> 3) | ((vp & 0x00E0) << 3);
+        }
+
         protected virtual void OnPaletteChanged()
         {
             for (int at = 0; at < 256; at++)
             {
                 var ulaInk = (at & 7) | ((at & 0x40) >> 3);
                 var ulaPaper = ((at >> 3) & 7) | ((at & 0x80) >> 4);
-                m_ink[at] = Palette[ulaInk];
-                m_paper[at] = Palette[ulaPaper];
+                m_ink0[at] = Palette[ulaInk];
+                m_ink1[at] = Palette[ulaPaper];
             }
         }
 

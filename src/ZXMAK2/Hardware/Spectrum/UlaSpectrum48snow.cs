@@ -23,7 +23,7 @@ namespace ZXMAK2.Hardware.Spectrum
             set
             {
                 base.Memory = value;
-                SnowRenderer.UlaMemory = Memory.RamPages[m_videoPage];
+                SnowRenderer.MemoryPage = Memory.RamPages[m_videoPage];
             }
         }
 
