@@ -11,7 +11,7 @@ namespace ZXMAK2.Hardware.Atm
     {
         #region IBusDevice
 
-        public override string Name { get { return "ATM450"; } }
+        public override string Name { get { return "ATM"; } }
 
         public override void BusInit(Interfaces.IBusManager bmgr)
         {
