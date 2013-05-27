@@ -230,6 +230,12 @@ namespace ZXMAK2.Hardware.Atm
             SetPaletteAtm(value);
         }
 
+        public void WriteSgen(int addr, byte value)
+        {
+            AtmTxtRenderer.WriteSgen(addr, value);
+            EvoTxtRenderer.WriteSgen(addr, value);
+        }
+
         private void InitStaticTables()
         {
             // atm palette mapping (port out to palette index)
