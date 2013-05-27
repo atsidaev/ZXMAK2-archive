@@ -41,6 +41,7 @@ namespace ZXMAK2.Hardware.Evo
             OnSubscribeIo(bmgr);
 
             bmgr.SubscribeRdMemM1(0x0000, 0x0000, BusReadM1);
+            bmgr.SubscribeWrMem(0x0000, 0x0000, WriteMemXXXX);
             bmgr.SubscribeReset(BusReset);
 
             // Subscribe before MemoryBase.BusInit 
@@ -61,6 +62,14 @@ namespace ZXMAK2.Hardware.Evo
             bmgr.SubscribeRdIo(0x00FF, 0x00BF & 0x00FF, BusReadPortXXBF_EVO);
 
             bmgr.SubscribeRdIo(0xE0FF, 0x00BE & 0xE0FF, BusReadPortXXBE_CFG);
+        }
+
+        protected virtual void WriteMemXXXX(ushort addr, byte value)
+        {
+            if (m_ulaAtm != null && FNTWR)
+            {
+                m_ulaAtm.WriteSgen(addr, value);
+            }
         }
 
         protected virtual void BusReadM1(ushort addr, ref byte value)
@@ -280,7 +289,14 @@ namespace ZXMAK2.Hardware.Evo
             set { m_pXXBF = (byte)((m_pXXBF & ~1) | (value ? 1 : 0)); }
         }
 
-        [HardwareValue("SHADOW", Description = "Enable CMOS ports shadow independent")]
+        [HardwareValue("FNTWR", Description = "Allow write to font RAM")]
+        public bool FNTWR
+        {
+            get { return (m_pXXBF & 4) != 0; }
+            set { m_pXXBF = (byte)((m_pXXBF & ~4) | (value ? 4 : 0)); }
+        }
+
+        [HardwareValue("CMOSEN", Description = "Enable CMOS ports shadow independent")]
         public bool CMOSEN
         {
             get { return (m_pEFF7 & 0x80) != 0; }

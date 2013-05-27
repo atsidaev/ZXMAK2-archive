@@ -30,7 +30,7 @@ namespace ZXMAK2.Hardware.Atm
     {
         private AtmTxtRendererParams m_params;
         private uint[] m_palette;
-        private readonly byte[] m_ulaSGEN = new byte[256 * 8];
+        private readonly byte[] m_ulaSgen = new byte[256 * 8];
 
         private int[] m_videoOffset;
         private int[] m_memoryMask;
@@ -121,7 +121,7 @@ namespace ZXMAK2.Hardware.Atm
                             var addrBw = m_ulaAddrTXT640BW[tact];
                             var addrAt = m_ulaAddrTXT640AT[tact];
                             var addrCg = m_ulaAddrTXT640CG[tact];
-                            var bw = m_ulaSGEN[(m_memoryPageBw[addrBw] << 3) + addrCg];
+                            var bw = m_ulaSgen[(m_memoryPageBw[addrBw] << 3) + addrCg];
                             var at = m_memoryPageAt[addrAt];
                             var ink = m_ink[at];
                             var paper = m_paper[at];
@@ -192,6 +192,11 @@ namespace ZXMAK2.Hardware.Atm
         {
             get { return m_memoryPageBw; }
             set { m_memoryPageBw = value; }
+        }
+
+        public void WriteSgen(int addr, byte value)
+        {
+            m_ulaSgen[addr & 0x7FF] = value;
         }
 
         #endregion
@@ -298,7 +303,7 @@ namespace ZXMAK2.Hardware.Atm
             {
                 using (var stream = RomPack.GetUlaRomStream("ATM-SGEN"))
                 {
-                    stream.Read(m_ulaSGEN, 0, m_ulaSGEN.Length);
+                    stream.Read(m_ulaSgen, 0, m_ulaSgen.Length);
                 }
             }
             catch (Exception ex)
