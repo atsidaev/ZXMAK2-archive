@@ -18,6 +18,7 @@ namespace ZXMAK2.Serializers
             AddSerializer(new TrdSerializer(diskImage));
             AddSerializer(new ImgSerializer(diskImage));
             AddSerializer(new ProSerializer(diskImage));
+            AddSerializer(new QdiSerializer(diskImage));
             AddSerializer(new SclSerializer(diskImage));
             AddSerializer(new HobetaSerializer(diskImage));
 
