@@ -303,6 +303,8 @@
     <Compile Include="Interfaces\IUlaRenderer.cs" />
     <Compile Include="Serializers\DiskSerializers\ProSerializer.cs" />
     <Compile Include="Serializers\DiskSerializers\ImgSerializer.cs" />
+    <Compile Include="Serializers\DiskSerializers\QdiSerializer.cs" />
+    <Compile Include="Serializers\DiskSerializers\SectorImageSerializerBase.cs" />
     <Compile Include="Serializers\ScreenshotSerializers\BmpSerializer.cs" />
     <Compile Include="Serializers\ScreenshotSerializers\JpgSerializer.cs" />
     <Compile Include="Serializers\ScreenshotSerializers\PngSerializer.cs" />

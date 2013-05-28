@@ -282,6 +282,22 @@ namespace ZXMAK2.Entities
             }
         }
 
+        public int GetLogicalSectorSizeCode(int cyl, int side, int sec)
+        {
+            var track = GetTrackImage(cyl, side);
+            // find sector...
+            foreach (var header in track.HeaderList)
+            {
+                if (header.n == sec &&
+                    header.c == cyl &&
+                    header.dataOffset > 0)
+                {
+                    return header.l;
+                }
+            }
+            return -1;
+        }
+        
         public void ReadLogicalSector(int cyl, int side, int sec, byte[] buffer)
         {
             for (int i = 0; i < buffer.Length; i++)
