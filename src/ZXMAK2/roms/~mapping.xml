@@ -49,6 +49,9 @@
 	<RomSet name="PROFI-v450-HC">
 		<Page name="RAW" image="PROFI/profi_v450.ROM" />
 	</RomSet>
+	<RomSet name="PROFI-HDDBOOT">
+		<Page name="RAW" image="PROFI/profi-hddboot.rom" />
+	</RomSet>
 	<RomSet name="Quorum">
 		<Page name="RAW" image="QUORUM/QU7V42.rom" />
 	</RomSet>
