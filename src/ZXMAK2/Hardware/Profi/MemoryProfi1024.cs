@@ -81,9 +81,24 @@ namespace ZXMAK2.Hardware.Profi
             ramPage |= sega << 3;
 
             if (m_ulaProfi != null)
-                m_ulaProfi.SetPageMappingProfi(videoPage, norom ? 0 : -1, sco ? ramPage : 5, scr ? 6 : 2, sco ? 7 : ramPage, ds80);
+            {
+                m_ulaProfi.SetPageMappingProfi(
+                    ds80,
+                    videoPage, 
+                    norom ? 0 : -1, 
+                    sco ? ramPage : 5, 
+                    scr ? 6 : 2, 
+                    sco ? 7 : ramPage);
+            }
             else
-                m_ula.SetPageMapping(videoPage, norom ? 0 : -1, sco ? ramPage : 5, scr ? 6 : 2, sco ? 7 : ramPage);
+            {
+                m_ula.SetPageMapping(
+                    videoPage, 
+                    norom ? 0 : -1, 
+                    sco ? ramPage : 5, 
+                    scr ? 6 : 2, 
+                    sco ? 7 : ramPage);
+            }
             MapRead0000 = norom ? RamPages[0] : RomPages[romPage];
             MapRead4000 = sco ? RamPages[ramPage] : RamPages[5];
             MapRead8000 = scr ? RamPages[6] : RamPages[2];
