@@ -30,8 +30,8 @@ namespace ZXMAK2.Hardware.Profi
             m_cpu = bmgr.CPU;
             m_ulaProfi = bmgr.FindDevice<UlaProfi3XX>();
 
-            bmgr.SubscribeWrIo(0x8002, 0x0000, BusWritePort7FFD);
-            bmgr.SubscribeWrIo(0xFFFF, 0xDFFD, BusWritePortDFFD);
+            bmgr.SubscribeWrIo(0x8002, 0x7FFD & 0x8002, BusWritePort7FFD);
+            bmgr.SubscribeWrIo(0x2002, 0xDFFD & 0x2002, BusWritePortDFFD);
 
             bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
             bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
@@ -118,7 +118,9 @@ namespace ZXMAK2.Hardware.Profi
                 return;
             iorqge = false;
             if (!m_lock)
+            {
                 CMR0 = value;
+            }
         }
 
         protected virtual void BusWritePortDFFD(ushort addr, byte value, ref bool iorqge)
