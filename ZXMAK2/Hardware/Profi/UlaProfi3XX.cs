@@ -154,14 +154,25 @@ namespace ZXMAK2.Hardware.Profi
             return timing;
         }
 
-        public override void SetPageMapping(int videoPage, int page0000, int page4000, int page8000, int pageC000)
+        public override void SetPageMapping(
+            int videoPage, 
+            int page0000, 
+            int page4000, 
+            int page8000, 
+            int pageC000)
         {
             base.SetPageMapping(videoPage, page0000, page4000, page8000, pageC000);
             m_profiMode = false;
             Renderer = SpectrumRenderer;
         }
 
-        public void SetPageMappingProfi(int videoPage, int page0000, int page4000, int page8000, int pageC000, bool ds80)
+        public void SetPageMappingProfi(
+            bool ds80, 
+            int videoPage, 
+            int page0000, 
+            int page4000, 
+            int page8000, 
+            int pageC000)
         {
             base.SetPageMapping(videoPage, page0000, page4000, page8000, pageC000);
             if (Memory.RamPages.Length < 0x40)
