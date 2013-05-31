@@ -16,7 +16,7 @@ namespace ZXMAK2.MDX
         private Device m_device = null;
         private MouseStateWrapper m_state = new MouseStateWrapper();
 
-        
+
         public IMouseState MouseState
         {
             get { return m_state; }
@@ -86,7 +86,7 @@ namespace ZXMAK2.MDX
                     }
                     m_device.SetCooperativeLevel(
                         m_form,
-                        CooperativeLevelFlags.NonExclusive | 
+                        CooperativeLevelFlags.NonExclusive |
                             CooperativeLevelFlags.Foreground);
                     m_active = false;
                 }
@@ -114,8 +114,8 @@ namespace ZXMAK2.MDX
 
         private class MouseStateWrapper : IMouseState
         {
-            private int m_x = 0;
-            private int m_y = 0;
+            private int m_x = 128;
+            private int m_y = 128;
             private int m_b = 0;
 
             internal MouseStateWrapper()
