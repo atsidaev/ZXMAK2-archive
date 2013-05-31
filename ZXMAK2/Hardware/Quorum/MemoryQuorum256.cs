@@ -22,7 +22,8 @@ namespace ZXMAK2.Hardware.Quorum
         private Z80CPU m_cpu;
         private byte[][] m_ramPages = new byte[16][];
         private byte[] m_trashPage = new byte[0x4000];
-        private bool m_lock = false;
+        private bool m_lock;
+        private bool m_allowNmi;
 
         #endregion Fields
 
@@ -39,7 +40,8 @@ namespace ZXMAK2.Hardware.Quorum
             bmgr.SubscribeWrIo(0x801A, 0x7FFD & 0x801A, BusWritePort7FFD);
             bmgr.SubscribeWrIo(0x0099, 0x0000 & 0x0099, BusWritePort0000);
 
-            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3DXX_M1);
+            bmgr.SubscribeRdMemM1(0x0000, 0x0000, BusReadMemXXXX_M1);
             bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRam);
             bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRam);
             bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRam);
@@ -83,22 +85,33 @@ namespace ZXMAK2.Hardware.Quorum
             int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 
             bool blkwr = (CMR1 & Q_BLK_WR) != 0;
-            int ramPage0000 = ((CMR1 & Q_RAM_8) != 0) ? 8 : 0;
+            int ramPage0000 =  ((CMR1 & Q_RAM_8) != 0) ? 8 : 0;
             bool norom = (CMR1 & Q_F_RAM) != 0;
-            //bool dosPort = (CMR1 & Q_TR_DOS) == 0;
+            bool dosRom = (CMR1 & Q_TR_DOS) != 0;
 
-            if (DOSEN)      // trdos or 48/128
-                romPage = GetRomIndex(RomName.ROM_DOS);
-            if (SYSEN)
+            if (SYSEN && !dosRom)
+            {
                 romPage = GetRomIndex(RomName.ROM_SYS);
+            }
+            if (DOSEN)      // trdos or 48/128
+            {
+                romPage = GetRomIndex(RomName.ROM_DOS);
+                norom = !dosRom;
+            }
 
-            m_ula.SetPageMapping(videoPage, (norom && !blkwr) ? ramPage0000 : -1, 5, 2, ramPage);
+            m_ula.SetPageMapping(
+                videoPage, 
+                !blkwr ? ramPage0000 : -1, 
+                5, 
+                2, 
+                ramPage);
+            
             MapRead0000 = norom ? RamPages[ramPage0000] : RomPages[romPage];
             MapRead4000 = RamPages[5];
             MapRead8000 = RamPages[2];
             MapReadC000 = RamPages[ramPage];
 
-            MapWrite0000 = (norom && !blkwr) ? RamPages[ramPage0000] : m_trashPage;
+            MapWrite0000 = !blkwr ? RamPages[ramPage0000] : m_trashPage;
             MapWrite4000 = MapRead4000;
             MapWrite8000 = MapRead8000;
             MapWriteC000 = MapReadC000;
@@ -150,7 +163,7 @@ namespace ZXMAK2.Hardware.Quorum
             CMR1 = value;
         }
 
-        protected virtual void BusReadMem3D00_M1(ushort addr, ref byte value)
+        protected virtual void BusReadMem3DXX_M1(ushort addr, ref byte value)
         {
             if (IsRom48)
             {
@@ -166,15 +179,22 @@ namespace ZXMAK2.Hardware.Quorum
             }
         }
 
+        protected virtual void BusReadMemXXXX_M1(ushort addr, ref byte value)
+        {
+            m_allowNmi = m_cpu.INT;
+        }
+
         protected virtual void BusReset()
         {
+            DOSEN = false;
             CMR0 = 0;
             CMR1 = 0;
         }
 
         protected virtual void BusNmiRq(BusCancelArgs e)
         {
-            e.Cancel = (m_cpu.regs.PC&0xC000) == 0;
+            //e.Cancel = (m_cpu.regs.PC & 0xC000) == 0;
+            e.Cancel = DOSEN || !m_allowNmi;
         }
 
         protected virtual void BusNmiAck()
