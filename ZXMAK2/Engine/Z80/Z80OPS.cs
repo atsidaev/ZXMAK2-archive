@@ -19,7 +19,7 @@ namespace ZXMAK2.Engine.Z80
             regs.A = RDPORT(regs.MW); Tact += 4;
             regs.MW++;
         }
-        
+
         private void OUT_NN_A(byte cmd)     // OUT (N),A [11T]+ 
         {
             // 11T (4, 3, 4)
@@ -30,31 +30,31 @@ namespace ZXMAK2.Engine.Z80
             WRPORT(regs.MW, regs.A); Tact += 4;
             regs.ML++;
         }
-        
+
         private void DI(byte cmd)
         {
             IFF1 = false;
-            IFF2 = IFF1;
+            IFF2 = false;
         }
-        
+
         private void EI(byte cmd)
         {
             IFF1 = true;
             IFF2 = true;
             BINT = true;
         }
-        
+
         private void LDSPHL(byte cmd)       // LD SP,HL 
         {
             RDNOMREQ(regs.IR); Tact++;
             RDNOMREQ(regs.IR); Tact++;
             regs.SP = regs.HL;
         }
-        
+
         private void EX_SP_HL(byte cmd)     // EX (SP),HL
         {
             // 19T (4, 3, 4, 3, 5)
-            
+
             ushort tmpsp = regs.SP;
             regs.MW = RDMEM(tmpsp); Tact += 3;
             tmpsp++;
@@ -70,12 +70,12 @@ namespace ZXMAK2.Engine.Z80
             WRNOMREQ(tmpsp); Tact++;
             regs.HL = regs.MW;
         }
-        
+
         private void JP_HL_(byte cmd)       // JP (HL) 
         {
             regs.PC = regs.HL;
         }
-        
+
         private void EXDEHL(byte cmd)       // EX DE,HL 
         {
             ushort tmp;
@@ -83,12 +83,12 @@ namespace ZXMAK2.Engine.Z80
             regs.HL = regs.DE;
             regs.DE = tmp;
         }
-        
+
         private void EXAFAF(byte cmd)       // EX AF,AF' 
         {
             regs.EXAF();
         }
-        
+
         private void EXX(byte cmd)          // EXX 
         {
             regs.EXX();
@@ -106,7 +106,7 @@ namespace ZXMAK2.Engine.Z80
             if ((x & 0x100) != 0) x = (x | 0x01) & 0xFF;
             regs.A = (byte)x;
         }
-        
+
         private void RRCA(byte cmd)
         {
             regs.F = (byte)(rrcaf[regs.A] | (regs.F & (byte)(ZFLAGS.S | ZFLAGS.Z | ZFLAGS.PV)));
@@ -115,7 +115,7 @@ namespace ZXMAK2.Engine.Z80
             else x >>= 1;
             regs.A = (byte)x;
         }
-        
+
         private void RLA(byte cmd)
         {
             bool carry = (regs.F & (byte)ZFLAGS.C) != 0;
@@ -123,7 +123,7 @@ namespace ZXMAK2.Engine.Z80
             regs.A = (byte)((regs.A << 1) & 0xFF);
             if (carry) regs.A |= (byte)0x01;
         }
-        
+
         private void RRA(byte cmd)
         {
             bool carry = (regs.F & (byte)ZFLAGS.C) != 0;
@@ -131,18 +131,18 @@ namespace ZXMAK2.Engine.Z80
             regs.A = (byte)(regs.A >> 1);
             if (carry) regs.A |= (byte)0x80;
         }
-        
+
         private void DAA(byte cmd)
         {
             regs.AF = daatab[regs.A + 0x100 * ((regs.F & 3) + ((regs.F >> 2) & 4))];
         }
-        
+
         private void CPL(byte cmd)
         {
             regs.A ^= (byte)0xFF;
             regs.F = (byte)((regs.F & (int)~(ZFLAGS.F3 | ZFLAGS.F5)) | (int)(ZFLAGS.N | ZFLAGS.H) | (regs.A & (int)(ZFLAGS.F3 | ZFLAGS.F5)));
         }
-        
+
         private void SCF(byte cmd)
         {
             //regs.F = (byte)((regs.F & (int)~(ZFLAGS.H | ZFLAGS.N)) | (regs.A & (int)(ZFLAGS.F3 | ZFLAGS.F5)) | (int)ZFLAGS.C);
@@ -150,12 +150,12 @@ namespace ZXMAK2.Engine.Z80
                 (regs.A & ((int)ZFLAGS.F3 | (int)ZFLAGS.F5)) |
                 (int)ZFLAGS.C);
         }
-        
+
         private void CCF(byte cmd)
         {
             //regs.F = (byte)(((regs.F & (int)~(ZFLAGS.N | ZFLAGS.H)) | ((regs.F << 4) & (int)ZFLAGS.H) | (regs.A & (int)(ZFLAGS.F3 | ZFLAGS.F5))) ^ (int)ZFLAGS.C);
             regs.F = (byte)((regs.F & ((int)ZFLAGS.PV | (int)ZFLAGS.Z | (int)ZFLAGS.S)) |
-                ((regs.F & (int)ZFLAGS.C)!=0 ? (int)ZFLAGS.H : (int)ZFLAGS.C) | (regs.A & ((int)ZFLAGS.F3 | (int)ZFLAGS.F5)));
+                ((regs.F & (int)ZFLAGS.C) != 0 ? (int)ZFLAGS.H : (int)ZFLAGS.C) | (regs.A & ((int)ZFLAGS.F3 | (int)ZFLAGS.F5)));
         }
 
         #endregion
@@ -179,7 +179,7 @@ namespace ZXMAK2.Engine.Z80
 
             int drel = (sbyte)RDMEM(regs.PC); Tact += 3;
             regs.PC++;
-            
+
             if (--regs.B != 0)
             {
                 RDNOMREQ(regs.PC); Tact++;
@@ -352,7 +352,7 @@ namespace ZXMAK2.Engine.Z80
         private void RSTNN(byte cmd)     // RST #nn ?TIME?
         {
             // 11T (5, 3, 3)
-            
+
             RDNOMREQ(regs.IR); Tact++;
             regs.SP--;
 
@@ -382,11 +382,11 @@ namespace ZXMAK2.Engine.Z80
             regs.SP--;
             WRMEM(regs.SP, (byte)(val & 0xFF)); Tact += 3;
         }
-        
+
         private void POPRR(byte cmd)     // POP RR
         {
             // 10T (4, 3, 3)
-            
+
             ushort val = RDMEM(regs.SP);
             regs.SP++;
             Tact += 3;
@@ -417,18 +417,18 @@ namespace ZXMAK2.Engine.Z80
             alualg[op](val);
             Tact += 3;
         }
-        
+
         private void ALUAR(byte cmd)     // ADD/ADC/SUB/SBC/AND/XOR/OR/CP A,R
         {
             int r = cmd & 0x07;
             int op = (cmd & 0x38) >> 3;
             alualg[op](regs[r]);
         }
-        
+
         private void ALUA_HL_(byte cmd)     // ADD/ADC/SUB/SBC/AND/XOR/OR/CP A,(HL)
         {
             // 7T (4, 3)
-            
+
             int op = (cmd & 0x38) >> 3;
             byte val = RDMEM(regs.HL);
             alualg[op](val);
@@ -461,11 +461,11 @@ namespace ZXMAK2.Engine.Z80
             regs.MW = (ushort)(rr + 1);
             Tact += 3;
         }
-        
+
         private void LDA_NN_(byte cmd)   // LD A,(nnnn)
         {
             // 13T (4, 3, 3, 3)
-            
+
             ushort adr = RDMEM(regs.PC);
             regs.PC++;
             Tact += 3;
@@ -478,11 +478,11 @@ namespace ZXMAK2.Engine.Z80
             regs.MW = (ushort)(adr + 1);
             Tact += 3;
         }
-        
+
         private void LDHL_NN_(byte cmd)   // LD HL,(nnnn)
         {
             // 16T (4, 3, 3, 3, 3)
-            
+
             ushort adr = RDMEM(regs.PC);
             regs.PC++;
             Tact += 3;
@@ -494,7 +494,7 @@ namespace ZXMAK2.Engine.Z80
             ushort val = RDMEM(adr);
             regs.MW = (ushort)(adr + 1);
             Tact += 3;
-            
+
             val += (ushort)(RDMEM(regs.MW) * 0x100);
             regs.HL = val;
             Tact += 3;
@@ -510,15 +510,15 @@ namespace ZXMAK2.Engine.Z80
             regs.ML = (byte)(rr + 1);
             Tact += 3;
         }
-        
+
         private void LD_NN_A(byte cmd)   // LD (nnnn),A
         {
             // 13T (4, 3, 3, 3)
-            
+
             ushort adr = RDMEM(regs.PC);
             regs.PC++;
             Tact += 3;
-            
+
             adr += (ushort)(RDMEM(regs.PC) * 0x100);
             regs.PC++;
             Tact += 3;
@@ -528,11 +528,11 @@ namespace ZXMAK2.Engine.Z80
             regs.ML = (byte)(adr + 1);
             Tact += 3;
         }
-        
+
         private void LD_NN_HL(byte cmd)   // LD (nnnn),HL
         {
             // 16T (4, 3, 3, 3, 3)
-            
+
             ushort adr = RDMEM(regs.PC);
             regs.PC++;
             Tact += 3;
@@ -540,7 +540,7 @@ namespace ZXMAK2.Engine.Z80
             adr += (ushort)(RDMEM(regs.PC) * 0x100);
             regs.PC++;
             Tact += 3;
-            
+
             WRMEM(adr, regs.L);
             regs.MW = (ushort)(adr + 1);
             Tact += 3;
@@ -556,7 +556,7 @@ namespace ZXMAK2.Engine.Z80
             ushort val = RDMEM(regs.PC);
             regs.PC++;
             Tact += 3;
-            
+
             val |= (ushort)(RDMEM(regs.PC) << 8);
             regs.PC++;
             int rr = (cmd & 0x30) >> 4;
@@ -567,21 +567,21 @@ namespace ZXMAK2.Engine.Z80
         private void LDRNN(byte cmd)     // LD R,nn
         {
             // 7T (4, 3)
-            
+
             int r = (cmd & 0x38) >> 3;
             regs[r] = RDMEM(regs.PC);
             regs.PC++;
             Tact += 3;
         }
-        
+
         private void LD_HL_NN(byte cmd)     // LD (HL),nn
         {
             // 10T (4, 3, 3)
-            
+
             byte val = RDMEM(regs.PC);
             regs.PC++;
             Tact += 3;
-            
+
             WRMEM(regs.HL, val);
             Tact += 3;
         }
@@ -592,20 +592,20 @@ namespace ZXMAK2.Engine.Z80
             int rdst = (cmd & 0x38) >> 3;
             regs[rdst] = regs[rsrc];
         }
-        
+
         private void LD_HL_R(byte cmd)    // LD (HL),R
         {
             // 7T (4, 3)
-            
+
             int rsrc = cmd & 0x07;
             WRMEM(regs.HL, regs[rsrc]);
             Tact += 3;
         }
-        
+
         private void LDR_HL_(byte cmd)    // LD R,(HL)
         {
             // 7T (4, 3)
-            
+
             int rdst = (cmd & 0x38) >> 3;
             regs[rdst] = RDMEM(regs.HL);
             Tact += 3;
@@ -622,7 +622,7 @@ namespace ZXMAK2.Engine.Z80
             int rr = (cmd & 0x30) >> 4;
             regs.SetPair(rr, (ushort)(regs.GetPair(rr) - 1));
         }
-        
+
         private void INCRR(byte cmd)     // INC RR
         {
             RDNOMREQ(regs.IR); Tact++;
@@ -642,7 +642,7 @@ namespace ZXMAK2.Engine.Z80
             int r = (cmd & 0x38) >> 3;
             regs[r] = ALU_INCR(regs[r]);
         }
-        
+
         private void DEC_HL_(byte cmd)      // DEC (HL)
         {
             // 11T (4, 4, 3)
@@ -650,18 +650,18 @@ namespace ZXMAK2.Engine.Z80
             byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             val = ALU_DECR(val);
-            
+
             WRMEM(regs.HL, val); Tact += 3;
         }
 
         private void INC_HL_(byte cmd)      // INC (HL)
         {
             // 11T (4, 4, 3)
-            
+
             byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             val = ALU_INCR(val);
-            
+
             WRMEM(regs.HL, val); Tact += 3;
         }
 
