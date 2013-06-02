@@ -144,6 +144,7 @@ namespace ZXMAK2.Hardware.General.UI
             listState.Items.Add("  IM=" + m_spectrum.CPU.IM.ToString());
             listState.Items.Add("  FX=" + m_spectrum.CPU.FX.ToString());
             listState.Items.Add(" XFX=" + m_spectrum.CPU.XFX.ToString());
+            listState.Items.Add(" LPC=#" + m_spectrum.CPU.LPC.ToString("X4"));
             listState.Items.Add("Tact=" + m_spectrum.CPU.Tact.ToString());
             listState.Items.Add("frmT=" + m_spectrum.GetFrameTact().ToString());
             if (m_spectrum.RzxState.IsPlayback)
@@ -450,7 +451,7 @@ namespace ZXMAK2.Hardware.General.UI
                     if (m_spectrum.CPU.IM > 2)
                         m_spectrum.CPU.IM = 0;
                     break;
-                case 7:     //frmT
+                case 8:     //frmT
                     int frameTact = m_spectrum.GetFrameTact();
                     if (InputBox.InputValue("Frame Tact", "New Frame Tact:", "{0}", ref frameTact, 0, m_spectrum.FrameTactCount))
                     {
