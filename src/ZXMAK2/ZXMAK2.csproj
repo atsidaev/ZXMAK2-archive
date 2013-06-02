@@ -282,9 +282,11 @@
     <Compile Include="Entities\IconDescriptor.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRenderer.cs" />
     <Compile Include="Hardware\ZXBYTE\UlaByte.cs" />
+    <Compile Include="Interfaces\IHostJoystick.cs" />
     <Compile Include="Interfaces\IHostKeyboard.cs" />
     <Compile Include="Interfaces\IHostMouse.cs" />
     <Compile Include="Interfaces\IHostSound.cs" />
+    <Compile Include="Interfaces\IJoystickDevice.cs" />
     <Compile Include="Interfaces\IMachineState.cs" />
     <Compile Include="Interfaces\IBusManager.cs" />
     <Compile Include="Interfaces\IDebuggable.cs" />
@@ -301,6 +303,7 @@
     <Compile Include="Hardware\General\KeyboardDevice.cs" />
     <Compile Include="Engine\RzxHandler.cs" />
     <Compile Include="Interfaces\IUlaRenderer.cs" />
+    <Compile Include="MDX\DirectJoystick.cs" />
     <Compile Include="Serializers\DiskSerializers\ProSerializer.cs" />
     <Compile Include="Serializers\DiskSerializers\ImgSerializer.cs" />
     <Compile Include="Serializers\DiskSerializers\QdiSerializer.cs" />
