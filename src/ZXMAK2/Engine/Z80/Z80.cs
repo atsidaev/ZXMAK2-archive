@@ -29,6 +29,7 @@ namespace ZXMAK2.Engine.Z80
         public bool BINT;       // last opcode was EI or DD/FD prefix (to prevent INT handling)
         public OPFX FX;
         public OPXFX XFX;
+        public ushort LPC;      // last opcode PC
 
         public bool INT = false;
         public bool NMI = false;
@@ -64,7 +65,8 @@ namespace ZXMAK2.Engine.Z80
             {
                 if (ProcessSignals())
                     return;
-                cmd = RDMEM_M1(regs.PC);
+                LPC = regs.PC;
+                cmd = RDMEM_M1(LPC);
             }
             else
             {
