@@ -5,7 +5,7 @@ using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.General
 {
-    public class KempstonJoystick : BusDeviceBase
+    public class KempstonJoystick : BusDeviceBase, IJoystickDevice
     {
         #region Fields
 
@@ -16,8 +16,8 @@ namespace ZXMAK2.Hardware.General
 
         #region IBusDevice
 
-        public override string Name { get { return "JOYSTICK KEMPSTON (Stub)"; } }
-        public override string Description { get { return "Standard Spectrum Joystick\n\nWARNING: This is Stub device (port emulation only)!\nSorry, real joystick read is not implemented yet"; } }
+        public override string Name { get { return "JOYSTICK KEMPSTON"; } }
+        public override string Description { get { return "Kempston Joystick"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
 
         public override void BusInit(IBusManager bmgr)
@@ -37,15 +37,23 @@ namespace ZXMAK2.Hardware.General
         #endregion IBusDevice
 
 
-		protected virtual void ReadPort1F(ushort addr, ref byte value, ref bool iorqge)
+        public IJoystickState JoystickState { get; set; }
+
+
+        protected virtual void ReadPort1F(ushort addr, ref byte value, ref bool iorqge)
         {
             if (!iorqge || m_memory.DOSEN)
             {
                 return;
             }
-			iorqge = false;
-            
+            iorqge = false;
+
             value = 0x00;
+            if (JoystickState.IsLeft) value |= 0x01;
+            if (JoystickState.IsRight) value |= 0x02;
+            if (JoystickState.IsUp) value |= 0x04;
+            if (JoystickState.IsDown) value |= 0x08;
+            if (JoystickState.IsFire) value |= 0x10;
         }
     }
 }

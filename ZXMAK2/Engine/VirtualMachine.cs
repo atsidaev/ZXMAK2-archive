@@ -57,12 +57,14 @@ namespace ZXMAK2.Engine
         public event EventHandler UpdateVideo;
 
         public unsafe VirtualMachine(
-            IHostKeyboard keyboard, 
-            IHostMouse mouse, 
+            IHostKeyboard keyboard,
+            IHostMouse mouse,
+            IHostJoystick joystick,
             IHostSound sound)
         {
             m_hostKeyboard = keyboard;
             m_hostMouse = mouse;
+            m_hostJoystick = joystick;
             m_hostSound = sound;
             m_spectrum = new SpectrumConcrete();
             m_spectrum.UpdateState += OnUpdateState;
@@ -138,7 +140,7 @@ namespace ZXMAK2.Engine
         {
             if (!m_isConfigUpdate)
             {
-                SaveConfig();    
+                SaveConfig();
             }
         }
 
@@ -266,6 +268,7 @@ namespace ZXMAK2.Engine
         private SpectrumBase m_spectrum;
         private IHostKeyboard m_hostKeyboard;
         private IHostMouse m_hostMouse;
+        private IHostJoystick m_hostJoystick;
         private IHostSound m_hostSound;
 
         public int DebugFrameStartTact { get { return Spectrum.FrameStartTact; } }
@@ -279,6 +282,7 @@ namespace ZXMAK2.Engine
 
                 var keyboards = m_spectrum.BusManager.FindDevices<IKeyboardDevice>();
                 var mouses = m_spectrum.BusManager.FindDevices<IMouseDevice>();
+                var joysticks = m_spectrum.BusManager.FindDevices<IJoystickDevice>();
 
                 while (m_spectrum.IsRunning)
                 {
@@ -296,6 +300,14 @@ namespace ZXMAK2.Engine
                         foreach (var mouse in mouses)
                         {
                             mouse.MouseState = m_hostMouse.MouseState;
+                        }
+                    }
+                    if (joysticks.Count > 0)
+                    {
+                        m_hostJoystick.Scan();
+                        foreach (var joy in joysticks)
+                        {
+                            joy.JoystickState = m_hostJoystick.State;
                         }
                     }
                     m_spectrum.ExecuteFrame();

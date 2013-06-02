@@ -25,6 +25,7 @@ namespace ZXMAK2.Controls
         private VirtualMachine m_vm;
         private DirectKeyboard m_keyboard;
         private DirectMouse m_mouse;
+        private DirectJoystick m_joystick;
         private DirectSound m_sound;
 
         private bool m_fullscreen = false;
@@ -49,10 +50,11 @@ namespace ZXMAK2.Controls
             try
             {
                 renderVideo.InitWnd();
-                m_mouse = new DirectMouse(this);
                 m_keyboard = new DirectKeyboard(this);
+                m_mouse = new DirectMouse(this);
+                m_joystick = new DirectJoystick(this);
                 m_sound = new DirectSound(this, -1, 44100, 16, 2, 882 * 2 * 2, 4);
-                m_vm = new VirtualMachine(m_keyboard, m_mouse, m_sound);
+                m_vm = new VirtualMachine(m_keyboard, m_mouse, m_joystick, m_sound);
                 m_vm.Spectrum.BusManager.BusConnected += OnVmBusConnected;
                 m_vm.Spectrum.BusManager.BusDisconnect += OnVmBusDisconnect;
                 m_vm.UpdateVideo += vm_UpdateVideo;
@@ -76,6 +78,9 @@ namespace ZXMAK2.Controls
                 if (m_mouse != null)
                     m_mouse.Dispose();
                 m_mouse = null;
+                if (m_joystick != null)
+                    m_joystick.Dispose();
+                m_joystick = null;
                 if (m_sound != null)
                     m_sound.Dispose();
                 m_sound = null;
@@ -639,7 +644,7 @@ namespace ZXMAK2.Controls
             menuViewDisplayIcon.Checked = sender == menuViewDisplayIcon ? !menuViewDisplayIcon.Checked : menuViewDisplayIcon.Checked;
             menuViewDebugInfo.Checked = sender == menuViewDebugInfo ? !menuViewDebugInfo.Checked : menuViewDebugInfo.Checked;
 
-            var scaleMode = 
+            var scaleMode =
                 sender == menuViewScaleModeStretch ? ScaleMode.Stretch :
                 sender == menuViewScaleModeKeepProportion ? ScaleMode.KeepProportion :
                 sender == menuViewScaleModeFixedPixelSize ? ScaleMode.FixedPixelSize :
