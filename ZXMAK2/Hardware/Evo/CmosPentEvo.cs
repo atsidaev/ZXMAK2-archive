@@ -62,7 +62,7 @@ namespace ZXMAK2.Hardware.Evo
         {
             sandbox = bmgr.IsSandbox;
             mem = bmgr.FindDevice<MemoryPentEvo>();
-            m_fileName = bmgr.GetSatelliteFileName("eeprom");
+            m_fileName = bmgr.GetSatelliteFileName("cmos");
 
             bmgr.SubscribeReset(Reset);
             bmgr.SubscribeWrIo(0xFEFF, 0xDEF7, WrDEF7);
