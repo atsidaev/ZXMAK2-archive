@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 using ZXMAK2.Hardware;
+using System.ComponentModel;
+using System.Drawing;
 
 namespace ZXMAK2.Controls.Debugger
 {
@@ -13,6 +15,28 @@ namespace ZXMAK2.Controls.Debugger
         {
             m_memory = memory;
             InitializeComponent();
+            propGrid.SelectedObject = new BusDeviceProxy(m_memory);
+            var tc = TypeDescriptor.GetConverter(typeof(BusDeviceProxy));
+            var propCount = tc
+                .GetProperties(propGrid.SelectedObject)
+                .Count;
+            var gridVisible = propCount > 0;
+            propGrid.Visible = gridVisible;
+            if (!gridVisible)
+            {
+                ClientSize = new Size(
+                    ClientSize.Width,
+                    lblWndC000.Location.Y + lblWndC000.Height + 8);
+            }
+            else
+            {
+                var height = (propCount+5) * 16;
+                if (height > 1600) height = 1600;
+                propGrid.Height = height;
+                ClientSize = new Size(
+                    ClientSize.Width,
+                    propGrid.Location.Y + propGrid.Height);
+            }
         }
 
         private void timerUpdate_Tick(object sender, EventArgs e)

@@ -1,6 +1,7 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
+using ZXMAK2.Attributes;
 
 namespace ZXMAK2.Hardware.Atm
 {
@@ -79,15 +80,15 @@ namespace ZXMAK2.Hardware.Atm
             int sega = CMR1 & 3;   // & 7  for 1024K
             ramPage |= sega << 3;
 
-            bool norom = (m_aFE & 0x80) == 0;                 // CPUS
+            bool norom = CPUS;                 // CPUS
             if (!norom)
             {
                 if (m_lock)
                     m_aFB = (byte)(m_aFB & ~0x80);
-                if (DOSEN && (CMR1 & 8) != 0)   //CPNET?
+                if (DOSEN && CPNET)   //CPNET?
                     m_aFB |= 0x80; // more priority, then 7FFD
 
-                bool cpsys = (m_aFB & 0x80) != 0;                     // CPSYS
+                bool cpsys = CPSYS;                     // CPSYS
                 if (cpsys)
                     romPage = GetRomIndex(RomName.ROM_SYS);
                 else if (DOSEN)
@@ -126,6 +127,44 @@ namespace ZXMAK2.Hardware.Atm
             MapWriteC000 = MapReadC000;
         }
 
+        [HardwareValue("AFE", Description="High address byte of the last port #FE output")]
+        public byte AFE
+        {
+            get { return m_aFE; }
+            set { m_aFE = value; }
+        }
+
+        [HardwareValue("AFB", Description="High address byte of the last port #FB output")]
+        public byte AFB
+        {
+            get { return m_aFB; }
+            set { m_aFB = value; }
+        }
+
+        [HardwareValue("CPUS", Description="Enable RAM cache")]
+        public bool CPUS
+        {
+            get { return (m_aFE & 0x80) == 0; }
+            set { m_aFE = (byte)((m_aFE & ~0x80) | (value ? 0x80:0)); }
+        }
+
+        [HardwareValue("CPSYS", Description="Select system ROM")]
+        public bool CPSYS
+        {
+            get { return (m_aFB & 0x80) != 0; }
+            set { m_aFB = (byte)((m_aFB & ~0x80) | (value ? 0x80:0)); }
+        }
+
+        [HardwareValue("CPNET", Description="")]
+        public bool CPNET
+        {
+            get { return (CMR1 & 8) != 0; }
+            set { CMR1 = (byte)((CMR1 & ~8) | (value ? 8:0)); }
+        }
+        
+
+
+        [HardwareValue("SYSEN", Description="")]
         public override bool SYSEN
         {
             get { return (m_aFB & 0x80) != 0 && (m_aFE & 0x80) != 0; }

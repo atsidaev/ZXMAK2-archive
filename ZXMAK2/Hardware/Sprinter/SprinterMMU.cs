@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Attributes;
 
 
 namespace ZXMAK2.Hardware.Sprinter
@@ -1291,6 +1292,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         #endregion
 
+        [HardwareValue("PAGE0", Description = "Port 82 (PAGE0)")]
         public virtual byte PAGE0
         {
             get
@@ -1307,6 +1309,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
+        [HardwareValue("PAGE1", Description = "Port A2(PAGE1)")]
         public virtual byte PAGE1
         {
             get
@@ -1323,6 +1326,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
+        [HardwareValue("PAGE2", Description = "Port C2 (PAGE2)")]
         public virtual byte PAGE2
         {
             get
@@ -1339,6 +1343,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
+        [HardwareValue("PAGE3", Description = "Port E2 (PAGE3)")]
         public virtual byte PAGE3
         {
             get
@@ -1355,22 +1360,19 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
+        [HardwareValue("SYSPORT", Description = "Port XX7C/XX3C")]
         public virtual byte SYSPORT
         {
-            get
-            {
-                return this.m_sysport;
-            }
+            get { return this.m_sysport; }
         }
 
+        [HardwareValue("RGADR", Description = "Port 89 (RGADR)")]
         public virtual byte RGADR
         {
-            get
-            {
-                return this.m_port_y;
-            }
+            get { return this.m_port_y; }
         }
 
+        [HardwareValue("RGMOD", Description = "Port C9 (RGMOD)")]
         public virtual byte RGMOD
         {
             get
@@ -1379,6 +1381,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
+        [HardwareValue("SYS", Description = "Variable SYS")]
         public virtual bool SYS
         {
             get
@@ -1392,6 +1395,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
+        [HardwareValue("RA16", Description = "Variable RA16")]
         public virtual bool RA16
         {
             get

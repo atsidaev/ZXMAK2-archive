@@ -123,7 +123,7 @@ namespace ZXMAK2.Hardware.Evo
                 if (m_ulaAtm != null)
                 {
                     m_ulaAtm.SetPageMappingAtm(
-                        (AtmVideoMode)(RG | (RGEX<<3)), 
+                        VIDEO, 
                         videoPage, 
                         -1, 
                         -1, 
@@ -209,7 +209,7 @@ namespace ZXMAK2.Hardware.Evo
                 if (m_ulaAtm != null)
                 {
                     m_ulaAtm.SetPageMappingAtm(
-                        (AtmVideoMode)(RG | (RGEX << 3)),
+                        VIDEO,
                         videoPage,
                         isRam0 ? ramPage0 : -1,
                         isRam1 ? ramPage1 : -1,
@@ -268,7 +268,7 @@ namespace ZXMAK2.Hardware.Evo
             set { m_aFF77 = (m_aFF77 & ~0x4000) | (value ? 0x0000 : 0x4000); UpdateMapping(); }
         }
 
-        [HardwareValue("RG", Description = "Video mode")]
+        [HardwareValue("RG", Description = "Low bits of video mode")]
         public int RG
         {
             get { return m_pFF77 & 7; }
@@ -324,16 +324,31 @@ namespace ZXMAK2.Hardware.Evo
             set { m_pEFF7 = (byte)((m_pEFF7 & 0xEF) | (value ? 0x10 : 0)); }
         }
 
-        [HardwareValue("VideoModeEx", Description = "Extended video modes (when RG=3)")]
+        [HardwareValue("RGEX", Description = "High bits of video mode (when RG=3)")]
         public int RGEX
         {
             get { return (m_pEFF7 & 0x01) | ((m_pEFF7 & 0x20) >> 4); }
             set { m_pEFF7 = (byte)((m_pEFF7 & 0xDE) | (value & 0x01) | ((value & 2) << 4)); }
         }
 
+        [HardwareValue("VIDEO", Description = "Video Mode")]
+        public AtmVideoMode VIDEO
+        {
+            get { return (AtmVideoMode)(RG | (RGEX << 3)); }
+            set { RG = (int)value & 7; RGEX = (int)value >> 3; }
+        }
 
+        [ReadOnly(true)]
+        [HardwareValue("RU2", Description = "RU2 RAM memory manager content")]
+        public int[] RU2
+        {
+            get { return m_ru2; }
+        }
+
+        [HardwareValue("DOSEN", Description = "TRDOS flag")]
         public override bool DOSEN
         {
+            get { return base.DOSEN; }
             set { base.DOSEN = value | CPM; }
         }
 

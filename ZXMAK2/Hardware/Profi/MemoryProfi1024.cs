@@ -3,6 +3,7 @@
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Engine.Z80;
+using ZXMAK2.Attributes;
 
 
 namespace ZXMAK2.Hardware.Profi
@@ -54,6 +55,41 @@ namespace ZXMAK2.Hardware.Profi
 
         public override bool IsMap48 { get { return false; } }
 
+        [HardwareValue("DS80", Description = "Extended Video")]
+        public bool DS80
+        {
+            get { return (CMR1 & 0x80) != 0; }
+            set { CMR1 = (byte)((CMR1 & ~0x80) | (value ? 0x80 : 0)); }
+        }
+
+        [HardwareValue("SCR", Description = "Page for window #8000 (0=2,1=6)")]
+        public bool SCR
+        {
+            get { return (CMR1 & 0x40) != 0; }
+            set { CMR1 = (byte)((CMR1 & ~0x40) | (value ? 0x40 : 0)); }
+        }
+
+        [HardwareValue("CPM", Description = "")]
+        public bool CPM
+        {
+            get { return (CMR1 & 0x20) != 0; }
+            set { CMR1 = (byte)((CMR1 & ~0x20) | (value ? 0x20 : 0)); }
+        }
+
+        [HardwareValue("NOROM", Description = "Enable RAM cache")]
+        public bool NOROM
+        {
+            get { return (CMR1 & 0x10) != 0; }
+            set { CMR1 = (byte)((CMR1 & ~0x10) | (value ? 0x10 : 0)); }
+        }
+
+        [HardwareValue("SCO", Description = "Select window pos (0=#C000,1=#4000)")]
+        public bool SCO
+        {
+            get { return (CMR1 & 0x08) != 0; }
+            set { CMR1 = (byte)((CMR1 & ~0x08) | (value ? 0x08 : 0)); }
+        }
+
         protected override void UpdateMapping()
         {
             m_lock = ((CMR0 & 0x20) != 0);
@@ -69,11 +105,10 @@ namespace ZXMAK2.Hardware.Profi
                 romPage = GetRomIndex(RomName.ROM_SYS);// 3;
 
             int sega = CMR1 & 7;
-            bool norom = (CMR1 & 0x10) != 0;
-            bool sco = (CMR1 & 0x08) != 0;   // selectors RAM gates
-            bool scr = (CMR1 & 0x40) != 0;   // !??CMR0.D3=1??!
-            //bool cpm = (CMR1 & 0x20) != 0;
-            bool ds80 = (CMR1 & 0x80) != 0;
+            bool norom = NOROM;
+            bool sco = SCO;   // selectors RAM gates
+            bool scr = SCR;   // !??CMR0.D3=1??!
+            //bool cpm = CPM;
 
             if (norom)
                 m_lock = false;
@@ -83,7 +118,7 @@ namespace ZXMAK2.Hardware.Profi
             if (m_ulaProfi != null)
             {
                 m_ulaProfi.SetPageMappingProfi(
-                    ds80,
+                    DS80,
                     videoPage, 
                     norom ? 0 : -1, 
                     sco ? ramPage : 5, 
