@@ -93,6 +93,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\HardwareSwitchAttribute.cs" />
+    <Compile Include="Attributes\ReadOnlyAttribute.cs" />
+    <Compile Include="Controls\Debugger\BusDeviceTypeConverter.cs" />
     <Compile Include="Controls\DragDataWrapper.cs" />
     <Compile Include="Controls\InputBox.cs">
       <SubType>Form</SubType>

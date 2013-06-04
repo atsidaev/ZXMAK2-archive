@@ -44,6 +44,7 @@
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.chkDosen = new System.Windows.Forms.CheckBox();
             this.chkSysen = new System.Windows.Forms.CheckBox();
+            this.propGrid = new System.Windows.Forms.PropertyGrid();
             this.SuspendLayout();
             // 
             // lblCmr0
@@ -190,11 +191,21 @@
             this.chkSysen.Text = "SYSEN";
             this.chkSysen.UseVisualStyleBackColor = true;
             // 
+            // propGrid
+            // 
+            this.propGrid.Location = new System.Drawing.Point(0, 151);
+            this.propGrid.Name = "propGrid";
+            this.propGrid.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
+            this.propGrid.Size = new System.Drawing.Size(204, 245);
+            this.propGrid.TabIndex = 14;
+            this.propGrid.ToolbarVisible = false;
+            // 
             // FormMemoryMap
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(204, 155);
+            this.ClientSize = new System.Drawing.Size(204, 396);
+            this.Controls.Add(this.propGrid);
             this.Controls.Add(this.chkSysen);
             this.Controls.Add(this.chkDosen);
             this.Controls.Add(this.lblWndC000);
@@ -236,5 +247,6 @@
         private System.Windows.Forms.Timer timerUpdate;
         private System.Windows.Forms.CheckBox chkDosen;
         private System.Windows.Forms.CheckBox chkSysen;
+        private System.Windows.Forms.PropertyGrid propGrid;
     }
 }

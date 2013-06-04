@@ -246,6 +246,13 @@ namespace ZXMAK2.Hardware.Atm
             set { m_pFF77 = (m_pFF77 & ~0x20) | (value ? 0x20 : 0x00); UpdateMapping(); }
         }
 
+        [ReadOnly(true)]
+        [HardwareValue("RU2", Description = "RU2 RAM memory manager content")]
+        public int[] RU2
+        {
+            get { return m_ru2; }
+        }
+
         public override bool DOSEN
         {
             set { base.DOSEN = value | SYSEN; }
