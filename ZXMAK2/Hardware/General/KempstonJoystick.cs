@@ -2,6 +2,7 @@
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
+using System.Xml;
 
 namespace ZXMAK2.Hardware.General
 {
@@ -10,6 +11,7 @@ namespace ZXMAK2.Hardware.General
         #region Fields
 
         private IMemoryDevice m_memory;
+        private string m_hostId = string.Empty;
 
         #endregion Fields
 
@@ -23,7 +25,7 @@ namespace ZXMAK2.Hardware.General
         public override void BusInit(IBusManager bmgr)
         {
             m_memory = bmgr.FindDevice<IMemoryDevice>();
-            bmgr.SubscribeRdIo(0x00e0, 0x0000, ReadPort1F);
+            bmgr.SubscribeRdIo(0xE0, 0x00, ReadPort1F);
         }
 
         public override void BusConnect()
@@ -38,6 +40,12 @@ namespace ZXMAK2.Hardware.General
 
 
         public IJoystickState JoystickState { get; set; }
+        
+        public string HostId 
+        {
+            get { return m_hostId; }
+            set { m_hostId = value; OnConfigChanged(); }
+        }
 
 
         protected virtual void ReadPort1F(ushort addr, ref byte value, ref bool iorqge)
@@ -49,11 +57,23 @@ namespace ZXMAK2.Hardware.General
             iorqge = false;
 
             value = 0x00;
-            if (JoystickState.IsLeft) value |= 0x01;
-            if (JoystickState.IsRight) value |= 0x02;
-            if (JoystickState.IsUp) value |= 0x04;
-            if (JoystickState.IsDown) value |= 0x08;
+            if (JoystickState.IsRight) value |= 0x01;
+            if (JoystickState.IsLeft) value |= 0x02;
+            if (JoystickState.IsDown) value |= 0x04;
+            if (JoystickState.IsUp) value |= 0x08;
             if (JoystickState.IsFire) value |= 0x10;
+        }
+
+        protected override void OnConfigSave(XmlNode itemNode)
+        {
+            base.OnConfigSave(itemNode);
+            Utils.SetXmlAttribute(itemNode, "hostId", HostId);
+        }
+
+        protected override void OnConfigLoad(XmlNode itemNode)
+        {
+            base.OnConfigLoad(itemNode);
+            HostId = Utils.GetXmlAttributeAsString(itemNode, "hostId", HostId);
         }
     }
 }

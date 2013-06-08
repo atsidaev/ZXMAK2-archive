@@ -1,8 +1,11 @@
 ﻿// (c) 2013 Eltaron
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Globalization;
 using Microsoft.DirectX.DirectInput;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.MDX
@@ -11,37 +14,105 @@ namespace ZXMAK2.MDX
     {
         #region Fields
 
-        private Device m_diJoystick;
+        private const string KeyboardNumpadId = "keyboard";
+
+        private Form m_form;
+        private Dictionary<string, Device> m_devices = new Dictionary<string, Device>();
+        private Dictionary<string, IJoystickState> m_states = new Dictionary<string, IJoystickState>();
+        private Dictionary<string, bool> m_acquired = new Dictionary<string, bool>();
+        private IJoystickState m_numpadState;
 
         #endregion Fields
-
-
-        #region Properties
-
-        public IJoystickState State { get; private set; }
-
-        #endregion Properties
 
 
         #region Public
 
         public DirectJoystick(Form form)
         {
+            m_form = form;
+            m_form.Activated += WndActivated;
+            m_form.Deactivate += WndDeactivate;
+        }
+
+        public void Scan()
+        {
+            var guidList = m_devices.Keys;
+            foreach (var guid in guidList)
+            {
+                ActivateDevice(guid);
+                m_states[guid] = ScanDevice(guid);
+            }
+            if (IsKeyboardStateRequired)
+            {
+                var isUp = KeyboardState[Interfaces.Key.NumPad8];
+                var isDown = KeyboardState[Interfaces.Key.NumPad2];
+                var isLeft = KeyboardState[Interfaces.Key.NumPad4];
+                var isRight = KeyboardState[Interfaces.Key.NumPad6];
+                var isFire = KeyboardState[Interfaces.Key.NumPad5] ||
+                    KeyboardState[Interfaces.Key.NumPad0];
+                m_numpadState = new StateWrapper(
+                    isLeft,
+                    isRight,
+                    isUp,
+                    isDown,
+                    isFire);
+            }
+        }
+
+        public void Dispose()
+        {
+            m_form.Activated -= WndActivated;
+            m_form.Deactivate -= WndDeactivate;
+            foreach (var guid in m_devices.Keys)
+            {
+                ReleaseHostDevice(guid);
+            }
+        }
+
+        public void CaptureHostDevice(string hostId)
+        {
             try
             {
-                State = StateWrapper.Empty;
-                var gameControllerList = Manager.GetDevices(
+                if (hostId == string.Empty)
+                {
+                    return;
+                }
+                if (hostId == KeyboardNumpadId)
+                {
+                    IsKeyboardStateRequired = true;
+                    return;
+                }
+                var list = Manager.GetDevices(
                     DeviceClass.GameControl,
                     EnumDevicesFlags.AttachedOnly);
-                if (gameControllerList.Count > 0)
+                while (list.MoveNext())
                 {
-                    gameControllerList.MoveNext();
-                    var deviceInstance = (DeviceInstance)gameControllerList.Current;
+                    var deviceInstance = (DeviceInstance)list.Current;
+                    if (string.Compare(
+                        GetDeviceId(deviceInstance.InstanceGuid),
+                        hostId,
+                        true) != 0)
+                    {
+                        continue;
+                    }
                     var joystick = new Device(deviceInstance.InstanceGuid);
-                    joystick.SetCooperativeLevel(form, CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
-                    joystick.SetDataFormat(DeviceDataFormat.Joystick);
-                    joystick.Acquire();
-                    m_diJoystick = joystick;
+                    try
+                    {
+                        joystick.SetCooperativeLevel(m_form, CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
+                        joystick.SetDataFormat(DeviceDataFormat.Joystick);
+                        joystick.Acquire();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogAgent.Error(ex);
+                        joystick.Dispose();
+                        joystick = null;
+                    }
+                    if (joystick != null)
+                    {
+                        m_devices.Add(hostId, joystick);
+                        ActivateDevice(hostId);
+                    }
                 }
             }
             catch (Exception ex)
@@ -50,15 +121,123 @@ namespace ZXMAK2.MDX
             }
         }
 
-        public void Scan()
+        public void ReleaseHostDevice(string hostId)
         {
             try
             {
-                if (m_diJoystick == null)
+                if (hostId == KeyboardNumpadId)
                 {
-                    State = StateWrapper.Empty;
+                    IsKeyboardStateRequired = false;
                     return;
                 }
+                if (!m_devices.ContainsKey(hostId))
+                {
+                    return;
+                }
+                var device = m_devices[hostId];
+                DeactivateDevice(hostId);
+                try
+                {
+                    device.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    LogAgent.Error(ex);
+                }
+                m_devices.Remove(hostId);
+                if (m_states.ContainsKey(hostId))
+                {
+                    m_states.Remove(hostId);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+        }
+
+        public IJoystickState GetState(string hostId)
+        {
+            if (m_states.ContainsKey(hostId))
+            {
+                return m_states[hostId];
+            }
+            if (hostId == KeyboardNumpadId)
+            {
+                return m_numpadState;
+            }
+            return StateWrapper.Empty;
+        }
+
+        public IKeyboardState KeyboardState { get; set; }
+        public bool IsKeyboardStateRequired { get; private set; }
+
+        #endregion Public
+
+
+        #region Private
+
+        private static string GetDeviceId(Guid guid)
+        {
+            return guid.ToString(null, CultureInfo.InvariantCulture);
+        }
+
+        private void WndActivated(object sender, EventArgs e)
+        {
+            var guidList = m_devices.Keys;
+            foreach (var guid in guidList)
+            {
+                ActivateDevice(guid);
+            }
+        }
+
+        private void WndDeactivate(object sender, EventArgs e)
+        {
+            var guidList = m_devices.Keys;
+            foreach (var guid in guidList)
+            {
+                DeactivateDevice(guid);
+            }
+        }
+
+        private void ActivateDevice(string guid)
+        {
+            try
+            {
+                var device = m_devices[guid];
+                var acquired = m_acquired.ContainsKey(guid) &&
+                    m_acquired[guid];
+                if (!acquired)
+                {
+                    device.Acquire();
+                }
+                m_acquired[guid] = true;
+            }
+            catch
+            {
+                m_acquired[guid] = false;
+            }
+        }
+
+        private void DeactivateDevice(string guid)
+        {
+            try
+            {
+                var device = m_devices[guid];
+                device.Unacquire();
+                m_acquired[guid] = false;
+            }
+            catch
+            {
+            }
+        }
+
+
+        private IJoystickState ScanDevice(string hostId)
+        {
+            try
+            {
+                var device = m_devices[hostId];
 
                 // axisTolerance check is needed because of little fluctuation of axis values even when nothing is pressed.
                 int axisTolerance = 0x1000; // Should this be taken from joystick device somehow?
@@ -66,13 +245,13 @@ namespace ZXMAK2.MDX
 
                 try
                 {
-                    m_diJoystick.Poll();
-                    var diState = m_diJoystick.CurrentJoystickState;
+                    device.Poll();
+                    var diState = device.CurrentJoystickState;
 
-                    var isUp = diState.Y > center && diState.Y - center > axisTolerance;
-                    var isDown = diState.Y < center && center - diState.Y > axisTolerance;
-                    var isLeft = diState.X > center && diState.X - center > axisTolerance;
-                    var isRight = diState.X < center && center - diState.X > axisTolerance;
+                    var isDown = diState.Y > center && diState.Y - center > axisTolerance;
+                    var isUp = diState.Y < center && center - diState.Y > axisTolerance;
+                    var isRight = diState.X > center && diState.X - center > axisTolerance;
+                    var isLeft = diState.X < center && center - diState.X > axisTolerance;
                     var isFire = false;
 
                     var buttons = diState.GetButtons();
@@ -82,7 +261,7 @@ namespace ZXMAK2.MDX
                         isFire |= (button & 0x80) != 0;
                     }
 
-                    State = new StateWrapper(
+                    return new StateWrapper(
                         isLeft,
                         isRight,
                         isUp,
@@ -91,41 +270,14 @@ namespace ZXMAK2.MDX
                 }
                 catch (InputLostException)
                 {
-                    State = StateWrapper.Empty;
-                    ReleaseJoystick();
+                    ReleaseHostDevice(hostId);
                 }
             }
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
             }
-        }
-
-        public void Dispose()
-        {
-            if (m_diJoystick != null)
-            {
-                ReleaseJoystick();
-            }
-        }
-
-        #endregion Public
-
-
-        #region Private
-
-        private void ReleaseJoystick()
-        {
-            try
-            {
-                m_diJoystick.Unacquire();
-                m_diJoystick.Dispose();
-                m_diJoystick = null;
-            }
-            catch (Exception ex)
-            {
-                LogAgent.Error(ex);
-            }
+            return StateWrapper.Empty;
         }
 
         private class StateWrapper : IJoystickState
@@ -173,5 +325,40 @@ namespace ZXMAK2.MDX
         }
 
         #endregion Private
+
+        #region Static
+
+        public static IEnumerable<HostDeviceInfo> Select()
+        {
+            var list = new List<HostDeviceInfo>();
+            try
+            {
+                var devList = Manager.GetDevices(
+                    DeviceClass.GameControl,
+                    EnumDevicesFlags.AttachedOnly);
+                while (devList.MoveNext())
+                {
+                    var deviceInstance = (DeviceInstance)devList.Current;
+                    var hdi = new HostDeviceInfo(
+                        deviceInstance.InstanceName,
+                        GetDeviceId(deviceInstance.InstanceGuid));
+                    list.Add(hdi);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+            list.Sort();
+            list.Insert(
+                0,
+                new HostDeviceInfo("Keyboard Numpad", KeyboardNumpadId));
+            list.Insert(
+                0,
+                new HostDeviceInfo("None", string.Empty));
+            return list;
+        }
+
+        #endregion Static
     }
 }
