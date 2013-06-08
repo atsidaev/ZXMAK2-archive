@@ -94,6 +94,18 @@
   <ItemGroup>
     <Compile Include="Attributes\HardwareSwitchAttribute.cs" />
     <Compile Include="Attributes\ReadOnlyAttribute.cs" />
+    <Compile Include="Controls\Configuration\CtlSettingsHayesModem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsHayesModem.designer.cs">
+      <DependentUpon>CtlSettingsHayesModem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsJoystick.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Configuration\CtlSettingsJoystick.Designer.cs">
+      <DependentUpon>CtlSettingsJoystick.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Debugger\BusDeviceTypeConverter.cs" />
     <Compile Include="Controls\DragDataWrapper.cs" />
     <Compile Include="Controls\InputBox.cs">
@@ -109,6 +121,7 @@
     <Compile Include="Crc\CrcUdi.cs" />
     <Compile Include="Crc\CrcTd0.cs" />
     <Compile Include="Crc\CrcVg93.cs" />
+    <Compile Include="Engine\InputAggregator.cs" />
     <Compile Include="Entities\Breakpoint.cs" />
     <Compile Include="Controls\Configuration\ConfigScreenControl.cs">
       <SubType>UserControl</SubType>
@@ -171,6 +184,7 @@
       <DependentUpon>dbgWD1793.cs</DependentUpon>
     </Compile>
     <Compile Include="Engine\DeviceEnumerator.cs" />
+    <Compile Include="Entities\HostDeviceInfo.cs" />
     <Compile Include="Entities\RzxFrame.cs" />
     <Compile Include="Entities\BusDeviceCategory.cs" />
     <Compile Include="Entities\BusDeviceDescriptor.cs" />
@@ -203,6 +217,7 @@
     <Compile Include="Hardware\Evo\UlaPentEvo.cs" />
     <Compile Include="Hardware\Evo\ZsdPentEvo.cs" />
     <Compile Include="Hardware\General\FddController.cs" />
+    <Compile Include="Hardware\General\HayesModem.cs" />
     <Compile Include="Hardware\IC\AtaPort.cs" />
     <Compile Include="Hardware\IC\NvramChip.cs" />
     <Compile Include="Hardware\IC\RtcChip.cs" />
@@ -442,6 +457,12 @@
     <Compile Include="ZipLib\Zip\ZipInputStream.cs" />
     <Compile Include="ZipLib\Zip\ZipNameTransform.cs" />
     <Compile Include="ZipLib\Zip\ZipOutputStream.cs" />
+    <EmbeddedResource Include="Controls\Configuration\CtlSettingsHayesModem.resx">
+      <DependentUpon>CtlSettingsHayesModem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Configuration\CtlSettingsJoystick.resx">
+      <DependentUpon>CtlSettingsJoystick.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\Configuration\CtlSettingsBetaDisk.resx">
       <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
     </EmbeddedResource>

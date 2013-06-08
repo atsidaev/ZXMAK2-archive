@@ -280,37 +280,19 @@ namespace ZXMAK2.Engine
             {
                 m_spectrum.IsRunning = true;
 
-                var keyboards = m_spectrum.BusManager.FindDevices<IKeyboardDevice>();
-                var mouses = m_spectrum.BusManager.FindDevices<IMouseDevice>();
-                var joysticks = m_spectrum.BusManager.FindDevices<IJoystickDevice>();
-
-                while (m_spectrum.IsRunning)
+                using (var input = new InputAggregator(
+                    m_hostKeyboard,
+                    m_hostMouse,
+                    m_hostJoystick,
+                    m_spectrum.BusManager.FindDevices<IKeyboardDevice>().ToArray(),
+                    m_spectrum.BusManager.FindDevices<IMouseDevice>().ToArray(),
+                    m_spectrum.BusManager.FindDevices<IJoystickDevice>().ToArray()))
                 {
-                    if (keyboards.Count > 0)
+                    while (m_spectrum.IsRunning)
                     {
-                        m_hostKeyboard.Scan();
-                        foreach (var kbd in keyboards)
-                        {
-                            kbd.KeyboardState = m_hostKeyboard.State;
-                        }
+                        input.Scan();
+                        m_spectrum.ExecuteFrame();
                     }
-                    if (mouses.Count > 0)
-                    {
-                        m_hostMouse.Scan();
-                        foreach (var mouse in mouses)
-                        {
-                            mouse.MouseState = m_hostMouse.MouseState;
-                        }
-                    }
-                    if (joysticks.Count > 0)
-                    {
-                        m_hostJoystick.Scan();
-                        foreach (var joy in joysticks)
-                        {
-                            joy.JoystickState = m_hostJoystick.State;
-                        }
-                    }
-                    m_spectrum.ExecuteFrame();
                 }
             }
             catch (Exception ex)

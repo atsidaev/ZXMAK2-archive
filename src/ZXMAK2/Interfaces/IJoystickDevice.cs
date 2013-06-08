@@ -1,9 +1,11 @@
-﻿
+﻿using System;
+
 
 namespace ZXMAK2.Interfaces
 {
     public interface IJoystickDevice
     {
+        string HostId { get; set; }
         IJoystickState JoystickState { get; set; }
     }
 
