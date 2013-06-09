@@ -53,7 +53,14 @@ namespace ZXMAK2.Controls.Configuration
         public override void Apply()
         {
             var hdi = (HostDeviceInfo)cbxType.SelectedItem;
-            m_device.HostId = hdi.HostId;
+            if (hdi != null)
+            {
+                m_device.HostId = hdi.HostId;
+            }
+            else
+            {
+                m_device.HostId = string.Empty;
+            }
             Init(m_bmgr, m_device);
         }
 
