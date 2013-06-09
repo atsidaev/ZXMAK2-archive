@@ -17,6 +17,7 @@ namespace ZXMAK2.MDX
         private const string KeyboardNumpadId = "keyboard";
 
         private Form m_form;
+        private IntPtr m_hwnd;
         private Dictionary<string, Device> m_devices = new Dictionary<string, Device>();
         private Dictionary<string, IJoystickState> m_states = new Dictionary<string, IJoystickState>();
         private Dictionary<string, bool> m_acquired = new Dictionary<string, bool>();
@@ -30,6 +31,7 @@ namespace ZXMAK2.MDX
         public DirectJoystick(Form form)
         {
             m_form = form;
+            m_hwnd = form.Handle;
             m_form.Activated += WndActivated;
             m_form.Deactivate += WndDeactivate;
         }
@@ -98,7 +100,7 @@ namespace ZXMAK2.MDX
                     var joystick = new Device(deviceInstance.InstanceGuid);
                     try
                     {
-                        joystick.SetCooperativeLevel(m_form, CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
+                        joystick.SetCooperativeLevel(m_hwnd, CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
                         joystick.SetDataFormat(DeviceDataFormat.Joystick);
                         joystick.Acquire();
                     }
