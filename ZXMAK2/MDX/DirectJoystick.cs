@@ -239,6 +239,11 @@ namespace ZXMAK2.MDX
         {
             try
             {
+                if (!m_acquired.ContainsKey(hostId) || 
+                    !m_acquired[hostId])
+                {
+                    return StateWrapper.Empty;
+                }
                 var device = m_devices[hostId];
 
                 // axisTolerance check is needed because of little fluctuation of axis values even when nothing is pressed.
@@ -270,9 +275,14 @@ namespace ZXMAK2.MDX
                         isDown,
                         isFire);
                 }
+                catch (NotAcquiredException)
+                {
+                    m_acquired[hostId] = false;
+                }
                 catch (InputLostException)
                 {
-                    ReleaseHostDevice(hostId);
+                    m_acquired[hostId] = false;
+                    //ReleaseHostDevice(hostId);
                 }
             }
             catch (Exception ex)
