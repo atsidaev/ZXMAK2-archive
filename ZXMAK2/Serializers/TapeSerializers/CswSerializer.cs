@@ -31,127 +31,163 @@ namespace ZXMAK2.Serializers.TapeSerializers
 
         public override void Deserialize(Stream stream)
         {
-            var hdr = new byte[0x34];
-            stream.Read(hdr, 0, 0x20);
+            try
+            {
+                var hdr = new byte[0x34];
+                stream.Read(hdr, 0, 0x20);
 
-            if (Encoding.ASCII.GetString(hdr, 0, 22) != "Compressed Square Wave")
-            {
-                DialogProvider.Show(
-                    "Invalid CSW file, identifier not found! ",
-                    "CSW loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
-                return;
-            }
-            var version = hdr[0x17];
-            if (version > 2)
-            {
-                DialogProvider.Show(
-                    string.Format("Format CSW V{0}.{1} not supported!", hdr[0x17], hdr[0x18]),
-                    "CSW loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
-                return;
-            }
-            if (version == 2)  // CSW V2
-            {
-                stream.Read(hdr, 0x20, 0x14);
-                byte[] extHdr = new byte[hdr[0x23]];
-                stream.Read(extHdr, 0, extHdr.Length);
-            }
-            var cswSampleRate = version == 2 ?
-                BitConverter.ToInt32(hdr, 0x19) : 
-                BitConverter.ToUInt16(hdr, 0x19);
-            var cswCompressionType = version == 2 ?
-                hdr[0x21] : 
-                hdr[0x1B];
-
-            var dataSize = version == 2 ?
-                BitConverter.ToInt32(hdr, 0x1D) :
-                stream.Length - 0x20;
-            var buf = new byte[dataSize];
-
-            if (cswCompressionType == 1)        // RLE
-            {
-                stream.Read(buf, 0, buf.Length);
-            }
-            else if (cswCompressionType == 2)   // Z-RLE
-            {
-                csw2_uncompress(stream, buf);
-            }
-            else
-            {
-                DialogProvider.Show(
-                    "Unknown compression type!",
-                    "CSW loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
-                return;
-            }
-
-            var tactsPerSecond = _tape.TactsPerSecond;
-            var rate = tactsPerSecond / (double)cswSampleRate; // usually 3.5mhz / 44khz
-
-            var list = new List<TapeBlock>();
-            var pulses = new List<int>();
-            var blockTime = 0;
-            var blockCounter = 0;
-
-            for (var ptr = 0; ptr < buf.Length; )
-            {
-                double rle = buf[ptr++];
-                if (rle == 0x00)
+                var txtInfo = string.Empty;
+                if (Encoding.ASCII.GetString(hdr, 0, 22) != "Compressed Square Wave")
                 {
-                    rle = BitConverter.ToInt32(buf, ptr);
-                    ptr += 4;
+                    DialogProvider.Show(
+                        "Invalid CSW file, identifier not found! ",
+                        "CSW loader",
+                        DlgButtonSet.OK,
+                        DlgIcon.Error);
+                    return;
                 }
-                var len = (int)Math.Round(rle * rate, MidpointRounding.AwayFromZero);
-                pulses.Add(len);
+                var version = hdr[0x17];
+                if (version > 2)
+                {
+                    DialogProvider.Show(
+                        string.Format("Format CSW V{0}.{1} not supported!", hdr[0x17], hdr[0x18]),
+                        "CSW loader",
+                        DlgButtonSet.OK,
+                        DlgIcon.Error);
+                    return;
+                }
+                if (version == 2)  // CSW V2
+                {
+                    stream.Read(hdr, 0x20, 0x14);
 
-                blockTime += len;
-                if (blockTime >= tactsPerSecond * 2)
+                    var binDesc = new List<byte>();
+                    for (var i = 0; i < 16 && hdr[0x24 + i] != 0; i++)
+                    {
+                        binDesc.Add(hdr[0x24 + i]);
+                    }
+                    txtInfo = Encoding.ASCII.GetString(binDesc.ToArray());
+
+                    var extHdr = new byte[hdr[0x23]];
+                    stream.Read(extHdr, 0, extHdr.Length);
+                }
+                var cswSampleRate = version == 2 ?
+                    BitConverter.ToInt32(hdr, 0x19) :
+                    BitConverter.ToUInt16(hdr, 0x19);
+                var cswCompressionType = version == 2 ?
+                    hdr[0x21] :
+                    hdr[0x1B];
+                // Flags b0: initial polarity; if set, the signal starts at logical high
+                var cswFlags = version == 2 ?
+                    hdr[0x22] :
+                    hdr[0x1C];
+                var cswPulseCount = version == 2 ?
+                    BitConverter.ToInt32(hdr, 0x1D) :
+                    (int)stream.Length - 0x20;
+                var rleData = LoadRleData(
+                    stream,
+                    cswCompressionType,
+                    cswPulseCount);
+
+                var tactsPerSecond = _tape.TactsPerSecond;
+                var ratio = tactsPerSecond / (double)cswSampleRate; // usually 3.5mhz / 44khz
+
+                var list = new List<TapeBlock>();
+                var pulses = new List<int>();
+                var blockTime = 0;
+                var blockCounter = 0;
+                foreach (var rle in rleData)
+                {
+                    var len = (int)Math.Round(rle * ratio, MidpointRounding.AwayFromZero);
+                    pulses.Add(len);
+
+                    blockTime += len;
+                    if (blockTime >= tactsPerSecond * 2)
+                    {
+                        var tb = new TapeBlock();
+                        tb.Description = string.Format("CSW-{0:D3}", blockCounter++);
+                        tb.Periods = new List<int>(pulses);
+                        list.Add(tb);
+                        blockTime = 0;
+                        pulses.Clear();
+                    }
+                }
+                if (pulses.Count > 0)
                 {
                     var tb = new TapeBlock();
                     tb.Description = string.Format("CSW-{0:D3}", blockCounter++);
                     tb.Periods = new List<int>(pulses);
                     list.Add(tb);
-                    blockTime = 0;
-                    pulses.Clear();
                 }
+
+                _tape.Blocks.Clear();
+                if (txtInfo != string.Empty)
+                {
+                    var desc = new TapeBlock();
+                    desc.Periods = new List<int>();
+                    desc.Description = string.Format("[{0}]", txtInfo);
+                    _tape.Blocks.Add(desc);
+                }
+                _tape.Blocks.AddRange(list);
+                _tape.Reset();
             }
-            if (pulses.Count > 0)
+            catch (Exception ex)
             {
-                var tb = new TapeBlock();
-                tb.Description = string.Format("CSW-{0:D3}", blockCounter++);
-                tb.Periods = new List<int>(pulses);
-                list.Add(tb);
+                LogAgent.Error(ex);
+                DialogProvider.Show(
+                    ex.Message,
+                    "CSW loader",
+                    DlgButtonSet.OK,
+                    DlgIcon.Error);
+                return;
             }
-            _tape.Blocks.Clear();
-            _tape.Blocks.AddRange(list);
-            _tape.Reset();
         }
 
         #endregion
 
 
-        #region private
+        #region Private
 
-        /// <summary>
-        /// Decompress Z-RLE compressed stream
-        /// </summary>
-        /// <param name="stream">input stream</param>
-        /// <param name="buffer">buffer to decompress</param>
-        private int csw2_uncompress(Stream stream, byte[] buffer)
+        private static IEnumerable<int> LoadRleData(
+            Stream stream,
+            byte type,
+            int dataSize)
         {
-            // fix problem known as "Block length does not match with its complement."
-            // see http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=97064
-            stream.ReadByte();
-            stream.ReadByte();
-
-            DeflateStream gzip = new DeflateStream(stream, System.IO.Compression.CompressionMode.Decompress, false);
-            return gzip.Read(buffer, 0, buffer.Length);
+            if (type == 2)   // Z-RLE
+            {
+                stream = new ZipLib.Zip.Compression.Streams.InflaterInputStream(stream);
+            }
+            else if (type != 1)
+            {
+                throw new Exception("Unknown compression type!");
+            }
+            var list = new List<int>();
+            while ((type == 1 && stream.Position < stream.Length) ||
+                (type == 2 && list.Count < dataSize))
+            {
+                byte[] buf = new byte[4];
+                var read = stream.Read(buf, 0, 1);
+                if (read != 1)
+                {
+                    throw new Exception("Unexpected end of stream");
+                }
+                if (buf[0] == 0)
+                {
+                    read = stream.Read(buf, 0, 4);
+                    if (read != 4)
+                    {
+                        throw new Exception("Unexpected end of stream");
+                    }
+                }
+                var rle =
+                    (buf[0] << 0) |
+                    (buf[1] << 8) |
+                    (buf[2] << 16) |
+                    (buf[3] << 24);
+                list.Add(rle);
+            }
+            return list;
         }
 
-        #endregion
+        #endregion Private
     }
 }
