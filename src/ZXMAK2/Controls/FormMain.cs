@@ -32,8 +32,7 @@ namespace ZXMAK2.Controls
         private Size m_size;
         private FormBorderStyle m_style;
 
-        private String m_lastDir = ".";
-
+        
         public FormMain()
         {
             SetStyle(ControlStyles.Opaque, true);
@@ -439,9 +438,8 @@ namespace ZXMAK2.Controls
 
         private void menuFileOpen_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog loadDialog = new OpenFileDialog())
+            using (var loadDialog = new OpenFileDialog())
             {
-                loadDialog.InitialDirectory = m_lastDir;
                 loadDialog.SupportMultiDottedExtensions = true;
                 loadDialog.Title = "Open...";
                 loadDialog.Filter = m_vm.Spectrum.Loader.GetOpenExtFilter();
@@ -450,12 +448,12 @@ namespace ZXMAK2.Controls
                 loadDialog.ShowReadOnly = true;
                 loadDialog.ReadOnlyChecked = true;
                 loadDialog.CheckFileExists = true;
-                loadDialog.FileOk += new CancelEventHandler(loadDialog_FileOk);
-                if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                loadDialog.FileOk += loadDialog_FileOk;
+                if (loadDialog.ShowDialog() != DialogResult.OK)
+                {
                     return;
+                }
                 OpenFile(loadDialog.FileName, loadDialog.ReadOnlyChecked);
-
-                m_lastDir = Path.GetFullPath(loadDialog.FileName);
             }
         }
 
@@ -463,7 +461,7 @@ namespace ZXMAK2.Controls
         {
             try
             {
-                OpenFileDialog loadDialog = sender as OpenFileDialog;
+                var loadDialog = sender as OpenFileDialog;
                 if (loadDialog == null) return;
                 e.Cancel = !m_vm.Spectrum.Loader.CheckCanOpenFileName(loadDialog.FileName);
             }
@@ -477,17 +475,18 @@ namespace ZXMAK2.Controls
 
         private void menuFileSaveAs_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            using (var saveDialog = new SaveFileDialog())
             {
-                saveDialog.InitialDirectory = ".";
                 saveDialog.SupportMultiDottedExtensions = true;
                 saveDialog.Title = "Save...";
                 saveDialog.Filter = m_vm.Spectrum.Loader.GetSaveExtFilter();
                 saveDialog.DefaultExt = m_vm.Spectrum.Loader.GetDefaultExtension();
                 saveDialog.FileName = "";
                 saveDialog.OverwritePrompt = true;
-                if (saveDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                if (saveDialog.ShowDialog() != DialogResult.OK)
+                {
                     return;
+                }
                 SaveFile(saveDialog.FileName);
             }
         }
