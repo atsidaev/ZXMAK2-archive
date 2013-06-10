@@ -34,29 +34,17 @@ namespace ZXMAK2.Serializers.TapeSerializers
             var reader = new WavStreamReader(stream);
 
             var tactsPerSecond = m_tape.TactsPerSecond;
-            var rate = tactsPerSecond / (double)reader.Header.FmtSampleRate; // usually 3.5mhz / 44khz
+            var ratio = tactsPerSecond / (double)reader.Header.FmtSampleRate; // usually 3.5mhz / 44khz
+
+            var rleData = LoadRleData(reader);
 
             var list = new List<TapeBlock>();
             var pulses = new List<int>();
             var blockTime = 0;
             var blockCounter = 0;
-
-            var smpCounter = 0;
-            var state = reader.ReadNext();
-            for (var i = 0; i < reader.Count; i++)
+            foreach (var rle in rleData)
             {
-                var sample = reader.ReadNext();
-                smpCounter++;
-                if ((state < 0 && sample < 0) ||
-                    (state >= 0 && sample >= 0))
-                {
-                    continue;
-                }
-                double rle = smpCounter;
-                smpCounter = 0;
-                state = sample;
-
-                var len = (int)Math.Round(rle * rate, MidpointRounding.AwayFromZero);
+                var len = (int)Math.Round(rle * ratio, MidpointRounding.AwayFromZero);
                 pulses.Add(len);
 
                 blockTime += len;
@@ -83,6 +71,32 @@ namespace ZXMAK2.Serializers.TapeSerializers
         }
 
         #endregion
+
+
+        #region Private
+
+        private static IEnumerable<int> LoadRleData(WavStreamReader reader)
+        {
+            var list = new List<int>();
+            var smpCounter = 0;
+            var state = reader.ReadNext();
+            for (var i = 0; i < reader.Count; i++)
+            {
+                var sample = reader.ReadNext();
+                smpCounter++;
+                if ((state < 0 && sample < 0) ||
+                    (state >= 0 && sample >= 0))
+                {
+                    continue;
+                }
+                list.Add(smpCounter);
+                smpCounter = 0;
+                state = sample;
+            }
+            return list;
+        }
+
+        #endregion Private
     }
 
     public class WavStreamReader
