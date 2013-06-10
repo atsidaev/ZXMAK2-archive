@@ -285,24 +285,32 @@ namespace ZXMAK2.Engine
 
         private byte RDPORT(ushort addr)
         {
-            BusReadIoProc proc = m_mapReadPort[addr];
-            byte result = m_cpu.BUS;
-            bool iorqge = true;
+            var proc = m_mapReadPort[addr];
+            var result = m_cpu.BUS;
             if (proc != null)
+            {
+                var iorqge = true;
                 proc(addr, ref result, ref iorqge);
+            }
             if (RzxHandler.IsPlayback)
+            {
                 return RzxHandler.GetInput();
+            }
+            else if (RzxHandler.IsRecording)
+            {
+                RzxHandler.SetInput(result);
+            }
             return result;
         }
 
         private void WRPORT(ushort addr, byte value)
         {
-            if (RzxHandler.IsRecording)
-                RzxHandler.SetInput(value);
-            BusWriteIoProc proc = m_mapWritePort[addr];
-            bool iorqge = true;
+            var proc = m_mapWritePort[addr];
             if (proc != null)
+            {
+                var iorqge = true;
                 proc(addr, value, ref iorqge);
+            }
         }
 
         private void RDNOMREQ(ushort addr)
@@ -577,7 +585,7 @@ namespace ZXMAK2.Engine
                 return;
             }
             m_frameOpened = false;
-            
+
             var endHandler = m_endFrame;
             if (endHandler != null)
             {
