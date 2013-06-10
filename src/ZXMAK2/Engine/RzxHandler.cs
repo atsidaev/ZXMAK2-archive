@@ -42,12 +42,7 @@ using ZXMAK2.Entities;
 
           public byte GetInput()
           {
-              //if (m_playFrame==117 && m_playIndex==6)
-              //{
-              //    Spec.AddBreakpoint(0x0296);
-              //}
-
-              RzxFrame frame = m_frameArray[m_playFrame];
+              var frame = m_frameArray[m_playFrame];
               if (m_playIndex < frame.InputData.Length)
               {
                   //LogAgent.Info("RZX: get {0}:{1}=#{2:X2}  RZX={3} PC=#{4:X4}", m_playFrame, m_playIndex, frame.IOData[m_playIndex], m_cpu.RzxCounter, m_cpu.regs.PC);
@@ -85,11 +80,15 @@ using ZXMAK2.Entities;
           {
               if (!IsPlayback)
                   return false;
-              RzxFrame frame = m_frameArray[m_playFrame];
+              var frame = m_frameArray[m_playFrame];
               if (m_cpu.RzxCounter < frame.FetchCount)
+              {
                   return false;
+              }
               if (m_cpu.FX != OPFX.NONE || m_cpu.XFX != OPXFX.NONE)
+              {
                   return true;
+              }
               //LogAgent.Info("RZX: ---- int  RZX={0} PC=#{1:X4} ----", m_cpu.RzxCounter, m_cpu.regs.PC, m_busMgr.GetFrameTact());
               if (m_playIndex != frame.InputData.Length)
               {
