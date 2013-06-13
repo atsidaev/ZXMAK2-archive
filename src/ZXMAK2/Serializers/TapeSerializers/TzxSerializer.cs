@@ -438,6 +438,14 @@ namespace ZXMAK2.Serializers.TapeSerializers
                 _tape.Blocks.Add(tb);
                 tzxBlocks.Add(tb);
             }
+            var ltb = _tape.Blocks.Count > 0 ?
+                _tape.Blocks[_tape.Blocks.Count-1] :
+                null;
+            if (ltb != null)
+            {
+                ltb.Periods.Add(_tape.TactsPerSecond / 220);
+                ltb.Periods.Add(_tape.TactsPerSecond / 220);
+            }
             _tape.Reset();
         }
 
