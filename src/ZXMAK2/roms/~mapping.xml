@@ -43,7 +43,10 @@
 	<RomSet name="PROFI">
 		<Page name="RAW" image="PROFI/PROF-M.ROM" />
 	</RomSet>
-	<RomSet name="Profi3XX">
+	<RomSet name="PROFI-V03">
+		<Page name="RAW" image="PROFI/PROFI_v03.ROM" />
+	</RomSet>
+	<RomSet name="PROFI-M-V1.0">
 		<Page name="RAW" image="PROFI/profi_v10.rom" />
 	</RomSet>
 	<RomSet name="PROFI-v450-HC">

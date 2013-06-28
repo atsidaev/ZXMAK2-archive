@@ -15,6 +15,7 @@ namespace ZXMAK2.Hardware.Profi
         private Z80CPU m_cpu;
         private UlaProfi3XX m_ulaProfi;
         private bool m_lock = false;
+        private int m_cmr1mask;
         
         #endregion Fields
 
@@ -100,7 +101,7 @@ namespace ZXMAK2.Hardware.Profi
             if (SYSEN)
                 romPage = GetRomIndex(RomName.ROM_SYS);// 3;
 
-            int sega = CMR1 & 7;
+            int sega = CMR1 & m_cmr1mask;
             bool norom = NOROM;
             bool sco = SCO;   // selectors RAM gates
             bool scr = SCR;   // !??CMR0.D3=1??!
@@ -225,10 +226,22 @@ namespace ZXMAK2.Hardware.Profi
             int ramPageCount)
             : base(romSetName, romPageCount, ramPageCount)
         {
+            m_cmr1mask = (ramPageCount / 8) - 1;
         }
 
         public MemoryProfi1024()
             : this("PROFI", 4, 64)
+        {
+        }
+    }
+
+    public class MemoryProfi512 : MemoryProfi1024
+    {
+        public override string Name { get { return "PROFI+ 512K"; } }
+        public override string Description { get { return "PROFI+ 512K Memory Manager"; } }
+        
+        public MemoryProfi512()
+            : base("PROFI-V03", 4, 32)
         {
         }
     }
