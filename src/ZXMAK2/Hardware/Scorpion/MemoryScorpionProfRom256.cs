@@ -47,32 +47,25 @@ namespace ZXMAK2.Hardware.Scorpion
         #endregion
 
 
-        protected byte[][] m_romPages = new byte[16][];
         private int m_profPlane = 0;
 
-
-        public MemoryScorpionProfRom256()
-            : base("Scorpion-ProfRom")
+        public MemoryScorpionProfRom256(
+            String romSetName, 
+            int romPageCount, 
+            int ramPageCount)
+            : base(romSetName, romPageCount, ramPageCount)
         {
-            InitRom();
         }
 
-        public override byte[][] RomPages { get { return m_romPages; } }
+        public MemoryScorpionProfRom256()
+            : this("Scorpion-ProfRom", 16, 16)
+        {
+        }
 
         // needs to allow enable DOS when m_profPlane!=0
         public override bool IsRom48
         {
             get { return !SYSEN && !DOSEN && (CMR0 & 0x10) != 0; }
-        }
-
-        protected virtual void InitRom()
-        {
-            // init prof-rom
-            m_romPages = new byte[16][];
-            for (int i = 0; i < m_romPages.Length; i++)
-            {
-                m_romPages[i] = new byte[0x4000];
-            }
         }
 
         public override void ResetState()
@@ -98,13 +91,9 @@ namespace ZXMAK2.Hardware.Scorpion
 
         #endregion
 
-        protected override void InitRam()
+        public MemoryScorpionProfRom1024()
+            : base("Scorpion-ProfRom", 16, 64)
         {
-            m_ramPages = new byte[64][];
-            for (int i = 0; i < m_ramPages.Length; i++)
-            {
-                m_ramPages[i] = new byte[0x4000];
-            }
         }
 
         protected override int GetRamPage()

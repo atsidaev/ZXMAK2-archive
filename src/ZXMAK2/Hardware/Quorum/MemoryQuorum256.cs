@@ -20,8 +20,6 @@ namespace ZXMAK2.Hardware.Quorum
         #region Fields
 
         private Z80CPU m_cpu;
-        private byte[][] m_ramPages = new byte[16][];
-        private byte[] m_trashPage = new byte[0x4000];
         private bool m_lock;
 
         #endregion Fields
@@ -56,8 +54,6 @@ namespace ZXMAK2.Hardware.Quorum
         #endregion
 
         #region MemoryBase
-
-        public override byte[][] RamPages { get { return m_ramPages; } }
 
         public override bool IsMap48
         {
@@ -198,12 +194,8 @@ namespace ZXMAK2.Hardware.Quorum
 
 
         public MemoryQuorum256()
-            : base("Quorum")
+            : base("Quorum", 4, 16)
         {
-            for (var i = 0; i < m_ramPages.Length; i++)
-            {
-                m_ramPages[i] = new byte[0x4000];
-            }
         }
     }
 }

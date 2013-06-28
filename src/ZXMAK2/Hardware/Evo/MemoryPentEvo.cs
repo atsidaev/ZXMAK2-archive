@@ -12,9 +12,7 @@ namespace ZXMAK2.Hardware.Evo
         #region Fields
 
         protected Z80CPU m_cpu;
-        private byte[][] m_ramPages;
         protected byte[][] m_romPages;
-        private byte[] m_trashPage = new byte[0x4000];
         private bool m_lock = false;
         private UlaAtm450 m_ulaAtm;
 
@@ -96,9 +94,6 @@ namespace ZXMAK2.Hardware.Evo
         #endregion
 
         #region MemoryBase
-
-        public override byte[][] RamPages { get { return m_ramPages; } }
-        public override byte[][] RomPages { get { return m_romPages; } }
 
         public override bool IsMap48 { get { return false; } }
 
@@ -558,29 +553,17 @@ namespace ZXMAK2.Hardware.Evo
         #endregion
 
 
-        public MemoryPentEvo(String romSetName)
-            : base(romSetName)
+        public MemoryPentEvo(
+            String romSetName,
+            int romPageCount,
+            int ramPageCount)
+            : base(romSetName, romPageCount, ramPageCount)
         {
-            Init();
         }
 
         public MemoryPentEvo()
-            : this("PentEvo")
+            : this("PentEvo", 32, 256)
         {
-        }
-
-        protected virtual void Init()
-        {
-            m_ramPages = new byte[256][];   // 4096K
-            for (var i = 0; i < m_ramPages.Length; i++)
-            {
-                m_ramPages[i] = new byte[0x4000];
-            }
-            m_romPages = new byte[32][];    // 512K
-            for (int i = 0; i < m_romPages.Length; i++)
-            {
-                m_romPages[i] = new byte[0x4000];
-            }
         }
     }
 }

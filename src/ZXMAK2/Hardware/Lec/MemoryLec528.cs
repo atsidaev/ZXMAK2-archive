@@ -28,8 +28,6 @@ namespace ZXMAK2.Hardware.Lec
 
         public override bool IsMap48 { get { return false; } }
 
-        public override byte[][] RamPages { get { return m_ramPages; } }
-
         protected override void UpdateMapping()
         {
             bool allram = (CMR1 & 0x80) != 0;
@@ -86,16 +84,9 @@ namespace ZXMAK2.Hardware.Lec
 
         #endregion
 
-        private byte[][] m_ramPages = new byte[32 + 1][];
-        private byte[] m_trashPage = new byte[0x4000];
-
         public MemoryLec48528()
-            : base("LEC")
+            : base("LEC", 4, 32 + 1)
         {
-            for (var i = 0; i < m_ramPages.Length; i++)
-            {
-                m_ramPages[i] = new byte[0x4000];
-            }
         }
     }
 }

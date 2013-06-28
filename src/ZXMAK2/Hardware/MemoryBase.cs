@@ -10,6 +10,22 @@ namespace ZXMAK2.Hardware
 {
     public abstract class MemoryBase : BusDeviceBase, IMemoryDevice, IGuiExtension
     {
+        #region Fields
+
+        private byte[][] m_romPages;
+        private byte[][] m_ramPages;
+        private int[] m_map48 = new int[4] { -1, -1, -1, -1 };
+        private bool m_dosen = false;
+        private bool m_sysen = false;
+        private byte m_cmr0 = 0;
+        private byte m_cmr1 = 0;
+        protected UlaDeviceBase m_ula;
+        protected String m_romSetName;
+        protected byte[] m_trashPage = new byte[0x4000];
+
+        #endregion
+
+
         #region IBusDevice Members
 
         public override BusDeviceCategory Category
@@ -59,6 +75,7 @@ namespace ZXMAK2.Hardware
 
         #endregion
 
+
         #region IMemory Members
 
         public virtual byte RDMEM_DBG(ushort addr)
@@ -95,14 +112,14 @@ namespace ZXMAK2.Hardware
             }
         }
 
-        public abstract byte[][] RamPages
+        public virtual byte[][] RamPages
         {
-            get;
+            get { return m_ramPages; }
         }
 
         public virtual byte[][] RomPages
         {
-            get { return m_romImages; }
+            get { return m_romPages; }
         }
 
         public virtual byte CMR0
@@ -174,23 +191,15 @@ namespace ZXMAK2.Hardware
 
         #endregion
 
-        private byte[][] m_romImages = new byte[4][];
-        private int[] m_map48 = new int[4] { -1, -1, -1, -1 };
-        private bool m_dosen = false;
-        private bool m_sysen = false;
-        private byte m_cmr0 = 0;
-        private byte m_cmr1 = 0;
-        protected UlaDeviceBase m_ula;
-        protected String m_romSetName;
 
-
-        public MemoryBase(String romSetName)
+        public MemoryBase(
+            String romSetName,
+            int romPageCount,
+            int ramPageCount)
         {
             m_romSetName = romSetName;// "Default";
-            for (var i = 0; i < m_romImages.Length; i++)
-            {
-                m_romImages[i] = new byte[0x4000];
-            }
+            Init(romPageCount, ramPageCount);
+            OnPowerOn();
         }
 
         public String RomSetName
@@ -236,6 +245,7 @@ namespace ZXMAK2.Hardware
 
         public abstract int GetRomIndex(RomName romId);
 
+        
         #region RD/WR MEM
 
         protected byte[] MapRead0000 = null;
@@ -289,8 +299,30 @@ namespace ZXMAK2.Hardware
 
         #endregion
 
+        
+        protected virtual void Init(
+            int romPageCount,
+            int ramPageCount)
+        {
+            m_romPages = new byte[romPageCount][];
+            for (var i = 0; i < m_romPages.Length; i++)
+            {
+                m_romPages[i] = new byte[0x4000];
+            }
+            m_ramPages = new byte[ramPageCount][];
+            for (var i = 0; i < m_ramPages.Length; i++)
+            {
+                m_ramPages[i] = new byte[0x4000];
+            }
+        }
+
+        protected virtual void OnPowerOn()
+        {
+        }
+
         protected abstract void UpdateMapping();
 
+        
         #region Rom Loader
 
         private void LoadRomSet()
