@@ -10,9 +10,6 @@ namespace ZXMAK2.Hardware.Atm
         #region Fields
 
         protected Z80CPU m_cpu;
-        private byte[][] m_ramPages;
-        protected byte[][] m_romPages;
-        private byte[] m_trashPage = new byte[0x4000];
         private bool m_lock = false;
         private UlaAtm450 m_ulaAtm;
 
@@ -85,9 +82,6 @@ namespace ZXMAK2.Hardware.Atm
         #endregion
 
         #region MemoryBase
-
-        public override byte[][] RamPages { get { return m_ramPages; } }
-        public override byte[][] RomPages { get { return m_romPages; } }
 
         public override bool IsMap48 { get { return false; } }
         public override bool IsRom48 { get { return !DOSEN && (CMR0 & 0x10) != 0; } }
@@ -353,29 +347,17 @@ namespace ZXMAK2.Hardware.Atm
         #endregion
 
 
-        public MemoryAtm710(String romSetName)
-            : base(romSetName)
+        public MemoryAtm710(
+            String romSetName, 
+            int romPageCount, 
+            int ramPageCount)
+            : base(romSetName, romPageCount, ramPageCount)
         {
-            Init();
         }
 
         public MemoryAtm710()
-            : this("ATM710")
+            : this("ATM710", 8, 64)
         {
-        }
-
-        protected virtual void Init()
-        {
-            m_ramPages = new byte[64][];
-            for (var i = 0; i < m_ramPages.Length; i++)
-            {
-                m_ramPages[i] = new byte[0x4000];
-            }
-            m_romPages = new byte[8][];
-            for (int i = 0; i < m_romPages.Length; i++)
-            {
-                m_romPages[i] = new byte[0x4000];
-            }
         }
 
         #region Private methods
@@ -384,9 +366,9 @@ namespace ZXMAK2.Hardware.Atm
         {
             //if (!m_cfg_mem_swap) return;
             byte[] buffer = new byte[2048];
-            for (int subPage = 0; subPage < m_ramPages.Length * 2; subPage++)
+            for (int subPage = 0; subPage < RamPages.Length * 2; subPage++)
             {
-                byte[] bankPage = m_ramPages[subPage / 2];
+                byte[] bankPage = RamPages[subPage / 2];
                 int bankIndex = (subPage % 2) * 2048;
                 for (int addr = 0; addr < 2048; addr++)
                     buffer[addr] = bankPage[bankIndex + (addr & 0x1F) + ((addr >> 3) & 0xE0) + ((addr << 3) & 0x700)];

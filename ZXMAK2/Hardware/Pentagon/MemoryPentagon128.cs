@@ -27,8 +27,6 @@ namespace ZXMAK2.Hardware.Pentagon
 
         #region MemoryBase
 
-        public override byte[][] RamPages { get { return m_ramPages; } }
-
         public override bool IsMap48 { get { return m_lock; } }
 
         protected override void UpdateMapping()
@@ -76,19 +74,21 @@ namespace ZXMAK2.Hardware.Pentagon
         #endregion
 
 
-        private byte[][] m_ramPages = new byte[8][];
-        private byte[] m_trashPage = new byte[0x4000];
         private bool m_lock = false;
 
         public MemoryPentagon128()
-            : base("Pentagon")
+            : base("Pentagon", 4, 8)
         {
-            for (var i = 0; i < m_ramPages.Length; i++)
+        }
+
+        protected override void OnPowerOn()
+        {
+            base.OnPowerOn();
+            for (var i = 0; i < RamPages.Length; i++)
             {
-                m_ramPages[i] = new byte[0x4000];
                 // Pentagon - A3, A6, A7, false
                 // Delta-C - A0, A6, A8, true
-                FillRamPowerOn(m_ramPages[i], 3, 6, 7, false);
+                FillRamPowerOn(RamPages[i], 3, 6, 7, false);
             }
         }
 

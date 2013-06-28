@@ -129,9 +129,6 @@ namespace ZXMAK2.Hardware.Sprinter
 
     public class SprinterMMU : MemoryBase
     {
-        private byte[] m_trashPage = new byte[0x4000];
-        private byte[][] m_ramPages = new byte[0x0100][];
-        private byte[][] m_romPages = new byte[0x10][];
         private byte[][] m_cramPages = new byte[0x04][]; //кэш
         private byte[][] m_vramPages = new byte[0x10][]; //видео-рам
         private byte[] m_scorpion_pages = new byte[8];
@@ -180,12 +177,13 @@ namespace ZXMAK2.Hardware.Sprinter
         private SprinterFdd m_SprinterBDI;
 
         public SprinterMMU()
-            : base("Sprinter")
+            : base("Sprinter", 0x10, 0x0100)
         {
-            for (int i = 0; i < this.m_ramPages.Length; i++)
-            {
-                this.m_ramPages[i] = new byte[0x4000];
-            }
+        }
+
+        protected override void Init(int romPageCount, int ramPageCount)
+        {
+            base.Init(romPageCount, ramPageCount);
             for (int i = 0; i < this.m_vramPages.Length; i++)
             {
                 this.m_vramPages[i] = new byte[0x4000];
@@ -193,10 +191,6 @@ namespace ZXMAK2.Hardware.Sprinter
             for (int i = 0; i < this.m_cramPages.Length; i++)
             {
                 this.m_cramPages[i] = new byte[0x4000];
-            }
-            for (int i = 0; i < this.m_romPages.Length; i++)
-            {
-                this.m_romPages[i] = new byte[0x4000];
             }
         }
 
@@ -540,16 +534,16 @@ namespace ZXMAK2.Hardware.Sprinter
                 LogPort(addr, value);
 #endif
                 //            switch (m_ramPages[0x40][dcpadr])
-                if ((m_ramPages[0x40][dcpadr] >= 0xF0) && (m_ramPages[0x40][dcpadr] <= 0xFF))
+                if ((RamPages[0x40][dcpadr] >= 0xF0) && (RamPages[0x40][dcpadr] <= 0xFF))
                 {
-                    m_scorpion_pages[(m_ramPages[0x40][dcpadr] & 0x0f)] = value;
+                    m_scorpion_pages[(RamPages[0x40][dcpadr] & 0x0f)] = value;
                     iorqge = false;
                 }
                 else
                 {
-                    if ((m_ramPages[0x40][dcpadr] >= 0xE0) && (m_ramPages[0x40][dcpadr] <= 0xEF))
+                    if ((RamPages[0x40][dcpadr] >= 0xE0) && (RamPages[0x40][dcpadr] <= 0xEF))
                     {
-                        m_pages[m_ramPages[0x40][dcpadr] & 0x0f] = value;
+                        m_pages[RamPages[0x40][dcpadr] & 0x0f] = value;
                         iorqge = false;
                     }
 
@@ -575,16 +569,16 @@ namespace ZXMAK2.Hardware.Sprinter
                 LogPort(addr, value);
 #endif
                 //            switch (m_ramPages[0x40][dcpadr])
-                if ((m_ramPages[0x40][dcpadr] >= 0xF0) && (m_ramPages[0x40][dcpadr] <= 0xFF))
+                if ((RamPages[0x40][dcpadr] >= 0xF0) && (RamPages[0x40][dcpadr] <= 0xFF))
                 {
-                    value = m_scorpion_pages[(m_ramPages[0x40][dcpadr] & 0x0f)];
+                    value = m_scorpion_pages[(RamPages[0x40][dcpadr] & 0x0f)];
                     iorqge = false;
                 }
                 else
                 {
-                    if ((m_ramPages[0x40][dcpadr] >= 0xE0) && (m_ramPages[0x40][dcpadr] <= 0xEF))
+                    if ((RamPages[0x40][dcpadr] >= 0xE0) && (RamPages[0x40][dcpadr] <= 0xEF))
                     {
-                        value = m_pages[m_ramPages[0x40][dcpadr] & 0x0f];
+                        value = m_pages[RamPages[0x40][dcpadr] & 0x0f];
                         iorqge = false;
                     }
 
@@ -618,7 +612,7 @@ namespace ZXMAK2.Hardware.Sprinter
                     m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr] = value;
                 if ((m_page0 & 4) == 0)
                 {
-                    m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr] = value;
+                    RamPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr] = value;
                     //   this.MapWrite8000[addr & 0x3fff] = value;
                 }
             }
@@ -642,7 +636,7 @@ namespace ZXMAK2.Hardware.Sprinter
                 // 0x50 - нормальная запись
                 // 3 бит номера - разрешение записи байта #FF в видео ОЗУ
                 // 2 бит номера - разрешение записи в основное ОЗУ
-                value = m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr];
+                value = RamPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr];
                 //m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr];
             }
             else
@@ -671,7 +665,7 @@ namespace ZXMAK2.Hardware.Sprinter
                 if ((m_page1 & 4) == 0)
                 {
                     //   this.MapWrite4000[addr & 0x3fff] = value;
-                    m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr] = value;
+                    RamPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr] = value;
                 }
             }
             else
@@ -718,7 +712,7 @@ namespace ZXMAK2.Hardware.Sprinter
                     m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr] = value;
                 if ((m_page2 & 4) == 0)
                 {
-                    m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr] = value;
+                    RamPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr] = value;
                     //   this.MapWrite8000[addr & 0x3fff] = value;
                 }
             }
@@ -746,7 +740,7 @@ namespace ZXMAK2.Hardware.Sprinter
                     m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr] = value;
                 if ((m_page3 & 4) == 0)
                 {
-                    m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr] = value;
+                    RamPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr] = value;
                     //= value;
                 }
             }
@@ -797,7 +791,7 @@ namespace ZXMAK2.Hardware.Sprinter
                 // 0x50 - нормальная запись
                 // 3 бит номера - разрешение записи байта #FF в видео ОЗУ
                 // 2 бит номера - разрешение записи в основное ОЗУ
-                value = m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr];
+                value = RamPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr];
                 //m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr];
             }
             else
@@ -821,7 +815,7 @@ namespace ZXMAK2.Hardware.Sprinter
                 // 0x50 - нормальная запись
                 // 3 бит номера - разрешение записи байта #FF в видео ОЗУ
                 // 2 бит номера - разрешение записи в основное ОЗУ
-                value = m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr];
+                value = RamPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr];
                 //m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr];
             }
             else
@@ -845,7 +839,7 @@ namespace ZXMAK2.Hardware.Sprinter
                 // 0x50 - нормальная запись
                 // 3 бит номера - разрешение записи байта #FF в видео ОЗУ
                 // 2 бит номера - разрешение записи в основное ОЗУ
-                value = m_ramPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr];
+                value = RamPages[0x50 + vpage][((line & 0x0f) * 1024) + vaddr];
                 //m_vramPages[vpage][((line & 0x0f) * 1024) + vaddr];
             }
             else
@@ -1255,22 +1249,6 @@ namespace ZXMAK2.Hardware.Sprinter
             get
             {
                 return "Sprinter RAM";
-            }
-        }
-
-        public override byte[][] RomPages
-        {
-            get
-            {
-                return this.m_romPages;
-            }
-        }
-
-        public override byte[][] RamPages
-        {
-            get
-            {
-                return this.m_ramPages;
             }
         }
 

@@ -10,8 +10,6 @@ namespace ZXMAK2.Hardware.Scorpion
         #region Fields
 
         private Z80CPU m_cpu;
-        protected byte[][] m_ramPages = new byte[16][];
-        private byte[] m_trashPage = new byte[0x4000];
         private bool m_lock = false;
 
         #endregion Fields
@@ -44,8 +42,6 @@ namespace ZXMAK2.Hardware.Scorpion
         #endregion
 
         #region MemoryBase
-
-        public override byte[][] RamPages { get { return m_ramPages; } }
 
         public override bool IsMap48 { get { return false; } }
 
@@ -174,25 +170,17 @@ namespace ZXMAK2.Hardware.Scorpion
         #endregion
 
 
-        public MemoryScorpion256(String romSetName)
-            : base(romSetName)
+        public MemoryScorpion256(
+            String romSetName, 
+            int romPageCount, 
+            int ramPageCount)
+            : base(romSetName, romPageCount, ramPageCount)
         {
-            InitRam();
         }
 
         public MemoryScorpion256()
-            : this("Scorpion")
+            : this("Scorpion", 4, 16)
         {
-        }
-
-
-        protected virtual void InitRam()
-        {
-            m_ramPages = new byte[16][];
-            for (var i = 0; i < m_ramPages.Length; i++)
-            {
-                m_ramPages[i] = new byte[0x4000];
-            }
         }
     }
 
@@ -205,11 +193,9 @@ namespace ZXMAK2.Hardware.Scorpion
 
         #endregion
 
-        protected override void InitRam()
+        public MemoryScorpion1024()
+            : base("Scorpion", 4, 64)
         {
-            m_ramPages = new byte[64][];
-            for (int i = 0; i < m_ramPages.Length; i++)
-                m_ramPages[i] = new byte[0x4000];
         }
 
         protected override int GetRamPage()

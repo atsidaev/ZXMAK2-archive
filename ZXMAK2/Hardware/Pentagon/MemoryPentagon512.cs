@@ -12,8 +12,6 @@ namespace ZXMAK2.Hardware.Pentagon
         #region Fields
 
         private bool m_enableShadow;
-        private byte[][] m_ramPages = new byte[32][];
-        private byte[] m_trashPage = new byte[0x4000];
         private bool m_lock = false;
 
         #endregion Fields
@@ -55,8 +53,6 @@ namespace ZXMAK2.Hardware.Pentagon
         #endregion
 
         #region MemoryBase
-
-        public override byte[][] RamPages { get { return m_ramPages; } }
 
         public override bool IsMap48 { get { return m_lock; } }
 
@@ -162,13 +158,9 @@ namespace ZXMAK2.Hardware.Pentagon
 
 
         public MemoryPentagon512()
-            : base("Pentagon")
+            : base("Pentagon", 4, 32)
         {
             EnableShadow = true;
-            for (var i = 0; i < m_ramPages.Length; i++)
-            {
-                m_ramPages[i] = new byte[0x4000];
-            }
         }
 
         public bool EnableShadow 

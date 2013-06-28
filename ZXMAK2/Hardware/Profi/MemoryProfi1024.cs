@@ -13,8 +13,6 @@ namespace ZXMAK2.Hardware.Profi
         #region Fields
 
         private Z80CPU m_cpu;
-        private byte[][] m_ramPages = new byte[64][];
-        private byte[] m_trashPage = new byte[0x4000];
         private UlaProfi3XX m_ulaProfi;
         private bool m_lock = false;
         
@@ -50,8 +48,6 @@ namespace ZXMAK2.Hardware.Profi
         #endregion
 
         #region MemoryBase
-
-        public override byte[][] RamPages { get { return m_ramPages; } }
 
         public override bool IsMap48 { get { return false; } }
 
@@ -223,17 +219,13 @@ namespace ZXMAK2.Hardware.Profi
         #endregion
 
 
-        public MemoryProfi1024(String romSetName)
-            : base(romSetName)
+        public MemoryProfi1024(String romSetName, int ramPageCount)
+            : base(romSetName, 4, ramPageCount)
         {
-            for (var i = 0; i < m_ramPages.Length; i++)
-            {
-                m_ramPages[i] = new byte[0x4000];
-            }
         }
 
         public MemoryProfi1024()
-            : this("PROFI")
+            : this("PROFI", 64)
         {
         }
     }
