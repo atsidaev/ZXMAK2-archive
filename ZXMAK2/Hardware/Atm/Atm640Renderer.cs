@@ -70,7 +70,7 @@ namespace ZXMAK2.Hardware.Atm
         public virtual void UpdateBorder(int value)
         {
             m_borderIndex = value;
-            m_borderColor = Palette[m_borderIndex & 7];
+            m_borderColor = Palette[m_borderIndex & 0x0F];
         }
 
         public virtual void UpdatePalette(int index, uint value)
