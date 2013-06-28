@@ -257,7 +257,7 @@ namespace ZXMAK2.Hardware
         public virtual byte PortFE
         {
             get { return m_portFe; }
-            set { m_portFe = value; Renderer.UpdateBorder(value); }
+            set { m_portFe = value; Renderer.UpdateBorder(value & 7); }
         }
 
         protected virtual void OnTimingChanged()
