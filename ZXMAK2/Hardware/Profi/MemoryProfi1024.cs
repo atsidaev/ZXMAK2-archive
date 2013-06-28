@@ -219,13 +219,16 @@ namespace ZXMAK2.Hardware.Profi
         #endregion
 
 
-        public MemoryProfi1024(String romSetName, int ramPageCount)
-            : base(romSetName, 4, ramPageCount)
+        public MemoryProfi1024(
+            String romSetName, 
+            int romPageCount, 
+            int ramPageCount)
+            : base(romSetName, romPageCount, ramPageCount)
         {
         }
 
         public MemoryProfi1024()
-            : this("PROFI", 64)
+            : this("PROFI", 4, 64)
         {
         }
     }
