@@ -16,6 +16,9 @@ namespace ZXMAK2.Hardware.Atm
         private int m_aFF77;
         private int m_pFF77;
         private int[] m_ru2 = new int[8]; // ATM 7.10 / ATM3(4Mb) memory map
+
+        private int m_romMask;
+        private int m_ramMask;
         
         #endregion Fields
 
@@ -133,16 +136,6 @@ namespace ZXMAK2.Hardware.Atm
             else
             {
                 int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
-                int romMask = RomPages.Length - 1;
-                if (romMask > 0x07)
-                {
-                    romMask = 0x07;
-                }
-                int ramMask = RamPages.Length - 1;
-                if (ramMask > 0x3F)
-                {
-                    ramMask = 0x3F;
-                }
 
                 var index = (CMR0 & 0x10) >> 2;
                 var w0 = m_ru2[index + 0] ^ 0xFF;
@@ -151,14 +144,14 @@ namespace ZXMAK2.Hardware.Atm
                 var w3 = m_ru2[index + 3] ^ 0xFF;
                 var kpa0 = CMR0 & 7;
                 var kpa8 = (DOSEN | SYSEN) ? 1 : 0;
-                var romPage0 = ((w0 & 0x80) == 0 ? kpa8 | (w0 & 6) : w0 & 7) & romMask;
-                var romPage1 = ((w1 & 0x80) == 0 ? kpa8 | (w1 & 6) : w1 & 7) & romMask;
-                var romPage2 = ((w2 & 0x80) == 0 ? kpa8 | (w2 & 6) : w2 & 7) & romMask;
-                var romPage3 = ((w3 & 0x80) == 0 ? kpa8 | (w3 & 6) : w3 & 7) & romMask;
-                var ramPage0 = ((w0 & 0x80) == 0 ? (w0 & 0x38) | kpa0 : w0 & 0x3F) & ramMask;
-                var ramPage1 = ((w1 & 0x80) == 0 ? (w1 & 0x38) | kpa0 : w1 & 0x3F) & ramMask;
-                var ramPage2 = ((w2 & 0x80) == 0 ? (w2 & 0x38) | kpa0 : w2 & 0x3F) & ramMask;
-                var ramPage3 = ((w3 & 0x80) == 0 ? (w3 & 0x38) | kpa0 : w3 & 0x3F) & ramMask;
+                var romPage0 = ((w0 & 0x80) == 0 ? kpa8 | (w0 & 6) : w0 & 7) & m_romMask;
+                var romPage1 = ((w1 & 0x80) == 0 ? kpa8 | (w1 & 6) : w1 & 7) & m_romMask;
+                var romPage2 = ((w2 & 0x80) == 0 ? kpa8 | (w2 & 6) : w2 & 7) & m_romMask;
+                var romPage3 = ((w3 & 0x80) == 0 ? kpa8 | (w3 & 6) : w3 & 7) & m_romMask;
+                var ramPage0 = ((w0 & 0x80) == 0 ? (w0 & 0x38) | kpa0 : w0 & 0x3F) & m_ramMask;
+                var ramPage1 = ((w1 & 0x80) == 0 ? (w1 & 0x38) | kpa0 : w1 & 0x3F) & m_ramMask;
+                var ramPage2 = ((w2 & 0x80) == 0 ? (w2 & 0x38) | kpa0 : w2 & 0x3F) & m_ramMask;
+                var ramPage3 = ((w3 & 0x80) == 0 ? (w3 & 0x38) | kpa0 : w3 & 0x3F) & m_ramMask;
                 var isRam0 = (w0 & 0x40) == 0;
                 var isRam1 = (w1 & 0x40) == 0;
                 var isRam2 = (w2 & 0x40) == 0;
@@ -198,6 +191,21 @@ namespace ZXMAK2.Hardware.Atm
                 Map48[1] = isRam1 ? ramPage1 : -1;
                 Map48[2] = isRam2 ? ramPage2 : -1;
                 Map48[3] = isRam3 ? ramPage3 : -1;
+            }
+        }
+
+        protected override void Init(int romPageCount, int ramPageCount)
+        {
+            base.Init(romPageCount, ramPageCount);
+            m_romMask = RomPages.Length - 1;
+            if (m_romMask > 0x07)
+            {
+                m_romMask = 0x07;
+            }
+            m_ramMask = RamPages.Length - 1;
+            if (m_ramMask > 0x3F)
+            {
+                m_ramMask = 0x3F;
             }
         }
 

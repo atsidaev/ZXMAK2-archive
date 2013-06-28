@@ -23,6 +23,9 @@ namespace ZXMAK2.Hardware.Evo
         private byte m_pXXBF;   // port EVO EVO
         private byte m_pEFF7;   // port EVO MOD
 
+        private int m_romMask;
+        private int m_ramMask;
+        
         #endregion Fields
 
 
@@ -149,16 +152,6 @@ namespace ZXMAK2.Hardware.Evo
             else
             {
                 int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
-                int romMask = RomPages.Length - 1;
-                if (romMask > 0x1F)
-                {
-                    romMask = 0x1F;
-                }
-                int ramMask = RamPages.Length - 1;
-                if (ramMask > 0xFF)
-                {
-                    ramMask = 0xFF;
-                }
 
                 var index = (CMR0 & 0x10) >> 2;
 
@@ -186,14 +179,14 @@ namespace ZXMAK2.Hardware.Evo
                     kpa0mask = 0xC0;
                 }
                 var kpa8 = DOSEN ? 1 : 0;
-                var romPage0 = (isDos0 ? kpa8 | (w0 & 0x3E) : w0 & 0x3F) & romMask;
-                var romPage1 = (isDos1 ? kpa8 | (w1 & 0x3E) : w1 & 0x3F) & romMask;
-                var romPage2 = (isDos2 ? kpa8 | (w2 & 0x3E) : w2 & 0x3F) & romMask;
-                var romPage3 = (isDos3 ? kpa8 | (w3 & 0x3E) : w3 & 0x3F) & romMask;
-                var ramPage0 = ((isDos0 ? (w0 & kpa0mask) | kpa0 : (w0 & 0x3F)) | ((w0 >> 2) & 0xC0)) & ramMask;
-                var ramPage1 = ((isDos1 ? (w1 & kpa0mask) | kpa0 : (w1 & 0x3F)) | ((w1 >> 2) & 0xC0)) & ramMask;
-                var ramPage2 = ((isDos2 ? (w2 & kpa0mask) | kpa0 : (w2 & 0x3F)) | ((w2 >> 2) & 0xC0)) & ramMask;
-                var ramPage3 = ((isDos3 ? (w3 & kpa0mask) | kpa0 : (w3 & 0x3F)) | ((w3 >> 2) & 0xC0)) & ramMask;
+                var romPage0 = (isDos0 ? kpa8 | (w0 & 0x3E) : w0 & 0x3F) & m_romMask;
+                var romPage1 = (isDos1 ? kpa8 | (w1 & 0x3E) : w1 & 0x3F) & m_romMask;
+                var romPage2 = (isDos2 ? kpa8 | (w2 & 0x3E) : w2 & 0x3F) & m_romMask;
+                var romPage3 = (isDos3 ? kpa8 | (w3 & 0x3E) : w3 & 0x3F) & m_romMask;
+                var ramPage0 = ((isDos0 ? (w0 & kpa0mask) | kpa0 : (w0 & 0x3F)) | ((w0 >> 2) & 0xC0)) & m_ramMask;
+                var ramPage1 = ((isDos1 ? (w1 & kpa0mask) | kpa0 : (w1 & 0x3F)) | ((w1 >> 2) & 0xC0)) & m_ramMask;
+                var ramPage2 = ((isDos2 ? (w2 & kpa0mask) | kpa0 : (w2 & 0x3F)) | ((w2 >> 2) & 0xC0)) & m_ramMask;
+                var ramPage3 = ((isDos3 ? (w3 & kpa0mask) | kpa0 : (w3 & 0x3F)) | ((w3 >> 2) & 0xC0)) & m_ramMask;
 
                 if (W0RAM0)
                 {
@@ -235,6 +228,21 @@ namespace ZXMAK2.Hardware.Evo
                 Map48[1] = isRam1 ? ramPage1 : -1;
                 Map48[2] = isRam2 ? ramPage2 : -1;
                 Map48[3] = isRam3 ? ramPage3 : -1;
+            }
+        }
+
+        protected override void Init(int romPageCount, int ramPageCount)
+        {
+            base.Init(romPageCount, ramPageCount);
+            m_romMask = RomPages.Length - 1;
+            if (m_romMask > 0x1F)
+            {
+                m_romMask = 0x1F;
+            }
+            m_ramMask = RamPages.Length - 1;
+            if (m_ramMask > 0xFF)
+            {
+                m_ramMask = 0xFF;
             }
         }
 
