@@ -198,7 +198,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         else
                             brDesc += " ";
 						brDesc += item.Value.Info.leftCondition.ToString();
-						brDesc += item.Value.Info.conditionTypeSign.ToString();
+                        brDesc += item.Value.Info.conditionTypeSign.ToString();
 						brDesc += item.Value.Info.rightCondition.ToString();
 
                         listState.Items.Add(brDesc);
@@ -880,14 +880,17 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     dbgCmdLine.SelectAll();
                     dbgCmdLine.Focus();
                 }
-                catch (Exception)
+                catch (Exception exc)
                 {
+                    string saveCmdLineString = dbgCmdLine.Text;
                     dbgCmdLine.BackColor = Color.Red;
-                    dbgCmdLine.ForeColor = Color.Red;
+                    dbgCmdLine.ForeColor = Color.Black;
+                    dbgCmdLine.Text = exc.Message;
                     dbgCmdLine.Refresh();
-                    System.Threading.Thread.Sleep(50);
+                    System.Threading.Thread.Sleep(140);
                     dbgCmdLine.BackColor = Color.White;
                     dbgCmdLine.ForeColor = Color.Black;
+                    dbgCmdLine.Text = saveCmdLineString;
                 }
             }
         }
@@ -907,6 +910,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
 			//1.LEFT condition
 			bool leftIsMemoryReference = false;
+            bool bits16 = false;
 
 			string left = newBreakpointDesc[1];
 			if (DebuggerManager.isMemoryReference(left))
@@ -915,7 +919,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
 				// it can be memory reference by registry value, e.g.: (PC), (DE), ...
 				if (DebuggerManager.isRegistryMemoryReference(left))
-					breakpointInfo.leftValue = DebuggerManager.getRegistryValueByName(m_spectrum.CPU.regs, DebuggerManager.getRegistryFromReference(left));
+                    breakpointInfo.leftRegistryArrayIndex = DebuggerManager.getRegistryArrayIndex( DebuggerManager.getRegistryFromReference( left) );
 				else
 					breakpointInfo.leftValue = DebuggerManager.getReferencedMemoryPointer(left);
 
@@ -932,6 +936,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
 			//2.CONDITION type
 			breakpointInfo.conditionTypeSign = newBreakpointDesc[2]; // ==, !=, <, >, ...
+            if (breakpointInfo.conditionTypeSign == "==")
+                breakpointInfo.conditionEquals = true;
 
 			//3.RIGHT condition
 			byte rightType = 0xFF; // 0 - memory reference, 1 - registry value, 2 - common value
@@ -1005,12 +1011,17 @@ namespace ZXMAK2.Hardware.Adlers.UI
 		}
 		public void RemoveExtBreakpoint(byte index)
 		{
-			if (index < _breakpointsExt.Count)
+            if (_breakpointsExt == null || _breakpointsExt.Count == 0)
+                throw new Exception("No breakpoints...!");
+
+            if (_breakpointsExt.ContainsKey(index))
 			{
 				Breakpoint bp = _breakpointsExt[index];
 				_breakpointsExt.Remove(index);
 				m_spectrum.RemoveBreakpoint(bp);
 			}
+            else
+                throw new Exception(String.Format("No breakpoint with index {0} !", index));
 		}
 		public DictionarySafe<byte, BreakpointAdlers> GetExtBreakpointsList()
 		{
@@ -1094,67 +1105,4 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
 		#endregion
     }
-
-	public class BreakpointAdlers : Breakpoint
-	{
-		public BreakpointAdlers(BreakpointInfo info)
-		{
-			Label = info.breakpointString;
-			Check = checkInfo;
-			Address = null;
-			Info = info;
-		}
-
-		public BreakpointInfo Info { get; private set; }
-
-		private bool checkInfo(IMachineState state)
-		{
-			if (!Info.isOn)
-				return false;
-
-			ushort leftValue = 0;
-			ushort rightValue = 0;
-
-			switch (Info.accessType)
-			{
-				// e.g.: PC == #9C40
-				case BreakPointConditionType.registryVsValue:
-					leftValue = DebuggerManager.getRegistryValueByName(state.CPU.regs, Info.leftCondition);
-					rightValue = Info.rightValue;
-					break;
-				// e.g.: (#9C40) != #2222
-				case BreakPointConditionType.memoryVsValue:
-					leftValue = state.ReadMemory(Info.leftValue);
-					rightValue = Info.rightValue;
-					break;
-				// e.g.: (PC) == #D1 - instruction breakpoint
-				case BreakPointConditionType.registryMemoryReferenceVsValue:
-					leftValue = state.ReadMemory(DebuggerManager.getRegistryValueByName(state.CPU.regs, DebuggerManager.getRegistryFromReference(Info.leftCondition)));
-					rightValue = Info.rightValue;
-					if (rightValue > 0xFF) //check on 2 bytes right condition, e.g.: (PC) == #5EED
-					{
-						int hiByte = DebuggerManager.getRegistryValueByName(state.CPU.regs, DebuggerManager.getRegistryFromReference(Info.leftCondition)) + 1;
-						if (hiByte > 0xFFFF)
-							hiByte = 0;
-						leftValue += Convert.ToUInt16(state.ReadMemory(Convert.ToUInt16(hiByte)) * 256);
-					}
-					break;
-				default:
-					break;
-			}
-
-			//condition
-			if (Info.conditionTypeSign == "==") // is equal
-			{
-				if (leftValue == rightValue)
-					return true;
-			}
-			else if (Info.conditionTypeSign == "!=") // is not equal
-			{
-				if (leftValue != rightValue)
-					return true;
-			};
-			return false;
-		}
-	}
 }

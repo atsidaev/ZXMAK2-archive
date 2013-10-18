@@ -26,6 +26,13 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             _spec.RaiseUpdateState();
         }
 
+        protected ushort ReadMemory16bit(ushort addr)
+        {
+            //IMemory memory = _spec.BusManager.FindDevice(typeof(IMemory)) as IMemory;
+            //return memory.RDMEM_DBG(addr);
+            return _spec.ReadMemory16bit(addr);
+        }
+
         protected byte ReadMemory(ushort addr)
         {
             //IMemory memory = _spec.BusManager.FindDevice(typeof(IMemory)) as IMemory;

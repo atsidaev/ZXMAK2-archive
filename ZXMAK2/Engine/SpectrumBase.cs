@@ -152,6 +152,7 @@ namespace ZXMAK2.Engine
 
         #region debugger specific
 
+        public abstract ushort ReadMemory16bit(ushort addr);
         public abstract byte ReadMemory(ushort addr);
         public abstract void WriteMemory(ushort addr, byte value);
 

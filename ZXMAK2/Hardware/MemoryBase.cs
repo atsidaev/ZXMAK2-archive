@@ -77,6 +77,51 @@ namespace ZXMAK2.Hardware
 
 
         #region IMemory Members
+        public static ushort get16bitValue(IntPtr pZ80Regs)
+        {
+            unsafe
+            {
+                return *((ushort*)pZ80Regs.ToPointer());
+            }
+        }
+
+        public virtual ushort RDMEM_DBG_16bit(ushort addr)
+        {
+            if (addr == 0x3FFF)
+            {
+                switch (addr & 0xC000)
+                {
+                    case 0x0000:
+                        return MapRead0000[addr];  // 48/128
+                    case 0x4000:
+                        return MapRead4000[addr & 0x3FFF];
+                    case 0x8000:
+                        return MapRead8000[addr & 0x3FFF];
+                    default: // 0xC000:
+                        return MapReadC000[addr & 0x3FFF];
+                }
+            }
+            else
+            {
+                switch (addr & 0xC000)
+                {
+                    case 0x0000:
+                        unsafe
+                        {
+                            fixed (byte* pRegs = &(MapRead0000[addr]))
+                            {
+                                return get16bitValue(new IntPtr(pRegs)); // 48/128
+                            }
+                        }
+                    case 0x4000:
+                        return MapRead4000[addr & 0x3FFF];
+                    case 0x8000:
+                        return MapRead8000[addr & 0x3FFF];
+                    default: // 0xC000:
+                        return MapReadC000[addr & 0x3FFF];
+                }
+            }
+        }
 
         public virtual byte RDMEM_DBG(ushort addr)
         {

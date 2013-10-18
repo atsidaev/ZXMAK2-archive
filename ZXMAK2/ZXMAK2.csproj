@@ -188,6 +188,7 @@
     <Compile Include="Entities\BusDeviceDescriptor.cs" />
     <Compile Include="Entities\SectorHeader.cs" />
     <Compile Include="Hardware\Adlers\Debugger.cs" />
+    <Compile Include="Hardware\Adlers\UI\BreakpointAdlers.cs" />
     <Compile Include="Hardware\Adlers\UI\DebuggerManager.cs" />
     <Compile Include="Hardware\Adlers\UI\DebugPanels.cs">
       <SubType>Component</SubType>

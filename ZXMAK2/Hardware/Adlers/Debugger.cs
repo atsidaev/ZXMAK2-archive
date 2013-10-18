@@ -2,6 +2,7 @@
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
+using ZXMAK2.Hardware.Adlers.UI;
 
 namespace ZXMAK2.Hardware.Adlers
 {
@@ -17,6 +18,7 @@ namespace ZXMAK2.Hardware.Adlers
 
         public override void BusInit(IBusManager bmgr)
         {
+            bmgr.SubscribeWrMem(0, 0, BreakpointAdlers.checkWriteMem);
         }
 
         public override void BusConnect()
