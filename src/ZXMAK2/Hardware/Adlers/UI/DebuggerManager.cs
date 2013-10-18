@@ -30,14 +30,22 @@ namespace ZXMAK2.Hardware.Adlers.UI
         public ushort leftValue;
         public ushort rightValue;
 
+        public int leftRegistryArrayIndex;
+
         //condition type
-        public string conditionTypeSign; // "!=", "==", "<", ...
+        public string conditionTypeSign;
+        public bool conditionEquals; // true - if values must be equal
 
         //is active
         public bool isOn;
 
         //original breakpoint string(raw data get from dbg command line)
         public string breakpointString;
+
+        public BreakpointInfo()
+        {
+            conditionEquals = false;
+        }
     }
     #endregion
 
@@ -351,6 +359,17 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 default:
                     throw new Exception("Bad registry name: " + i_registryName);
             }
+        }
+
+        public static int getRegistryArrayIndex(string registry)
+        {
+            switch (registry.ToUpper())
+            {
+                case "BC":
+                    return 0;
+            }
+               
+            return -1;
         }
     }
 }

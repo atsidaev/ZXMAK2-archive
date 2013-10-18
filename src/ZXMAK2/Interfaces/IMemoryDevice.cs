@@ -5,8 +5,9 @@ namespace ZXMAK2.Interfaces
 {
     public interface IMemoryDevice //: BusDeviceBase
     {
-        byte RDMEM_DBG(ushort addr);
-        void WRMEM_DBG(ushort addr, byte value);
+        ushort RDMEM_DBG_16bit(ushort addr); // 16bit memory read
+        byte   RDMEM_DBG(ushort addr);
+        void   WRMEM_DBG(ushort addr, byte value);
 
         byte[][] RamPages { get; }
         byte[][] RomPages { get; }

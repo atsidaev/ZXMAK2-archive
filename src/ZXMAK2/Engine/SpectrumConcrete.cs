@@ -67,6 +67,12 @@ namespace ZXMAK2.Engine
 
         #region debugger methods
 
+        public override ushort ReadMemory16bit(ushort addr)
+        {
+            var memory = _bus.FindDevice<IMemoryDevice>();
+            return memory.RDMEM_DBG_16bit(addr);
+        }
+
         public override byte ReadMemory(ushort addr)
         {
             var memory = _bus.FindDevice<IMemoryDevice>();
