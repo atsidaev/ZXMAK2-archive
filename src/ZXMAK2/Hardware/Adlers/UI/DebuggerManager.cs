@@ -365,8 +365,22 @@ namespace ZXMAK2.Hardware.Adlers.UI
         {
             switch (registry.ToUpper())
             {
-                case "BC":
+                case "AF":
                     return 0;
+                case "BC":
+                    return 1;
+                case "DE":
+                    return 2;
+                case "HL":
+                    return 2;
+                case "IX":
+                    return 6;
+                case "IY":
+                    return 7;
+                case "SP":
+                    return 12;
+                case "PC":
+                    return 11;
             }
                
             return -1;
