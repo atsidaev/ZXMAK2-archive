@@ -28,7 +28,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
         {
             unsafe
             {
-                return (ushort)*((int*)pZ80Regs.ToPointer() + delta);
+                return (ushort)*((int*)pZ80Regs + delta);
             }
         }
         public static void checkWriteMem(ushort addr, byte value)
@@ -63,8 +63,13 @@ namespace ZXMAK2.Hardware.Adlers.UI
             {
                 // e.g.: PC == #9C40
                 case BreakPointConditionType.registryVsValue:
-                    leftValue = DebuggerManager.getRegistryValueByName(state.CPU.regs, Info.leftCondition);
-                    //rightValue = Info.rightValue;
+                    unsafe
+                    {
+                        fixed (ushort* pRegs = &(state.CPU.regs.AF))
+                        {
+                            leftValue = getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex));
+                        }
+                    }
                     break;
                 // e.g.: (#9C40) != #2222
                 case BreakPointConditionType.memoryVsValue:
@@ -75,17 +80,17 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 case BreakPointConditionType.registryMemoryReferenceVsValue:
                     unsafe
                     {
-                        fixed (ushort* pRegs = &(state.CPU.regs.BC))
+                        fixed (ushort* pRegs = &(state.CPU.regs.AF))
                         {
                             //rightValue = Info.rightValue;
                             if (Info.rightValue <= 0xFF)
                             {
-                                leftValue = state.ReadMemory(getValuePair16bit(new IntPtr(pRegs), Info.leftRegistryArrayIndex));
+                                leftValue = state.ReadMemory(getValuePair16bit(new IntPtr(pRegs)));
                             }
                             else
                             {
                                 //TimeSpan time = watch.Elapsed;
-                                leftValue = state.ReadMemory16bit(getValuePair16bit(new IntPtr(pRegs), Info.leftRegistryArrayIndex));
+                                leftValue = state.ReadMemory16bit(getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex)));
                                 /*watch.Stop();
                                 TimeSpan time = watch.Elapsed;
                                 time = time;*/

@@ -21,6 +21,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
         private DasmUtils m_dasmUtils;
 
         private bool showStack = true; // show stack or breakpoint list on the form(panel listState)
+
+        //debugger command line history
+        private List<string> cmdLineHistory = new List<string>();
+        private int cmdLineHistoryPos = 0;
 		
         public FormCpu()
 		{
@@ -750,7 +754,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         //load breakpoints list into debugger
                         LoadBreakpointsListFromFile(parsedCommand[1]);
 
-                        showStack = false;                        
+                        showStack = false;
                     }
                     else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.saveBreakpointsListToFile)
                     {
@@ -828,7 +832,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                 {
                                     //2 bytes will be written; ToDo: check on adress if it is not > 65535
                                     byte hiBits = Convert.ToByte(regValue / 256);
-                                    byte loBits = Convert.ToByte(regValue - hiBits*256 );
+                                    byte loBits = Convert.ToByte(regValue - hiBits * 256);
 
                                     m_spectrum.WriteMemory(leftNum, loBits);
                                     leftNum++;
@@ -893,6 +897,52 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     dbgCmdLine.Text = saveCmdLineString;
                 }
             }
+            else if (e.KeyCode == Keys.Up) //arrow up - history of command line
+            {
+                if (this.cmdLineHistory != null && this.cmdLineHistoryPos < (this.cmdLineHistory.Count - 1))
+                {
+                    this.dbgCmdLine.Text = this.cmdLineHistory[++cmdLineHistoryPos];
+                }
+                else
+                {
+                    this.cmdLineHistoryPos = 0;
+                    this.dbgCmdLine.Text = this.cmdLineHistory[this.cmdLineHistoryPos];
+                }
+                dbgCmdLine.Select(this.dbgCmdLine.Text.Length, 0);
+                dbgCmdLine.Focus();
+                e.Handled = true;
+                return;
+            }
+            else if (e.KeyCode == Keys.Down) //arrow down - history of command line
+            {
+                if (this.cmdLineHistory != null && this.cmdLineHistoryPos != 0)
+                {
+                    this.dbgCmdLine.Text = this.cmdLineHistory[--cmdLineHistoryPos];
+                }
+                else
+                {
+                    this.cmdLineHistoryPos = this.cmdLineHistory.Count-1;
+                    this.dbgCmdLine.Text = this.cmdLineHistory[this.cmdLineHistoryPos];
+                }
+                dbgCmdLine.Select(this.dbgCmdLine.Text.Length, 0);
+                dbgCmdLine.Focus();
+                e.Handled = true;
+                return;
+            }
+            else if (this.dbgCmdLine.Text == "lo") //shortcut
+            {
+                this.dbgCmdLine.Text = "loadbrs ";
+                dbgCmdLine.Select(8, 0);
+                dbgCmdLine.Focus();
+                return;
+            }
+            else if (this.dbgCmdLine.Text == "sa") //shortcut
+            {
+                this.dbgCmdLine.Text = "savebrs ";
+                dbgCmdLine.Select(8, 0);
+                dbgCmdLine.Focus();
+                return;
+            }
         }
 
 		#region 2.) Extended breakpoints(conditional on memory change, write, registry change, ...)
@@ -910,7 +960,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
 			//1.LEFT condition
 			bool leftIsMemoryReference = false;
-            bool bits16 = false;
+            //bool bits16 = false;
 
 			string left = newBreakpointDesc[1];
 			if (DebuggerManager.isMemoryReference(left))
@@ -932,6 +982,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
 					throw new Exception("incorrect breakpoint(left condition)");
 
 				breakpointInfo.leftCondition = left.ToUpper();
+                breakpointInfo.leftRegistryArrayIndex = DebuggerManager.getRegistryArrayIndex(breakpointInfo.leftCondition);
 			}
 
 			//2.CONDITION type
@@ -996,6 +1047,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
 				if (counter + 1 < newBreakpointDesc.Count)
 					breakpointInfo.breakpointString += " ";
 			}
+            cmdLineHistory.Add(breakpointInfo.breakpointString);
+            this.cmdLineHistoryPos++;
 
 			// ADD breakpoint into list
 			// Here will be the breakpoint key assigned by searching keys starting with key 0
@@ -1077,7 +1130,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
 			}
 			finally
 			{
-				file.Close();
+                if (file != null)
+				    file.Close();
 			}
 		}
 
