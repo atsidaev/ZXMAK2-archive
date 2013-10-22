@@ -32,6 +32,8 @@ namespace ZXMAK2.Controls
         private Size m_size;
         private FormBorderStyle m_style;
 
+        //CHM(help file) bug
+        string helpFileNewLocation = null;
         
         public FormMain()
         {
@@ -82,6 +84,16 @@ namespace ZXMAK2.Controls
                 if (m_sound != null)
                     m_sound.Dispose();
                 m_sound = null;
+                if (helpFileNewLocation != null) //CHM help file
+                {
+                    try
+                    {
+                        File.Delete(helpFileNewLocation);
+                    }
+                    catch(Exception)
+                    {
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -504,19 +516,57 @@ namespace ZXMAK2.Controls
 
         private void menuHelpViewHelp_Click(object sender, EventArgs e)
         {
-            var appName = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
-            var helpFile = Path.ChangeExtension(appName, ".chm");
-            if (File.Exists(helpFile))
+            if (helpFileNewLocation != null && File.Exists(helpFileNewLocation))
             {
-                Help.ShowHelp(this, helpFile);
+                Help.ShowHelp(this, helpFileNewLocation);
             }
             else
             {
-                DialogProvider.Show(
-                    "Help file is missing",
-                    "ERROR",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                var appName = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
+                var helpFile = Path.ChangeExtension(appName, ".chm");
+                if (File.Exists(helpFile))
+                {
+                    if (appName.Contains("#")) //Path to .chm file must not contain # - Microsoft bug
+                    {
+                        var res = DialogProvider.Show(
+                            "Help file cannot be correctly opened.\nIt is because path to file contains not allowed character '#' - it is Microsoft`s bug.\n" +
+                            "\n" +
+                            "Copy it to root folder(" + appName[0] + ":\\) instead) ?\n\nNote: File will be deleted on application close."
+                            ,
+                            "ERROR",
+                            DlgButtonSet.OKCancel,
+                            DlgIcon.Warning);
+
+                        if (res == DlgResult.OK)
+                        {
+                            try
+                            {
+                                string dest = appName[0] + @":\" + Path.GetFileName(helpFile);
+                                File.Copy(helpFile, dest, true);
+                                Help.ShowHelp(this, dest);
+                                helpFileNewLocation = dest;
+                            }
+                            catch (Exception exc)
+                            {
+                                DialogProvider.Show("Sorry, could not be copied and opened.\n\nError message:\n \"" + exc.Message + "\""
+                                ,
+                                "ERROR",
+                                DlgButtonSet.OK,
+                                DlgIcon.Error);
+                            }
+                        }
+                    }
+                    else
+                        Help.ShowHelp(this, helpFile);
+                }
+                else
+                {
+                    DialogProvider.Show(
+                        "Help file is missing",
+                        "ERROR",
+                        DlgButtonSet.OK,
+                        DlgIcon.Error);
+                }
             }
         }
 

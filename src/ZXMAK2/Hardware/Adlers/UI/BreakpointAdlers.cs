@@ -57,12 +57,11 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 return false;
 
             ushort leftValue = 0;
-            //ushort rightValue = 0;
 
             switch (Info.accessType)
             {
                 // e.g.: PC == #9C40
-                case BreakPointConditionType.registryVsValue:
+                case BreakPointConditionType.registryVsValue: //only value pair, e.g: BC, HL, DE, ...ToDo:
                     unsafe
                     {
                         fixed (ushort* pRegs = &(state.CPU.regs.AF))
@@ -74,7 +73,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 // e.g.: (#9C40) != #2222
                 case BreakPointConditionType.memoryVsValue:
                     leftValue = state.ReadMemory(Info.leftValue);
-                    //rightValue = Info.rightValue;
                     break;
                 // e.g.: (PC) == #D1 - instruction breakpoint
                 case BreakPointConditionType.registryMemoryReferenceVsValue:
@@ -82,7 +80,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     {
                         fixed (ushort* pRegs = &(state.CPU.regs.AF))
                         {
-                            //rightValue = Info.rightValue;
                             if (Info.rightValue <= 0xFF)
                             {
                                 leftValue = state.ReadMemory(getValuePair16bit(new IntPtr(pRegs)));

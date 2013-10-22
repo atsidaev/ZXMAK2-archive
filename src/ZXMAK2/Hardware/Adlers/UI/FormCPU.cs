@@ -897,9 +897,9 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     dbgCmdLine.Text = saveCmdLineString;
                 }
             }
-            else if (e.KeyCode == Keys.Up) //arrow up - history of command line
+            else if (e.KeyCode == Keys.Up && this.cmdLineHistory.Count != 0) //arrow up - history of command line
             {
-                if (this.cmdLineHistory != null && this.cmdLineHistoryPos < (this.cmdLineHistory.Count - 1))
+                if (this.cmdLineHistoryPos < (this.cmdLineHistory.Count - 1))
                 {
                     this.dbgCmdLine.Text = this.cmdLineHistory[++cmdLineHistoryPos];
                 }
@@ -913,9 +913,9 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 e.Handled = true;
                 return;
             }
-            else if (e.KeyCode == Keys.Down) //arrow down - history of command line
+            else if (e.KeyCode == Keys.Down && this.cmdLineHistory.Count != 0) //arrow down - history of command line
             {
-                if (this.cmdLineHistory != null && this.cmdLineHistoryPos != 0)
+                if (this.cmdLineHistoryPos != 0)
                 {
                     this.dbgCmdLine.Text = this.cmdLineHistory[--cmdLineHistoryPos];
                 }
