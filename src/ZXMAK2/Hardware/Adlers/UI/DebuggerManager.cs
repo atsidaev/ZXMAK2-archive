@@ -55,7 +55,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
         public static char[]   Regs8Bit  = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'H', 'L' };
 
         public enum CommandType { memoryOrRegistryManipulation, breakpointManipulation, gotoAdress, removeBreakpoint, enableBreakpoint,
-                                  disableBreakpoint, loadBreakpointsListFromFile, saveBreakpointsListToFile, Unidentified
+                                  disableBreakpoint, loadBreakpointsListFromFile, saveBreakpointsListToFile, showAssembler, Unidentified
                                 }; // E.g.: ld = memoryOrRegistryManipulation
         public enum BreakPointAccessType { memoryAccess, memoryWrite, memoryChange, registryValue, All, Undefined };
 
@@ -70,6 +70,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
         public static string DbgDisableBreakpoint = "off"; // disables breakpoint
         public static string DbgLoadBreakpointsListFromFile = "loadbrs"; // loads breakpoints from file
         public static string DbgSaveBreakpointsListFromFile = "savebrs"; // save actual breakpoints list into file
+        public static string DbgOpenAssembler = "asm"; // open Assembler Form
 
         static char[]  debugDelimitersOther = new char[] { '(', '=', ')', '!' };
 
@@ -195,6 +196,11 @@ namespace ZXMAK2.Hardware.Adlers.UI
             if (command[0].ToUpper() == DbgSaveBreakpointsListFromFile.ToString().ToUpper())
             {
                 return CommandType.saveBreakpointsListToFile;
+            }
+
+            if (command[0].ToUpper() == DbgOpenAssembler.ToString().ToUpper())
+            {
+                return CommandType.showAssembler;
             }
 
             return CommandType.Unidentified;
