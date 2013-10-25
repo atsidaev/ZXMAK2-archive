@@ -761,6 +761,13 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         //save breakpoints list into debugger
                         SaveBreakpointsListToFile(parsedCommand[1]);
                     }
+                    else if( DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.showAssembler)
+                    {
+                        m_spectrum.DoStop();
+                        UpdateCPU(true);
+
+                        Assembler.Show(ref m_spectrum);
+                    }
                     else
                     {
                         // memory/registry manipulation(LD instruction)

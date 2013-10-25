@@ -85,6 +85,7 @@
       <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectSound.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -188,6 +189,12 @@
     <Compile Include="Entities\BusDeviceDescriptor.cs" />
     <Compile Include="Entities\SectorHeader.cs" />
     <Compile Include="Hardware\Adlers\Debugger.cs" />
+    <Compile Include="Hardware\Adlers\UI\Assembler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Hardware\Adlers\UI\Assembler.Designer.cs">
+      <DependentUpon>Assembler.cs</DependentUpon>
+    </Compile>
     <Compile Include="Hardware\Adlers\UI\BreakpointAdlers.cs" />
     <Compile Include="Hardware\Adlers\UI\DebuggerManager.cs" />
     <Compile Include="Hardware\Adlers\UI\DebugPanels.cs">
@@ -496,6 +503,9 @@
     <EmbeddedResource Include="Controls\Debugger\dbgWD1793.resx">
       <DependentUpon>dbgWD1793.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Hardware\Adlers\UI\Assembler.resx">
+      <DependentUpon>Assembler.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Hardware\Adlers\UI\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </EmbeddedResource>
@@ -597,6 +607,9 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(SolutionDir)ZXMak2\Hardware\Adlers\Pasmo.dll" "$(TargetDir)Pasmo.dll"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
