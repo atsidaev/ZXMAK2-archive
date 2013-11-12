@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using ZXMAK2.Interfaces;
+using System.Drawing;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
@@ -17,6 +18,16 @@ namespace ZXMAK2.Hardware.Adlers.UI
                   /*char**/ IntPtr errFileName,
                   /*char**/ IntPtr errReason
                   );
+        [DllImport(@"PasmoXP.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint="compile")]
+        public unsafe static extern int compileXP(
+            /*char**/ [MarshalAs(UnmanagedType.LPStr)] string compileArg,   //e.g. --bin, --tap; terminated by NULL(0)
+            /*char**/ [MarshalAs(UnmanagedType.LPStr)] string inAssembler,
+            /*char**/ IntPtr compiledOut,
+            /*int* */ IntPtr codeSize,
+            /*int**/  IntPtr errFileLine,
+            /*char**/ IntPtr errFileName,
+            /*char**/ IntPtr errReason
+            );
 
         private IDebuggable m_spectrum;
 
@@ -37,7 +48,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 m_instance.ShowDialog();
             }
             else
-                m_instance.Show();
+                m_instance.ShowDialog();
         }
 
         /*internal unsafe struct FixedBuffer
@@ -47,9 +58,15 @@ namespace ZXMAK2.Hardware.Adlers.UI
             public int     codeSize;
         }*/
 
-        private void btnCompile_Click(object sender, EventArgs e)
+        private void compileToZ80()
         {
-            int retCode = 0;
+            int retCode = -1;
+
+            if (txtAsm.Text.Trim() == String.Empty)
+            {
+                this.richCompileMessages.Text = "Nothing to compile...";
+                return;
+            }
 
             unsafe
             {
@@ -68,10 +85,20 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     {
                         fixed (byte* perrFileName = &errFileName[0])
                         {
-                            retCode = compile("--bin", asmToCompile, new IntPtr(pcompiledOut),
-                                              new IntPtr(&codeSize), new IntPtr(&errFileLine),
-                                              new IntPtr(perrFileName), new IntPtr(perrReason)
-                                              );
+                            try
+                            {
+                                retCode = compile("--bin", asmToCompile, new IntPtr(pcompiledOut),
+                                                  new IntPtr(&codeSize), new IntPtr(&errFileLine),
+                                                  new IntPtr(perrFileName), new IntPtr(perrReason)
+                                                  );
+                            }
+                            catch(DllNotFoundException)
+                            {
+                                retCode = compileXP("--bin", asmToCompile, new IntPtr(pcompiledOut),
+                                                    new IntPtr(&codeSize), new IntPtr(&errFileLine),
+                                                    new IntPtr(perrFileName), new IntPtr(perrReason)
+                                                    );
+                            }
                             if (retCode != 0)
                             {
                                 string errStringText = DateTime.Now.ToLongTimeString() + ": ";
@@ -170,6 +197,69 @@ namespace ZXMAK2.Hardware.Adlers.UI
             {
                 e.Handled = true;
                 txtAsm.SelectedText = new string(' ', 4);
+            }
+            else if (e.KeyChar == (char)Keys.Enter)
+            {
+                int indexPrevLine = txtAsm.GetLineFromCharIndex(txtAsm.SelectionStart);
+                string actualLineContent = txtAsm.Lines[indexPrevLine-1];
+                if (actualLineContent.Length == 0)
+                {
+                    e.Handled = true;
+                    return;
+                }
+
+                string spaces = String.Empty;
+                for (int counter = 0; ; counter++)
+                {
+                    if ( actualLineContent[counter].ToString() != " ")
+                        break;
+                    spaces += " ";
+                    if (actualLineContent.Length == counter + 1)
+                        break;
+                }
+                txtAsm.SelectedText = spaces;
+            }
+        }
+
+        //Compile Button
+        private void btnCompile_Click(object sender, EventArgs e)
+        {
+            compileToZ80();
+        }
+        private void compileToolStrip_Click(object sender, EventArgs e)
+        {
+            compileToZ80();
+        }
+
+        //Select font
+        private void fonttoolStrip_Click(object sender, EventArgs e)
+        {
+            FontDialog fontDialog = new FontDialog();
+            fontDialog.Font = txtAsm.Font;
+
+            DialogResult res = fontDialog.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                Font font = fontDialog.Font;
+                txtAsm.Font = font;
+            }
+        }
+
+        private void colorToolStrip_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() != DialogResult.Cancel)
+            {
+                txtAsm.ForeColor = colorDialog.Color;
+            }
+        }
+
+        private void backColortoolStrip_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() != DialogResult.Cancel)
+            {
+                txtAsm.BackColor = colorDialog.Color;
             }
         }
 

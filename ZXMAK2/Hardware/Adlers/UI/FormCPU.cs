@@ -766,7 +766,9 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         m_spectrum.DoStop();
                         UpdateCPU(true);
 
+                        this.Hide();
                         Assembler.Show(ref m_spectrum);
+                        this.Show();
                     }
                     else
                     {
@@ -815,8 +817,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                 rightNum = DebuggerManager.getRegistryValueByName(m_spectrum.CPU.regs, right);
                                 isRightRegistry = true;
                             }
-                            else
-                                rightNum = DebuggerManager.convertNumberWithPrefix(right);
                         }
 
                         //Writing Memory/Registry
@@ -848,18 +848,27 @@ namespace ZXMAK2.Hardware.Adlers.UI
                             }
                             else
                             {
-                                // e.g.: ld (#9C40), #21
-                                if (rightNum <= Byte.MaxValue)
-                                    m_spectrum.WriteMemory(leftNum, Convert.ToByte(rightNum));
-                                else
+                                // e.g.: ld (#9C40), #21 #33 3344 .. .. .. -> x
+                                for (int counter = 2; parsedCommand.Count > counter; counter++)
                                 {
-                                    //2 bytes will be written; ToDo: check on adress if it is not > 65535
-                                    byte hiBits = Convert.ToByte(rightNum / 256);
-                                    byte loBits = Convert.ToByte(rightNum - hiBits * 256);
+                                    rightNum = DebuggerManager.convertNumberWithPrefix(parsedCommand[counter]);
 
-                                    m_spectrum.WriteMemory(leftNum, loBits);
-                                    leftNum++;
-                                    m_spectrum.WriteMemory(leftNum, hiBits);
+                                    if (rightNum <= Byte.MaxValue)
+                                    {
+                                        m_spectrum.WriteMemory(leftNum, Convert.ToByte(rightNum));
+                                        leftNum++;
+                                    }
+                                    else
+                                    {
+                                        //2 bytes will be written; ToDo: check on adress if it is not > 65535
+                                        byte hiBits = Convert.ToByte(rightNum / 256);
+                                        byte loBits = Convert.ToByte(rightNum % 256);
+
+                                        m_spectrum.WriteMemory(leftNum, hiBits);
+                                        leftNum++;
+                                        m_spectrum.WriteMemory(leftNum, loBits);
+                                        leftNum++;
+                                    }
                                 }
                             }
                         }
