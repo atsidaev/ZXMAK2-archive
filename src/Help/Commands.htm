@@ -8,8 +8,11 @@
 <br>
 When in debugger window you can use following commands(type in command line):<br>
 <ul>
-<li><b>ld</b>  - load memory/register with value<br></li>
+<li><b>ld</b>  - load memory or register with value<br></li>
 <li><b>ds <i>&lt;memory address&gt;</i></b>  - dissassemble memory from value &lt;memory address&gt;<br></li>
+<li><b>asm</b> - opens assembler window</li>
+</ul>
+<ul>
 <li><b>br</b> - define new breakpoint<br></li>
 <li><b>del <i>&lt;breakpoint number&gt;</i></b>  - delete breakpoint<br></li>
 <li><b>on <i>&lt;breakpoint number&gt;</i></b> - turn breakpoint on. This can be done also by doubleclicking on the breakpoint.<br></li>
@@ -33,4 +36,5 @@ Examples:<br>
 <li><b>ld hl, (#9c40)</b> - fill HL register with value on adress #9C40(40000 decimal)</li>
 <li><b>ld hl, de</b> - fill HL register with value in register DE</li>
 <li><b>ld (#9c40), 5</b> - POKE 40000, 5</b>
+<li><b>ld (50000), 201 #C9AF #C350</b> - fills memory(starting at adress 50000 decimal) with bytes 201 #C9 #AF #C3 #50
 </ul>
