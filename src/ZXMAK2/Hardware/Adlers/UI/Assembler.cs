@@ -245,18 +245,22 @@ namespace ZXMAK2.Hardware.Adlers.UI
             }
         }
 
+        //text Color
         private void colorToolStrip_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
+            colorDialog.Color = txtAsm.ForeColor;
             if (colorDialog.ShowDialog() != DialogResult.Cancel)
             {
                 txtAsm.ForeColor = colorDialog.Color;
             }
         }
 
+        //background Color
         private void backColortoolStrip_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
+            colorDialog.Color = txtAsm.BackColor;
             if (colorDialog.ShowDialog() != DialogResult.Cancel)
             {
                 txtAsm.BackColor = colorDialog.Color;

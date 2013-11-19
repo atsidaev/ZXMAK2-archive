@@ -41,14 +41,16 @@
             this.toolMenu = new System.Windows.Forms.ToolStrip();
             this.compileToolStrip = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.openFileStripButton = new System.Windows.Forms.ToolStripButton();
+            this.saveileStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.settingsToolStrip = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.fonttoolStrip = new System.Windows.Forms.ToolStripButton();
             this.colorToolStrip = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.openFileStripButton = new System.Windows.Forms.ToolStripButton();
             this.backColortoolStrip = new System.Windows.Forms.ToolStripButton();
-            this.saveileStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolCodeLibrary = new System.Windows.Forms.ToolStripButton();
             this.groupBox1.SuspendLayout();
             this.toolMenu.SuspendLayout();
             this.SuspendLayout();
@@ -160,7 +162,9 @@
             this.toolStripSeparator2,
             this.fonttoolStrip,
             this.colorToolStrip,
-            this.backColortoolStrip});
+            this.backColortoolStrip,
+            this.toolStripSeparator4,
+            this.toolCodeLibrary});
             this.toolMenu.Location = new System.Drawing.Point(0, 0);
             this.toolMenu.Name = "toolMenu";
             this.toolMenu.Size = new System.Drawing.Size(532, 35);
@@ -182,6 +186,29 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 35);
             // 
+            // openFileStripButton
+            // 
+            this.openFileStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.openFileStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openFileStripButton.Image")));
+            this.openFileStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.openFileStripButton.Name = "openFileStripButton";
+            this.openFileStripButton.Size = new System.Drawing.Size(32, 32);
+            this.openFileStripButton.Text = "Open File";
+            // 
+            // saveileStripButton
+            // 
+            this.saveileStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveileStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveileStripButton.Image")));
+            this.saveileStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveileStripButton.Name = "saveileStripButton";
+            this.saveileStripButton.Size = new System.Drawing.Size(32, 32);
+            this.saveileStripButton.Text = "Save File";
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 35);
+            // 
             // settingsToolStrip
             // 
             this.settingsToolStrip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -190,6 +217,11 @@
             this.settingsToolStrip.Name = "settingsToolStrip";
             this.settingsToolStrip.Size = new System.Drawing.Size(32, 32);
             this.settingsToolStrip.Text = "Settings";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 35);
             // 
             // fonttoolStrip
             // 
@@ -212,20 +244,6 @@
             this.colorToolStrip.ToolTipText = "Select colors";
             this.colorToolStrip.Click += new System.EventHandler(this.colorToolStrip_Click);
             // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 35);
-            // 
-            // openFileStripButton
-            // 
-            this.openFileStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.openFileStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openFileStripButton.Image")));
-            this.openFileStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.openFileStripButton.Name = "openFileStripButton";
-            this.openFileStripButton.Size = new System.Drawing.Size(32, 32);
-            this.openFileStripButton.Text = "Open File";
-            // 
             // backColortoolStrip
             // 
             this.backColortoolStrip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -237,19 +255,21 @@
             this.backColortoolStrip.ToolTipText = "Select BackGround Color";
             this.backColortoolStrip.Click += new System.EventHandler(this.backColortoolStrip_Click);
             // 
-            // saveileStripButton
+            // toolStripSeparator4
             // 
-            this.saveileStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.saveileStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveileStripButton.Image")));
-            this.saveileStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.saveileStripButton.Name = "saveileStripButton";
-            this.saveileStripButton.Size = new System.Drawing.Size(32, 32);
-            this.saveileStripButton.Text = "Save File";
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 35);
             // 
-            // toolStripSeparator2
+            // toolCodeLibrary
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 35);
+            this.toolCodeLibrary.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolCodeLibrary.Image = ((System.Drawing.Image)(resources.GetObject("toolCodeLibrary.Image")));
+            this.toolCodeLibrary.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolCodeLibrary.Name = "toolCodeLibrary";
+            this.toolCodeLibrary.Size = new System.Drawing.Size(32, 32);
+            this.toolCodeLibrary.Text = "toolStripButton1";
+            this.toolCodeLibrary.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.toolCodeLibrary.ToolTipText = "Code Library(Includes)";
             // 
             // Assembler
             // 
@@ -295,5 +315,7 @@
         private System.Windows.Forms.ToolStripButton backColortoolStrip;
         private System.Windows.Forms.ToolStripButton saveileStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripButton toolCodeLibrary;
     }
 }
