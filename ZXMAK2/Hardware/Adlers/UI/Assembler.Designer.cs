@@ -64,7 +64,7 @@
             this.txtAsm.Name = "txtAsm";
             this.txtAsm.Size = new System.Drawing.Size(371, 448);
             this.txtAsm.TabIndex = 0;
-            this.txtAsm.Text = "";
+            this.txtAsm.Text = "                ";
             this.txtAsm.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtAsm_KeyPress);
             this.txtAsm.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtAsm_KeyUp);
             // 

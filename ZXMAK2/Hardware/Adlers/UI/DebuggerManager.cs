@@ -15,7 +15,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
     // e.g.: 1.) memoryVsValue = left is memory reference, right is number(#9C40, %1100, 6755, ...)
     //       2.) valueVsRegister = left is value, right is register value
     //
-    public enum BreakPointConditionType { memoryVsValue, valueVsRegister, registryVsValue, registryMemoryReferenceVsValue };
+    public enum BreakPointConditionType { memoryVsValue, valueVsRegister, registryVsValue, registryMemoryReferenceVsValue, memoryRead };
 
     //Information about extended breakpoint
     public class BreakpointInfo
@@ -45,6 +45,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
         public BreakpointInfo()
         {
             conditionEquals = false;
+            leftCondition = String.Empty;
+            rightCondition = String.Empty;
         }
     }
     #endregion
@@ -56,8 +58,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
         public enum CommandType { memoryOrRegistryManipulation, breakpointManipulation, gotoAdress, removeBreakpoint, enableBreakpoint,
                                   disableBreakpoint, loadBreakpointsListFromFile, saveBreakpointsListToFile, showAssembler, Unidentified
-                                }; // E.g.: ld = memoryOrRegistryManipulation
-        public enum BreakPointAccessType { memoryAccess, memoryWrite, memoryChange, registryValue, All, Undefined };
+                                };
+        public enum BreakPointAccessType { memoryAccess, memoryWrite, memoryChange, memoryRead, registryValue, All, Undefined };
 
         public enum CharType { Number = 0, Letter, Other };
 
@@ -378,7 +380,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 case "DE":
                     return 2;
                 case "HL":
-                    return 2;
+                    return 3;
                 case "IX":
                     return 6;
                 case "IY":

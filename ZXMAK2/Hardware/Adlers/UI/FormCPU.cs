@@ -201,9 +201,17 @@ namespace ZXMAK2.Hardware.Adlers.UI
                             brDesc += "(off)";
                         else
                             brDesc += " ";
-						brDesc += item.Value.Info.leftCondition.ToString();
-                        brDesc += item.Value.Info.conditionTypeSign.ToString();
-						brDesc += item.Value.Info.rightCondition.ToString();
+                        if (item.Value.Info.accessType == BreakPointConditionType.memoryRead)
+                        {
+                            //desc of memory read breakpoint type
+                            brDesc += String.Format("mem read {0}", item.Value.Info.leftValue);
+                        }
+                        else
+                        {
+                            brDesc += item.Value.Info.leftCondition.ToString();
+                            brDesc += item.Value.Info.conditionTypeSign.ToString();
+                            brDesc += item.Value.Info.rightCondition.ToString();
+                        }
 
                         listState.Items.Add(brDesc);
 
@@ -716,52 +724,52 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         throw new Exception("unknown debugger command"); // unknown cmd line type
 
                     //breakpoint manipulation ?
-                    if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.breakpointManipulation)
+                    if (commandType == DebuggerManager.CommandType.breakpointManipulation)
                     {
                         // add new enhanced breakpoint
                         string left = parsedCommand[1];
 
                         //left side must be registry or memory reference
-                        if (!DebuggerManager.isRegistry(left) && !DebuggerManager.isMemoryReference(left))
+                        if (!DebuggerManager.isRegistry(left) && !DebuggerManager.isMemoryReference(left) && left != "memread")
                             throw new Exception("bad condition !");
 
                         AddExtBreakpoint(parsedCommand); // add breakpoint, send parsed command e.g.: br pc == #0000
 
                         showStack = false; // show breakpoint list on listState panel
                     }
-                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.gotoAdress)
+                    else if (commandType == DebuggerManager.CommandType.gotoAdress)
                     {
                         // goto adress to dissasembly
                         dasmPanel.TopAddress = DebuggerManager.convertNumberWithPrefix(parsedCommand[1]);
                     }
-                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.removeBreakpoint)
+                    else if (commandType == DebuggerManager.CommandType.removeBreakpoint)
                     {
                         // remove breakpoint
                         RemoveExtBreakpoint(Convert.ToByte(DebuggerManager.convertNumberWithPrefix(parsedCommand[1])));
                     }
-                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.enableBreakpoint)
+                    else if (commandType == DebuggerManager.CommandType.enableBreakpoint)
                     {
                         //enable breakpoint
                         EnableOrDisableBreakpointStatus(Convert.ToByte(DebuggerManager.convertNumberWithPrefix(parsedCommand[1])), true);
                     }
-                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.disableBreakpoint)
+                    else if (commandType == DebuggerManager.CommandType.disableBreakpoint)
                     {
                         //disable breakpoint
                         EnableOrDisableBreakpointStatus(Convert.ToByte(DebuggerManager.convertNumberWithPrefix(parsedCommand[1])), false);
                     }
-                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.loadBreakpointsListFromFile)
+                    else if (commandType == DebuggerManager.CommandType.loadBreakpointsListFromFile)
                     {
                         //load breakpoints list into debugger
                         LoadBreakpointsListFromFile(parsedCommand[1]);
 
                         showStack = false;
                     }
-                    else if (DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.saveBreakpointsListToFile)
+                    else if (commandType == DebuggerManager.CommandType.saveBreakpointsListToFile)
                     {
                         //save breakpoints list into debugger
                         SaveBreakpointsListToFile(parsedCommand[1]);
                     }
-                    else if( DebuggerManager.getDbgCommandType(parsedCommand) == DebuggerManager.CommandType.showAssembler)
+                    else if (commandType == DebuggerManager.CommandType.showAssembler)
                     {
                         m_spectrum.DoStop();
                         UpdateCPU(true);
@@ -966,7 +974,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
 		//conditional breakpoints
 		private DictionarySafe<byte, BreakpointAdlers> _breakpointsExt = null;
 		
-		
 		public void AddExtBreakpoint(List<string> newBreakpointDesc)
 		{
 			if (_breakpointsExt == null)
@@ -993,6 +1000,19 @@ namespace ZXMAK2.Hardware.Adlers.UI
 			}
 			else
 			{
+                //memory read breakpoint ?
+                if (left == "memread")
+                {
+                    if (newBreakpointDesc.Count == 3) //e.g.: "br memread #4000"
+                    {
+                        breakpointInfo.isOn = true;
+                        breakpointInfo.accessType = BreakPointConditionType.memoryRead;
+                        breakpointInfo.leftValue = DebuggerManager.convertNumberWithPrefix(newBreakpointDesc[2]); // last chance
+                        InsertNewBreakpoint(breakpointInfo);
+                        return;
+                    }
+                }
+
 				//must be a registry
 				if (!DebuggerManager.isRegistry(left))
 					throw new Exception("incorrect breakpoint(left condition)");
@@ -1066,17 +1086,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             cmdLineHistory.Add(breakpointInfo.breakpointString);
             this.cmdLineHistoryPos++;
 
-			// ADD breakpoint into list
-			// Here will be the breakpoint key assigned by searching keys starting with key 0
-			// Maximum 255 breakpoints is allowed
-			if (_breakpointsExt.Count < 255)
-			{	
-				var bp = new BreakpointAdlers(breakpointInfo);
-				_breakpointsExt.Add((byte)_breakpointsExt.Count, bp);
-				m_spectrum.AddBreakpoint(bp);
-			}
-            else
-                throw new Exception("Maximum breakpoints count(255) exceeded...");
+			InsertNewBreakpoint(breakpointInfo);
 		}
 		public void RemoveExtBreakpoint(byte index)
 		{
@@ -1101,8 +1111,60 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
 			return _breakpointsExt;
 		}
+        private void InsertNewBreakpoint(BreakpointInfo info)
+        {
+            // ADD breakpoint into list
+            // Here will be the breakpoint key assigned by searching keys starting with key 0
+            // Maximum 255 breakpoints is allowed
+            if (_breakpointsExt.Count < 255)
+            {
+                var bp = new BreakpointAdlers(info);
+                _breakpointsExt.Add((byte)_breakpointsExt.Count, bp);
+                m_spectrum.AddBreakpoint(bp);
+            }
+            else
+                throw new Exception("Maximum breakpoints count(255) exceeded...");
+        }
 
-		public void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn) //enables/disables breakpoint, command "on" or "off"
+        #region Read and Write Mem check methods
+        public void CheckWriteMem(ushort addr, byte value)
+        {
+            if (_breakpointsExt == null)
+                return;
+
+            foreach(BreakpointAdlers brk in _breakpointsExt.Values)
+            {
+                //here would be nice to use select x from _breakpointsExt where ..., but cannot use Linq(.Net Framework 2.0 is used)
+                if (  brk.Info.isOn &&
+                    ( brk.Info.accessType == BreakPointConditionType.memoryVsValue || brk.Info.accessType == BreakPointConditionType.registryMemoryReferenceVsValue) )
+                {
+                    if (brk.checkInfoMemory(m_spectrum.MachineState))
+                        m_spectrum.ForceStop();
+                }
+            }
+
+            return;
+        }
+        public void CheckReadMem(ushort addr, ref byte value)
+        {
+            if (_breakpointsExt == null)
+                return;
+
+            foreach (BreakpointAdlers brk in _breakpointsExt.Values)
+            {
+                //here would be nice to use select x from _breakpointsExt where ..., but cannot use Linq(.Net Framework 2.0 is used)
+                if (brk.Info.isOn && brk.Info.accessType == BreakPointConditionType.memoryRead )
+                {
+                    if (brk.Info.leftValue == addr)
+                        m_spectrum.ForceStop();
+                }
+            }
+
+            return;
+        }
+        #endregion
+
+        public void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn) //enables/disables breakpoint, command "on" or "off"
 		{
 			if (_breakpointsExt == null || _breakpointsExt.Count == 0)
 				return;

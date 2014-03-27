@@ -134,7 +134,7 @@ namespace ZXMAK2.Engine
                 }
                 // Alex: end of performance critical block
 
-                if (CheckBreakpoint())
+                if (CheckBreakpoint() || forceStop)
                 {
                     int delta1 = (int)(_cpu.Tact - t);
                     if (delta1 >= 0)
@@ -142,6 +142,7 @@ namespace ZXMAK2.Engine
                     IsRunning = false;
                     OnUpdateFrame();
                     OnBreakpoint();
+                    forceStop = false;
                     return;
                 }
             }
@@ -161,11 +162,12 @@ namespace ZXMAK2.Engine
             int delta = (int)(_cpu.Tact - t);
             if (delta >= 0)
                 m_frameStartTact = delta;
-            if (CheckBreakpoint())
+            if (CheckBreakpoint() || forceStop)
             {
                 IsRunning = false;
                 OnUpdateFrame();
                 OnBreakpoint();
+                forceStop = false;
             }
         }
     }

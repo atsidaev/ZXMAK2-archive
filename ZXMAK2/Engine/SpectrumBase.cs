@@ -22,6 +22,8 @@ namespace ZXMAK2.Engine
 
         private long m_tactLimitStepOver = 71680 * 5;
 
+        protected bool forceStop = false; //when breakpoint occurrs
+
         #endregion
 
         #region protected fields
@@ -199,6 +201,11 @@ namespace ZXMAK2.Engine
         public void RaiseUpdateState()
         {
             OnUpdateState();
+        }
+
+        public void ForceStop()
+        {
+            this.forceStop = true;
         }
     }
 }
