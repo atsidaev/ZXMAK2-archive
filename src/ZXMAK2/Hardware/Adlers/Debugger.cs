@@ -9,6 +9,7 @@ namespace ZXMAK2.Hardware.Adlers
     public class Debugger : BusDeviceBase, IJtagDevice, IGuiExtension
     {
         private IDebuggable m_target;
+        private IBusManager m_bmgr;
 
         #region BusDeviceBase
 
@@ -18,7 +19,7 @@ namespace ZXMAK2.Hardware.Adlers
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeWrMem(0, 0, BreakpointAdlers.checkWriteMem);
+            m_bmgr = bmgr;
         }
 
         public override void BusConnect()
@@ -94,6 +95,8 @@ namespace ZXMAK2.Hardware.Adlers
                 {
 					m_form = new UI.FormCpu();
                     m_form.Init(m_target);
+                    m_bmgr.SubscribeWrMem(0, 0, m_form.CheckWriteMem);
+                    m_bmgr.SubscribeRdMem(0, 0, m_form.CheckReadMem);
                     m_form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg)
                     {
                         m_form = null;

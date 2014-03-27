@@ -23,7 +23,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
         public BreakpointInfo Info { get; private set; }
 
-        #region Breakpoint Check Methods
         private static ushort getValuePair16bit(IntPtr pZ80Regs, int delta = 0)
         {
             unsafe
@@ -31,16 +30,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 return (ushort)*((int*)pZ80Regs + delta);
             }
         }
-        public static void checkWriteMem(ushort addr, byte value)
-        {
-            /*if (addr == 40000)
-                debuggerStop = true;*/
-            return;
-        }
-        #endregion
 
-
-        private bool checkInfo(IMachineState state)
+        public bool checkInfo(IMachineState state)
         {
             /*Stopwatch watch = new Stopwatch();
             watch.Start();*/
@@ -70,6 +61,37 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         }
                     }
                     break;
+                default:
+                    return false;
+            }
+
+            //condition
+            if (Info.conditionEquals) // is equal
+                return leftValue == Info.rightValue;
+            else
+                return leftValue != Info.rightValue;
+        }
+
+        public bool checkInfoMemory(IMachineState state)
+        {
+            /*Stopwatch watch = new Stopwatch();
+            watch.Start();*/
+            lock (lockingObj)
+            {
+                if (debuggerStop)
+                {
+                    debuggerStop = false;
+                    return true;
+                }
+            }
+
+            if (!Info.isOn)
+                return false;
+
+            ushort leftValue = 0;
+
+            switch (Info.accessType)
+            {
                 // e.g.: (#9C40) != #2222
                 case BreakPointConditionType.memoryVsValue:
                     leftValue = state.ReadMemory(Info.leftValue);
@@ -82,7 +104,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         {
                             if (Info.rightValue <= 0xFF)
                             {
-                                leftValue = state.ReadMemory(getValuePair16bit(new IntPtr(pRegs)));
+                                leftValue = state.ReadMemory(getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex)));
                             }
                             else
                             {

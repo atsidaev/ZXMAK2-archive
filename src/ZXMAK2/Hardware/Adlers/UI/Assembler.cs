@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using ZXMAK2.Interfaces;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
@@ -29,6 +30,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
             /*char**/ IntPtr errReason
             );
 
+        private short tabSpace = 16; //how many characters on tab
+
         private IDebuggable m_spectrum;
 
         private static Assembler m_instance = null;
@@ -37,6 +40,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
             m_spectrum = spectrum;
 
             InitializeComponent();
+            txtAsm.Text = new string(' ', tabSpace);
+
+            txtAsm.SelectionLength = 0;
+            txtAsm.SelectionStart = txtAsm.TextLength + 1;
         }
 
         public static void Show(ref IDebuggable spectrum)
