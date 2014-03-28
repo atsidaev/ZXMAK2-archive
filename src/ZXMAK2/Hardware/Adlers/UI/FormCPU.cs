@@ -577,6 +577,11 @@ namespace ZXMAK2.Hardware.Adlers.UI
 			if (e.Button == MouseButtons.Right)
 				contextMenuDasm.Show(dasmPanel, e.Location);
 		}
+        
+        private void dasmPanel_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+            dbgCmdLine.Text += "#" + dasmPanel.ActiveAddress.ToString("X4");
+		}
 
 		private void dataPanel_MouseClick(object sender, MouseEventArgs e)
 		{
@@ -1019,6 +1024,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
 				breakpointInfo.leftCondition = left.ToUpper();
                 breakpointInfo.leftRegistryArrayIndex = DebuggerManager.getRegistryArrayIndex(breakpointInfo.leftCondition);
+                if (left.Length == 1) //8 bit registry
+                    breakpointInfo.is8Bit = true;
+                else
+                    breakpointInfo.is8Bit = false;
 			}
 
 			//2.CONDITION type
