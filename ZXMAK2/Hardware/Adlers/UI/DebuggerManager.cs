@@ -42,6 +42,9 @@ namespace ZXMAK2.Hardware.Adlers.UI
         //original breakpoint string(raw data get from dbg command line)
         public string breakpointString;
 
+        //value mask - e.g.: for F registry => 0xFF, for A registry => 0xFF00; for AF => isMasked = false
+        public bool is8Bit;
+
         public BreakpointInfo()
         {
             conditionEquals = false;
@@ -374,15 +377,25 @@ namespace ZXMAK2.Hardware.Adlers.UI
             switch (registry.ToUpper())
             {
                 case "AF":
+                case "F":
                     return 0;
+                case "A":
                 case "BC":
                     return 1;
+                case "C":
                 case "DE":
                     return 2;
+                case "B":
                 case "HL":
                     return 3;
+                case "E":
+                    return 4;
+                case "D":
+                    return 5;
+                case "L":
                 case "IX":
                     return 6;
+                case "H":
                 case "IY":
                     return 7;
                 case "SP":

@@ -55,9 +55,15 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 case BreakPointConditionType.registryVsValue: //only value pair, e.g: BC, HL, DE, ...ToDo:
                     unsafe
                     {
-                        fixed (ushort* pRegs = &(state.CPU.regs.AF))
+                        if (Info.is8Bit)
                         {
-                            leftValue = getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex));
+                            fixed (byte* pRegs = &(state.CPU.regs.F))
+                                leftValue = (byte)*(pRegs + Info.leftRegistryArrayIndex);
+                        }
+                        else
+                        {
+                            fixed (ushort* pRegs = &(state.CPU.regs.AF))
+                                leftValue = getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex));
                         }
                     }
                     break;

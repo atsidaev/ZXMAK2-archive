@@ -38,10 +38,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
           this.listREGS = new System.Windows.Forms.ListBox();
           this.splitter1 = new System.Windows.Forms.Splitter();
           this.panelMem = new System.Windows.Forms.Panel();
-		  this.dataPanel = new ZXMAK2.Hardware.Adlers.UI.DataPanel();
+          this.dataPanel = new ZXMAK2.Hardware.Adlers.UI.DataPanel();
           this.splitter2 = new System.Windows.Forms.Splitter();
           this.panelDasm = new System.Windows.Forms.Panel();
-		  this.dasmPanel = new ZXMAK2.Hardware.Adlers.UI.DasmPanel();
+          this.dasmPanel = new ZXMAK2.Hardware.Adlers.UI.DasmPanel();
           this.contextMenuDasm = new System.Windows.Forms.ContextMenu();
           this.menuItemDasmGotoADDR = new System.Windows.Forms.MenuItem();
           this.menuItemDasmGotoPC = new System.Windows.Forms.MenuItem();
@@ -218,7 +218,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
           this.dataPanel.Text = "dataPanel1";
           this.dataPanel.TopAddress = ((ushort)(0));
           this.dataPanel.GetData += new ZXMAK2.Hardware.Adlers.UI.DataPanel.ONGETDATACPU(this.dasmPanel_GetData);
-		  this.dataPanel.DataClick += new ZXMAK2.Hardware.Adlers.UI.DataPanel.ONCLICKCPU(this.dataPanel_DataClick);
+          this.dataPanel.DataClick += new ZXMAK2.Hardware.Adlers.UI.DataPanel.ONCLICKCPU(this.dataPanel_DataClick);
           this.dataPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataPanel_MouseClick);
           // 
           // splitter2
@@ -257,12 +257,13 @@ namespace ZXMAK2.Hardware.Adlers.UI
           this.dasmPanel.TabIndex = 0;
           this.dasmPanel.Text = "dasmPanel1";
           this.dasmPanel.TopAddress = ((ushort)(0));
-		  this.dasmPanel.CheckBreakpoint += new ZXMAK2.Hardware.Adlers.UI.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckBreakpoint);
-		  this.dasmPanel.CheckExecuting += new ZXMAK2.Hardware.Adlers.UI.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckExecuting);
-		  this.dasmPanel.GetData += new ZXMAK2.Hardware.Adlers.UI.DasmPanel.ONGETDATACPU(this.dasmPanel_GetData);
-		  this.dasmPanel.GetDasm += new ZXMAK2.Hardware.Adlers.UI.DasmPanel.ONGETDASMCPU(this.dasmPanel_GetDasm);
-		  this.dasmPanel.BreakpointClick += new ZXMAK2.Hardware.Adlers.UI.DasmPanel.ONCLICKCPU(this.dasmPanel_SetBreakpoint);
+          this.dasmPanel.CheckBreakpoint += new ZXMAK2.Hardware.Adlers.UI.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckBreakpoint);
+          this.dasmPanel.CheckExecuting += new ZXMAK2.Hardware.Adlers.UI.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckExecuting);
+          this.dasmPanel.GetData += new ZXMAK2.Hardware.Adlers.UI.DasmPanel.ONGETDATACPU(this.dasmPanel_GetData);
+          this.dasmPanel.GetDasm += new ZXMAK2.Hardware.Adlers.UI.DasmPanel.ONGETDASMCPU(this.dasmPanel_GetDasm);
+          this.dasmPanel.BreakpointClick += new ZXMAK2.Hardware.Adlers.UI.DasmPanel.ONCLICKCPU(this.dasmPanel_SetBreakpoint);
           this.dasmPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseClick);
+          this.dasmPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseDoubleClick);
           // 
           // contextMenuDasm
           // 
