@@ -56,21 +56,19 @@ namespace ZXMAK2.Engine
 
         public event EventHandler UpdateVideo;
 
-        public unsafe VirtualMachine(
-            IHostKeyboard keyboard,
-            IHostMouse mouse,
-            IHostJoystick joystick,
-            IHostSound sound)
+        public unsafe VirtualMachine(IHost host, GuiData uiService)
         {
-            m_hostKeyboard = keyboard;
-            m_hostMouse = mouse;
-            m_hostJoystick = joystick;
-            m_hostSound = sound;
+            m_host = host;
             m_spectrum = new SpectrumConcrete();
             m_spectrum.UpdateState += OnUpdateState;
             m_spectrum.Breakpoint += OnBreakpoint;
             m_spectrum.UpdateFrame += OnUpdateFrame;
             m_spectrum.BusManager.ConfigChanged += BusManager_OnConfigChanged;
+            if (uiService != null)
+            {
+                m_spectrum.BusManager.BusConnected += (s,e) => BusManager_OnConnected(uiService);
+                m_spectrum.BusManager.BusDisconnect += (s,e) => BusManager_OnDisconnect(uiService);
+            }
         }
 
         public void Init()
@@ -144,6 +142,58 @@ namespace ZXMAK2.Engine
             }
         }
 
+        
+        #region UI Extension
+
+        protected virtual void BusManager_OnConnected(GuiData uiService)
+        {
+            var list = m_spectrum.BusManager.FindDevices<IGuiExtension>();
+            list.Sort(GuiExtensionNameComparison);
+            foreach (var wfe in list)
+            {
+                try
+                {
+                    wfe.AttachGui(uiService);
+                }
+                catch (Exception ex)
+                {
+                    LogAgent.Error(ex);
+                }
+            }
+        }
+
+        protected virtual void BusManager_OnDisconnect(GuiData uiService)
+        {
+            var list = m_spectrum.BusManager.FindDevices<IGuiExtension>();
+            list.Sort(GuiExtensionNameComparison);
+            foreach (var wfe in list)
+            {
+                try
+                {
+                    wfe.DetachGui();
+                }
+                catch (Exception ex)
+                {
+                    LogAgent.Error(ex);
+                }
+            }
+        }
+
+        private static int GuiExtensionNameComparison(
+            IGuiExtension x1,
+            IGuiExtension x2)
+        {
+            if (x1 == x2) return 0;
+            if (x1 is IJtagDevice) return -1;
+            if (x2 is IJtagDevice) return 1;
+            var dev1 = (BusDeviceBase)x1;
+            var dev2 = (BusDeviceBase)x2;
+            return dev2.Name.CompareTo(dev1.Name);
+        }
+
+        #endregion
+
+
         #region Open/Save Config
 
         private string m_configFileName = string.Empty;
@@ -214,11 +264,11 @@ namespace ZXMAK2.Engine
         {
             if (!MaxSpeed)
             {
-                byte[] sndbuf = m_hostSound.LockBuffer();
+                byte[] sndbuf = m_host.Sound.LockBuffer();
                 while (m_spectrum.IsRunning && sndbuf == null)
                 {
                     Thread.Sleep(1);
-                    sndbuf = m_hostSound.LockBuffer();
+                    sndbuf = m_host.Sound.LockBuffer();
                 }
                 if (sndbuf != null)
                 {
@@ -228,7 +278,7 @@ namespace ZXMAK2.Engine
                     }
                     finally
                     {
-                        m_hostSound.UnlockBuffer(sndbuf);
+                        m_host.Sound.UnlockBuffer(sndbuf);
                     }
                 }
                 else
@@ -266,10 +316,7 @@ namespace ZXMAK2.Engine
         public SpectrumBase Spectrum { get { return m_spectrum; } }
 
         private SpectrumBase m_spectrum;
-        private IHostKeyboard m_hostKeyboard;
-        private IHostMouse m_hostMouse;
-        private IHostJoystick m_hostJoystick;
-        private IHostSound m_hostSound;
+        private IHost m_host;
 
         public int DebugFrameStartTact { get { return Spectrum.FrameStartTact; } }
         public bool MaxSpeed = false;
@@ -281,9 +328,7 @@ namespace ZXMAK2.Engine
                 m_spectrum.IsRunning = true;
 
                 using (var input = new InputAggregator(
-                    m_hostKeyboard,
-                    m_hostMouse,
-                    m_hostJoystick,
+                    m_host,
                     m_spectrum.BusManager.FindDevices<IKeyboardDevice>().ToArray(),
                     m_spectrum.BusManager.FindDevices<IMouseDevice>().ToArray(),
                     m_spectrum.BusManager.FindDevices<IJoystickDevice>().ToArray()))

@@ -10,21 +10,22 @@ namespace ZXMAK2.Engine
         private IHostKeyboard m_hostKeyboard;
         private IHostMouse m_hostMouse;
         private IHostJoystick m_hostJoystick;
+        
         private IKeyboardDevice[] m_keyboards;
         private IMouseDevice[] m_mouses;
         private IJoystickDevice[] m_joysticks;
 
+
         public InputAggregator(
-            IHostKeyboard hostKeyboard,
-            IHostMouse hostMouse,
-            IHostJoystick hostJoystick,
+            IHost host,
             IKeyboardDevice[] keyboards,
             IMouseDevice[] mouses,
             IJoystickDevice[] joysticks)
         {
-            m_hostKeyboard = hostKeyboard;
-            m_hostMouse = hostMouse;
-            m_hostJoystick = hostJoystick;
+            m_hostKeyboard = host.Keyboard;
+            m_hostMouse = host.Mouse;
+            m_hostJoystick = host.Joystick;
+            
             m_keyboards = keyboards;
             m_mouses = mouses;
             m_joysticks = joysticks;
