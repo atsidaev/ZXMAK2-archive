@@ -14,8 +14,9 @@ namespace ZXMAK2.MDX
         private DirectSound m_sound;
         
 
-        public MdxHost(Form form)
+        public MdxHost(Form form, IHostVideo hostVideo)
         {
+            Video = hostVideo;
             m_sound = new DirectSound(form, -1, 44100, 16, 2, 882 * 2 * 2, 4);
             m_keyboard = new DirectKeyboard(form);
             m_mouse = new DirectMouse(form);
@@ -38,10 +39,12 @@ namespace ZXMAK2.MDX
             m_joystick = null;
         }
 
+        public IHostVideo Video { get; private set; }
         public IHostSound Sound { get { return m_sound; } }
         public IHostKeyboard Keyboard { get { return m_keyboard; } }
         public IHostMouse Mouse { get { return m_mouse; } }
         public IHostJoystick Joystick { get { return m_joystick; } }
+
 
         public bool IsInputCaptured 
         {

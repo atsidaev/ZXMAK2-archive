@@ -311,6 +311,7 @@
     <Compile Include="Interfaces\IHostKeyboard.cs" />
     <Compile Include="Interfaces\IHostMouse.cs" />
     <Compile Include="Interfaces\IHostSound.cs" />
+    <Compile Include="Interfaces\IHostVideo.cs" />
     <Compile Include="Interfaces\IJoystickDevice.cs" />
     <Compile Include="Interfaces\IMachineState.cs" />
     <Compile Include="Interfaces\IBusManager.cs" />
