@@ -257,7 +257,7 @@
     <Compile Include="Controls\TapeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DialogProvider.cs" />
+    <Compile Include="DialogService.cs" />
     <Compile Include="Entities\BusDeviceBase.cs" />
     <Compile Include="Entities\TapeBlock.cs" />
     <Compile Include="Hardware\General\AyMouseDevice.cs" />
