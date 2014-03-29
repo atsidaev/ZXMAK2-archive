@@ -58,7 +58,7 @@ namespace ZXMAK2.Serializers
                 "Do you want to save disk changes to {0}",
                 Path.GetFileName(fileName));
 
-            DlgResult qr = DialogProvider.Show(
+            DlgResult qr = DialogService.Show(
                 msg,
                 "Attention!",
                 DlgButtonSet.YesNo,
@@ -74,7 +74,7 @@ namespace ZXMAK2.Serializers
 
                 if (fileName == string.Empty)
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Can't save disk image!\nNo space on HDD!",
                         "Warning",
                         DlgButtonSet.OK,
@@ -87,7 +87,7 @@ namespace ZXMAK2.Serializers
                         Directory.CreateDirectory(folderName);
                     sender.FileName = fileName;
                     SaveFileName(sender.FileName);
-                    DialogProvider.Show(
+                    DialogService.Show(
                         string.Format("Disk image successfuly saved!\n{0}", sender.FileName),
                         "Notification",
                         DlgButtonSet.OK,

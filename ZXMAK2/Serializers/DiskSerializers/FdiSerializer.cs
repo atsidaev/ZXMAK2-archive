@@ -78,7 +78,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
             if (stream.Length < 14)
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Corrupted disk image!",
                     "FDI loader",
                     DlgButtonSet.OK,
@@ -93,7 +93,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                 hdr1[1] != 0x44 ||
                 hdr1[2] != 0x49)
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Invalid FDI file!",
                     "FDI loader",
                     DlgButtonSet.OK,

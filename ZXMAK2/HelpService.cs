@@ -57,7 +57,7 @@ namespace ZXMAK2
             var helpFile = Path.ChangeExtension(appName, ".chm");
             if (!File.Exists(helpFile))
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Help file is missing",
                     "ERROR",
                     DlgButtonSet.OK,

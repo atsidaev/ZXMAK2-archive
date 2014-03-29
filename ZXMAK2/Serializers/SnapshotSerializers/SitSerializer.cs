@@ -38,7 +38,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 			if (stream.Length != 65564)
 			{
-				DialogProvider.Show(
+				DialogService.Show(
                     "Invalid data, file corrupt!", 
                     "SIT loader",
                     DlgButtonSet.OK,

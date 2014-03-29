@@ -316,7 +316,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
 					catch (Exception ex)
 					{
 						LogAgent.Error(ex);
-                        DialogProvider.ShowFatalError(ex);
+                        DialogService.ShowFatalError(ex);
 					}
 					UpdateCPU(true);
 					break;
@@ -330,7 +330,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
 					catch (Exception ex)
 					{
 						LogAgent.Error(ex);
-                        DialogProvider.ShowFatalError(ex);
+                        DialogService.ShowFatalError(ex);
 					}
 					UpdateCPU(true);
 					break;

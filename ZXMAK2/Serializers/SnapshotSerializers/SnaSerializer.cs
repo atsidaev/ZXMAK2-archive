@@ -43,7 +43,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 			if (stream.Length != 49179 && stream.Length != 131103)
 			{
-				DialogProvider.Show(
+				DialogService.Show(
                     "Invalid SNA file size!", 
                     "SNA loader",
                     DlgButtonSet.OK,

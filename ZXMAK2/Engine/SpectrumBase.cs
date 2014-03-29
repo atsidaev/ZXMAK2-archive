@@ -49,7 +49,7 @@ namespace ZXMAK2.Engine
             string msg = string.Format(
                 "{0} tacts executed,\nbut operation not complete!\n\nAre you sure to continue?",
                 tactLimit);
-            return DialogProvider.Show(
+            return DialogService.Show(
                 msg,
                 "Warning",
                 DlgButtonSet.YesNo,

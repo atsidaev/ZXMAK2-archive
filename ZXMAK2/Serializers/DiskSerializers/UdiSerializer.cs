@@ -76,7 +76,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
             if (Encoding.ASCII.GetString(hdr, 0, 4) != "UDI!") // check "UDI!"
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Unknown *.UDI file identifier!",
                     "UDI loader",
                     DlgButtonSet.OK,
@@ -87,7 +87,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
             var size = hdr[4] | hdr[5] << 8 | hdr[6] << 16 | hdr[7] << 24;
             if (stream.Length != (size + 4))
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Corrupt *.UDI file!",
                     "UDI loader",
                     DlgButtonSet.OK,
@@ -96,7 +96,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
             }
             if (hdr[8] != 0)
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Unsupported *.UDI format version!",
                     "UDI loader",
                     DlgButtonSet.OK,
@@ -142,7 +142,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
             var stampCrc = (UInt32)(hdr[0] | hdr[1] << 8 | hdr[2] << 16 | hdr[3] << 24);
             if (stampCrc != crc)
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     string.Format("CRC ERROR:\nStamp: {0:X8}\nReal: {1:X8}", stampCrc, crc),
                     "UDI loader",
                     DlgButtonSet.OK,

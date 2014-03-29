@@ -38,7 +38,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			byte[] hdr = new byte[0xCA];
 			if (stream.Length != 49486)
 			{
-                DialogProvider.Show(
+                DialogService.Show(
                     "Invalid file size, file corrupt!",
                     "ZX loader",
                     DlgButtonSet.OK,

@@ -708,7 +708,7 @@ namespace ZXMAK2.Engine
                 catch (Exception ex)
                 {
                     LogAgent.Error(ex);
-                    DialogProvider.Show(
+                    DialogService.Show(
                         string.Format("Load device failed: {0}", ex.Message),
                         "ERROR",
                         DlgButtonSet.OK,

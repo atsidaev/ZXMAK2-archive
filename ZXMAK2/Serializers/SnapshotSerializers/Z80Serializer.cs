@@ -75,7 +75,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                         "supported only ExtensionSize={{0(old format), 23, 54}})",
                         hdr1[Z80HDR1_EXTSIZE]);
                     LogAgent.Warn("{0}", msg);
-                    DialogProvider.Show(
+                    DialogService.Show(
                         msg,
                         "Z80 loader",
                         DlgButtonSet.OK,
@@ -604,7 +604,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 				if (j >= DestSize)
 				{
-					DialogProvider.Show(
+					DialogService.Show(
                         "Compression error: buffer overflow,\nfile can contain invalid data!", 
                         "Z80 loader",
                         DlgButtonSet.OK,
@@ -674,7 +674,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                     j, 
                     size);
                 LogAgent.Error("Z80Serializer: {0}", msg);
-                DialogProvider.Show(
+                DialogService.Show(
                     msg,
                     "Z80 loader",
                     DlgButtonSet.OK,
