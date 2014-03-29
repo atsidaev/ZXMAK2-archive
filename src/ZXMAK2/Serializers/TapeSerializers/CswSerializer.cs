@@ -39,7 +39,7 @@ namespace ZXMAK2.Serializers.TapeSerializers
                 var txtInfo = string.Empty;
                 if (Encoding.ASCII.GetString(hdr, 0, 22) != "Compressed Square Wave")
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Invalid CSW file, identifier not found! ",
                         "CSW loader",
                         DlgButtonSet.OK,
@@ -49,7 +49,7 @@ namespace ZXMAK2.Serializers.TapeSerializers
                 var version = hdr[0x17];
                 if (version > 2)
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         string.Format("Format CSW V{0}.{1} not supported!", hdr[0x17], hdr[0x18]),
                         "CSW loader",
                         DlgButtonSet.OK,
@@ -133,7 +133,7 @@ namespace ZXMAK2.Serializers.TapeSerializers
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogProvider.Show(
+                DialogService.Show(
                     ex.Message,
                     "CSW loader",
                     DlgButtonSet.OK,

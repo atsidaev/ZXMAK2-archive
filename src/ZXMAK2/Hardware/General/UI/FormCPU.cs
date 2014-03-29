@@ -246,7 +246,7 @@ namespace ZXMAK2.Hardware.General.UI
                     catch (Exception ex)
                     {
                         LogAgent.Error(ex);
-                        DialogProvider.ShowFatalError(ex);
+                        DialogService.ShowFatalError(ex);
                     }
                     UpdateCPU(true);
                     break;
@@ -260,7 +260,7 @@ namespace ZXMAK2.Hardware.General.UI
                     catch (Exception ex)
                     {
                         LogAgent.Error(ex);
-                        DialogProvider.ShowFatalError(ex);
+                        DialogService.ShowFatalError(ex);
                     }
                     UpdateCPU(true);
                     break;

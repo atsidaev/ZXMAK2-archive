@@ -469,7 +469,7 @@ namespace ZXMAK2.Controls
                 catch (Exception ex)
                 {
                     LogAgent.Error(ex);
-                    DialogProvider.Show(
+                    DialogService.Show(
                         string.Format("The following device was failed to initialize and will be removed:\n{0}", device.GetType()),
                         "ERROR",
                         DlgButtonSet.OK,
@@ -567,7 +567,7 @@ namespace ZXMAK2.Controls
                 }
                 if (m_workBus.FindDevice<IUlaDevice>() == null)
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Bad configuration!\n\nPease add ULA device!",
                         "ERROR",
                         DlgButtonSet.OK,
@@ -576,7 +576,7 @@ namespace ZXMAK2.Controls
                 }
                 if (m_workBus.FindDevice<IMemoryDevice>() == null)
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Bad configuration!\n\nPease add Memory device!",
                         "ERROR",
                         DlgButtonSet.OK,
@@ -586,7 +586,7 @@ namespace ZXMAK2.Controls
 
                 if (!m_workBus.Connect())
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "There is a problem in your machine configuration!\nSee logs for details",
                         "Apply failed!",
                         DlgButtonSet.OK,
@@ -626,7 +626,7 @@ namespace ZXMAK2.Controls
             {
                 LogAgent.Error(ex);
                 m_workBus.Disconnect();
-                DialogProvider.Show(
+                DialogService.Show(
                     ex.Message,
                     "Apply failed!",
                     DlgButtonSet.OK,
@@ -687,7 +687,7 @@ namespace ZXMAK2.Controls
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogProvider.Show(
+                DialogService.Show(
                     ex.Message,
                     "Add failed!",
                     DlgButtonSet.OK,

@@ -36,7 +36,7 @@ namespace ZXMAK2.Serializers.TapeSerializers
 
             if (Encoding.ASCII.GetString(snbuf, 0, 7) != "ZXTape!" || snbuf[7] != 0x1A)
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Invalid TZX file, identifier not found! ",
                     "TZX loader",
                     DlgButtonSet.OK,

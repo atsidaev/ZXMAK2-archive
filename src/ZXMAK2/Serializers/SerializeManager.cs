@@ -121,7 +121,7 @@ namespace ZXMAK2.Serializers
 					}
 					else if (list.Count > 1)
 					{
-						selEntry = (ZipLib.Zip.ZipEntry)DialogProvider.ObjectSelector(
+						selEntry = (ZipLib.Zip.ZipEntry)DialogService.ObjectSelector(
 							list.ToArray(),
 							Path.GetFileName(fileName));
 						if (selEntry == null)
@@ -137,7 +137,7 @@ namespace ZXMAK2.Serializers
 					}
 				}
 			}
-			DialogProvider.Show(
+			DialogService.Show(
 				string.Format("Can't open {0}!\n\nSupported file not found!", fileName),
 				"Error",
 				DlgButtonSet.OK,
@@ -176,7 +176,7 @@ namespace ZXMAK2.Serializers
 					}
 					else if (list.Count > 1)
 					{
-						selEntry = (ZipLib.Zip.ZipEntry)DialogProvider.ObjectSelector(
+						selEntry = (ZipLib.Zip.ZipEntry)DialogService.ObjectSelector(
 							list.ToArray(),
 							Path.GetFileName(fileName));
 						if (selEntry == null)
@@ -192,7 +192,7 @@ namespace ZXMAK2.Serializers
 					}
 				}
 			}
-			DialogProvider.Show(
+			DialogService.Show(
 				string.Format("Can't open {0}!\n\nSupported file not found!", fileName),
 				"Error",
 				DlgButtonSet.OK,
@@ -217,7 +217,7 @@ namespace ZXMAK2.Serializers
 					}
 					else
 					{
-						DialogProvider.Show(
+						DialogService.Show(
 							string.Format("Can't open {0}\\{1}!\n\nFile not supported!", fileName, entry.Name),
 							"Error",
 							DlgButtonSet.OK,
@@ -285,7 +285,7 @@ namespace ZXMAK2.Serializers
 			FormatSerializer serializer = GetSerializer(ext);
 			if (serializer == null || !serializer.CanSerialize)
 			{
-				DialogProvider.Show(
+				DialogService.Show(
 					string.Format("Save {0} file format not implemented!", ext),
 					"Error",
 					DlgButtonSet.OK,
@@ -301,7 +301,7 @@ namespace ZXMAK2.Serializers
 			FormatSerializer serializer = GetSerializer(ext);
 			if (serializer == null)
 			{
-				DialogProvider.Show(
+				DialogService.Show(
 					string.Format("Open {0} file format not implemented!", ext),
 					"Error",
 					DlgButtonSet.OK,

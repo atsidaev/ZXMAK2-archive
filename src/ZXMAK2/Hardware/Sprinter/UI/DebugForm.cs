@@ -241,7 +241,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                         catch (Exception exception)
                         {
                             LogAgent.Error(exception);
-                            DialogProvider.ShowFatalError(exception);
+                            DialogService.ShowFatalError(exception);
                         }
                         UpdateCPU(true);
                         return;
@@ -258,7 +258,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                         catch (Exception exception2)
                         {
                             LogAgent.Error(exception2);
-                            DialogProvider.ShowFatalError(exception2);
+                            DialogService.ShowFatalError(exception2);
                         }
                         UpdateCPU(true);
                         return;

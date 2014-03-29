@@ -55,7 +55,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
         {
             if (stream.Length < 15)
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Invalid HOBETA file size",
                     "HOBETA loader",
                     DlgButtonSet.OK,
@@ -69,7 +69,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
             if (fbuf[14] * 256 + 17 != fbuf.Length || fbuf[13] != 0 || fbuf[14] == 0)
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Invalid HOBETA file!",
                     "HOBETA loader",
                     DlgButtonSet.OK,
@@ -80,7 +80,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
             bool needFormat = true;
             if (_diskImage.IsConnected && _diskImage.Present)
             {
-                DlgResult dlgRes = DialogProvider.Show(
+                DlgResult dlgRes = DialogService.Show(
                     "Do you want to append file(s) to existing disk?\n\nPlease click 'Yes' to append file(s).\nOr click 'No' to create new disk...",
                     "HOBETA loader",
                     DlgButtonSet.YesNoCancel,
@@ -111,7 +111,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
             _diskImage.ReadLogicalSector(0, 0, 1 + pos / 0x100, dir);
             if ((s9[0xE5] | (s9[0xE6] << 8)) < len)   // disk full
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Disk full! Create empty disk and repeat operation!",
                     "HOBETA loader",
                     DlgButtonSet.OK,

@@ -60,7 +60,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
             }
             if (mainHdr.Ver > 21 || mainHdr.Ver < 10)           // 1.0 <= version <= 2.1...
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     string.Format("Format version is not supported [0x{0:X2}]", mainHdr.Ver),
                     "TD0 loader",
                     DlgButtonSet.OK,
@@ -69,7 +69,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
             }
             if (mainHdr.DataDOS != 0)
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "'DOS Allocated sectors were copied' option is not supported!",
                     "TD0 loader",
                     DlgButtonSet.OK,
@@ -82,7 +82,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
             {
                 if (mainHdr.Ver < 20)    // unsupported Old Advanced compression
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Old Advanced compression is not implemented!",
                         "TD0 loader",
                         DlgButtonSet.OK,
@@ -125,7 +125,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
                 if (CrcTd0.Calculate(info, 2, 8 + getUInt16(info, 2)) != getUInt16(info, 0))
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Info crc wrong",
                         "TD0 loader",
                         DlgButtonSet.OK,
@@ -166,7 +166,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
             if (cylCount < 1 || sideCount < 1)
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Invalid disk structure",
                     "td0",
                     DlgButtonSet.OK,
@@ -251,7 +251,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                 if (ID != 0x4454 && ID != 0x6474) // "TD"/"td"
                 {
                     LogAgent.Error("TD0 loader: Invalid header ID");
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Invalid header ID",
                         "TD0 loader",
                         DlgButtonSet.OK,
@@ -264,7 +264,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                 if (stampcrc != crc)
                 {
                     LogAgent.Warn("TD0 loader: Main header had bad CRC=0x" + crc.ToString("X4") + " (stamp crc=0x" + stampcrc.ToString("X4") + ")");
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Wrong main header CRC",
                         "TD0 loader",
                         DlgButtonSet.OK,
@@ -315,7 +315,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                     if (hdr._rawData[3] != (crc & 0xFF))
                     {
                         LogAgent.Warn("TD0 loader: Track header had bad CRC=0x" + crc.ToString("X4") + " (stamp crc=0x" + hdr._rawData[3].ToString("X2") + ") [CYL:0x" + hdr._rawData[1].ToString("X2") + ";SIDE:" + hdr._rawData[2].ToString("X2"));
-                        DialogProvider.Show(
+                        DialogService.Show(
                             "Track header had bad CRC",
                             "TD0 loader",
                             DlgButtonSet.OK,
@@ -427,7 +427,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                         sector.H,
                         sector.R,
                         sector.N);
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Sector data had bad CRC",
                         "TD0 loader",
                         DlgButtonSet.OK,
@@ -488,7 +488,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                                     break;
                                 default:
                                     LogAgent.Warn("Unknown sector encoding!");
-                                    DialogProvider.Show(
+                                    DialogService.Show(
                                         "Unknown sector encoding!",
                                         "TD0 loader",
                                         DlgButtonSet.OK,

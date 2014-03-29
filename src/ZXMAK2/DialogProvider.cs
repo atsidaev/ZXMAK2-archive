@@ -4,7 +4,7 @@ using ZXMAK2.Controls;
 
 namespace ZXMAK2
 {
-    public static class DialogProvider
+    public static class DialogService
     {
         public static void ShowFatalError(Exception ex)
         {

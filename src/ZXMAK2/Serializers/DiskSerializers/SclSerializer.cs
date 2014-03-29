@@ -45,7 +45,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
         {
             if (stream.Length < 9 || stream.Length > 2544 * 256 + 9)
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Invalid SCL file size",
                     "SCL loader",
                     DlgButtonSet.OK,
@@ -60,7 +60,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
             // TODO:check first 8 bytes "SINCLAIR"
             if (Encoding.ASCII.GetString(fbuf, 0, 8) != "SINCLAIR")
             {
-                DialogProvider.Show(
+                DialogService.Show(
                     "Corrupted SCL file",
                     "SCL loader",
                     DlgButtonSet.OK,
@@ -74,7 +74,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
             bool needFormat = true;
             if (_diskImage.IsConnected && _diskImage.Present)
             {
-                DlgResult dlgRes = DialogProvider.Show(
+                DlgResult dlgRes = DialogService.Show(
                     "Do you want to append file(s) to existing disk?\n\nPlease click 'Yes' to append file(s).\nOr click 'No' to create new disk...",
                     "SCL loader",
                     DlgButtonSet.YesNoCancel,

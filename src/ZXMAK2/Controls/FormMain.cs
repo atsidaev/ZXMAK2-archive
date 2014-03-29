@@ -174,7 +174,7 @@ namespace ZXMAK2.Controls
                 catch (Exception ex)
                 {
                     LogAgent.Error(ex);
-                    DialogProvider.ShowFatalError(ex);
+                    DialogService.ShowFatalError(ex);
                 }
             }
             m_allowSaveSize = true;
@@ -311,7 +311,7 @@ namespace ZXMAK2.Controls
                 }
                 else
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Cannot open quick snapshot boot.zip!",
                         "Error",
                         DlgButtonSet.OK,
@@ -383,7 +383,7 @@ namespace ZXMAK2.Controls
                 }
                 else
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Unrecognized file!",
                         "Error",
                         DlgButtonSet.OK,
@@ -393,7 +393,7 @@ namespace ZXMAK2.Controls
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogProvider.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+                DialogService.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
             }
             finally
             {
@@ -415,7 +415,7 @@ namespace ZXMAK2.Controls
                 }
                 else
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         "Unrecognized file!",
                         "Error",
                         DlgButtonSet.OK,
@@ -425,7 +425,7 @@ namespace ZXMAK2.Controls
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogProvider.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+                DialogService.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
             }
             finally
             {
@@ -469,7 +469,7 @@ namespace ZXMAK2.Controls
             {
                 LogAgent.Error(ex);
                 e.Cancel = true;
-                DialogProvider.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+                DialogService.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
             }
         }
 
@@ -563,7 +563,7 @@ namespace ZXMAK2.Controls
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogProvider.Show(
+                DialogService.Show(
                     ex.Message,
                     "ERROR",
                     DlgButtonSet.OK,
@@ -922,7 +922,7 @@ namespace ZXMAK2.Controls
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogProvider.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+                DialogService.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
             }
         }
 
@@ -943,7 +943,7 @@ namespace ZXMAK2.Controls
                 }
                 else
                 {
-                    DialogProvider.Show(
+                    DialogService.Show(
                         string.Format("Unrecognized file!\n\n{0}", fileName),
                         "Error",
                         DlgButtonSet.OK,
