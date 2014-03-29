@@ -305,6 +305,7 @@
     <Compile Include="Entities\IconDescriptor.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRenderer.cs" />
     <Compile Include="Hardware\ZXBYTE\UlaByte.cs" />
+    <Compile Include="HelpService.cs" />
     <Compile Include="Interfaces\IHostJoystick.cs" />
     <Compile Include="Interfaces\IHostKeyboard.cs" />
     <Compile Include="Interfaces\IHostMouse.cs" />
