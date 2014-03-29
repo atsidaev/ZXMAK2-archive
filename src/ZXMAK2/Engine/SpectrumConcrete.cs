@@ -67,12 +67,6 @@ namespace ZXMAK2.Engine
 
         #region debugger methods
 
-        public override ushort ReadMemory16bit(ushort addr)
-        {
-            var memory = _bus.FindDevice<IMemoryDevice>();
-            return memory.RDMEM_DBG_16bit(addr);
-        }
-
         public override byte ReadMemory(ushort addr)
         {
             var memory = _bus.FindDevice<IMemoryDevice>();
@@ -134,7 +128,7 @@ namespace ZXMAK2.Engine
                 }
                 // Alex: end of performance critical block
 
-                if (CheckBreakpoint() || forceStop)
+                if (CheckBreakpoint())
                 {
                     int delta1 = (int)(_cpu.Tact - t);
                     if (delta1 >= 0)
@@ -142,7 +136,6 @@ namespace ZXMAK2.Engine
                     IsRunning = false;
                     OnUpdateFrame();
                     OnBreakpoint();
-                    forceStop = false;
                     return;
                 }
             }
@@ -162,12 +155,11 @@ namespace ZXMAK2.Engine
             int delta = (int)(_cpu.Tact - t);
             if (delta >= 0)
                 m_frameStartTact = delta;
-            if (CheckBreakpoint() || forceStop)
+            if (CheckBreakpoint())
             {
                 IsRunning = false;
                 OnUpdateFrame();
                 OnBreakpoint();
-                forceStop = false;
             }
         }
     }

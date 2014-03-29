@@ -508,13 +508,6 @@ namespace ZXMAK2.Engine
         public event EventHandler UpdateState;
         public event EventHandler Breakpoint;
 
-        /*public void OnBreakpoint()
-        {
-            //IsRunning = false;
-            OnUpdateFrame(this, EventArgs.Empty);
-            this.OnBreakpoint(this, EventArgs.Empty);
-        }*/
-
         public bool IsRunning
         {
             get
@@ -548,26 +541,12 @@ namespace ZXMAK2.Engine
             }
         }
 
-        public void ForceStop()
-        {
-            Spectrum.ForceStop();
-        }
-
         public IRzxState RzxState
         {
             get
             {
                 lock (m_sync)
                     return Spectrum.BusManager.RzxHandler;
-            }
-        }
-
-        public IMachineState MachineState
-        {
-            get
-            {
-                lock (m_sync)
-                    return (IMachineState)Spectrum;
             }
         }
 

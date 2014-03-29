@@ -10,7 +10,6 @@ namespace ZXMAK2.Interfaces
 	{
 		Z80CPU CPU { get; }
 		BusManager BusManager { get; }
-                ushort ReadMemory16bit(ushort addr);
 		byte ReadMemory(ushort addr);
 		void WriteMemory(ushort addr, byte value);
 	}
