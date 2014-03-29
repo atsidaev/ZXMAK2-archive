@@ -22,10 +22,7 @@ namespace ZXMAK2.Controls
     public unsafe partial class FormMain : Form
     {
         private VirtualMachine m_vm;
-        private DirectKeyboard m_keyboard;
-        private DirectMouse m_mouse;
-        private DirectJoystick m_joystick;
-        private DirectSound m_sound;
+        private MdxHost m_host;
 
         private bool m_fullscreen = false;
         private Point m_location;
@@ -48,13 +45,8 @@ namespace ZXMAK2.Controls
             try
             {
                 renderVideo.InitWnd();
-                m_keyboard = new DirectKeyboard(this);
-                m_mouse = new DirectMouse(this);
-                m_joystick = new DirectJoystick(this);
-                m_sound = new DirectSound(this, -1, 44100, 16, 2, 882 * 2 * 2, 4);
-                m_vm = new VirtualMachine(m_keyboard, m_mouse, m_joystick, m_sound);
-                m_vm.Spectrum.BusManager.BusConnected += OnVmBusConnected;
-                m_vm.Spectrum.BusManager.BusDisconnect += OnVmBusDisconnect;
+                m_host = new MdxHost(this);
+                m_vm = new VirtualMachine(m_host, new GuiData(this, menuTools));
                 m_vm.UpdateVideo += vm_UpdateVideo;
                 m_vm.Init();
             }
@@ -70,18 +62,11 @@ namespace ZXMAK2.Controls
             try
             {
                 renderVideo.FreeWnd();
-                if (m_keyboard != null)
-                    m_keyboard.Dispose();
-                m_keyboard = null;
-                if (m_mouse != null)
-                    m_mouse.Dispose();
-                m_mouse = null;
-                if (m_joystick != null)
-                    m_joystick.Dispose();
-                m_joystick = null;
-                if (m_sound != null)
-                    m_sound.Dispose();
-                m_sound = null;
+                if (m_host != null)
+                {
+                    m_host.Dispose();
+                    m_host = null;
+                }
             }
             catch (Exception ex)
             {
@@ -92,52 +77,6 @@ namespace ZXMAK2.Controls
 
         public string StartupImage { get; set; }
 
-        protected virtual void OnVmBusConnected(object sender, EventArgs e)
-        {
-            var list = m_vm.Spectrum.BusManager.FindDevices<IGuiExtension>();
-            list.Sort(GuiExtensionNameComparison);
-            foreach (var wfe in list)
-            {
-                try
-                {
-                    var guiData = new GuiData(this, menuTools);
-                    wfe.AttachGui(guiData);
-                }
-                catch (Exception ex)
-                {
-                    LogAgent.Error(ex);
-                }
-            }
-        }
-
-        protected virtual void OnVmBusDisconnect(object sender, EventArgs e)
-        {
-            var list = m_vm.Spectrum.BusManager.FindDevices<IGuiExtension>();
-            list.Sort(GuiExtensionNameComparison);
-            foreach (var wfe in list)
-            {
-                try
-                {
-                    wfe.DetachGui();
-                }
-                catch (Exception ex)
-                {
-                    LogAgent.Error(ex);
-                }
-            }
-        }
-
-        private static int GuiExtensionNameComparison(
-            IGuiExtension x1,
-            IGuiExtension x2)
-        {
-            if (x1 == x2) return 0;
-            if (x1 is IJtagDevice) return -1;
-            if (x2 is IJtagDevice) return 1;
-            var dev1 = (BusDeviceBase)x1;
-            var dev2 = (BusDeviceBase)x2;
-            return dev2.Name.CompareTo(dev1.Name);
-        }
 
         private bool m_firstShow = true;
 
@@ -222,14 +161,14 @@ namespace ZXMAK2.Controls
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (m_mouse.IsCaptured)
+            if (m_host.IsInputCaptured)
             {
                 e.SuppressKeyPress = true;
             }
 
             if (e.Alt && e.Control)
             {
-                m_mouse.StopCapture();
+                m_host.StopInputCapture(); 
             }
 
             // FULLSCREEN
@@ -349,10 +288,7 @@ namespace ZXMAK2.Controls
         {
             if (renderVideo.Focused)
             {
-                if (m_mouse != null)
-                {
-                    m_mouse.StartCapture();
-                }
+                m_host.StartInputCapture();
             }
         }
 
@@ -690,7 +626,7 @@ namespace ZXMAK2.Controls
                         FormBorderStyle = FormBorderStyle.None;
                         Location = new Point(0, 0);
 
-                        //m_mouse.StartCapture();
+                        //m_host.StartInputCapture();
                         Menu = null;
                         Size = Screen.PrimaryScreen.Bounds.Size;
                         Focus();
@@ -700,12 +636,10 @@ namespace ZXMAK2.Controls
                         Location = m_location;
                         FormBorderStyle = m_style;
 
-                        m_mouse.StopCapture();
+                        m_host.StopInputCapture();
                         Menu = menuMain;
                         ClientSize = m_size;
                     }
-
-                    //vctl.RenderScene();
                 }
             }
         }
