@@ -1147,8 +1147,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 if (  brk.Info.isOn &&
                     ( brk.Info.accessType == BreakPointConditionType.memoryVsValue || brk.Info.accessType == BreakPointConditionType.registryMemoryReferenceVsValue) )
                 {
-                    if (brk.checkInfoMemory(m_spectrum.MachineState))
-                        m_spectrum.ForceStop();
+                    brk.IsNeedWriteMemoryCheck = true;
                 }
             }
 
@@ -1165,7 +1164,11 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 if (brk.Info.isOn && brk.Info.accessType == BreakPointConditionType.memoryRead )
                 {
                     if (brk.Info.leftValue == addr)
-                        m_spectrum.ForceStop();
+                    {
+                        // raise force stop at the end of the currect CPU cycle
+                        // (this flag will be checked from BreakpointAdlers.Check at the end of CPU cycle)
+                        brk.IsForceStop = true;
+                    }
                 }
             }
 

@@ -15,7 +15,6 @@ namespace ZXMAK2.Interfaces
 		void DoStepOver();
 		void DoRun();
 		void DoStop();
-        void ForceStop();
 
 		byte ReadMemory(ushort addr);
 		void WriteMemory(ushort addr, byte value);
@@ -35,6 +34,5 @@ namespace ZXMAK2.Interfaces
 		int FrameTactCount { get; }
 
 		IRzxState RzxState { get; }
-        IMachineState MachineState { get; }
 	}
 }

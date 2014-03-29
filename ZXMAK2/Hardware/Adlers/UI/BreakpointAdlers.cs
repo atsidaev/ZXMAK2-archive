@@ -9,6 +9,9 @@ namespace ZXMAK2.Hardware.Adlers.UI
 {
     public class BreakpointAdlers : Breakpoint
     {
+        public bool IsNeedWriteMemoryCheck { get; set; }
+        public bool IsForceStop { get; set; }
+        
         private object lockingObj = new object();
 
         private static bool debuggerStop = false;
@@ -33,6 +36,18 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
         public bool checkInfo(IMachineState state)
         {
+            var needWriteMemoryCheck = IsNeedWriteMemoryCheck;
+            IsNeedWriteMemoryCheck = false; // reset flag for next cycle
+            if (IsForceStop)
+            {
+                IsForceStop = false;    // reset stop flag for next cycle
+                return true;            // return true to force stop
+            }
+            if (needWriteMemoryCheck && checkInfoMemory(state))
+            {
+                return true;
+            }
+            
             /*Stopwatch watch = new Stopwatch();
             watch.Start();*/
             lock (lockingObj)
@@ -78,7 +93,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 return leftValue != Info.rightValue;
         }
 
-        public bool checkInfoMemory(IMachineState state)
+        private bool checkInfoMemory(IMachineState state)
         {
             /*Stopwatch watch = new Stopwatch();
             watch.Start();*/
@@ -115,7 +130,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                             else
                             {
                                 //TimeSpan time = watch.Elapsed;
-                                leftValue = state.ReadMemory16bit(getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex)));
+                                leftValue = Read16(state, getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex)));
                                 /*watch.Stop();
                                 TimeSpan time = watch.Elapsed;
                                 time = time;*/
@@ -132,6 +147,11 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 return leftValue == Info.rightValue;
             else
                 return leftValue != Info.rightValue;
+        }
+
+        private static ushort Read16(IMachineState state, ushort addr)
+        {
+            return (ushort)(state.ReadMemory(addr++) | (state.ReadMemory(addr++) << 8));
         }
     }
 }

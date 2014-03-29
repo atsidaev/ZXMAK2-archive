@@ -5,9 +5,8 @@ namespace ZXMAK2.Interfaces
 {
     public interface IMemoryDevice //: BusDeviceBase
     {
-        ushort RDMEM_DBG_16bit(ushort addr); // 16bit memory read
-        byte   RDMEM_DBG(ushort addr);
-        void   WRMEM_DBG(ushort addr, byte value);
+        byte RDMEM_DBG(ushort addr);
+        void WRMEM_DBG(ushort addr, byte value);
 
         byte[][] RamPages { get; }
         byte[][] RomPages { get; }
@@ -21,15 +20,15 @@ namespace ZXMAK2.Interfaces
 
         #region Comment
         /// <summary>
-		/// Returns true when memory should be saved to 48K snapshot (save RAM pages from Map48 only)
+        /// Returns true when memory should be saved to 48K snapshot (save RAM pages from Map48 only)
         /// </summary>
         #endregion
         bool IsMap48 { get; }
-		int[] Map48 { get; }
+        int[] Map48 { get; }
 
         #region Comment
         /// <summary>
-		/// Returns True when ROM 48 is mapped to window #0000...#3FFF
+        /// Returns True when ROM 48 is mapped to window #0000...#3FFF
         /// </summary>
         #endregion
         bool IsRom48 { get; }
