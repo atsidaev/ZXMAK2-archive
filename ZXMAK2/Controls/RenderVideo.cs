@@ -9,12 +9,15 @@ using ZXMAK2.Engine;
 using System.Collections.Generic;
 using ZXMAK2.Entities;
 using System.Diagnostics;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.Controls
 {
-    public class RenderVideo : Render3D
+    public class RenderVideo : Render3D, IHostVideo
     {
+        #region Fields
+
         private Sprite m_sprite = null;
         private Texture m_texture = null;
         private Size m_surfaceSize = new Size(0, 0);
@@ -26,6 +29,9 @@ namespace ZXMAK2.Controls
 
         private unsafe DrawFilterDelegate m_drawFilter;
         private unsafe delegate void DrawFilterDelegate(int* dstBuffer, int* srcBuffer);
+
+        #endregion Fields
+
 
         #region Properties
 
@@ -49,13 +55,28 @@ namespace ZXMAK2.Controls
 
         #endregion Properties
 
-
+        
         public unsafe RenderVideo()
         {
             m_drawFilter = drawFrame;
             DisplayIcon = true;
             ScaleMode = ScaleMode.FixedPixelSize;
         }
+
+
+        #region IHostVideo
+
+        public void UpdateVideo(VirtualMachine vm)
+        {
+            UpdateIcons(vm.Spectrum.BusManager.IconDescriptorArray);
+            m_debugFrameStart = vm.DebugFrameStartTact;
+            UpdateSurface(vm.Screen, vm.ScreenSize, vm.ScreenHeightScale);
+        }
+
+        #endregion IHostVideo
+
+
+        #region Private
 
         protected override void OnCreateDevice()
         {
@@ -94,7 +115,7 @@ namespace ZXMAK2.Controls
             base.OnDestroyDevice();
         }
 
-        public unsafe void UpdateSurface(int[] surfaceBuffer, Size surfaceSize, float surfaceHeightScale)
+        private unsafe void UpdateSurface(int[] surfaceBuffer, Size surfaceSize, float surfaceHeightScale)
         {
             lock (SyncRoot)
             {
@@ -407,15 +428,10 @@ namespace ZXMAK2.Controls
         }
 
         private int m_debugFrameStart = 0;
-        public int DebugStartTact
-        {
-            get { return m_debugFrameStart; }
-            set { m_debugFrameStart = value; }
-        }
 
         private Dictionary<IconDescriptor, IconTextureWrapper> m_iconWrapperDict = new Dictionary<IconDescriptor, IconTextureWrapper>();
 
-        public void UpdateIcons(IconDescriptor[] iconDescArray)
+        private void UpdateIcons(IconDescriptor[] iconDescArray)
         {
             lock (SyncRoot)
             {
@@ -448,6 +464,46 @@ namespace ZXMAK2.Controls
                 }
             }
         }
+
+        #endregion Private
+
+
+        #region TextureWrapper
+
+        private class IconTextureWrapper : IDisposable
+        {
+            private IconDescriptor m_iconDesc;
+
+            public Texture Texture;
+            public bool Visible;
+
+            public IconTextureWrapper(IconDescriptor iconDesc)
+            {
+                m_iconDesc = iconDesc;
+                Visible = iconDesc.Visible;
+            }
+
+            public void Dispose()
+            {
+                if (Texture != null)
+                    Texture.Dispose();
+                Texture = null;
+            }
+
+            public Size Size { get { return m_iconDesc.Size; } }
+
+            public void Load(Device D3D)
+            {
+                if (Texture != null)
+                    Texture.Dispose();
+                Texture = null;
+                Texture = TextureLoader.FromStream(
+                    D3D,
+                    m_iconDesc.GetIconStream());
+            }
+        }
+        
+        #endregion TextureWrapper
     }
 
     public enum ScaleMode
@@ -455,38 +511,5 @@ namespace ZXMAK2.Controls
         Stretch = 0,
         KeepProportion,
         FixedPixelSize,
-    }
-
-    internal class IconTextureWrapper : IDisposable
-    {
-        private IconDescriptor m_iconDesc;
-
-        public Texture Texture;
-        public bool Visible;
-
-        public IconTextureWrapper(IconDescriptor iconDesc)
-        {
-            m_iconDesc = iconDesc;
-            Visible = iconDesc.Visible;
-        }
-
-        public void Dispose()
-        {
-            if (Texture != null)
-                Texture.Dispose();
-            Texture = null;
-        }
-
-        public Size Size { get { return m_iconDesc.Size; } }
-
-        public void Load(Device D3D)
-        {
-            if (Texture != null)
-                Texture.Dispose();
-            Texture = null;
-            Texture = TextureLoader.FromStream(
-                D3D,
-                m_iconDesc.GetIconStream());
-        }
     }
 }

@@ -54,8 +54,6 @@ namespace ZXMAK2.Engine
             }
         }
 
-        public event EventHandler UpdateVideo;
-
         public unsafe VirtualMachine(IHost host, GuiData uiService)
         {
             m_host = host;
@@ -256,8 +254,10 @@ namespace ZXMAK2.Engine
 
         private void OnUpdateVideo()
         {
-            if (UpdateVideo != null)
-                UpdateVideo(this, EventArgs.Empty);
+            if (m_host.Video != null)
+            {
+                m_host.Video.UpdateVideo(this);
+            }
         }
 
         private void OnUpdateFrame(object sender, EventArgs e)

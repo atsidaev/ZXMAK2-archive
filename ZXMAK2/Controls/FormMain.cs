@@ -45,9 +45,8 @@ namespace ZXMAK2.Controls
             try
             {
                 renderVideo.InitWnd();
-                m_host = new MdxHost(this);
+                m_host = new MdxHost(this, renderVideo);
                 m_vm = new VirtualMachine(m_host, new GuiData(this, menuTools));
-                m_vm.UpdateVideo += vm_UpdateVideo;
                 m_vm.Init();
             }
             catch (Exception ex)
@@ -130,7 +129,6 @@ namespace ZXMAK2.Controls
         {
             m_allowSaveSize = false;
             //LogAgent.Debug("FormMain.FormMain_FormClosing {0}", e.CloseReason);
-            m_vm.UpdateVideo -= new EventHandler(vm_UpdateVideo);
             m_vm.DoStop();
             m_vm.Spectrum.BusManager.Disconnect();
         }
@@ -264,23 +262,11 @@ namespace ZXMAK2.Controls
             }
         }
 
-        private void vm_UpdateVideo(object sender, EventArgs e)
-        {
-            if (m_vm != null)
-            {
-                renderVideo.UpdateIcons(m_vm.Spectrum.BusManager.IconDescriptorArray);
-                renderVideo.DebugStartTact = m_vm.DebugFrameStartTact;
-                renderVideo.UpdateSurface(m_vm.Screen, m_vm.ScreenSize, m_vm.ScreenHeightScale);
-            }
-        }
-
         private void renderVideo_DeviceReset(object sender, EventArgs e)
         {
-            if (m_vm != null)
+            if (m_host != null)
             {
-                renderVideo.UpdateIcons(m_vm.Spectrum.BusManager.IconDescriptorArray);
-                renderVideo.DebugStartTact = m_vm.DebugFrameStartTact;
-                renderVideo.UpdateSurface(m_vm.Screen, m_vm.ScreenSize, m_vm.ScreenHeightScale);
+                m_host.Video.UpdateVideo(m_vm);
             }
         }
 
@@ -493,7 +479,7 @@ namespace ZXMAK2.Controls
                 {
                     form.Init(m_vm, renderVideo);
                     form.ShowDialog(this);
-                    vm_UpdateVideo(this, EventArgs.Empty);
+                    m_host.Video.UpdateVideo(m_vm);
                 }
             }
             catch (Exception ex)
