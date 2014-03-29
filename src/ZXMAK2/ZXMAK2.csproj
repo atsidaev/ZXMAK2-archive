@@ -523,6 +523,11 @@
     <EmbeddedResource Include="Controls\TapeForm.resx">
       <DependentUpon>TapeForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Hardware\Sprinter\UI\DebugForm.resx">
+      <DependentUpon>DebugForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -533,16 +538,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Hardware\Sprinter\UI\DebugForm.resx">
-      <DependentUpon>DebugForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="boot.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="MACHINES.PAK">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -552,10 +547,46 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Content Include="..\Help\ZXMAK2.chm">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\Fdd.png" />
+    <EmbeddedResource Include="Icons\ZXMAK2.ICO" />
+    <None Include="Icons\PlayIcon.png" />
+    <None Include="Icons\RewindIcon.png" />
+    <None Include="Icons\PrevIcon.png" />
+    <None Include="Icons\NextIcon.png" />
+    <None Include="Icons\StopIcon.png" />
+    <None Include="Icons\Rocket.png" />
+    <None Include="Icons\Autoplay.png" />
+    <EmbeddedResource Include="Icons\FddWr.png" />
+    <EmbeddedResource Include="Icons\pause_vm.png" />
+    <EmbeddedResource Include="Icons\cassette.png" />
+    <EmbeddedResource Include="Icons\hdd.png" />
+    <None Include="Icons\Keyboard48k.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="boot.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="MACHINES.PAK">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ROMS.PAK">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Help\ZXMAK2.chm">
+      <Visible>false</Visible>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Libraries\Pasmo.dll">
+      <Visible>false</Visible>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Libraries\PasmoXP.dll">
+      <Visible>false</Visible>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -576,41 +607,9 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Icons\Fdd.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Icons\ZXMAK2.ICO" />
-    <None Include="Icons\PlayIcon.png" />
-    <None Include="Icons\RewindIcon.png" />
-    <None Include="Icons\PrevIcon.png" />
-    <None Include="Icons\NextIcon.png" />
-    <None Include="Icons\StopIcon.png" />
-    <None Include="Icons\Rocket.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\Autoplay.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Icons\FddWr.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Icons\pause_vm.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Icons\cassette.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Icons\hdd.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\Keyboard48k.png" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(SolutionDir)ZXMak2\Hardware\Adlers\Pasmo.dll" "$(TargetDir)Pasmo.dll"
-    copy /Y "$(SolutionDir)ZXMak2\Hardware\Adlers\PasmoXP.dll" "$(TargetDir)PasmoXP.dll"
+    <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
