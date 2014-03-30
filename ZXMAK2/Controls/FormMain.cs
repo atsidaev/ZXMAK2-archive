@@ -29,19 +29,27 @@ namespace ZXMAK2.Controls
         private Size m_size;
         private FormBorderStyle m_style;
 
+        private string m_startupImage;
+        private bool m_firstShow = true;
+
         
-        public FormMain()
+        public FormMain(params string[] args)
         {
             SetStyle(ControlStyles.Opaque, true);
             InitializeComponent();
             this.Icon = Utils.GetAppIcon();
             loadClientSize();
             loadRenderSetting();
+            if (args.Length > 0 && File.Exists(args[0]))
+            {
+                m_startupImage = Path.GetFullPath(args[0]);
+            }
         }
 
-        internal void InitWnd()
+        protected override void OnLoad(EventArgs e)
         {
-            //LogAgent.Debug("MainForm.InitWnd");
+            //LogAgent.Debug("MainForm.OnLoad");
+            base.OnLoad(e);
             try
             {
                 renderVideo.InitWnd();
@@ -60,12 +68,17 @@ namespace ZXMAK2.Controls
             //LogAgent.Debug("MainForm.OnFormClosed");
             try
             {
-                renderVideo.FreeWnd();
+                if (m_vm != null)
+                {
+                    m_vm.Dispose();
+                    m_vm = null;
+                }
                 if (m_host != null)
                 {
                     m_host.Dispose();
                     m_host = null;
                 }
+                renderVideo.FreeWnd();
             }
             catch (Exception ex)
             {
@@ -74,10 +87,11 @@ namespace ZXMAK2.Controls
             base.OnFormClosed(e);
         }
 
-        public string StartupImage { get; set; }
-
-
-        private bool m_firstShow = true;
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            m_allowSaveSize = false;
+        }
 
         protected override void OnShown(EventArgs e)
         {
@@ -99,9 +113,9 @@ namespace ZXMAK2.Controls
                     {
                         m_vm.SaveConfigAs(fileName);
                     }
-                    if (StartupImage != null)
+                    if (m_startupImage != null)
                     {
-                        string imageName = m_vm.Spectrum.Loader.OpenFileName(StartupImage, true);
+                        string imageName = m_vm.Spectrum.Loader.OpenFileName(m_startupImage, true);
                         if (imageName != string.Empty)
                         {
                             setCaption(imageName);
@@ -125,14 +139,6 @@ namespace ZXMAK2.Controls
                 string.Format("ZXMAK2");
         }
 
-        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            m_allowSaveSize = false;
-            //LogAgent.Debug("FormMain.FormMain_FormClosing {0}", e.CloseReason);
-            m_vm.DoStop();
-            m_vm.Spectrum.BusManager.Disconnect();
-        }
-
         protected override void OnPaint(PaintEventArgs e)
         {
         }
@@ -140,8 +146,10 @@ namespace ZXMAK2.Controls
         protected override void OnDeactivate(EventArgs e)
         {
             base.OnDeactivate(e);
-            if (m_vm.CPU.RST)
+            if (m_vm != null && m_vm.CPU.RST)
+            {
                 m_vm.CPU.RST = false;
+            }
         }
 
         protected override void OnKeyUp(KeyEventArgs e)

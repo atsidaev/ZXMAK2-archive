@@ -15,7 +15,7 @@ using ZXMAK2.Entities;
 
 namespace ZXMAK2.Engine
 {
-    public class VirtualMachine : IDebuggable
+    public class VirtualMachine : IDebuggable, IDisposable
     {
         private readonly object m_sync = new object();
         private Thread m_thread = null;
@@ -74,6 +74,12 @@ namespace ZXMAK2.Engine
             m_spectrum.Init();
             m_spectrum.DoReset();
             m_spectrum.BusManager.SetDebuggable(this);
+        }
+
+        public void Dispose()
+        {
+            DoStop();
+            Spectrum.BusManager.Disconnect();
         }
 
         private string m_name = "ZX Spectrum Clone";
