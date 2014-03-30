@@ -48,6 +48,7 @@
             this.menuViewScaleModeStretch = new System.Windows.Forms.MenuItem();
             this.menuViewScaleModeKeepProportion = new System.Windows.Forms.MenuItem();
             this.menuViewScaleModeFixedPixelSize = new System.Windows.Forms.MenuItem();
+            this.menuViewSeparator2 = new System.Windows.Forms.MenuItem();
             this.menuViewSmoothing = new System.Windows.Forms.MenuItem();
             this.menuViewNoFlic = new System.Windows.Forms.MenuItem();
             this.menuViewVBlankSync = new System.Windows.Forms.MenuItem();
@@ -68,7 +69,6 @@
             this.menuHelpSeparator1 = new System.Windows.Forms.MenuItem();
             this.menuHelpAbout = new System.Windows.Forms.MenuItem();
             this.renderVideo = new ZXMAK2.Controls.RenderVideo();
-            this.menuViewSeparator2 = new System.Windows.Forms.MenuItem();
             this.SuspendLayout();
             // 
             // menuMain
@@ -209,6 +209,11 @@
             this.menuViewScaleModeFixedPixelSize.Text = "Fixed Pixel Size";
             this.menuViewScaleModeFixedPixelSize.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
+            // menuViewSeparator2
+            // 
+            this.menuViewSeparator2.Index = 5;
+            this.menuViewSeparator2.Text = "-";
+            // 
             // menuViewSmoothing
             // 
             this.menuViewSmoothing.Index = 6;
@@ -344,11 +349,6 @@
             this.renderVideo.DoubleClick += new System.EventHandler(this.renderVideo_DoubleClick);
             this.renderVideo.MouseMove += new System.Windows.Forms.MouseEventHandler(this.renderVideo_MouseMove);
             // 
-            // menuViewSeparator2
-            // 
-            this.menuViewSeparator2.Index = 5;
-            this.menuViewSeparator2.Text = "-";
-            // 
             // FormMain
             // 
             this.AllowDrop = true;
@@ -361,7 +361,6 @@
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ZXMAK2";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.FormMain_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.FormMain_DragEnter);
             this.Resize += new System.EventHandler(this.FormMain_Resize);

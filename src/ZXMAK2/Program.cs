@@ -1,7 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Forms;
 using ZXMAK2.Controls;
+
 
 namespace ZXMAK2
 {
@@ -18,12 +18,8 @@ namespace ZXMAK2
 			LogAgent.Start();
             try
             {
-                using (FormMain form = new FormMain())
+                using (var form = new FormMain(args))
                 {
-                    form.Show();
-                    form.InitWnd();
-                    if (args.Length > 0 && File.Exists(args[0]))
-                        form.StartupImage = Path.GetFullPath(args[0]);
                     Application.Run(form);
                 }
             }
