@@ -1,4 +1,6 @@
-﻿namespace ZXMAK2.Hardware.Adlers.UI
+﻿using FastColoredTextBoxNS;
+
+namespace ZXMAK2.Hardware.Adlers.UI
 {
     partial class Assembler
     {
@@ -29,7 +31,8 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Assembler));
-            this.txtAsm = new System.Windows.Forms.RichTextBox();
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("noname.asm");
+            this.txtAsm = new FastColoredTextBoxNS.FastColoredTextBox();
             this.btnCompile = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
             this.richCompileMessages = new System.Windows.Forms.RichTextBox();
@@ -51,26 +54,50 @@
             this.backColortoolStrip = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolCodeLibrary = new System.Windows.Forms.ToolStripButton();
+            this.treeViewFiles = new System.Windows.Forms.TreeView();
+            ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.toolMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtAsm
             // 
-            this.txtAsm.AcceptsTab = true;
-            this.txtAsm.Font = new System.Drawing.Font("Consolas", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.txtAsm.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.txtAsm.Location = new System.Drawing.Point(12, 35);
+            this.txtAsm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtAsm.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.txtAsm.AutoScrollMinSize = new System.Drawing.Size(27, 17);
+            this.txtAsm.AutoSize = true;
+            this.txtAsm.BackBrush = null;
+            this.txtAsm.CharHeight = 17;
+            this.txtAsm.CharWidth = 8;
+            this.txtAsm.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtAsm.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtAsm.Font = new System.Drawing.Font("Consolas", 11F);
+            this.txtAsm.IsReplaceMode = false;
+            this.txtAsm.Location = new System.Drawing.Point(157, 35);
             this.txtAsm.Name = "txtAsm";
-            this.txtAsm.Size = new System.Drawing.Size(371, 448);
+            this.txtAsm.Paddings = new System.Windows.Forms.Padding(0);
+            this.txtAsm.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.txtAsm.Size = new System.Drawing.Size(381, 473);
             this.txtAsm.TabIndex = 0;
-            this.txtAsm.Text = "                ";
-            this.txtAsm.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtAsm_KeyPress);
-            this.txtAsm.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtAsm_KeyUp);
+            this.txtAsm.Zoom = 100;
+            this.txtAsm.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.txtAsm_TextChanged);
             // 
             // btnCompile
             // 
-            this.btnCompile.Location = new System.Drawing.Point(389, 487);
+            this.btnCompile.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.btnCompile.Location = new System.Drawing.Point(543, 172);
             this.btnCompile.Name = "btnCompile";
             this.btnCompile.Size = new System.Drawing.Size(85, 23);
             this.btnCompile.TabIndex = 1;
@@ -80,7 +107,8 @@
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(389, 518);
+            this.btnClose.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.btnClose.Location = new System.Drawing.Point(543, 201);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(85, 23);
             this.btnClose.TabIndex = 2;
@@ -90,19 +118,22 @@
             // 
             // richCompileMessages
             // 
-            this.richCompileMessages.Location = new System.Drawing.Point(12, 489);
+            this.richCompileMessages.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.richCompileMessages.Location = new System.Drawing.Point(157, 521);
             this.richCompileMessages.Name = "richCompileMessages";
-            this.richCompileMessages.Size = new System.Drawing.Size(371, 52);
+            this.richCompileMessages.Size = new System.Drawing.Size(381, 52);
             this.richCompileMessages.TabIndex = 5;
             this.richCompileMessages.Text = "";
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.textSaveFileName);
             this.groupBox1.Controls.Add(this.textMemAdress);
             this.groupBox1.Controls.Add(this.checkFile);
             this.groupBox1.Controls.Add(this.checkMemory);
-            this.groupBox1.Location = new System.Drawing.Point(388, 35);
+            this.groupBox1.Location = new System.Drawing.Point(543, 35);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(132, 131);
             this.groupBox1.TabIndex = 6;
@@ -167,7 +198,7 @@
             this.toolCodeLibrary});
             this.toolMenu.Location = new System.Drawing.Point(0, 0);
             this.toolMenu.Name = "toolMenu";
-            this.toolMenu.Size = new System.Drawing.Size(532, 35);
+            this.toolMenu.Size = new System.Drawing.Size(687, 35);
             this.toolMenu.TabIndex = 7;
             this.toolMenu.Text = "toolStrip1";
             // 
@@ -178,7 +209,7 @@
             this.compileToolStrip.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.compileToolStrip.Name = "compileToolStrip";
             this.compileToolStrip.Size = new System.Drawing.Size(32, 32);
-            this.compileToolStrip.Text = "Compile";
+            this.compileToolStrip.Text = "Compile(F5)";
             this.compileToolStrip.Click += new System.EventHandler(this.compileToolStrip_Click);
             // 
             // toolStripSeparator1
@@ -193,7 +224,8 @@
             this.openFileStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openFileStripButton.Name = "openFileStripButton";
             this.openFileStripButton.Size = new System.Drawing.Size(32, 32);
-            this.openFileStripButton.Text = "Open File";
+            this.openFileStripButton.Text = "Open File(Ctrl+O)";
+            this.openFileStripButton.Click += new System.EventHandler(this.openFileStripButton_Click);
             // 
             // saveileStripButton
             // 
@@ -271,19 +303,38 @@
             this.toolCodeLibrary.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.toolCodeLibrary.ToolTipText = "Code Library(Includes)";
             // 
+            // treeViewFiles
+            // 
+            this.treeViewFiles.CheckBoxes = true;
+            this.treeViewFiles.Dock = System.Windows.Forms.DockStyle.Left;
+            this.treeViewFiles.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.treeViewFiles.Location = new System.Drawing.Point(0, 35);
+            this.treeViewFiles.Name = "treeViewFiles";
+            treeNode7.Name = "Node0";
+            treeNode7.Text = "noname.asm";
+            this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode7});
+            this.treeViewFiles.Size = new System.Drawing.Size(151, 538);
+            this.treeViewFiles.TabIndex = 8;
+            // 
             // Assembler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(532, 548);
+            this.ClientSize = new System.Drawing.Size(687, 573);
+            this.Controls.Add(this.treeViewFiles);
             this.Controls.Add(this.toolMenu);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.richCompileMessages);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnCompile);
             this.Controls.Add(this.txtAsm);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Assembler";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Assembler";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.assemblerForm_KeyDown);
+            ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.toolMenu.ResumeLayout(false);
@@ -295,7 +346,7 @@
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox txtAsm;
+        private FastColoredTextBoxNS.FastColoredTextBox txtAsm;
         private System.Windows.Forms.Button btnCompile;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.RichTextBox richCompileMessages;
@@ -317,5 +368,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripButton toolCodeLibrary;
+        private System.Windows.Forms.TreeView treeViewFiles;
     }
 }
