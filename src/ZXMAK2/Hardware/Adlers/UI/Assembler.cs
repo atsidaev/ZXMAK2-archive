@@ -4,6 +4,9 @@ using System.Runtime.InteropServices;
 using ZXMAK2.Interfaces;
 using System.Drawing;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Text;
+using FastColoredTextBoxNS;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
@@ -30,7 +33,15 @@ namespace ZXMAK2.Hardware.Adlers.UI
             /*char**/ IntPtr errReason
             );
 
-        private short tabSpace = 16; //how many characters on tab
+        //text editor styles
+        Style CommentStyle = new TextStyle(Brushes.Green, null, FontStyle.Italic);
+        Style CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
+        //Style JumpInstructionStyle = new TextStyle(new SolidBrush(Color.FromArgb(255, 43, 145, 175)), null, FontStyle.Regular);
+        Style JumpInstructionStyle = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
+        Style StackInstructionStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
+        Style CompilerInstructionStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
+
+        private byte tabSpace = 16; //how many characters on tab
 
         private IDebuggable m_spectrum;
 
@@ -40,10 +51,17 @@ namespace ZXMAK2.Hardware.Adlers.UI
             m_spectrum = spectrum;
 
             InitializeComponent();
-            txtAsm.Text = new string(' ', tabSpace);
 
+            //txtAsm.Selection.Start = Place.Empty;
+            txtAsm.DoCaretVisible();
+            txtAsm.IsChanged = false;
+            txtAsm.ClearUndo();
+
+            txtAsm.Text = new string(' ', tabSpace);
             txtAsm.SelectionLength = 0;
-            txtAsm.SelectionStart = txtAsm.TextLength + 1;
+            txtAsm.SelectionStart = txtAsm.Text.Length + 1;
+
+            this.KeyPreview = true;
         }
 
         public static void Show(ref IDebuggable spectrum)
@@ -189,42 +207,18 @@ namespace ZXMAK2.Hardware.Adlers.UI
             }
         }
 
-        private void txtAsm_KeyUp(object sender, KeyEventArgs e)
+        private void assemblerForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Tab)
+            if (e.KeyCode == Keys.F5)
             {
                 e.Handled = true;
+                compileToZ80();
                 return;
             }
-        }
 
-        private void txtAsm_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)Keys.Tab)
+            if( e.KeyCode == Keys.O && e.Control )
             {
-                e.Handled = true;
-                txtAsm.SelectedText = new string(' ', 4);
-            }
-            else if (e.KeyChar == (char)Keys.Enter)
-            {
-                int indexPrevLine = txtAsm.GetLineFromCharIndex(txtAsm.SelectionStart);
-                string actualLineContent = txtAsm.Lines[indexPrevLine-1];
-                if (actualLineContent.Length == 0)
-                {
-                    e.Handled = true;
-                    return;
-                }
-
-                string spaces = String.Empty;
-                for (int counter = 0; ; counter++)
-                {
-                    if ( actualLineContent[counter].ToString() != " ")
-                        break;
-                    spaces += " ";
-                    if (actualLineContent.Length == counter + 1)
-                        break;
-                }
-                txtAsm.SelectedText = spaces;
+                openFileStripButton_Click(null, null);
             }
         }
 
@@ -274,5 +268,56 @@ namespace ZXMAK2.Hardware.Adlers.UI
             }
         }
 
+        //open file
+        private void openFileStripButton_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog loadDialog = new OpenFileDialog())
+            {
+                loadDialog.InitialDirectory = ".";
+                loadDialog.SupportMultiDottedExtensions = true;
+                loadDialog.Title = "Load file...";
+                loadDialog.Filter = "Assembler files (asm,txt)|*.asm;*.txt";
+                loadDialog.DefaultExt = "";
+                loadDialog.FileName = "";
+                loadDialog.ShowReadOnly = false;
+                loadDialog.CheckFileExists = true;
+                if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                    return;
+
+                FileInfo fileInfo = new FileInfo(loadDialog.FileName);
+                int s_len = (int)fileInfo.Length;
+
+                byte[] data = new byte[s_len];
+                using (FileStream fs = new FileStream(loadDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    fs.Read(data, 0, data.Length);
+                this.txtAsm.Text = Encoding.UTF8.GetString(data, 0, data.Length);
+
+                TreeNode node = treeViewFiles.Nodes.Add(loadDialog.FileName);
+
+                //node.ForeColor = Color.Red;
+
+                //add file content to Dictionary
+                //codeFileContent.Add(loadDialog.FileName, newFileContent);
+
+                //add to TreeView Left Panel
+                //tabToAddNewFile.Controls.Add(this);
+            }
+        }
+
+        private void txtAsm_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            //clear styles
+            e.ChangedRange.ClearStyle(CommentStyle);
+            e.ChangedRange.ClearStyle(JumpInstructionStyle);
+
+            //comment highlighting
+            e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
+            e.ChangedRange.SetStyle(CommonInstructionStyle, @"ldir|lddr|\bld\b|\bim\b|add|\bsub\b|\bdec\b|sbc|halt|\bbit\b|set|xor|\binc\b|cp|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
+                @"|\brr\b|scf|ccf|\bneg\b|srl|exx|\bex\b",
+                RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(CompilerInstructionStyle, @"defb|include", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(StackInstructionStyle, @"push|pop|dec sp|inc sp", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(JumpInstructionStyle, @"reti|retn|ret|jp|jr|call|djnz", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        } 
    }
 }

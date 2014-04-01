@@ -89,6 +89,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="..\Libraries\FastColoredTextBox.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\HardwareSwitchAttribute.cs" />
@@ -195,12 +196,12 @@
     <Compile Include="Hardware\Adlers\UI\Assembler.Designer.cs">
       <DependentUpon>Assembler.cs</DependentUpon>
     </Compile>
-    <Compile Include="Hardware\Adlers\UI\BreakpointAdlers.cs" />
-    <Compile Include="Hardware\Adlers\UI\DebuggerManager.cs" />
-    <Compile Include="Hardware\Adlers\UI\DebugPanels.cs">
+    <Compile Include="Hardware\Adlers\BreakpointAdlers.cs" />
+    <Compile Include="Hardware\Adlers\DebuggerManager.cs" />
+    <Compile Include="Hardware\Adlers\DebugPanels.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Hardware\Adlers\UI\DictionarySafe.cs" />
+    <Compile Include="Hardware\Adlers\DictionarySafe.cs" />
     <Compile Include="Hardware\Adlers\UI\FormCPU.cs">
       <SubType>Form</SubType>
     </Compile>
