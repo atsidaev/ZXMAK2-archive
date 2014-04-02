@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Text;
 using FastColoredTextBoxNS;
+using System.Diagnostics;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
@@ -45,6 +46,9 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
         private IDebuggable m_spectrum;
 
+        private bool compileFromFile = false; //if loaded from file then --binfile compile parameter will be used
+        private string actualLoadedFile = String.Empty;
+
         private static Assembler m_instance = null;
         private Assembler(ref IDebuggable spectrum)
         {
@@ -70,10 +74,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
             {
                 m_instance = new Assembler(ref spectrum);
                 m_instance.ShowInTaskbar = false;
-                m_instance.ShowDialog();
+                m_instance.Show();
             }
             else
-                m_instance.ShowDialog();
+                m_instance.Show();
         }
 
         /*internal unsafe struct FixedBuffer
@@ -97,12 +101,24 @@ namespace ZXMAK2.Hardware.Adlers.UI
             {
                 //FixedBuffer fixedBuf = new FixedBuffer();
 
-                string  asmToCompile = txtAsm.Text;
-                byte[]  compiledOut = new byte[65536];
+                string  asmToCompileOrFileName;
+                byte[]  compiledOut = new byte[65536-16384 + 2/*memory start when --binfile is used*/];
                 byte[]  errReason = new byte[1024];
                 int     codeSize;
                 int     errFileLine;
                 byte[]  errFileName = new byte[512];
+
+                string compileOption;
+                if (compileFromFile)
+                {
+                    asmToCompileOrFileName = actualLoadedFile;
+                    compileOption = "--binfile";
+                }
+                else
+                {
+                    asmToCompileOrFileName = txtAsm.Text;
+                    compileOption = "--bin";
+                }
 
                 fixed (byte* pcompiledOut = &compiledOut[0])
                 {
@@ -112,14 +128,14 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         {
                             try
                             {
-                                retCode = compile("--bin", asmToCompile, new IntPtr(pcompiledOut),
+                                retCode = compile(compileOption, asmToCompileOrFileName, new IntPtr(pcompiledOut),
                                                   new IntPtr(&codeSize), new IntPtr(&errFileLine),
                                                   new IntPtr(perrFileName), new IntPtr(perrReason)
                                                   );
                             }
                             catch(DllNotFoundException)
                             {
-                                retCode = compileXP("--bin", asmToCompile, new IntPtr(pcompiledOut),
+                                retCode = compileXP(compileOption, asmToCompileOrFileName, new IntPtr(pcompiledOut),
                                                     new IntPtr(&codeSize), new IntPtr(&errFileLine),
                                                     new IntPtr(perrFileName), new IntPtr(perrReason)
                                                     );
@@ -136,16 +152,23 @@ namespace ZXMAK2.Hardware.Adlers.UI
                             else
                             {
                                 //we got a assembly
-                                this.richCompileMessages.Text = DateTime.Now.ToLongTimeString() + ": Compilation OK !";
+                                this.richCompileMessages.Text = DateTime.Now.ToLongTimeString() + ": Compilation OK ! Now writing memory...";
 
                                 //write to memory ?
                                 if (checkMemory.Checked)
                                 {
                                     //get address where to write the code
                                     ushort memAdress = 0;
+                                    ushort memArrayDelta = 0;
                                     try
                                     {
-                                        memAdress = DebuggerManager.convertNumberWithPrefix(textMemAdress.Text);
+                                        if (compileOption == "--binfile") //here the start address will be first 2 bytes from compiledOut
+                                        {
+                                            memAdress = (ushort)(compiledOut[0] + compiledOut[1] * 256);
+                                            memArrayDelta = 2;
+                                        }
+                                        else
+                                            memAdress = DebuggerManager.convertNumberWithPrefix(textMemAdress.Text);
                                     }
                                     catch (System.Exception)
                                     {
@@ -153,14 +176,15 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                         return;
                                     }
 
-                                    if (memAdress >= 0x4000)
+                                    if (memAdress >= 0x4000) //RAM start
                                     {
-                                        for (ushort memPointer = 0; codeSize > 0; memPointer++)
-                                        {
-                                            m_spectrum.WriteMemory((ushort)(memPointer + memAdress), compiledOut[memPointer]);
-                                            codeSize--;
-                                        }
-                                        this.richCompileMessages.Text += "\n    Memory written.";
+                                        Stopwatch watch = new Stopwatch();
+                                        watch.Start();
+                                        m_spectrum.WriteMemory(memAdress, compiledOut, memArrayDelta, codeSize);
+                                        watch.Stop();
+
+                                        TimeSpan time = watch.Elapsed;
+                                        this.richCompileMessages.Text += String.Format("\n    Memory written in {0:0.00000} seconds", time.TotalSeconds);
                                     }
                                     else
                                     {
@@ -301,6 +325,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
                 //add to TreeView Left Panel
                 //tabToAddNewFile.Controls.Add(this);
+
+                compileFromFile = true;
+                actualLoadedFile = loadDialog.FileName;
+                textMemAdress.Enabled = false;
             }
         }
 

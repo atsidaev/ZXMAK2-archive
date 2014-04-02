@@ -72,6 +72,11 @@ namespace ZXMAK2.Hardware.Adlers.UI
 			Select();
 		}
 
+        private void FormCpu_Activated(object sender, EventArgs e)
+        {
+            if (!m_spectrum.IsRunning)
+                dasmPanel.UpdateLines();
+        }
 
 		private void spectrum_OnUpdateState(object sender, EventArgs args)
 		{
@@ -779,7 +784,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         m_spectrum.DoStop();
                         UpdateCPU(true);
 
-                        this.Hide();
+                        //this.Hide();
                         Assembler.Show(ref m_spectrum);
                         this.Show();
                     }
