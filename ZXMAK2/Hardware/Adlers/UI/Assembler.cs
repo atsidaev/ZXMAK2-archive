@@ -91,11 +91,14 @@ namespace ZXMAK2.Hardware.Adlers.UI
         {
             int retCode = -1;
 
-            if (txtAsm.Text.Trim() == String.Empty)
+            if (txtAsm.Text.Trim().Length < 2)
             {
                 this.richCompileMessages.Text = "Nothing to compile...";
                 return;
             }
+
+            if(validateCompile() == false)
+                return;
 
             unsafe
             {
@@ -109,7 +112,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 byte[]  errFileName = new byte[512];
 
                 string compileOption;
-                if (compileFromFile)
+                if (compileFromFile /*|| (!checkMemory.Checked && IsStartAdressInCode())*/)
                 {
                     asmToCompileOrFileName = actualLoadedFile;
                     compileOption = "--binfile";
@@ -143,9 +146,14 @@ namespace ZXMAK2.Hardware.Adlers.UI
                             if (retCode != 0)
                             {
                                 string errStringText = DateTime.Now.ToLongTimeString() + ": ";
-                                errStringText += "Error on line " + errFileLine.ToString() + ", file: " + getString(perrFileName);
-                                errStringText += "\n    ";
-                                errStringText += getString(perrReason);
+                                if (compileOption == "--binfile")
+                                {
+                                    errStringText += "Error on line " + errFileLine.ToString() + ", file: " + getString(perrFileName);
+                                    errStringText += "\n    ";
+                                    errStringText += getString(perrReason);
+                                }
+                                else
+                                    errStringText += String.Format("Compile error on line {0}!\n    {1}", errFileLine, getString(perrReason));
 
                                 this.richCompileMessages.Text = errStringText;
                             }
@@ -155,26 +163,15 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                 this.richCompileMessages.Text = DateTime.Now.ToLongTimeString() + ": Compilation OK ! Now writing memory...";
 
                                 //write to memory ?
-                                if (checkMemory.Checked)
+                                //if (checkMemory.Checked)
+                                if( codeSize > 0 )
                                 {
                                     //get address where to write the code
-                                    ushort memAdress = 0;
-                                    ushort memArrayDelta = 0;
-                                    try
-                                    {
-                                        if (compileOption == "--binfile") //here the start address will be first 2 bytes from compiledOut
-                                        {
-                                            memAdress = (ushort)(compiledOut[0] + compiledOut[1] * 256);
-                                            memArrayDelta = 2;
-                                        }
-                                        else
-                                            memAdress = DebuggerManager.convertNumberWithPrefix(textMemAdress.Text);
-                                    }
-                                    catch (System.Exception)
-                                    {
-                                        this.richCompileMessages.Text += "\n    Incorrect memory address. No write memory to be processed...";
-                                        return;
-                                    }
+                                    ushort memAdress = (ushort)(compiledOut[0] + compiledOut[1] * 256);
+                                    ushort memArrayDelta = 2;
+
+                                    if (memAdress == 0) //this can happen for bin format without ORG
+                                        memAdress = DebuggerManager.convertNumberWithPrefix(textMemAdress.Text);
 
                                     if (memAdress >= 0x4000) //RAM start
                                     {
@@ -184,6 +181,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                         watch.Stop();
 
                                         TimeSpan time = watch.Elapsed;
+                                        this.richCompileMessages.Text += String.Format("\n    Memory written at start address: #{0:X04}({1})", memAdress, memAdress);
                                         this.richCompileMessages.Text += String.Format("\n    Memory written in {0:0.00000} seconds", time.TotalSeconds);
                                     }
                                     else
@@ -192,16 +190,58 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                         return;
                                     }
                                 }
-                            }
+                                else
+                                    this.richCompileMessages.Text += "\n    Nothing to write to memory !";
+                            }   
                         }
                     }
                 }
             }
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private bool validateCompile()
         {
-            this.Hide();
+            bool startAdressManual = checkMemory.Checked;
+            bool startAdressInCode = this.IsStartAdressInCode();
+
+            if (startAdressInCode == false && startAdressManual == false)
+            {
+                //start adress for compilation not found
+                DialogService.Show("Missing starting address for the compilation!\n\n" +
+                                   "Either check the check box for memory address(Compile to -> Memory)\n" + 
+                                   "or define it using 'ORG' instruction in source code !\n\n" +
+                                   "Compilation is cancelled.",
+                                   "Compilation failed(missing start address)",
+                                   DlgButtonSet.OK, DlgIcon.Warning);
+                return false;
+            }
+            if (startAdressInCode && startAdressManual)
+            {
+                //duplicate adress for compilation
+                DialogService.Show("Duplicity in starting address for the compilation!\n\n" +
+                                   "Either UNcheck the check box for memory address(Compile to -> Memory)\n" +
+                                   "or remove ALL 'ORG' instructions from the source code !\n\n" +
+                                   "Compilation is cancelled.",
+                                   "Compilation failed(duplicity in start address)",
+                                   DlgButtonSet.OK, DlgIcon.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool IsStartAdressInCode()
+        {
+            foreach (string line in this.txtAsm.Lines)
+            {
+                string toCheck = line.Split(';')[0].Trim(); //remove comments
+                Match match = Regex.Match(toCheck, @"\borg\b", RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         static unsafe private string getString(byte* i_pointer)
@@ -210,13 +250,20 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
             for (int counter = 0; ; counter++)
             {
-                if (*(i_pointer + counter) == 0)
+                char c = (char)*(i_pointer + counter);
+                if (c == '\0')
                     break;
 
-                retString += (char)*(i_pointer + counter);
+                retString += c;
             }
 
             return retString;
+        }
+
+        #region GUI methods
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Hide();
         }
 
         private void checkMemory_CheckedChanged(object sender, EventArgs e)
@@ -266,7 +313,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             if (res == DialogResult.OK)
             {
                 Font font = fontDialog.Font;
-                txtAsm.Font = font;
+                txtAsm.Font = font; //FastColoredTextBox supports only monospaced fonts !
             }
         }
 
@@ -336,6 +383,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
         {
             //clear styles
             e.ChangedRange.ClearStyle(CommentStyle);
+            e.ChangedRange.ClearStyle(CommonInstructionStyle);
             e.ChangedRange.ClearStyle(JumpInstructionStyle);
 
             //comment highlighting
@@ -345,7 +393,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(CompilerInstructionStyle, @"defb|include", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(StackInstructionStyle, @"push|pop|dec sp|inc sp", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(JumpInstructionStyle, @"reti|retn|ret|jp|jr|call|djnz", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-        } 
-   }
+            e.ChangedRange.SetStyle(JumpInstructionStyle, @"org|reti|retn|ret|jp|jr|call|djnz", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        }
+        #endregion
+    }
 }
