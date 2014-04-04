@@ -31,7 +31,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Assembler));
-            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("noname.asm");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("noname.asm");
             this.txtAsm = new FastColoredTextBoxNS.FastColoredTextBox();
             this.btnCompile = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
@@ -169,8 +169,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
             // checkMemory
             // 
             this.checkMemory.AutoSize = true;
-            this.checkMemory.Checked = true;
-            this.checkMemory.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkMemory.Location = new System.Drawing.Point(7, 22);
             this.checkMemory.Name = "checkMemory";
             this.checkMemory.Size = new System.Drawing.Size(63, 17);
@@ -310,10 +308,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
             this.treeViewFiles.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.treeViewFiles.Location = new System.Drawing.Point(0, 35);
             this.treeViewFiles.Name = "treeViewFiles";
-            treeNode7.Name = "Node0";
-            treeNode7.Text = "noname.asm";
+            treeNode1.Name = "Node0";
+            treeNode1.Text = "noname.asm";
             this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode7});
+            treeNode1});
             this.treeViewFiles.Size = new System.Drawing.Size(151, 538);
             this.treeViewFiles.TabIndex = 8;
             // 
