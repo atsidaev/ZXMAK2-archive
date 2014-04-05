@@ -3,10 +3,11 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Hardware.Spectrum;
 using ZXMAK2.Attributes;
 using System.Xml;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.ZXBYTE
 {
-    public class MemoryByte128 : MemorySpectrum128, IGuiExtension
+    public class MemoryByte128 : MemorySpectrum128
     {
         #region Fields
 
@@ -14,7 +15,9 @@ namespace ZXMAK2.Hardware.ZXBYTE
         private int m_rd1f = 0;
         private byte[] m_dd66 = new byte[512];
         private byte[] m_dd71 = new byte[2048];
-        
+
+        private ICommand CommandSwitcher { get; set; }
+
         #endregion
 
 
@@ -26,6 +29,12 @@ namespace ZXMAK2.Hardware.ZXBYTE
         public override void BusInit(IBusManager bmgr)
         {
             bmgr.SubscribeRdIo(0x75, 0x1F & 0x75, BusReadPort1F);
+            CommandSwitcher = new CommandDelegate(
+                CommandSwitcher_OnExecute,
+                () => true,
+                "BYTE \"COBMECT.\"");
+            CommandSwitcher.Checked = COBMECT;
+            bmgr.AddCommandUi(CommandSwitcher);
 
             // Subscribe before MemoryBase.BusInit 
             // to handle memory switches before read
@@ -133,6 +142,10 @@ namespace ZXMAK2.Hardware.ZXBYTE
                 if (m_sovmest != iValue)
                 {
                     m_sovmest = iValue;
+                    if (CommandSwitcher != null)
+                    {
+                        CommandSwitcher.Checked = COBMECT;
+                    }
                     OnConfigChanged();
                 }
             }
@@ -143,50 +156,19 @@ namespace ZXMAK2.Hardware.ZXBYTE
         {
         }
 
+        
         #region IGuiExtension Members
 
-        private GuiData m_guiData;
-        private System.Windows.Forms.MenuItem m_subMenuItem;
-
-        public override void AttachGui(GuiData guiData)
+        private void CommandSwitcher_OnExecute()
         {
-            base.AttachGui(guiData);
-            m_guiData = guiData;
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            if (CommandSwitcher == null)
             {
-                System.Windows.Forms.MenuItem menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
-                if (menuItem != null)
-                {
-                    m_subMenuItem = new System.Windows.Forms.MenuItem("BYTE \"COBMECT.\"", menu_Click);
-                    m_subMenuItem.Checked = COBMECT;
-                    menuItem.MenuItems.Add(m_subMenuItem);
-                }
+                return;
             }
+            COBMECT = !COBMECT;
+            CommandSwitcher.Checked = COBMECT;
         }
 
-        public override void DetachGui()
-        {
-            base.DetachGui();
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                if (m_subMenuItem != null)
-                {
-                    m_subMenuItem.Parent.MenuItems.Remove(m_subMenuItem);
-                    m_subMenuItem.Dispose();
-                    m_subMenuItem = null;
-                }
-            }
-            m_guiData = null;
-        }
-
-        private void menu_Click(object sender, EventArgs e)
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                COBMECT = !COBMECT;
-                m_subMenuItem.Checked = COBMECT;
-            }
-        }
         #endregion IGuiExtension Members
     }
 }

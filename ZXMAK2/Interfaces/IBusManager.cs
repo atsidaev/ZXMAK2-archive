@@ -28,6 +28,8 @@ namespace ZXMAK2.Interfaces
 		void AddSerializer(FormatSerializer serializer);
 		void RegisterIcon(IconDescriptor iconDesc);
 
+        void AddCommandUi(ICommand command);
+
 		Z80CPU CPU { get; }
 		bool IsSandbox { get; }
 		String GetSatelliteFileName(string extension);

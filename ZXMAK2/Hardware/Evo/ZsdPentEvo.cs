@@ -2,11 +2,12 @@
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware.IC.SecureDigital;
+using System.Windows.Forms;
 
 
 namespace ZXMAK2.Hardware.Evo
 {
-    public class ZsdPentEvo : BusDeviceBase, IGuiExtension
+    public class ZsdPentEvo : BusDeviceBase
     {
         #region Fields
 
@@ -45,6 +46,11 @@ namespace ZXMAK2.Hardware.Evo
         public override void BusInit(IBusManager bmgr)
         {
             mem = bmgr.FindDevice<IMemoryDevice>();
+            bmgr.AddCommandUi(
+                new CommandDelegate(
+                    CommandUi_OnExecute, 
+                    CommandUi_OnCanExecute, 
+                    "Open SD Card image..."));
 
             bmgr.SubscribeReset(Reset);
             bmgr.SubscribeWrIo(0x00FF, 0x0057, WrXX57);
@@ -151,49 +157,22 @@ namespace ZXMAK2.Hardware.Evo
         #endregion
 
 
-        #region IGuiExtension Members
+        #region CommandUi
 
-        private GuiData m_guiData;
-        private System.Windows.Forms.MenuItem m_subMenuItem;
-        private Controls.Debugger.dbgWD1793 m_form;
-
-        public void AttachGui(GuiData guiData)
+        private bool CommandUi_OnCanExecute(Object arg)
         {
-            m_guiData = guiData;
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                System.Windows.Forms.MenuItem menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
-                if (menuItem != null)
-                {
-                    m_subMenuItem = new System.Windows.Forms.MenuItem("Open SD Card image...", menuOpen_Click);
-                    menuItem.MenuItems.Add(m_subMenuItem);
-                }
-            }
+            return arg is IWin32Window;
         }
 
-        public void DetachGui()
+        private void CommandUi_OnExecute(Object arg)
         {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            try
             {
-                if (m_subMenuItem != null)
+                var hostWindow = arg as IWin32Window;
+                if (hostWindow == null)
                 {
-                    m_subMenuItem.Parent.MenuItems.Remove(m_subMenuItem);
-                    m_subMenuItem.Dispose();
-                    m_subMenuItem = null;
+                    return;
                 }
-                if (m_form != null)
-                {
-                    m_form.Close();
-                    m_form = null;
-                }
-            }
-            m_guiData = null;
-        }
-
-        private void menuOpen_Click(object sender, EventArgs e)
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
                 var dlg = new System.Windows.Forms.OpenFileDialog();
                 dlg.CheckFileExists = true;
                 dlg.CheckPathExists = true;
@@ -201,14 +180,18 @@ namespace ZXMAK2.Hardware.Evo
                 dlg.Filter = "Disk image file (*.img, *.ima)|*.img;*.ima";
                 dlg.Multiselect = false;
 
-                if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                if (dlg.ShowDialog(hostWindow) != System.Windows.Forms.DialogResult.OK)
                 {
                     return;
                 }
                 card.Open(dlg.FileName);
             }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
         }
 
-        #endregion
+        #endregion CommandUi
     }
 }

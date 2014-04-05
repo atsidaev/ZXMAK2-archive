@@ -1,0 +1,623 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
+using System.Drawing;
+using System.Windows.Forms;
+using System.ComponentModel;
+using System.Reflection;
+using System.Threading;
+using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
+using ZXMAK2.Controls;
+using ZXMAK2.Entities;
+using ZXMAK2.MVP.Interfaces;
+
+
+namespace ZXMAK2.MVP
+{
+    public class MainPresenter : IDisposable
+    {
+        private IMainView m_view;
+        private VirtualMachine m_vm;
+        private string m_startupImage;
+        private bool m_isKeyboardHelpOpened;
+        
+        
+        public MainPresenter(IMainView view, params string[] args)
+        {
+            m_view = view;
+            if (args.Length > 0 && File.Exists(args[0]))
+            {
+                m_startupImage = Path.GetFullPath(args[0]);
+            }
+            m_view.GetVideoSize = () => m_vm.ScreenSize;
+            m_view.GetVideoRatio = () => m_vm.ScreenHeightScale;
+            m_view.ViewOpened += MainView_OnViewOpened;
+            m_view.ViewClosed += MainView_OnViewClosed;
+            m_view.ViewInvalidate += MainView_OnViewInvalidate;
+            CommandFileOpen = new CommandDelegate(CommandFileOpen_OnExecute, () => true);
+            CommandFileSave = new CommandDelegate(CommandFileSave_OnExecute, () => true);
+            CommandFileExit = new CommandDelegate(CommandFileExit_OnExecute, () => true);
+            CommandViewFullScreen = new CommandDelegate(CommandViewFullScreen_OnExecute, (arg) => true);
+            CommandVmPause = new CommandDelegate(CommandVmPause_OnExecute, () => true);
+            CommandVmMaxSpeed = new CommandDelegate(CommandVmMaxSpeed_OnExecute, () => true);
+            CommandVmWarmReset = new CommandDelegate(CommandVmWarmReset_OnExecute, (arg) => true);
+            CommandVmNmi = new CommandDelegate(CommandVmNmi_OnExecute, () => true);
+            CommandVmSettings = new CommandDelegate(CommandVmSettings_OnExecute, () => true);
+            CommandHelpViewHelp = new CommandDelegate(CommandHelpViewHelp_OnExecute, () => true);
+            CommandHelpKeyboardHelp = new CommandDelegate(CommandHelpKeyboardHelp_OnExecute, () => !m_isKeyboardHelpOpened);
+            CommandHelpAbout = new CommandDelegate(CommandHelpAbout_OnExecute, () => true);
+            CommandTapePause = new CommandDelegate(CommandTapePause_OnExecute, CommandTapePause_CanExecute);
+            CommandQuickLoad = new CommandDelegate(CommandQuickLoad_OnExecute, () => true);
+            CommandOpenUri = new CommandDelegate(CommandOpenUri_OnExecute, CommandOpenUri_OnCanExecute);
+        }
+
+        public void Dispose()
+        {
+            MainView_OnViewClosed(this, EventArgs.Empty);
+        }
+
+        public void Run()
+        {
+            m_view.Run();
+        }
+
+        
+        #region Commands
+
+        public ICommand CommandFileOpen { get; private set; }
+        public ICommand CommandFileSave { get; private set; }
+        public ICommand CommandFileExit { get; private set; }
+        public ICommand CommandViewFullScreen { get; private set; }
+        public ICommand CommandVmPause { get; private set; }
+        public ICommand CommandVmMaxSpeed { get; private set; }
+        public ICommand CommandVmWarmReset { get; private set; }
+        public ICommand CommandVmColdReset { get; private set; }
+        public ICommand CommandVmNmi { get; private set; }
+        public ICommand CommandVmSettings { get; private set; }
+        public ICommand CommandHelpViewHelp { get; private set; }
+        public ICommand CommandHelpKeyboardHelp { get; private set; }
+        public ICommand CommandHelpAbout { get; private set; }
+        public ICommand CommandTapePause { get; private set; }
+        public ICommand CommandQuickLoad { get; private set; }
+        public ICommand CommandOpenUri { get; private set; }
+
+        #endregion Commands
+
+
+        #region MainView Event Handlers
+
+        private void MainView_OnViewOpened(object sender, EventArgs e)
+        {
+            if (m_vm != null)
+            {
+                LogAgent.Warn("IMainView.ViewOpened event raised twice!");
+                return;
+            }
+            m_vm = new VirtualMachine(m_view.Host);
+            m_vm.Init();
+            m_vm.UpdateState += VirtualMachine_OnUpdateState;
+
+            m_view.Title = string.Empty;
+            var fileName = Path.Combine(
+                Utils.GetAppDataFolder(),
+                "ZXMAK2.vmz");
+            if (File.Exists(fileName))
+            {
+                m_vm.OpenConfig(fileName);
+            }
+            else
+            {
+                m_vm.SaveConfigAs(fileName);
+            }
+            if (m_startupImage != null)
+            {
+                m_view.Title = m_vm.Spectrum.Loader.OpenFileName(m_startupImage, true);
+            }
+            m_view.Bind(this);
+            m_vm.DoRun();
+        }
+
+        private void MainView_OnViewClosed(object sender, EventArgs e)
+        {
+            if (m_vm == null)
+            {
+                LogAgent.Warn("IMainView.ViewClosed: object is not initialized!");
+                return;
+            }
+            m_vm.Dispose();
+            m_vm = null;
+        }
+
+        private void MainView_OnViewInvalidate(object sender, EventArgs e)
+        {
+            if (m_view == null || m_view.Host == null)
+            {
+                return;
+            }
+            m_view.Host.Video.UpdateVideo(m_vm);
+        }
+
+        #endregion MainView Event Handlers
+
+
+        #region Command Implementation
+
+        private void CommandFileOpen_OnExecute()
+        {
+            if (m_vm == null)
+            {
+                return;
+            }
+            using (var loadDialog = new OpenFileDialog())
+            {
+                loadDialog.SupportMultiDottedExtensions = true;
+                loadDialog.Title = "Open...";
+                loadDialog.Filter = m_vm.Spectrum.Loader.GetOpenExtFilter();
+                loadDialog.DefaultExt = "";
+                loadDialog.FileName = "";
+                loadDialog.ShowReadOnly = true;
+                loadDialog.ReadOnlyChecked = true;
+                loadDialog.CheckFileExists = true;
+                loadDialog.FileOk += LoadDialog_FileOk;
+                if (loadDialog.ShowDialog(m_view.Window) != DialogResult.OK)
+                {
+                    return;
+                }
+                OpenFile(loadDialog.FileName, loadDialog.ReadOnlyChecked);
+            }
+        }
+
+        private void CommandFileSave_OnExecute()
+        {
+            if (m_vm == null)
+            {
+                return;
+            }
+            using (var saveDialog = new SaveFileDialog())
+            {
+                saveDialog.SupportMultiDottedExtensions = true;
+                saveDialog.Title = "Save...";
+                saveDialog.Filter = m_vm.Spectrum.Loader.GetSaveExtFilter();
+                saveDialog.DefaultExt = m_vm.Spectrum.Loader.GetDefaultExtension();
+                saveDialog.FileName = "";
+                saveDialog.OverwritePrompt = true;
+                if (saveDialog.ShowDialog(m_view.Window) != DialogResult.OK)
+                {
+                    return;
+                }
+                SaveFile(saveDialog.FileName);
+            }
+        }
+
+        private void CommandFileExit_OnExecute()
+        {
+            m_view.Close();
+        }
+
+        private void CommandViewFullScreen_OnExecute(object objState)
+        {
+            var state = objState as bool?;
+            var value = m_view.IsFullScreen;
+            value = state.HasValue ? state.Value : !value;
+            m_view.IsFullScreen = value;
+            CommandViewFullScreen.Text = value ? "Windowed" : "Full Screen";
+        }
+
+        private void CommandVmPause_OnExecute()
+        {
+            if (m_vm == null)
+            {
+                return;
+            }
+            if (m_vm.IsRunning)
+            {
+                m_vm.DoStop();
+            }
+            else
+            {
+                m_vm.DoRun();
+            }
+        }
+
+        private void CommandVmMaxSpeed_OnExecute()
+        {
+            if (m_vm == null)
+            {
+                return;
+            }
+            CommandVmMaxSpeed.Checked = !CommandVmMaxSpeed.Checked;
+            m_vm.MaxSpeed = CommandVmMaxSpeed.Checked;
+            //applyRenderSetting();  ???
+        }
+
+        private void CommandVmWarmReset_OnExecute(object objState)
+        {
+            if (m_vm == null)
+            {
+                return;
+            }
+            var state = objState as bool?;
+            if (state.HasValue)
+            {
+                if (m_vm.IsRunning)
+                {
+                    // state-change command
+                    if (state.Value != m_vm.CPU.RST)
+                    {
+                        m_vm.CPU.RST = (bool)objState;
+                    }
+                    CommandVmWarmReset.Checked = state.Value;
+                }
+                else if (!state.Value && state.Value != m_vm.CPU.RST)
+                {
+                    // if stopped then trigger reset on back front only once
+                    // because false may be set on wnd.deactivate for breakpoint
+                    m_vm.DoReset();
+                    CommandVmWarmReset.Checked = false;
+                }
+            }
+            else
+            {
+                // event command
+                m_vm.DoReset();
+                CommandVmWarmReset.Checked = false;
+            }
+        }
+
+        private void CommandVmNmi_OnExecute()
+        {
+            if (m_vm == null)
+            {
+                return;
+            }
+            m_vm.DoNmi();
+        }
+
+        private void CommandVmSettings_OnExecute()
+        {
+            try
+            {
+                if (m_vm == null)
+                {
+                    return;
+                }
+                using (var form = new FormMachineSettings())
+                {
+                    form.Init(m_vm);
+                    form.ShowDialog(m_view.Window);
+                    m_view.Host.Video.UpdateVideo(m_vm);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                DialogService.Show(
+                    ex.Message,
+                    "ERROR",
+                    DlgButtonSet.OK,
+                    DlgIcon.Error);
+            }
+        }
+
+        private void CommandHelpViewHelp_OnExecute()
+        {
+            m_view.ShowHelp();
+        }
+
+        private void CommandHelpKeyboardHelp_OnExecute()
+        {
+            if (m_isKeyboardHelpOpened)
+            {
+                return;
+            }
+            //var form = (FormKeyboardHelp)menuHelpKeyboard.Tag;
+            //if (form == null)
+            //{
+            //    form = new FormKeyboardHelp();
+            //    form.FormClosed += new FormClosedEventHandler(delegate(object s1, FormClosedEventArgs e1)
+            //    {
+            //        CommandHelpKeyboardHelp.
+            //        menuHelpKeyboard.Tag = null;
+            //    });
+            //    menuHelpKeyboard.Tag = form;
+            //    form.Show(this);
+            //}
+            //else
+            //{
+            //    form.Activate();
+            //}
+            m_isKeyboardHelpOpened = true;
+            RaiseCommandCanExecuteChanged(CommandHelpKeyboardHelp);
+            var form = new FormKeyboardHelp();
+            form.FormClosed += new FormClosedEventHandler(delegate(object s1, FormClosedEventArgs e1)
+            {
+                m_isKeyboardHelpOpened = false;
+                RaiseCommandCanExecuteChanged(CommandHelpKeyboardHelp);
+            });
+            form.Show(m_view.Window);
+        }
+
+        private void CommandHelpAbout_OnExecute()
+        {
+            using (var form = new FormAbout())
+            {
+                form.ShowDialog(m_view.Window);
+            }
+        }
+
+        private bool CommandTapePause_CanExecute()
+        {
+            if (m_vm == null)
+            {
+                return false;
+            }
+            var tape = m_vm.Spectrum.BusManager.FindDevice<ITapeDevice>();
+            return tape != null;
+        }
+
+        private void CommandTapePause_OnExecute()
+        {
+            if (m_vm == null)
+            {
+                return;
+            }
+            var tape = m_vm.Spectrum.BusManager.FindDevice<ITapeDevice>();
+            if (tape == null)
+            {
+                return;
+            }
+            if (tape.IsPlay)
+            {
+                tape.Stop();
+            }
+            else
+            {
+                tape.Play();
+            }
+        }
+
+        private void CommandQuickLoad_OnExecute()
+        {
+            if (m_vm == null)
+            {
+                return;
+            }
+            var fileName = Path.GetDirectoryName(
+                Assembly.GetExecutingAssembly().Location);
+            fileName = Path.Combine(fileName, "boot.zip");
+            if (!File.Exists(fileName))
+            {
+                DialogService.Show(
+                    "Quick snapshot boot.zip is missing!", 
+                    "ERROR", 
+                    DlgButtonSet.OK, 
+                    DlgIcon.Error);
+                return;
+            }
+            var running = m_vm.IsRunning;
+            m_vm.DoStop();
+            try
+            {
+                if (m_vm.Spectrum.Loader.CheckCanOpenFileName(fileName))
+                {
+                    m_vm.Spectrum.Loader.OpenFileName(fileName, true);
+                }
+                else
+                {
+                    DialogService.Show(
+                        "Cannot open quick snapshot boot.zip!",
+                        "Error",
+                        DlgButtonSet.OK,
+                        DlgIcon.Error);
+                }
+            }
+            finally
+            {
+                if (running)
+                    m_vm.DoRun();
+            }
+        }
+
+        private bool CommandOpenUri_OnCanExecute(object objUri)
+        {
+            try
+            {
+                if (m_vm == null)
+                {
+                    return false;
+                }
+                var uri = (Uri)objUri;
+                return uri != null && 
+                    (!uri.IsLoopback ||
+                    m_vm.Spectrum.Loader.CheckCanOpenFileName(uri.ToString()));
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                return false;
+            }
+        }
+
+        private void CommandOpenUri_OnExecute(object objUri)
+        {
+            try
+            {
+                if (m_vm == null)
+                {
+                    return;
+                }
+                var uri = (Uri)objUri;
+                if (uri.IsLoopback)
+                {
+                    OpenFile(uri.LocalPath, true);
+                }
+                else
+                {
+                    var downloader = new WebDownloader();
+                    var webFile = downloader.Download(uri);
+                    using (var ms = new MemoryStream(webFile.Content))
+                    {
+                        OpenStream(webFile.FileName, ms);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                DialogService.Show(
+                    ex.Message, 
+                    "ERROR", 
+                    DlgButtonSet.OK, 
+                    DlgIcon.Error);
+            }
+        }
+
+        #endregion Command Implementation
+
+
+        #region Private
+
+        private void VirtualMachine_OnUpdateState(object sender, EventArgs e)
+        {
+            var text = m_vm.IsRunning ? "Pause" : "Resume";
+            CommandVmPause.Text = text;
+            RaiseCommandCanExecuteChanged(CommandTapePause);
+        }
+
+        private void LoadDialog_FileOk(object sender, CancelEventArgs e)
+        {
+            try
+            {
+                var loadDialog = sender as OpenFileDialog;
+                if (loadDialog == null) return;
+                e.Cancel = !m_vm.Spectrum.Loader.CheckCanOpenFileName(loadDialog.FileName);
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                e.Cancel = true;
+                DialogService.Show(
+                    ex.Message, 
+                    "ERROR", 
+                    DlgButtonSet.OK, 
+                    DlgIcon.Error);
+            }
+        }
+
+        private void OpenFile(string fileName, bool readOnly)
+        {
+            var running = m_vm.IsRunning;
+            m_vm.DoStop();
+            try
+            {
+                if (m_vm.Spectrum.Loader.CheckCanOpenFileName(fileName))
+                {
+                    string imageName = m_vm.Spectrum.Loader.OpenFileName(fileName, readOnly);
+                    if (imageName != string.Empty)
+                    {
+                        m_view.Title = imageName;
+                        m_vm.SaveConfig();
+                    }
+                }
+                else
+                {
+                    DialogService.Show(
+                        "Unrecognized file!",
+                        "Error",
+                        DlgButtonSet.OK,
+                        DlgIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                DialogService.Show(
+                    ex.Message, 
+                    "ERROR", 
+                    DlgButtonSet.OK, 
+                    DlgIcon.Error);
+            }
+            finally
+            {
+                if (running)
+                    m_vm.DoRun();
+            }
+        }
+
+        private void SaveFile(string fileName)
+        {
+            var running = m_vm.IsRunning;
+            m_vm.DoStop();
+            try
+            {
+                if (m_vm.Spectrum.Loader.CheckCanSaveFileName(fileName))
+                {
+                    m_view.Title = m_vm.Spectrum.Loader.SaveFileName(fileName);
+                    m_vm.SaveConfig();
+                }
+                else
+                {
+                    DialogService.Show(
+                        "Unrecognized file!",
+                        "Error",
+                        DlgButtonSet.OK,
+                        DlgIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+                DialogService.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+            }
+            finally
+            {
+                if (running)
+                    m_vm.DoRun();
+            }
+        }
+
+        private void OpenStream(string fileName, Stream fileStream)
+        {
+            var running = m_vm.IsRunning;
+            m_vm.DoStop();
+            try
+            {
+                if (m_vm.Spectrum.Loader.CheckCanOpenFileStream(fileName, fileStream))
+                {
+                    string imageName = m_vm.Spectrum.Loader.OpenFileStream(fileName, fileStream);
+                    if (imageName != string.Empty)
+                    {
+                        m_view.Title = imageName;
+                        m_vm.SaveConfig();
+                    }
+                }
+                else
+                {
+                    DialogService.Show(
+                        string.Format("Unrecognized file!\n\n{0}", fileName),
+                        "Error",
+                        DlgButtonSet.OK,
+                        DlgIcon.Error);
+                }
+            }
+            finally
+            {
+                if (running)
+                    m_vm.DoRun();
+            }
+        }
+
+        private void RaiseCommandCanExecuteChanged(ICommand command)
+        {
+            var commandDelegate = command as CommandDelegate;
+            if (commandDelegate != null)
+            {
+                commandDelegate.RaiseCanExecuteChanged();
+            }
+        }
+
+        #endregion Private
+    }
+}

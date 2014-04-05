@@ -4,11 +4,14 @@ using System.Xml;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
+using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.MVP.WinForms;
+using ZXMAK2.Controls.Debugger;
 
 
 namespace ZXMAK2.Hardware
 {
-    public abstract class MemoryBase : BusDeviceBase, IMemoryDevice, IGuiExtension
+    public abstract class MemoryBase : BusDeviceBase, IMemoryDevice
     {
         #region Fields
 
@@ -22,6 +25,8 @@ namespace ZXMAK2.Hardware
         protected UlaDeviceBase m_ula;
         protected String m_romSetName;
         protected byte[] m_trashPage = new byte[0x4000];
+
+        private IViewHolder m_viewHolder;
 
         #endregion
 
@@ -49,6 +54,10 @@ namespace ZXMAK2.Hardware
             bmgr.SubscribeWrMem(0xC000, 0x4000, WriteMem4000);
             bmgr.SubscribeWrMem(0xC000, 0x8000, WriteMem8000);
             bmgr.SubscribeWrMem(0xC000, 0xC000, WriteMemC000);
+            if (m_viewHolder != null)
+            {
+                bmgr.AddCommandUi(m_viewHolder.CommandOpen);
+            }
         }
 
         public override void BusConnect()
@@ -59,6 +68,10 @@ namespace ZXMAK2.Hardware
 
         public override void BusDisconnect()
         {
+            if (m_viewHolder != null)
+            {
+                m_viewHolder.Close();
+            }
         }
 
         protected override void OnConfigLoad(XmlNode itemNode)
@@ -200,6 +213,7 @@ namespace ZXMAK2.Hardware
             m_romSetName = romSetName;// "Default";
             Init(romPageCount, ramPageCount);
             OnPowerOn();
+            CreateViewHolder();
         }
 
         public String RomSetName
@@ -389,60 +403,18 @@ namespace ZXMAK2.Hardware
 
         #endregion
 
+        
         #region IGuiExtension Members
 
-        private GuiData m_guiData;
-        private System.Windows.Forms.MenuItem m_subMenuItem;
-        private Controls.Debugger.FormMemoryMap m_form;
-
-        public virtual void AttachGui(GuiData guiData)
+        private void CreateViewHolder()
         {
-            m_guiData = guiData;
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            try
             {
-                System.Windows.Forms.MenuItem menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
-                if (menuItem != null)
-                {
-                    m_subMenuItem = new System.Windows.Forms.MenuItem("Memory Map", menu_Click);
-                    menuItem.MenuItems.Add(m_subMenuItem);
-                }
+                m_viewHolder = new ViewHolder<FormMemoryMap>("Memory Map", this);
             }
-        }
-
-        public virtual void DetachGui()
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            catch (Exception ex)
             {
-                if (m_subMenuItem != null)
-                {
-                    m_subMenuItem.Parent.MenuItems.Remove(m_subMenuItem);
-                    m_subMenuItem.Dispose();
-                    m_subMenuItem = null;
-                }
-                if (m_form != null)
-                {
-                    m_form.Close();
-                    m_form = null;
-                }
-            }
-            m_guiData = null;
-        }
-
-        private void menu_Click(object sender, EventArgs e)
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                if (m_form == null)
-                {
-                    m_form = new Controls.Debugger.FormMemoryMap(this);
-                    m_form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg) { m_form = null; };
-                    m_form.Show((System.Windows.Forms.Form)m_guiData.MainWindow);
-                }
-                else
-                {
-                    m_form.Show();
-                    m_form.Activate();
-                }
+                LogAgent.Error(ex);
             }
         }
 

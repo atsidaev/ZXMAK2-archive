@@ -26,4 +26,22 @@ namespace ZXMAK2.Controls
             }
         }
     }
+
+    public class MenuStripEx : MenuStrip
+    {
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            const int WM_MOUSEACTIVATE = 0x0021;
+            const int MA_ACTIVATE = 1;
+            const int MA_ACTIVATEANDEAT = 2;
+
+            if (m.Msg == WM_MOUSEACTIVATE &&
+                m.Result == (IntPtr)MA_ACTIVATEANDEAT)
+            {
+                m.Result = (IntPtr)MA_ACTIVATE;
+            }
+        }
+    }
 }

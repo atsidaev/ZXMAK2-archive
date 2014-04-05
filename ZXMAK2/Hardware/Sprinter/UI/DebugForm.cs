@@ -32,11 +32,10 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         // ZEK ---
 
 
-        public bool AllowClose { get; set; }
-
-        public DebugForm()
+        public DebugForm(IDebuggable debugTarget)
         {
             InitializeComponent();
+            Init(debugTarget);
         }
 
         private void ChangeReg(ref ushort p, string reg)
@@ -200,15 +199,6 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             m_spectrum.Breakpoint -= new EventHandler(spectrum_OnBreakpoint);
         }
 
-        private void FormCPU_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if ((e.CloseReason != CloseReason.FormOwnerClosing) && !AllowClose)
-            {
-                base.Hide();
-                e.Cancel = true;
-            }
-        }
-
         private void FormCPU_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -292,7 +282,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             base.Select();
         }
 
-        public void Init(IDebuggable debugTarget)
+        private void Init(IDebuggable debugTarget)
         {
             if (debugTarget != m_spectrum)
             {

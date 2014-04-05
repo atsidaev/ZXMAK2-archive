@@ -424,7 +424,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
           this.ShowInTaskbar = false;
           this.Text = "Z80 CPU";
           this.Activated += new System.EventHandler(this.FormCpu_Activated);
-          this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormCPU_FormClosing);
           this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormCPU_FormClosed);
           this.Load += new System.EventHandler(this.FormCPU_Load);
           this.Shown += new System.EventHandler(this.FormCPU_Shown);

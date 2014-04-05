@@ -84,16 +84,72 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectSound.dll</HintPath>
     </Reference>
+    <Reference Include="..\Libraries\FastColoredTextBox.dll" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="..\Libraries\FastColoredTextBox.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Func.cs" />
+    <Compile Include="DialogService.cs" />
+    <Compile Include="LogAgent.cs" />
+    <Compile Include="HelpService.cs" />
+    <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\HardwareSwitchAttribute.cs" />
     <Compile Include="Attributes\ReadOnlyAttribute.cs" />
+    <Compile Include="Attributes\HardwareValueAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Interfaces\ICommand.cs" />
+    <Compile Include="Interfaces\IHostUi.cs" />
+    <Compile Include="Interfaces\IHost.cs" />
+    <Compile Include="Interfaces\IHostJoystick.cs" />
+    <Compile Include="Interfaces\IHostKeyboard.cs" />
+    <Compile Include="Interfaces\IHostMouse.cs" />
+    <Compile Include="Interfaces\IHostSound.cs" />
+    <Compile Include="Interfaces\IHostVideo.cs" />
+    <Compile Include="Interfaces\IJoystickDevice.cs" />
+    <Compile Include="Interfaces\IMachineState.cs" />
+    <Compile Include="Interfaces\IBusManager.cs" />
+    <Compile Include="Interfaces\IDebuggable.cs" />
+    <Compile Include="Interfaces\IJtagDevice.cs" />
+    <Compile Include="Interfaces\IKeyboardDevice.cs" />
+    <Compile Include="Interfaces\IMemoryDevice.cs" />
+    <Compile Include="Interfaces\IMouseDevice.cs" />
+    <Compile Include="Interfaces\IRzxFrameSource.cs" />
+    <Compile Include="Interfaces\IRzxState.cs" />
+    <Compile Include="Interfaces\ISoundRenderer.cs" />
+    <Compile Include="Interfaces\IUlaDevice.cs" />
+    <Compile Include="Interfaces\IUlaRenderer.cs" />
+    <Compile Include="Interfaces\IAyDevice.cs" />
+    <Compile Include="Interfaces\IBetaDiskDevice.cs" />
+    <Compile Include="Interfaces\ITapeDevice.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MVP\MainPresenter.cs" />
+    <Compile Include="MVP\Interfaces\IViewHolder.cs" />
+    <Compile Include="MVP\Interfaces\IMainView.cs" />
+    <Compile Include="MVP\WinForms\DragDataWrapper.cs" />
+    <Compile Include="MVP\WinForms\ViewHolder.cs" />
+    <Compile Include="MVP\WinForms\MainView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MVP\WinForms\MainView.Designer.cs">
+      <DependentUpon>MainView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MVP\WinForms\RenderVideo.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MVP\WinForms\Render3D.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\CommandDelegate.cs" />
     <Compile Include="Controls\Configuration\CtlSettingsHayesModem.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -107,7 +163,6 @@
       <DependentUpon>CtlSettingsJoystick.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\Debugger\BusDeviceTypeConverter.cs" />
-    <Compile Include="Controls\DragDataWrapper.cs" />
     <Compile Include="Controls\InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -252,19 +307,14 @@
     <Compile Include="Hardware\General\UI\FormCPU.designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\RenderVideo.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Controls\TapeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DialogService.cs" />
     <Compile Include="Entities\BusDeviceBase.cs" />
     <Compile Include="Entities\TapeBlock.cs" />
     <Compile Include="Hardware\General\AyMouseDevice.cs" />
     <Compile Include="Hardware\General\BeeperDevice.cs" />
     <Compile Include="Engine\BusManager.cs" />
-    <Compile Include="Attributes\HardwareValueAttribute.cs" />
     <Compile Include="Hardware\Profi\KeyboardProfi.cs" />
     <Compile Include="Hardware\Profi\ProfiRenderer.cs" />
     <Compile Include="Hardware\Quorum\BeeperQuorum.cs" />
@@ -306,30 +356,9 @@
     <Compile Include="Entities\IconDescriptor.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRenderer.cs" />
     <Compile Include="Hardware\ZXBYTE\UlaByte.cs" />
-    <Compile Include="HelpService.cs" />
-    <Compile Include="Interfaces\IHost.cs" />
-    <Compile Include="Interfaces\IHostJoystick.cs" />
-    <Compile Include="Interfaces\IHostKeyboard.cs" />
-    <Compile Include="Interfaces\IHostMouse.cs" />
-    <Compile Include="Interfaces\IHostSound.cs" />
-    <Compile Include="Interfaces\IHostVideo.cs" />
-    <Compile Include="Interfaces\IJoystickDevice.cs" />
-    <Compile Include="Interfaces\IMachineState.cs" />
-    <Compile Include="Interfaces\IBusManager.cs" />
-    <Compile Include="Interfaces\IDebuggable.cs" />
-    <Compile Include="Interfaces\IJtagDevice.cs" />
-    <Compile Include="Interfaces\IKeyboardDevice.cs" />
-    <Compile Include="Interfaces\IMemoryDevice.cs" />
-    <Compile Include="Interfaces\IGuiExtension.cs" />
-    <Compile Include="Interfaces\IMouseDevice.cs" />
-    <Compile Include="Interfaces\IRzxFrameSource.cs" />
-    <Compile Include="Interfaces\IRzxState.cs" />
-    <Compile Include="Interfaces\ISoundRenderer.cs" />
-    <Compile Include="Interfaces\IUlaDevice.cs" />
     <Compile Include="Hardware\General\KempstonMouseDevice.cs" />
     <Compile Include="Hardware\General\KeyboardDevice.cs" />
     <Compile Include="Engine\RzxHandler.cs" />
-    <Compile Include="Interfaces\IUlaRenderer.cs" />
     <Compile Include="MDX\DirectJoystick.cs" />
     <Compile Include="MDX\MdxHost.cs" />
     <Compile Include="Serializers\DiskSerializers\ProSerializer.cs" />
@@ -357,7 +386,6 @@
     <Compile Include="Engine\Z80\DasmUtils.cs" />
     <Compile Include="Engine\Z80\Z80FXCBops.cs" />
     <Compile Include="Hardware\Spectrum\UlaPlus3.cs" />
-    <Compile Include="LogAgent.cs" />
     <Compile Include="MDX\DirectKeyboard.cs" />
     <Compile Include="MDX\DirectMouse.cs" />
     <Compile Include="MDX\DirectSound.cs" />
@@ -367,9 +395,6 @@
     <Compile Include="Entities\SimpleSector.cs" />
     <Compile Include="Entities\Track.cs" />
     <Compile Include="Hardware\General\BetaDiskInterface.cs" />
-    <Compile Include="Interfaces\IAyDevice.cs" />
-    <Compile Include="Interfaces\IBetaDiskDevice.cs" />
-    <Compile Include="Interfaces\ITapeDevice.cs" />
     <Compile Include="Serializers\DiskLoadManager.cs" />
     <Compile Include="Serializers\DiskSerializers\FdiSerializer.cs" />
     <Compile Include="Serializers\DiskSerializers\HobetaSerializer.cs" />
@@ -399,21 +424,11 @@
     <Compile Include="Engine\Z80\Z80FXops.cs" />
     <Compile Include="Engine\Z80\Z80OPS.cs" />
     <Compile Include="Engine\Z80\Z80REGS.cs" />
-    <Compile Include="Controls\FormMain.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\FormMain.Designer.cs">
-      <DependentUpon>FormMain.cs</DependentUpon>
-    </Compile>
     <Compile Include="Logging\Log.cs" />
     <Compile Include="Logging\LoggerInternal.cs" />
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Logging\LogMessage.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Controls\Render3D.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Engine\VirtualMachine.cs" />
     <Compile Include="Hardware\Sprinter\UI\DebugForm.cs">
       <SubType>Form</SubType>
@@ -499,6 +514,9 @@
     <EmbeddedResource Include="Controls\FormKeyboardHelp.resx">
       <DependentUpon>FormKeyboardHelp.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="MVP\WinForms\MainView.resx">
+      <DependentUpon>MainView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ObjectSelectorDialog.resx">
       <DependentUpon>ObjectSelectorDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -516,9 +534,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Hardware\General\UI\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FormMain.resx">
-      <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\FormMachineSettings.resx">
       <DependentUpon>FormMachineSettings.cs</DependentUpon>
@@ -573,6 +588,16 @@
     <None Include="boot.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Icons\WindowFullScreen_32x32.png" />
+    <Content Include="Icons\WindowWindowed_32x32.png" />
+    <Content Include="Icons\EmuPause_32x32.png" />
+    <Content Include="Icons\EmuResume_32x32.png" />
+    <Content Include="Icons\EmuColdReset_32x32.png" />
+    <Content Include="Icons\EmuWarmReset_32x32.png" />
+    <Content Include="Icons\EmuFileOpen_32x32.png" />
+    <Content Include="Icons\EmuFileSave_32x32.png" />
+    <Content Include="Icons\EmuMaxSpeed_32x32.png" />
+    <Content Include="Icons\EmuSettings_32x32.png" />
     <Content Include="MACHINES.PAK">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

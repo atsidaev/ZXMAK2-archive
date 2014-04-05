@@ -275,7 +275,6 @@ namespace ZXMAK2.Controls
 
         #region private
 
-        private RenderVideo m_renderVideo;
         private VirtualMachine m_vm;
         private BusManager m_workBus;
         private List<ConfigScreenControl> m_ctlList = new List<ConfigScreenControl>();
@@ -410,9 +409,8 @@ namespace ZXMAK2.Controls
             return null;
         }
 
-        public void Init(VirtualMachine vm, RenderVideo renderVideo)
+        public void Init(VirtualMachine vm)
         {
-            m_renderVideo = renderVideo;
             m_vm = vm;
 
             m_workBus = new BusManager();

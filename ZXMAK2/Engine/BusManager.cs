@@ -45,6 +45,8 @@ namespace ZXMAK2.Engine
 
         private int m_pendingNmi;
         private long m_pendingNmiLastTact;
+
+        public IHostUi HostUi { get; set; }
         public RzxHandler RzxHandler { get; set; }
         public IconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
         public IconDescriptor IconPause { get { return m_iconPause; } }
@@ -59,6 +61,10 @@ namespace ZXMAK2.Engine
                 m_loadManager.AddStandardSerializers();
             }
             m_iconDescList = new IconDescriptor[0];
+            if (HostUi != null)
+            {
+                HostUi.ClearCommandsUi();
+            }
             if (m_cpu != null)
             {
                 m_cpu.RDMEM_M1 = null;
@@ -201,6 +207,14 @@ namespace ZXMAK2.Engine
             List<IconDescriptor> list = new List<IconDescriptor>(m_iconDescList);
             list.Add(iconDesc);
             m_iconDescList = list.ToArray();
+        }
+
+        void IBusManager.AddCommandUi(ICommand command)
+        {
+            if (HostUi != null)
+            {
+                HostUi.AddCommandUi(command);
+            }
         }
 
         Z80CPU IBusManager.CPU
@@ -458,6 +472,10 @@ namespace ZXMAK2.Engine
                 m_loadManager.AddStandardSerializers();
             }
             m_iconDescList = new IconDescriptor[] { m_iconPause };
+            if (HostUi != null)
+            {
+                HostUi.ClearCommandsUi();
+            }
             foreach (var device in m_deviceList)
             {
                 try { device.BusInit(this); }
@@ -491,8 +509,14 @@ namespace ZXMAK2.Engine
             OnEndFrame();
             OnBusDisconnect();
             if (m_loadManager != null)
+            {
                 m_loadManager.Clear();
+            }
             m_iconDescList = new IconDescriptor[0];
+            if (HostUi != null)
+            {
+                HostUi.ClearCommandsUi();
+            }
             if (m_debuggable != null)
             {
                 var jtag = FindDevice<IJtagDevice>();

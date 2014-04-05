@@ -13,11 +13,14 @@ using ZXMAK2.Serializers.TapeSerializers;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
+using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.MVP.WinForms;
+using ZXMAK2.Controls;
 
 
 namespace ZXMAK2.Hardware.General
 {
-    public class TapeDevice : SoundDeviceBase, ITapeDevice, IGuiExtension
+    public class TapeDevice : SoundDeviceBase, ITapeDevice
     {
         #region Fields
 
@@ -41,7 +44,16 @@ namespace ZXMAK2.Hardware.General
         private int m_waitEdge = 0;
         private bool m_state = false;
 
+        private IViewHolder m_viewHolder;
+
         #endregion Fields
+
+        
+        public TapeDevice()
+        {
+            Volume = 20;
+            CreateViewHolder();
+        }
 
 
         #region IBusDevice
@@ -65,6 +77,19 @@ namespace ZXMAK2.Hardware.General
             bmgr.AddSerializer(new CswSerializer(this));
             bmgr.AddSerializer(new WavSerializer(this));
             bmgr.RegisterIcon(m_iconTape);
+            if (m_viewHolder != null)
+            {
+                bmgr.AddCommandUi(m_viewHolder.CommandOpen);
+            }
+        }
+
+        public override void BusDisconnect()
+        {
+            base.BusDisconnect();
+            if (m_viewHolder != null)
+            {
+                m_viewHolder.Close();
+            }
         }
 
         protected override void OnConfigLoad(XmlNode itemNode)
@@ -187,12 +212,6 @@ namespace ZXMAK2.Hardware.General
         }
 
         #endregion
-
-
-        public TapeDevice()
-        {
-            Volume = 20;
-        }
 
 
         #region Events
@@ -456,58 +475,15 @@ namespace ZXMAK2.Hardware.General
 
         #region IGuiExtension Members
 
-        private GuiData m_guiData;
-        private System.Windows.Forms.MenuItem m_subMenuItem;
-        private Controls.TapeForm m_form;
-
-        public void AttachGui(GuiData guiData)
+        private void CreateViewHolder()
         {
-            m_guiData = guiData;
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            try
             {
-                System.Windows.Forms.MenuItem menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
-                if (menuItem != null)
-                {
-                    m_subMenuItem = new System.Windows.Forms.MenuItem("Tape", menu_Click);
-                    menuItem.MenuItems.Add(m_subMenuItem);
-                }
+                m_viewHolder = new ViewHolder<TapeForm>("Tape", this);
             }
-        }
-
-        public void DetachGui()
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            catch (Exception ex)
             {
-                if (m_subMenuItem != null)
-                {
-                    m_subMenuItem.Parent.MenuItems.Remove(m_subMenuItem);
-                    m_subMenuItem.Dispose();
-                    m_subMenuItem = null;
-                }
-                if (m_form != null)
-                {
-                    m_form.Close();
-                    m_form = null;
-                }
-            }
-            m_guiData = null;
-        }
-
-        private void menu_Click(object sender, EventArgs e)
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                if (m_form == null)
-                {
-                    m_form = new Controls.TapeForm(this);
-                    m_form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg) { m_form = null; };
-                    m_form.Show((System.Windows.Forms.Form)m_guiData.MainWindow);
-                }
-                else
-                {
-                    m_form.Show();
-                    m_form.Activate();
-                }
+                LogAgent.Error(ex);
             }
         }
 

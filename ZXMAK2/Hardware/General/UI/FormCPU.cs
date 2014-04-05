@@ -21,15 +21,13 @@ namespace ZXMAK2.Hardware.General.UI
         private IDebuggable m_spectrum;
         private DasmUtils m_dasmUtils;
 
-        public FormCpu()
+        public FormCpu(IDebuggable debugTarget)
         {
             InitializeComponent();
+            Init(debugTarget);
         }
 
-        public bool AllowClose { get; set; }
-
-
-        public void Init(IDebuggable debugTarget)
+        private void Init(IDebuggable debugTarget)
         {
             if (debugTarget == m_spectrum)
                 return;
@@ -420,17 +418,6 @@ namespace ZXMAK2.Hardware.General.UI
         {
             if (e.Button == MouseButtons.Right)
                 contextMenuData.Show(dataPanel, e.Location);
-        }
-
-        private void FormCPU_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            //LogAgent.Debug("FormCpu.FormCPU_FormClosing {0}", e.CloseReason);
-            if (e.CloseReason != CloseReason.FormOwnerClosing && !this.AllowClose)
-            {
-                //LogAgent.Debug("FormCpu.Hide");
-                Hide();
-                e.Cancel = true;
-            }
         }
 
         private void listState_DoubleClick(object sender, EventArgs e)

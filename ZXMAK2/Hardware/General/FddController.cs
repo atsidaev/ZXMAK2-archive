@@ -4,10 +4,13 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Hardware.IC;
+using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.Controls.Debugger;
+using ZXMAK2.MVP.WinForms;
 
 namespace ZXMAK2.Hardware.General
 {
-    public class FddController : BusDeviceBase, IBetaDiskDevice, IGuiExtension
+    public class FddController : BusDeviceBase, IBetaDiskDevice
     {
         #region Fields
 
@@ -18,7 +21,15 @@ namespace ZXMAK2.Hardware.General
         protected IMemoryDevice m_memory;
         protected Wd1793 m_wd = new Wd1793();
 
+        private IViewHolder m_viewHolder;
+
         #endregion
+
+
+        public FddController()
+        {
+            CreateViewHolder();
+        }
 
         
         #region IBusDevice
@@ -44,6 +55,10 @@ namespace ZXMAK2.Hardware.General
             {
                 bmgr.AddSerializer(fs);
             }
+            if (m_viewHolder != null)
+            {
+                bmgr.AddCommandUi(m_viewHolder.CommandOpen);
+            }
         }
 
         public override void BusConnect()
@@ -65,6 +80,10 @@ namespace ZXMAK2.Hardware.General
                 {
                     di.Disconnect();
                 }
+            }
+            if (m_viewHolder != null)
+            {
+                m_viewHolder.Close();
             }
         }
 
@@ -142,58 +161,15 @@ namespace ZXMAK2.Hardware.General
 
         #region IGuiExtension Members
 
-        private GuiData m_guiData;
-        private System.Windows.Forms.MenuItem m_subMenuItem;
-        private Controls.Debugger.dbgWD1793 m_form;
-
-        public void AttachGui(GuiData guiData)
+        private void CreateViewHolder()
         {
-            m_guiData = guiData;
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            try
             {
-                System.Windows.Forms.MenuItem menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
-                if (menuItem != null)
-                {
-                    m_subMenuItem = new System.Windows.Forms.MenuItem("WD1793", menu_Click);
-                    menuItem.MenuItems.Add(m_subMenuItem);
-                }
+                m_viewHolder = new ViewHolder<dbgWD1793>("WD1793", m_wd);
             }
-        }
-
-        public void DetachGui()
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            catch (Exception ex)
             {
-                if (m_subMenuItem != null)
-                {
-                    m_subMenuItem.Parent.MenuItems.Remove(m_subMenuItem);
-                    m_subMenuItem.Dispose();
-                    m_subMenuItem = null;
-                }
-                if (m_form != null)
-                {
-                    m_form.Close();
-                    m_form = null;
-                }
-            }
-            m_guiData = null;
-        }
-
-        private void menu_Click(object sender, EventArgs e)
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                if (m_form == null)
-                {
-                    m_form = new Controls.Debugger.dbgWD1793(m_wd);
-                    m_form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg) { m_form = null; };
-                    m_form.Show((System.Windows.Forms.Form)m_guiData.MainWindow);
-                }
-                else
-                {
-                    m_form.Show();
-                    m_form.Activate();
-                }
+                LogAgent.Error(ex);
             }
         }
 

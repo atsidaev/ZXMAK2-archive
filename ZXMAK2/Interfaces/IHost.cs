@@ -6,6 +6,7 @@ namespace ZXMAK2.Interfaces
 {
     public interface IHost : IDisposable
     {
+        IHostUi HostUi { get; }
         IHostVideo Video { get; }
         IHostSound Sound { get; }
         IHostKeyboard Keyboard { get; }
