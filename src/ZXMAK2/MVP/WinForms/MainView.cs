@@ -58,11 +58,6 @@ namespace ZXMAK2.MVP.WinForms
 
         #region IMainView
 
-        public IWin32Window Window
-        {
-            get { return this; }
-        }
-
         public string Title
         {
             get { return m_title; }

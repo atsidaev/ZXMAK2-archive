@@ -1,15 +1,12 @@
-﻿using ZXMAK2.Interfaces;
+﻿using System;
 using System.Drawing;
-using System;
-using System.Windows.Forms;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.MVP.Interfaces
 {
     public interface IMainView
     {
-        IWin32Window Window { get; }    // TODO: remove
-        
         string Title { get; set; }
         bool IsFullScreen { get; set; }
         IHost Host { get; }
