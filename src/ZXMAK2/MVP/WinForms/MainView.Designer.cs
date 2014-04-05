@@ -554,7 +554,7 @@
             this.MainMenuStrip = this.mnuStrip;
             this.Name = "MainView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "FormMain2";
+            this.Text = "ZXMAK2";
             this.mnuStrip.ResumeLayout(false);
             this.mnuStrip.PerformLayout();
             this.tbrStrip.ResumeLayout(false);

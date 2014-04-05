@@ -12,6 +12,7 @@ using ZXMAK2.Engine;
 using ZXMAK2.Controls;
 using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.MVP.WinForms;
 
 
 namespace ZXMAK2.MVP
@@ -21,7 +22,6 @@ namespace ZXMAK2.MVP
         private IMainView m_view;
         private VirtualMachine m_vm;
         private string m_startupImage;
-        private bool m_isKeyboardHelpOpened;
         
         
         public MainPresenter(IMainView view, params string[] args)
@@ -36,21 +36,7 @@ namespace ZXMAK2.MVP
             m_view.ViewOpened += MainView_OnViewOpened;
             m_view.ViewClosed += MainView_OnViewClosed;
             m_view.ViewInvalidate += MainView_OnViewInvalidate;
-            CommandFileOpen = new CommandDelegate(CommandFileOpen_OnExecute, () => true);
-            CommandFileSave = new CommandDelegate(CommandFileSave_OnExecute, () => true);
-            CommandFileExit = new CommandDelegate(CommandFileExit_OnExecute, () => true);
-            CommandViewFullScreen = new CommandDelegate(CommandViewFullScreen_OnExecute, (arg) => true);
-            CommandVmPause = new CommandDelegate(CommandVmPause_OnExecute, () => true);
-            CommandVmMaxSpeed = new CommandDelegate(CommandVmMaxSpeed_OnExecute, () => true);
-            CommandVmWarmReset = new CommandDelegate(CommandVmWarmReset_OnExecute, (arg) => true);
-            CommandVmNmi = new CommandDelegate(CommandVmNmi_OnExecute, () => true);
-            CommandVmSettings = new CommandDelegate(CommandVmSettings_OnExecute, () => true);
-            CommandHelpViewHelp = new CommandDelegate(CommandHelpViewHelp_OnExecute, () => true);
-            CommandHelpKeyboardHelp = new CommandDelegate(CommandHelpKeyboardHelp_OnExecute, () => !m_isKeyboardHelpOpened);
-            CommandHelpAbout = new CommandDelegate(CommandHelpAbout_OnExecute, () => true);
-            CommandTapePause = new CommandDelegate(CommandTapePause_OnExecute, CommandTapePause_CanExecute);
-            CommandQuickLoad = new CommandDelegate(CommandQuickLoad_OnExecute, () => true);
-            CommandOpenUri = new CommandDelegate(CommandOpenUri_OnExecute, CommandOpenUri_OnCanExecute);
+            CreateCommands();
         }
 
         public void Dispose()
@@ -146,7 +132,26 @@ namespace ZXMAK2.MVP
 
         #region Command Implementation
 
-        private void CommandFileOpen_OnExecute()
+        private void CreateCommands()
+        {
+            CommandFileOpen = new CommandDelegate(CommandFileOpen_OnExecute);
+            CommandFileSave = new CommandDelegate(CommandFileSave_OnExecute);
+            CommandFileExit = new CommandDelegate(CommandFileExit_OnExecute);
+            CommandViewFullScreen = new CommandDelegate(CommandViewFullScreen_OnExecute);
+            CommandVmPause = new CommandDelegate(CommandVmPause_OnExecute);
+            CommandVmMaxSpeed = new CommandDelegate(CommandVmMaxSpeed_OnExecute);
+            CommandVmWarmReset = new CommandDelegate(CommandVmWarmReset_OnExecute);
+            CommandVmNmi = new CommandDelegate(CommandVmNmi_OnExecute);
+            CommandVmSettings = new CommandDelegate(CommandVmSettings_OnExecute);
+            CommandHelpViewHelp = new CommandDelegate((obj)=>HelpService.ShowHelp(obj), (obj)=>HelpService.CanShow(obj));
+            CommandHelpKeyboardHelp = new ViewHolder<FormKeyboardHelp>(null).CommandOpen;
+            CommandHelpAbout = new ViewHolder<FormAbout>(null).CommandOpen;
+            CommandTapePause = new CommandDelegate(CommandTapePause_OnExecute, CommandTapePause_CanExecute);
+            CommandQuickLoad = new CommandDelegate(CommandQuickLoad_OnExecute);
+            CommandOpenUri = new CommandDelegate(CommandOpenUri_OnExecute, CommandOpenUri_OnCanExecute);
+        }
+
+        private void CommandFileOpen_OnExecute(Object objArg)
         {
             if (m_vm == null)
             {
@@ -163,7 +168,7 @@ namespace ZXMAK2.MVP
                 loadDialog.ReadOnlyChecked = true;
                 loadDialog.CheckFileExists = true;
                 loadDialog.FileOk += LoadDialog_FileOk;
-                if (loadDialog.ShowDialog(m_view.Window) != DialogResult.OK)
+                if (loadDialog.ShowDialog(objArg as IWin32Window) != DialogResult.OK)
                 {
                     return;
                 }
@@ -171,7 +176,7 @@ namespace ZXMAK2.MVP
             }
         }
 
-        private void CommandFileSave_OnExecute()
+        private void CommandFileSave_OnExecute(Object objArg)
         {
             if (m_vm == null)
             {
@@ -185,7 +190,7 @@ namespace ZXMAK2.MVP
                 saveDialog.DefaultExt = m_vm.Spectrum.Loader.GetDefaultExtension();
                 saveDialog.FileName = "";
                 saveDialog.OverwritePrompt = true;
-                if (saveDialog.ShowDialog(m_view.Window) != DialogResult.OK)
+                if (saveDialog.ShowDialog(objArg as IWin32Window) != DialogResult.OK)
                 {
                     return;
                 }
@@ -277,7 +282,7 @@ namespace ZXMAK2.MVP
             m_vm.DoNmi();
         }
 
-        private void CommandVmSettings_OnExecute()
+        private void CommandVmSettings_OnExecute(Object objArg)
         {
             try
             {
@@ -288,7 +293,7 @@ namespace ZXMAK2.MVP
                 using (var form = new FormMachineSettings())
                 {
                     form.Init(m_vm);
-                    form.ShowDialog(m_view.Window);
+                    form.ShowDialog(objArg as IWin32Window);
                     m_view.Host.Video.UpdateVideo(m_vm);
                 }
             }
@@ -300,52 +305,6 @@ namespace ZXMAK2.MVP
                     "ERROR",
                     DlgButtonSet.OK,
                     DlgIcon.Error);
-            }
-        }
-
-        private void CommandHelpViewHelp_OnExecute()
-        {
-            m_view.ShowHelp();
-        }
-
-        private void CommandHelpKeyboardHelp_OnExecute()
-        {
-            if (m_isKeyboardHelpOpened)
-            {
-                return;
-            }
-            //var form = (FormKeyboardHelp)menuHelpKeyboard.Tag;
-            //if (form == null)
-            //{
-            //    form = new FormKeyboardHelp();
-            //    form.FormClosed += new FormClosedEventHandler(delegate(object s1, FormClosedEventArgs e1)
-            //    {
-            //        CommandHelpKeyboardHelp.
-            //        menuHelpKeyboard.Tag = null;
-            //    });
-            //    menuHelpKeyboard.Tag = form;
-            //    form.Show(this);
-            //}
-            //else
-            //{
-            //    form.Activate();
-            //}
-            m_isKeyboardHelpOpened = true;
-            RaiseCommandCanExecuteChanged(CommandHelpKeyboardHelp);
-            var form = new FormKeyboardHelp();
-            form.FormClosed += new FormClosedEventHandler(delegate(object s1, FormClosedEventArgs e1)
-            {
-                m_isKeyboardHelpOpened = false;
-                RaiseCommandCanExecuteChanged(CommandHelpKeyboardHelp);
-            });
-            form.Show(m_view.Window);
-        }
-
-        private void CommandHelpAbout_OnExecute()
-        {
-            using (var form = new FormAbout())
-            {
-                form.ShowDialog(m_view.Window);
             }
         }
 

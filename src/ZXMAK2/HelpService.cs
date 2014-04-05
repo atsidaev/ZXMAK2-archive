@@ -10,41 +10,50 @@ namespace ZXMAK2
     public static class HelpService
     {
         private static string s_url;
+
+        public static bool CanShow(object uiControl)
+        {
+            return uiControl is Control;
+        }
         
-        public static void ShowHelp(Control parent)
+        public static void ShowHelp(object uiControl)
         {
-            if (!CheckUrl())
+            var control = uiControl as Control;
+            if (control == null || !CheckUrl())
             {
                 return;
             }
-            Help.ShowHelp(parent, s_url);
+            Help.ShowHelp(control, s_url);
         }
 
-        public static void ShowHelp(Control parent, HelpNavigator navigator)
+        public static void ShowHelp(object uiControl, HelpNavigator navigator)
         {
-            if (!CheckUrl())
+            var control = uiControl as Control;
+            if (control == null || !CheckUrl())
             {
                 return;
             }
-            Help.ShowHelp(parent, s_url, navigator);
+            Help.ShowHelp(control, s_url, navigator);
         }
 
-        public static void ShowHelp(Control parent, string keyword)
+        public static void ShowHelp(object uiControl, string keyword)
         {
-            if (!CheckUrl())
+            var control = uiControl as Control;
+            if (control == null || !CheckUrl())
             {
                 return;
             }
-            Help.ShowHelp(parent, s_url, keyword);
+            Help.ShowHelp(control, s_url, keyword);
         }
 
-        public static void ShowHelp(Control parent, HelpNavigator command, object parameter)
+        public static void ShowHelp(Object uiControl, HelpNavigator command, object parameter)
         {
-            if (!CheckUrl())
+            var control = uiControl as Control;
+            if (control == null || !CheckUrl())
             {
                 return;
             }
-            Help.ShowHelp(parent, s_url, command, parameter);
+            Help.ShowHelp(control, s_url, command, parameter);
         }
 
         private static bool CheckUrl()

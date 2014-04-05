@@ -44,6 +44,7 @@ namespace ZXMAK2.Controls
             this.buttonOk.TabIndex = 0;
             this.buttonOk.Text = "OK";
             this.buttonOk.UseVisualStyleBackColor = true;
+            this.buttonOk.Click += new System.EventHandler(this.buttonOk_Click);
             // 
             // buttonUpdate
             // 
@@ -155,5 +156,9 @@ namespace ZXMAK2.Controls
 			Process.Start(new ProcessStartInfo(e.Link.LinkData.ToString()));
 		}
 
+        private void buttonOk_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
 	}
 }
