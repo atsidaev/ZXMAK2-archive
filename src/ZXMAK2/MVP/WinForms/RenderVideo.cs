@@ -300,9 +300,9 @@ namespace ZXMAK2.MVP.WinForms
 
                     if (DisplayIcon)
                     {
-                        var devIconSize = new SizeF(
-                            D3D.PresentationParameters.BackBufferWidth / 20,
-                            D3D.PresentationParameters.BackBufferHeight / 15);
+                        var devIconSize = new SizeF(32, 32);
+                            //D3D.PresentationParameters.BackBufferWidth / 20,
+                            //D3D.PresentationParameters.BackBufferHeight / 15);
                         var iconNumber = 1;
                         foreach (var itw in m_iconWrapperDict.Values)
                         {

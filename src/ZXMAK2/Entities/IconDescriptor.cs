@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace ZXMAK2.Entities
 {
@@ -14,7 +15,18 @@ namespace ZXMAK2.Entities
         public Size Size { get; private set; }
 		public bool Visible { get; set; }
 
-		public IconDescriptor(string iconName, Stream iconStream)
+        public IconDescriptor(string iconName, Image iconImage)
+        {
+            Name = iconName;
+            Size = iconImage.Size;
+            using (var stream = new MemoryStream())
+            {
+                iconImage.Save(stream, ImageFormat.Png);
+                m_iconData = stream.ToArray();
+            }
+        }
+        
+        public IconDescriptor(string iconName, Stream iconStream)
 		{
             if (iconStream == null)
             {
