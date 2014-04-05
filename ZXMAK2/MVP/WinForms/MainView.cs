@@ -26,16 +26,19 @@ namespace ZXMAK2.MVP.WinForms
         private Size m_size;
         private FormBorderStyle m_style;
 
-        private bool m_firstShow = true;
         private string m_title;
         private bool m_allowSaveSize;
 
-        
+
         public MainView()
         {
             SetStyle(ControlStyles.Opaque | ControlStyles.AllPaintingInWmPaint, true);
             InitializeComponent();
             this.Icon = Utils.GetAppIcon();
+
+            menuViewCustomizeShowToolBar.Checked = true;
+            SetRenderSize(new Size(640, 512));
+
             LoadClientSize();
             LoadRenderSetting();
         }
@@ -43,21 +46,21 @@ namespace ZXMAK2.MVP.WinForms
 
         #region Commands
 
-        public ICommand CommandViewFullScreen { get; private set; }
-        public ICommand CommandVmPause { get; private set; }
-        public ICommand CommandVmWarmReset { get; private set; }
-        public ICommand CommandTapePause { get; private set; }
-        public ICommand CommandQuickLoad { get; private set; }
-        public ICommand CommandOpenUri { get; private set; }
+        private ICommand CommandViewFullScreen { get; set; }
+        private ICommand CommandVmPause { get; set; }
+        private ICommand CommandVmWarmReset { get; set; }
+        private ICommand CommandTapePause { get; set; }
+        private ICommand CommandQuickLoad { get; set; }
+        private ICommand CommandOpenUri { get; set; }
 
         #endregion Commands
 
 
         #region IMainView
 
-        public IWin32Window Window 
-        { 
-            get { return this; } 
+        public IWin32Window Window
+        {
+            get { return this; }
         }
 
         public string Title
@@ -65,20 +68,21 @@ namespace ZXMAK2.MVP.WinForms
             get { return m_title; }
             set
             {
-                if (m_title == value)
-                {
-                    return;
-                }
                 m_title = value;
+                var tail = "ZXMAK2";
+                if (CommandVmPause != null && CommandVmPause.Text != "Pause")
+                {
+                    tail += " (Paused)";
+                }
                 Text = string.IsNullOrEmpty(m_title) ?
-                    "ZXMAK2" :
-                    string.Format("[{0}] - ZXMAK2", m_title);
+                    tail :
+                    string.Format("[{0}] - {1}", m_title, tail);
             }
         }
 
-        public IHost Host 
-        { 
-            get { return m_host; } 
+        public IHost Host
+        {
+            get { return m_host; }
         }
 
         public Func<Size> GetVideoSize { get; set; }
@@ -117,19 +121,37 @@ namespace ZXMAK2.MVP.WinForms
             BindToolBarCommand(tbrButtonColdReset, presenter.CommandVmColdReset);
             BindToolBarCommand(tbrButtonFullScreen, presenter.CommandViewFullScreen);
             BindToolBarCommand(tbrButtonSettings, presenter.CommandVmSettings);
-            
-            BindToolBarImageText(
-                tbrButtonPause, 
-                presenter.CommandVmPause, 
-                "Pause",
-                global::ZXMAK2.Properties.Resources.EmuPause_32x32,
-                global::ZXMAK2.Properties.Resources.EmuResume_32x32);
-            BindToolBarImageText(
-                tbrButtonFullScreen,
+
+            BindProperty<string>(
+                presenter.CommandVmPause,
+                "Text",
+                new Action<string>((value) =>
+                {
+                    if (value == "Pause")
+                    {
+                        tbrButtonPause.Image = global::ZXMAK2.Properties.Resources.EmuPause_32x32;
+                    }
+                    else
+                    {
+                        tbrButtonPause.Image = global::ZXMAK2.Properties.Resources.EmuResume_32x32;
+                    }
+                    Title = Title;
+                }));
+            BindProperty<string>(
                 presenter.CommandViewFullScreen,
-                "Windowed",
-                global::ZXMAK2.Properties.Resources.WindowWindowed_32x32,
-                global::ZXMAK2.Properties.Resources.WindowFullScreen_32x32);
+                "Text",
+                new Action<string>((value) =>
+                {
+                    if (value == "Windowed")
+                    {
+                        tbrButtonFullScreen.Image = global::ZXMAK2.Properties.Resources.WindowWindowed_32x32;
+                    }
+                    else
+                    {
+                        tbrButtonFullScreen.Image = global::ZXMAK2.Properties.Resources.WindowFullScreen_32x32;
+                    }
+                }));
+
             CommandViewFullScreen = presenter.CommandViewFullScreen;
             CommandVmPause = presenter.CommandVmPause;
             CommandVmWarmReset = presenter.CommandVmWarmReset;
@@ -145,14 +167,14 @@ namespace ZXMAK2.MVP.WinForms
 
         #endregion IMainView
 
-        
+
         #region IHostUi
 
         public void ClearCommandsUi()
         {
             menuTools.DropDownItems.Clear();
         }
-        
+
         public void AddCommandUi(ICommand command)
         {
             var subMenu = menuTools.DropDownItems.Add(command.Text) as ToolStripMenuItem;
@@ -198,7 +220,7 @@ namespace ZXMAK2.MVP.WinForms
 
         #endregion IMainView Events
 
-        
+
         #region Form Event Handlers
 
         protected override void OnLoad(EventArgs e)
@@ -218,31 +240,8 @@ namespace ZXMAK2.MVP.WinForms
 
         protected override void OnShown(EventArgs e)
         {
-            //LogAgent.Debug("MainForm.OnShown");
             base.OnShown(e);
-            try
-            {
-                if (m_firstShow)
-                {
-                    m_firstShow = false;
-                    //OnViewOpened();
-
-                    //var mult = 2;
-                    //var scale = 1D;
-                    //var toolHeight = mnuStrip.Height + tbrStrip.Height;
-                    //Size size = GetVideoSize();
-                    //size = new System.Drawing.Size(
-                    //    size.Width * mult,
-                    //    (int)((float)size.Height * scale) * mult + toolHeight);
-                    //ClientSize = size;
-                }
-                m_allowSaveSize = true;
-            }
-            catch (Exception ex)
-            {
-                LogAgent.Error(ex);
-                DialogService.ShowFatalError(ex);
-            }
+            m_allowSaveSize = true;
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -250,7 +249,7 @@ namespace ZXMAK2.MVP.WinForms
             base.OnClosing(e);
             m_allowSaveSize = false;
         }
-        
+
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             base.OnFormClosed(e);
@@ -408,7 +407,7 @@ namespace ZXMAK2.MVP.WinForms
                 {
                     var uri = new Uri(Path.GetFullPath(ddw.GetFilePath()));
                     this.Activate();
-                    this.BeginInvoke(new Action(()=>OnCommand(CommandOpenUri, uri)));
+                    this.BeginInvoke(new Action(() => OnCommand(CommandOpenUri, uri)));
 
                     //string fileName = ddw.GetFilePath();
                     //if (fileName != string.Empty)
@@ -516,7 +515,7 @@ namespace ZXMAK2.MVP.WinForms
                 }
             }
         }
-        
+
         private void renderVideo_MouseMove(object sender, MouseEventArgs e)
         {
             UpdateLayout();
@@ -548,7 +547,7 @@ namespace ZXMAK2.MVP.WinForms
 
         #endregion Layout
 
-        
+
         #region Save/Load Registry Settings
 
         private void SaveClientSize()
@@ -700,7 +699,7 @@ namespace ZXMAK2.MVP.WinForms
             menuViewFullScreen.Checked = m_fullScreen;
 
             var videoSize = GetVideoSize();
-            var ratio = GetVideoRatio(); 
+            var ratio = GetVideoRatio();
             videoSize = new System.Drawing.Size(videoSize.Width, (int)((float)videoSize.Height * ratio));
             menuViewSizeX1.Enabled = m_fullScreen || renderVideo.Size != videoSize;
             menuViewSizeX1.Checked = !m_fullScreen && renderVideo.Size == videoSize;
@@ -715,7 +714,7 @@ namespace ZXMAK2.MVP.WinForms
         private void menuViewCustomize_Click(object sender, EventArgs e)
         {
             var menuItem = sender as ToolStripMenuItem;
-            var tool = sender == menuViewCustomizeShowToolBar ? (ToolStrip)tbrStrip : 
+            var tool = sender == menuViewCustomizeShowToolBar ? (ToolStrip)tbrStrip :
                 sender == menuViewCustomizeShowStatusBar ? sbrStrip :
                 null;
             if (tool == null)
@@ -725,7 +724,7 @@ namespace ZXMAK2.MVP.WinForms
             var delta = menuItem.Checked ? tool.Height : -tool.Height;
             if (m_fullScreen)
             {
-                m_size = new Size(m_size.Width, m_size.Height + delta);    
+                m_size = new Size(m_size.Width, m_size.Height + delta);
             }
             else
             {
@@ -793,7 +792,7 @@ namespace ZXMAK2.MVP.WinForms
 
         #endregion Menu Handlers
 
-        
+
         #region Bind Helpers
 
         private static void OnCommand(ICommand command, object arg = null)
@@ -806,47 +805,39 @@ namespace ZXMAK2.MVP.WinForms
         }
 
         private void BindMenuCommand(
-            ToolStripMenuItem menuItem,
+            ToolStripMenuItem toolItem,
             ICommand command,
-            object arg=null)
+            object arg = null)
         {
             if (command == null)
             {
-                menuItem.Visible = false;
+                toolItem.Visible = false;
                 return;
             }
-            menuItem.Tag = command;
-            menuItem.Click += (s, e) => OnCommand(command, arg);
-            if (!string.IsNullOrEmpty(command.Text))
-            {
-                menuItem.Text = command.Text;
-            }
-            else
-            {
-                command.Text = menuItem.Text;
-            }
-            menuItem.Checked = command.Checked;
-            command.CanExecuteChanged += (s, e) =>
-            {
-                var canExecute = command.CanExecute(arg);
-                var action = new Action(() => menuItem.Enabled = canExecute);
-                if (InvokeRequired)
-                {
-                    BeginInvoke(action);
-                }
-                else
-                {
-                    action();
-                }
-            };
-            BindProperty<string>(command, "Text", (v) => menuItem.Text = v);
-            BindProperty<bool>(command, "Checked", (v) => menuItem.Checked = v);
+            BindToolStripItemCommand(toolItem, command, arg);
+            toolItem.Checked = command.Checked;
+            BindProperty<bool>(command, "Checked", (v) => toolItem.Checked = v);
         }
 
         private void BindToolBarCommand(
             ToolStripButton toolItem,
             ICommand command,
-            object arg=null)
+            object arg = null)
+        {
+            if (command == null)
+            {
+                toolItem.Visible = false;
+                return;
+            }
+            BindToolStripItemCommand(toolItem, command, arg);
+            toolItem.Checked = command.Checked;
+            BindProperty<bool>(command, "Checked", (v) => toolItem.Checked = v);
+        }
+
+        private void BindToolStripItemCommand(
+            ToolStripItem toolItem,
+            ICommand command,
+            object arg = null)
         {
             if (command == null)
             {
@@ -855,11 +846,6 @@ namespace ZXMAK2.MVP.WinForms
             }
             toolItem.Tag = command;
             toolItem.Click += (s, e) => OnCommand(command, arg);
-            if (!string.IsNullOrEmpty(command.Text))
-            {
-                toolItem.Text = command.Text;
-            }
-            toolItem.Checked = command.Checked;
             command.CanExecuteChanged += (s, e) =>
             {
                 var canExecute = command.CanExecute(arg);
@@ -873,26 +859,20 @@ namespace ZXMAK2.MVP.WinForms
                     action();
                 }
             };
-            BindProperty<string>(command, "Text", (v) => toolItem.Text = v);
-            BindProperty<bool>(command, "Checked", (v) => toolItem.Checked = v);
-        }
-
-        private void BindToolBarImageText(
-            ToolStripButton toolItem,
-            ICommand command,
-            string text,
-            Image image,
-            Image imageDefault)
-        {
-            BindProperty<string>(command, "Text", (value) =>
+            if (!string.IsNullOrEmpty(command.Text))
             {
-                toolItem.Image = value == text ? image : imageDefault;
-            });
+                toolItem.Text = command.Text;
+            }
+            else
+            {
+                command.Text = toolItem.Text;
+            }
+            BindProperty<string>(command, "Text", (v) => toolItem.Text = v);
         }
 
         private void BindProperty<T>(
-            INotifyPropertyChanged viewModel, 
-            string name, 
+            INotifyPropertyChanged viewModel,
+            string name,
             Action<T> setter)
         {
             var property = viewModel
