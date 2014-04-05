@@ -123,6 +123,16 @@ namespace ZXMAK2.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap EmuQuickLoad_32x32 {
+            get {
+                object obj = ResourceManager.GetObject("EmuQuickLoad_32x32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap EmuResume_32x32 {
             get {
                 object obj = ResourceManager.GetObject("EmuResume_32x32", resourceCulture);

@@ -48,6 +48,7 @@ namespace ZXMAK2.MVP.WinForms
 
         private ICommand CommandViewFullScreen { get; set; }
         private ICommand CommandVmPause { get; set; }
+        private ICommand CommandVmMaxSpeed { get; set; }
         private ICommand CommandVmWarmReset { get; set; }
         private ICommand CommandTapePause { get; set; }
         private ICommand CommandQuickLoad { get; set; }
@@ -114,6 +115,7 @@ namespace ZXMAK2.MVP.WinForms
             BindToolBarCommand(tbrButtonWarmReset, presenter.CommandVmWarmReset);
             BindToolBarCommand(tbrButtonColdReset, presenter.CommandVmColdReset);
             BindToolBarCommand(tbrButtonFullScreen, presenter.CommandViewFullScreen);
+            BindToolBarCommand(tbrButtonQuickLoad, presenter.CommandQuickLoad);
             BindToolBarCommand(tbrButtonSettings, presenter.CommandVmSettings, this);
 
             BindProperty<string>(
@@ -148,6 +150,7 @@ namespace ZXMAK2.MVP.WinForms
 
             CommandViewFullScreen = presenter.CommandViewFullScreen;
             CommandVmPause = presenter.CommandVmPause;
+            CommandVmMaxSpeed = presenter.CommandVmMaxSpeed;
             CommandVmWarmReset = presenter.CommandVmWarmReset;
             CommandTapePause = presenter.CommandTapePause;
             CommandQuickLoad = presenter.CommandQuickLoad;
@@ -312,6 +315,13 @@ namespace ZXMAK2.MVP.WinForms
             if (e.KeyCode == Keys.Pause)
             {
                 OnCommand(CommandVmPause);
+                e.Handled = true;
+                return;
+            }
+            // Max Speed
+            if (e.Alt && e.KeyCode == Keys.Scroll)
+            {
+                OnCommand(CommandVmMaxSpeed);
                 e.Handled = true;
                 return;
             }
