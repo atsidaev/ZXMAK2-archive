@@ -579,7 +579,6 @@
     <None Include="Icons\Rocket.png" />
     <None Include="Icons\Autoplay.png" />
     <EmbeddedResource Include="Icons\FddWr.png" />
-    <EmbeddedResource Include="Icons\pause_vm.png" />
     <EmbeddedResource Include="Icons\cassette.png" />
     <EmbeddedResource Include="Icons\hdd.png" />
     <None Include="Icons\Keyboard48k.png" />

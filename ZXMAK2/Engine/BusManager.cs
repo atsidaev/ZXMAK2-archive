@@ -36,7 +36,9 @@ namespace ZXMAK2.Engine
         private BusFrameEventHandler m_beginFrame;
         private BusFrameEventHandler m_endFrame;
         private IconDescriptor[] m_iconDescList = new IconDescriptor[0];
-        private IconDescriptor m_iconPause = new IconDescriptor("PAUSE", Utils.GetIconStream("pause_vm.png"));
+        private IconDescriptor m_iconPause = new IconDescriptor(
+            "PAUSE", 
+            global::ZXMAK2.Properties.Resources.EmuPause_32x32);
 
         public event BusFrameEventHandler FrameReady;
         public event EventHandler BusConnected;
