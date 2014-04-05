@@ -81,6 +81,7 @@
             this.tbrButtonColdReset = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbrButtonFullScreen = new System.Windows.Forms.ToolStripButton();
+            this.tbrButtonQuickLoad = new System.Windows.Forms.ToolStripButton();
             this.tbrButtonSettings = new System.Windows.Forms.ToolStripButton();
             this.sbrStrip = new System.Windows.Forms.StatusStrip();
             this.renderVideo = new ZXMAK2.MVP.WinForms.RenderVideo();
@@ -115,24 +116,24 @@
             // menuFileOpen
             // 
             this.menuFileOpen.Name = "menuFileOpen";
-            this.menuFileOpen.Size = new System.Drawing.Size(123, 22);
+            this.menuFileOpen.Size = new System.Drawing.Size(152, 22);
             this.menuFileOpen.Text = "Open...";
             // 
             // menuFileSaveAs
             // 
             this.menuFileSaveAs.Name = "menuFileSaveAs";
-            this.menuFileSaveAs.Size = new System.Drawing.Size(123, 22);
+            this.menuFileSaveAs.Size = new System.Drawing.Size(152, 22);
             this.menuFileSaveAs.Text = "Save As...";
             // 
             // menuFileSeparator
             // 
             this.menuFileSeparator.Name = "menuFileSeparator";
-            this.menuFileSeparator.Size = new System.Drawing.Size(120, 6);
+            this.menuFileSeparator.Size = new System.Drawing.Size(149, 6);
             // 
             // menuFileExit
             // 
             this.menuFileExit.Name = "menuFileExit";
-            this.menuFileExit.Size = new System.Drawing.Size(123, 22);
+            this.menuFileExit.Size = new System.Drawing.Size(152, 22);
             this.menuFileExit.Text = "Exit";
             // 
             // menuView
@@ -429,6 +430,7 @@
             this.tbrButtonColdReset,
             this.toolStripSeparator1,
             this.tbrButtonFullScreen,
+            this.tbrButtonQuickLoad,
             this.tbrButtonSettings});
             this.tbrStrip.Location = new System.Drawing.Point(0, 24);
             this.tbrStrip.Name = "tbrStrip";
@@ -491,7 +493,6 @@
             this.tbrButtonColdReset.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbrButtonColdReset.Name = "tbrButtonColdReset";
             this.tbrButtonColdReset.Size = new System.Drawing.Size(36, 36);
-            this.tbrButtonColdReset.Text = "toolStripButton1";
             // 
             // toolStripSeparator1
             // 
@@ -505,6 +506,15 @@
             this.tbrButtonFullScreen.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbrButtonFullScreen.Name = "tbrButtonFullScreen";
             this.tbrButtonFullScreen.Size = new System.Drawing.Size(36, 36);
+            // 
+            // tbrButtonQuickLoad
+            // 
+            this.tbrButtonQuickLoad.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbrButtonQuickLoad.Image = global::ZXMAK2.Properties.Resources.EmuQuickLoad_32x32;
+            this.tbrButtonQuickLoad.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbrButtonQuickLoad.Name = "tbrButtonQuickLoad";
+            this.tbrButtonQuickLoad.Size = new System.Drawing.Size(36, 36);
+            this.tbrButtonQuickLoad.Text = "Quick Boot";
             // 
             // tbrButtonSettings
             // 
@@ -622,5 +632,6 @@
         private System.Windows.Forms.ToolStripMenuItem menuVmColdReset;
         private Controls.MenuStripEx mnuStrip;
         private Controls.ToolStripEx tbrStrip;
+        private System.Windows.Forms.ToolStripButton tbrButtonQuickLoad;
     }
 }

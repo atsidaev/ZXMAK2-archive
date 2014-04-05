@@ -589,6 +589,7 @@
     <None Include="boot.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Icons\EmuQuickLoad_32x32.png" />
     <Content Include="Icons\WindowFullScreen_32x32.png" />
     <Content Include="Icons\WindowWindowed_32x32.png" />
     <Content Include="Icons\EmuPause_32x32.png" />
