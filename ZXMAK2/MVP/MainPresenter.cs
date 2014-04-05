@@ -55,7 +55,11 @@ namespace ZXMAK2.MVP
 
         public void Dispose()
         {
-            MainView_OnViewClosed(this, EventArgs.Empty);
+            if (m_vm != null)
+            {
+                m_vm.Dispose();
+                m_vm = null;
+            }
         }
 
         public void Run()
@@ -124,10 +128,8 @@ namespace ZXMAK2.MVP
             if (m_vm == null)
             {
                 LogAgent.Warn("IMainView.ViewClosed: object is not initialized!");
-                return;
             }
-            m_vm.Dispose();
-            m_vm = null;
+            Dispose();
         }
 
         private void MainView_OnViewInvalidate(object sender, EventArgs e)
