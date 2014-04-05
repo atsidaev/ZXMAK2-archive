@@ -65,8 +65,8 @@ namespace ZXMAK2.Engine
 
         public void Scan()
         {
-            if (m_keyboards.Length > 0 || 
-                m_hostJoystick.IsKeyboardStateRequired)
+            if (m_hostKeyboard != null &&
+                (m_keyboards.Length > 0 || m_hostJoystick.IsKeyboardStateRequired))
             {
                 m_hostKeyboard.Scan();
                 foreach (var kbd in m_keyboards)
@@ -75,7 +75,7 @@ namespace ZXMAK2.Engine
                 }
                 m_hostJoystick.KeyboardState = m_hostKeyboard.State;
             }
-            if (m_mouses.Length > 0)
+            if (m_hostMouse != null && m_mouses.Length > 0)
             {
                 m_hostMouse.Scan();
                 foreach (var mouse in m_mouses)
@@ -83,7 +83,7 @@ namespace ZXMAK2.Engine
                     mouse.MouseState = m_hostMouse.MouseState;
                 }
             }
-            if (m_joysticks.Length > 0)
+            if (m_hostJoystick != null && m_joysticks.Length > 0)
             {
                 m_hostJoystick.Scan();
                 foreach (var j in m_joysticks)
