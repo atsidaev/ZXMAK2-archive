@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Drawing;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
 namespace ZXMAK2.Hardware
 {
@@ -58,10 +59,7 @@ namespace ZXMAK2.Hardware
 
         #region IUlaRenderer
 
-        public Size VideoSize
-        {
-            get { return new Size(Params.c_ulaWidth, Params.c_ulaHeight); }
-        }
+        public IVideoData VideoData { get; private set; }
 
         public int FrameLength
         {
@@ -71,11 +69,6 @@ namespace ZXMAK2.Hardware
         public int IntLength
         {
             get { return Params.c_ulaIntLength; }
-        }
-
-        public float PixelHeightRatio
-        {
-            get { return 1F; }
         }
 
         public virtual void UpdateBorder(int value)
@@ -373,6 +366,7 @@ namespace ZXMAK2.Hardware
         protected virtual void OnParamsChanged()
         {
             // rebuild tables...
+            VideoData = new VideoData(Params.c_ulaWidth, Params.c_ulaHeight, 1F);
             m_ulaLineOffset = new int[Params.c_frameTactCount];
             m_ulaAddrBw = new int[Params.c_frameTactCount];
             m_ulaAddrAt = new int[Params.c_frameTactCount];

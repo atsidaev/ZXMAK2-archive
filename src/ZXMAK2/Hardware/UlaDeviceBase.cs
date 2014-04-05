@@ -18,7 +18,6 @@ namespace ZXMAK2.Hardware
 
         protected Z80CPU CPU;
         private IUlaRenderer m_renderer;
-        private readonly Dictionary<IUlaRenderer, IVideoData> m_videoDataCache = new Dictionary<IUlaRenderer, IVideoData>();
         private IMemoryDevice m_memory;
         private int m_lastFrameTact = 0;         // last processed tact
         private byte m_portFe = 0;
@@ -33,18 +32,7 @@ namespace ZXMAK2.Hardware
         protected IUlaRenderer Renderer 
         {
             get { return m_renderer; }
-            set
-            {
-                m_renderer = value;
-                if (m_videoDataCache.ContainsKey(value))
-                {
-                    VideoData = m_videoDataCache[value];
-                    return;
-                }
-                var videoData = new VideoData(value.VideoSize, value.PixelHeightRatio);
-                VideoData = videoData;
-                m_videoDataCache[value] = videoData;
-            }
+            set { m_renderer = value; }
         }
 
         #endregion Fields
@@ -190,7 +178,7 @@ namespace ZXMAK2.Hardware
             get { return Renderer.FrameLength; }
         }
 
-        public IVideoData VideoData { get; private set; }
+        public IVideoData VideoData { get { return m_renderer.VideoData; } }
 
         public void LoadScreenData(Stream stream)
         {

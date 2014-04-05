@@ -6,10 +6,9 @@ namespace ZXMAK2.Interfaces
 {
     public interface IUlaRenderer
     {
-        Size VideoSize { get; }
         int FrameLength { get; }
         int IntLength { get; }
-        float PixelHeightRatio { get; }
+        IVideoData VideoData { get; }
 
         void UpdateBorder(int value);
 
