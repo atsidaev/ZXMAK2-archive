@@ -26,9 +26,7 @@ namespace ZXMAK2.Engine
             get
             {
                 var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
-                if (ula != null)
-                    return ula.VideoSize;
-                return new Size(320, 240);
+                return ula != null ? ula.VideoSize : new Size(320, 240);
             }
         }
 
@@ -37,9 +35,7 @@ namespace ZXMAK2.Engine
             get
             {
                 var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
-                if (ula != null)
-                    return ula.VideoHeightScale;
-                return 1F;
+                return ula != null ? ula.VideoHeightScale : 1F;
             }
         }
 
@@ -48,25 +44,19 @@ namespace ZXMAK2.Engine
             get
             {
                 var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
-                if (ula != null)
-                    return ula.VideoBuffer;
-                return m_blankScreen;
+                return ula != null ? ula.VideoBuffer : m_blankScreen;
             }
         }
 
-        public unsafe VirtualMachine(IHost host, GuiData uiService)
+        public unsafe VirtualMachine(IHost host)
         {
             m_host = host;
             m_spectrum = new SpectrumConcrete();
             m_spectrum.UpdateState += OnUpdateState;
             m_spectrum.Breakpoint += OnBreakpoint;
             m_spectrum.UpdateFrame += OnUpdateFrame;
+            m_spectrum.BusManager.HostUi = host.HostUi;
             m_spectrum.BusManager.ConfigChanged += BusManager_OnConfigChanged;
-            if (uiService != null)
-            {
-                m_spectrum.BusManager.BusConnected += (s,e) => BusManager_OnConnected(uiService);
-                m_spectrum.BusManager.BusDisconnect += (s,e) => BusManager_OnDisconnect(uiService);
-            }
         }
 
         public void Init()
@@ -88,8 +78,8 @@ namespace ZXMAK2.Engine
 
         public void LoadConfigXml(XmlNode parent)
         {
-            XmlNode infoNode = parent.SelectSingleNode("Info");
-            XmlNode busNode = parent.SelectSingleNode("Bus");
+            var infoNode = parent.SelectSingleNode("Info");
+            var busNode = parent.SelectSingleNode("Bus");
             if (busNode == null)
             {
                 LogAgent.Error("Machine bus configuration not found!");
@@ -101,9 +91,13 @@ namespace ZXMAK2.Engine
             if (infoNode != null)
             {
                 if (infoNode.Attributes["name"] != null)
+                {
                     m_name = infoNode.Attributes["name"].InnerText;
+                }
                 if (infoNode.Attributes["description"] != null)
+                {
                     m_description = infoNode.Attributes["description"].InnerText;
+                }
             }
             m_isConfigUpdate = true;
             try
@@ -119,14 +113,18 @@ namespace ZXMAK2.Engine
 
         public void SaveConfigXml(XmlNode parent)
         {
-            XmlElement xeInfo = parent.OwnerDocument.CreateElement("Info");
+            var xeInfo = (XmlElement)parent.OwnerDocument.CreateElement("Info");
             if (m_name != "ZX Spectrum Clone")
+            {
                 xeInfo.SetAttribute("name", m_name);
+            }
             if (m_description != "N/A")
+            {
                 xeInfo.SetAttribute("description", m_description);
+            }
             parent.AppendChild(xeInfo);
-            XmlElement xeBus = parent.OwnerDocument.CreateElement("Bus");
-            XmlNode busNode = parent.AppendChild(xeBus);
+            var xeBus = parent.OwnerDocument.CreateElement("Bus");
+            var busNode = parent.AppendChild(xeBus);
             m_isConfigUpdate = true;
             try
             {
@@ -147,57 +145,6 @@ namespace ZXMAK2.Engine
         }
 
         
-        #region UI Extension
-
-        protected virtual void BusManager_OnConnected(GuiData uiService)
-        {
-            var list = m_spectrum.BusManager.FindDevices<IGuiExtension>();
-            list.Sort(GuiExtensionNameComparison);
-            foreach (var wfe in list)
-            {
-                try
-                {
-                    wfe.AttachGui(uiService);
-                }
-                catch (Exception ex)
-                {
-                    LogAgent.Error(ex);
-                }
-            }
-        }
-
-        protected virtual void BusManager_OnDisconnect(GuiData uiService)
-        {
-            var list = m_spectrum.BusManager.FindDevices<IGuiExtension>();
-            list.Sort(GuiExtensionNameComparison);
-            foreach (var wfe in list)
-            {
-                try
-                {
-                    wfe.DetachGui();
-                }
-                catch (Exception ex)
-                {
-                    LogAgent.Error(ex);
-                }
-            }
-        }
-
-        private static int GuiExtensionNameComparison(
-            IGuiExtension x1,
-            IGuiExtension x2)
-        {
-            if (x1 == x2) return 0;
-            if (x1 is IJtagDevice) return -1;
-            if (x2 is IJtagDevice) return 1;
-            var dev1 = (BusDeviceBase)x1;
-            var dev2 = (BusDeviceBase)x2;
-            return dev2.Name.CompareTo(dev1.Name);
-        }
-
-        #endregion
-
-
         #region Open/Save Config
 
         private string m_configFileName = string.Empty;
@@ -205,7 +152,7 @@ namespace ZXMAK2.Engine
         public void OpenConfig(string fileName)
         {
             fileName = Path.GetFullPath(fileName);
-            using (Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 m_configFileName = fileName;
                 m_spectrum.BusManager.MachineFile = m_configFileName;
@@ -217,7 +164,7 @@ namespace ZXMAK2.Engine
         {
             if (!string.IsNullOrEmpty(m_configFileName))
             {
-                using (Stream stream = new FileStream(m_configFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                using (var stream = new FileStream(m_configFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
                 {
                     SaveConfig(stream);
                 }
@@ -227,7 +174,7 @@ namespace ZXMAK2.Engine
         public void SaveConfigAs(string fileName)
         {
             fileName = Path.GetFullPath(fileName);
-            using (Stream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+            using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
             {
                 m_configFileName = fileName;
                 m_spectrum.BusManager.MachineFile = m_configFileName;
@@ -260,17 +207,22 @@ namespace ZXMAK2.Engine
 
         private void OnUpdateVideo()
         {
-            if (m_host.Video != null)
+            if (m_host == null || m_host.Video == null)
             {
-                m_host.Video.UpdateVideo(this);
+                return;
             }
+            m_host.Video.UpdateVideo(this);
         }
 
         private void OnUpdateFrame(object sender, EventArgs e)
         {
+            if (m_host == null || m_host.Sound == null)
+            {
+                return;
+            }
             if (!MaxSpeed)
             {
-                byte[] sndbuf = m_host.Sound.LockBuffer();
+                var sndbuf = m_host.Sound.LockBuffer();
                 while (m_spectrum.IsRunning && sndbuf == null)
                 {
                     Thread.Sleep(1);
@@ -301,19 +253,27 @@ namespace ZXMAK2.Engine
         private void OnUpdateState(object sender, EventArgs e)
         {
             m_spectrum.BusManager.IconPause.Visible = !m_spectrum.IsRunning;
-            if (UpdateState != null)
-                UpdateState(this, EventArgs.Empty);
+            var handler = UpdateState;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
             var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
             if (ula != null)
+            {
                 ula.Flush();
+            }
             OnUpdateVideo();
         }
 
         private void OnBreakpoint(object sender, EventArgs e)
         {
             m_bpTriggered = true;
-            if (Breakpoint != null)
-                Breakpoint(this, EventArgs.Empty);
+            var handler = Breakpoint;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
 
 
@@ -422,12 +382,14 @@ namespace ZXMAK2.Engine
         {
             lock (m_sync)
             {
-                bool run = IsRunning;
+                var run = IsRunning;
                 DoStop();
                 m_bpTriggered = false;
                 Spectrum.DoReset();
                 if (run && !m_bpTriggered)
+                {
                     DoRun();
+                }
             }
             OnUpdateVideo();
         }
@@ -436,12 +398,14 @@ namespace ZXMAK2.Engine
         {
             lock (m_sync)
             {
-                bool run = IsRunning;
+                var run = IsRunning;
                 DoStop();
                 m_bpTriggered = false;
                 Spectrum.DoNmi();
                 if (run && !m_bpTriggered)
+                {
                     DoRun();
+                }
             }
             OnUpdateVideo();
         }
@@ -449,14 +413,18 @@ namespace ZXMAK2.Engine
         public void DoStepInto()
         {
             lock (m_sync)
+            {
                 Spectrum.DoStepInto();
+            }
             OnUpdateVideo();
         }
 
         public void DoStepOver()
         {
             lock (m_sync)
+            {
                 Spectrum.DoStepOver();
+            }
             OnUpdateVideo();
         }
 
@@ -465,14 +433,18 @@ namespace ZXMAK2.Engine
             lock (m_sync)
             {
                 if (IsRunning)
+                {
                     return;
+                }
                 m_thread = null;
                 m_thread = new Thread(new ThreadStart(runThreadProc));
                 m_thread.Name = "VirtualMachine.runThreadProc";
                 m_thread.Priority = ThreadPriority.AboveNormal;
                 m_thread.Start();
                 while (!IsRunning)
+                {
                     Thread.Sleep(1);
+                }
             }
             OnUpdateVideo();
         }
@@ -482,10 +454,10 @@ namespace ZXMAK2.Engine
             Thread thread = null;
             lock (m_sync)
             {
-                if (!IsRunning)
+                if (!IsRunning || m_thread == null)
+                {
                     return;
-                if (m_thread == null)
-                    return;
+                }
                 Spectrum.IsRunning = false;
                 thread = m_thread;
                 m_thread = null;
@@ -497,14 +469,14 @@ namespace ZXMAK2.Engine
 
         public byte ReadMemory(ushort addr)
         {
-            byte[] data = new byte[1];
+            var data = new byte[1];
             ReadMemory(addr, data, 0, 1);
             return data[0];
         }
 
         public void WriteMemory(ushort addr, byte value)
         {
-            byte[] data = new byte[1];
+            var data = new byte[1];
             data[0] = value;
             WriteMemory(addr, data, 0, 1);
         }
@@ -516,7 +488,9 @@ namespace ZXMAK2.Engine
                 var memory = Spectrum.BusManager.FindDevice<IMemoryDevice>();
                 ushort ptr = addr;
                 for (int i = 0; i < length; i++, ptr++)
+                {
                     data[offset + i] = memory.RDMEM_DBG(ptr);
+                }
             }
         }
 
@@ -527,7 +501,9 @@ namespace ZXMAK2.Engine
                 var memory = Spectrum.BusManager.FindDevice<IMemoryDevice>();
                 ushort ptr = addr;
                 for (int i = 0; i < length; i++, ptr++)
+                {
                     memory.WRMEM_DBG(ptr, data[offset + i]);
+                }
             }
             OnUpdateVideo();
         }
@@ -535,25 +511,33 @@ namespace ZXMAK2.Engine
         public void AddBreakpoint(Breakpoint bp)
         {
             lock (m_sync)
+            {
                 Spectrum.AddBreakpoint(bp);
+            }
         }
 
         public void RemoveBreakpoint(Breakpoint bp)
         {
             lock (m_sync)
+            {
                 Spectrum.RemoveBreakpoint(bp);
+            }
         }
 
         public Breakpoint[] GetBreakpointList()
         {
             lock (m_sync)
+            {
                 return Spectrum.GetBreakpointList();
+            }
         }
 
         public void ClearBreakpoints()
         {
             lock (m_sync)
+            {
                 Spectrum.ClearBreakpoints();
+            }
         }
 
         public event EventHandler UpdateState;
@@ -564,7 +548,9 @@ namespace ZXMAK2.Engine
             get
             {
                 lock (m_sync)
+                {
                     return Spectrum.IsRunning;
+                }
             }
         }
 
@@ -573,14 +559,18 @@ namespace ZXMAK2.Engine
             get
             {
                 lock (m_sync)
+                {
                     return Spectrum.CPU;
+                }
             }
         }
 
         public int GetFrameTact()
         {
             lock (m_sync)
+            {
                 return Spectrum.BusManager.GetFrameTact();
+            }
         }
 
         public int FrameTactCount
@@ -588,7 +578,9 @@ namespace ZXMAK2.Engine
             get
             {
                 lock (m_sync)
+                {
                     return Spectrum.BusManager.FrameTactCount;
+                }
             }
         }
 
@@ -597,7 +589,9 @@ namespace ZXMAK2.Engine
             get
             {
                 lock (m_sync)
+                {
                     return Spectrum.BusManager.RzxHandler;
+                }
             }
         }
 

@@ -16,6 +16,7 @@ namespace ZXMAK2.MDX
 
         public MdxHost(Form form, IHostVideo hostVideo)
         {
+            HostUi = form as IHostUi;
             Video = hostVideo;
             m_sound = new DirectSound(form, -1, 44100, 16, 2, 882 * 2 * 2, 4);
             m_keyboard = new DirectKeyboard(form);
@@ -39,6 +40,7 @@ namespace ZXMAK2.MDX
             m_joystick = null;
         }
 
+        public IHostUi HostUi { get; private set; }
         public IHostVideo Video { get; private set; }
         public IHostSound Sound { get { return m_sound; } }
         public IHostKeyboard Keyboard { get { return m_keyboard; } }

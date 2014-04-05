@@ -3,21 +3,35 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using UI = ZXMAK2.Controls.Debugger;
 using ZXMAK2.Entities;
+using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.MVP.WinForms;
+using ZXMAK2.Hardware.General.UI;
 
 namespace ZXMAK2.Hardware.General
 {
-    public class Debugger : BusDeviceBase, IJtagDevice, IGuiExtension
+    public class Debugger : BusDeviceBase, IJtagDevice
     {
-        private IDebuggable m_target;
-
         #region BusDeviceBase
 
         public override string Name { get { return "DEBUGGER"; } }
         public override string Description { get { return "Default Debugger"; } }
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Debugger; } }
 
+        private IViewHolder m_viewHolder;
+
+
+        public Debugger()
+        {
+            CreateViewHolder();
+        }
+
+
         public override void BusInit(IBusManager bmgr)
         {
+            if (m_viewHolder != null)
+            {
+                bmgr.AddCommandUi(m_viewHolder.CommandOpen);
+            }
         }
 
         public override void BusConnect()
@@ -26,6 +40,10 @@ namespace ZXMAK2.Hardware.General
 
         public override void BusDisconnect()
         {
+            if (m_viewHolder != null)
+            {
+                m_viewHolder.Close();
+            }
         }
 
         #endregion
@@ -34,93 +52,38 @@ namespace ZXMAK2.Hardware.General
 
         public void Attach(IDebuggable dbg)
         {
-            m_target = dbg;
-            m_target.Breakpoint += new EventHandler(OnBreakpoint);
+            if (m_viewHolder != null && dbg != null)
+            {
+                m_viewHolder.Arguments = new object[] { dbg };
+            }
         }
 
         public void Detach()
         {
-            m_target.Breakpoint -= new EventHandler(OnBreakpoint);
-        }
-
-        #endregion
-
-        #region IGuiExtension Members
-
-        private GuiData m_guiData;
-        private System.Windows.Forms.MenuItem m_subMenuItem;
-        private UI.FormCpu m_form;
-
-        public void AttachGui(GuiData guiData)
-        {
-            m_guiData = guiData;
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
+            if (m_viewHolder != null)
             {
-                System.Windows.Forms.MenuItem menuItem = guiData.MenuItem as System.Windows.Forms.MenuItem;
-                if (menuItem != null)
-                {
-                    m_subMenuItem = new System.Windows.Forms.MenuItem("Debugger", menu_Click);
-                    menuItem.MenuItems.Add(m_subMenuItem);
-                }
-            }
-        }
-
-        public void DetachGui()
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                if (m_subMenuItem != null)
-                {
-                    m_subMenuItem.Parent.MenuItems.Remove(m_subMenuItem);
-                    m_subMenuItem.Dispose();
-                    m_subMenuItem = null;
-                }
-                if (m_form != null)
-                {
-                    m_form.AllowClose = true;
-                    m_form.Close();
-                    m_form = null;
-                }
-            }
-            m_guiData = null;
-        }
-
-        private void menu_Click(object sender, EventArgs e)
-        {
-            if (m_guiData.MainWindow is System.Windows.Forms.Form)
-            {
-                if (m_form == null)
-                {
-                    m_form = new UI.FormCpu();
-                    m_form.Init(m_target);
-                    m_form.FormClosed += delegate(object obj, System.Windows.Forms.FormClosedEventArgs arg)
-                    {
-                        m_form = null;
-                    };
-                    m_form.Show((System.Windows.Forms.Form)m_guiData.MainWindow);
-                }
-                else
-                {
-                    m_form.Show();
-                    m_form.Activate();
-                }
-            }
-        }
-
-        protected virtual void OnBreakpoint(object sender, EventArgs e)
-        {
-            System.Windows.Forms.Form mainForm = m_guiData.MainWindow as System.Windows.Forms.Form;
-            if (mainForm != null)
-            {
-                if (mainForm.InvokeRequired)
-                {
-                    mainForm.BeginInvoke(new EventHandler(OnBreakpoint), sender, e);
-                    return;
-                }
-                menu_Click(this, EventArgs.Empty);
+                m_viewHolder.Close();
+                m_viewHolder.Arguments = null;
             }
         }
 
         #endregion
+
+        
+        #region IGuiExtension
+
+        private void CreateViewHolder()
+        {
+            try
+            {
+                m_viewHolder = new ViewHolder<FormCpu>("Debugger");
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+        }
+
+        #endregion IGuiExtension
     }
 }

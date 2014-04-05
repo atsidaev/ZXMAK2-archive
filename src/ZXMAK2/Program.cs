@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using ZXMAK2.Controls;
+using ZXMAK2.MVP;
+using ZXMAK2.MVP.WinForms;
 
 
 namespace ZXMAK2
@@ -18,9 +19,9 @@ namespace ZXMAK2
 			LogAgent.Start();
             try
             {
-                using (var form = new FormMain(args))
+                using (var presenter = new MainPresenter(new MainView(), args))
                 {
-                    Application.Run(form);
+                    presenter.Run();
                 }
             }
             catch (System.IO.FileNotFoundException ex)

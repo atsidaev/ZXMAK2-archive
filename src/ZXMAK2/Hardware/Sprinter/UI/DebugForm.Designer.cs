@@ -441,7 +441,6 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             this.Name = "DebugForm";
             this.ShowInTaskbar = false;
             this.Text = "Z80 CPU";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormCPU_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormCPU_FormClosed);
             this.Load += new System.EventHandler(this.FormCPU_Load);
             this.Shown += new System.EventHandler(this.FormCPU_Shown);

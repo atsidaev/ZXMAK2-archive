@@ -139,8 +139,38 @@
   <data name="RewindIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\RewindIcon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Keyboard48k" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Keyboard48k.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="WindowFullScreen_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\windowfullscreen_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="WindowWindowed_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\windowwindowed_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EmuPause_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\emupause_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EmuResume_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\emuresume_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EmuColdReset_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\emucoldreset_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EmuWarmReset_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\emuwarmreset_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EmuFileOpen_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\emufileopen_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EmuFileSave_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\emufilesave_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="EmuMaxSpeed_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\emumaxspeed_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EmuSettings_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\emusettings_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
