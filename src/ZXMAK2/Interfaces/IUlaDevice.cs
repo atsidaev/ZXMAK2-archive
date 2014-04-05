@@ -4,11 +4,9 @@ using System.Drawing;
 
 namespace ZXMAK2.Interfaces
 {
-	public interface IUlaDevice //: BusDeviceBase
+	public interface IUlaDevice
 	{
-		int[] VideoBuffer { get; set; }
-		float VideoHeightScale { get; }
-		Size VideoSize { get; }
+        IVideoData VideoData { get; }
 
 		void LoadScreenData(Stream stream);
 		void SaveScreenData(Stream stream);

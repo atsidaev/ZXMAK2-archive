@@ -19,32 +19,14 @@ namespace ZXMAK2.Engine
     {
         private readonly object m_sync = new object();
         private Thread m_thread = null;
+        private IVideoData m_blankData = new VideoData(320, 240, 1F);
 
-        private int[] m_blankScreen = new int[320 * 240];
-        public Size ScreenSize
+        public IVideoData VideoData
         {
             get
             {
                 var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
-                return ula != null ? ula.VideoSize : new Size(320, 240);
-            }
-        }
-
-        public float ScreenHeightScale
-        {
-            get
-            {
-                var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
-                return ula != null ? ula.VideoHeightScale : 1F;
-            }
-        }
-
-        public int[] Screen
-        {
-            get
-            {
-                var ula = m_spectrum.BusManager.FindDevice<IUlaDevice>();
-                return ula != null ? ula.VideoBuffer : m_blankScreen;
+                return ula != null && ula.VideoData != null ? ula.VideoData : m_blankData;
             }
         }
 

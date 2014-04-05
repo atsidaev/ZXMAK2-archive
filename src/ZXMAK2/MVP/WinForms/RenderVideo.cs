@@ -70,7 +70,7 @@ namespace ZXMAK2.MVP.WinForms
         {
             UpdateIcons(vm.Spectrum.BusManager.IconDescriptorArray);
             m_debugFrameStart = vm.DebugFrameStartTact;
-            UpdateSurface(vm.Screen, vm.ScreenSize, vm.ScreenHeightScale);
+            UpdateSurface(vm.VideoData);
         }
 
         #endregion IHostVideo
@@ -115,7 +115,7 @@ namespace ZXMAK2.MVP.WinForms
             base.OnDestroyDevice();
         }
 
-        private unsafe void UpdateSurface(int[] surfaceBuffer, Size surfaceSize, float surfaceHeightScale)
+        private unsafe void UpdateSurface(IVideoData videoData)
         {
             lock (SyncRoot)
             {
@@ -125,15 +125,15 @@ namespace ZXMAK2.MVP.WinForms
                 }
                 try
                 {
-                    m_surfaceHeightScale = surfaceHeightScale;
-                    if (m_surfaceSize != surfaceSize)
+                    m_surfaceHeightScale = videoData.Ratio;
+                    if (m_surfaceSize != videoData.Size)
                     {
-                        initTextures(surfaceSize);
+                        initTextures(videoData.Size);
                     }
                     if (m_texture != null)
                     {
                         using (GraphicsStream gs = m_texture.LockRectangle(0, LockFlags.None))
-                            fixed (int* srcPtr = surfaceBuffer)
+                            fixed (int* srcPtr = videoData.Buffer)
                                 m_drawFilter((int*)gs.InternalData, srcPtr);
                         m_texture.UnlockRectangle(0);
                     }

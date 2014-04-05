@@ -80,8 +80,7 @@ namespace ZXMAK2.MVP.WinForms
             get { return m_host; }
         }
 
-        public Func<Size> GetVideoSize { get; set; }
-        public Func<float> GetVideoRatio { get; set; }
+        public Func<IVideoData> GetVideoData { get; set; }
 
         public event EventHandler ViewOpened;
         public event EventHandler ViewClosed;
@@ -693,9 +692,10 @@ namespace ZXMAK2.MVP.WinForms
         {
             menuViewFullScreen.Checked = m_fullScreen;
 
-            var videoSize = GetVideoSize();
-            var ratio = GetVideoRatio();
-            videoSize = new System.Drawing.Size(videoSize.Width, (int)((float)videoSize.Height * ratio));
+            var videoData = GetVideoData();
+            var videoSize = new Size(
+                videoData.Size.Width, 
+                (int)((float)videoData.Size.Height * videoData.Ratio));
             menuViewSizeX1.Enabled = m_fullScreen || renderVideo.Size != videoSize;
             menuViewSizeX1.Checked = !m_fullScreen && renderVideo.Size == videoSize;
             menuViewSizeX2.Enabled = m_fullScreen || renderVideo.Size != new Size(videoSize.Width * 2, videoSize.Height * 2);
@@ -740,11 +740,10 @@ namespace ZXMAK2.MVP.WinForms
                 mult = 3;
             if (sender == menuViewSizeX4)
                 mult = 4;
-            var size = GetVideoSize();
-            var ratio = GetVideoRatio();
-            size = new System.Drawing.Size(
-                size.Width * mult,
-                (int)((float)size.Height * ratio) * mult);
+            var videoData = GetVideoData();
+            var size = new Size(
+                videoData.Size.Width * mult,
+                (int)((float)videoData.Size.Height * videoData.Ratio) * mult);
             SetRenderSize(size);
         }
 
