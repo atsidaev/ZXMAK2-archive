@@ -433,7 +433,7 @@ namespace ZXMAK2.MVP
                 var uri = (Uri)objUri;
                 return uri != null && 
                     (!uri.IsLoopback ||
-                    m_vm.Spectrum.Loader.CheckCanOpenFileName(uri.ToString()));
+                    m_vm.Spectrum.Loader.CheckCanOpenFileName(uri.LocalPath));
             }
             catch (Exception ex)
             {
