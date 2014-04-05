@@ -99,8 +99,8 @@ namespace ZXMAK2.MVP.WinForms
 
         public void Bind(MainPresenter presenter)
         {
-            BindMenuCommand(menuFileOpen, presenter.CommandFileOpen);
-            BindMenuCommand(menuFileSaveAs, presenter.CommandFileSave);
+            BindMenuCommand(menuFileOpen, presenter.CommandFileOpen, this);
+            BindMenuCommand(menuFileSaveAs, presenter.CommandFileSave, this);
             BindMenuCommand(menuFileExit, presenter.CommandFileExit);
             BindMenuCommand(menuViewFullScreen, presenter.CommandViewFullScreen);
             BindMenuCommand(menuVmPause, presenter.CommandVmPause);
@@ -108,19 +108,19 @@ namespace ZXMAK2.MVP.WinForms
             BindMenuCommand(menuVmWarmReset, presenter.CommandVmWarmReset);
             BindMenuCommand(menuVmColdReset, presenter.CommandVmColdReset);
             BindMenuCommand(menuVmNmi, presenter.CommandVmNmi);
-            BindMenuCommand(menuVmSettings, presenter.CommandVmSettings);
-            BindMenuCommand(menuHelpViewHelp, presenter.CommandHelpViewHelp);
-            BindMenuCommand(menuHelpKeyboardHelp, presenter.CommandHelpKeyboardHelp);
-            BindMenuCommand(menuHelpAbout, presenter.CommandHelpAbout);
+            BindMenuCommand(menuVmSettings, presenter.CommandVmSettings, this);
+            BindMenuCommand(menuHelpViewHelp, presenter.CommandHelpViewHelp, this);
+            BindMenuCommand(menuHelpKeyboardHelp, presenter.CommandHelpKeyboardHelp, this);
+            BindMenuCommand(menuHelpAbout, presenter.CommandHelpAbout, this);
 
-            BindToolBarCommand(tbrButtonOpen, presenter.CommandFileOpen);
-            BindToolBarCommand(tbrButtonSave, presenter.CommandFileSave);
+            BindToolBarCommand(tbrButtonOpen, presenter.CommandFileOpen, this);
+            BindToolBarCommand(tbrButtonSave, presenter.CommandFileSave, this);
             BindToolBarCommand(tbrButtonPause, presenter.CommandVmPause);
             BindToolBarCommand(tbrButtonMaxSpeed, presenter.CommandVmMaxSpeed);
             BindToolBarCommand(tbrButtonWarmReset, presenter.CommandVmWarmReset);
             BindToolBarCommand(tbrButtonColdReset, presenter.CommandVmColdReset);
             BindToolBarCommand(tbrButtonFullScreen, presenter.CommandViewFullScreen);
-            BindToolBarCommand(tbrButtonSettings, presenter.CommandVmSettings);
+            BindToolBarCommand(tbrButtonSettings, presenter.CommandVmSettings, this);
 
             BindProperty<string>(
                 presenter.CommandVmPause,

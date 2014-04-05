@@ -64,7 +64,7 @@ namespace ZXMAK2.MVP.WinForms
             }
             else
             {
-                m_form = default(T);
+                m_form = Activator.CreateInstance<T>();
             }
             m_form.FormClosed += (s,e) => 
             {
