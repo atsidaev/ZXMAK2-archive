@@ -4,17 +4,20 @@ using System.Text;
 using System.Drawing;
 using System.IO;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
 
 namespace ZXMAK2.Hardware.Sprinter
 {
     public class SprinterRenderer : IUlaRenderer
     {
-        public Size VideoSize
+        public SprinterRenderer()
         {
-            get { return new Size(640, 256); }
+            VideoData = new VideoData(640, 256, 2F);
         }
-
+        
+        public IVideoData VideoData { get; private set; }
+        
         public int FrameLength
         {
             get { return 0x11800 * 6; } //6 - 21MHz
@@ -23,11 +26,6 @@ namespace ZXMAK2.Hardware.Sprinter
         public int IntLength
         {
             get { return 0x20; }
-        }
-
-        public float PixelHeightRatio
-        {
-            get { return 2F; }
         }
 
         public void UpdateBorder(int value)

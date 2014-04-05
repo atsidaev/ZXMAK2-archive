@@ -4,6 +4,7 @@ using System.Text;
 using System.Drawing;
 using System.IO;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Engine;
 
 namespace ZXMAK2.Hardware.Atm
 {
@@ -51,10 +52,7 @@ namespace ZXMAK2.Hardware.Atm
 
         #region IUlaRenderer
 
-        public Size VideoSize
-        {
-            get { return new System.Drawing.Size(Params.c_ulaWidth, Params.c_ulaHeight); }
-        }
+        public IVideoData VideoData { get; private set; }
 
         public virtual int FrameLength
         {
@@ -64,11 +62,6 @@ namespace ZXMAK2.Hardware.Atm
         public virtual int IntLength
         {
             get { return Params.c_ulaIntLength; }
-        }
-
-        public virtual float PixelHeightRatio
-        {
-            get { return 2F; }
         }
 
         public virtual void UpdateBorder(int value)
@@ -241,6 +234,7 @@ namespace ZXMAK2.Hardware.Atm
 
         protected virtual void OnParamsChanged()
         {
+            VideoData = new VideoData(Params.c_ulaWidth, Params.c_ulaHeight, 2F);
             m_ulaAction = new UlaAction[Params.c_frameTactCount];
             m_videoOffset = new int[Params.c_frameTactCount];
             m_memoryMask = new int[Params.c_frameTactCount];
