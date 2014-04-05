@@ -7,6 +7,7 @@ using ZXMAK2.Serializers.ScreenshotSerializers;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
+using System.Collections.Generic;
 
 
 namespace ZXMAK2.Hardware
@@ -16,7 +17,8 @@ namespace ZXMAK2.Hardware
         #region Fields
 
         protected Z80CPU CPU;
-        private int[] m_bitmapBuffer = new int[1024 * 768];
+        private IUlaRenderer m_renderer;
+        private readonly Dictionary<IUlaRenderer, IVideoData> m_videoDataCache = new Dictionary<IUlaRenderer, IVideoData>();
         private IMemoryDevice m_memory;
         private int m_lastFrameTact = 0;         // last processed tact
         private byte m_portFe = 0;
@@ -27,7 +29,23 @@ namespace ZXMAK2.Hardware
         protected int m_page8000 = 2;
         protected int m_pageC000 = 0;
         protected SpectrumRenderer SpectrumRenderer = new SpectrumRenderer();
-        protected IUlaRenderer Renderer { get; set; }
+        
+        protected IUlaRenderer Renderer 
+        {
+            get { return m_renderer; }
+            set
+            {
+                m_renderer = value;
+                if (m_videoDataCache.ContainsKey(value))
+                {
+                    VideoData = m_videoDataCache[value];
+                    return;
+                }
+                var videoData = new VideoData(value.VideoSize, value.PixelHeightRatio);
+                VideoData = videoData;
+                m_videoDataCache[value] = videoData;
+            }
+        }
 
         #endregion Fields
 
@@ -172,21 +190,7 @@ namespace ZXMAK2.Hardware
             get { return Renderer.FrameLength; }
         }
 
-        public int[] VideoBuffer
-        {
-            get { return m_bitmapBuffer; }
-            set { m_bitmapBuffer = value; }
-        }
-
-        public float VideoHeightScale
-        {
-            get { return Renderer.PixelHeightRatio; }
-        }
-
-        public Size VideoSize
-        {
-            get { return Renderer.VideoSize; }
-        }
+        public IVideoData VideoData { get; private set; }
 
         public void LoadScreenData(Stream stream)
         {
@@ -208,7 +212,7 @@ namespace ZXMAK2.Hardware
         {
             if (frameTact < m_lastFrameTact)
                 frameTact = FrameTactCount;
-            fixed (int* ptr = m_bitmapBuffer)
+            fixed (int* ptr = VideoData.Buffer)
             {
                 Renderer.Render(
                     (uint*)ptr,
@@ -245,7 +249,7 @@ namespace ZXMAK2.Hardware
         public unsafe void ForceRedrawFrame()
         {
             //TODO: what about _ulaFetch??
-            fixed (int* ptr = m_bitmapBuffer)
+            fixed (int* ptr = VideoData.Buffer)
             {
                 Renderer.Render(
                     (uint*)ptr,

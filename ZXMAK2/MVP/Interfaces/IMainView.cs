@@ -10,8 +10,7 @@ namespace ZXMAK2.MVP.Interfaces
         string Title { get; set; }
         bool IsFullScreen { get; set; }
         IHost Host { get; }
-        Func<Size> GetVideoSize { get; set; }
-        Func<float> GetVideoRatio { get; set; }
+        Func<IVideoData> GetVideoData { get; set; }
 
         event EventHandler ViewOpened;
         event EventHandler ViewClosed;

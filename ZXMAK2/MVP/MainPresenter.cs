@@ -31,8 +31,7 @@ namespace ZXMAK2.MVP
             {
                 m_startupImage = Path.GetFullPath(args[0]);
             }
-            m_view.GetVideoSize = () => m_vm.ScreenSize;
-            m_view.GetVideoRatio = () => m_vm.ScreenHeightScale;
+            m_view.GetVideoData = () => m_vm.VideoData;
             m_view.ViewOpened += MainView_OnViewOpened;
             m_view.ViewClosed += MainView_OnViewClosed;
             m_view.ViewInvalidate += MainView_OnViewInvalidate;

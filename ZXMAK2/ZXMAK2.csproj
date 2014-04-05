@@ -92,8 +92,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\VideoData.cs" />
     <Compile Include="Func.cs" />
     <Compile Include="DialogService.cs" />
+    <Compile Include="Interfaces\IVideoData.cs" />
     <Compile Include="LogAgent.cs" />
     <Compile Include="HelpService.cs" />
     <Compile Include="Program.cs" />

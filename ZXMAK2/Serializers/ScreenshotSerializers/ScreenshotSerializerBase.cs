@@ -27,28 +27,31 @@ namespace ZXMAK2.Serializers.ScreenshotSerializers
 
         public unsafe override void Serialize(Stream stream)
         {
-            Size size = m_ulaDevice.VideoSize;
-            using (Bitmap bmp = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb))
+            var videoData = m_ulaDevice.VideoData;
+            using (var bmp = new Bitmap(videoData.Size.Width, videoData.Size.Height, PixelFormat.Format32bppArgb))
             {
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, size.Width, size.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+                var size = videoData.Size;
+                var bmpData = bmp.LockBits(new Rectangle(0, 0, size.Width, size.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
                 try
                 {
-                    Marshal.Copy(m_ulaDevice.VideoBuffer, 0, bmpData.Scan0, size.Width * size.Height);
+                    Marshal.Copy(videoData.Buffer, 0, bmpData.Scan0, size.Width * size.Height);
                 }
                 finally
                 {
                     bmp.UnlockBits(bmpData);
                 }
 
-                Size sizeScale = new Size(size.Width, (int)((float)size.Height * m_ulaDevice.VideoHeightScale));
-                using (Bitmap bmpScale = new Bitmap(sizeScale.Width, sizeScale.Height, bmp.PixelFormat))
+                var sizeScale = new Size(
+                    size.Width, 
+                    (int)((float)size.Height * videoData.Ratio));
+                using (var bmpScale = new Bitmap(sizeScale.Width, sizeScale.Height, bmp.PixelFormat))
                 {
-                    using (Graphics g = Graphics.FromImage(bmpScale))
+                    using (var g = Graphics.FromImage(bmpScale))
                     {
                         g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                         // -0.5 pixel shift to avoid shift after scale (looks like bug in Graphics)
-                        RectangleF dstRect = new RectangleF(-0.5F, -0.5F, sizeScale.Width, sizeScale.Height);
-                        RectangleF srcRect = new RectangleF(-0.5F, -0.5F, size.Width, size.Height);
+                        var dstRect = new RectangleF(-0.5F, -0.5F, sizeScale.Width, sizeScale.Height);
+                        var srcRect = new RectangleF(-0.5F, -0.5F, size.Width, size.Height);
                         g.DrawImage(bmp, dstRect, srcRect, GraphicsUnit.Pixel);
                     }
                     Save(stream, bmpScale);

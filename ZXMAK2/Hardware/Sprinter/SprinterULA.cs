@@ -110,7 +110,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         protected override void EndFrame()
         {
-            int[] videoBuffer = base.VideoBuffer;
+            var videoBuffer = base.VideoData.Buffer;
             int num = 0;
             byte linenum, linenum1;
             byte mode0, mode1, mode2, mode10, mode11, mode12, mode, scrbyte, attrbyte;//, scrbyte1, attrbyte1;
