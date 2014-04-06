@@ -138,7 +138,7 @@ namespace ZXMAK2.MVP
             CommandFileSave = new CommandDelegate(CommandFileSave_OnExecute);
             CommandFileExit = new CommandDelegate(CommandFileExit_OnExecute);
             CommandViewFullScreen = new CommandDelegate(CommandViewFullScreen_OnExecute);
-            CommandViewSyncVBlank = new CommandDelegate(CommandViewSyncVBlank_OnExecute, CommandViewSyncVBlank_CanExecute);
+            CommandViewSyncVBlank = new CommandDelegate(CommandViewSyncVBlank_OnExecute);
             CommandVmPause = new CommandDelegate(CommandVmPause_OnExecute);
             CommandVmMaxSpeed = new CommandDelegate(CommandVmMaxSpeed_OnExecute);
             CommandVmWarmReset = new CommandDelegate(CommandVmWarmReset_OnExecute);
@@ -213,11 +213,6 @@ namespace ZXMAK2.MVP
             CommandViewFullScreen.Text = value ? "Windowed" : "Full Screen";
         }
 
-        private bool CommandViewSyncVBlank_CanExecute(object objState)
-        {
-            return !CommandVmMaxSpeed.Checked;
-        }
-
         private void CommandViewSyncVBlank_OnExecute(object objState)
         {
             var state = objState as bool?;
@@ -245,13 +240,16 @@ namespace ZXMAK2.MVP
             }
         }
 
-        private void CommandVmMaxSpeed_OnExecute()
+        private void CommandVmMaxSpeed_OnExecute(Object objState)
         {
+            var state = objState as bool?;
+            var value = CommandVmMaxSpeed.Checked;
+            value = state.HasValue ? state.Value : !value;
+            CommandVmMaxSpeed.Checked = value;
             if (m_vm == null)
             {
                 return;
             }
-            CommandVmMaxSpeed.Checked = !CommandVmMaxSpeed.Checked;
             m_vm.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None :
                 CommandViewSyncVBlank.Checked ? SyncSource.Video :
                 SyncSource.Sound;
@@ -314,6 +312,8 @@ namespace ZXMAK2.MVP
                     form.Init(m_vm);
                     form.ShowDialog(objArg as IWin32Window);
                     m_view.Host.Video.PushFrame(m_vm);
+                    
+                    ((CommandDelegate)CommandTapePause).RaiseCanExecuteChanged();
                 }
             }
             catch (Exception ex)
