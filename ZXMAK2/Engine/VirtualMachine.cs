@@ -302,13 +302,16 @@ namespace ZXMAK2.Engine
                     while (Spectrum.IsRunning)
                     {
                         input.Scan();
-                        Spectrum.ExecuteFrame();
-                        
+
                         // frame sync
+                        // need to call before executeFrame
+                        // because first action will be PushFrame
                         if (sound != null && !MaxSpeed)
                         {
                             sound.WaitFrame();
                         }
+
+                        Spectrum.ExecuteFrame();
                     }
 
                     m_soundBuffers = null;

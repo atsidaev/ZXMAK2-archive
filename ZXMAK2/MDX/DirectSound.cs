@@ -170,8 +170,8 @@ namespace ZXMAK2.MDX
             lock (_fillQueue)
             {
                 _fillQueue.Enqueue(buf);
+                m_frameEvent.Set();
             }
-            m_frameEvent.Set();
         }
 
 		private readonly Queue<byte[]> _fillQueue;
@@ -219,14 +219,14 @@ namespace ZXMAK2.MDX
 
         public void WaitFrame()
         {
-            lock (_playQueue)
+            lock (_fillQueue)
             {
+                m_frameEvent.Reset();
+                m_cancelEvent.Reset();
                 if (_fillQueue.Count > 0)
                 {
                     return;
                 }
-                //m_frameEvent.Reset();
-                m_cancelEvent.Reset();
             }
             WaitHandle.WaitAny(new[] { m_frameEvent, m_cancelEvent });
         }
