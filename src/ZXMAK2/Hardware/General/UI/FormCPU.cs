@@ -19,7 +19,8 @@ namespace ZXMAK2.Hardware.General.UI
     public partial class FormCpu : Form
     {
         private IDebuggable m_spectrum;
-        private DasmUtils m_dasmUtils;
+        private DasmTool m_dasmTool;
+        private TimingTool m_timingTool;
 
         public FormCpu(IDebuggable debugTarget)
         {
@@ -39,7 +40,8 @@ namespace ZXMAK2.Hardware.General.UI
             if (debugTarget != null)
             {
                 m_spectrum = debugTarget;
-                m_dasmUtils = new DasmUtils(m_spectrum.CPU, debugTarget.ReadMemory);
+                m_dasmTool = new DasmTool(debugTarget.ReadMemory);
+                m_timingTool = new TimingTool(m_spectrum.CPU, debugTarget.ReadMemory);
                 m_spectrum.UpdateState += spectrum_OnUpdateState;
                 m_spectrum.Breakpoint += spectrum_OnBreakpoint;
             }
@@ -181,8 +183,8 @@ namespace ZXMAK2.Hardware.General.UI
 
         private void dasmPanel_GetDasm(object Sender, ushort ADDR, out string DASM, out int len)
         {
-            string mnemonic = Z80CPU.GetMnemonic(m_spectrum.ReadMemory, ADDR, true, out len);
-            string timing = m_dasmUtils.GetTimingInfo(ADDR);
+            var mnemonic = m_dasmTool.GetMnemonic(ADDR, out len);
+            var timing = m_timingTool.GetTimingString(ADDR);
 
             DASM = string.Format("{0,-24} ; {1}", mnemonic, timing);
         }

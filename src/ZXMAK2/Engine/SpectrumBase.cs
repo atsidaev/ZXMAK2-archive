@@ -19,7 +19,6 @@ namespace ZXMAK2.Engine
         #region private
 
         private bool m_isRunning = false;
-
         private long m_tactLimitStepOver = 71680 * 5;
 
         #endregion
@@ -81,16 +80,20 @@ namespace ZXMAK2.Engine
 
         protected virtual void StepOver()
         {
-            long tactLimit = m_tactLimitStepOver;
-            long t = CPU.Tact;
+            var tactLimit = m_tactLimitStepOver;
+            var t = CPU.Tact;
+            var dasmTool = new DasmTool(ReadMemory);
             int len;
-            string op = Z80CPU.GetMnemonic(ReadMemory, CPU.regs.PC, true, out len);
-            ushort nextAddr = (ushort)((CPU.regs.PC + len) & 0xFFFF);
+            var opCodeStr = dasmTool.GetMnemonic(CPU.regs.PC, out len);
+            var nextAddr = (ushort)((CPU.regs.PC + len) & 0xFFFF);
 
-            bool donotStepOver = (op.IndexOf("J") >= 0) || (op.IndexOf("RET") >= 0);
+            var donotStepOver = opCodeStr.IndexOf("J") >= 0 || 
+                opCodeStr.IndexOf("RET") >= 0;
 
             if (donotStepOver)
+            {
                 StepInto();
+            }
             else
             {
                 while (true)

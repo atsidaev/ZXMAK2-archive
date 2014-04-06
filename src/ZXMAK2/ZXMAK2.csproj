@@ -385,7 +385,7 @@
     <Compile Include="Hardware\Profi\UlaProfi3XX.cs" />
     <Compile Include="Hardware\Quorum\UlaQuorum.cs" />
     <Compile Include="Hardware\Scorpion\UlaScorpionYellow.cs" />
-    <Compile Include="Engine\Z80\DasmUtils.cs" />
+    <Compile Include="Engine\Z80\TimingTool.cs" />
     <Compile Include="Engine\Z80\Z80FXCBops.cs" />
     <Compile Include="Hardware\Spectrum\UlaPlus3.cs" />
     <Compile Include="MDX\DirectKeyboard.cs" />
@@ -418,7 +418,7 @@
     <Compile Include="Serializers\TapeSerializers\TzxSerializer.cs" />
     <Compile Include="Engine\SpectrumBase.cs" />
     <Compile Include="Hardware\General\TapeDevice.cs" />
-    <Compile Include="Engine\Z80\dasm.cs" />
+    <Compile Include="Engine\Z80\DasmTool.cs" />
     <Compile Include="Engine\Z80\Z80.cs" />
     <Compile Include="Engine\Z80\Z80ALU.cs" />
     <Compile Include="Engine\Z80\Z80CBops.cs" />
