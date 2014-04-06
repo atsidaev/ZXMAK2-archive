@@ -310,6 +310,10 @@ namespace ZXMAK2.Engine
                         {
                             sound.WaitFrame();
                         }
+                        //if (video != null && !MaxSpeed)
+                        //{
+                        //    video.WaitFrame();
+                        //}
 
                         Spectrum.ExecuteFrame();
                     }

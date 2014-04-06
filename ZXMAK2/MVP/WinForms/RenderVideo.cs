@@ -97,13 +97,37 @@ namespace ZXMAK2.MVP.WinForms
         //private readonly AutoResetEvent m_cancelEvent = new AutoResetEvent(false);
         //private readonly AutoResetEvent m_vblankEvent = new AutoResetEvent(false);
         private bool _isCancel;
+        private int _syncFrame;
+        private bool _vblankValue;
 
         public void WaitFrame()
         {
             //m_cancelEvent.Reset();
             //WaitHandle.WaitAny(new[] { m_vblankEvent, m_cancelEvent });
+            
+            // FIXME: stupid synchronization, 
+            // because there is no event from Direct3D
             _isCancel = false;
-            while (!_isCancel && !D3D.RasterStatus.InVBlank) ;
+            while (!_isCancel)
+            {
+                // wait VBlank
+                while (!_isCancel)
+                {
+                    var state = D3D.RasterStatus.InVBlank;
+                    var change = state != _vblankValue;
+                    _vblankValue = state;
+                    if (change && _vblankValue)
+                    {
+                        break;
+                    }
+                }
+                if (++_syncFrame > 2)
+                {
+                    _syncFrame = 0;
+                    continue;
+                }
+                return;
+            }
         }
 
         public void CancelWait()
