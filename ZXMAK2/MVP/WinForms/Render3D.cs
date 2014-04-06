@@ -251,18 +251,18 @@ namespace ZXMAK2.MVP.WinForms
 			}
 		}
 
-		public bool VBlankSync
-		{
-			get { return m_vBlankSync; }
-			set
-			{
-				if (value != m_vBlankSync)
-				{
-					m_vBlankSync = value;
-					reset();
-				}
-			}
-		}
+        //public bool VBlankSync
+        //{
+        //    get { return m_vBlankSync; }
+        //    set
+        //    {
+        //        if (value != m_vBlankSync)
+        //        {
+        //            m_vBlankSync = value;
+        //            reset();
+        //        }
+        //    }
+        //}
 
 		// Disable 'Ding' sound on Alt+Enter
 		protected const int WM_SYSCHAR = 0x106;

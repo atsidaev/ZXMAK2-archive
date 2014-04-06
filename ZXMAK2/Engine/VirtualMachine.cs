@@ -37,8 +37,8 @@ namespace ZXMAK2.Engine
         { 
             get { return Spectrum.FrameStartTact; } 
         }
-        
-        public bool MaxSpeed = false;
+
+        public SyncSource SyncSource { get; set; }
 
         #endregion Fields
 
@@ -58,6 +58,7 @@ namespace ZXMAK2.Engine
         public unsafe VirtualMachine(IHost host)
         {
             m_host = host;
+            SyncSource = SyncSource.Sound;
             Spectrum = new SpectrumConcrete();
             Spectrum.UpdateState += OnUpdateState;
             Spectrum.Breakpoint += OnBreakpoint;
@@ -306,14 +307,21 @@ namespace ZXMAK2.Engine
                         // frame sync
                         // need to call before executeFrame
                         // because first action will be PushFrame
-                        if (sound != null && !MaxSpeed)
+                        switch (SyncSource)
                         {
-                            sound.WaitFrame();
+                            case SyncSource.Sound:
+                                if (sound != null)
+                                {
+                                    sound.WaitFrame();
+                                }
+                                break;
+                            case SyncSource.Video:
+                                if (video != null)
+                                {
+                                    video.WaitFrame();
+                                }
+                                break;
                         }
-                        //if (video != null && !MaxSpeed)
-                        //{
-                        //    video.WaitFrame();
-                        //}
 
                         Spectrum.ExecuteFrame();
                     }

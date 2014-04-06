@@ -544,7 +544,6 @@
             this.renderVideo.Smoothing = false;
             this.renderVideo.TabIndex = 3;
             this.renderVideo.Text = "renderVideo";
-            this.renderVideo.VBlankSync = false;
             this.renderVideo.DeviceReset += new System.EventHandler(this.renderVideo_DeviceReset);
             this.renderVideo.DoubleClick += new System.EventHandler(this.renderVideo_DoubleClick);
             this.renderVideo.MouseMove += new System.Windows.Forms.MouseEventHandler(this.renderVideo_MouseMove);

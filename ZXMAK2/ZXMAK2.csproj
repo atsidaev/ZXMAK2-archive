@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine\VideoData.cs" />
+    <Compile Include="Entities\SyncSource.cs" />
     <Compile Include="Func.cs" />
     <Compile Include="DialogService.cs" />
     <Compile Include="Interfaces\IVideoData.cs" />
