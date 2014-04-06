@@ -292,7 +292,6 @@
             // 
             // menuViewVBlankSync
             // 
-            this.menuViewVBlankSync.CheckOnClick = true;
             this.menuViewVBlankSync.Name = "menuViewVBlankSync";
             this.menuViewVBlankSync.Size = new System.Drawing.Size(188, 22);
             this.menuViewVBlankSync.Text = "VBlank Sync";
