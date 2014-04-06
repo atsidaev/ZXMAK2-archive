@@ -8,184 +8,205 @@ namespace ZXMAK2.Engine.Z80
 {
     public partial class Z80CPU
     {
-        public static string GetMnemonic(OnRDBUS MemReader, int Addr, bool Hex, out int MnemLength)
+        public static string GetMnemonic(OnRDBUS memReader, int addr, bool isHex, out int mnemLength)
         {
-            string sbuf;
-            int pos;
+            var curPtr = 0x0000;
 
-            int CurPtr = 0x0000;
+            var opCode = memReader((ushort)(addr + curPtr));
+            mnemLength = 1;
+            
+            var fxReg = "*prefix*";
+            var plusMinusOffsetIndex = 0;
 
-            byte selcode = MemReader((ushort)(Addr + CurPtr));
-            string Mnem;
-            MnemLength = 1;
-            string PrefixReg = "*prefix*";
-
-            int PlusMinusOffsetIndex = 0;
-
-            if (selcode == 0xCB)
+            string mnem;
+            if (opCode == 0xCB)
             {
-                CurPtr++;
-                MnemLength++;
-                Mnem = CBhZ80Code[MemReader((ushort)(Addr + CurPtr))];
+                curPtr++;
+                mnemLength++;
+                mnem = CBhZ80Code[memReader((ushort)(addr + curPtr))];
             }
-            else if (selcode == 0xED)
+            else if (opCode == 0xED)
             {
-                CurPtr++;
-                MnemLength++;
-                Mnem = EDhZ80Code[MemReader((ushort)(Addr + CurPtr))];
-                if (Mnem.Length == 0) Mnem = "*NOP";
+                curPtr++;
+                mnemLength++;
+                mnem = EDhZ80Code[memReader((ushort)(addr + curPtr))];
+                if (mnem.Length == 0)
+                {
+                    mnem = "*NOP";
+                }
             }
-            else if ((selcode == 0xDD) || (selcode == 0xFD))
+            else if ((opCode == 0xDD) || (opCode == 0xFD))
             {
             REPREFIX_DDFD:
-                selcode = MemReader((ushort)(Addr + CurPtr));
-                if (selcode == 0xDD) PrefixReg = "IX";
-                else PrefixReg = "IY";
-                CurPtr++;
-                PlusMinusOffsetIndex = 1;
-                MnemLength++;
-                if (MemReader((ushort)(Addr + CurPtr)) == 0xCB)
+                opCode = memReader((ushort)(addr + curPtr));
+                fxReg = opCode == 0xDD ? "IX" : "IY";
+                curPtr++;
+                plusMinusOffsetIndex = 1;
+                mnemLength++;
+                if (memReader((ushort)(addr + curPtr)) == 0xCB)
                 {
-                    CurPtr++;
-                    MnemLength++;
-                    PlusMinusOffsetIndex = 0;
-                    Mnem = DDFDCBhZ80Code[MemReader((ushort)(Addr + CurPtr + 1))];
+                    curPtr++;
+                    mnemLength++;
+                    plusMinusOffsetIndex = 0;
+                    mnem = DDFDCBhZ80Code[memReader((ushort)(addr + curPtr + 1))];
 
-                    if (Mnem.Length == 0) MnemLength++;  // ??? for CBh
+                    if (mnem.Length == 0)
+                    {
+                        mnemLength++;  // ??? for CBh
+                    }
                 }
-                else if (MemReader((ushort)(Addr + CurPtr)) == 0xED)
+                else if (memReader((ushort)(addr + curPtr)) == 0xED)
                 {
-                    CurPtr++;
-                    MnemLength++;
-                    Mnem = EDhZ80Code[MemReader((ushort)(Addr + CurPtr))];
-                    if (Mnem.Length == 0) Mnem = "*NOP";
-                    if (Mnem[0] != '*') Mnem = "*" + Mnem; // mark undocumented as "*"...
+                    curPtr++;
+                    mnemLength++;
+                    mnem = EDhZ80Code[memReader((ushort)(addr + curPtr))];
+                    if (mnem.Length == 0)
+                    {
+                        mnem = "*NOP";
+                    }
+                    if (mnem[0] != '*')
+                    {
+                        mnem = "*" + mnem; // mark undocumented as "*"...
+                    }
                 }
-                else if ((MemReader((ushort)(Addr + CurPtr)) == 0xDD) || (MemReader((ushort)(Addr + CurPtr)) == 0xFD))     // DD/FD, DD/FD
+                else if ((memReader((ushort)(addr + curPtr)) == 0xDD) || (memReader((ushort)(addr + curPtr)) == 0xFD))     // DD/FD, DD/FD
                 {
                     goto REPREFIX_DDFD;
                 }
-                else Mnem = DDFDhZ80Code[MemReader((ushort)(Addr + CurPtr))];
+                else
+                {
+                    mnem = DDFDhZ80Code[memReader((ushort)(addr + curPtr))];
+                }
 
-                if (Mnem.Length == 0) Mnem = "*" + DirectZ80Code[MemReader((ushort)(Addr + CurPtr))];
+                if (mnem.Length == 0)
+                {
+                    mnem = "*" + DirectZ80Code[memReader((ushort)(addr + curPtr))];
+                }
             }
-            else Mnem = DirectZ80Code[MemReader((ushort)(Addr + CurPtr))];
+            else
+            {
+                mnem = DirectZ80Code[memReader((ushort)(addr + curPtr))];
+            }
 
-            if (Mnem.IndexOf("$") < 0) return Mnem;
-
+            if (mnem.IndexOf("$") < 0)
+            {
+                return mnem;
+            }
             do
             {
-                if (Mnem.IndexOf("$R") >= 0)  // Prefix register
+                if (mnem.IndexOf("$R") >= 0)  // Prefix register
                 {
-                    pos = Mnem.IndexOf("$R");
-                    if (Mnem.Length <= (pos + 1 + 1))               // ixl/ixh -> xl/xh  !!!!!
+                    var pos = mnem.IndexOf("$R");
+                    if (mnem.Length <= (pos + 1 + 1))               // ixl/ixh -> xl/xh  !!!!!
                     {
-                        Mnem = Mnem.Remove(pos, 2);
-                        Mnem = Mnem.Insert(pos, PrefixReg);
+                        mnem = mnem.Remove(pos, 2);
+                        mnem = mnem.Insert(pos, fxReg);
                     }
-                    else if ((Mnem[pos + 2] == 'L') || (Mnem[pos + 2] == 'H'))
+                    else if ((mnem[pos + 2] == 'L') || (mnem[pos + 2] == 'H'))
                     {
-                        Mnem = Mnem.Remove(pos, 2);
-                        Mnem = Mnem.Insert(pos, "" + PrefixReg[1]);
-                    }
-                    else
-                    {
-                        Mnem = Mnem.Remove(pos, 2);
-                        Mnem = Mnem.Insert(pos, PrefixReg);
-                    }
-                }
-                if (Mnem.IndexOf("$PLUS") >= 0)  // PrefixReg+-offset
-                {
-                    sbyte val = (sbyte)MemReader((ushort)(Addr + (CurPtr + PlusMinusOffsetIndex)));
-                    int uval = val;
-                    if (val < 0) uval = -uval;
-
-                    if (val < 0)
-                    {
-                        if (Hex) sbuf = "-#" + uval.ToString("X2"); //sprintf(buf, "-"Z80ASMHEX"%02X", int(uval));
-                        else sbuf = "-" + uval.ToString();          //sprintf(buf, "-%i", int(uval));
+                        mnem = mnem.Remove(pos, 2);
+                        mnem = mnem.Insert(pos, "" + fxReg[1]);
                     }
                     else
                     {
-                        if (Hex) sbuf = "+#" + uval.ToString("X2");  //sprintf(buf, "+"Z80ASMHEX"%02X", int(uval));
-                        else sbuf = "+" + uval.ToString();          //sprintf(buf, "+%i", int(uval));
+                        mnem = mnem.Remove(pos, 2);
+                        mnem = mnem.Insert(pos, fxReg);
                     }
-                    pos = Mnem.IndexOf("$PLUS");
-                    Mnem = Mnem.Remove(pos, 5);
-                    Mnem = Mnem.Insert(pos, sbuf);
-                    MnemLength++;
-                    CurPtr++;
                 }
-
-
-                if (Mnem.IndexOf("$S") >= 0)  // Internal bits value
+                if (mnem.IndexOf("$PLUS") >= 0)  // PrefixReg+-offset
                 {
-                    byte code = MemReader((ushort)(Addr + CurPtr));
-                    int bitadr = (code & 0x38) >> 3;
+                    var val = (sbyte)memReader((ushort)(addr + (curPtr + plusMinusOffsetIndex)));
+                    var txtValue = FormatOffset(val, isHex);
 
-                    sbuf = bitadr.ToString();                    //sprintf(buf, "%i", int(bitadr));
-
-                    pos = Mnem.IndexOf("$S");
-                    Mnem = Mnem.Remove(pos, 2);
-                    Mnem = Mnem.Insert(pos, sbuf);
+                    var pos = mnem.IndexOf("$PLUS");
+                    mnem = mnem.Remove(pos, 5);
+                    mnem = mnem.Insert(pos, txtValue);
+                    mnemLength++;
+                    curPtr++;
                 }
 
-                if (Mnem.IndexOf("$W") >= 0)  // 2byte value
+
+                if (mnem.IndexOf("$S") >= 0)  // Internal bits value
                 {
-                    ushort val = (ushort)(MemReader((ushort)(Addr + CurPtr + 1)) + 256 * MemReader((ushort)(Addr + CurPtr + 2)));
-                    if (Hex) sbuf = "#" + val.ToString("X4");       // sprintf(buf, Z80ASMHEX"%04X", int(val));
-                    else sbuf = val.ToString();                  // sprintf(buf, "%i", int(val));
+                    var val = memReader((ushort)(addr + curPtr));
+                    var bitadr = (val & 0x38) >> 3;
+                    var txtValue = string.Format("{0}", bitadr);
 
-                    pos = Mnem.IndexOf("$W");
-                    Mnem = Mnem.Remove(pos, 2);
-                    Mnem = Mnem.Insert(pos, sbuf);
-                    MnemLength += 2;
+                    var pos = mnem.IndexOf("$S");
+                    mnem = mnem.Remove(pos, 2);
+                    mnem = mnem.Insert(pos, txtValue);
                 }
 
-                if (Mnem.IndexOf("$N") >= 0)  // 1byte value
+                if (mnem.IndexOf("$W") >= 0)  // 2byte value
                 {
-                    byte val = MemReader((ushort)(Addr + CurPtr + 1));
-                    if (Hex) sbuf = "#" + val.ToString("X2");       //sprintf(buf, Z80ASMHEX"%02X", int(val));
-                    else sbuf = val.ToString();                  //sprintf(buf, "%i", int(val));
+                    var val = (ushort)(memReader((ushort)(addr + curPtr + 1)) + 256 * memReader((ushort)(addr + curPtr + 2)));
+                    var txtValue = FormatWord(val, isHex);
 
-                    pos = Mnem.IndexOf("$N");
-                    Mnem = Mnem.Remove(pos, 2);
-                    Mnem = Mnem.Insert(pos, sbuf);
-                    MnemLength++;
+                    var pos = mnem.IndexOf("$W");
+                    mnem = mnem.Remove(pos, 2);
+                    mnem = mnem.Insert(pos, txtValue);
+                    mnemLength += 2;
                 }
 
-                if (Mnem.IndexOf("$T") >= 0)  // Internal bits value ($S)*8
+                if (mnem.IndexOf("$N") >= 0)  // 1byte value
                 {
-                    byte code = MemReader((ushort)(Addr + CurPtr));
-                    int rstadr = ((code & 0x38) >> 3) * 8;
+                    var val = memReader((ushort)(addr + curPtr + 1));
+                    var txtValue = FormatByte(val, isHex);
 
-                    if (Hex) sbuf = "#" + rstadr.ToString("X2");    //sprintf(buf, Z80ASMHEX"%02X", int(rstadr));
-                    else sbuf = rstadr.ToString();               //sprintf(buf, "%i", int(rstadr));
-
-                    pos = Mnem.IndexOf("$T");
-                    Mnem = Mnem.Remove(pos, 2);
-                    Mnem = Mnem.Insert(pos, sbuf);
+                    var pos = mnem.IndexOf("$N");
+                    mnem = mnem.Remove(pos, 2);
+                    mnem = mnem.Insert(pos, txtValue);
+                    mnemLength++;
                 }
 
-                if (Mnem.IndexOf("$DIS") >= 0)  // 1byte offset value
+                if (mnem.IndexOf("$T") >= 0)  // Internal bits value ($S)*8
                 {
-                    sbyte val = (sbyte)MemReader((ushort)(Addr + CurPtr + 1));
-                    //         int adr = (Addr + 2) + val;
-                    int adr = (Addr + 2 + CurPtr) + val;
-                    adr = (ushort)adr;
+                    var val = memReader((ushort)(addr + curPtr));
+                    var rstadr = (byte)(((val & 0x38) >> 3) * 8);
+                    var txtValue = FormatByte(rstadr, isHex);
 
-                    if (Hex) sbuf = "#" + adr.ToString("X4");       //sprintf(buf, Z80ASMHEX"%04X", int(adr));
-                    else sbuf = adr.ToString();                  //sprintf(buf, "%i", int(adr));
-
-                    pos = Mnem.IndexOf("$DIS");
-                    Mnem = Mnem.Remove(pos, 4);
-                    Mnem = Mnem.Insert(pos, sbuf);
-                    MnemLength++;
+                    var pos = mnem.IndexOf("$T");
+                    mnem = mnem.Remove(pos, 2);
+                    mnem = mnem.Insert(pos, txtValue);
                 }
 
-            } while (Mnem.IndexOf("$") >= 0);
+                if (mnem.IndexOf("$DIS") >= 0)  // 1byte offset value
+                {
+                    var val = (sbyte)memReader((ushort)(addr + curPtr + 1));
+                    var adr = (ushort)((addr + 2 + curPtr) + val);
+                    var txtValue = FormatWord(adr, isHex);
 
-            return Mnem;
+                    var pos = mnem.IndexOf("$DIS");
+                    mnem = mnem.Remove(pos, 4);
+                    mnem = mnem.Insert(pos, txtValue);
+                    mnemLength++;
+                }
+            } while (mnem.IndexOf("$") >= 0);
+            return mnem;
+        }
+
+        private static string FormatByte(byte val, bool isHex)
+        {
+            return isHex ?
+                string.Format("#{0:X2}", val) :
+                string.Format("{0}", val);
+        }
+
+        private static string FormatWord(ushort val, bool isHex)
+        {
+            return isHex ?
+                string.Format("#{0:X4}", val) :
+                string.Format("{0}", val);
+        }
+
+        private static string FormatOffset(sbyte val, bool isHex)
+        {
+            var absVal = val < 0 ? -val : val;
+            var result = isHex ? 
+                string.Format("#{0:X2}", absVal) : 
+                string.Format("{0}", absVal);
+            var sign = val < 0 ? "-" : "+";
+            return sign + result;
         }
 
         #region Tables
