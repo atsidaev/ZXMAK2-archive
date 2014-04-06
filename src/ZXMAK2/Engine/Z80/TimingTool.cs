@@ -7,13 +7,13 @@ namespace ZXMAK2.Engine.Z80
     public class TimingTool
     {
         private Z80CPU Object;
-        private Func<byte, ushort> memReader;
+        private Func<byte, ushort> _memRead;
 
         
         public TimingTool(Z80CPU cpu, Func<byte, ushort> reader)
         {
             Object = cpu;
-            memReader = reader;
+            _memRead = reader;
         }
 
         public string GetTimingString(int addr)
@@ -29,72 +29,71 @@ namespace ZXMAK2.Engine.Z80
             var tableNumber = 0;
             var perfTime = 0;
             var offset = 0;
-
-        ANALYSE_FX:
-            var opCode = memReader((ushort)(addr + offset));
-            var res = Tables[tableNumber][opCode];
-            if (res < 0xF0)
+            var opCode = -1;
+            while (true)
             {
-                return res + perfTime;
-            }
-            tableNumber = res - 0xF0;
-            if (tableNumber < 5)
-            {
+                opCode = _memRead((ushort)(addr + offset));
+                var res = Tables[tableNumber][opCode];
+                if (res < 0xF0)
+                {
+                    return res + perfTime;
+                }
+                tableNumber = res - 0xF0;
+                if (tableNumber >= 5)
+                {
+                    break;
+                }
                 perfTime += 4;
                 offset++;
                 if (tableNumber == 4)
                 {
                     offset++;
                 }
-                goto ANALYSE_FX;
+                if (perfTime > 1500000)
+                {
+                    LogAgent.Warn("TimingTool.GetTiming: {0}T reached!", perfTime); 
+                    return int.MaxValue;
+                }
             }
-
-            // TableProc...
             switch (opCode)
             {
-                case 0x10: 
-                    return DjnzIO(0x08, 0x0D, perfTime);
+                case 0x10:
+                    return DjnzTime(perfTime, 0x08, 0x0D);
 
                 case 0xB1:
                 case 0xB2:
                 case 0xB9:
                 case 0xBA:
-                    return DjnzIO(0x0C, 0x11, perfTime);
+                    return DjnzTime(perfTime, 0x0C, 0x11);
 
-
-                case 0x20: return FlT(0x07, 0x0C, 0x40, perfTime);
-                case 0x28: return FlT(0x0C, 0x07, 0x40, perfTime);
-                case 0x30: return FlT(0x07, 0x0C, 0x01, perfTime);
-                case 0x38: return FlT(0x0C, 0x07, 0x01, perfTime);
-                case 0xC0: return FlT(0x05, 0x0B, 0x40, perfTime);
-                case 0xC8: return FlT(0x0B, 0x05, 0x40, perfTime);
-                case 0xD0: return FlT(0x05, 0x0B, 0x01, perfTime);
-                case 0xD8: return FlT(0x0B, 0x05, 0x01, perfTime);
-                case 0xE0: return FlT(0x05, 0x0B, 0x04, perfTime);
-                case 0xE8: return FlT(0x0B, 0x05, 0x04, perfTime);
-                case 0xF0: return FlT(0x05, 0x0B, 0x80, perfTime);
-                case 0xF8: return FlT(0x0B, 0x05, 0x80, perfTime);
-                case 0xC4: return FlT(0x0A, 0x11, 0x40, perfTime);
-                case 0xCC: return FlT(0x11, 0x0A, 0x40, perfTime);
-                case 0xD4: return FlT(0x0A, 0x11, 0x01, perfTime);
-                case 0xDC: return FlT(0x11, 0x0A, 0x01, perfTime);
-                case 0xE4: return FlT(0x0A, 0x11, 0x04, perfTime);
-                case 0xEC: return FlT(0x11, 0x0A, 0x04, perfTime);
-                case 0xF4: return FlT(0x0A, 0x11, 0x80, perfTime);
-                case 0xFC: return FlT(0x11, 0x0A, 0x80, perfTime);
+                case 0x20: return FlagTime(perfTime, 0x07, 0x0C, 0x40);
+                case 0x28: return FlagTime(perfTime, 0x0C, 0x07, 0x40);
+                case 0x30: return FlagTime(perfTime, 0x07, 0x0C, 0x01);
+                case 0x38: return FlagTime(perfTime, 0x0C, 0x07, 0x01);
+                case 0xC0: return FlagTime(perfTime, 0x05, 0x0B, 0x40);
+                case 0xC8: return FlagTime(perfTime, 0x0B, 0x05, 0x40);
+                case 0xD0: return FlagTime(perfTime, 0x05, 0x0B, 0x01);
+                case 0xD8: return FlagTime(perfTime, 0x0B, 0x05, 0x01);
+                case 0xE0: return FlagTime(perfTime, 0x05, 0x0B, 0x04);
+                case 0xE8: return FlagTime(perfTime, 0x0B, 0x05, 0x04);
+                case 0xF0: return FlagTime(perfTime, 0x05, 0x0B, 0x80);
+                case 0xF8: return FlagTime(perfTime, 0x0B, 0x05, 0x80);
+                case 0xC4: return FlagTime(perfTime, 0x0A, 0x11, 0x40);
+                case 0xCC: return FlagTime(perfTime, 0x11, 0x0A, 0x40);
+                case 0xD4: return FlagTime(perfTime, 0x0A, 0x11, 0x01);
+                case 0xDC: return FlagTime(perfTime, 0x11, 0x0A, 0x01);
+                case 0xE4: return FlagTime(perfTime, 0x0A, 0x11, 0x04);
+                case 0xEC: return FlagTime(perfTime, 0x11, 0x0A, 0x04);
+                case 0xF4: return FlagTime(perfTime, 0x0A, 0x11, 0x80);
+                case 0xFC: return FlagTime(perfTime, 0x11, 0x0A, 0x80);
 
                 case 0xB0:
                 case 0xB8:
-                    var ifTime = Object.regs.BC == 0x0001 ? 0x0C : 0x11;
-                    return perfTime + ifTime;
+                    return RepTime(perfTime, 0x0C, 0x11);
 
                 case 0xB3:
                 case 0xBB:
-                    if (Object.regs.BC == 0x0001)
-                        return 0x0C + perfTime;
-                    var data = memReader(Object.regs.HL);
-                    var ifTime2 = Object.regs.F == data ? 0x0C : 0x11;
-                    return perfTime + ifTime2;
+                    return RepFlagTime(perfTime, 0x0C, 0x0C, 0x11);
             }
             LogAgent.Error(
                 "TimingTool.GetTiming: unexpected opCode #{0:2X}", 
@@ -102,18 +101,34 @@ namespace ZXMAK2.Engine.Z80
             return -1;
         }
 
-        private int DjnzIO(int timeEnd, int timeNoEnd, int timeBase)
+        private int DjnzTime(int timeBase, int timeEnd, int timeNoEnd)
         {
             var ifTime = Object.regs.B == 0x01 ? timeEnd : timeNoEnd;
             return timeBase + ifTime;
         }
 
-        private int FlT(int timeOn, int timeOff, int flagMask, int timeBase)
+        private int FlagTime(int timeBase, int timeOn, int timeOff, int flagMask)
         {
             var ifTime = (Object.regs.F & flagMask) != 0 ? timeOn : timeOff;
             return timeBase + ifTime;
         }
 
+        private int RepTime(int perfTime, int timeEnd, int timeNoEnd)
+        {
+            var ifTime = Object.regs.BC == 0x0001 ? timeEnd : timeNoEnd;
+            return perfTime + ifTime;
+        }
+
+        private int RepFlagTime(int timeEnd, int timeOn, int timeOff, int perfTime)
+        {
+            if (Object.regs.BC == 0x0001)
+            {
+                return perfTime + timeEnd;
+            }
+            var data = _memRead(Object.regs.HL);
+            var ifTime = Object.regs.F == data ? timeOn : timeOff;
+            return perfTime + ifTime;
+        }
 
         #region Dictionary Tables
         
