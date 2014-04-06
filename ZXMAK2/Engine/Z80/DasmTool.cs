@@ -8,7 +8,7 @@ namespace ZXMAK2.Engine.Z80
 {
     public class DasmTool
     {
-        private Func<byte, ushort> _memRead;
+        private readonly Func<byte, ushort> _memRead;
 
         public bool IsHex { get; set; }
 
@@ -18,19 +18,19 @@ namespace ZXMAK2.Engine.Z80
             _memRead = memRead;
             IsHex = isHex;
         }
-        
 
-        public string GetMnemonic(int addr, out int mnemLength)
+
+        public string GetMnemonic(int addr, out int length)
         {
             if (_memRead == null)
             {
-                mnemLength = 1;
+                length = 1;
                 return "N/A";
             }
             var curPtr = 0x0000;
             var opCode = _memRead((ushort)(addr + curPtr));
-            mnemLength = 1;
-            
+            length = 1;
+
             var fxReg = "*prefix*";
             var plusMinusOffsetIndex = 0;
 
@@ -38,14 +38,14 @@ namespace ZXMAK2.Engine.Z80
             if (opCode == 0xCB)
             {
                 curPtr++;
-                mnemLength++;
+                length++;
                 var data = _memRead((ushort)(addr + curPtr));
                 mnem = CBhZ80Code[data];
             }
             else if (opCode == 0xED)
             {
                 curPtr++;
-                mnemLength++;
+                length++;
                 var data = _memRead((ushort)(addr + curPtr));
                 mnem = EDhZ80Code[data];
                 if (mnem.Length == 0)
@@ -60,24 +60,24 @@ namespace ZXMAK2.Engine.Z80
                 fxReg = opCode == 0xDD ? "IX" : "IY";
                 curPtr++;
                 plusMinusOffsetIndex = 1;
-                mnemLength++;
+                length++;
                 var fxCode = _memRead((ushort)(addr + curPtr));
                 if (fxCode == 0xCB)
                 {
                     curPtr++;
-                    mnemLength++;
+                    length++;
                     plusMinusOffsetIndex = 0;
                     var data = _memRead((ushort)(addr + curPtr + 1));
                     mnem = DDFDCBhZ80Code[data];
                     if (mnem.Length == 0)
                     {
-                        mnemLength++;  // ??? for CBh
+                        length++;  // ??? for CBh
                     }
                 }
                 else if (fxCode == 0xED)
                 {
                     curPtr++;
-                    mnemLength++;
+                    length++;
                     var data = _memRead((ushort)(addr + curPtr));
                     mnem = EDhZ80Code[data];
                     if (mnem.Length == 0)
@@ -115,7 +115,7 @@ namespace ZXMAK2.Engine.Z80
             {
                 return mnem;
             }
-            
+
             do
             {
                 if (mnem.IndexOf("$R") >= 0)  // Prefix register
@@ -145,7 +145,7 @@ namespace ZXMAK2.Engine.Z80
                     var pos = mnem.IndexOf("$PLUS");
                     mnem = mnem.Remove(pos, 5);
                     mnem = mnem.Insert(pos, txtValue);
-                    mnemLength++;
+                    length++;
                     curPtr++;
                 }
                 if (mnem.IndexOf("$S") >= 0)  // Internal bits value
@@ -166,7 +166,7 @@ namespace ZXMAK2.Engine.Z80
                     var pos = mnem.IndexOf("$W");
                     mnem = mnem.Remove(pos, 2);
                     mnem = mnem.Insert(pos, txtValue);
-                    mnemLength += 2;
+                    length += 2;
                 }
                 if (mnem.IndexOf("$N") >= 0)  // 1byte value
                 {
@@ -176,7 +176,7 @@ namespace ZXMAK2.Engine.Z80
                     var pos = mnem.IndexOf("$N");
                     mnem = mnem.Remove(pos, 2);
                     mnem = mnem.Insert(pos, txtValue);
-                    mnemLength++;
+                    length++;
                 }
                 if (mnem.IndexOf("$T") >= 0)  // Internal bits value ($S)*8
                 {
@@ -197,11 +197,14 @@ namespace ZXMAK2.Engine.Z80
                     var pos = mnem.IndexOf("$DIS");
                     mnem = mnem.Remove(pos, 4);
                     mnem = mnem.Insert(pos, txtValue);
-                    mnemLength++;
+                    length++;
                 }
             } while (mnem.IndexOf("$") >= 0);
             return mnem;
         }
+
+
+        #region Format
 
         private string FormatByte(byte val)
         {
@@ -220,18 +223,20 @@ namespace ZXMAK2.Engine.Z80
         private string FormatOffset(sbyte val)
         {
             var absVal = val < 0 ? -val : val;
-            var result = IsHex ? 
-                string.Format("#{0:X2}", absVal) : 
+            var result = IsHex ?
+                string.Format("#{0:X2}", absVal) :
                 string.Format("{0}", absVal);
             var sign = val < 0 ? "-" : "+";
             return sign + result;
         }
 
-        #region Tables
+        #endregion Format
+
+
+        #region Table Direct
 
         private static readonly string[] DirectZ80Code = new string[256] 
 		{
-		    #region data
 			"NOP",                  // 0x00
 			"LD     BC,$W",
 			"LD     (BC),A",
@@ -506,307 +511,312 @@ namespace ZXMAK2.Engine.Z80
 			"*IY",          // 0xFD
 			"CP     $N",
 			"RST    $T"
-			#endregion
 		};
+
+        #endregion Direct
+
+
+        #region Table #CB
 
         private static readonly string[] CBhZ80Code = new string[256] 
 		{
-            #region data
-        "RLC    B",
-        "RLC    C",
-        "RLC    D",
-        "RLC    E",
-        "RLC    H",
-        "RLC    L",
-        "RLC    (HL)",
-        "RLC    A",
+            "RLC    B",
+            "RLC    C",
+            "RLC    D",
+            "RLC    E",
+            "RLC    H",
+            "RLC    L",
+            "RLC    (HL)",
+            "RLC    A",
 
-        "RRC    B",
-        "RRC    C",
-        "RRC    D",
-        "RRC    E",
-        "RRC    H",
-        "RRC    L",
-        "RRC    (HL)",
-        "RRC    A",
+            "RRC    B",
+            "RRC    C",
+            "RRC    D",
+            "RRC    E",
+            "RRC    H",
+            "RRC    L",
+            "RRC    (HL)",
+            "RRC    A",
 
-        "RL     B",
-        "RL     C",
-        "RL     D",
-        "RL     E",
-        "RL     H",
-        "RL     L",
-        "RL     (HL)",
-        "RL     A",
+            "RL     B",
+            "RL     C",
+            "RL     D",
+            "RL     E",
+            "RL     H",
+            "RL     L",
+            "RL     (HL)",
+            "RL     A",
 
-        "RR     B",
-        "RR     C",
-        "RR     D",
-        "RR     E",
-        "RR     H",
-        "RR     L",
-        "RR     (HL)",
-        "RR     A",
+            "RR     B",
+            "RR     C",
+            "RR     D",
+            "RR     E",
+            "RR     H",
+            "RR     L",
+            "RR     (HL)",
+            "RR     A",
 
-        "SLA    B",
-        "SLA    C",
-        "SLA    D",
-        "SLA    E",
-        "SLA    H",
-        "SLA    L",
-        "SLA    (HL)",
-        "SLA    A",
+            "SLA    B",
+            "SLA    C",
+            "SLA    D",
+            "SLA    E",
+            "SLA    H",
+            "SLA    L",
+            "SLA    (HL)",
+            "SLA    A",
 
-        "SRA    B",
-        "SRA    C",
-        "SRA    D",
-        "SRA    E",
-        "SRA    H",
-        "SRA    L",
-        "SRA    (HL)",
-        "SRA    A",
+            "SRA    B",
+            "SRA    C",
+            "SRA    D",
+            "SRA    E",
+            "SRA    H",
+            "SRA    L",
+            "SRA    (HL)",
+            "SRA    A",
 
-        "*SLL   B",               // SLL or SLI (UNDOCUMENTED)
-        "*SLL   C",
-        "*SLL   D",
-        "*SLL   E",
-        "*SLL   H",
-        "*SLL   L",
-        "*SLL   (HL)",
-        "*SLL   A",
+            "*SLL   B",               // SLL or SLI (UNDOCUMENTED)
+            "*SLL   C",
+            "*SLL   D",
+            "*SLL   E",
+            "*SLL   H",
+            "*SLL   L",
+            "*SLL   (HL)",
+            "*SLL   A",
 
-        "SRL    B",
-        "SRL    C",
-        "SRL    D",
-        "SRL    E",
-        "SRL    H",
-        "SRL    L",
-        "SRL    (HL)",
-        "SRL    A",
+            "SRL    B",
+            "SRL    C",
+            "SRL    D",
+            "SRL    E",
+            "SRL    H",
+            "SRL    L",
+            "SRL    (HL)",
+            "SRL    A",
 
+            "BIT    $S,B",             // Bit 0
+            "BIT    $S,C",
+            "BIT    $S,D",
+            "BIT    $S,E",
+            "BIT    $S,H",
+            "BIT    $S,L",
+            "BIT    $S,(HL)",
+            "BIT    $S,A",
 
-        "BIT    $S,B",             // Bit 0
-        "BIT    $S,C",
-        "BIT    $S,D",
-        "BIT    $S,E",
-        "BIT    $S,H",
-        "BIT    $S,L",
-        "BIT    $S,(HL)",
-        "BIT    $S,A",
+            "BIT    $S,B",             // Bit 1
+            "BIT    $S,C",
+            "BIT    $S,D",
+            "BIT    $S,E",
+            "BIT    $S,H",
+            "BIT    $S,L",
+            "BIT    $S,(HL)",
+            "BIT    $S,A",
 
-        "BIT    $S,B",             // Bit 1
-        "BIT    $S,C",
-        "BIT    $S,D",
-        "BIT    $S,E",
-        "BIT    $S,H",
-        "BIT    $S,L",
-        "BIT    $S,(HL)",
-        "BIT    $S,A",
+            "BIT    $S,B",             // Bit 2
+            "BIT    $S,C",
+            "BIT    $S,D",
+            "BIT    $S,E",
+            "BIT    $S,H",
+            "BIT    $S,L",
+            "BIT    $S,(HL)",
+            "BIT    $S,A",
 
-        "BIT    $S,B",             // Bit 2
-        "BIT    $S,C",
-        "BIT    $S,D",
-        "BIT    $S,E",
-        "BIT    $S,H",
-        "BIT    $S,L",
-        "BIT    $S,(HL)",
-        "BIT    $S,A",
+            "BIT    $S,B",             // Bit 3
+            "BIT    $S,C",
+            "BIT    $S,D",
+            "BIT    $S,E",
+            "BIT    $S,H",
+            "BIT    $S,L",
+            "BIT    $S,(HL)",
+            "BIT    $S,A",
 
-        "BIT    $S,B",             // Bit 3
-        "BIT    $S,C",
-        "BIT    $S,D",
-        "BIT    $S,E",
-        "BIT    $S,H",
-        "BIT    $S,L",
-        "BIT    $S,(HL)",
-        "BIT    $S,A",
+            "BIT    $S,B",             // Bit 4
+            "BIT    $S,C",
+            "BIT    $S,D",
+            "BIT    $S,E",
+            "BIT    $S,H",
+            "BIT    $S,L",
+            "BIT    $S,(HL)",
+            "BIT    $S,A",
 
-        "BIT    $S,B",             // Bit 4
-        "BIT    $S,C",
-        "BIT    $S,D",
-        "BIT    $S,E",
-        "BIT    $S,H",
-        "BIT    $S,L",
-        "BIT    $S,(HL)",
-        "BIT    $S,A",
+            "BIT    $S,B",             // Bit 5
+            "BIT    $S,C",
+            "BIT    $S,D",
+            "BIT    $S,E",
+            "BIT    $S,H",
+            "BIT    $S,L",
+            "BIT    $S,(HL)",
+            "BIT    $S,A",
 
-        "BIT    $S,B",             // Bit 5
-        "BIT    $S,C",
-        "BIT    $S,D",
-        "BIT    $S,E",
-        "BIT    $S,H",
-        "BIT    $S,L",
-        "BIT    $S,(HL)",
-        "BIT    $S,A",
+            "BIT    $S,B",             // Bit 6
+            "BIT    $S,C",
+            "BIT    $S,D",
+            "BIT    $S,E",
+            "BIT    $S,H",
+            "BIT    $S,L",
+            "BIT    $S,(HL)",
+            "BIT    $S,A",
 
-        "BIT    $S,B",             // Bit 6
-        "BIT    $S,C",
-        "BIT    $S,D",
-        "BIT    $S,E",
-        "BIT    $S,H",
-        "BIT    $S,L",
-        "BIT    $S,(HL)",
-        "BIT    $S,A",
-
-        "BIT    $S,B",             // Bit 7
-        "BIT    $S,C",
-        "BIT    $S,D",
-        "BIT    $S,E",
-        "BIT    $S,H",
-        "BIT    $S,L",
-        "BIT    $S,(HL)",
-        "BIT    $S,A",
+            "BIT    $S,B",             // Bit 7
+            "BIT    $S,C",
+            "BIT    $S,D",
+            "BIT    $S,E",
+            "BIT    $S,H",
+            "BIT    $S,L",
+            "BIT    $S,(HL)",
+            "BIT    $S,A",
 
 
-        "RES    $S,B",             // Bit 0
-        "RES    $S,C",
-        "RES    $S,D",
-        "RES    $S,E",
-        "RES    $S,H",
-        "RES    $S,L",
-        "RES    $S,(HL)",
-        "RES    $S,A",
+            "RES    $S,B",             // Bit 0
+            "RES    $S,C",
+            "RES    $S,D",
+            "RES    $S,E",
+            "RES    $S,H",
+            "RES    $S,L",
+            "RES    $S,(HL)",
+            "RES    $S,A",
 
-        "RES    $S,B",             // Bit 1
-        "RES    $S,C",
-        "RES    $S,D",
-        "RES    $S,E",
-        "RES    $S,H",
-        "RES    $S,L",
-        "RES    $S,(HL)",
-        "RES    $S,A",
+            "RES    $S,B",             // Bit 1
+            "RES    $S,C",
+            "RES    $S,D",
+            "RES    $S,E",
+            "RES    $S,H",
+            "RES    $S,L",
+            "RES    $S,(HL)",
+            "RES    $S,A",
 
-        "RES    $S,B",             // Bit 2
-        "RES    $S,C",
-        "RES    $S,D",
-        "RES    $S,E",
-        "RES    $S,H",
-        "RES    $S,L",
-        "RES    $S,(HL)",
-        "RES    $S,A",
+            "RES    $S,B",             // Bit 2
+            "RES    $S,C",
+            "RES    $S,D",
+            "RES    $S,E",
+            "RES    $S,H",
+            "RES    $S,L",
+            "RES    $S,(HL)",
+            "RES    $S,A",
 
-        "RES    $S,B",             // Bit 3
-        "RES    $S,C",
-        "RES    $S,D",
-        "RES    $S,E",
-        "RES    $S,H",
-        "RES    $S,L",
-        "RES    $S,(HL)",
-        "RES    $S,A",
+            "RES    $S,B",             // Bit 3
+            "RES    $S,C",
+            "RES    $S,D",
+            "RES    $S,E",
+            "RES    $S,H",
+            "RES    $S,L",
+            "RES    $S,(HL)",
+            "RES    $S,A",
 
-        "RES    $S,B",             // Bit 4
-        "RES    $S,C",
-        "RES    $S,D",
-        "RES    $S,E",
-        "RES    $S,H",
-        "RES    $S,L",
-        "RES    $S,(HL)",
-        "RES    $S,A",
+            "RES    $S,B",             // Bit 4
+            "RES    $S,C",
+            "RES    $S,D",
+            "RES    $S,E",
+            "RES    $S,H",
+            "RES    $S,L",
+            "RES    $S,(HL)",
+            "RES    $S,A",
 
-        "RES    $S,B",             // Bit 5
-        "RES    $S,C",
-        "RES    $S,D",
-        "RES    $S,E",
-        "RES    $S,H",
-        "RES    $S,L",
-        "RES    $S,(HL)",
-        "RES    $S,A",
+            "RES    $S,B",             // Bit 5
+            "RES    $S,C",
+            "RES    $S,D",
+            "RES    $S,E",
+            "RES    $S,H",
+            "RES    $S,L",
+            "RES    $S,(HL)",
+            "RES    $S,A",
 
-        "RES    $S,B",             // Bit 6
-        "RES    $S,C",
-        "RES    $S,D",
-        "RES    $S,E",
-        "RES    $S,H",
-        "RES    $S,L",
-        "RES    $S,(HL)",
-        "RES    $S,A",
+            "RES    $S,B",             // Bit 6
+            "RES    $S,C",
+            "RES    $S,D",
+            "RES    $S,E",
+            "RES    $S,H",
+            "RES    $S,L",
+            "RES    $S,(HL)",
+            "RES    $S,A",
 
-        "RES    $S,B",             // Bit 7
-        "RES    $S,C",
-        "RES    $S,D",
-        "RES    $S,E",
-        "RES    $S,H",
-        "RES    $S,L",
-        "RES    $S,(HL)",
-        "RES    $S,A",
+            "RES    $S,B",             // Bit 7
+            "RES    $S,C",
+            "RES    $S,D",
+            "RES    $S,E",
+            "RES    $S,H",
+            "RES    $S,L",
+            "RES    $S,(HL)",
+            "RES    $S,A",
 
-        "SET    $S,B",             // Bit 0
-        "SET    $S,C",
-        "SET    $S,D",
-        "SET    $S,E",
-        "SET    $S,H",
-        "SET    $S,L",
-        "SET    $S,(HL)",
-        "SET    $S,A",
+            "SET    $S,B",             // Bit 0
+            "SET    $S,C",
+            "SET    $S,D",
+            "SET    $S,E",
+            "SET    $S,H",
+            "SET    $S,L",
+            "SET    $S,(HL)",
+            "SET    $S,A",
 
-        "SET    $S,B",             // Bit 1
-        "SET    $S,C",
-        "SET    $S,D",
-        "SET    $S,E",
-        "SET    $S,H",
-        "SET    $S,L",
-        "SET    $S,(HL)",
-        "SET    $S,A",
+            "SET    $S,B",             // Bit 1
+            "SET    $S,C",
+            "SET    $S,D",
+            "SET    $S,E",
+            "SET    $S,H",
+            "SET    $S,L",
+            "SET    $S,(HL)",
+            "SET    $S,A",
 
-        "SET    $S,B",             // Bit 2
-        "SET    $S,C",
-        "SET    $S,D",
-        "SET    $S,E",
-        "SET    $S,H",
-        "SET    $S,L",
-        "SET    $S,(HL)",
-        "SET    $S,A",
+            "SET    $S,B",             // Bit 2
+            "SET    $S,C",
+            "SET    $S,D",
+            "SET    $S,E",
+            "SET    $S,H",
+            "SET    $S,L",
+            "SET    $S,(HL)",
+            "SET    $S,A",
 
-        "SET    $S,B",             // Bit 3
-        "SET    $S,C",
-        "SET    $S,D",
-        "SET    $S,E",
-        "SET    $S,H",
-        "SET    $S,L",
-        "SET    $S,(HL)",
-        "SET    $S,A",
+            "SET    $S,B",             // Bit 3
+            "SET    $S,C",
+            "SET    $S,D",
+            "SET    $S,E",
+            "SET    $S,H",
+            "SET    $S,L",
+            "SET    $S,(HL)",
+            "SET    $S,A",
 
-        "SET    $S,B",             // Bit 4
-        "SET    $S,C",
-        "SET    $S,D",
-        "SET    $S,E",
-        "SET    $S,H",
-        "SET    $S,L",
-        "SET    $S,(HL)",
-        "SET    $S,A",
+            "SET    $S,B",             // Bit 4
+            "SET    $S,C",
+            "SET    $S,D",
+            "SET    $S,E",
+            "SET    $S,H",
+            "SET    $S,L",
+            "SET    $S,(HL)",
+            "SET    $S,A",
 
-        "SET    $S,B",             // Bit 5
-        "SET    $S,C",
-        "SET    $S,D",
-        "SET    $S,E",
-        "SET    $S,H",
-        "SET    $S,L",
-        "SET    $S,(HL)",
-        "SET    $S,A",
+            "SET    $S,B",             // Bit 5
+            "SET    $S,C",
+            "SET    $S,D",
+            "SET    $S,E",
+            "SET    $S,H",
+            "SET    $S,L",
+            "SET    $S,(HL)",
+            "SET    $S,A",
 
-        "SET    $S,B",             // Bit 6
-        "SET    $S,C",
-        "SET    $S,D",
-        "SET    $S,E",
-        "SET    $S,H",
-        "SET    $S,L",
-        "SET    $S,(HL)",
-        "SET    $S,A",
+            "SET    $S,B",             // Bit 6
+            "SET    $S,C",
+            "SET    $S,D",
+            "SET    $S,E",
+            "SET    $S,H",
+            "SET    $S,L",
+            "SET    $S,(HL)",
+            "SET    $S,A",
 
-        "SET    $S,B",             // Bit 7
-        "SET    $S,C",
-        "SET    $S,D",
-        "SET    $S,E",
-        "SET    $S,H",
-        "SET    $S,L",
-        "SET    $S,(HL)",
-        "SET    $S,A",
-            #endregion
+            "SET    $S,B",             // Bit 7
+            "SET    $S,C",
+            "SET    $S,D",
+            "SET    $S,E",
+            "SET    $S,H",
+            "SET    $S,L",
+            "SET    $S,(HL)",
+            "SET    $S,A",
 		};
+
+        #endregion Table #CB
+
+
+        #region Table #ED
 
         private static readonly string[] EDhZ80Code = new string[256] 
 		{
-            #region data
         "",             // 0x00
         "",
         "",
@@ -1094,12 +1104,15 @@ namespace ZXMAK2.Engine.Z80
         "",
         "",
         ""
-            #endregion
 		};
+
+        #endregion Table #ED
+
+
+        #region Table #DD/#FD
 
         private static readonly string[] DDFDhZ80Code = new string[256] 
 		{
-            #region data
         "",                     // 0x00
         "",
         "",
@@ -1387,12 +1400,15 @@ namespace ZXMAK2.Engine.Z80
         "*DD/FD,FD",
         "",
         ""
-            #endregion
 		};
+
+        #endregion Table #DD/#FD
+
+
+        #region Table #DD/#FD,#CB
 
         private static readonly string[] DDFDCBhZ80Code = new string[256] 
 		{
-            #region data
         "*RLC   B,($R$PLUS)",      // 0x00
         "*RLC   C,($R$PLUS)",
         "*RLC   D,($R$PLUS)",
@@ -1680,9 +1696,8 @@ namespace ZXMAK2.Engine.Z80
         "*SET   $S,L,($R$PLUS)",
         "SET    $S,($R$PLUS)",             // SET 7
         "*SET   $S,A,($R$PLUS)",
-            #endregion
 		};
 
-        #endregion
+        #endregion Table #DD/#FD,#CB
     }
 }
