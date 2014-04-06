@@ -222,7 +222,7 @@ namespace ZXMAK2.Engine
             {
                 return;
             }
-            m_host.Video.UpdateVideo(this);
+            m_host.Video.PushFrame(this);
         }
 
         private void OnUpdateFrame(object sender, EventArgs e)
@@ -283,6 +283,7 @@ namespace ZXMAK2.Engine
                 var bus = Spectrum.BusManager;
                 var host = m_host;
                 var sound = host != null ? host.Sound : null;
+                var video = host != null ? host.Video : null;
 
                 using (var input = new InputAggregator(
                     host,
@@ -304,7 +305,7 @@ namespace ZXMAK2.Engine
                         Spectrum.ExecuteFrame();
                         
                         // frame sync
-                        if (!MaxSpeed && sound != null)
+                        if (sound != null && !MaxSpeed)
                         {
                             sound.WaitFrame();
                         }
@@ -410,6 +411,11 @@ namespace ZXMAK2.Engine
                 if (sound != null)
                 {
                     sound.CancelWait();
+                }
+                var video = host != null ? host.Video : null;
+                if (video != null)
+                {
+                    video.CancelWait();
                 }
                 var thread = m_thread;
                 m_thread = null;

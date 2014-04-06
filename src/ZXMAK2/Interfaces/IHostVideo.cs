@@ -7,6 +7,8 @@ namespace ZXMAK2.Interfaces
 {
     public interface IHostVideo
     {
-        void UpdateVideo(VirtualMachine vm);
+        void WaitFrame();
+        void CancelWait();
+        void PushFrame(VirtualMachine vm);
     }
 }
