@@ -19,7 +19,8 @@ namespace ZXMAK2.Hardware.Sprinter.UI
     {
         private DasmPanel dasmPanel;
         private DataPanel dataPanel;
-        private DasmUtils m_dasmUtils;
+        private DasmTool m_dasmTool;
+        private TimingTool m_timingTool;
         private IDebuggable m_spectrum;
         private static int s_addr;
         private static int s_len;
@@ -125,8 +126,8 @@ namespace ZXMAK2.Hardware.Sprinter.UI
 
         private void dasmPanel_GetDasm(object Sender, ushort ADDR, out string DASM, out int len)
         {
-            string str = Z80CPU.GetMnemonic(new OnRDBUS(m_spectrum.ReadMemory), ADDR, true, out len);
-            string timingInfo = m_dasmUtils.GetTimingInfo(ADDR);
+            var str = m_dasmTool.GetMnemonic(ADDR, out len);
+            var timingInfo = m_timingTool.GetTimingString(ADDR);
             DASM = string.Format("{0,-24} ; {1}", str, timingInfo);
         }
 
@@ -301,7 +302,8 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                     //pevo_bdi = bus.FindDevice(typeof(BDI)) as BDI;
                     // ZEK ---
 
-                    m_dasmUtils = new DasmUtils(m_spectrum.CPU, new OnRDBUS(debugTarget.ReadMemory));
+                    m_dasmTool = new DasmTool(debugTarget.ReadMemory);
+                    m_timingTool = new TimingTool(m_spectrum.CPU, debugTarget.ReadMemory);
                     m_spectrum.UpdateState += new EventHandler(spectrum_OnUpdateState);
                     m_spectrum.Breakpoint += new EventHandler(spectrum_OnBreakpoint);
                 }
