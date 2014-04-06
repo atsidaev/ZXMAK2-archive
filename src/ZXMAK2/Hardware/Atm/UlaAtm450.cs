@@ -159,6 +159,7 @@ namespace ZXMAK2.Hardware.Atm
             int page8000,
             int pageC000)
         {
+            // TODO: replace with this.SetPageMappingAtm(AtmVideoMode.Std256x192, ...)?
             base.SetPageMapping(videoPage, page0000, page4000, page8000, pageC000);
             m_mode = AtmVideoMode.Std256x192;
             Renderer = SpectrumRenderer;
@@ -295,6 +296,7 @@ namespace ZXMAK2.Hardware.Atm
         {
             base.OnRendererInit();
 
+            // FIXME: assign new value will not raise OnParamsChanged!
             SpectrumRenderer.Params.c_frameTactCount *= 2;
             Atm320Renderer.Params.c_frameTactCount *= 2;
             Atm640Renderer.Params.c_frameTactCount *= 2;
@@ -303,6 +305,15 @@ namespace ZXMAK2.Hardware.Atm
             EvoTxtRenderer.Params.c_frameTactCount *= 2;
             EvoHwmRenderer.Params.c_frameTactCount *= 2;
             EvoA16Renderer.Params.c_frameTactCount *= 2;
+
+            // kludge fix to raise OnParamsChanged
+            SpectrumRenderer.Params = SpectrumRenderer.Params;
+            Atm320Renderer.Params = Atm320Renderer.Params;
+            Atm640Renderer.Params = Atm640Renderer.Params;
+            AtmTxtRenderer.Params = AtmTxtRenderer.Params;
+            EvoTxtRenderer.Params = EvoTxtRenderer.Params;
+            EvoHwmRenderer.Params = EvoHwmRenderer.Params;
+            EvoA16Renderer.Params = EvoA16Renderer.Params;
         }
     }
 }
