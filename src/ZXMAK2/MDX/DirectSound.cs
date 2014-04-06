@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectSound;
 using ZXMAK2.Interfaces;
+using System.Collections.Generic;
 
 
 
@@ -27,16 +28,16 @@ namespace ZXMAK2.MDX
 		private bool _isFinished;
 
 
-		public DirectSound(Control mainForm, int device,
+        public DirectSound(Control mainForm, int device,
 			int samplesPerSecond, short bitsPerSample, short channels,
 			int bufferSize, int bufferCount)
 		{
-			_fillQueue = new Queue(bufferCount);
-			_playQueue = new Queue(bufferCount);
-			for (int i = 0; i < bufferCount; i++)
-				_fillQueue.Enqueue(new byte[bufferSize]);
-			
-			
+			_fillQueue = new Queue<byte[]>(bufferCount);
+			_playQueue = new Queue<byte[]>(bufferCount);
+            for (int i = 0; i < bufferCount; i++)
+            {
+                _fillQueue.Enqueue(new byte[bufferSize]);
+            }
 			_bufferSize = bufferSize;
 			_bufferCount = bufferCount;
 			_zeroValue = bitsPerSample == 8 ? (byte)128 : (byte)0;
@@ -44,7 +45,7 @@ namespace ZXMAK2.MDX
 			_device = new Device();
 			_device.SetCooperativeLevel(mainForm, CooperativeLevel.Priority);
 
-			WaveFormat wf = new WaveFormat();
+			var wf = new WaveFormat();
 			wf.FormatTag = WaveFormatTag.Pcm;
 			wf.SamplesPerSecond = samplesPerSecond;
 			wf.BitsPerSample = bitsPerSample;
@@ -53,7 +54,7 @@ namespace ZXMAK2.MDX
 			wf.AverageBytesPerSecond = (int)wf.SamplesPerSecond * (int)wf.BlockAlign;
 
 			// Create a buffer
-			BufferDescription bufferDesc = new BufferDescription(wf);
+			var bufferDesc = new BufferDescription(wf);
 			bufferDesc.BufferBytes = _bufferSize * _bufferCount;
 			bufferDesc.ControlPositionNotify = true;
 			bufferDesc.GlobalFocus = true;
@@ -61,7 +62,7 @@ namespace ZXMAK2.MDX
 			_soundBuffer = new SecondaryBuffer(bufferDesc, _device);
 
 			_notify = new Notify(_soundBuffer);
-			BufferPositionNotify[] posNotify = new BufferPositionNotify[_bufferCount];
+			var posNotify = new BufferPositionNotify[_bufferCount];
 			for (int i = 0; i < posNotify.Length; i++)
 			{
 				posNotify[i] = new BufferPositionNotify();
@@ -70,9 +71,9 @@ namespace ZXMAK2.MDX
 			}
 			_notify.SetNotificationPositions(posNotify);
 
-			_waveFillThread = new Thread(new ThreadStart(waveFillThreadProc));
+			_waveFillThread = new Thread(new ThreadStart(WaveFillThreadProc));
 			_waveFillThread.IsBackground = true;
-			_waveFillThread.Name = "Wave fill thread";
+            _waveFillThread.Name = "DirectSound.WaveFillThreadProc";
 			_waveFillThread.Priority = ThreadPriority.Highest;
 			_waveFillThread.Start();
 		}
@@ -109,12 +110,10 @@ namespace ZXMAK2.MDX
 			}
 		}
 
-		private unsafe void waveFillThreadProc()
+		private void WaveFillThreadProc()
 		{
-			int lastWrittenBuffer = -1;
-			byte[] sampleData = new byte[_bufferSize];
-
-
+			var lastWrittenBuffer = -1;
+			var sampleData = new byte[_bufferSize];
 			fixed (byte* lpSampleData = sampleData)
 			{
 				try
@@ -123,10 +122,11 @@ namespace ZXMAK2.MDX
 					while (!_isFinished)
 					{
 						_fillEvent.WaitOne();
-
-						for (int i = (lastWrittenBuffer + 1) % _bufferCount; i != (_soundBuffer.PlayPosition / _bufferSize); i = ++i % _bufferCount)
+                        var stIndex = (lastWrittenBuffer + 1) % _bufferCount;
+                        var playingIndex = (_soundBuffer.PlayPosition / _bufferSize);
+                        for (var i = stIndex; i != playingIndex; i = ++i % _bufferCount)
 						{
-							OnBufferFill((IntPtr)lpSampleData, sampleData.Length);
+							OnBufferFill(lpSampleData, sampleData.Length);
 							_soundBuffer.Write(_bufferSize * i, sampleData, LockFlag.None);
 							lastWrittenBuffer = i;
 						}
@@ -139,56 +139,153 @@ namespace ZXMAK2.MDX
 			}
 		}
 
-		protected void OnBufferFill(IntPtr buffer, int length)
-		{
-			byte[] buf = null;
-			lock (_playQueue.SyncRoot)
-				if (_playQueue.Count > 0)
-					buf = _playQueue.Dequeue() as byte[];
-			if (buf != null)
-			{
-				//Marshal.Copy(buf, 0, buffer, length);
-				//fixed(uint* lsp = &lastSample)
-				//   Marshal.Copy(buf, length - 4, (IntPtr)lsp, 4);
-				uint* dst = (uint*)buffer;
-				fixed (byte* srcb = buf)
-				{
-					uint* src = (uint*)srcb;
-					for (int i = 0; i < length / 4; i++)
-						dst[i] = src[i];
-					lastSample = dst[length / 4 - 1];
-				}
-				lock (_fillQueue.SyncRoot)
-					_fillQueue.Enqueue(buf);
-			}
-			else
-			{
-				uint* dst = (uint*)buffer;
-				for (int i = 0; i < length / 4; i++)
-					dst[i] = lastSample;
-			}
-		}
+        protected void OnBufferFill(byte* buffer, int length)
+        {
+            byte[] buf = null;
+            lock (_playQueue)
+            {
+                if (_playQueue.Count > 0)
+                {
+                    buf = _playQueue.Dequeue();
+                }
+            }
+            uint* dst = (uint*)buffer;
+            if (buf == null)
+            {
+                for (var i = 0; i < length / 4; i++)
+                {
+                    dst[i] = lastSample;
+                }
+                return;
+            }
+            fixed (byte* srcb = buf)
+            {
+                uint* src = (uint*)srcb;
+                for (var i = 0; i < length / 4; i++)
+                {
+                    dst[i] = src[i];
+                }
+                lastSample = dst[length / 4 - 1];
+            }
+            lock (_fillQueue)
+            {
+                _fillQueue.Enqueue(buf);
+            }
+            m_frameEvent.Set();
+        }
 
-		private Queue _fillQueue = null;
-		private Queue _playQueue = null;
-		private uint lastSample = 0;
+		private readonly Queue<byte[]> _fillQueue;
+		private readonly Queue<byte[]> _playQueue;
+		private uint lastSample;
 		
 		
-		public byte[] LockBuffer()
+		private byte[] LockBuffer()
 		{
-			byte[] sndbuf = null;
-			lock (_fillQueue.SyncRoot)
-				if (_fillQueue.Count > 0)
-					sndbuf = _fillQueue.Dequeue() as byte[];
-			return sndbuf;
+            lock (_fillQueue)
+            {
+                if (_fillQueue.Count > 0)
+                {
+                    return _fillQueue.Dequeue();
+                }
+                return null;
+            }
 		}
 
-		public void UnlockBuffer(byte[] sndbuf)
+		private void UnlockBuffer(byte[] sndbuf)
 		{
-			lock (_playQueue.SyncRoot)
-				_playQueue.Enqueue(sndbuf);
+            lock (_playQueue)
+            {
+                _playQueue.Enqueue(sndbuf);
+            }
 		}
 
-		public int QueueLoadState { get { return (int)(_playQueue.Count * 100.0 / _fillQueue.Count); } }
-	}
+		public int QueueLoadState 
+        { 
+            get 
+            {
+                lock (_playQueue)
+                {
+                    return (int)(_playQueue.Count * 100.0 / _fillQueue.Count);
+                }
+            }
+        }
+
+
+        #region IHostSound
+
+        private readonly AutoResetEvent m_frameEvent = new AutoResetEvent(false);
+        private readonly AutoResetEvent m_cancelEvent = new AutoResetEvent(false);
+        private readonly Queue<byte[]> m_frames = new Queue<byte[]>();
+
+        public void WaitFrame()
+        {
+            lock (_playQueue)
+            {
+                if (_fillQueue.Count > 0)
+                {
+                    return;
+                }
+                m_frameEvent.Reset();
+                m_cancelEvent.Reset();
+            }
+            WaitHandle.WaitAny(new[] { m_frameEvent, m_cancelEvent });
+        }
+
+        public void CancelWait()
+        {
+            m_cancelEvent.Set();
+        }
+
+        public void PushFrame(uint[][] frameBuffers)
+        {
+            if (frameBuffers == null)
+            {
+                return;
+            }
+            var buffer = LockBuffer();
+            if (buffer == null)
+            {
+                return;
+            }
+            Mix(buffer, frameBuffers);
+            UnlockBuffer(buffer);
+        }
+
+        #endregion IHostSound
+
+        private void Mix(byte[] dst, uint[][] bufferArray)
+        {
+            fixed (byte* bptr = dst)
+            {
+                var uiptr = (uint*)bptr;
+                for (var i = 0; i < dst.Length / 4; i++)    // clean buffer
+                {
+                    uint value1 = 0;
+                    uint value2 = 0;
+                    if (bufferArray.Length > 0)
+                    {
+                        for (int j = 0; j < bufferArray.Length; j++)
+                        {
+                            value1 += bufferArray[j][i] >> 16;
+                            value2 += bufferArray[j][i] & 0xFFFF;
+                        }
+                        value1 /= (uint)bufferArray.Length;
+                        value2 /= (uint)bufferArray.Length;
+                    }
+                    uiptr[i] = (value1 << 16) | value2;
+                }
+
+                //for (int i = 0; i < dst.Length / 4; i++)    // clean buffer
+                //    uiptr[i] = 0;
+                //foreach (uint[] buffer in bufferArray)       // mix sound sources
+                //    fixed (uint* uibuffer = buffer)
+                //        for (int i = 0; i < dst.Length/4; i++)
+                //        {
+                //            uint s1 = uiptr[i];
+                //            uint s2 = uibuffer[i];
+                //            uiptr[i] = ((((s1 >> 16) + (s2 >> 16)) / 2) << 16) | (((s1 & 0xFFFF) + (s2 & 0xFFFF)) / 2);
+                //        }
+            }
+        }
+    }
 }
