@@ -6,26 +6,28 @@ namespace ZXMAK2.Engine.Z80
 {
     public class TimingTool
     {
-        private Z80CPU Object;
-        private Func<byte, ushort> _memRead;
+        private readonly Z80CPU _cpu;
+        private readonly Func<byte, ushort> _memRead;
 
         
         public TimingTool(Z80CPU cpu, Func<byte, ushort> reader)
         {
-            Object = cpu;
+            _cpu = cpu;
             _memRead = reader;
         }
 
         public string GetTimingString(int addr)
         {
             var t = GetTiming(addr);
-            return string.Format(
-                "{0}T",
-                (t >= 0) ? t.ToString() : "N/A");
+            return t.HasValue ? string.Format("{0}T", t) : "N/A";
         }
 
-        public int GetTiming(int addr)
+        public int? GetTiming(int addr)
         {
+            if (_memRead == null || _cpu == null)
+            {
+                return null;
+            }
             var tableNumber = 0;
             var perfTime = 0;
             var offset = 0;
@@ -52,7 +54,7 @@ namespace ZXMAK2.Engine.Z80
                 if (perfTime > 1500000)
                 {
                     LogAgent.Warn("TimingTool.GetTiming: {0}T reached!", perfTime); 
-                    return int.MaxValue;
+                    return null;
                 }
             }
             switch (opCode)
@@ -98,40 +100,46 @@ namespace ZXMAK2.Engine.Z80
             LogAgent.Error(
                 "TimingTool.GetTiming: unexpected opCode #{0:2X}", 
                 opCode);
-            return -1;
+            return null;
         }
+
+
+        #region Private
 
         private int DjnzTime(int timeBase, int timeEnd, int timeNoEnd)
         {
-            var ifTime = Object.regs.B == 0x01 ? timeEnd : timeNoEnd;
+            var ifTime = _cpu.regs.B == 0x01 ? timeEnd : timeNoEnd;
             return timeBase + ifTime;
         }
 
         private int FlagTime(int timeBase, int timeOn, int timeOff, int flagMask)
         {
-            var ifTime = (Object.regs.F & flagMask) != 0 ? timeOn : timeOff;
+            var ifTime = (_cpu.regs.F & flagMask) != 0 ? timeOn : timeOff;
             return timeBase + ifTime;
         }
 
         private int RepTime(int perfTime, int timeEnd, int timeNoEnd)
         {
-            var ifTime = Object.regs.BC == 0x0001 ? timeEnd : timeNoEnd;
+            var ifTime = _cpu.regs.BC == 0x0001 ? timeEnd : timeNoEnd;
             return perfTime + ifTime;
         }
 
         private int RepFlagTime(int timeEnd, int timeOn, int timeOff, int perfTime)
         {
-            if (Object.regs.BC == 0x0001)
+            if (_cpu.regs.BC == 0x0001)
             {
                 return perfTime + timeEnd;
             }
-            var data = _memRead(Object.regs.HL);
-            var ifTime = Object.regs.F == data ? timeOn : timeOff;
+            var data = _memRead(_cpu.regs.HL);
+            var ifTime = _cpu.regs.F == data ? timeOn : timeOff;
             return perfTime + ifTime;
         }
 
+        #endregion Private
+
+
         #region Dictionary Tables
-        
+
         private static int[] TaktsDirect = {
         0x04,0x0A,0x07,0x06,0x04,0x04,0x07,0x04, //;00h-07h
         0x04,0x0B,0x07,0x06,0x04,0x04,0x07,0x04, //;08h-0Fh
