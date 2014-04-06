@@ -59,6 +59,7 @@ namespace ZXMAK2.MVP
         public ICommand CommandFileSave { get; private set; }
         public ICommand CommandFileExit { get; private set; }
         public ICommand CommandViewFullScreen { get; private set; }
+        public ICommand CommandViewSyncVBlank { get; private set; }
         public ICommand CommandVmPause { get; private set; }
         public ICommand CommandVmMaxSpeed { get; private set; }
         public ICommand CommandVmWarmReset { get; private set; }
@@ -137,6 +138,7 @@ namespace ZXMAK2.MVP
             CommandFileSave = new CommandDelegate(CommandFileSave_OnExecute);
             CommandFileExit = new CommandDelegate(CommandFileExit_OnExecute);
             CommandViewFullScreen = new CommandDelegate(CommandViewFullScreen_OnExecute);
+            CommandViewSyncVBlank = new CommandDelegate(CommandViewSyncVBlank_OnExecute, CommandViewSyncVBlank_CanExecute);
             CommandVmPause = new CommandDelegate(CommandVmPause_OnExecute);
             CommandVmMaxSpeed = new CommandDelegate(CommandVmMaxSpeed_OnExecute);
             CommandVmWarmReset = new CommandDelegate(CommandVmWarmReset_OnExecute);
@@ -211,6 +213,22 @@ namespace ZXMAK2.MVP
             CommandViewFullScreen.Text = value ? "Windowed" : "Full Screen";
         }
 
+        private bool CommandViewSyncVBlank_CanExecute(object objState)
+        {
+            return !CommandVmMaxSpeed.Checked;
+        }
+
+        private void CommandViewSyncVBlank_OnExecute(object objState)
+        {
+            var state = objState as bool?;
+            var value = CommandViewSyncVBlank.Checked;
+            value = state.HasValue ? state.Value : !value;
+            CommandViewSyncVBlank.Checked = value;
+            m_vm.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None :
+                CommandViewSyncVBlank.Checked ? SyncSource.Video :
+                SyncSource.Sound;
+        }
+
         private void CommandVmPause_OnExecute()
         {
             if (m_vm == null)
@@ -234,7 +252,9 @@ namespace ZXMAK2.MVP
                 return;
             }
             CommandVmMaxSpeed.Checked = !CommandVmMaxSpeed.Checked;
-            m_vm.MaxSpeed = CommandVmMaxSpeed.Checked;
+            m_vm.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None :
+                CommandViewSyncVBlank.Checked ? SyncSource.Video :
+                SyncSource.Sound;
             //applyRenderSetting();  ???
         }
 

@@ -94,10 +94,17 @@ namespace ZXMAK2.MVP.WinForms
 
         public void Bind(MainPresenter presenter)
         {
+            if (presenter.CommandViewSyncVBlank != null)
+            {
+                // set back to apply registry setting
+                OnCommand(presenter.CommandViewSyncVBlank, menuViewVBlankSync.Checked);
+            }
+
             BindMenuCommand(menuFileOpen, presenter.CommandFileOpen, this);
             BindMenuCommand(menuFileSaveAs, presenter.CommandFileSave, this);
             BindMenuCommand(menuFileExit, presenter.CommandFileExit);
             BindMenuCommand(menuViewFullScreen, presenter.CommandViewFullScreen);
+            BindMenuCommand(menuViewVBlankSync, presenter.CommandViewSyncVBlank);
             BindMenuCommand(menuVmPause, presenter.CommandVmPause);
             BindMenuCommand(menuVmMaximumSpeed, presenter.CommandVmMaxSpeed);
             BindMenuCommand(menuVmWarmReset, presenter.CommandVmWarmReset);
@@ -678,7 +685,7 @@ namespace ZXMAK2.MVP.WinForms
             renderVideo.Smoothing = menuViewSmoothing.Checked;
             renderVideo.NoFlic = menuViewNoFlic.Checked;
             renderVideo.ScaleMode = GetSelectedScaleMode();
-            renderVideo.VBlankSync = menuViewVBlankSync.Checked && !menuVmMaximumSpeed.Checked;
+            //renderVideo.VBlankSync = menuViewVBlankSync.Checked && !menuVmMaximumSpeed.Checked;
             renderVideo.DisplayIcon = menuViewDisplayIcon.Checked;
             renderVideo.DebugInfo = menuViewDebugInfo.Checked;
             renderVideo.Invalidate();
