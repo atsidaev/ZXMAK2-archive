@@ -107,6 +107,8 @@ namespace ZXMAK2.MVP.WinForms
             
             // FIXME: stupid synchronization, 
             // because there is no event from Direct3D
+            var frameRest = D3D.DisplayMode.RefreshRate % 50;
+            var frameRatio = frameRest != 0 ? 50 / frameRest : 0;
             _isCancel = false;
             while (!_isCancel)
             {
@@ -121,7 +123,7 @@ namespace ZXMAK2.MVP.WinForms
                         break;
                     }
                 }
-                if (++_syncFrame > 2)
+                if (frameRatio > 0 && ++_syncFrame > frameRatio)
                 {
                     _syncFrame = 0;
                     continue;

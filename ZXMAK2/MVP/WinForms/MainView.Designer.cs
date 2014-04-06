@@ -116,24 +116,24 @@
             // menuFileOpen
             // 
             this.menuFileOpen.Name = "menuFileOpen";
-            this.menuFileOpen.Size = new System.Drawing.Size(152, 22);
+            this.menuFileOpen.Size = new System.Drawing.Size(123, 22);
             this.menuFileOpen.Text = "Open...";
             // 
             // menuFileSaveAs
             // 
             this.menuFileSaveAs.Name = "menuFileSaveAs";
-            this.menuFileSaveAs.Size = new System.Drawing.Size(152, 22);
+            this.menuFileSaveAs.Size = new System.Drawing.Size(123, 22);
             this.menuFileSaveAs.Text = "Save As...";
             // 
             // menuFileSeparator
             // 
             this.menuFileSeparator.Name = "menuFileSeparator";
-            this.menuFileSeparator.Size = new System.Drawing.Size(149, 6);
+            this.menuFileSeparator.Size = new System.Drawing.Size(120, 6);
             // 
             // menuFileExit
             // 
             this.menuFileExit.Name = "menuFileExit";
-            this.menuFileExit.Size = new System.Drawing.Size(152, 22);
+            this.menuFileExit.Size = new System.Drawing.Size(123, 22);
             this.menuFileExit.Text = "Exit";
             // 
             // menuView
@@ -332,48 +332,50 @@
             // menuVmPause
             // 
             this.menuVmPause.Name = "menuVmPause";
-            this.menuVmPause.Size = new System.Drawing.Size(223, 22);
+            this.menuVmPause.ShortcutKeyDisplayString = "Pause";
+            this.menuVmPause.Size = new System.Drawing.Size(226, 22);
             this.menuVmPause.Text = "Pause";
             // 
             // menuVmMaximumSpeed
             // 
             this.menuVmMaximumSpeed.Name = "menuVmMaximumSpeed";
-            this.menuVmMaximumSpeed.Size = new System.Drawing.Size(223, 22);
+            this.menuVmMaximumSpeed.ShortcutKeyDisplayString = "Ctrl+Scroll";
+            this.menuVmMaximumSpeed.Size = new System.Drawing.Size(226, 22);
             this.menuVmMaximumSpeed.Text = "Maximum Speed";
             // 
             // menuVmSeparator1
             // 
             this.menuVmSeparator1.Name = "menuVmSeparator1";
-            this.menuVmSeparator1.Size = new System.Drawing.Size(220, 6);
+            this.menuVmSeparator1.Size = new System.Drawing.Size(223, 6);
             // 
             // menuVmWarmReset
             // 
             this.menuVmWarmReset.Name = "menuVmWarmReset";
             this.menuVmWarmReset.ShortcutKeyDisplayString = "Alt+Ctrl+Insert";
-            this.menuVmWarmReset.Size = new System.Drawing.Size(223, 22);
+            this.menuVmWarmReset.Size = new System.Drawing.Size(226, 22);
             this.menuVmWarmReset.Text = "Warm Reset";
             // 
             // menuVmColdReset
             // 
             this.menuVmColdReset.Name = "menuVmColdReset";
-            this.menuVmColdReset.Size = new System.Drawing.Size(223, 22);
+            this.menuVmColdReset.Size = new System.Drawing.Size(226, 22);
             this.menuVmColdReset.Text = "Cold Reset";
             // 
             // menuVmNmi
             // 
             this.menuVmNmi.Name = "menuVmNmi";
-            this.menuVmNmi.Size = new System.Drawing.Size(223, 22);
+            this.menuVmNmi.Size = new System.Drawing.Size(226, 22);
             this.menuVmNmi.Text = "NMI";
             // 
             // menuVmSeparator2
             // 
             this.menuVmSeparator2.Name = "menuVmSeparator2";
-            this.menuVmSeparator2.Size = new System.Drawing.Size(220, 6);
+            this.menuVmSeparator2.Size = new System.Drawing.Size(223, 6);
             // 
             // menuVmSettings
             // 
             this.menuVmSettings.Name = "menuVmSettings";
-            this.menuVmSettings.Size = new System.Drawing.Size(223, 22);
+            this.menuVmSettings.Size = new System.Drawing.Size(226, 22);
             this.menuVmSettings.Text = "Settings";
             // 
             // menuTools
