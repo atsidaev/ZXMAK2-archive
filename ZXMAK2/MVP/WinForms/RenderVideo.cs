@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using ZXMAK2.Entities;
 using System.Diagnostics;
 using ZXMAK2.Interfaces;
+using System.Threading;
 
 
 namespace ZXMAK2.MVP.WinForms
@@ -29,6 +30,7 @@ namespace ZXMAK2.MVP.WinForms
 
         private unsafe DrawFilterDelegate m_drawFilter;
         private unsafe delegate void DrawFilterDelegate(int* dstBuffer, int* srcBuffer);
+        //private Thread _threadVBlankScan;
 
         #endregion Fields
 
@@ -63,10 +65,54 @@ namespace ZXMAK2.MVP.WinForms
             ScaleMode = ScaleMode.FixedPixelSize;
         }
 
+        //private void ThreadVBlankScanProc()
+        //{
+        //    var frame = 0;
+        //    var vblank = false;
+        //    while (_threadVBlankScan != null)
+        //    {
+        //        var value = D3D.RasterStatus.InVBlank;
+        //        var change = vblank != value;
+        //        vblank = value;
+        //        if (change && value)
+        //        {
+        //            frame++;
+        //            if (frame < 3)
+        //            {
+        //                m_vblankEvent.Set();
+        //                Thread.Sleep(10);
+        //            }
+        //            else
+        //            {
+        //                frame = 0;
+        //            }
+        //        }
+        //        //Thread.Sleep(0);
+        //    }
+        //}
+
 
         #region IHostVideo
 
-        public void UpdateVideo(VirtualMachine vm)
+        //private readonly AutoResetEvent m_cancelEvent = new AutoResetEvent(false);
+        //private readonly AutoResetEvent m_vblankEvent = new AutoResetEvent(false);
+        private bool _isCancel;
+
+        public void WaitFrame()
+        {
+            //m_cancelEvent.Reset();
+            //WaitHandle.WaitAny(new[] { m_vblankEvent, m_cancelEvent });
+            _isCancel = false;
+            while (!_isCancel && !D3D.RasterStatus.InVBlank) ;
+        }
+
+        public void CancelWait()
+        {
+            //m_cancelEvent.Set();
+            _isCancel = true;
+        }
+        
+        public void PushFrame(VirtualMachine vm)
         {
             UpdateIcons(vm.Spectrum.BusManager.IconDescriptorArray);
             m_debugFrameStart = vm.DebugFrameStartTact;
@@ -83,10 +129,21 @@ namespace ZXMAK2.MVP.WinForms
             base.OnCreateDevice();
             m_sprite = new Sprite(D3D);
             m_iconSprite = new Sprite(D3D);
+            //_threadVBlankScan = new Thread(ThreadVBlankScanProc);
+            //_threadVBlankScan.Priority = ThreadPriority.Highest;
+            //_threadVBlankScan.IsBackground = false;
+            //_threadVBlankScan.Name = "RenderVideo.ThreadVBlankScanProc";
+            //_threadVBlankScan.Start();
         }
 
         protected override void OnDestroyDevice()
         {
+            //if (_threadVBlankScan != null)
+            //{
+            //    var thread = _threadVBlankScan;
+            //    _threadVBlankScan = null;
+            //    thread.Join();
+            //}
             if (m_texture != null)
             {
                 m_texture.Dispose();

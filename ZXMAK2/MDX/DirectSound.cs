@@ -225,7 +225,7 @@ namespace ZXMAK2.MDX
                 {
                     return;
                 }
-                m_frameEvent.Reset();
+                //m_frameEvent.Reset();
                 m_cancelEvent.Reset();
             }
             WaitHandle.WaitAny(new[] { m_frameEvent, m_cancelEvent });
