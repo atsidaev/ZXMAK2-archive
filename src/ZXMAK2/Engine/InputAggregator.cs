@@ -39,6 +39,10 @@ namespace ZXMAK2.Engine
 
         private void Capture()
         {
+            if (m_hostJoystick == null)
+            {
+                return;
+            }
             var list = new List<string>();
             foreach (var j in m_joysticks)
             {
@@ -52,6 +56,10 @@ namespace ZXMAK2.Engine
 
         private void Release()
         {
+            if (m_hostJoystick == null)
+            {
+                return;
+            }
             var list = new List<string>();
             foreach (var j in m_joysticks)
             {
@@ -73,7 +81,10 @@ namespace ZXMAK2.Engine
                 {
                     kbd.KeyboardState = m_hostKeyboard.State;
                 }
-                m_hostJoystick.KeyboardState = m_hostKeyboard.State;
+                if (m_hostJoystick != null)
+                {
+                    m_hostJoystick.KeyboardState = m_hostKeyboard.State;
+                }
             }
             if (m_hostMouse != null && m_mouses.Length > 0)
             {

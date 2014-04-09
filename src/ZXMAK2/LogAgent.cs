@@ -8,12 +8,12 @@ namespace ZXMAK2
 {
     public static class LogAgent
     {
-        internal static void Start()
+        public static void Start()
         {
             LoggerInternal.Start();
         }
 
-        internal static void Finish()
+        public static void Finish()
         {
             LoggerInternal.Finish();
         }
