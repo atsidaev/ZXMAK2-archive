@@ -228,7 +228,7 @@ namespace ZXMAK2.Engine
 
         private void OnUpdateFrame(object sender, EventArgs e)
         {
-            if (m_host == null || m_host.Sound == null)
+            if (m_host == null)
             {
                 return;
             }
