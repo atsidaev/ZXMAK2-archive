@@ -238,10 +238,6 @@ namespace ZXMAK2.MDX
 
         public void PushFrame(uint[][] frameBuffers)
         {
-            if (frameBuffers == null)
-            {
-                return;
-            }
             var buffer = LockBuffer();
             if (buffer == null)
             {
