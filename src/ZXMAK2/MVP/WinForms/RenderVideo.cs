@@ -30,7 +30,8 @@ namespace ZXMAK2.MVP.WinForms
 
         private unsafe DrawFilterDelegate m_drawFilter;
         private unsafe delegate void DrawFilterDelegate(int* dstBuffer, int* srcBuffer);
-        //private Thread _threadVBlankScan;
+        private readonly FpsMonitor m_fpsUpdate = new FpsMonitor();
+        private readonly FpsMonitor m_fpsRender = new FpsMonitor();
 
         #endregion Fields
 
@@ -65,46 +66,14 @@ namespace ZXMAK2.MVP.WinForms
             ScaleMode = ScaleMode.FixedPixelSize;
         }
 
-        //private void ThreadVBlankScanProc()
-        //{
-        //    var frame = 0;
-        //    var vblank = false;
-        //    while (_threadVBlankScan != null)
-        //    {
-        //        var value = D3D.RasterStatus.InVBlank;
-        //        var change = vblank != value;
-        //        vblank = value;
-        //        if (change && value)
-        //        {
-        //            frame++;
-        //            if (frame < 3)
-        //            {
-        //                m_vblankEvent.Set();
-        //                Thread.Sleep(10);
-        //            }
-        //            else
-        //            {
-        //                frame = 0;
-        //            }
-        //        }
-        //        //Thread.Sleep(0);
-        //    }
-        //}
-
-
         #region IHostVideo
 
-        //private readonly AutoResetEvent m_cancelEvent = new AutoResetEvent(false);
-        //private readonly AutoResetEvent m_vblankEvent = new AutoResetEvent(false);
         private bool _isCancel;
         private int _syncFrame;
         private bool _vblankValue;
 
         public void WaitFrame()
         {
-            //m_cancelEvent.Reset();
-            //WaitHandle.WaitAny(new[] { m_vblankEvent, m_cancelEvent });
-            
             // FIXME: stupid synchronization, 
             // because there is no event from Direct3D
             var frameRest = D3D.DisplayMode.RefreshRate % 50;
@@ -134,12 +103,12 @@ namespace ZXMAK2.MVP.WinForms
 
         public void CancelWait()
         {
-            //m_cancelEvent.Set();
             _isCancel = true;
         }
         
         public void PushFrame(VirtualMachine vm)
         {
+            m_fpsUpdate.Frame();
             UpdateIcons(vm.Spectrum.BusManager.IconDescriptorArray);
             m_debugFrameStart = vm.DebugFrameStartTact;
             UpdateSurface(vm.VideoData);
@@ -155,21 +124,10 @@ namespace ZXMAK2.MVP.WinForms
             base.OnCreateDevice();
             m_sprite = new Sprite(D3D);
             m_iconSprite = new Sprite(D3D);
-            //_threadVBlankScan = new Thread(ThreadVBlankScanProc);
-            //_threadVBlankScan.Priority = ThreadPriority.Highest;
-            //_threadVBlankScan.IsBackground = false;
-            //_threadVBlankScan.Name = "RenderVideo.ThreadVBlankScanProc";
-            //_threadVBlankScan.Start();
         }
 
         protected override void OnDestroyDevice()
         {
-            //if (_threadVBlankScan != null)
-            //{
-            //    var thread = _threadVBlankScan;
-            //    _threadVBlankScan = null;
-            //    thread.Join();
-            //}
             if (m_texture != null)
             {
                 m_texture.Dispose();
@@ -280,6 +238,7 @@ namespace ZXMAK2.MVP.WinForms
             {
                 if (m_texture != null)
                 {
+                    m_fpsRender.Frame();
                     m_sprite.Begin(SpriteFlags.None);
 
                     ////if (d3d.DeviceCaps.TextureFilterCaps.SupportsMinifyAnisotropic)
@@ -358,8 +317,9 @@ namespace ZXMAK2.MVP.WinForms
                         m_lastTick = tick;
                         var fps = MeasureFramePerSecond(frameTime);
                         var textValue = string.Format(
-                            "Render FPS: {0:F2}\nDevice FPS: {1}\nBack: [{2}, {3}]\nClient: [{4}, {5}]\nSurface: [{6}, {7}]\nFrameStart: {8}T",
-                            fps,
+                            "Render FPS: {0:F3}\nUpdate FPS: {1:F3}\nDevice FPS: {2}\nBack: [{3}, {4}]\nClient: [{5}, {6}]\nSurface: [{7}, {8}]\nFrameStart: {9}T",
+                            m_fpsRender.Value,
+                            m_fpsUpdate.Value,
                             D3D.DisplayMode.RefreshRate,
                             D3D.PresentationParameters.BackBufferWidth,
                             D3D.PresentationParameters.BackBufferHeight,

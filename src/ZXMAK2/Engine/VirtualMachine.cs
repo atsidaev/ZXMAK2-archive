@@ -208,7 +208,7 @@ namespace ZXMAK2.Engine
         {
             var host = m_host;
             var sound = host != null ? host.Sound : null;
-            if (sound == null)
+            if (sound == null || m_soundBuffers == null)
             {
                 return;
             }
