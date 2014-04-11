@@ -47,7 +47,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
         private IDebuggable m_spectrum;
 
         private bool compileFromFile = false; //if loaded from file then --binfile compile parameter will be used
-        private string actualLoadedFile = String.Empty;
+        private string m_actualLoadedFile = String.Empty;
 
         private static Assembler m_instance = null;
         private Assembler(ref IDebuggable spectrum)
@@ -114,8 +114,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 string compileOption;
                 if (compileFromFile /*|| (!checkMemory.Checked && IsStartAdressInCode())*/)
                 {
-                    asmToCompileOrFileName = actualLoadedFile;
+                    asmToCompileOrFileName = m_actualLoadedFile;
                     compileOption = "--binfile";
+                    //Set the current directory so that the compiler could find also include files(in the same dir as compiled source)
+                    Directory.SetCurrentDirectory(Path.GetDirectoryName(asmToCompileOrFileName));
                 }
                 else
                 {
@@ -182,7 +184,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
                                         TimeSpan time = watch.Elapsed;
                                         this.richCompileMessages.Text += String.Format("\n    Memory written at start address: #{0:X04}({1})", memAdress, memAdress);
-                                        this.richCompileMessages.Text += String.Format("\n    Memory written in {0:0.00000} seconds", time.TotalSeconds);
+                                        this.richCompileMessages.Text += String.Format("\n    Written #{0:X04}({1}) bytes", codeSize, codeSize);
                                     }
                                     else
                                     {
@@ -291,6 +293,11 @@ namespace ZXMAK2.Hardware.Adlers.UI
             {
                 openFileStripButton_Click(null, null);
             }
+
+            if (e.KeyCode == Keys.S && e.Control)
+            {
+                saveFileStripButton_Click(null, null);
+            }
         }
 
         //Compile Button
@@ -355,18 +362,16 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     return;
 
-                FileInfo fileInfo = new FileInfo(loadDialog.FileName);
-                int s_len = (int)fileInfo.Length;
+                if (LoadAsm(loadDialog.FileName) == false)
+                    return;
 
-                byte[] data = new byte[s_len];
-                using (FileStream fs = new FileStream(loadDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    fs.Read(data, 0, data.Length);
-                this.txtAsm.Text = Encoding.UTF8.GetString(data, 0, data.Length);
+                //TreeNode node = treeViewFiles.Nodes.Add( Path.GetFileName(loadDialog.FileName));
+                TreeNode node = new TreeNode(Path.GetFileName(loadDialog.FileName));
+                node.ToolTipText = loadDialog.FileName;
+                //node.ToolTipText = loadDialog.FileName;
 
-                TreeNode node = treeViewFiles.Nodes.Add(loadDialog.FileName);
-
-                //node.ForeColor = Color.Red;
-
+                node.ForeColor = Color.Red;
+                treeViewFiles.Nodes.Add(node);
                 //add file content to Dictionary
                 //codeFileContent.Add(loadDialog.FileName, newFileContent);
 
@@ -374,7 +379,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 //tabToAddNewFile.Controls.Add(this);
 
                 compileFromFile = true;
-                actualLoadedFile = loadDialog.FileName;
+                m_actualLoadedFile = loadDialog.FileName;
                 textMemAdress.Enabled = false;
             }
         }
@@ -385,16 +390,66 @@ namespace ZXMAK2.Hardware.Adlers.UI
             e.ChangedRange.ClearStyle(CommentStyle);
             e.ChangedRange.ClearStyle(CommonInstructionStyle);
             e.ChangedRange.ClearStyle(JumpInstructionStyle);
+            e.ChangedRange.ClearStyle(StackInstructionStyle);
 
             //comment highlighting
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
-            e.ChangedRange.SetStyle(CommonInstructionStyle, @"ldir|lddr|\bld\b|\bim\b|add|\bsub\b|\bdec\b|sbc|halt|\bbit\b|set|xor|\binc\b|cp|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
-                @"|\brr\b|scf|ccf|\bneg\b|srl|exx|\bex\b",
+            e.ChangedRange.SetStyle(CommonInstructionStyle, @"ldir|lddr|\bld\b|\bim\b|add|\bsub\b|\bdec\b|sbc|halt|\bbit\b|\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
+                @"|\brr\b|scf|ccf|\bneg\b|srl|exx|\bex\b|\brla\b",
                 RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(CompilerInstructionStyle, @"defb|include", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(CompilerInstructionStyle, @"defb|defw|include|incbin", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(StackInstructionStyle, @"push|pop|dec sp|inc sp", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(JumpInstructionStyle, @"org|reti|retn|ret|jp|jr|call|djnz", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         }
+
+        //Save button
+        private void saveFileStripButton_Click(object sender, EventArgs e)
+        {
+            SaveAsm(m_actualLoadedFile);
+        }
+
+        //Refresh button
+        private void toolStripButtonRefresh_Click(object sender, EventArgs e)
+        {
+            LoadAsm(m_actualLoadedFile);
+        }
         #endregion
+
+        private bool LoadAsm(string i_fileName)
+        {
+            if (i_fileName == String.Empty || i_fileName == null)
+                return false;
+
+            try
+            {
+                FileInfo fileInfo = new FileInfo(i_fileName);
+                int s_len = (int)fileInfo.Length;
+
+                byte[] data = new byte[s_len];
+                using (FileStream fs = new FileStream(i_fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    fs.Read(data, 0, data.Length);
+                this.txtAsm.Text = Encoding.UTF8.GetString(data, 0, data.Length);
+
+                if (this.richCompileMessages.Text.Trim() != String.Empty)
+                    this.richCompileMessages.Text += "\n\n";
+
+                this.richCompileMessages.Text += "File " + i_fileName + " read successfully..";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                this.richCompileMessages.Text += "\n\nFile " + i_fileName + " read ERROR!";
+                LogAgent.Error(ex);
+                return false;
+            }
+        }
+
+        private bool SaveAsm(string i_fileName)
+        {
+            if (i_fileName == String.Empty)
+                i_fileName = "noname.asm";
+            File.WriteAllText(i_fileName, this.txtAsm.Text);
+            return true;
+        }
     }
 }

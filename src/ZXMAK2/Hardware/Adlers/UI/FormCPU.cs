@@ -587,7 +587,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
         private void dasmPanel_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            dbgCmdLine.Text += "#" + dasmPanel.ActiveAddress.ToString("X4");
+            if (e.X > 30/*fGutterWidth*/)
+                dbgCmdLine.Text += "#" + dasmPanel.ActiveAddress.ToString("X4");
         }
 
         private void dataPanel_MouseClick(object sender, MouseEventArgs e)
@@ -746,7 +747,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     else if (commandType == DebuggerManager.CommandType.removeBreakpoint)
                     {
                         // remove breakpoint
-                        RemoveExtBreakpoint(Convert.ToByte(DebuggerManager.convertNumberWithPrefix(parsedCommand[1])));
+                        if (parsedCommand.Count > 1)
+                            RemoveExtBreakpoint(parsedCommand[1]);
                     }
                     else if (commandType == DebuggerManager.CommandType.enableBreakpoint)
                     {
@@ -1093,19 +1095,28 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
             InsertNewBreakpoint(breakpointInfo);
         }
-        public void RemoveExtBreakpoint(byte index)
+        public void RemoveExtBreakpoint(string brkIndex)
         {
             if (_breakpointsExt == null || _breakpointsExt.Count == 0)
                 throw new Exception("No breakpoints...!");
 
-            if (_breakpointsExt.ContainsKey(index))
+            if (brkIndex.ToUpper() == "ALL")
             {
-                Breakpoint bp = _breakpointsExt[index];
-                _breakpointsExt.Remove(index);
-                m_spectrum.RemoveBreakpoint(bp);
+                _breakpointsExt.Clear();
+                UpdateREGS();
             }
             else
-                throw new Exception(String.Format("No breakpoint with index {0} !", index));
+            {
+                byte index = Convert.ToByte(brkIndex);
+                if (_breakpointsExt.ContainsKey(Convert.ToByte(index)))
+                {
+                    Breakpoint bp = _breakpointsExt[index];
+                    _breakpointsExt.Remove(index);
+                    m_spectrum.RemoveBreakpoint(bp);
+                }
+                else
+                    throw new Exception(String.Format("No breakpoint with index {0} !", index));
+            }
         }
         public DictionarySafe<byte, BreakpointAdlers> GetExtBreakpointsList()
         {
