@@ -448,6 +448,7 @@
     <Compile Include="Hardware\Sprinter\SprinterMouse.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRTC.cs" />
     <Compile Include="Hardware\Sprinter\SprinterULA.cs" />
+    <Compile Include="Launcher.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="ZipLib\Checksums\Adler32.cs" />
     <Compile Include="ZipLib\Checksums\CRC32.cs" />
