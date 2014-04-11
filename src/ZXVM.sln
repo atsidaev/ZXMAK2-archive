@@ -5,9 +5,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2", "ZXMAK2\ZXMAK2.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.XNA4", "ZXMAK2.XNA4\ZXMAK2.XNA4.csproj", "{A3B89835-284D-4264-9033-57AF328AF8B0}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
+		SccNumberOfProjects = 4
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath0 = .
@@ -17,20 +19,49 @@ Global
 		SccProjectUniqueName2 = Test\\Test.csproj
 		SccProjectName2 = Test
 		SccLocalPath2 = Test
+		SccProjectUniqueName3 = ZXMAK2.XNA4\\ZXMAK2.XNA4.csproj
+		SccProjectName3 = ZXMAK2.XNA4
+		SccLocalPath3 = ZXMAK2.XNA4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}.Debug|x86.ActiveCfg = Debug|x86
 		{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}.Debug|x86.Build.0 = Debug|x86
+		{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}.Release|Any CPU.ActiveCfg = Release|x86
+		{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}.Release|Mixed Platforms.Build.0 = Release|x86
 		{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}.Release|x86.ActiveCfg = Release|x86
 		{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}.Release|x86.Build.0 = Release|x86
+		{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}.Debug|x86.ActiveCfg = Debug|x86
 		{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}.Debug|x86.Build.0 = Debug|x86
+		{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}.Release|Any CPU.ActiveCfg = Release|x86
+		{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}.Release|Mixed Platforms.Build.0 = Release|x86
 		{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}.Release|x86.ActiveCfg = Release|x86
 		{6AB3608B-2A64-4B03-AB9C-86BC4E783F5F}.Release|x86.Build.0 = Release|x86
+		{A3B89835-284D-4264-9033-57AF328AF8B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B89835-284D-4264-9033-57AF328AF8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B89835-284D-4264-9033-57AF328AF8B0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A3B89835-284D-4264-9033-57AF328AF8B0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A3B89835-284D-4264-9033-57AF328AF8B0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A3B89835-284D-4264-9033-57AF328AF8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B89835-284D-4264-9033-57AF328AF8B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3B89835-284D-4264-9033-57AF328AF8B0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A3B89835-284D-4264-9033-57AF328AF8B0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A3B89835-284D-4264-9033-57AF328AF8B0}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
