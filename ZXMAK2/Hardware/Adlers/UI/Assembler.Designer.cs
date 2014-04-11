@@ -43,9 +43,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
             this.checkMemory = new System.Windows.Forms.CheckBox();
             this.toolMenu = new System.Windows.Forms.ToolStrip();
             this.compileToolStrip = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonRefresh = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.openFileStripButton = new System.Windows.Forms.ToolStripButton();
-            this.saveileStripButton = new System.Windows.Forms.ToolStripButton();
+            this.saveFileStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.settingsToolStrip = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -54,6 +55,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             this.backColortoolStrip = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolCodeLibrary = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.treeViewFiles = new System.Windows.Forms.TreeView();
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -183,9 +185,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
             this.toolMenu.ImageScalingSize = new System.Drawing.Size(28, 28);
             this.toolMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.compileToolStrip,
+            this.toolStripButtonRefresh,
             this.toolStripSeparator1,
             this.openFileStripButton,
-            this.saveileStripButton,
+            this.saveFileStripButton,
             this.toolStripSeparator3,
             this.settingsToolStrip,
             this.toolStripSeparator2,
@@ -193,7 +196,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
             this.colorToolStrip,
             this.backColortoolStrip,
             this.toolStripSeparator4,
-            this.toolCodeLibrary});
+            this.toolCodeLibrary,
+            this.toolStripSeparator5});
             this.toolMenu.Location = new System.Drawing.Point(0, 0);
             this.toolMenu.Name = "toolMenu";
             this.toolMenu.Size = new System.Drawing.Size(687, 35);
@@ -210,6 +214,16 @@ namespace ZXMAK2.Hardware.Adlers.UI
             this.compileToolStrip.Text = "Compile(F5)";
             this.compileToolStrip.Click += new System.EventHandler(this.compileToolStrip_Click);
             // 
+            // toolStripButtonRefresh
+            // 
+            this.toolStripButtonRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonRefresh.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonRefresh.Image")));
+            this.toolStripButtonRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonRefresh.Name = "toolStripButtonRefresh";
+            this.toolStripButtonRefresh.Size = new System.Drawing.Size(32, 32);
+            this.toolStripButtonRefresh.Text = "Refresh";
+            this.toolStripButtonRefresh.Click += new System.EventHandler(this.toolStripButtonRefresh_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
@@ -225,14 +239,15 @@ namespace ZXMAK2.Hardware.Adlers.UI
             this.openFileStripButton.Text = "Open File(Ctrl+O)";
             this.openFileStripButton.Click += new System.EventHandler(this.openFileStripButton_Click);
             // 
-            // saveileStripButton
+            // saveFileStripButton
             // 
-            this.saveileStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.saveileStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveileStripButton.Image")));
-            this.saveileStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.saveileStripButton.Name = "saveileStripButton";
-            this.saveileStripButton.Size = new System.Drawing.Size(32, 32);
-            this.saveileStripButton.Text = "Save File";
+            this.saveFileStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveFileStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveFileStripButton.Image")));
+            this.saveFileStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveFileStripButton.Name = "saveFileStripButton";
+            this.saveFileStripButton.Size = new System.Drawing.Size(32, 32);
+            this.saveFileStripButton.Text = "Save File(Ctrl+S)";
+            this.saveFileStripButton.Click += new System.EventHandler(this.saveFileStripButton_Click);
             // 
             // toolStripSeparator3
             // 
@@ -301,6 +316,11 @@ namespace ZXMAK2.Hardware.Adlers.UI
             this.toolCodeLibrary.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.toolCodeLibrary.ToolTipText = "Code Library(Includes)";
             // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 35);
+            // 
             // treeViewFiles
             // 
             this.treeViewFiles.CheckBoxes = true;
@@ -312,6 +332,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             treeNode1.Text = "noname.asm";
             this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1});
+            this.treeViewFiles.ShowNodeToolTips = true;
             this.treeViewFiles.Size = new System.Drawing.Size(151, 538);
             this.treeViewFiles.TabIndex = 8;
             // 
@@ -362,10 +383,12 @@ namespace ZXMAK2.Hardware.Adlers.UI
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton openFileStripButton;
         private System.Windows.Forms.ToolStripButton backColortoolStrip;
-        private System.Windows.Forms.ToolStripButton saveileStripButton;
+        private System.Windows.Forms.ToolStripButton saveFileStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripButton toolCodeLibrary;
         private System.Windows.Forms.TreeView treeViewFiles;
+        private System.Windows.Forms.ToolStripButton toolStripButtonRefresh;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
     }
 }

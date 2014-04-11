@@ -1,0 +1,9 @@
+SCREEN_START      equ     16384               ; spectrum display memory address
+SCREEN_OFFSET     equ     SCREEN_START+64     ; address to draw the offset screen buffer
+SCREEN_ATTR_START equ     22528               ; spectrum attribute memory address
+SCRLEN            equ     6144                ; size of the screen pixels in bytes
+ATTRLEN           equ     768                 ; size of the ATTR in bytes
+MEMSCRLEN         equ     6335                ; size of the offscreen buffer
+SCRWIDTH          equ     32                  ; number of character the offscreen buffer is wide
+
+PLOT_Y_MAX        equ     175                 ; maximal value for Y-coor for PLOT
