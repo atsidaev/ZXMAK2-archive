@@ -99,6 +99,7 @@
     <Compile Include="Interfaces\IVideoData.cs" />
     <Compile Include="LogAgent.cs" />
     <Compile Include="HelpService.cs" />
+    <Compile Include="Engine\FpsMonitor.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
