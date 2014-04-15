@@ -131,6 +131,9 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     {
                         fixed (byte* perrFileName = &errFileName[0])
                         {
+                            string errStringText = DateTime.Now.ToLongTimeString() + ": Compiling...\n";
+                            this.richCompileMessages.Text = errStringText;
+
                             try
                             {
                                 retCode = compile(compileOption, asmToCompileOrFileName, new IntPtr(pcompiledOut),
@@ -147,7 +150,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
                             }
                             if (retCode != 0)
                             {
-                                string errStringText = DateTime.Now.ToLongTimeString() + ": ";
                                 if (compileOption == "--binfile")
                                 {
                                     errStringText += "Error on line " + errFileLine.ToString() + ", file: " + getString(perrFileName);
@@ -162,7 +164,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                             else
                             {
                                 //we got a assembly
-                                this.richCompileMessages.Text = DateTime.Now.ToLongTimeString() + ": Compilation OK ! Now writing memory...";
+                                this.richCompileMessages.Text += DateTime.Now.ToLongTimeString() + ": Compilation OK ! Now writing memory...";
 
                                 //write to memory ?
                                 //if (checkMemory.Checked)
@@ -433,7 +435,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 byte[] data = new byte[s_len];
                 using (FileStream fs = new FileStream(i_fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                     fs.Read(data, 0, data.Length);
-                this.txtAsm.Text = Encoding.UTF8.GetString(data, 0, data.Length);
+                string asmCode = Encoding.UTF8.GetString(data, 0, data.Length);
+                this.txtAsm.Text = asmCode;
+                if (IsStartAdressInCode())
+                    this.checkMemory.Checked = false;
 
                 if (this.richCompileMessages.Text.Trim() != String.Empty)
                     this.richCompileMessages.Text += "\n\n";
