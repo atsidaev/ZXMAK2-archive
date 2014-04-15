@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ZXMAK2.Entities;
 using ZXMAK2.Interfaces;
-using System.Diagnostics;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
@@ -62,35 +59,17 @@ namespace ZXMAK2.Hardware.Adlers.UI
             if (!Info.isOn)
                 return false;
 
-            ushort leftValue = 0;
+            //ushort leftValue = 0;
 
             switch (Info.accessType)
             {
                 // e.g.: PC == #9C40
                 case BreakPointConditionType.registryVsValue: //only value pair, e.g: BC, HL, DE, ...ToDo:
-                    unsafe
-                    {
-                        if (Info.is8Bit)
-                        {
-                            fixed (byte* pRegs = &(state.CPU.regs.F))
-                                leftValue = (byte)*(pRegs + Info.leftRegistryArrayIndex);
-                        }
-                        else
-                        {
-                            fixed (ushort* pRegs = &(state.CPU.regs.AF))
-                                leftValue = getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex));
-                        }
-                    }
-                    break;
+                //case BreakPointConditionType.memoryVsValue: Is done in checkInfoMemory():
+                    return Info.checkBreakpoint();
                 default:
                     return false;
             }
-
-            //condition
-            if (Info.conditionEquals) // is equal
-                return leftValue == Info.rightValue;
-            else
-                return leftValue != Info.rightValue;
         }
 
         private bool checkInfoMemory(IMachineState state)
@@ -115,11 +94,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
             {
                 // e.g.: (#9C40) != #2222
                 case BreakPointConditionType.memoryVsValue:
-                    leftValue = state.ReadMemory(Info.leftValue);
-                    break;
+                    return Info.checkBreakpoint();
                 // e.g.: (PC) == #D1 - instruction breakpoint
                 case BreakPointConditionType.registryMemoryReferenceVsValue:
-                    unsafe
+                    /*unsafe
                     {
                         fixed (ushort* pRegs = &(state.CPU.regs.AF))
                         {
@@ -133,11 +111,13 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                 leftValue = Read16(state, getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex)));
                                 /*watch.Stop();
                                 TimeSpan time = watch.Elapsed;
-                                time = time;*/
+                                time = time;/
                             }
                         }
                     }
-                    break;
+                    break;*/
+                    bool ret = Info.checkBreakpoint(); //only for testing purpose
+                    return ret;
                 default:
                     break;
             }

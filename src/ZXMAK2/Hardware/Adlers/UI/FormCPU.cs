@@ -12,6 +12,9 @@ using System.Collections.Generic;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Controls;
+using System.Reflection.Emit;
+using System.Reflection;
+using ZXMAK2.Hardware.Adlers.UI;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
@@ -905,6 +908,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         }
                     }
 
+                    //command line history
+                    cmdLineHistory.Add(actualCommand);
+                    this.cmdLineHistoryPos++;
+
                     UpdateREGS();
                     UpdateCPU(false);
 
@@ -1080,6 +1087,121 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     breakpointInfo.accessType = BreakPointConditionType.registryVsValue;
             }
 
+            //let emit CIL code to check the breakpoint
+            if (breakpointInfo.accessType == BreakPointConditionType.registryVsValue)
+            {
+                //e.g. PC == #0038
+                Type[] args = { typeof(REGS) };
+                DynamicMethod dynamicMethod = new DynamicMethod(
+                    "RegVsValue",
+                    typeof(bool), //return type
+                    args,         //arguments for the method
+                    typeof(REGS).Module); //module as input
+
+                ILGenerator il = dynamicMethod.GetILGenerator();
+
+                //Arg0
+                FieldInfo testInfo1 = typeof(REGS).GetField(breakpointInfo.leftCondition, BindingFlags.Public | BindingFlags.Instance);
+                il.Emit(OpCodes.Ldfld, testInfo1);
+                il.Emit(OpCodes.Ldarg_0);
+               
+                //Arg1
+                il.Emit(OpCodes.Ldc_I4, (int)breakpointInfo.rightValue);
+
+                //DebuggerManager.EmitCondition(il, breakpointInfo.conditionTypeSign);
+                il.Emit(OpCodes.Ceq);
+                il.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
+
+                var checkBreakpoint = (checkBreakpointDelegate<bool>)dynamicMethod.CreateDelegate(typeof(checkBreakpointDelegate<bool>), m_spectrum.CPU.regs);
+                breakpointInfo.SetBreakpointCheckMethod(checkBreakpoint);
+            }
+            else if (breakpointInfo.accessType == BreakPointConditionType.memoryVsValue)
+            {
+                //e.g. (16384) == #FF00
+                //ToDo: Because it is not possible to dynamically emit code for interface method(IDebuggable.ReadMemory)
+                //      I temporary wrapped it into custom wrapper.
+                InterfaceWrapper middleMan = new InterfaceWrapper();
+                middleMan.wrapInterface(m_spectrum);
+
+                MethodInfo ReadMemoryMethod;
+                if( breakpointInfo.rightValue > 0xFF )
+                    ReadMemoryMethod = typeof(InterfaceWrapper).GetMethod("invokeReadMemory16Bit",
+                                                                           BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                                                                         , null
+                                                                         , new Type[] { typeof(ushort) }
+                                                                         , null);
+                else
+                    ReadMemoryMethod = typeof(InterfaceWrapper).GetMethod("invokeReadMemory8Bit",
+                                                                           BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                                                                         , null
+                                                                         , new Type[] { typeof(ushort) }
+                                                                         , null);
+
+                DynamicMethod dynamicMethod = new DynamicMethod("ReadMemory", typeof(bool), new Type[] { typeof(InterfaceWrapper) });
+
+                ILGenerator IL = dynamicMethod.GetILGenerator();
+
+                //Arg0
+                IL.Emit(OpCodes.Ldarg_0); // class on stack
+                IL.Emit(OpCodes.Ldc_I4, breakpointInfo.leftValue); // method parameter(for ReadMemory())
+                IL.Emit(OpCodes.Call, ReadMemoryMethod);
+
+                //Arg1
+                IL.Emit(OpCodes.Ldc_I4, breakpointInfo.rightValue); // <- compare to 8 or 16bit
+
+                DebuggerManager.EmitCondition(IL, breakpointInfo.conditionTypeSign);
+                IL.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
+
+                var checkBreakpoint = (checkBreakpointDelegate<bool>)
+                                        dynamicMethod.CreateDelegate(typeof(checkBreakpointDelegate<bool>), middleMan);
+                breakpointInfo.SetBreakpointCheckMethod(checkBreakpoint);
+            }
+            else if (breakpointInfo.accessType == BreakPointConditionType.registryMemoryReferenceVsValue)
+            {
+                // e.g.: (PC) == #D155 - instruction breakpoint
+                //ToDo: Because it is not possible to dynamically emit code for interface method(IDebuggable.ReadMemory)
+                //      I temporary wrapped it into custom wrapper.
+                InterfaceWrapper middleMan = new InterfaceWrapper();
+                middleMan.wrapInterface(m_spectrum);
+                middleMan.wrapFields(m_spectrum.CPU.regs);
+
+                MethodInfo ReadMemoryMethod;
+                //Type[] args = { typeof(REGS) };
+                if (breakpointInfo.rightValue > 0xFF)
+                    ReadMemoryMethod = typeof(InterfaceWrapper).GetMethod("invokeReadMemory16BitViaRegistryValue",
+                                                                           BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                                                                         , null
+                                                                         , new Type[] { typeof(string) }
+                                                                         , null);
+                else
+                    ReadMemoryMethod = typeof(InterfaceWrapper).GetMethod("invokeReadMemory8BitViaRegistryValue",
+                                                                           BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                                                                         , null
+                                                                         , new Type[] { typeof(string) }
+                                                                         , null);
+
+                DynamicMethod dynamicMethod = new DynamicMethod("ReadMemoryViaRegistry", typeof(bool), new Type[] { typeof(InterfaceWrapper) });
+
+                ILGenerator IL = dynamicMethod.GetILGenerator();
+
+                //Arg0, e.g. (PC)
+                IL.Emit(OpCodes.Ldarg_0); // class on stack
+
+                string registry = DebuggerManager.getRegistryFromReference(breakpointInfo.leftCondition);
+                IL.Emit(OpCodes.Ldstr, registry);
+                IL.Emit(OpCodes.Call, ReadMemoryMethod);
+
+                //Arg1
+                IL.Emit(OpCodes.Ldc_I4, breakpointInfo.rightValue); // <- compare to 8 or 16bit
+
+                DebuggerManager.EmitCondition(IL, breakpointInfo.conditionTypeSign);
+                IL.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
+
+                var checkBreakpoint = (checkBreakpointDelegate<bool>)
+                                        dynamicMethod.CreateDelegate(typeof(checkBreakpointDelegate<bool>), middleMan);
+                breakpointInfo.SetBreakpointCheckMethod(checkBreakpoint);
+            }
+
             breakpointInfo.isOn = true; // activate the breakpoint
 
             //save breakpoint command line string
@@ -1090,8 +1212,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 if (counter + 1 < newBreakpointDesc.Count)
                     breakpointInfo.breakpointString += " ";
             }
-            cmdLineHistory.Add(breakpointInfo.breakpointString);
-            this.cmdLineHistoryPos++;
 
             InsertNewBreakpoint(breakpointInfo);
         }
@@ -1255,5 +1375,59 @@ namespace ZXMAK2.Hardware.Adlers.UI
         }
 
         #endregion
+    }
+
+    public class InterfaceWrapper
+    {
+        //fields wrapper
+        private REGS a_Z80Registers;
+
+        public void wrapFields(REGS i_regs)
+        {
+            a_Z80Registers = i_regs;
+        }
+
+        public ushort getRegistryValue(string i_registryName)
+        {
+            //FieldInfo testInfo1 = typeof(REGS).GetField(i_registryName, BindingFlags.Public | BindingFlags.Instance);
+            return 0;
+        }
+
+        //method wrapper
+        delegate TReturn delegateWithReturnAndParameterType<TReturn, TParameter0>(TParameter0 p0);
+
+        private delegateWithReturnAndParameterType<byte, ushort>   readMemory8BitDelegate;
+        private delegateWithReturnAndParameterType<ushort, ushort> readMemory16BitDelegate;
+
+        public void wrapInterface(IDebuggable i_debuggable)
+        {
+            readMemory8BitDelegate = delegate(ushort memAdress) { return i_debuggable.ReadMemory(memAdress); };
+            readMemory16BitDelegate = delegate(ushort memAdress) { return (ushort)(  i_debuggable.ReadMemory(memAdress) 
+                                                                                   | i_debuggable.ReadMemory(++memAdress) << 8
+                                                                                  ); 
+                                                                 };
+        }
+
+        public byte invokeReadMemory8Bit(ushort memAdress)
+        {
+            return readMemory8BitDelegate(memAdress);
+        }
+        public ushort invokeReadMemory16Bit(ushort memAdress)
+        {
+            return readMemory16BitDelegate(memAdress);
+        }
+
+        public byte invokeReadMemory8BitViaRegistryValue(string registryName)
+        {
+            //ToDo: emit code ?
+            ushort memAdress = DebuggerManager.getRegistryValueByName(a_Z80Registers, registryName);
+            return readMemory8BitDelegate(memAdress);
+        }
+        public ushort invokeReadMemory16BitViaRegistryValue(string registryName)
+        {
+            //ToDo: emit code ?
+            ushort memAdress = DebuggerManager.getRegistryValueByName(a_Z80Registers, registryName);
+            return readMemory16BitDelegate(memAdress);
+        }
     }
 }

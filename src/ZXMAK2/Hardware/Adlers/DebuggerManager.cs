@@ -6,9 +6,14 @@ using System.Collections.ObjectModel;
 using ZXMAK2.Interfaces;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Reflection.Emit;
+using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
+    //CIL
+    public delegate TRetVal checkBreakpointDelegate<TRetVal>();
 
     #region Debugger enums/structs, ...
     // enum BreakPointConditionType
@@ -44,6 +49,23 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
         //value mask - e.g.: for F registry => 0xFF, for A registry => 0xFF00; for AF => isMasked = false
         public bool is8Bit;
+
+        public checkBreakpointDelegate<bool> checkBreakpoint;
+
+        public void SetBreakpointCheckMethod( checkBreakpointDelegate<bool> i_checkBreakpoint
+                                            )
+        {
+            /*switch (i_brkAccessType)
+            {
+                case BreakPointConditionType.registryVsValue:
+                    checkBreakpoint = (checkBreakpointDelegate<bool>)i_emittedCode.CreateDelegate(typeof(checkBreakpointDelegate<bool>), z80Registers);
+                    break;
+                case BreakPointConditionType.memoryVsValue:
+                    checkBreakpoint = (checkBreakpointDelegate<bool>)i_emittedCode.CreateDelegate(typeof(checkBreakpointDelegate<bool>), (VirtualMachine)i_spectrum);
+                    break;
+            }*/
+            checkBreakpoint = i_checkBreakpoint;
+        }
 
         public BreakpointInfo()
         {
@@ -405,6 +427,22 @@ namespace ZXMAK2.Hardware.Adlers.UI
             }
                
             return -1;
+        }
+
+        public static void EmitCondition(ILGenerator i_ILGenerator, string i_condition)
+        {
+            switch (i_condition)
+            {
+                case "==":
+                    i_ILGenerator.Emit(OpCodes.Ceq);
+                    break;
+                case "!=":
+                    //ToDo: i_ILGenerator.Emit(OpCodes.Ceq);
+                    break;
+                case ">":
+                    i_ILGenerator.Emit(OpCodes.Cgt);
+                    break;
+            }
         }
     }
 }
