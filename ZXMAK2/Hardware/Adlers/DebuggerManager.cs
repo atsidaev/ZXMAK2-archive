@@ -108,12 +108,12 @@ namespace ZXMAK2.Hardware.Adlers.UI
         // 2. item: ==
         // 3. item: #9C40
         // 
-        // Must be working: ld hl,  #4000; br (pc)==#4000; br (pc)   ==#af; ...
+        // Must be working: ld hl,  #4000; br (pc)==#4000; br (pc)   ==#af; br a<#FE; ...
         public static List<string> ParseCommand(string dbgCommand)
         {
             try
             {
-                string       pattern = @"(\s+|,|==|!=)";
+                string       pattern = @"(\s+|,|==|!=|<|>)";
                 List<string> dbgParsed = new List<string>();
                 dbgParsed.Clear();
 
@@ -441,6 +441,9 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     break;
                 case ">":
                     i_ILGenerator.Emit(OpCodes.Cgt);
+                    break;
+                case "<":
+                    i_ILGenerator.Emit(OpCodes.Clt);
                     break;
             }
         }

@@ -1,3 +1,13 @@
+;****************************************************************
+;
+; Description: Picture effect(mosaic).
+;
+; Author: Adler, 2014
+;
+; Note: do not forget CLEAR 24999 before compiling the assembly
+;
+;****************************************************************
+
                 org  25000
                 di
                 ld   hl, #5C8F
@@ -73,7 +83,13 @@ nextPlot        ld   c, (hl)
                 jr   nextPlot
 EndPixelPrint:
                 ei
-                ret
+                
+                ;exit from program after 'Enter' is pressed
+                ld   a, #BF
+                in   a, (#FE)
+                rra
+                ret  nc
+                jr   $-6
 PixelCounter:
 DEFW 548
 
