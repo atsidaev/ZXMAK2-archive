@@ -13,7 +13,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
 {
     public partial class Assembler : Form
     {
-        [DllImport(@"Pasmo.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"Pasmo.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "compile")]
         public unsafe static extern int compile( 
                   /*char**/ [MarshalAs(UnmanagedType.LPStr)] string compileArg,   //e.g. --bin, --tap; terminated by NULL(0)
                   /*char**/ [MarshalAs(UnmanagedType.LPStr)] string inAssembler,
@@ -70,10 +70,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
         public static void Show(ref IDebuggable spectrum)
         {
-            if (m_instance == null)
+            if (m_instance == null || m_instance.IsDisposed)
             {
                 m_instance = new Assembler(ref spectrum);
-                m_instance.ShowInTaskbar = false;
+                m_instance.ShowInTaskbar = true;
                 m_instance.Show();
             }
             else
@@ -169,11 +169,16 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                 if( codeSize > 0 )
                                 {
                                     //get address where to write the code
-                                    ushort memAdress = (ushort)(compiledOut[0] + compiledOut[1] * 256);
+                                    ushort memAdress = 0;
                                     ushort memArrayDelta = 2;
-
-                                    if (memAdress == 0) //this can happen for bin format without ORG
+                                    if (compileOption != "--bin") //binary
+                                        memAdress = (ushort)(compiledOut[0] + compiledOut[1] * 256);
+                                    else
+                                    {
+                                        //--bin mode
                                         memAdress = DebuggerManager.convertNumberWithPrefix(textMemAdress.Text);
+                                        memArrayDelta = 0;
+                                    }
 
                                     if (memAdress >= 0x4000) //RAM start
                                     {
@@ -450,6 +455,12 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 i_fileName = "noname.asm";
             File.WriteAllText(i_fileName, this.txtAsm.Text);
             return true;
+        }
+
+        private void Assembler_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.Hide();
+            e.Cancel = true;
         }
     }
 }

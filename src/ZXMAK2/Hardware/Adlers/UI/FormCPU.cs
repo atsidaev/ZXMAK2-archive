@@ -1101,15 +1101,14 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 ILGenerator il = dynamicMethod.GetILGenerator();
 
                 //Arg0
+                il.Emit(OpCodes.Ldarg_0);
                 FieldInfo testInfo1 = typeof(REGS).GetField(breakpointInfo.leftCondition, BindingFlags.Public | BindingFlags.Instance);
                 il.Emit(OpCodes.Ldfld, testInfo1);
-                il.Emit(OpCodes.Ldarg_0);
                
                 //Arg1
                 il.Emit(OpCodes.Ldc_I4, (int)breakpointInfo.rightValue);
 
-                //DebuggerManager.EmitCondition(il, breakpointInfo.conditionTypeSign);
-                il.Emit(OpCodes.Ceq);
+                DebuggerManager.EmitCondition(il, breakpointInfo.conditionTypeSign);
                 il.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
 
                 var checkBreakpoint = (checkBreakpointDelegate<bool>)dynamicMethod.CreateDelegate(typeof(checkBreakpointDelegate<bool>), m_spectrum.CPU.regs);
@@ -1223,6 +1222,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             if (brkIndex.ToUpper() == "ALL")
             {
                 _breakpointsExt.Clear();
+                m_spectrum.ClearBreakpoints();
                 UpdateREGS();
             }
             else

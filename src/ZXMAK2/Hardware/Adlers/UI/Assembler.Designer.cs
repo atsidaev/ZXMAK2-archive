@@ -30,6 +30,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Assembler));
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("noname.asm");
             this.txtAsm = new FastColoredTextBoxNS.FastColoredTextBox();
@@ -171,6 +172,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
             // checkMemory
             // 
             this.checkMemory.AutoSize = true;
+            this.checkMemory.Checked = true;
+            this.checkMemory.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkMemory.Location = new System.Drawing.Point(7, 22);
             this.checkMemory.Name = "checkMemory";
             this.checkMemory.Size = new System.Drawing.Size(63, 17);
@@ -352,6 +355,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             this.Name = "Assembler";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Assembler";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Assembler_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.assemblerForm_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).EndInit();
             this.groupBox1.ResumeLayout(false);
