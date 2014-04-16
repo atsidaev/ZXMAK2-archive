@@ -1,6 +1,6 @@
 ;****************************************************************
 ;
-; Descrption: First 8 pixels on the screen will be permanently 
+; Description: First 8 pixels on the screen will be permanently 
 ;       changing while the speccy is running and accepting commands. 
 ;       Example how to implement background process on ZX Spectrum.
 ;

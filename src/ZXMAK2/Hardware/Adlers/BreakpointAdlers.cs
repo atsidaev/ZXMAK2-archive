@@ -65,7 +65,9 @@ namespace ZXMAK2.Hardware.Adlers.UI
             {
                 // e.g.: PC == #9C40
                 case BreakPointConditionType.registryVsValue: //only value pair, e.g: BC, HL, DE, ...ToDo:
-                //case BreakPointConditionType.memoryVsValue: Is done in checkInfoMemory():
+                    return Info.checkBreakpoint();
+                // e.g.: (PC) == #AFC9 - instruction breakpoint; must be here because the registry change must be taking into account, not memory change
+                case BreakPointConditionType.registryMemoryReferenceVsValue:
                     return Info.checkBreakpoint();
                 default:
                     return false;
@@ -95,29 +97,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 // e.g.: (#9C40) != #2222
                 case BreakPointConditionType.memoryVsValue:
                     return Info.checkBreakpoint();
-                // e.g.: (PC) == #D1 - instruction breakpoint
-                case BreakPointConditionType.registryMemoryReferenceVsValue:
-                    /*unsafe
-                    {
-                        fixed (ushort* pRegs = &(state.CPU.regs.AF))
-                        {
-                            if (Info.rightValue <= 0xFF)
-                            {
-                                leftValue = state.ReadMemory(getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex)));
-                            }
-                            else
-                            {
-                                //TimeSpan time = watch.Elapsed;
-                                leftValue = Read16(state, getValuePair16bit(new IntPtr(pRegs + Info.leftRegistryArrayIndex)));
-                                /*watch.Stop();
-                                TimeSpan time = watch.Elapsed;
-                                time = time;/
-                            }
-                        }
-                    }
-                    break;*/
-                    bool ret = Info.checkBreakpoint(); //only for testing purpose
-                    return ret;
                 default:
                     break;
             }
@@ -127,11 +106,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 return leftValue == Info.rightValue;
             else
                 return leftValue != Info.rightValue;
-        }
-
-        private static ushort Read16(IMachineState state, ushort addr)
-        {
-            return (ushort)(state.ReadMemory(addr++) | (state.ReadMemory(addr++) << 8));
         }
     }
 }
