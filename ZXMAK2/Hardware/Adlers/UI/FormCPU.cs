@@ -1100,12 +1100,12 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
                 ILGenerator il = dynamicMethod.GetILGenerator();
 
-                //Arg0
-                il.Emit(OpCodes.Ldarg_0);
+                //Arg0 - registry value
+                il.Emit(OpCodes.Ldarg_0); // load m_spectrum.CPU.regs on stack
                 FieldInfo testInfo1 = typeof(REGS).GetField(breakpointInfo.leftCondition, BindingFlags.Public | BindingFlags.Instance);
                 il.Emit(OpCodes.Ldfld, testInfo1);
                
-                //Arg1
+                //Arg1 - number
                 il.Emit(OpCodes.Ldc_I4, (int)breakpointInfo.rightValue);
 
                 DebuggerManager.EmitCondition(il, breakpointInfo.conditionTypeSign);
@@ -1136,13 +1136,17 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                                                          , new Type[] { typeof(ushort) }
                                                                          , null);
 
-                DynamicMethod dynamicMethod = new DynamicMethod("ReadMemory", typeof(bool), new Type[] { typeof(InterfaceWrapper) });
+                DynamicMethod dynamicMethod = new DynamicMethod( "ReadMemory"
+                                                               , typeof(bool)
+                                                               , new Type[] { typeof(InterfaceWrapper) }
+                                                               , typeof(InterfaceWrapper).Module
+                                                               );
 
                 ILGenerator IL = dynamicMethod.GetILGenerator();
 
-                //Arg0
-                IL.Emit(OpCodes.Ldarg_0); // class on stack
-                IL.Emit(OpCodes.Ldc_I4, breakpointInfo.leftValue); // method parameter(for ReadMemory())
+                //Arg0 - memory reference(static), e.g. (16384)
+                IL.Emit(OpCodes.Ldarg_0); // load InterfaceWrapper on stack
+                IL.Emit(OpCodes.Ldc_I4, breakpointInfo.leftValue); // method parameter(for ReadMemoryMethod)
                 IL.Emit(OpCodes.Call, ReadMemoryMethod);
 
                 //Arg1
@@ -1184,13 +1188,13 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 ILGenerator IL = dynamicMethod.GetILGenerator();
 
                 //Arg0, e.g. (PC)
-                IL.Emit(OpCodes.Ldarg_0); // class on stack
+                IL.Emit(OpCodes.Ldarg_0); // load InterfaceWrapper on stack
 
                 string registry = DebuggerManager.getRegistryFromReference(breakpointInfo.leftCondition);
                 IL.Emit(OpCodes.Ldstr, registry);
                 IL.Emit(OpCodes.Call, ReadMemoryMethod);
 
-                //Arg1
+                //Arg1, number(right condition)
                 IL.Emit(OpCodes.Ldc_I4, breakpointInfo.rightValue); // <- compare to 8 or 16bit
 
                 DebuggerManager.EmitCondition(IL, breakpointInfo.conditionTypeSign);
@@ -1406,6 +1410,29 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                                                                    | i_debuggable.ReadMemory(++memAdress) << 8
                                                                                   ); 
                                                                  };
+
+            //ToDo: get registry value using emitted code(=> create delegate similar to above
+            /*Type[] args = { typeof(REGS) };
+            DynamicMethod dynamicMethod = new DynamicMethod(
+                "RegVsValue",
+                typeof(bool), //return type
+                args,         //arguments for the method
+                typeof(REGS).Module); //module as input
+
+            ILGenerator il = dynamicMethod.GetILGenerator();
+
+            //Arg0 - registry value
+            il.Emit(OpCodes.Ldarg_0); // load m_spectrum.CPU.regs on stack
+            FieldInfo testInfo1 = typeof(REGS).GetField(breakpointInfo.leftCondition, BindingFlags.Public | BindingFlags.Instance);
+            il.Emit(OpCodes.Ldfld, testInfo1);
+
+            //Arg1 - number
+            il.Emit(OpCodes.Ldc_I4, (int)breakpointInfo.rightValue);
+
+            DebuggerManager.EmitCondition(il, breakpointInfo.conditionTypeSign);
+            il.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
+
+            var checkBreakpoint = (checkBreakpointDelegate<bool>)dynamicMethod.CreateDelegate(typeof(checkBreakpointDelegate<bool>), a_Z80Registers);*/
         }
 
         public byte invokeReadMemory8Bit(ushort memAdress)
@@ -1420,14 +1447,14 @@ namespace ZXMAK2.Hardware.Adlers.UI
         public byte invokeReadMemory8BitViaRegistryValue(string registryName)
         {
             //ToDo: emit code ?
-            ushort memAdress = DebuggerManager.getRegistryValueByName(a_Z80Registers, registryName);
-            return readMemory8BitDelegate(memAdress);
+            //lock (a_Z80Registers)
+            return readMemory8BitDelegate(DebuggerManager.getRegistryValueByName(a_Z80Registers, registryName));
         }
         public ushort invokeReadMemory16BitViaRegistryValue(string registryName)
         {
             //ToDo: emit code ?
-            ushort memAdress = DebuggerManager.getRegistryValueByName(a_Z80Registers, registryName);
-            return readMemory16BitDelegate(memAdress);
+            //lock (a_Z80Registers)
+            return readMemory16BitDelegate(DebuggerManager.getRegistryValueByName(a_Z80Registers, registryName));
         }
     }
 }

@@ -402,7 +402,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             //comment highlighting
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(CommonInstructionStyle, @"ldir|lddr|\bld\b|\bim\b|add|\bsub\b|\bdec\b|sbc|halt|\bbit\b|\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
-                @"|\brr\b|scf|ccf|\bneg\b|srl|exx|\bex\b|\brla\b",
+                @"|\brr\b|scf|ccf|\bneg\b|srl|exx|\bex\b|\brla\b|rra|\brr\b",
                 RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(CompilerInstructionStyle, @"defb|defw|include|incbin", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(StackInstructionStyle, @"push|pop|dec sp|inc sp", RegexOptions.Multiline | RegexOptions.IgnoreCase);
