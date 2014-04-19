@@ -5,61 +5,81 @@ using System;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectInput;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
+using ZxmakKey = ZXMAK2.Interfaces.Key;
+using MdxKey = Microsoft.DirectX.DirectInput.Key;
+using System.Collections.Generic;
 
 
 namespace ZXMAK2.MDX
 {
-    public class DirectKeyboard : IHostKeyboard, IDisposable
+    public class DirectKeyboard : IHostKeyboard, IKeyboardState, IDisposable
     {
-        private Form _form;
-        private bool kbdActive = false;
-        private Device diKeyboard = null;
+        private readonly Form m_form;
+        private Device m_device = null;
+        private readonly KeyboardStateMapper<MdxKey> m_mapper = new KeyboardStateMapper<MdxKey>();
+        private readonly Dictionary<ZxmakKey, bool> m_state = new Dictionary<ZxmakKey, bool>();
+        private bool m_isActive = false;
 
-        private IKeyboardState _state = null;
 
 
         public DirectKeyboard(Form mainForm)
         {
-            _form = mainForm;
-            if (diKeyboard == null)
+            m_form = mainForm;
+            if (m_device == null)
             {
-                diKeyboard = new Device(SystemGuid.Keyboard);
-                diKeyboard.SetCooperativeLevel(mainForm, CooperativeLevelFlags.NonExclusive | CooperativeLevelFlags.Foreground);
+                m_device = new Device(SystemGuid.Keyboard);
+                m_device.SetCooperativeLevel(mainForm, CooperativeLevelFlags.NonExclusive | CooperativeLevelFlags.Foreground);
                 mainForm.Activated += WndActivated;
                 mainForm.Deactivate += WndDeactivate;
                 WndActivated(null, null);
             }
+            m_mapper.LoadMapFromString(
+                global::ZXMAK2.Properties.Resources.KeyboardMap);
         }
 
         public void Dispose()
         {
-            _form.Activated -= WndActivated;
-            _form.Deactivate -= WndDeactivate;
-            if (diKeyboard != null)
+            m_form.Activated -= WndActivated;
+            m_form.Deactivate -= WndDeactivate;
+            if (m_device != null)
             {
-                kbdActive = false;
-                diKeyboard.Unacquire();
-                diKeyboard.Dispose();
-                diKeyboard = null;
+                m_isActive = false;
+                m_device.Unacquire();
+                m_device.Dispose();
+                m_device = null;
             }
+        }
+
+        #region IHostKeyboard
+
+        public IKeyboardState State
+        {
+            get { return this; }
         }
 
         public void Scan()
         {
-            if (diKeyboard == null)
+            if (m_device == null)
             {
-                _state = KeyboardStateWrapper.Empty;
+                foreach (var key in m_mapper.Keys)
+                {
+                    m_state[key] = false;
+                }
                 return;
             }
-            if (!kbdActive)
+            if (!m_isActive)
             {
                 WndActivated(null, null);
                 return;
             }
             try
             {
-                var keyState = diKeyboard.GetCurrentKeyboardState();
-                _state = new KeyboardStateWrapper(keyState);
+                var state = m_device.GetCurrentKeyboardState();
+                foreach (var key in m_mapper.Keys)
+                {
+                    m_state[key] = state[m_mapper[key]];
+                }
             }
             catch
             {
@@ -67,34 +87,45 @@ namespace ZXMAK2.MDX
             }
         }
 
-        public IKeyboardState State { get { return _state; } }
+        #endregion IHostKeyboard
+
+
+        #region IKeyboardState
+
+        public bool this[ZxmakKey key]
+        {
+            get { return m_state.ContainsKey(key) && m_state[key]; }
+        }
+
+        #endregion IKeyboardState
+
 
         #region private methods
 
         private void WndActivated(object sender, EventArgs e)
         {
-            if (diKeyboard != null)
+            if (m_device != null)
             {
                 try
                 {
-                    diKeyboard.Acquire();
-                    kbdActive = true;
+                    m_device.Acquire();
+                    m_isActive = true;
                 }
                 catch
                 {
-                    kbdActive = false;
+                    m_isActive = false;
                 }
             }
         }
 
         private void WndDeactivate(object sender, EventArgs e)
         {
-            if (diKeyboard != null)
+            if (m_device != null)
             {
-                kbdActive = false;
+                m_isActive = false;
                 try
                 {
-                    diKeyboard.Unacquire();
+                    m_device.Unacquire();
                 }
                 catch
                 {
@@ -103,26 +134,5 @@ namespace ZXMAK2.MDX
         }
 
         #endregion
-
-        private class KeyboardStateWrapper : IKeyboardState
-        {
-            private Microsoft.DirectX.DirectInput.KeyboardState m_state;
-
-            internal KeyboardStateWrapper(Microsoft.DirectX.DirectInput.KeyboardState state)
-            {
-                m_state = state;
-            }
-
-            public bool this[ZXMAK2.Interfaces.Key key]
-            {
-                get
-                {
-                    return m_state != null &&
-                        m_state[(Microsoft.DirectX.DirectInput.Key)key];
-                }
-            }
-
-            public static readonly KeyboardStateWrapper Empty = new KeyboardStateWrapper(null);
-        }
     }
 }
