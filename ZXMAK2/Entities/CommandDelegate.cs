@@ -8,18 +8,18 @@ namespace ZXMAK2.Entities
     public class CommandDelegate : ICommand
     {
         private Action<object> m_action;
-        private Func<bool,object> m_canExecute;
+        private Func<object, bool> m_canExecute;
         private string m_text;
         private bool m_checked;
 
-        public CommandDelegate(Action<object> action, Func<bool, object> canExecute, string text)
+        public CommandDelegate(Action<object> action, Func<object, bool> canExecute, string text)
         {
             m_action = action;
             m_canExecute = canExecute;
             m_text = text;
         }
 
-        public CommandDelegate(Action<object> action, Func<bool, object> canExecute)
+        public CommandDelegate(Action<object> action, Func<object, bool> canExecute)
             : this(action, canExecute, null)
         {
         }
