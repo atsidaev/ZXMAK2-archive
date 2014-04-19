@@ -61,6 +61,29 @@ namespace ZXMAK2.XNA4.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+        ///&lt;KeyboardMap Type=&quot;Microsoft.Xna.Framework.Input.Keys&quot;&gt;
+        ///    &lt;Key Name=&quot;D1&quot; Value=&quot;D1&quot; /&gt;
+        ///    &lt;Key Name=&quot;D2&quot; Value=&quot;D2&quot; /&gt;
+        ///    &lt;Key Name=&quot;D3&quot; Value=&quot;D3&quot; /&gt;
+        ///    &lt;Key Name=&quot;D4&quot; Value=&quot;D4&quot; /&gt;
+        ///    &lt;Key Name=&quot;D5&quot; Value=&quot;D5&quot; /&gt;
+        ///    &lt;Key Name=&quot;D6&quot; Value=&quot;D6&quot; /&gt;
+        ///    &lt;Key Name=&quot;D7&quot; Value=&quot;D7&quot; /&gt;
+        ///    &lt;Key Name=&quot;D8&quot; Value=&quot;D8&quot; /&gt;
+        ///    &lt;Key Name=&quot;D9&quot; Value=&quot;D9&quot; /&gt;
+        ///    &lt;Key Name=&quot;D0&quot; Value=&quot;D0&quot; /&gt;
+        ///    &lt;Key Name=&quot;Q&quot; Value=&quot;Q&quot; /&gt;
+        ///    &lt;Key Name=&quot;W&quot; Value=&quot;W&quot; /&gt;
+        ///    &lt;Key N [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string KeyboardMap {
+            get {
+                return ResourceManager.GetString("KeyboardMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] SansSerifBold {
