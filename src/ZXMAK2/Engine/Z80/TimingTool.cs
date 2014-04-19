@@ -7,10 +7,10 @@ namespace ZXMAK2.Engine.Z80
     public class TimingTool
     {
         private readonly Z80CPU _cpu;
-        private readonly Func<byte, ushort> _memRead;
+        private readonly Func<ushort, byte> _memRead;
 
-        
-        public TimingTool(Z80CPU cpu, Func<byte, ushort> reader)
+
+        public TimingTool(Z80CPU cpu, Func<ushort, byte> reader)
         {
             _cpu = cpu;
             _memRead = reader;

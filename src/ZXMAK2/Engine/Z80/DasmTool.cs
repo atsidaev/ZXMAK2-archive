@@ -8,12 +8,12 @@ namespace ZXMAK2.Engine.Z80
 {
     public class DasmTool
     {
-        private readonly Func<byte, ushort> _memRead;
+        private readonly Func<ushort, byte> _memRead;
 
         public bool IsHex { get; set; }
 
 
-        public DasmTool(Func<byte, ushort> memRead, bool isHex = true)
+        public DasmTool(Func<ushort, byte> memRead, bool isHex = true)
         {
             _memRead = memRead;
             IsHex = isHex;
