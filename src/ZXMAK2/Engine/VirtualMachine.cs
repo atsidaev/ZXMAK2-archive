@@ -434,7 +434,7 @@ namespace ZXMAK2.Engine
                 }
                 var thread = m_thread;
                 m_thread = null;
-                thread.Join(new TimeSpan(100)); //Adler: added delta time to prevent deadlock(this occurrs for some breakpoint types). Must be reviewed.
+                thread.Join();
             }
             OnUpdateVideo();
         }
