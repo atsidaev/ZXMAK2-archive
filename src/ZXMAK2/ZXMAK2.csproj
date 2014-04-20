@@ -452,7 +452,6 @@
     <Compile Include="Hardware\Sprinter\SprinterMouse.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRTC.cs" />
     <Compile Include="Hardware\Sprinter\SprinterULA.cs" />
-    <Compile Include="Launcher.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="ZipLib\Checksums\Adler32.cs" />
     <Compile Include="ZipLib\Checksums\CRC32.cs" />
@@ -643,13 +642,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZXMAK2.Presentation\ZXMAK2.Presentation.csproj">
-      <Project>{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}</Project>
-      <Name>ZXMAK2.Presentation</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Dependency\ZXMAK2.Dependency.csproj">
       <Project>{BB32EB49-52FF-4976-9586-5C4E415CD730}</Project>
       <Name>ZXMAK2.Dependency</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

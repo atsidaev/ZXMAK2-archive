@@ -13,7 +13,7 @@
     <Alias Name="ViewResolver" Type="ZXMAK2.Presentation.ViewResolver, ZXMAK2.Presentation" />
 
     <Alias Name="ILauncher" Type="ZXMAK2.Interfaces.ILauncher, ZXMAK2" />
-    <Alias Name="Launcher" Type="ZXMAK2.Launcher, ZXMAK2" />
+    <Alias Name="Launcher" Type="ZXMAK2.Presentation.Launcher, ZXMAK2.Presentation" />
 
     <Alias Name="IMainView" Type="ZXMAK2.MVP.Interfaces.IMainView, ZXMAK2" />
     <Alias Name="WinFormMainView" Type="ZXMAK2.MVP.WinForms.MainView, ZXMAK2" />
