@@ -105,7 +105,6 @@
     <Compile Include="HelpService.cs" />
     <Compile Include="Engine\FpsMonitor.cs" />
     <Compile Include="MVP\Interfaces\IMainPresenter.cs" />
-    <Compile Include="MVP\UserMessage.cs" />
     <Compile Include="MVP\WinForms\UserQuery.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
