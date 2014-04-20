@@ -96,13 +96,16 @@
     <Compile Include="Entities\KeyboardMapper.cs" />
     <Compile Include="Entities\SyncSource.cs" />
     <Compile Include="Func.cs" />
+    <Compile Include="Interfaces\ILauncher.cs" />
     <Compile Include="Interfaces\IUserQuery.cs" />
     <Compile Include="Interfaces\IUserMessage.cs" />
     <Compile Include="Interfaces\IVideoData.cs" />
+    <Compile Include="Interfaces\IViewResolver.cs" />
     <Compile Include="Locator.cs" />
     <Compile Include="LogAgent.cs" />
     <Compile Include="HelpService.cs" />
     <Compile Include="Engine\FpsMonitor.cs" />
+    <Compile Include="MVP\Interfaces\IMainPresenter.cs" />
     <Compile Include="MVP\UserMessage.cs" />
     <Compile Include="MVP\WinForms\UserQuery.cs" />
     <Compile Include="Program.cs" />
@@ -452,6 +455,7 @@
     <Compile Include="Hardware\Sprinter\SprinterULA.cs" />
     <Compile Include="Launcher.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="ViewResolver.cs" />
     <Compile Include="ZipLib\Checksums\Adler32.cs" />
     <Compile Include="ZipLib\Checksums\CRC32.cs" />
     <Compile Include="ZipLib\Checksums\IChecksum.cs" />
@@ -606,7 +610,10 @@
     <Content Include="Icons\EmuFileSave_32x32.png" />
     <Content Include="Icons\EmuMaxSpeed_32x32.png" />
     <Content Include="Icons\EmuSettings_32x32.png" />
-    <Content Include="Locator.xml" />
+    <Content Include="ZXMAK2.Dependency.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="MACHINES.PAK">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -636,6 +643,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZXMAK2.Resolver\ZXMAK2.Dependency.csproj">
+      <Project>{BB32EB49-52FF-4976-9586-5C4E415CD730}</Project>
+      <Name>ZXMAK2.Dependency</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

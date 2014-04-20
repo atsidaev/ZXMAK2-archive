@@ -86,7 +86,7 @@ namespace ZXMAK2.XNA4.Views
         public event EventHandler ViewClosed;
         public event EventHandler ViewInvalidate;
 
-        public void Bind(MainPresenter presenter)
+        public void Bind(IMainPresenter presenter)
         {
             presenter.CommandViewSyncVBlank.Execute(false);
             CommandViewFullScreen = presenter.CommandViewFullScreen;

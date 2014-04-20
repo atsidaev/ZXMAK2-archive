@@ -2,39 +2,46 @@
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.MVP;
 using ZXMAK2.Interfaces;
+using System.Collections.Generic;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2
 {
-    public class Launcher
+    public class Launcher : ILauncher
     {
-        public static void Run<T>(string[] args)
-            where T : IMainView, new()
+        private readonly IResolver m_resolver;
+        private readonly IViewResolver m_viewResolver;
+        
+        public Launcher(IResolver resolver, IViewResolver viewResolver)
         {
-            LogAgent.Start();
+            m_resolver = resolver;
+            m_viewResolver = viewResolver;
+        }
+        
+        public void Run(string[] args)
+        {
             try
             {
-                var view = new T();
-                using (var presenter = new MainPresenter(view, args))
+                using (var view = m_viewResolver.Resolve<IMainView>())
                 {
-                    presenter.Run();
+                    var list = new List<Argument>();
+                    list.Add(new Argument("view", view));
+                    list.Add(new Argument("args", args));
+                    using (var presenter = m_resolver.Resolve<IMainPresenter>(list.ToArray()))
+                    {
+                        presenter.Run();
+                    }
                 }
             }
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                try
+                var service = m_resolver.TryResolve<IUserMessage>();
+                if (service != null)
                 {
-                    Locator.Resolve<IUserMessage>().ErrorDetails(ex);
+                    service.ErrorDetails(ex);
                 }
-                catch (Exception ex2)
-                {
-                    LogAgent.Error(ex2);
-                }
-            }
-            finally
-            {
-                LogAgent.Finish();
             }
         }
     }

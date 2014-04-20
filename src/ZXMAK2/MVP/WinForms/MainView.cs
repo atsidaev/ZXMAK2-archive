@@ -28,6 +28,11 @@ namespace ZXMAK2.MVP.WinForms
         private string m_title;
         private bool m_allowSaveSize;
 
+        static MainView()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+        }
 
         public MainView()
         {
@@ -91,7 +96,7 @@ namespace ZXMAK2.MVP.WinForms
             Application.Run(this);
         }
 
-        public void Bind(MainPresenter presenter)
+        public void Bind(IMainPresenter presenter)
         {
             if (presenter.CommandViewSyncVBlank != null)
             {
