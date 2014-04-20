@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Interfaces
@@ -11,5 +13,6 @@ namespace ZXMAK2.Interfaces
         IJoystickState GetState(string hostId);
         IKeyboardState KeyboardState { set; }
         bool IsKeyboardStateRequired { get; }
+        IEnumerable<HostDeviceInfo> GetAvailableJoysticks();
     }
 }

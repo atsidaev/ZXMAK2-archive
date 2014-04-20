@@ -14,6 +14,7 @@ namespace ZXMAK2.Controls.Configuration
     public partial class CtlSettingsUla : ConfigScreenControl
     {
         private BusManager m_bmgr;
+        private IHost m_host;
         private UlaDeviceBase m_device;
 
         public CtlSettingsUla()
@@ -32,9 +33,10 @@ namespace ZXMAK2.Controls.Configuration
             cbxType.Sorted = true;
         }
 
-        public void Init(BusManager bmgr, UlaDeviceBase device)
+        public void Init(BusManager bmgr, IHost host, UlaDeviceBase device)
         {
             m_bmgr = bmgr;
+            m_host = host;
             m_device = device;
 
             cbxType.SelectedIndex = -1;
@@ -69,7 +71,7 @@ namespace ZXMAK2.Controls.Configuration
                 }
                 m_bmgr.Add(busNewUla);
             }
-            Init(m_bmgr, (UlaDeviceBase)ula);
+            Init(m_bmgr, m_host, (UlaDeviceBase)ula);
         }
     }
 }

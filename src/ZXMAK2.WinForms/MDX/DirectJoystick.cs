@@ -174,6 +174,37 @@ namespace ZXMAK2.MDX
         public IKeyboardState KeyboardState { get; set; }
         public bool IsKeyboardStateRequired { get; private set; }
 
+        public IEnumerable<HostDeviceInfo> GetAvailableJoysticks()
+        {
+            var list = new List<HostDeviceInfo>();
+            try
+            {
+                var devList = Manager.GetDevices(
+                    DeviceClass.GameControl,
+                    EnumDevicesFlags.AttachedOnly);
+                while (devList.MoveNext())
+                {
+                    var deviceInstance = (DeviceInstance)devList.Current;
+                    var hdi = new HostDeviceInfo(
+                        deviceInstance.InstanceName,
+                        GetDeviceId(deviceInstance.InstanceGuid));
+                    list.Add(hdi);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+            list.Sort();
+            list.Insert(
+                0,
+                new HostDeviceInfo("Keyboard Numpad", KeyboardNumpadId));
+            list.Insert(
+                0,
+                new HostDeviceInfo("None", string.Empty));
+            return list;
+        }
+
         #endregion Public
 
 
@@ -337,40 +368,5 @@ namespace ZXMAK2.MDX
         }
 
         #endregion Private
-
-        #region Static
-
-        public static IEnumerable<HostDeviceInfo> Select()
-        {
-            var list = new List<HostDeviceInfo>();
-            try
-            {
-                var devList = Manager.GetDevices(
-                    DeviceClass.GameControl,
-                    EnumDevicesFlags.AttachedOnly);
-                while (devList.MoveNext())
-                {
-                    var deviceInstance = (DeviceInstance)devList.Current;
-                    var hdi = new HostDeviceInfo(
-                        deviceInstance.InstanceName,
-                        GetDeviceId(deviceInstance.InstanceGuid));
-                    list.Add(hdi);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogAgent.Error(ex);
-            }
-            list.Sort();
-            list.Insert(
-                0,
-                new HostDeviceInfo("Keyboard Numpad", KeyboardNumpadId));
-            list.Insert(
-                0,
-                new HostDeviceInfo("None", string.Empty));
-            return list;
-        }
-
-        #endregion Static
     }
 }

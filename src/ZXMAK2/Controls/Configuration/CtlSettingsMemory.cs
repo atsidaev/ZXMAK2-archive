@@ -13,6 +13,7 @@ namespace ZXMAK2.Controls.Configuration
     public partial class CtlSettingsMemory : ConfigScreenControl
     {
         private BusManager m_bmgr;
+        private IHost m_host;
         private IMemoryDevice m_device;
 
         public CtlSettingsMemory()
@@ -38,9 +39,10 @@ namespace ZXMAK2.Controls.Configuration
             cbxRomSet.Sorted = true;
         }
 
-        public void Init(BusManager bmgr, IMemoryDevice device)
+        public void Init(BusManager bmgr, IHost host, IMemoryDevice device)
         {
             m_bmgr = bmgr;
+            m_host = host;
             m_device = device;
 
             var busDevice = (BusDeviceBase)device;
@@ -77,7 +79,7 @@ namespace ZXMAK2.Controls.Configuration
             {
                 memoryBase.RomSetName = (String)cbxRomSet.SelectedItem;
             }
-            Init(m_bmgr, memory);
+            Init(m_bmgr, m_host, memory);
         }
 
         private void cbxType_SelectedIndexChanged(object sender, EventArgs e)

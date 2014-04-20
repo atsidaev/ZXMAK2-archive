@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
 
 using ZXMAK2.Engine;
 using ZXMAK2.Interfaces;
-using ZXMAK2.MDX;
 using ZXMAK2.Controls.Debugger;
 using ZXMAK2.Entities;
 

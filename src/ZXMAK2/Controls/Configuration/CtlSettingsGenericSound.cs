@@ -23,7 +23,7 @@ namespace ZXMAK2.Controls.Configuration
             InitializeComponent();
         }
 
-        public void Init(BusManager bmgr, ISoundRenderer device)
+        public void Init(BusManager bmgr, IHost host, ISoundRenderer device)
         {
             m_bmgr = bmgr;
             m_device = device;

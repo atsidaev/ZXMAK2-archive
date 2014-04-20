@@ -352,6 +352,11 @@
     <Compile Include="Hardware\General\KempstonMouseDevice.cs" />
     <Compile Include="Hardware\General\KeyboardDevice.cs" />
     <Compile Include="Engine\RzxHandler.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Serializers\DiskSerializers\ProSerializer.cs" />
     <Compile Include="Serializers\DiskSerializers\ImgSerializer.cs" />
     <Compile Include="Serializers\DiskSerializers\QdiSerializer.cs" />
@@ -535,6 +540,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -566,6 +572,7 @@
     <None Include="boot.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Icons\EmuPause_32x32.png" />
     <Content Include="ZXMAK2.Dependency.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

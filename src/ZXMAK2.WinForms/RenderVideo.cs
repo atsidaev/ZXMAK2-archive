@@ -13,7 +13,7 @@ using ZXMAK2.Interfaces;
 using System.Threading;
 
 
-namespace ZXMAK2.MVP.WinForms
+namespace ZXMAK2.WinForms
 {
     public class RenderVideo : Render3D, IHostVideo
     {

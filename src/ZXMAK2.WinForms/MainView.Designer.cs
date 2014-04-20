@@ -1,4 +1,4 @@
-﻿namespace ZXMAK2.MVP.WinForms
+﻿namespace ZXMAK2.WinForms
 {
     partial class MainView
     {
@@ -84,7 +84,7 @@
             this.tbrButtonQuickLoad = new System.Windows.Forms.ToolStripButton();
             this.tbrButtonSettings = new System.Windows.Forms.ToolStripButton();
             this.sbrStrip = new System.Windows.Forms.StatusStrip();
-            this.renderVideo = new ZXMAK2.MVP.WinForms.RenderVideo();
+            this.renderVideo = new RenderVideo();
             this.mnuStrip.SuspendLayout();
             this.tbrStrip.SuspendLayout();
             this.SuspendLayout();
@@ -540,7 +540,7 @@
             this.renderVideo.Location = new System.Drawing.Point(0, 63);
             this.renderVideo.Name = "renderVideo";
             this.renderVideo.NoFlic = false;
-            this.renderVideo.ScaleMode = ZXMAK2.MVP.WinForms.ScaleMode.FixedPixelSize;
+            this.renderVideo.ScaleMode = ScaleMode.FixedPixelSize;
             this.renderVideo.Size = new System.Drawing.Size(526, 385);
             this.renderVideo.Smoothing = false;
             this.renderVideo.TabIndex = 3;

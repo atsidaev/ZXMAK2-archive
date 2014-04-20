@@ -4,7 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
-namespace ZXMAK2.MVP.WinForms
+namespace ZXMAK2.WinForms
 {
     public class DragDataWrapper
     {

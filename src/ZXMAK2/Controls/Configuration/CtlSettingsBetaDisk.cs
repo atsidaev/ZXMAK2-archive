@@ -22,7 +22,7 @@ namespace ZXMAK2.Controls.Configuration
             InitializeComponent();
         }
 
-        public void Init(BusManager bmgr, IBetaDiskDevice device)
+        public void Init(BusManager bmgr, IHost host, IBetaDiskDevice device)
         {
             m_bmgr = bmgr;
             m_device = device;

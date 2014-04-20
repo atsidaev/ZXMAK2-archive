@@ -7,34 +7,24 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware;
-using ZXMAK2.MDX;
 
 namespace ZXMAK2.Controls.Configuration
 {
     public partial class CtlSettingsJoystick : ConfigScreenControl
     {
         private BusManager m_bmgr;
+        private IHost m_host;
         private IJoystickDevice m_device;
 
         public CtlSettingsJoystick()
         {
             InitializeComponent();
-            BindTypeList();
         }
 
-        private void BindTypeList()
-        {
-            cbxType.Items.Clear();
-            foreach (var hdi in DirectJoystick.Select())
-            {
-                cbxType.Items.Add(hdi);
-            }
-            //cbxType.Sorted = true;
-        }
-
-        public void Init(BusManager bmgr, IJoystickDevice device)
+        public void Init(BusManager bmgr, IHost host, IJoystickDevice device)
         {
             m_bmgr = bmgr;
+            m_host = host;
             m_device = device;
 
             cbxType.SelectedIndex = -1;
@@ -47,6 +37,15 @@ namespace ZXMAK2.Controls.Configuration
                     break;
                 }
             }
+            cbxType.Items.Clear();
+            if (m_host != null && m_host.Joystick != null)
+            {
+                foreach (var hdi in m_host.Joystick.GetAvailableJoysticks())
+                {
+                    cbxType.Items.Add(hdi);
+                }
+            }
+            //cbxType.Sorted = true;
             cbxType_SelectedIndexChanged(this, EventArgs.Empty);
         }
 
@@ -61,7 +60,7 @@ namespace ZXMAK2.Controls.Configuration
             {
                 m_device.HostId = string.Empty;
             }
-            Init(m_bmgr, m_device);
+            Init(m_bmgr, m_host, m_device);
         }
 
         private void cbxType_SelectedIndexChanged(object sender, EventArgs e)

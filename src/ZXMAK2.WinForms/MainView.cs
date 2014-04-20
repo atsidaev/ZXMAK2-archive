@@ -14,7 +14,7 @@ using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
 
 
-namespace ZXMAK2.MVP.WinForms
+namespace ZXMAK2.WinForms
 {
     public partial class MainView : Form, IMainView, IHostUi
     {
