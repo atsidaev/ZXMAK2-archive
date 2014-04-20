@@ -503,7 +503,7 @@
             // tbrButtonFullScreen
             // 
             this.tbrButtonFullScreen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbrButtonFullScreen.Image = global::ZXMAK2.Properties.Resources.WindowFullScreen_32x32;
+            this.tbrButtonFullScreen.Image = global::ZXMAK2.WinForms.Properties.Resources.EmuFullScreen_32x32;
             this.tbrButtonFullScreen.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbrButtonFullScreen.Name = "tbrButtonFullScreen";
             this.tbrButtonFullScreen.Size = new System.Drawing.Size(36, 36);

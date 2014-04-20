@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Resolver>
     <Alias Name="IUserQuery" Type="ZXMAK2.Interfaces.IUserQuery, ZXMAK2" />
-    <Alias Name="UserQuery" Type="ZXMAK2.MVP.WinForms.UserQuery, ZXMAK2" />
+    <Alias Name="UserQuery" Type="ZXMAK2.WinForms.UserQuery, ZXMAK2.WinForms" />
 
     <Alias Name="IUserMessage" Type="ZXMAK2.Interfaces.IUserMessage, ZXMAK2" />
     <Alias Name="UserMessage" Type="ZXMAK2.Presentation.UserMessage, ZXMAK2.Presentation" />
@@ -16,7 +16,7 @@
     <Alias Name="Launcher" Type="ZXMAK2.Presentation.Launcher, ZXMAK2.Presentation" />
 
     <Alias Name="IMainView" Type="ZXMAK2.MVP.Interfaces.IMainView, ZXMAK2" />
-    <Alias Name="WinFormMainView" Type="ZXMAK2.MVP.WinForms.MainView, ZXMAK2" />
+    <Alias Name="WinFormMainView" Type="ZXMAK2.WinForms.MainView, ZXMAK2.WinForms" />
     <Alias Name="XnaMainView" Type="ZXMAK2.XNA4.Views.MainView, ZXMAK2.XNA4" />
 
     <Entry Type="IViewResolver" MapTo="ViewResolver" LifeTime="Singleton">
