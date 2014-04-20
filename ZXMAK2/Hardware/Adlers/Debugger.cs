@@ -4,7 +4,6 @@ using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware.Adlers.UI;
 using ZXMAK2.MVP.Interfaces;
-using ZXMAK2.MVP.WinForms;
 using ZXMAK2.MVP;
 using ZXMAK2.Dependency;
 
