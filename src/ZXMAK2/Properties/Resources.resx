@@ -154,9 +154,6 @@
   <data name="EmuResume_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\icons\emuresume_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="EmuColdReset_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\icons\emucoldreset_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="EmuWarmReset_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\icons\emuwarmreset_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

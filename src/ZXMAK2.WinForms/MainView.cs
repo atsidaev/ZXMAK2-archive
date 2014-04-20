@@ -151,11 +151,11 @@ namespace ZXMAK2.MVP.WinForms
                 {
                     if (value == "Windowed")
                     {
-                        tbrButtonFullScreen.Image = global::ZXMAK2.WinForms.Properties.Resources.WindowWindowed_32x32;
+                        tbrButtonFullScreen.Image = global::ZXMAK2.WinForms.Properties.Resources.EmuWindowed_32x32;
                     }
                     else
                     {
-                        tbrButtonFullScreen.Image = global::ZXMAK2.WinForms.Properties.Resources.WindowFullScreen_32x32;
+                        tbrButtonFullScreen.Image = global::ZXMAK2.WinForms.Properties.Resources.EmuFullScreen_32x32;
                     }
                 }));
 
