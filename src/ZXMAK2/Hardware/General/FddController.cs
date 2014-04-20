@@ -6,7 +6,6 @@ using ZXMAK2.Engine.Z80;
 using ZXMAK2.Hardware.IC;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.Controls.Debugger;
-using ZXMAK2.MVP.WinForms;
 using ZXMAK2.Dependency;
 using ZXMAK2.MVP;
 
