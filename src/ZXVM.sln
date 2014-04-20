@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.XNA4", "ZXMAK2.XNA4\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Dependency", "ZXMAK2.Dependency\ZXMAK2.Dependency.csproj", "{BB32EB49-52FF-4976-9586-5C4E415CD730}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Presentation", "Presentation\ZXMAK2.Presentation.csproj", "{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Presentation", "ZXMAK2.Presentation\ZXMAK2.Presentation.csproj", "{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
