@@ -8,8 +8,8 @@
     <ProjectGuid>{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Presentation</RootNamespace>
-    <AssemblyName>Presentation</AssemblyName>
+    <RootNamespace>ZXMAK2.Presentation</RootNamespace>
+    <AssemblyName>ZXMAK2.Presentation</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
