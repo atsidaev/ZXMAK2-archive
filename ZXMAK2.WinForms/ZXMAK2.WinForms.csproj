@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DragDataWrapper.cs" />
+    <Compile Include="HelpService.cs" />
     <Compile Include="MainView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,9 +105,20 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ZXMAK2.Dependency\ZXMAK2.Dependency.csproj">
+      <Project>{BB32EB49-52FF-4976-9586-5C4E415CD730}</Project>
+      <Name>ZXMAK2.Dependency</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Presentation\ZXMAK2.Presentation.csproj">
+      <Project>{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}</Project>
+      <Name>ZXMAK2.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2\ZXMAK2.csproj">
       <Project>{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}</Project>
       <Name>ZXMAK2</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

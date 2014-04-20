@@ -4,10 +4,15 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using ZXMAK2.MVP.Interfaces;
 
 namespace ZXMAK2.Controls
 {
-	public class FormKeyboardHelp : Form
+    public interface IKeyboardView : IView
+    {
+    }
+	
+    public class FormKeyboardHelp : FormView, IKeyboardView
 	{
 		#region Windows Form Designer generated code
 

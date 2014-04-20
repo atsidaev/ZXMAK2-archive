@@ -12,12 +12,14 @@ using ZXMAK2.Engine;
 using ZXMAK2.MDX;
 using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2.WinForms
 {
     public partial class MainView : Form, IMainView, IHostUi
     {
+        private IResolver m_resolver;
         private MdxHost m_host;
 
         private bool m_fullScreen;
@@ -34,8 +36,9 @@ namespace ZXMAK2.WinForms
             Application.SetCompatibleTextRenderingDefault(false);
         }
 
-        public MainView()
+        public MainView(IResolver resolver)
         {
+            m_resolver = resolver;
             SetStyle(ControlStyles.Opaque | ControlStyles.AllPaintingInWmPaint, true);
             InitializeComponent();
             this.Icon = Utils.GetAppIcon();
@@ -168,9 +171,14 @@ namespace ZXMAK2.WinForms
             CommandOpenUri = presenter.CommandOpenUri;
         }
 
-        public void ShowHelp()
+        public void ShowHelp(object obj)
         {
-            HelpService.ShowHelp(this);
+            var control = obj as Control;
+            if (control == null)
+            {
+                return;
+            }
+            HelpService.ShowHelp(control);
         }
 
         #endregion IMainView
@@ -274,8 +282,7 @@ namespace ZXMAK2.WinForms
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                Locator.Resolve<IUserMessage>()
-                    .ErrorDetails(ex);
+                m_resolver.Resolve<IUserMessage>().ErrorDetails(ex);
             }
         }
 

@@ -7,6 +7,8 @@ using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.MVP.WinForms;
 using ZXMAK2.Controls.Debugger;
+using ZXMAK2.Dependency;
+using ZXMAK2.MVP;
 
 
 namespace ZXMAK2.Hardware
@@ -410,7 +412,11 @@ namespace ZXMAK2.Hardware
         {
             try
             {
-                m_viewHolder = new ViewHolder<FormMemoryMap>("Memory Map", this);
+                var resolver = Locator.Instance.Resolve<IViewResolver>();
+                m_viewHolder = new ViewHolder<IMemoryMapView>(
+                    resolver, 
+                    "Memory Map", 
+                    new Argument("memory", this));
             }
             catch (Exception ex)
             {

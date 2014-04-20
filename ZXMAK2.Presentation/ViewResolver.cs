@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ZXMAK2.Dependency;
-using ZXMAK2.Presentation.Interfaces;
+using ZXMAK2.MVP.Interfaces;
 
 
 namespace ZXMAK2.Presentation
@@ -26,7 +26,7 @@ namespace ZXMAK2.Presentation
         {
             foreach (var viewType in m_viewTypes)
             {
-                var view = m_resolver.TryResolve<T>(viewType);
+                var view = m_resolver.TryResolve<T>(viewType, arguments);
                 if (view != null)
                 {
                     return view;

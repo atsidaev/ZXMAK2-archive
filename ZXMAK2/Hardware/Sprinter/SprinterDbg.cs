@@ -10,6 +10,8 @@ using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.MVP.WinForms;
 using ZXMAK2.Hardware.Sprinter.UI;
+using ZXMAK2.MVP;
+using ZXMAK2.Dependency;
 
 namespace ZXMAK2.Hardware.Sprinter
 {
@@ -30,7 +32,7 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             if (m_viewHolder != null && dbg != null)
             {
-                m_viewHolder.Arguments = new object[] { dbg };
+                m_viewHolder.Arguments = new [] { new Argument("debugTarget", dbg) };
             }
         }
 
@@ -90,7 +92,8 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             try
             {
-                m_viewHolder = new ViewHolder<DebugForm>("Debugger");
+                var resolver = Locator.Instance.Resolve<IViewResolver>();
+                m_viewHolder = new ViewHolder<IDebuggerSprinterView>(resolver, "Debugger");
             }
             catch (Exception ex)
             {

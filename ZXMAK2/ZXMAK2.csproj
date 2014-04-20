@@ -72,6 +72,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\FormView.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Engine\VideoData.cs" />
     <Compile Include="Entities\KeyboardMapper.cs" />
     <Compile Include="Entities\SyncSource.cs" />
@@ -82,9 +85,11 @@
     <Compile Include="Interfaces\IVideoData.cs" />
     <Compile Include="Locator.cs" />
     <Compile Include="LogAgent.cs" />
-    <Compile Include="HelpService.cs" />
     <Compile Include="Engine\FpsMonitor.cs" />
+    <Compile Include="MVP\Interfaces\IView.cs" />
     <Compile Include="MVP\Interfaces\IMainPresenter.cs" />
+    <Compile Include="MVP\Interfaces\IViewResolver.cs" />
+    <Compile Include="MVP\ViewHolder.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

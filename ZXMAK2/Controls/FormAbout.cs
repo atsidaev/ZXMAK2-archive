@@ -1,11 +1,16 @@
 using System;
 using System.Windows.Forms;
 using System.Diagnostics;
+using ZXMAK2.MVP.Interfaces;
 
 
 namespace ZXMAK2.Controls
 {
-	public class FormAbout : Form
+    public interface IAboutView : IView
+    {
+    }
+    
+    public class FormAbout : FormView, IAboutView
 	{
 		#region Windows Form Designer generated code
 
@@ -141,7 +146,7 @@ namespace ZXMAK2.Controls
 		#endregion
 
 
-		public FormAbout()
+        public FormAbout()
 		{
 			InitializeComponent();
 			using (System.Drawing.Icon icon = Utils.GetAppIcon())
@@ -160,5 +165,5 @@ namespace ZXMAK2.Controls
         {
             Close();
         }
-	}
+    }
 }

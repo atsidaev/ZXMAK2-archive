@@ -98,6 +98,10 @@ namespace ZXMAK2.XNA4.Views
             Exit();
         }
 
+        public void ShowHelp(object obj)
+        {
+        }
+
         #endregion IMainView
 
         

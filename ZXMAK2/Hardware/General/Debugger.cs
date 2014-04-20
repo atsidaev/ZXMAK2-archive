@@ -6,6 +6,8 @@ using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.MVP.WinForms;
 using ZXMAK2.Hardware.General.UI;
+using ZXMAK2.MVP;
+using ZXMAK2.Dependency;
 
 namespace ZXMAK2.Hardware.General
 {
@@ -54,7 +56,10 @@ namespace ZXMAK2.Hardware.General
         {
             if (m_viewHolder != null && dbg != null)
             {
-                m_viewHolder.Arguments = new object[] { dbg };
+                m_viewHolder.Arguments = new [] 
+                { 
+                    new Argument("debugTarget", dbg), 
+                };
             }
         }
 
@@ -76,7 +81,8 @@ namespace ZXMAK2.Hardware.General
         {
             try
             {
-                m_viewHolder = new ViewHolder<FormCpu>("Debugger");
+                var resolver = Locator.Instance.Resolve<IViewResolver>();
+                m_viewHolder = new ViewHolder<IDebuggerGeneralView>(resolver, "Debugger");
             }
             catch (Exception ex)
             {

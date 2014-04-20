@@ -19,13 +19,18 @@ namespace ZXMAK2.MVP
 {
     public class MainPresenter : IMainPresenter
     {
+        private readonly IViewResolver m_viewResolver;
         private readonly IMainView m_view;
         private readonly string m_startupImage;
         private VirtualMachine m_vm;
         
         
-        public MainPresenter(IMainView view, params string[] args)
+        public MainPresenter(
+            IViewResolver viewResolver, 
+            IMainView view, 
+            params string[] args)
         {
+            m_viewResolver = viewResolver;
             m_view = view;
             if (args.Length > 0 && File.Exists(args[0]))
             {
@@ -144,12 +149,19 @@ namespace ZXMAK2.MVP
             CommandVmWarmReset = new CommandDelegate(CommandVmWarmReset_OnExecute);
             CommandVmNmi = new CommandDelegate(CommandVmNmi_OnExecute);
             CommandVmSettings = new CommandDelegate(CommandVmSettings_OnExecute);
-            CommandHelpViewHelp = new CommandDelegate((obj)=>HelpService.ShowHelp(obj), (obj)=>HelpService.CanShow(obj));
-            CommandHelpKeyboardHelp = new ViewHolder<FormKeyboardHelp>(null).CommandOpen;
-            CommandHelpAbout = new ViewHolder<FormAbout>(null).CommandOpen;
+            CommandHelpViewHelp = new CommandDelegate((obj)=>m_view.ShowHelp(obj));
+            CommandHelpKeyboardHelp = CreateViewHolderCommand<IKeyboardView>();
+            CommandHelpAbout = CreateViewHolderCommand<IAboutView>();
             CommandTapePause = new CommandDelegate(CommandTapePause_OnExecute, CommandTapePause_CanExecute);
             CommandQuickLoad = new CommandDelegate(CommandQuickLoad_OnExecute);
             CommandOpenUri = new CommandDelegate(CommandOpenUri_OnExecute, CommandOpenUri_OnCanExecute);
+        }
+
+        private ICommand CreateViewHolderCommand<T>()
+            where T : IView
+        {
+            var viewHolder = new ViewHolder<T>(m_viewResolver, null);
+            return viewHolder.CommandOpen;
         }
 
         private void CommandFileOpen_OnExecute(Object objArg)

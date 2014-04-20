@@ -19,5 +19,6 @@ namespace ZXMAK2.MVP.Interfaces
         void Run();
         void Bind(IMainPresenter presenter);
         void Close();
+        void ShowHelp(object obj);
     }
 }
