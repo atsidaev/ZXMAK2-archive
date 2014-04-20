@@ -127,7 +127,6 @@
     <Compile Include="MVP\MainPresenter.cs" />
     <Compile Include="MVP\Interfaces\IViewHolder.cs" />
     <Compile Include="MVP\Interfaces\IMainView.cs" />
-    <Compile Include="MVP\WinForms\ViewHolder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\CommandDelegate.cs" />
