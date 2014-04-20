@@ -19,9 +19,9 @@ namespace ZXMAK2.MVP
 {
     public class MainPresenter : IDisposable
     {
-        private IMainView m_view;
+        private readonly IMainView m_view;
+        private readonly string m_startupImage;
         private VirtualMachine m_vm;
-        private string m_startupImage;
         
         
         public MainPresenter(IMainView view, params string[] args)
