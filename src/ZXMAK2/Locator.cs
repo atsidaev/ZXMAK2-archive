@@ -7,19 +7,19 @@ namespace ZXMAK2
 {
     public class Locator
     {
-        private static LocatorResolver _instance = new LocatorResolver();
+        private static Resolver _instance = new Resolver();
 
         public static T Resolve<T>()
         {
             return _instance.Resolve<T>();
         }
 
-        private class LocatorResolver
+        private class Resolver
         {
             private Dictionary<Type, LocatorEntry> m_entries = new Dictionary<Type, LocatorEntry>();
             private Dictionary<Type, object> m_instances = new Dictionary<Type, object>();
 
-            public LocatorResolver()
+            public Resolver()
             {
                 Load();
             }
