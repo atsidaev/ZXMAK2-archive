@@ -6,7 +6,7 @@ namespace ZXMAK2.Engine
 {
     public class FpsMonitor
     {
-        private Stopwatch m_watch;
+        private readonly Stopwatch m_watch;
         private int m_frameCounter;
 
         public double Value { get; private set; }
