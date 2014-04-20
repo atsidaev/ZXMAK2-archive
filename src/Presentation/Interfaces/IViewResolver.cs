@@ -2,7 +2,7 @@
 using ZXMAK2.Dependency;
 
 
-namespace ZXMAK2.Interfaces
+namespace ZXMAK2.Presentation.Interfaces
 {
     public interface IViewResolver
     {

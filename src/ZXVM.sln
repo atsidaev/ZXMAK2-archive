@@ -7,11 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.XNA4", "ZXMAK2.XNA4\ZXMAK2.XNA4.csproj", "{A3B89835-284D-4264-9033-57AF328AF8B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Dependency", "ZXMAK2.Resolver\ZXMAK2.Dependency.csproj", "{BB32EB49-52FF-4976-9586-5C4E415CD730}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Dependency", "ZXMAK2.Dependency\ZXMAK2.Dependency.csproj", "{BB32EB49-52FF-4976-9586-5C4E415CD730}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Presentation", "Presentation\ZXMAK2.Presentation.csproj", "{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath0 = .
@@ -27,6 +29,9 @@ Global
 		SccProjectUniqueName4 = ZXMAK2.Resolver\\ZXMAK2.Dependency.csproj
 		SccProjectName4 = ZXMAK2.Resolver
 		SccLocalPath4 = ZXMAK2.Resolver
+		SccProjectUniqueName5 = Presentation\\ZXMAK2.Presentation.csproj
+		SccProjectName5 = Presentation
+		SccLocalPath5 = Presentation
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +82,16 @@ Global
 		{BB32EB49-52FF-4976-9586-5C4E415CD730}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{BB32EB49-52FF-4976-9586-5C4E415CD730}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{BB32EB49-52FF-4976-9586-5C4E415CD730}.Release|x86.ActiveCfg = Release|Any CPU
+		{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
