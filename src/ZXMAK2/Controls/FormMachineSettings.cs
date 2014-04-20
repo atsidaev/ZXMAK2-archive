@@ -403,7 +403,7 @@ namespace ZXMAK2.Controls
                         if (mi == null)
                             continue;
                         var obj = (UserControl)Activator.CreateInstance(type);
-                        mi.Invoke(obj, new object[] { bmgr, objTarget });
+                        mi.Invoke(obj, new object[] { bmgr, m_host, objTarget });
                         return obj;
                     }
                 }
