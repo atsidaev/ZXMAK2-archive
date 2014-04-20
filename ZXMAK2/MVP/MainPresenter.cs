@@ -12,12 +12,14 @@ using ZXMAK2.Engine;
 using ZXMAK2.Controls;
 using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2.MVP
 {
     public class MainPresenter : IMainPresenter
     {
+        private readonly IUserMessage m_userMessage;
         private readonly IViewResolver m_viewResolver;
         private readonly IMainView m_view;
         private readonly string m_startupImage;
@@ -25,10 +27,12 @@ namespace ZXMAK2.MVP
         
         
         public MainPresenter(
+            IUserMessage userMessage,
             IViewResolver viewResolver, 
             IMainView view, 
             params string[] args)
         {
+            m_userMessage = userMessage;
             m_viewResolver = viewResolver;
             m_view = view;
             if (args.Length > 0 && File.Exists(args[0]))
@@ -330,7 +334,7 @@ namespace ZXMAK2.MVP
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                Locator.Resolve<IUserMessage>().Error(ex);
+                m_userMessage.Error(ex);
             }
         }
 
@@ -376,8 +380,7 @@ namespace ZXMAK2.MVP
             fileName = Path.Combine(fileName, "boot.zip");
             if (!File.Exists(fileName))
             {
-                Locator.Resolve<IUserMessage>()
-                    .Error("Quick snapshot boot.zip is missing!");
+                m_userMessage.Error("Quick snapshot boot.zip is missing!");
                 return;
             }
             var running = m_vm.IsRunning;
@@ -390,8 +393,7 @@ namespace ZXMAK2.MVP
                 }
                 else
                 {
-                    Locator.Resolve<IUserMessage>()
-                        .Error("Cannot open quick snapshot boot.zip!");
+                    m_userMessage.Error("Cannot open quick snapshot boot.zip!");
                 }
             }
             finally
@@ -447,7 +449,7 @@ namespace ZXMAK2.MVP
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                Locator.Resolve<IUserMessage>().Error(ex);
+                m_userMessage.Error(ex);
             }
         }
 
@@ -475,7 +477,7 @@ namespace ZXMAK2.MVP
             {
                 LogAgent.Error(ex);
                 e.Cancel = true;
-                Locator.Resolve<IUserMessage>().Error(ex);
+                m_userMessage.Error(ex);
             }
         }
 
@@ -496,14 +498,13 @@ namespace ZXMAK2.MVP
                 }
                 else
                 {
-                    Locator.Resolve<IUserMessage>()
-                        .Error("Unrecognized file!");
+                    m_userMessage.Error("Unrecognized file!");
                 }
             }
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                Locator.Resolve<IUserMessage>().Error(ex);
+                m_userMessage.Error(ex);
             }
             finally
             {
@@ -525,14 +526,13 @@ namespace ZXMAK2.MVP
                 }
                 else
                 {
-                    Locator.Resolve<IUserMessage>()
-                        .Error("Unrecognized file!");
+                    m_userMessage.Error("Unrecognized file!");
                 }
             }
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                Locator.Resolve<IUserMessage>().Error(ex);
+                m_userMessage.Error(ex);
             }
             finally
             {
@@ -558,8 +558,9 @@ namespace ZXMAK2.MVP
                 }
                 else
                 {
-                    Locator.Resolve<IUserMessage>()
-                        .Error("Unrecognized file!\n\n{0}", fileName);
+                    m_userMessage.Error(
+                        "Unrecognized file!\n\n{0}", 
+                        fileName);
                 }
             }
             finally
