@@ -5,6 +5,8 @@ using ZXMAK2.Entities;
 using ZXMAK2.Hardware.Adlers.UI;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.MVP.WinForms;
+using ZXMAK2.MVP;
+using ZXMAK2.Dependency;
 
 namespace ZXMAK2.Hardware.Adlers
 {
@@ -53,7 +55,11 @@ namespace ZXMAK2.Hardware.Adlers
         {
             if (m_viewHolder != null && dbg != null)
             {
-                m_viewHolder.Arguments = new object[] { dbg, m_bmgr };
+                m_viewHolder.Arguments = new[] 
+                { 
+                    new Argument("debugTarget", dbg),
+                    new Argument("bmgr", m_bmgr),
+                };
             }
         }
 
@@ -72,7 +78,8 @@ namespace ZXMAK2.Hardware.Adlers
         {
             try
             {
-                m_viewHolder = new ViewHolder<FormCpu>("Debugger");
+                var resolver = Locator.Instance.Resolve<IViewResolver>();
+                m_viewHolder = new ViewHolder<IDebuggerAdlersView>(resolver, "Debugger");
             }
             catch (Exception ex)
             {

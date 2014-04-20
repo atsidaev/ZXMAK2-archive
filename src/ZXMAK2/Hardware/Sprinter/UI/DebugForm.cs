@@ -12,10 +12,15 @@ using ZXMAK2.Engine;
 using ZXMAK2.Hardware.General.UI;
 using ZXMAK2.Entities;
 using ZXMAK2.Controls;
+using ZXMAK2.MVP.Interfaces;
 
 namespace ZXMAK2.Hardware.Sprinter.UI
 {
-    public partial class DebugForm : Form
+    public interface IDebuggerSprinterView : IView
+    {
+    }
+
+    public partial class DebugForm : FormView, IDebuggerSprinterView
     {
         private DasmPanel dasmPanel;
         private DataPanel dataPanel;

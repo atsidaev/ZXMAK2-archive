@@ -4,10 +4,15 @@ using ZXMAK2.Hardware;
 using System.ComponentModel;
 using System.Drawing;
 using ZXMAK2.Interfaces;
+using ZXMAK2.MVP.Interfaces;
 
 namespace ZXMAK2.Controls.Debugger
 {
-    public partial class FormMemoryMap : Form
+    public interface IMemoryMapView : IView
+    {
+    }
+    
+    public partial class FormMemoryMap : FormView, IMemoryMapView
     {
         private const string CS_UNKNOWN = "???";
         private MemoryBase m_memory = null;

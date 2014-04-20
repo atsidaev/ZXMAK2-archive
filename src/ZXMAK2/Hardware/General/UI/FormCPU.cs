@@ -13,10 +13,15 @@ using System.Collections.Generic;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Controls;
+using ZXMAK2.MVP.Interfaces;
 
 namespace ZXMAK2.Hardware.General.UI
 {
-    public partial class FormCpu : Form
+    public interface IDebuggerGeneralView : IView
+    {
+    }
+    
+    public partial class FormCpu : FormView, IDebuggerGeneralView
     {
         private IDebuggable m_spectrum;
         private DasmTool m_dasmTool;

@@ -27,6 +27,16 @@ namespace ZXMAK2.Controls.Configuration
             m_host = host;
             m_device = device;
 
+            cbxType.Items.Clear();
+            if (m_host != null && m_host.Joystick != null)
+            {
+                foreach (var hdi in m_host.Joystick.GetAvailableJoysticks())
+                {
+                    cbxType.Items.Add(hdi);
+                }
+            }
+            //cbxType.Sorted = true;
+
             cbxType.SelectedIndex = -1;
             for (var i = 0; i < cbxType.Items.Count; i++)
             {
@@ -37,15 +47,6 @@ namespace ZXMAK2.Controls.Configuration
                     break;
                 }
             }
-            cbxType.Items.Clear();
-            if (m_host != null && m_host.Joystick != null)
-            {
-                foreach (var hdi in m_host.Joystick.GetAvailableJoysticks())
-                {
-                    cbxType.Items.Add(hdi);
-                }
-            }
-            //cbxType.Sorted = true;
             cbxType_SelectedIndexChanged(this, EventArgs.Empty);
         }
 

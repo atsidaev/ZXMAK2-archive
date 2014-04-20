@@ -16,6 +16,8 @@ using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.MVP.WinForms;
 using ZXMAK2.Controls;
+using ZXMAK2.MVP;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2.Hardware.General
@@ -479,7 +481,11 @@ namespace ZXMAK2.Hardware.General
         {
             try
             {
-                m_viewHolder = new ViewHolder<TapeForm>("Tape", this);
+                var resolver = Locator.Instance.Resolve<IViewResolver>();
+                m_viewHolder = new ViewHolder<ITapeView>(
+                    resolver,
+                    "Tape",
+                    new Argument("tapeDevice", this));
             }
             catch (Exception ex)
             {

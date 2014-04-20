@@ -15,10 +15,15 @@ using ZXMAK2.Controls;
 using System.Reflection.Emit;
 using System.Reflection;
 using ZXMAK2.Hardware.Adlers.UI;
+using ZXMAK2.MVP.Interfaces;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
-    public partial class FormCpu : Form
+    public interface IDebuggerAdlersView : IView
+    {
+    }
+    
+    public partial class FormCpu : FormView, IDebuggerAdlersView
     {
         private IDebuggable m_spectrum;
         private DasmTool m_dasmTool;

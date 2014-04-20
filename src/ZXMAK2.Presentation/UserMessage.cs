@@ -2,11 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Dependency;
 
 namespace ZXMAK2.Presentation
 {
     public class UserMessage : IUserMessage
     {
+        private readonly IResolver m_resolver;
+        
+        public UserMessage(IResolver resolver)
+        {
+            m_resolver = resolver;
+        }
+        
         public void ErrorDetails(Exception ex)
         {
             var msg = string.Format("{0}\n\n{1}", ex.GetType(), ex.Message);
@@ -50,7 +58,7 @@ namespace ZXMAK2.Presentation
 
         private void Show(string msg, string caption, DlgIcon icon)
         {
-            var service = Locator.Resolve<IUserQuery>();
+            var service = m_resolver.TryResolve<IUserQuery>();
             if (service != null)
             {
                 service.Show(

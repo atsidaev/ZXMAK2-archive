@@ -8,10 +8,15 @@ using System.Windows.Forms;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Z80;
 using ZXMAK2.Entities;
+using ZXMAK2.MVP.Interfaces;
 
 namespace ZXMAK2.Controls
 {
-    public class TapeForm : Form
+    public interface ITapeView : IView
+    {
+    }
+
+    public class TapeForm : FormView, ITapeView
     {
         #region Windows Form Designer generated code
 
@@ -209,11 +214,11 @@ namespace ZXMAK2.Controls
 
         private ITapeDevice m_tape;
 
-        public TapeForm(ITapeDevice tape)
+        public TapeForm(ITapeDevice tapeDevice)
         {
-            m_tape = tape;
+            m_tape = tapeDevice;
             InitializeComponent();
-            tape.TapeStateChanged += new EventHandler(OnTapeStateChanged);
+            tapeDevice.TapeStateChanged += new EventHandler(OnTapeStateChanged);
             OnTapeStateChanged(null, null);
             OnTapeStateChanged(null, null);
         }

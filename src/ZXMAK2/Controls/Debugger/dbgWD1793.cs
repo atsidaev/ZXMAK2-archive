@@ -6,11 +6,16 @@ using System.Threading;
 using System.Windows.Forms;
 
 using ZXMAK2.Hardware.IC;
+using ZXMAK2.MVP.Interfaces;
 
 
 namespace ZXMAK2.Controls.Debugger
 {
-    public partial class dbgWD1793 : Form
+    public interface IFddDebugView : IView
+    {
+    }
+    
+    public partial class dbgWD1793 : FormView, IFddDebugView
     {
         private Wd1793 _wd1793;
 

@@ -7,6 +7,8 @@ using ZXMAK2.Hardware.IC;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.Controls.Debugger;
 using ZXMAK2.MVP.WinForms;
+using ZXMAK2.Dependency;
+using ZXMAK2.MVP;
 
 namespace ZXMAK2.Hardware.General
 {
@@ -165,7 +167,11 @@ namespace ZXMAK2.Hardware.General
         {
             try
             {
-                m_viewHolder = new ViewHolder<dbgWD1793>("WD1793", m_wd);
+                var resolver = Locator.Instance.Resolve<IViewResolver>();
+                m_viewHolder = new ViewHolder<IFddDebugView>(
+                    resolver, 
+                    "WD1793", 
+                    new Argument("debugTarget", m_wd));
             }
             catch (Exception ex)
             {
