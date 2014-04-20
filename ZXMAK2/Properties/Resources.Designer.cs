@@ -194,6 +194,22 @@ namespace ZXMAK2.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+        ///&lt;Locator&gt;
+        ///    &lt;Alias Name=&quot;IDialogService&quot; Type=&quot;ZXMAK2.Interfaces.IDialogService, ZXMAK2&quot; /&gt;
+        ///    &lt;Alias Name=&quot;WinFormsDialogService&quot; Type=&quot;ZXMAK2.WinFormsDialogService, ZXMAK2&quot; /&gt;
+        ///
+        ///    &lt;Entry Name=&quot;IDialogService&quot; MapTo=&quot;WinFormsDialogService&quot; /&gt;
+        ///&lt;/Locator&gt; 
+        ///.
+        /// </summary>
+        internal static string Locator {
+            get {
+                return ResourceManager.GetString("Locator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap NextIcon {

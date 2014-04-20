@@ -1,6 +1,7 @@
 ﻿using System;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.MVP;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2
@@ -24,11 +25,7 @@ namespace ZXMAK2
                 LogAgent.Error(ex);
                 try
                 {
-                    DialogService.Show(
-                        string.Format("{0}\n\n{1}", ex.GetType(), ex.Message),
-                        "ZXMAK2",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>().ErrorDetails(ex);
                 }
                 catch (Exception ex2)
                 {

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 using ZXMAK2.Entities;
 using ZXMAK2.Crc;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.Serializers.DiskSerializers
@@ -60,20 +61,14 @@ namespace ZXMAK2.Serializers.DiskSerializers
             }
             if (mainHdr.Ver > 21 || mainHdr.Ver < 10)           // 1.0 <= version <= 2.1...
             {
-                DialogService.Show(
-                    string.Format("Format version is not supported [0x{0:X2}]", mainHdr.Ver),
-                    "TD0 loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("TD0 loader\n\nFormat version is not supported [0x{0:X2}]", mainHdr.Ver);
                 return false;
             }
             if (mainHdr.DataDOS != 0)
             {
-                DialogService.Show(
-                    "'DOS Allocated sectors were copied' option is not supported!",
-                    "TD0 loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("TD0 loader\n\n'DOS Allocated sectors were copied' is not supported!");
                 return false;
             }
 
@@ -82,11 +77,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
             {
                 if (mainHdr.Ver < 20)    // unsupported Old Advanced compression
                 {
-                    DialogService.Show(
-                        "Old Advanced compression is not implemented!",
-                        "TD0 loader",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("TD0 loader\n\nOld Advanced compression is not implemented!");
                     return false;
                 }
                 dataStream = new LzssHuffmanStream(stream);
@@ -125,11 +117,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
                 if (CrcTd0.Calculate(info, 2, 8 + getUInt16(info, 2)) != getUInt16(info, 0))
                 {
-                    DialogService.Show(
-                        "Info crc wrong",
-                        "TD0 loader",
-                        DlgButtonSet.OK,
-                        DlgIcon.Warning);
+                    Locator.Resolve<IUserMessage>()
+                        .Warning("TD0 loader\n\nInfo crc wrong!");
                 }
                 // combine lines splitted by zero
                 var builder = new StringBuilder();
@@ -166,11 +155,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
             if (cylCount < 1 || sideCount < 1)
             {
-                DialogService.Show(
-                    "Invalid disk structure",
-                    "td0",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("TD0 loader\n\nInvalid disk structure");
                 return false;
             }
 
@@ -251,11 +237,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
                 if (ID != 0x4454 && ID != 0x6474) // "TD"/"td"
                 {
                     LogAgent.Error("TD0 loader: Invalid header ID");
-                    DialogService.Show(
-                        "Invalid header ID",
-                        "TD0 loader",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("TD0 loader\n\nInvalid header ID");
                     return null;
                 }
 
@@ -264,11 +247,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
                 if (stampcrc != crc)
                 {
                     LogAgent.Warn("TD0 loader: Main header had bad CRC=0x" + crc.ToString("X4") + " (stamp crc=0x" + stampcrc.ToString("X4") + ")");
-                    DialogService.Show(
-                        "Wrong main header CRC",
-                        "TD0 loader",
-                        DlgButtonSet.OK,
-                        DlgIcon.Warning);
+                    Locator.Resolve<IUserMessage>()
+                        .Warning("TD0 loader\n\nWrong main header CRC");
                 }
                 return result;
             }
@@ -315,11 +295,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
                     if (hdr._rawData[3] != (crc & 0xFF))
                     {
                         LogAgent.Warn("TD0 loader: Track header had bad CRC=0x" + crc.ToString("X4") + " (stamp crc=0x" + hdr._rawData[3].ToString("X2") + ") [CYL:0x" + hdr._rawData[1].ToString("X2") + ";SIDE:" + hdr._rawData[2].ToString("X2"));
-                        DialogService.Show(
-                            "Track header had bad CRC",
-                            "TD0 loader",
-                            DlgButtonSet.OK,
-                            DlgIcon.Warning);
+                        Locator.Resolve<IUserMessage>()
+                            .Warning("TD0 loader\n\nTrack header had bad CRC");
                     }
 
                     var sectors = new List<Sector>(hdr.SectorCount);
@@ -427,11 +404,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
                         sector.H,
                         sector.R,
                         sector.N);
-                    DialogService.Show(
-                        "Sector data had bad CRC",
-                        "TD0 loader",
-                        DlgButtonSet.OK,
-                        DlgIcon.Warning);
+                    Locator.Resolve<IUserMessage>()
+                        .Warning("TD0 loader\n\nSector data had bad CRC");
                 }
 
                 sector.SetAdCrc(true);
@@ -488,11 +462,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
                                     break;
                                 default:
                                     LogAgent.Warn("Unknown sector encoding!");
-                                    DialogService.Show(
-                                        "Unknown sector encoding!",
-                                        "TD0 loader",
-                                        DlgButtonSet.OK,
-                                        DlgIcon.Warning);
+                                    Locator.Resolve<IUserMessage>()
+                                        .Warning("TD0 loader\n\nUnknown sector encoding!");
                                     index = buffer.Length;
                                     break;
                             }

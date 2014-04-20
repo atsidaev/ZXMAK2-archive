@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Locator>
+    <Alias Name="IUserQuery" Type="ZXMAK2.Interfaces.IUserQuery, ZXMAK2" />
+    <Alias Name="UserQuery" Type="ZXMAK2.MVP.WinForms.UserQuery, ZXMAK2" />
+
+    <Alias Name="IUserMessage" Type="ZXMAK2.Interfaces.IUserMessage, ZXMAK2" />
+    <Alias Name="UserMessage" Type="ZXMAK2.MVP.UserMessage, ZXMAK2" />
+
+    <Entry Type="IUserQuery" MapTo="UserQuery" />
+    <Entry Type="IUserMessage" MapTo="UserMessage" />
+</Locator> 

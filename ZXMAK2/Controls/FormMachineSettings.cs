@@ -467,11 +467,9 @@ namespace ZXMAK2.Controls
                 catch (Exception ex)
                 {
                     LogAgent.Error(ex);
-                    DialogService.Show(
-                        string.Format("The following device was failed to initialize and will be removed:\n{0}", device.GetType()),
-                        "ERROR",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>().Error(
+                        "The following device was failed to initialize and will be removed:\n{0}", 
+                        device.GetType());
                     m_workBus.Remove(device);
                 }
             }
@@ -565,30 +563,21 @@ namespace ZXMAK2.Controls
                 }
                 if (m_workBus.FindDevice<IUlaDevice>() == null)
                 {
-                    DialogService.Show(
-                        "Bad configuration!\n\nPease add ULA device!",
-                        "ERROR",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("Bad configuration!\n\nPease add ULA device!");
                     return;
                 }
                 if (m_workBus.FindDevice<IMemoryDevice>() == null)
                 {
-                    DialogService.Show(
-                        "Bad configuration!\n\nPease add Memory device!",
-                        "ERROR",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("Bad configuration!\n\nPease add Memory device!");
                     return;
                 }
 
                 if (!m_workBus.Connect())
                 {
-                    DialogService.Show(
-                        "There is a problem in your machine configuration!\nSee logs for details",
-                        "Apply failed!",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("Apply failed!\n\nThere is a problem in your machine configuration!\nSee logs for details");
                     m_workBus.Disconnect();
                     return;
                 }
@@ -624,11 +613,8 @@ namespace ZXMAK2.Controls
             {
                 LogAgent.Error(ex);
                 m_workBus.Disconnect();
-                DialogService.Show(
-                    ex.Message,
-                    "Apply failed!",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("Apply failed!\n\n{0}", ex.Message);
             }
         }
 
@@ -685,11 +671,8 @@ namespace ZXMAK2.Controls
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogService.Show(
-                    ex.Message,
-                    "Add failed!",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("Add failed!\n\n{0}", ex.Message);
             }
         }
 
@@ -802,7 +785,8 @@ namespace ZXMAK2.Controls
             }
             else
             {
-                MessageBox.Show("Invalid Configuration File!", "Error");
+                Locator.Resolve<IUserMessage>()
+                    .Error("Invalid Configuration File!");
             }
         }
     }

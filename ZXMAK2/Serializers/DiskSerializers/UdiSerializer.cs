@@ -4,6 +4,7 @@ using System.Text;
 
 using ZXMAK2.Entities;
 using ZXMAK2.Crc;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.Serializers.DiskSerializers
@@ -76,31 +77,22 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
             if (Encoding.ASCII.GetString(hdr, 0, 4) != "UDI!") // check "UDI!"
             {
-                DialogService.Show(
-                    "Unknown *.UDI file identifier!",
-                    "UDI loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("UDI loader\n\nUnknown *.UDI file identifier!");
                 return;
             }
 
             var size = hdr[4] | hdr[5] << 8 | hdr[6] << 16 | hdr[7] << 24;
             if (stream.Length != (size + 4))
             {
-                DialogService.Show(
-                    "Corrupt *.UDI file!",
-                    "UDI loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("UDI loader\n\nCorrupt *.UDI file!");
                 return;
             }
             if (hdr[8] != 0)
             {
-                DialogService.Show(
-                    "Unsupported *.UDI format version!",
-                    "UDI loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("UDI loader\n\nUnsupported *.UDI format version!");
                 return;
             }
 
@@ -142,11 +134,10 @@ namespace ZXMAK2.Serializers.DiskSerializers
             var stampCrc = (UInt32)(hdr[0] | hdr[1] << 8 | hdr[2] << 16 | hdr[3] << 24);
             if (stampCrc != crc)
             {
-                DialogService.Show(
-                    string.Format("CRC ERROR:\nStamp: {0:X8}\nReal: {1:X8}", stampCrc, crc),
-                    "UDI loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Warning);
+                Locator.Resolve<IUserMessage>().Warning(
+                    "UDI loader\n\nCRC ERROR:\nStamp: {0:X8}\nReal: {1:X8}", 
+                    stampCrc, 
+                    crc);
             }
         }
 

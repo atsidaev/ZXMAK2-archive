@@ -39,21 +39,15 @@ namespace ZXMAK2.Serializers.TapeSerializers
                 var txtInfo = string.Empty;
                 if (Encoding.ASCII.GetString(hdr, 0, 22) != "Compressed Square Wave")
                 {
-                    DialogService.Show(
-                        "Invalid CSW file, identifier not found! ",
-                        "CSW loader",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("CSW loader\n\nInvalid CSW file, identifier not found!");
                     return;
                 }
                 var version = hdr[0x17];
                 if (version > 2)
                 {
-                    DialogService.Show(
-                        string.Format("Format CSW V{0}.{1} not supported!", hdr[0x17], hdr[0x18]),
-                        "CSW loader",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("CSW loader\n\nFormat CSW V{0}.{1} not supported!", hdr[0x17], hdr[0x18]);
                     return;
                 }
                 if (version == 2)  // CSW V2
@@ -133,11 +127,8 @@ namespace ZXMAK2.Serializers.TapeSerializers
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogService.Show(
-                    ex.Message,
-                    "CSW loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("CSW loader\n\n{0}", ex.Message);
                 return;
             }
         }

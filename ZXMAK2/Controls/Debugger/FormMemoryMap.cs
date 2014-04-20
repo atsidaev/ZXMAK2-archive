@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using ZXMAK2.Hardware;
 using System.ComponentModel;
 using System.Drawing;
+using ZXMAK2.Interfaces;
 
 namespace ZXMAK2.Controls.Debugger
 {
@@ -95,7 +96,12 @@ namespace ZXMAK2.Controls.Debugger
         private bool EditValue(ref byte value, string valueName)
         {
             int iValue = value;
-            if (!InputBox.InputValue(
+            var service = Locator.Resolve<IUserQuery>();
+            if (service == null)
+            {
+                return false;
+            }
+            if (!service.QueryValue(
                 string.Format("Change {0}", valueName),
                 string.Format("New {0} value", valueName),
                 "#{0:X2}",
