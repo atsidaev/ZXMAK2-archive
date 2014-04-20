@@ -4,7 +4,7 @@
     <Alias Name="UserQuery" Type="ZXMAK2.MVP.WinForms.UserQuery, ZXMAK2" />
 
     <Alias Name="IUserMessage" Type="ZXMAK2.Interfaces.IUserMessage, ZXMAK2" />
-    <Alias Name="UserMessage" Type="ZXMAK2.MVP.UserMessage, ZXMAK2" />
+    <Alias Name="UserMessage" Type="ZXMAK2.Presentation.UserMessage, ZXMAK2.Presentation" />
 
     <Alias Name="IMainPresenter" Type="ZXMAK2.MVP.Interfaces.IMainPresenter, ZXMAK2" />
     <Alias Name="MainPresenter" Type="ZXMAK2.MVP.MainPresenter, ZXMAK2" />
