@@ -5,7 +5,7 @@ using ZXMAK2.Interfaces;
 
 namespace ZXMAK2.MVP.Interfaces
 {
-    public interface IMainView
+    public interface IMainView : IDisposable
     {
         string Title { get; set; }
         bool IsFullScreen { get; set; }
@@ -17,7 +17,7 @@ namespace ZXMAK2.MVP.Interfaces
         event EventHandler ViewInvalidate;
 
         void Run();
-        void Bind(MainPresenter presenter);
+        void Bind(IMainPresenter presenter);
         void Close();
     }
 }

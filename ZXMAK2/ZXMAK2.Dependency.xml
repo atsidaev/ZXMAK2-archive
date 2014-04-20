@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Resolver>
+    <Alias Name="IUserQuery" Type="ZXMAK2.Interfaces.IUserQuery, ZXMAK2" />
+    <Alias Name="UserQuery" Type="ZXMAK2.MVP.WinForms.UserQuery, ZXMAK2" />
+
+    <Alias Name="IUserMessage" Type="ZXMAK2.Interfaces.IUserMessage, ZXMAK2" />
+    <Alias Name="UserMessage" Type="ZXMAK2.MVP.UserMessage, ZXMAK2" />
+
+    <Alias Name="IMainPresenter" Type="ZXMAK2.MVP.Interfaces.IMainPresenter, ZXMAK2" />
+    <Alias Name="MainPresenter" Type="ZXMAK2.MVP.MainPresenter, ZXMAK2" />
+
+    <Alias Name="IViewResolver" Type="ZXMAK2.Interfaces.IViewResolver, ZXMAK2" />
+    <Alias Name="ViewResolver" Type="ZXMAK2.ViewResolver, ZXMAK2" />
+
+    <Alias Name="ILauncher" Type="ZXMAK2.Interfaces.ILauncher, ZXMAK2" />
+    <Alias Name="Launcher" Type="ZXMAK2.Launcher, ZXMAK2" />
+
+    <Alias Name="IMainView" Type="ZXMAK2.MVP.Interfaces.IMainView, ZXMAK2" />
+    <Alias Name="WinFormMainView" Type="ZXMAK2.MVP.WinForms.MainView, ZXMAK2" />
+    <Alias Name="XnaMainView" Type="ZXMAK2.XNA4.Views.MainView, ZXMAK2.XNA4" />
+
+    <Entry Type="IViewResolver" MapTo="ViewResolver" LifeTime="Singleton">
+        <Argument Name="viewTypes" Value="WinForms, XNA" />
+    </Entry>
+    <Entry Type="ILauncher" MapTo="Launcher" LifeTime="Singleton" />
+    <Entry Type="IUserQuery" MapTo="UserQuery" LifeTime="Singleton" />
+    <Entry Type="IUserMessage" MapTo="UserMessage" LifeTime="Singleton" />
+    <Entry Type="IMainPresenter" MapTo="MainPresenter" LifeTime="Singleton"/>
+    <Entry Type="IMainView" MapTo="WinFormMainView" LifeTime="Singleton" Name="WinForms"/>
+    <Entry Type="IMainView" MapTo="XnaMainView" LifeTime="Singleton" Name="XNA"/>
+</Resolver> 

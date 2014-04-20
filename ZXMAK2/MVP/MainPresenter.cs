@@ -17,7 +17,7 @@ using ZXMAK2.MVP.WinForms;
 
 namespace ZXMAK2.MVP
 {
-    public class MainPresenter : IDisposable
+    public class MainPresenter : IMainPresenter
     {
         private readonly IMainView m_view;
         private readonly string m_startupImage;

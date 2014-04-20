@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Windows.Forms;
-using ZXMAK2.MVP.WinForms;
+using ZXMAK2.Dependency;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2
@@ -13,9 +13,24 @@ namespace ZXMAK2
         [STAThread]
         static void Main(string[] args)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Launcher.Run<MainView>(args);
+            LogAgent.Start();
+            try
+            {
+                var resolver = new Resolver();
+                resolver.Load("ZXMAK2.Dependency.xml");
+                Locator.Instance = resolver;
+
+                var launcher = resolver.Resolve<ILauncher>();
+                launcher.Run(args);
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+            finally
+            {
+                LogAgent.Finish();
+            }
         }
     }
 }
