@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
+using ZXMAK2.Interfaces;
 
 namespace ZXMAK2
 {
@@ -66,11 +67,8 @@ namespace ZXMAK2
             var helpFile = Path.ChangeExtension(appName, ".chm");
             if (!File.Exists(helpFile))
             {
-                DialogService.Show(
-                    "Help file is missing",
-                    "ERROR",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("Help file is missing");
                 return false;
             }
             if (helpFile.Contains("#")) //Path to .chm file must not contain # - Microsoft bug

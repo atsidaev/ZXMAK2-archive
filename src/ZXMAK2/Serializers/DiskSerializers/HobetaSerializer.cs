@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 
 using ZXMAK2.Entities;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.Serializers.DiskSerializers
@@ -55,11 +56,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
         {
             if (stream.Length < 15)
             {
-                DialogService.Show(
-                    "Invalid HOBETA file size",
-                    "HOBETA loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("HOBETA loader\n\nInvalid HOBETA file size");
                 return;
             }
 
@@ -69,22 +67,24 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
             if (fbuf[14] * 256 + 17 != fbuf.Length || fbuf[13] != 0 || fbuf[14] == 0)
             {
-                DialogService.Show(
-                    "Invalid HOBETA file!",
-                    "HOBETA loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("HOBETA loader\n\nInvalid HOBETA file!");
                 return;
             }
 
             bool needFormat = true;
             if (_diskImage.IsConnected && _diskImage.Present)
             {
-                DlgResult dlgRes = DialogService.Show(
-                    "Do you want to append file(s) to existing disk?\n\nPlease click 'Yes' to append file(s).\nOr click 'No' to create new disk...",
-                    "HOBETA loader",
-                    DlgButtonSet.YesNoCancel,
-                    DlgIcon.Question);
+                var service = Locator.Resolve<IUserQuery>();
+                var dlgRes = DlgResult.No;
+                if (service != null)
+                {
+                    dlgRes = service.Show(
+                        "Do you want to append file(s) to existing disk?\n\nPlease click 'Yes' to append file(s).\nOr click 'No' to create new disk...",
+                        "HOBETA loader",
+                        DlgButtonSet.YesNoCancel,
+                        DlgIcon.Question);
+                }
                 if (dlgRes == DlgResult.Cancel)
                     return;
                 if (dlgRes == DlgResult.Yes)
@@ -111,11 +111,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
             _diskImage.ReadLogicalSector(0, 0, 1 + pos / 0x100, dir);
             if ((s9[0xE5] | (s9[0xE6] << 8)) < len)   // disk full
             {
-                DialogService.Show(
-                    "Disk full! Create empty disk and repeat operation!",
-                    "HOBETA loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("HOBETA loader\n\nDisk full! Create empty disk and repeat operation!");
                 return false;
             }
             for (int i = 0; i < 14; i++)

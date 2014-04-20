@@ -57,11 +57,15 @@ using ZXMAK2.Entities;
                   Input,
                   InputCount,
                   m_cpu.regs.PC);
-              DialogService.Show(
-                  string.Format("RZX playback stopped!\nReason: unexpected end of input - synchronization lost!\n\nFrame:\t{0}/{1}\nFetch:\t{2}/{3}\nInput:\t{4}/{5}\nPC:\t#{6:X4}", Frame, FrameCount, Fetch, FetchCount, Input, InputCount, m_cpu.regs.PC),
-                  "RZX",
-                  DlgButtonSet.OK,
-                  DlgIcon.Error);
+              Locator.Resolve<IUserMessage>().Error(
+                  "RZX playback stopped!\nReason: unexpected end of input - synchronization lost!\n\nFrame:\t{0}/{1}\nFetch:\t{2}/{3}\nInput:\t{4}/{5}\nPC:\t#{6:X4}", 
+                  Frame, 
+                  FrameCount, 
+                  Fetch, 
+                  FetchCount, 
+                  Input, 
+                  InputCount, 
+                  m_cpu.regs.PC);
               IsPlayback = false;
               return m_cpu.BUS;
           }
@@ -101,11 +105,15 @@ using ZXMAK2.Entities;
                       Input,
                       InputCount,
                       m_cpu.regs.PC);
-                  DialogService.Show(
-                      string.Format("RZX playback stopped!\nReason: unexpected frame - synchronization lost!\n\nFrame:\t{0}/{1}\nFetch:\t{2}/{3}\nInput:\t{4}/{5}\nPC:\t#{6:X4}", Frame, FrameCount, Fetch, FetchCount, Input, InputCount, m_cpu.regs.PC),
-                      "RZX",
-                      DlgButtonSet.OK,
-                      DlgIcon.Error);
+                  Locator.Resolve<IUserMessage>().Error(
+                      "RZX playback stopped!\nReason: unexpected frame - synchronization lost!\n\nFrame:\t{0}/{1}\nFetch:\t{2}/{3}\nInput:\t{4}/{5}\nPC:\t#{6:X4}", 
+                      Frame, 
+                      FrameCount, 
+                      Fetch, 
+                      FetchCount, 
+                      Input, 
+                      InputCount, 
+                      m_cpu.regs.PC);
                   IsPlayback = false;
                   return false;
               }
@@ -116,7 +124,8 @@ using ZXMAK2.Entities;
                   Play(m_frameSource);
                   if (!IsPlayback)
                   {
-                      DialogService.Show("RZX playback end", "RZX", DlgButtonSet.OK, DlgIcon.Information);
+                      Locator.Resolve<IUserMessage>()
+                          .Info("RZX playback end");
                   }
               }
               return true;

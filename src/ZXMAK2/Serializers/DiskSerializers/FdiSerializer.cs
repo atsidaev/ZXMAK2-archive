@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 using ZXMAK2.Entities;
 using ZXMAK2.Crc;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.Serializers.DiskSerializers
@@ -78,11 +79,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
             if (stream.Length < 14)
             {
-                DialogService.Show(
-                    "Corrupted disk image!",
-                    "FDI loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("FDI loader\n\nCorrupted disk image!");
                 return;
             }
 
@@ -93,11 +91,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
                 hdr1[1] != 0x44 ||
                 hdr1[2] != 0x49)
             {
-                DialogService.Show(
-                    "Invalid FDI file!",
-                    "FDI loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("FDI loader\n\nInvalid FDI file!");
                 return;
             }
 

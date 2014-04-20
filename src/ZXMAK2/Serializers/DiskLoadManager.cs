@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using ZXMAK2.Entities;
 using ZXMAK2.Serializers.DiskSerializers;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.Serializers
@@ -54,15 +55,19 @@ namespace ZXMAK2.Serializers
                 }
             }
 
-            string msg = string.Format(
-                "Do you want to save disk changes to {0}",
-                Path.GetFileName(fileName));
-
-            DlgResult qr = DialogService.Show(
-                msg,
-                "Attention!",
-                DlgButtonSet.YesNo,
-                DlgIcon.Question);
+            var qr = DlgResult.No;
+            var service = Locator.Resolve<IUserQuery>();
+            if (service != null)
+            {
+                var msg = string.Format(
+                    "Do you want to save disk changes to {0}",
+                    Path.GetFileName(fileName));
+                qr = service.Show(
+                    msg, 
+                    "Attention!", 
+                    DlgButtonSet.YesNo,
+                    DlgIcon.Question);
+            }
             if (qr == DlgResult.Yes)
             {
                 //if (Path.GetExtension(_fileName).ToUpper() == ".SCL")
@@ -74,11 +79,8 @@ namespace ZXMAK2.Serializers
 
                 if (fileName == string.Empty)
                 {
-                    DialogService.Show(
-                        "Can't save disk image!\nNo space on HDD!",
-                        "Warning",
-                        DlgButtonSet.OK,
-                        DlgIcon.Warning);
+                    Locator.Resolve<IUserMessage>()
+                        .Warning("Can't save disk image!\nNo space on HDD!");
                 }
                 else
                 {
@@ -87,11 +89,9 @@ namespace ZXMAK2.Serializers
                         Directory.CreateDirectory(folderName);
                     sender.FileName = fileName;
                     SaveFileName(sender.FileName);
-                    DialogService.Show(
-                        string.Format("Disk image successfuly saved!\n{0}", sender.FileName),
-                        "Notification",
-                        DlgButtonSet.OK,
-                        DlgIcon.Information);
+                    Locator.Resolve<IUserMessage>().Info(
+                        "Disk image successfuly saved!\n{0}", 
+                        sender.FileName);
                 }
             }
         }

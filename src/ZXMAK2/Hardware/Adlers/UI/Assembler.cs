@@ -216,23 +216,23 @@ namespace ZXMAK2.Hardware.Adlers.UI
             if (startAdressInCode == false && startAdressManual == false)
             {
                 //start adress for compilation not found
-                DialogService.Show("Missing starting address for the compilation!\n\n" +
-                                   "Either check the check box for memory address(Compile to -> Memory)\n" + 
-                                   "or define it using 'ORG' instruction in source code !\n\n" +
-                                   "Compilation is cancelled.",
-                                   "Compilation failed(missing start address)",
-                                   DlgButtonSet.OK, DlgIcon.Warning);
+                Locator.Resolve<IUserMessage>().Warning(
+                    "Compilation failed(missing start address)\n\n" +
+                    "Missing starting address for the compilation!\n\n" +
+                    "Either check the check box for memory address(Compile to -> Memory)\n" + 
+                    "or define it using 'ORG' instruction in source code !\n\n" +
+                    "Compilation is cancelled.");
                 return false;
             }
             if (startAdressInCode && startAdressManual)
             {
                 //duplicate adress for compilation
-                DialogService.Show("Duplicity in starting address for the compilation!\n\n" +
-                                   "Either UNcheck the check box for memory address(Compile to -> Memory)\n" +
-                                   "or remove ALL 'ORG' instructions from the source code !\n\n" +
-                                   "Compilation is cancelled.",
-                                   "Compilation failed(duplicity in start address)",
-                                   DlgButtonSet.OK, DlgIcon.Warning);
+                Locator.Resolve<IUserMessage>().Warning(
+                    "Compilation failed(duplicity in start address)\n\n" +
+                    "Duplicity in starting address for the compilation!\n\n" +
+                    "Either UNcheck the check box for memory address(Compile to -> Memory)\n" +
+                    "or remove ALL 'ORG' instructions from the source code !\n\n" +
+                    "Compilation is cancelled.");
                 return false;
             }
 

@@ -734,11 +734,8 @@ namespace ZXMAK2.Engine
                 catch (Exception ex)
                 {
                     LogAgent.Error(ex);
-                    DialogService.Show(
-                        string.Format("Load device failed: {0}", ex.Message),
-                        "ERROR",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("Load device failed: {0}", ex.Message);
                 }
             }
             Sort();

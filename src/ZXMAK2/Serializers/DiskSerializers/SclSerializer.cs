@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 
 using ZXMAK2.Entities;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.Serializers.DiskSerializers
@@ -45,11 +46,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
         {
             if (stream.Length < 9 || stream.Length > 2544 * 256 + 9)
             {
-                DialogService.Show(
-                    "Invalid SCL file size",
-                    "SCL loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Warning);
+                Locator.Resolve<IUserMessage>()
+                    .Error("SCL loader\n\nInvalid SCL file size!");
                 return;
             }
 
@@ -60,11 +58,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
             // TODO:check first 8 bytes "SINCLAIR"
             if (Encoding.ASCII.GetString(fbuf, 0, 8) != "SINCLAIR")
             {
-                DialogService.Show(
-                    "Corrupted SCL file",
-                    "SCL loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("SCL loader\n\nCorrupted SCL file!");
                 return;
             }
 
@@ -74,11 +69,16 @@ namespace ZXMAK2.Serializers.DiskSerializers
             bool needFormat = true;
             if (_diskImage.IsConnected && _diskImage.Present)
             {
-                DlgResult dlgRes = DialogService.Show(
-                    "Do you want to append file(s) to existing disk?\n\nPlease click 'Yes' to append file(s).\nOr click 'No' to create new disk...",
-                    "SCL loader",
-                    DlgButtonSet.YesNoCancel,
-                    DlgIcon.Question);
+                var service = Locator.Resolve<IUserQuery>();
+                DlgResult dlgRes = DlgResult.No;
+                if (service != null)
+                {
+                    dlgRes = service.Show(
+                        "Do you want to append file(s) to existing disk?\n\nPlease click 'Yes' to append file(s).\nOr click 'No' to create new disk...",
+                        "SCL loader",
+                        DlgButtonSet.YesNoCancel,
+                        DlgIcon.Question);
+                }
                 if (dlgRes == DlgResult.Cancel)
                     return;
                 if (dlgRes == DlgResult.Yes)

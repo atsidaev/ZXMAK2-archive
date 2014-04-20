@@ -326,7 +326,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     catch (Exception ex)
                     {
                         LogAgent.Error(ex);
-                        DialogService.ShowFatalError(ex);
+                        Locator.Resolve<IUserMessage>().ErrorDetails(ex);
                     }
                     UpdateCPU(true);
                     break;
@@ -340,7 +340,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                     catch (Exception ex)
                     {
                         LogAgent.Error(ex);
-                        DialogService.ShowFatalError(ex);
+                        Locator.Resolve<IUserMessage>().ErrorDetails(ex);
                     }
                     UpdateCPU(true);
                     break;
@@ -362,7 +362,12 @@ namespace ZXMAK2.Hardware.Adlers.UI
         private void menuItemDasmGotoADDR_Click(object sender, EventArgs e)
         {
             int ToAddr = 0;
-            if (!InputBox.InputValue("Disassembly Address", "New Address:", "#{0:X4}", ref ToAddr, 0, 0xFFFF)) return;
+            var service = Locator.Resolve<IUserQuery>();
+            if (service == null)
+            {
+                return;
+            }
+            if (!service.QueryValue("Disassembly Address", "New Address:", "#{0:X4}", ref ToAddr, 0, 0xFFFF)) return;
             dasmPanel.TopAddress = (ushort)ToAddr;
         }
 
@@ -484,7 +489,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
         private void ChangeReg(ref ushort p, string reg)
         {
             int val = p;
-            if (!InputBox.InputValue("Change Register " + reg, "New value:", "#{0:X4}", ref val, 0, 0xFFFF)) return;
+            var service = Locator.Resolve<IUserQuery>();
+            if (!service.QueryValue("Change Register " + reg, "New value:", "#{0:X4}", ref val, 0, 0xFFFF)) return;
             p = (ushort)val;
             UpdateCPU(false);
         }
@@ -557,7 +563,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
         {
             int poked;
             poked = m_spectrum.ReadMemory((ushort)Addr);
-            if (!InputBox.InputValue("POKE #" + Addr.ToString("X4"), "Value:", "#{0:X2}", ref poked, 0, 0xFF)) return;
+            var service = Locator.Resolve<IUserQuery>();
+            if (!service.QueryValue("POKE #" + Addr.ToString("X4"), "Value:", "#{0:X2}", ref poked, 0, 0xFF)) return;
             m_spectrum.WriteMemory((ushort)Addr, (byte)poked);
             UpdateCPU(false);
         }
@@ -565,7 +572,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
         private void menuItemDataGotoADDR_Click(object sender, EventArgs e)
         {
             int adr = dataPanel.TopAddress;
-            if (!InputBox.InputValue("Data Panel Address", "New Address:", "#{0:X4}", ref adr, 0, 0xFFFF)) return;
+            var service = Locator.Resolve<IUserQuery>();
+            if (!service.QueryValue("Data Panel Address", "New Address:", "#{0:X4}", ref adr, 0, 0xFFFF)) return;
             dataPanel.TopAddress = (ushort)adr;
         }
 
@@ -578,7 +586,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
         private void menuItemDataSetColumnCount_Click(object sender, EventArgs e)
         {
             int cols = dataPanel.ColCount;
-            if (!InputBox.InputValue("Data Panel Columns", "Column Count:", "{0}", ref cols, 1, 32)) return;
+            var service = Locator.Resolve<IUserQuery>();
+            if (!service.QueryValue("Data Panel Columns", "Column Count:", "{0}", ref cols, 1, 32)) return;
             dataPanel.ColCount = cols;
         }
 
@@ -671,9 +680,14 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
                 if (s_len < 1)
                     return;
-                if (!InputBox.InputValue("Load Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xFFFF))
+                var service = Locator.Resolve<IUserQuery>();
+                if (service == null)
+                {
                     return;
-                if (!InputBox.InputValue("Load Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
+                }
+                if (!service.QueryValue("Load Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xFFFF))
+                    return;
+                if (!service.QueryValue("Load Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
                     return;
 
                 byte[] data = new byte[s_len];
@@ -685,9 +699,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
         private void menuSaveBlock_Click(object sender, EventArgs e)
         {
-            if (!InputBox.InputValue("Save Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xFFFF))
+            var service = Locator.Resolve<IUserQuery>();
+            if (!service.QueryValue("Save Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xFFFF))
                 return;
-            if (!InputBox.InputValue("Save Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
+            if (!service.QueryValue("Save Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
                 return;
 
             using (SaveFileDialog saveDialog = new SaveFileDialog())

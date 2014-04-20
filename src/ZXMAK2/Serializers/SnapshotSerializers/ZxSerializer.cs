@@ -38,11 +38,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			byte[] hdr = new byte[0xCA];
 			if (stream.Length != 49486)
 			{
-                DialogService.Show(
-                    "Invalid file size, file corrupt!",
-                    "ZX loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("ZX loader\n\nInvalid file size, file corrupt!");
 				return;
 			}
 			stream.Read(memdump, 0, memdump.Length);

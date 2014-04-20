@@ -42,7 +42,12 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void ChangeReg(ref ushort p, string reg)
         {
             int num = p;
-            if (InputBox.InputValue("Change Register " + reg, "New value:", "#{0:X4}", ref num, 0, 0xffff))
+            var service = Locator.Resolve<IUserQuery>();
+            if (service == null)
+            {
+                return;
+            }
+            if (service.QueryValue("Change Register " + reg, "New value:", "#{0:X4}", ref num, 0, 0xffff))
             {
                 p = (ushort)num;
                 UpdateCPU(false);
@@ -179,7 +184,12 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void dataPanel_DataClick(object Sender, ushort Addr)
         {
             int num = m_spectrum.ReadMemory(Addr);
-            if (InputBox.InputValue("POKE #" + Addr.ToString("X4"), "Value:", "#{0:X2}", ref num, 0, 0xff))
+            var service = Locator.Resolve<IUserQuery>();
+            if (service == null)
+            {
+                return;
+            }
+            if (service.QueryValue("POKE #" + Addr.ToString("X4"), "Value:", "#{0:X2}", ref num, 0, 0xff))
             {
                 m_spectrum.WriteMemory(Addr, (byte)num);
                 UpdateCPU(false);
@@ -232,7 +242,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                         catch (Exception exception)
                         {
                             LogAgent.Error(exception);
-                            DialogService.ShowFatalError(exception);
+                            Locator.Resolve<IUserMessage>().ErrorDetails(exception);
                         }
                         UpdateCPU(true);
                         return;
@@ -249,7 +259,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                         catch (Exception exception2)
                         {
                             LogAgent.Error(exception2);
-                            DialogService.ShowFatalError(exception2);
+                            Locator.Resolve<IUserMessage>().ErrorDetails(exception2);
                         }
                         UpdateCPU(true);
                         return;
@@ -354,7 +364,12 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                     case 8:
                         {
                             int frameTact = m_spectrum.GetFrameTact();
-                            if (InputBox.InputValue("Frame Tact", "New Frame Tact:", "{0}", ref frameTact, 0, m_spectrum.FrameTactCount))
+                            var service = Locator.Resolve<IUserQuery>();
+                            if (service == null)
+                            {
+                                break;
+                            }
+                            if (service.QueryValue("Frame Tact", "New Frame Tact:", "{0}", ref frameTact, 0, m_spectrum.FrameTactCount))
                             {
                                 int num2 = frameTact - m_spectrum.GetFrameTact();
                                 if (num2 < 0)
@@ -380,7 +395,12 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void menuItemDasmGotoADDR_Click(object sender, EventArgs e)
         {
             int num = 0;
-            if (InputBox.InputValue("Disassembly Address", "New Address:", "#{0:X4}", ref num, 0, 0xffff))
+            var service = Locator.Resolve<IUserQuery>();
+            if (service == null)
+            {
+                return;
+            }
+            if (service.QueryValue("Disassembly Address", "New Address:", "#{0:X4}", ref num, 0, 0xffff))
             {
                 dasmPanel.TopAddress = (ushort)num;
             }
@@ -402,7 +422,12 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void menuItemDataGotoADDR_Click(object sender, EventArgs e)
         {
             int topAddress = dataPanel.TopAddress;
-            if (InputBox.InputValue("Data Panel Address", "New Address:", "#{0:X4}", ref topAddress, 0, 0xffff))
+            var service = Locator.Resolve<IUserQuery>();
+            if (service == null)
+            {
+                return;
+            }
+            if (service.QueryValue("Data Panel Address", "New Address:", "#{0:X4}", ref topAddress, 0, 0xffff))
             {
                 dataPanel.TopAddress = (ushort)topAddress;
             }
@@ -417,7 +442,12 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void menuItemDataSetColumnCount_Click(object sender, EventArgs e)
         {
             int colCount = dataPanel.ColCount;
-            if (InputBox.InputValue("Data Panel Columns", "Column Count:", "{0}", ref colCount, 1, 0x20))
+            var service = Locator.Resolve<IUserQuery>();
+            if (service == null)
+            {
+                return;
+            }
+            if (service.QueryValue("Data Panel Columns", "Column Count:", "{0}", ref colCount, 1, 0x20))
             {
                 dataPanel.ColCount = colCount;
             }
@@ -438,9 +468,10 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             {
                 FileInfo info = new FileInfo(dialog.FileName);
                 s_len = (int)info.Length;
+                var service = Locator.Resolve<IUserQuery>();
                 if (((s_len >= 1) && 
-                    InputBox.InputValue("Load Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xffff)) &&
-                    InputBox.InputValue("Load Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
+                    service.QueryValue("Load Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xffff)) &&
+                    service.QueryValue("Load Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
                 {
                     byte[] buffer = new byte[s_len];
                     using (FileStream stream = new FileStream(dialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -454,8 +485,9 @@ namespace ZXMAK2.Hardware.Sprinter.UI
 
         private void menuSaveBlock_Click(object sender, EventArgs e)
         {
-            if (InputBox.InputValue("Save Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xffff) &&
-                InputBox.InputValue("Save Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
+            var service = Locator.Resolve<IUserQuery>();
+            if (service.QueryValue("Save Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xffff) &&
+                service.QueryValue("Save Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
             {
                 SaveFileDialog dialog = new SaveFileDialog();
                 dialog.InitialDirectory = ".";
@@ -672,7 +704,8 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void Update1FFD()
         {
             int num = sprint_mmu.CMR1;
-            if (InputBox.InputValue("Value of 1FFD port", "New value:", "#{0:X2}", ref num, 0, 0xff))
+            var service = Locator.Resolve<IUserQuery>();
+            if (service.QueryValue("Value of 1FFD port", "New value:", "#{0:X2}", ref num, 0, 0xff))
             {
                 sprint_mmu.CMR1 = (byte)num;
                 //                dasmPanel.TopAddress = (ushort)num;
@@ -682,7 +715,8 @@ namespace ZXMAK2.Hardware.Sprinter.UI
         private void Update7FFD()
         {
             int num = sprint_mmu.CMR0;
-            if (InputBox.InputValue("Value of 7FFD port", "New value:", "#{0:X2}", ref num, 0, 0xff))
+            var service = Locator.Resolve<IUserQuery>();
+            if (service.QueryValue("Value of 7FFD port", "New value:", "#{0:X2}", ref num, 0, 0xff))
             {
                 sprint_mmu.CMR0 = (byte)num;
                 //                dasmPanel.TopAddress = (ushort)num;

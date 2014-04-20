@@ -36,11 +36,8 @@ namespace ZXMAK2.Serializers.TapeSerializers
 
             if (Encoding.ASCII.GetString(snbuf, 0, 7) != "ZXTape!" || snbuf[7] != 0x1A)
             {
-                DialogService.Show(
-                    "Invalid TZX file, identifier not found! ",
-                    "TZX loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Warning);
+                Locator.Resolve<IUserMessage>()
+                    .Error("TZX loader\n\nInvalid TZX file, identifier not found!");
                 return;
             }
             //int verMajor = snbuf[0x08];

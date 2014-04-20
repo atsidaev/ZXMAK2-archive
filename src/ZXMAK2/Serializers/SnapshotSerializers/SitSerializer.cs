@@ -38,11 +38,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 			if (stream.Length != 65564)
 			{
-				DialogService.Show(
-                    "Invalid data, file corrupt!", 
-                    "SIT loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("SIT loader\n\nInvalid data, file corrupt!");
 				return;
 			}
 			stream.Read(hdr, 0, hdr.Length);

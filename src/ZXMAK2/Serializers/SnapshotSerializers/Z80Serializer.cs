@@ -69,17 +69,14 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                 }
                 else if (hdr1[Z80HDR1_EXTSIZE] != 23)
                 {
-                    string msg = string.Format(
+                    var msg = string.Format(
                         "Z80 format version not recognized!\n" +
                         "(ExtensionSize = {0},\n" +
                         "supported only ExtensionSize={{0(old format), 23, 54}})",
                         hdr1[Z80HDR1_EXTSIZE]);
                     LogAgent.Warn("{0}", msg);
-                    DialogService.Show(
-                        msg,
-                        "Z80 loader",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>().Error(
+                        "Z80 loader\n\n{0}", msg);
                     return;
                 }
 			}
@@ -604,11 +601,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 				if (j >= DestSize)
 				{
-					DialogService.Show(
-                        "Compression error: buffer overflow,\nfile can contain invalid data!", 
-                        "Z80 loader",
-                        DlgButtonSet.OK,
-                        DlgIcon.Warning);
+                    Locator.Resolve<IUserMessage>()
+                        .Warning("Z80 loader\n\nCompression error: buffer overflow,\nfile can contain invalid data!");
 
 					/* compressed image bigger or same than dest buffer */
 					for (int k = 0; k < SrcSize; k++)
@@ -674,11 +668,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                     j, 
                     size);
                 LogAgent.Error("Z80Serializer: {0}", msg);
-                DialogService.Show(
-                    msg,
-                    "Z80 loader",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("Z80 loader\n\n{0}", msg);
 				return 1;
 			}
 			return size;

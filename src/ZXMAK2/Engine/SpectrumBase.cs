@@ -45,10 +45,15 @@ namespace ZXMAK2.Engine
 
         protected bool OnMaxTactExceed(long tactLimit)
         {
-            string msg = string.Format(
+            var service = Locator.Resolve<IUserQuery>();
+            if (service == null)
+            {
+                return true;
+            }
+            var msg = string.Format(
                 "{0} tacts executed,\nbut operation not complete!\n\nAre you sure to continue?",
                 tactLimit);
-            return DialogService.Show(
+            return service.Show(
                 msg,
                 "Warning",
                 DlgButtonSet.YesNo,

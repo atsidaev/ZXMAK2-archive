@@ -269,7 +269,8 @@ namespace ZXMAK2.MVP.WinForms
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogService.ShowFatalError(ex);
+                Locator.Resolve<IUserMessage>()
+                    .ErrorDetails(ex);
             }
         }
 

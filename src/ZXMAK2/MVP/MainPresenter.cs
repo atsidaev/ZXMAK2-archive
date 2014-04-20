@@ -319,11 +319,7 @@ namespace ZXMAK2.MVP
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogService.Show(
-                    ex.Message,
-                    "ERROR",
-                    DlgButtonSet.OK,
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>().Error(ex);
             }
         }
 
@@ -369,11 +365,8 @@ namespace ZXMAK2.MVP
             fileName = Path.Combine(fileName, "boot.zip");
             if (!File.Exists(fileName))
             {
-                DialogService.Show(
-                    "Quick snapshot boot.zip is missing!", 
-                    "ERROR", 
-                    DlgButtonSet.OK, 
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>()
+                    .Error("Quick snapshot boot.zip is missing!");
                 return;
             }
             var running = m_vm.IsRunning;
@@ -386,11 +379,8 @@ namespace ZXMAK2.MVP
                 }
                 else
                 {
-                    DialogService.Show(
-                        "Cannot open quick snapshot boot.zip!",
-                        "Error",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("Cannot open quick snapshot boot.zip!");
                 }
             }
             finally
@@ -446,11 +436,7 @@ namespace ZXMAK2.MVP
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogService.Show(
-                    ex.Message, 
-                    "ERROR", 
-                    DlgButtonSet.OK, 
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>().Error(ex);
             }
         }
 
@@ -478,11 +464,7 @@ namespace ZXMAK2.MVP
             {
                 LogAgent.Error(ex);
                 e.Cancel = true;
-                DialogService.Show(
-                    ex.Message, 
-                    "ERROR", 
-                    DlgButtonSet.OK, 
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>().Error(ex);
             }
         }
 
@@ -503,21 +485,14 @@ namespace ZXMAK2.MVP
                 }
                 else
                 {
-                    DialogService.Show(
-                        "Unrecognized file!",
-                        "Error",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("Unrecognized file!");
                 }
             }
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogService.Show(
-                    ex.Message, 
-                    "ERROR", 
-                    DlgButtonSet.OK, 
-                    DlgIcon.Error);
+                Locator.Resolve<IUserMessage>().Error(ex);
             }
             finally
             {
@@ -539,17 +514,14 @@ namespace ZXMAK2.MVP
                 }
                 else
                 {
-                    DialogService.Show(
-                        "Unrecognized file!",
-                        "Error",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("Unrecognized file!");
                 }
             }
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                DialogService.Show(ex.Message, "ERROR", DlgButtonSet.OK, DlgIcon.Error);
+                Locator.Resolve<IUserMessage>().Error(ex);
             }
             finally
             {
@@ -575,11 +547,8 @@ namespace ZXMAK2.MVP
                 }
                 else
                 {
-                    DialogService.Show(
-                        string.Format("Unrecognized file!\n\n{0}", fileName),
-                        "Error",
-                        DlgButtonSet.OK,
-                        DlgIcon.Error);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("Unrecognized file!\n\n{0}", fileName);
                 }
             }
             finally
