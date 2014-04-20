@@ -4,7 +4,7 @@ using ZXMAK2.Controls;
 using System.Windows.Forms;
 
 
-namespace ZXMAK2.MVP.WinForms
+namespace ZXMAK2.WinForms
 {
     public class UserQuery : IUserQuery
     {

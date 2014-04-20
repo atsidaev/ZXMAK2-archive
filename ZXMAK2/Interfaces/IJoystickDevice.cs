@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Interfaces

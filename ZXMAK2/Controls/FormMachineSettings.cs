@@ -275,6 +275,7 @@ namespace ZXMAK2.Controls
 
         #region private
 
+        private readonly IHost m_host;
         private VirtualMachine m_vm;
         private BusManager m_workBus;
         private List<ConfigScreenControl> m_ctlList = new List<ConfigScreenControl>();
@@ -283,8 +284,9 @@ namespace ZXMAK2.Controls
         #endregion
 
 
-        public FormMachineSettings()
+        public FormMachineSettings(IHost host)
         {
+            m_host = host;
             InitializeComponent();
             loadMachines();
             btnWizard.Enabled = ctxMenuWizard.Items.Count > 0;
@@ -397,7 +399,7 @@ namespace ZXMAK2.Controls
                         typeof(ConfigScreenControl).IsAssignableFrom(type) &&
                         typeof(UserControl).IsAssignableFrom(type))
                     {
-                        var mi = type.GetMethod("Init", new Type[] { typeof(BusManager), objTarget.GetType() });
+                        var mi = type.GetMethod("Init", new Type[] { typeof(BusManager), typeof(IHost), objTarget.GetType() });
                         if (mi == null)
                             continue;
                         var obj = (UserControl)Activator.CreateInstance(type);
@@ -459,7 +461,7 @@ namespace ZXMAK2.Controls
                     if (control == null)
                     {
                         var generic = new CtlSettingsGenericDevice();
-                        generic.Init(m_workBus, device);
+                        generic.Init(m_workBus, m_host, device);
                         control = generic;
                     }
                     insertListViewItem(lstNavigation.Items.Count, control, device);

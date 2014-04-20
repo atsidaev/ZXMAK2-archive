@@ -20,7 +20,7 @@ namespace ZXMAK2.Controls.Configuration
             InitializeComponent();
         }
 
-        public void Init(BusManager bmgr, BusDeviceBase device)
+        public void Init(BusManager bmgr, IHost host, BusDeviceBase device)
         {
             m_bmgr = bmgr;
             m_device = device;

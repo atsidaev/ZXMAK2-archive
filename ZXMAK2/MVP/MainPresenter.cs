@@ -307,7 +307,7 @@ namespace ZXMAK2.MVP
                 {
                     return;
                 }
-                using (var form = new FormMachineSettings())
+                using (var form = new FormMachineSettings(m_view.Host))
                 {
                     form.Init(m_vm);
                     form.ShowDialog(objArg as IWin32Window);

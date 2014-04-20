@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 using ZXMAK2.Engine;
 using ZXMAK2.Hardware.General;
+using ZXMAK2.Interfaces;
 
 namespace ZXMAK2.Controls.Configuration
 {
@@ -20,7 +21,7 @@ namespace ZXMAK2.Controls.Configuration
             InitializeComponent();
         }
 
-        public void Init(BusManager bmgr, HayesModem modem)
+        public void Init(BusManager bmgr, IHost host, HayesModem modem)
         {
             m_bmgr = bmgr;
             m_modem = modem;
