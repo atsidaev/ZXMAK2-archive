@@ -215,6 +215,7 @@ namespace ZXMAK2.XNA4.Views
             var videoData = GetVideoData();
             m_deviceManager.PreferredBackBufferWidth = videoData.Size.Width * 2;
             m_deviceManager.PreferredBackBufferHeight = videoData.Size.Height * 2;
+            m_deviceManager.PreferredBackBufferFormat = SurfaceFormat.Color;
             m_deviceManager.ApplyChanges();
             m_sprite = new SpriteBatch(m_deviceManager.GraphicsDevice);
             //m_deviceManager.SynchronizeWithVerticalRetrace = false;
@@ -293,7 +294,12 @@ namespace ZXMAK2.XNA4.Views
             base.Draw(gameTime);
 
             m_deviceManager.GraphicsDevice.Clear(Color.Black);
-            m_sprite.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            m_sprite.Begin(
+                SpriteSortMode.Immediate, 
+                BlendState.AlphaBlend,
+                SamplerState.PointClamp, // disable anti-aliasing
+                null,
+                null);
             
             var texture = (Texture2D)null;
             lock (m_syncTexture)
