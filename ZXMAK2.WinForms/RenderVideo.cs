@@ -260,54 +260,20 @@ namespace ZXMAK2.WinForms
                         D3D.SamplerState[0].MagFilter = TextureFilter.None;
                     }
 
-                    var wndSize = new SizeF(
-                        D3D.PresentationParameters.BackBufferWidth,
-                        D3D.PresentationParameters.BackBufferHeight);
-                    var dstSize = new SizeF(
-                        m_surfaceSize.Width,
-                        m_surfaceSize.Height * m_surfaceHeightScale);
-
-                    if (dstSize.Width > 0 &&
-                        dstSize.Height > 0)
-                    {
-                        var rx = wndSize.Width / dstSize.Width;
-                        var ry = wndSize.Height / dstSize.Height;
-                        if (ScaleMode == ScaleMode.FixedPixelSize)
-                        {
-                            rx = (float)Math.Floor(rx);
-                            ry = (float)Math.Floor(ry);
-                            rx = rx < 1F ? 1F : rx;
-                            ry = ry < 1F ? 1F : ry;
-                        }
-                        else if (ScaleMode == ScaleMode.KeepProportion)
-                        {
-                            if (rx > ry)
-                            {
-                                rx = (wndSize.Width * ry / rx) / dstSize.Width;
-                            }
-                            else if (rx < ry)
-                            {
-                                ry = (wndSize.Height * rx / ry) / dstSize.Height;
-                            }
-                        }
-                        dstSize = new SizeF(
-                            dstSize.Width * rx,
-                            dstSize.Height * ry);
-                    }
+                    var wndSize = GetDeviceSize();
+                    var dstSize = GetDestinationSize(wndSize, GetSurfaceScaledSize());
+                    var dstPos = GetDestinationPos(wndSize, dstSize);
 
                     var srcRect = new Rectangle(
                         0,
                         0,
                         m_surfaceSize.Width,
                         m_surfaceSize.Height);
-                    var dstLocation = new PointF(
-                        (float)Math.Floor((wndSize.Width - dstSize.Width) / 2F),
-                        (float)Math.Floor((wndSize.Height - dstSize.Height) / 2F));
                     m_sprite.Draw2D(
                        m_texture,
                        srcRect,
                        dstSize,
-                       dstLocation,
+                       dstPos,
                        0x00FFFFFF);
 
                     //D3D.SamplerState[0].MinFilter = min;
@@ -322,8 +288,8 @@ namespace ZXMAK2.WinForms
                             m_fpsRender.Value,
                             m_fpsUpdate.Value,
                             D3D.DisplayMode.RefreshRate,
-                            D3D.PresentationParameters.BackBufferWidth,
-                            D3D.PresentationParameters.BackBufferHeight,
+                            wndSize.Width,
+                            wndSize.Height,
                             ClientSize.Width,
                             ClientSize.Height,
                             m_surfaceSize.Width,
@@ -368,6 +334,62 @@ namespace ZXMAK2.WinForms
                     }
                 }
             }
+        }
+
+        private PointF GetDestinationPos(SizeF wndSize, SizeF dstSize)
+        {
+            return new PointF(
+                (float)Math.Floor((wndSize.Width - dstSize.Width) / 2F),
+                (float)Math.Floor((wndSize.Height - dstSize.Height) / 2F));
+        }
+
+        private SizeF GetDestinationSize(SizeF wndSize, SizeF srfScaledSize)
+        {
+            var dstSize = srfScaledSize;
+            if (dstSize.Width > 0 &&
+                dstSize.Height > 0)
+            {
+                var rx = wndSize.Width / dstSize.Width;
+                var ry = wndSize.Height / dstSize.Height;
+                if (ScaleMode == ScaleMode.FixedPixelSize)
+                {
+                    rx = (float)Math.Floor(rx);
+                    ry = (float)Math.Floor(ry);
+                    rx = rx < 1F ? 1F : rx;
+                    ry = ry < 1F ? 1F : ry;
+                }
+                else if (ScaleMode == ScaleMode.KeepProportion)
+                {
+                    if (rx > ry)
+                    {
+                        rx = (wndSize.Width * ry / rx) / dstSize.Width;
+                    }
+                    else if (rx < ry)
+                    {
+                        ry = (wndSize.Height * rx / ry) / dstSize.Height;
+                    }
+                }
+                dstSize = new SizeF(
+                    dstSize.Width * rx,
+                    dstSize.Height * ry);
+            }
+            return dstSize;
+        }
+
+        private SizeF GetDeviceSize()
+        {
+            var param = D3D.PresentationParameters;
+            return new SizeF(
+                param.BackBufferWidth, 
+                param.BackBufferHeight);
+        }
+
+        private SizeF GetSurfaceScaledSize()
+        {
+            var surfSize = m_surfaceSize;
+            return new SizeF(
+                surfSize.Width,
+                surfSize.Height * m_surfaceHeightScale);
         }
 
         private unsafe void drawFrame(int* pDstBuffer, int* pSrcBuffer)
