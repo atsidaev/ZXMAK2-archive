@@ -79,25 +79,34 @@ namespace ZXMAK2.WinForms
             var frameRest = D3D.DisplayMode.RefreshRate % 50;
             var frameRatio = frameRest != 0 ? 50 / frameRest : 0;
             _isCancel = false;
-            while (!_isCancel)
+            var priority = Thread.CurrentThread.Priority;
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            try
             {
-                // wait VBlank
                 while (!_isCancel)
                 {
-                    var state = D3D.RasterStatus.InVBlank;
-                    var change = state != _vblankValue;
-                    _vblankValue = state;
-                    if (change && _vblankValue)
+                    // wait VBlank
+                    while (!_isCancel)
                     {
-                        break;
+                        var state = D3D.RasterStatus.InVBlank;
+                        var change = state != _vblankValue;
+                        _vblankValue = state;
+                        if (change && _vblankValue)
+                        {
+                            break;
+                        }
                     }
+                    if (frameRatio > 0 && ++_syncFrame > frameRatio)
+                    {
+                        _syncFrame = 0;
+                        continue;
+                    }
+                    return;
                 }
-                if (frameRatio > 0 && ++_syncFrame > frameRatio)
-                {
-                    _syncFrame = 0;
-                    continue;
-                }
-                return;
+            }
+            finally
+            {
+                Thread.CurrentThread.Priority = priority;
             }
         }
 
