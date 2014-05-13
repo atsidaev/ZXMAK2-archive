@@ -237,10 +237,6 @@ namespace ZXMAK2.WinForms
             m_font = new Microsoft.DirectX.Direct3D.Font(D3D, gdiFont);
         }
 
-        private long m_lastTick = 0;
-        private long m_lastFrameTime = Stopwatch.GetTimestamp();
-        private Queue<double> m_frameTimes = new Queue<double>(); 
-
         protected override void OnRenderScene()
         {
             lock (SyncRoot)
@@ -321,10 +317,6 @@ namespace ZXMAK2.WinForms
 
                     if (DebugInfo)
                     {
-                        var tick = Stopwatch.GetTimestamp();
-                        var frameTime = (tick - m_lastTick) / (double)Stopwatch.Frequency;
-                        m_lastTick = tick;
-                        var fps = MeasureFramePerSecond(frameTime);
                         var textValue = string.Format(
                             "Render FPS: {0:F3}\nUpdate FPS: {1:F3}\nDevice FPS: {2}\nBack: [{3}, {4}]\nClient: [{5}, {6}]\nSurface: [{7}, {8}]\nFrameStart: {9}T",
                             m_fpsRender.Value,
@@ -376,38 +368,6 @@ namespace ZXMAK2.WinForms
                     }
                 }
             }
-        }
-
-        //private double m_msrCounter = 0D;
-        private double m_lastFps = 0D;
-
-        private double MeasureFramePerSecond(double frameTime)
-        {
-            m_frameTimes.Enqueue(frameTime);
-            const int msrInterval = 50;
-            while (m_frameTimes.Count > msrInterval)
-            {
-                m_frameTimes.Dequeue();
-            }
-            if (m_frameTimes.Count == msrInterval)
-            {
-                //m_msrCounter += frameTime;
-                //if (m_msrCounter >= 1D)   // one update per second
-                {
-                    //m_msrCounter = 0;
-                    var totalTime = 0D;
-                    foreach (var time in m_frameTimes)
-                    {
-                        totalTime += time;
-                    }
-                    m_lastFps = msrInterval / totalTime;
-                }
-            }
-            else
-            {
-                m_lastFps = 0D;
-            }
-            return m_lastFps;
         }
 
         private unsafe void drawFrame(int* pDstBuffer, int* pSrcBuffer)
