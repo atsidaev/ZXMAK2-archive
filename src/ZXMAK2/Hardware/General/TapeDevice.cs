@@ -157,34 +157,66 @@ namespace ZXMAK2.Hardware.General
             UpdateDac(val, val);
 
             ushort addr = m_cpu.regs.PC;
-            if (!UseTraps || !m_memory.IsRom48 || !(addr == 0x056B || addr == 0x059E))
-                return;
-
-            TapeBlock tb = Blocks[CurrentBlock];
-            if (tb.TapData == null)
-                return;
-
-            ushort rIX = m_cpu.regs.IX;
-            ushort rDE = m_cpu.regs.DE;
-            if (rDE != (tb.TapData.Length - 2))
-                return;
-
-            int offset = 0;
-            byte crc = 0;
-            crc = tb.TapData[offset++];
-            for (int i = 0; i < rDE; i++)
+            if (!UseTraps || !m_memory.IsRom48 ||
+                !(addr == 0x056B || addr == 0x059E) ||
+                (m_cpu.regs._AF & (int)ZFLAGS.C) == 0) // verify?
             {
-                crc ^= tb.TapData[offset];
-                m_cpu.WRMEM(rIX++, tb.TapData[offset++]);
+                return;
             }
-            crc ^= tb.TapData[offset];
 
-            m_cpu.regs.PC = 0x05DF;//0x05DF - 1;
-            m_cpu.regs.IX = rIX;
-            m_cpu.regs.DE = 0;
-            m_cpu.regs.H = crc;
-            m_cpu.regs.L = tb.TapData[offset];
-            m_cpu.regs.BC = 0xB001;
+            var tb = Blocks[CurrentBlock];
+            if (tb.TapData == null || tb.TapData.Length < 2)
+            {
+                return;
+            }
+
+            var length = tb.TapData.Length;
+            var read = length - 1;
+            read = read < m_cpu.regs.DE ? read : m_cpu.regs.DE;
+            if (read <= 0)
+            {
+                return;
+            }
+            var parity = tb.TapData[0];
+            if (parity != m_cpu.regs._AF >> 8)
+            {
+                return;
+            }
+            m_cpu.regs._AF = 0x0145;
+
+            /* Loading or verifying determined by the carry flag of F' */
+            for (var i = 0; i < read; i++)
+            {
+                var value = tb.TapData[i + 1];
+                m_cpu.regs.L = value;
+                parity ^= value;
+                m_cpu.WRMEM((ushort)(m_cpu.regs.IX + i), value);
+            }
+            var pc = (ushort)0x05DF;
+            /* If |DE| bytes have been read and there's more data, do the parity check */
+            if (m_cpu.regs.DE == read && read + 1 < length)
+            {
+                var value = tb.TapData[read + 1];
+                m_cpu.regs.L = value;
+                parity ^= value;
+                m_cpu.regs.B = 0xB0;
+            }
+            else
+            {
+                /* Failure to read first bit of the next byte (ref. 48K ROM, 0x5EC) */
+                m_cpu.regs.L = 1;
+                m_cpu.regs.A = parity;
+                m_cpu.regs.F = 0x50;
+                m_cpu.regs.B = 0;
+                pc = 0x05EE;
+            }
+
+            m_cpu.regs.H = parity;
+            m_cpu.regs.DE -= (ushort)read;
+            m_cpu.regs.IX += (ushort)read;
+            m_cpu.regs.C = 0x01;
+
+            m_cpu.regs.PC = pc;//0x05DF;//0x05DF - 1;
 
             int newBlock = CurrentBlock + 1;
             if (newBlock < Blocks.Count)
