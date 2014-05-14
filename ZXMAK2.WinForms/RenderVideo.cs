@@ -300,6 +300,14 @@ namespace ZXMAK2.WinForms
                             textValue,
                             DrawTextFormat.NoClip,
                             Color.Yellow);
+                        textRect = new Rectangle(
+                            textRect.Left,
+                            textRect.Top,
+                            textRect.Width + 10,
+                            textRect.Height);
+
+                        FillRect(textRect, Color.FromArgb(64, Color.Black));
+
                         m_font.DrawText(
                             null,
                             textValue,
@@ -334,6 +342,27 @@ namespace ZXMAK2.WinForms
                     }
                 }
             }
+        }
+
+        private void FillRect(Rectangle textRect, Color color)
+        {
+            var alphaBlendEnabled = D3D.RenderState.AlphaBlendEnable;
+            //D3D.RenderState.ScissorTestEnable = false;
+            D3D.RenderState.AlphaBlendEnable = true;
+            D3D.RenderState.SourceBlend = Blend.SourceAlpha;
+            D3D.RenderState.DestinationBlend = Blend.InvSourceAlpha;
+            D3D.RenderState.BlendOperation = BlendOperation.Add;
+            var colorInt = Color.FromArgb(64, Color.Black).ToArgb();
+            var rectv = new[]
+            {
+                new CustomVertex.TransformedColored(textRect.Left, textRect.Top+textRect.Height, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(textRect.Left, textRect.Top, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(textRect.Left+textRect.Width, textRect.Top+textRect.Height, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(textRect.Left+textRect.Width, 0, 0, 0, colorInt),
+            };
+            D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
+            D3D.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, rectv);
+            D3D.RenderState.AlphaBlendEnable = alphaBlendEnabled;
         }
 
         private PointF GetDestinationPos(SizeF wndSize, SizeF dstSize)
