@@ -628,11 +628,15 @@ namespace ZXMAK2.WinForms
         {
             try
             {
-                var scaleMode = menuViewScaleModeStretch.Checked ? ScaleMode.Stretch :
-                    menuViewScaleModeKeepProportion.Checked ? ScaleMode.KeepProportion :
-                    ScaleMode.FixedPixelSize;
+                //var scaleMode = menuViewScaleModeStretch.Checked ? ScaleMode.Stretch :
+                //    menuViewScaleModeKeepProportion.Checked ? ScaleMode.KeepProportion :
+                //    menuViewScaleModeFixedPixelSize.Checked ? ScaleMode.FixedPixelSize :
+                //    menuViewScaleModeSquarePixelSize.Checked ? ScaleMode.SquarePixelSize :
+                //    ScaleMode.SquarePixelSize;
+                var scaleMode = GetSelectedScaleMode();
                 var rkey = Registry.CurrentUser.CreateSubKey("SOFTWARE\\ZXMAK2");
                 rkey.SetValue("RenderSmoothing", menuViewSmoothing.Checked ? 1 : 0, RegistryValueKind.DWord);
+                rkey.SetValue("RenderMimicTv", menuViewMimicTv.Checked ? 1 : 0, RegistryValueKind.DWord);
                 rkey.SetValue("RenderNoFlic", menuViewNoFlic.Checked ? 1 : 0, RegistryValueKind.DWord);
                 rkey.SetValue("RenderScaleMode", (int)scaleMode, RegistryValueKind.DWord);
                 rkey.SetValue("RenderVBlankSync", menuViewVBlankSync.Checked ? 1 : 0, RegistryValueKind.DWord);
@@ -652,27 +656,28 @@ namespace ZXMAK2.WinForms
                 if (rkey != null)
                 {
                     object objSmooth = rkey.GetValue("RenderSmoothing");
+                    object objMimicTv = rkey.GetValue("RenderMimicTv");
                     object objNoFlic = rkey.GetValue("RenderNoFlic");
                     object objScale = rkey.GetValue("RenderScaleMode");
                     object objSync = rkey.GetValue("RenderVBlankSync");
                     object objIcon = rkey.GetValue("RenderDisplayIcon");
                     if (objSmooth != null && objSmooth is int)
                         menuViewSmoothing.Checked = (int)objSmooth != 0;
+                    if (objMimicTv != null && objMimicTv is int)
+                        menuViewMimicTv.Checked = (int)objMimicTv != 0;
                     if (objNoFlic != null && objNoFlic is int)
                         menuViewNoFlic.Checked = (int)objNoFlic != 0;
+                    
+                    var scaleMode = ScaleMode.SquarePixelSize;
                     if (objScale != null && objScale is int)
                     {
-                        var scaleMode = (ScaleMode)objScale;
-                        menuViewScaleModeStretch.Checked = scaleMode == ScaleMode.Stretch;
-                        menuViewScaleModeKeepProportion.Checked = scaleMode == ScaleMode.KeepProportion;
-                        menuViewScaleModeFixedPixelSize.Checked = scaleMode == ScaleMode.FixedPixelSize;
+                        scaleMode = (ScaleMode)objScale;    
                     }
-                    else
-                    {
-                        menuViewScaleModeStretch.Checked = false;
-                        menuViewScaleModeKeepProportion.Checked = false;
-                        menuViewScaleModeFixedPixelSize.Checked = true;
-                    }
+                    menuViewScaleModeStretch.Checked = scaleMode == ScaleMode.Stretch;
+                    menuViewScaleModeKeepProportion.Checked = scaleMode == ScaleMode.KeepProportion;
+                    menuViewScaleModeFixedPixelSize.Checked = scaleMode == ScaleMode.FixedPixelSize;
+                    menuViewScaleModeSquarePixelSize.Checked = scaleMode == ScaleMode.SquarePixelSize;
+
                     if (objSync != null && objSync is int)
                         menuViewVBlankSync.Checked = (int)objSync != 0;
                     if (objIcon != null && objIcon is int)
@@ -695,6 +700,7 @@ namespace ZXMAK2.WinForms
         private void ApplyRenderSetting()
         {
             renderVideo.Smoothing = menuViewSmoothing.Checked;
+            renderVideo.MimicTv = menuViewMimicTv.Checked;
             renderVideo.NoFlic = menuViewNoFlic.Checked;
             renderVideo.ScaleMode = GetSelectedScaleMode();
             //renderVideo.VBlankSync = menuViewVBlankSync.Checked && !menuVmMaximumSpeed.Checked;
@@ -709,7 +715,8 @@ namespace ZXMAK2.WinForms
                 menuViewScaleModeStretch.Checked ? ScaleMode.Stretch :
                 menuViewScaleModeKeepProportion.Checked ? ScaleMode.KeepProportion :
                 menuViewScaleModeFixedPixelSize.Checked ? ScaleMode.FixedPixelSize :
-                ScaleMode.FixedPixelSize;   // default value
+                menuViewScaleModeSquarePixelSize.Checked ? ScaleMode.SquarePixelSize :
+                ScaleMode.SquarePixelSize;   // default value
         }
 
         #endregion
@@ -782,10 +789,12 @@ namespace ZXMAK2.WinForms
                 sender == menuViewScaleModeStretch ? ScaleMode.Stretch :
                 sender == menuViewScaleModeKeepProportion ? ScaleMode.KeepProportion :
                 sender == menuViewScaleModeFixedPixelSize ? ScaleMode.FixedPixelSize :
+                sender == menuViewScaleModeSquarePixelSize ? ScaleMode.SquarePixelSize :
                 GetSelectedScaleMode();
             menuViewScaleModeStretch.Checked = scaleMode == ScaleMode.Stretch;
             menuViewScaleModeKeepProportion.Checked = scaleMode == ScaleMode.KeepProportion;
             menuViewScaleModeFixedPixelSize.Checked = scaleMode == ScaleMode.FixedPixelSize;
+            menuViewScaleModeSquarePixelSize.Checked = scaleMode == ScaleMode.SquarePixelSize;
             ApplyRenderSetting();
             SaveRenderSetting();
         }
