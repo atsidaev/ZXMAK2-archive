@@ -11,6 +11,7 @@ using ZXMAK2.Entities;
 using System.Diagnostics;
 using ZXMAK2.Interfaces;
 using System.Threading;
+using System.ComponentModel;
 
 
 namespace ZXMAK2.WinForms
@@ -21,8 +22,10 @@ namespace ZXMAK2.WinForms
 
         private Sprite m_sprite = null;
         private Texture m_texture = null;
+        private Texture m_textureMaskTv = null;
         private Size m_surfaceSize = new Size(0, 0);
         private Size m_textureSize = new Size(0, 0);
+        private Size m_textureMaskTvSize = new Size(0, 0);
         private float m_surfaceHeightScale = 1F;
 
         private Sprite m_iconSprite = null;
@@ -38,8 +41,16 @@ namespace ZXMAK2.WinForms
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool MimicTv { get; set; }
+        
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool Smoothing { get; set; }
+        
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScaleMode ScaleMode { get; set; }
+        
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DebugInfo { get; set; }
 
         public unsafe bool NoFlic
@@ -53,7 +64,10 @@ namespace ZXMAK2.WinForms
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IconDisk { get; set; }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DisplayIcon { get; set; }
 
         #endregion Properties
@@ -142,6 +156,11 @@ namespace ZXMAK2.WinForms
                 m_texture.Dispose();
                 m_texture = null;
             }
+            if (m_textureMaskTv != null)
+            {
+                m_textureMaskTv.Dispose();
+                m_textureMaskTv = null;
+            }
             foreach (var textureWrapper in m_iconWrapperDict.Values)
             {
                 textureWrapper.Dispose();
@@ -196,7 +215,10 @@ namespace ZXMAK2.WinForms
             Invalidate();
         }
 
-        private void initTextures(Size surfaceSize)
+        private const byte MimicRatio = 3;      // 1/x
+        private const byte MimicAlpha = 0xFF;
+
+        private unsafe void initTextures(Size surfaceSize)
         {
             lock (SyncRoot)
             {
@@ -211,9 +233,32 @@ namespace ZXMAK2.WinForms
                     m_texture.Dispose();
                     m_texture = null;
                 }
+                if (m_textureMaskTv != null)
+                {
+                    m_textureMaskTv.Dispose();
+                    m_textureMaskTv = null;
+                }
                 m_texture = new Texture(D3D, potSize, potSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                 m_textureSize = new System.Drawing.Size(potSize, potSize);
                 m_surfaceSize = surfaceSize;
+
+                var maskTvSize = new Size(surfaceSize.Width, surfaceSize.Height*3);
+                var maskTvPotSize = getPotSize(maskTvSize);
+                m_textureMaskTv = new Texture(D3D, maskTvPotSize, maskTvPotSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+                m_textureMaskTvSize = new Size(maskTvPotSize, maskTvPotSize);
+                using (GraphicsStream gs = m_textureMaskTv.LockRectangle(0, LockFlags.None))
+                {                
+                    for (var x=0; x < maskTvSize.Width; x++)
+                        for (var y=0; y < maskTvSize.Height; y++)
+                        {
+                            var ptr = (int*)gs.InternalData;
+                            var offset = y * maskTvPotSize + x;
+                            *(ptr + offset) = (y%MimicRatio)!=(MimicRatio-1) ? 0 : MimicAlpha<<24;
+                        }
+                }
+                m_textureMaskTv.UnlockRectangle(0);
+
+
                 initIconTextures();
             }
         }
@@ -275,11 +320,28 @@ namespace ZXMAK2.WinForms
                        dstSize,
                        dstPos,
                        0x00FFFFFF);
+                    m_sprite.End();
+                    
+                    if (MimicTv)
+                    {
+                        var srcRectTv = new Rectangle(
+                            0,
+                            0,
+                            m_surfaceSize.Width,
+                            m_surfaceSize.Height*MimicRatio);
+                        m_sprite.Begin(SpriteFlags.AlphaBlend);
+                        m_sprite.Draw2D(
+                            m_textureMaskTv,
+                            srcRectTv,
+                            dstSize,
+                            dstPos,
+                            -1);        
+                        m_sprite.End();
+                    }
+
 
                     //D3D.SamplerState[0].MinFilter = min;
                     //D3D.SamplerState[0].MagFilter = mag;
-
-                    m_sprite.End();
 
                     if (DebugInfo)
                     {
@@ -306,7 +368,7 @@ namespace ZXMAK2.WinForms
                             textRect.Width + 10,
                             textRect.Height);
 
-                        FillRect(textRect, Color.FromArgb(64, Color.Black));
+                        FillRect(textRect, Color.FromArgb(64, Color.Green));
 
                         m_font.DrawText(
                             null,
@@ -352,7 +414,7 @@ namespace ZXMAK2.WinForms
             D3D.RenderState.SourceBlend = Blend.SourceAlpha;
             D3D.RenderState.DestinationBlend = Blend.InvSourceAlpha;
             D3D.RenderState.BlendOperation = BlendOperation.Add;
-            var colorInt = Color.FromArgb(64, Color.Black).ToArgb();
+            var colorInt = color.ToArgb();
             var rectv = new[]
             {
                 new CustomVertex.TransformedColored(textRect.Left, textRect.Top+textRect.Height, 0, 0, colorInt),
@@ -380,6 +442,14 @@ namespace ZXMAK2.WinForms
             {
                 var rx = wndSize.Width / dstSize.Width;
                 var ry = wndSize.Height / dstSize.Height;
+                if (ScaleMode == ScaleMode.SquarePixelSize)
+                {
+                    rx = (float)Math.Floor(rx);
+                    ry = (float)Math.Floor(ry);
+                    rx = ry = Math.Min(rx, ry);
+                    rx = rx < 1F ? 1F : rx;
+                    ry = ry < 1F ? 1F : ry;
+                }
                 if (ScaleMode == ScaleMode.FixedPixelSize)
                 {
                     rx = (float)Math.Floor(rx);
@@ -574,5 +644,6 @@ namespace ZXMAK2.WinForms
         Stretch = 0,
         KeepProportion,
         FixedPixelSize,
+        SquarePixelSize,
     }
 }
