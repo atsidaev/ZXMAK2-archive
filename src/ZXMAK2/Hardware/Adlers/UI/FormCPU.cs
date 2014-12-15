@@ -800,9 +800,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
                         m_spectrum.DoStop();
                         UpdateCPU(true);
 
-                        //this.Hide();
                         Assembler.Show(ref m_spectrum);
-                        this.Show();
+                        Assembler.ActiveForm.Focus();
+
+                        return;
                     }
                     else
                     {

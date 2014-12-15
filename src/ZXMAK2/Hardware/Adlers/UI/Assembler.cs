@@ -13,7 +13,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
 {
     public partial class Assembler : Form
     {
-        [DllImport(@"Pasmo.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "compile")]
+        [DllImport(@"Pasmo2.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "compile")]
         public unsafe static extern int compile( 
                   /*char**/ [MarshalAs(UnmanagedType.LPStr)] string compileArg,   //e.g. --bin, --tap; terminated by NULL(0)
                   /*char**/ [MarshalAs(UnmanagedType.LPStr)] string inAssembler,
@@ -23,7 +23,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                   /*char**/ IntPtr errFileName,
                   /*char**/ IntPtr errReason
                   );
-        [DllImport(@"PasmoXP.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint="compile")]
+        [DllImport(@"Pasmo2XP.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint="compile")]
         public unsafe static extern int compileXP(
             /*char**/ [MarshalAs(UnmanagedType.LPStr)] string compileArg,   //e.g. --bin, --tap; terminated by NULL(0)
             /*char**/ [MarshalAs(UnmanagedType.LPStr)] string inAssembler,
@@ -66,6 +66,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             txtAsm.SelectionStart = txtAsm.Text.Length + 1;
 
             this.KeyPreview = true;
+            this.BringToFront();
         }
 
         public static void Show(ref IDebuggable spectrum)
@@ -179,7 +180,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                     {
                                         //--bin mode
                                         memAdress = DebuggerManager.convertNumberWithPrefix(textMemAdress.Text);
-                                        memArrayDelta = 0;
+                                        //memArrayDelta = 0;
                                     }
 
                                     if (memAdress >= 0x4000) //RAM start
@@ -212,6 +213,20 @@ namespace ZXMAK2.Hardware.Adlers.UI
         {
             bool startAdressManual = checkMemory.Checked;
             bool startAdressInCode = this.IsStartAdressInCode();
+
+            if (!File.Exists(@"Pasmo2.dll"))
+            {
+                Locator.Resolve<IUserMessage>().Error(
+                    "Pasmo2.dll not found!\nThis file is needed for compilation\ninto Z80 code." +
+                    "\n\n" +
+                    "Now going to try to get it from internet/\nPlease click OK"
+                    );
+
+                TcpHelper client = new TcpHelper();
+                client.Show();
+
+                return false;
+            }
 
             if (startAdressInCode == false && startAdressManual == false)
             {

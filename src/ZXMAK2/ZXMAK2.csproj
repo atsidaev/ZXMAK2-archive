@@ -79,6 +79,12 @@
     <Compile Include="Entities\KeyboardMapper.cs" />
     <Compile Include="Entities\SyncSource.cs" />
     <Compile Include="Func.cs" />
+    <Compile Include="Hardware\Adlers\UI\TcpHelper.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Hardware\Adlers\UI\TcpHelper.Designer.cs">
+      <DependentUpon>TcpHelper.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interfaces\ILauncher.cs" />
     <Compile Include="Interfaces\IUserQuery.cs" />
     <Compile Include="Interfaces\IUserMessage.cs" />
@@ -506,6 +512,9 @@
     <EmbeddedResource Include="Hardware\Adlers\UI\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Hardware\Adlers\UI\TcpHelper.resx">
+      <DependentUpon>TcpHelper.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Hardware\General\UI\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </EmbeddedResource>
@@ -598,6 +607,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
