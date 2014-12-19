@@ -37,6 +37,8 @@
             this.groupBoxProxy = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.checkBoxIsProxy = new System.Windows.Forms.CheckBox();
+            this.labelStatus = new System.Windows.Forms.Label();
+            this.labelStatusText = new System.Windows.Forms.Label();
             this.groupBoxProxy.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -125,11 +127,32 @@
             this.checkBoxIsProxy.UseVisualStyleBackColor = true;
             this.checkBoxIsProxy.CheckedChanged += new System.EventHandler(this.checkBoxIsProxy_CheckedChanged);
             // 
+            // labelStatus
+            // 
+            this.labelStatus.AutoSize = true;
+            this.labelStatus.Location = new System.Drawing.Point(9, 182);
+            this.labelStatus.Name = "labelStatus";
+            this.labelStatus.Size = new System.Drawing.Size(40, 13);
+            this.labelStatus.TabIndex = 8;
+            this.labelStatus.Text = "Status:";
+            // 
+            // labelStatusText
+            // 
+            this.labelStatusText.AutoSize = true;
+            this.labelStatusText.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.labelStatusText.Location = new System.Drawing.Point(48, 181);
+            this.labelStatusText.Name = "labelStatusText";
+            this.labelStatusText.Size = new System.Drawing.Size(61, 15);
+            this.labelStatusText.TabIndex = 9;
+            this.labelStatusText.Text = "Not started";
+            // 
             // TcpHelper
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(435, 193);
+            this.ClientSize = new System.Drawing.Size(435, 200);
+            this.Controls.Add(this.labelStatusText);
+            this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.checkBoxIsProxy);
             this.Controls.Add(this.groupBoxProxy);
             this.Controls.Add(this.buttonCancel);
@@ -158,5 +181,7 @@
         private System.Windows.Forms.GroupBox groupBoxProxy;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox checkBoxIsProxy;
+        private System.Windows.Forms.Label labelStatus;
+        private System.Windows.Forms.Label labelStatusText;
     }
 }

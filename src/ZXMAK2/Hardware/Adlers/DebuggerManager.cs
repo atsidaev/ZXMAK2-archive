@@ -108,14 +108,16 @@ namespace ZXMAK2.Hardware.Adlers.UI
         // 2. item: ==
         // 3. item: #9C40
         // 
-        // Must be working: ld hl,  #4000; br (pc)==#4000; br (pc)   ==#af; br a<#FE; ...
-        public static List<string> ParseCommand(string dbgCommand)
+        // Must be working: ld hl,  #4000; br (pc)==#4000; br (pc)   ==#af; br a<#FE; ld ( 16384  ), 255; ...
+        public static List<string> ParseCommand(string i_dbgCommand)
         {
             try
             {
                 string       pattern = @"(\s+|,|==|!=|<|>)";
                 List<string> dbgParsed = new List<string>();
                 dbgParsed.Clear();
+
+                string dbgCommand = TrimCommand(i_dbgCommand);
 
                 foreach (string result in Regex.Split(dbgCommand, pattern)) 
                 {
@@ -129,6 +131,20 @@ namespace ZXMAK2.Hardware.Adlers.UI
             {
                 return null;
             }
+        }
+
+        private static string TrimCommand(string i_strIn)
+        {
+            string strOut = i_strIn;
+
+            //trim all whitespaces after '(' until next character
+            while (strOut.Contains("( "))
+                strOut = strOut.Replace("( ", "(");
+            //trim all whitespaces before ')'
+            while (strOut.Contains(" )"))
+                strOut = strOut.Replace(" )", ")");
+
+            return strOut;
         }
 
         public static void HasDigitsAndLettersInString(string s, ref bool hasLetters, ref bool hasDigits)
