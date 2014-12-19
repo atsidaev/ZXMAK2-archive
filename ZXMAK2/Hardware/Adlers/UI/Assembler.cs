@@ -14,7 +14,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
     public partial class Assembler : Form
     {
         [DllImport(@"Pasmo2.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "compile")]
-        public unsafe static extern int compile( 
+        private unsafe static extern int compile( 
                   /*char**/ [MarshalAs(UnmanagedType.LPStr)] string compileArg,   //e.g. --bin, --tap; terminated by NULL(0)
                   /*char**/ [MarshalAs(UnmanagedType.LPStr)] string inAssembler,
 	              /*char**/ IntPtr compiledOut,
@@ -23,26 +23,18 @@ namespace ZXMAK2.Hardware.Adlers.UI
                   /*char**/ IntPtr errFileName,
                   /*char**/ IntPtr errReason
                   );
-        [DllImport(@"Pasmo2XP.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint="compile")]
-        public unsafe static extern int compileXP(
-            /*char**/ [MarshalAs(UnmanagedType.LPStr)] string compileArg,   //e.g. --bin, --tap; terminated by NULL(0)
-            /*char**/ [MarshalAs(UnmanagedType.LPStr)] string inAssembler,
-            /*char**/ IntPtr compiledOut,
-            /*int* */ IntPtr codeSize,
-            /*int**/  IntPtr errFileLine,
-            /*char**/ IntPtr errFileName,
-            /*char**/ IntPtr errReason
-            );
 
         //text editor styles
         Style CommentStyle = new TextStyle(Brushes.Green, null, FontStyle.Italic);
         Style CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
-        //Style JumpInstructionStyle = new TextStyle(new SolidBrush(Color.FromArgb(255, 43, 145, 175)), null, FontStyle.Regular);
         Style JumpInstructionStyle = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
         Style StackInstructionStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
         Style CompilerInstructionStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
+        Style RegistryStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
 
         private byte tabSpace = 16; //how many characters on tab
+
+        private string m_kernelDir;
 
         private IDebuggable m_spectrum;
 
@@ -67,6 +59,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
             this.KeyPreview = true;
             this.BringToFront();
+
+            m_kernelDir = Directory.GetCurrentDirectory();
         }
 
         public static void Show(ref IDebuggable spectrum)
@@ -142,12 +136,10 @@ namespace ZXMAK2.Hardware.Adlers.UI
                                                   new IntPtr(perrFileName), new IntPtr(perrReason)
                                                   );
                             }
-                            catch(DllNotFoundException)
+                            catch
                             {
-                                retCode = compileXP(compileOption, asmToCompileOrFileName, new IntPtr(pcompiledOut),
-                                                    new IntPtr(&codeSize), new IntPtr(&errFileLine),
-                                                    new IntPtr(perrFileName), new IntPtr(perrReason)
-                                                    );
+                                Locator.Resolve<IUserMessage>().Error( "Technical error in compilation...\nSorry, compilation cannot be executed.");
+                                return;
                             }
                             if (retCode != 0)
                             {
@@ -214,12 +206,15 @@ namespace ZXMAK2.Hardware.Adlers.UI
             bool startAdressManual = checkMemory.Checked;
             bool startAdressInCode = this.IsStartAdressInCode();
 
+            Directory.SetCurrentDirectory(m_kernelDir);
+
             if (!File.Exists(@"Pasmo2.dll"))
             {
                 Locator.Resolve<IUserMessage>().Error(
-                    "Pasmo2.dll not found!\nThis file is needed for compilation\ninto Z80 code." +
+                    "Pasmo2.dll not found in " + m_kernelDir + "!\nThis file is needed for compilation\n" +
+                    "into Z80 code." +
                     "\n\n" +
-                    "Now going to try to get it from internet/\nPlease click OK"
+                    "Now going to try to get it from internet.\nPlease click OK."
                     );
 
                 TcpHelper client = new TcpHelper();
@@ -233,7 +228,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 //start adress for compilation not found
                 Locator.Resolve<IUserMessage>().Warning(
                     "Compilation failed(missing start address)\n\n" +
-                    "Missing starting address for the compilation!\n\n" +
                     "Either check the check box for memory address(Compile to -> Memory)\n" + 
                     "or define it using 'ORG' instruction in source code !\n\n" +
                     "Compilation is cancelled.");
@@ -244,7 +238,6 @@ namespace ZXMAK2.Hardware.Adlers.UI
                 //duplicate adress for compilation
                 Locator.Resolve<IUserMessage>().Warning(
                     "Compilation failed(duplicity in start address)\n\n" +
-                    "Duplicity in starting address for the compilation!\n\n" +
                     "Either UNcheck the check box for memory address(Compile to -> Memory)\n" +
                     "or remove ALL 'ORG' instructions from the source code !\n\n" +
                     "Compilation is cancelled.");
@@ -417,11 +410,12 @@ namespace ZXMAK2.Hardware.Adlers.UI
             //comment highlighting
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(CommonInstructionStyle, @"ldir|lddr|\bld\b|\bim\b|add|\bsub\b|\bdec\b|sbc|halt|\bbit\b|\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
-                @"|\brr\b|scf|ccf|\bneg\b|srl|exx|\bex\b|\brla\b|rra|\brr\b",
+                @"|\brr\b|scf|ccf|\bneg\b|srl|exx|\bex\b|\brla\b|rra|\brr\b|\bout\b|\bin\b",
                 RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(CompilerInstructionStyle, @"defb|defw|include|incbin", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(CompilerInstructionStyle, @"#defb|#defw|#include|#incbin", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(StackInstructionStyle, @"push|pop|dec sp|inc sp", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(JumpInstructionStyle, @"org|reti|retn|ret|jp|jr|call|djnz", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(RegistryStyle, @"\bhl\b|\bbc\b|\bix\b|\biy\b|\bde\b|\bpc\b|\baf\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         }
 
         //Save button

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
+using ZXMAK2.Interfaces;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
@@ -31,16 +32,26 @@ namespace ZXMAK2.Hardware.Adlers.UI
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            m_client.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
-            m_client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
-
-            if(checkBoxIsProxy.Checked)
+            try
             {
-                WebProxy proxy = new WebProxy("http://" + this.textBoxProxyAdress.Text.Trim() + ":" + this.textBoxProxyPort.Text.Trim() + "/",true);
-                m_client.Proxy = proxy;
-            }
+                m_client.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
+                m_client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
 
-            m_client.DownloadFileAsync(new Uri(@"http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=pasmo2&DownloadId=991511&FileTime=130631149681430000&Build=20959"), "Pasmo2.dll");
+                if(checkBoxIsProxy.Checked)
+                {
+                    WebProxy proxy = new WebProxy("http://" + this.textBoxProxyAdress.Text.Trim() + ":" + this.textBoxProxyPort.Text.Trim() + "/",true);
+                    m_client.Proxy = proxy;
+                }
+
+                labelStatusText.Text = "Downloading...";
+                buttonStart.Enabled = false;
+
+                m_client.DownloadFileAsync(new Uri(@"http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=pasmo2&DownloadId=991511&FileTime=130631149681430000&Build=20959"), "Pasmo2.dll");
+            }
+            catch(Exception tcpException)
+            {
+                Locator.Resolve<IUserMessage>().Error("Error: \n" + tcpException.Message);
+            }
         }
 
 
@@ -50,13 +61,17 @@ namespace ZXMAK2.Hardware.Adlers.UI
         }
         private void Completed(object sender, AsyncCompletedEventArgs e)
         {
-            MessageBox.Show("Download completed!");
+            labelStatusText.Text = "Completed!";
+            buttonStart.Enabled = true;
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
             if (m_client.IsBusy)
                 m_client.CancelAsync();
+
+            labelStatusText.Text = "Canceled";
+            buttonStart.Enabled = true;
 
             this.Hide();
         }
