@@ -215,7 +215,7 @@ namespace ZXMAK2.WinForms
             Invalidate();
         }
 
-        private const byte MimicRatio = 3;      // 1/x
+        private const byte MimicRatio = 4;      // 1/x
         private const byte MimicAlpha = 0xFF;
 
         private unsafe void initTextures(Size surfaceSize)
@@ -242,7 +242,7 @@ namespace ZXMAK2.WinForms
                 m_textureSize = new System.Drawing.Size(potSize, potSize);
                 m_surfaceSize = surfaceSize;
 
-                var maskTvSize = new Size(surfaceSize.Width, surfaceSize.Height*3);
+                var maskTvSize = new Size(surfaceSize.Width, surfaceSize.Height * MimicRatio);
                 var maskTvPotSize = getPotSize(maskTvSize);
                 m_textureMaskTv = new Texture(D3D, maskTvPotSize, maskTvPotSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                 m_textureMaskTvSize = new Size(maskTvPotSize, maskTvPotSize);
