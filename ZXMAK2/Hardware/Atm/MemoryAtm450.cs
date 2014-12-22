@@ -63,6 +63,8 @@ namespace ZXMAK2.Hardware.Atm
             int romPage = (CMR0 & 0x10) != 0 ?
                 GetRomIndex(RomName.ROM_SOS) :
                 GetRomIndex(RomName.ROM_128);
+            romPage |= CMR1 & 4;    // extended 64K rom (if exists)
+            
             int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 
             if (DOSEN)      // trdos or 48/128
