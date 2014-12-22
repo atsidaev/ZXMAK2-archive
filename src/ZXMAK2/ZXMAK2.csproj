@@ -533,6 +533,7 @@
     </EmbeddedResource>
     <None Include="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -570,7 +571,6 @@
     <Content Include="Icons\EmuPause_32x32.png" />
     <Content Include="ZXMAK2.Dependency.xml">
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="MACHINES.PAK">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
