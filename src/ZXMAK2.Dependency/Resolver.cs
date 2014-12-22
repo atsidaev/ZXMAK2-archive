@@ -36,8 +36,9 @@ namespace ZXMAK2.Dependency
             {
                 return (T)Resolve(typeof(T).AssemblyQualifiedName, name, args);
             }
-            catch
+            catch (Exception ex)
             {
+                LogAgent.Error(ex);
                 return default(T);
             }
         }

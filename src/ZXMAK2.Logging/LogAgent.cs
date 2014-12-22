@@ -1,29 +1,33 @@
 ﻿using System;
 using System.Text;
 using System.Diagnostics;
-using ZXMAK2.Logging;
 using System.IO;
+using log4net;
+using System.Globalization;
 
 namespace ZXMAK2
 {
     public static class LogAgent
     {
+        private static readonly ILog _logger = LogManager.GetLogger("ZXMAK2");
+        
         public static void Start()
         {
-            LoggerInternal.Start();
         }
 
         public static void Finish()
         {
-            LoggerInternal.Finish();
+            LogManager.Shutdown();
         }
-        
+
+
+        #region Redirect
+
         public static void Debug(string fmt, params object[] args)
         {
             try
             {
-                string msg = string.Format(fmt, args);
-                LoggerInternal.GetLogger().LogTrace(msg);
+                _logger.DebugFormat(CultureInfo.InvariantCulture, fmt, args);
             }
             catch (Exception ex)
             {
@@ -35,8 +39,7 @@ namespace ZXMAK2
         {
             try
             {
-                string msg = string.Format(fmt, args);
-                LoggerInternal.GetLogger().LogMessage(msg);
+                _logger.InfoFormat(CultureInfo.InvariantCulture, fmt, args);
             }
             catch (Exception ex)
             {
@@ -48,8 +51,7 @@ namespace ZXMAK2
         {
             try
             {
-                string msg = string.Format(fmt, args);
-                LoggerInternal.GetLogger().LogWarning(msg);
+                _logger.WarnFormat(CultureInfo.InvariantCulture, fmt, args);
             }
             catch (Exception ex)
             {
@@ -61,10 +63,7 @@ namespace ZXMAK2
         {
             try
             {
-                string stack = new StackTrace().ToString();
-                string msg = string.Format(fmt, args);
-                msg = string.Format("{0}{1}{2}", msg, Environment.NewLine, stack);
-                LoggerInternal.GetLogger().LogError(msg);
+                _logger.ErrorFormat(CultureInfo.InvariantCulture, fmt, args);
             }
             catch (Exception ex)
             {
@@ -72,43 +71,81 @@ namespace ZXMAK2
             }
         }
 
-        public static void Error(Exception ex)
+        public static void Debug(Exception exception, string fmt, params object[] args)
         {
             try
             {
-                string stack = new StackTrace().ToString();
-                string msg = format(ex);
-                msg = string.Format("{0}{1}---{1}Full StackTrace:{1}{2}", msg, Environment.NewLine, stack);
-                LoggerInternal.GetLogger().LogError(msg);
+                var msg = fmt != null ? string.Format(fmt, args) : null;
+                _logger.Debug(msg, exception);
             }
-            catch (Exception ex2)
+            catch (Exception ex)
             {
-                LoggerInternal.GetLogger().LogError(ex2);
+                Error(ex);
             }
         }
 
-        private static string format(Exception ex)
+        public static void Info(Exception exception, string fmt, params object[] args)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("Exception ");
-            if (ex != null)
+            try
             {
-                sb.Append(ex.GetType().ToString());
-                sb.Append(": ");
-                sb.Append(ex.Message);
-                sb.Append(Environment.NewLine);
-                sb.Append(ex.StackTrace);
-                if (ex.InnerException != null)
-                {
-                    sb.Append(string.Format("{0}Inner{1}", Environment.NewLine, format(ex.InnerException)));
-                }
+                var msg = fmt != null ? string.Format(fmt, args) : null;
+                _logger.Info(msg, exception);
             }
-            else
+            catch (Exception ex)
             {
-                sb.Append("[null]");
+                Error(ex);
             }
-            return sb.ToString();
         }
+
+        public static void Warn(Exception exception, string fmt, params object[] args)
+        {
+            try
+            {
+                var msg = fmt != null ? string.Format(fmt, args) : null;
+                _logger.Warn(msg, exception);
+            }
+            catch (Exception ex)
+            {
+                Error(ex);
+            }
+        }
+
+        public static void Error(Exception exception, string fmt, params object[] args)
+        {
+            try
+            {
+                var msg = fmt != null ? string.Format(fmt, args) : null;
+                _logger.Error(msg, exception);
+            }
+            catch (Exception ex)
+            {
+                Error(ex);
+            }
+        }
+
+        #endregion Redirect
+
+
+        public static void Debug(Exception exception)
+        {
+            Debug(exception, null);
+        }
+
+        public static void Info(Exception exception)
+        {
+            Info(exception, null);
+        }
+
+        public static void Warn(Exception exception)
+        {
+            Warn(exception, null);
+        }
+
+        public static void Error(Exception exception)
+        {
+            Error(exception, null);
+        }
+
 
         [Obsolete("remove call to LogAgent.DumpArray")]
         public static void DumpArray<T>(string fileName, T[] array)
