@@ -65,6 +65,10 @@
     <Compile Include="Host\XnaSound.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">
+      <Project>{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}</Project>
+      <Name>ZXMAK2.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2\ZXMAK2.csproj">
       <Project>{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}</Project>
       <Name>ZXMAK2</Name>

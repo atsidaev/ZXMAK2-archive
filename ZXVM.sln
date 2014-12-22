@@ -13,9 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Presentation", "ZXMA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.WinForms", "ZXMAK2.WinForms\ZXMAK2.WinForms.csproj", "{E7AFB7C0-7BAF-4C0F-A1FB-FA2DB5A3AD11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Logging", "ZXMAK2.Logging\ZXMAK2.Logging.csproj", "{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 7
+		SccNumberOfProjects = 8
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath0 = .
@@ -37,6 +39,9 @@ Global
 		SccProjectUniqueName6 = ZXMAK2.WinForms\\ZXMAK2.WinForms.csproj
 		SccProjectName6 = ZXMAK2.WinForms
 		SccLocalPath6 = ZXMAK2.WinForms
+		SccProjectUniqueName7 = ZXMAK2.Logging\\ZXMAK2.Logging.csproj
+		SccProjectName7 = ZXMAK2.Logging
+		SccLocalPath7 = ZXMAK2.Logging
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,8 +112,21 @@ Global
 		{E7AFB7C0-7BAF-4C0F-A1FB-FA2DB5A3AD11}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{E7AFB7C0-7BAF-4C0F-A1FB-FA2DB5A3AD11}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{E7AFB7C0-7BAF-4C0F-A1FB-FA2DB5A3AD11}.Release|x86.ActiveCfg = Release|Any CPU
+		{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPath = _packages\Unity.2.1.505.2\lib\NET35
 	EndGlobalSection
 EndGlobal

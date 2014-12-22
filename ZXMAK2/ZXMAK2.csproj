@@ -10,9 +10,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ZXMAK2</RootNamespace>
     <AssemblyName>ZXMAK2</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -63,10 +62,12 @@
   <PropertyGroup>
     <ApplicationIcon>Icons\ZXMAK2.ICO</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="..\Libraries\FastColoredTextBox.dll" />
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -90,7 +91,6 @@
     <Compile Include="Interfaces\IUserMessage.cs" />
     <Compile Include="Interfaces\IVideoData.cs" />
     <Compile Include="Locator.cs" />
-    <Compile Include="LogAgent.cs" />
     <Compile Include="Engine\FpsMonitor.cs" />
     <Compile Include="MVP\Interfaces\IView.cs" />
     <Compile Include="MVP\Interfaces\IMainPresenter.cs" />
@@ -407,10 +407,6 @@
     <Compile Include="Engine\Z80\Z80FXops.cs" />
     <Compile Include="Engine\Z80\Z80OPS.cs" />
     <Compile Include="Engine\Z80\Z80REGS.cs" />
-    <Compile Include="Logging\Log.cs" />
-    <Compile Include="Logging\LoggerInternal.cs" />
-    <Compile Include="Logging\LogLevel.cs" />
-    <Compile Include="Logging\LogMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Engine\VirtualMachine.cs" />
     <Compile Include="Hardware\Sprinter\UI\DebugForm.cs">
@@ -535,6 +531,9 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -545,6 +544,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <None Include="app.config" />
+    <None Include="unity.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icons\Fdd.png" />
@@ -605,6 +607,10 @@
       <Project>{BB32EB49-52FF-4976-9586-5C4E415CD730}</Project>
       <Name>ZXMAK2.Dependency</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">
+      <Project>{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}</Project>
+      <Name>ZXMAK2.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

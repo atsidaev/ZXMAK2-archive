@@ -21,9 +21,19 @@ namespace ZXMAK2.Presentation
         
         public void Run(string[] args)
         {
+            var service = m_resolver.TryResolve<IUserMessage>();
             try
             {
-                using (var view = m_viewResolver.Resolve<IMainView>())
+                var view = m_viewResolver.Resolve<IMainView>();
+                if (view==null)
+                {
+                    if(service != null)
+                    {
+                        service.Error("Cannot create IMainView");
+                    }
+                    return;
+                }
+                using (view)
                 {
                     var list = new List<Argument>();
                     list.Add(new Argument("view", view));
@@ -37,7 +47,6 @@ namespace ZXMAK2.Presentation
             catch (Exception ex)
             {
                 LogAgent.Error(ex);
-                var service = m_resolver.TryResolve<IUserMessage>();
                 if (service != null)
                 {
                     service.ErrorDetails(ex);
