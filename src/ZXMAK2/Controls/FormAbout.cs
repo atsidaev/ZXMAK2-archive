@@ -70,7 +70,7 @@ namespace ZXMAK2.Controls
             this.labelVersionText.Name = "labelVersionText";
             this.labelVersionText.Size = new System.Drawing.Size(114, 13);
             this.labelVersionText.TabIndex = 3;
-            this.labelVersionText.Text = "Version 0.0.0.0 [beta]";
+            this.labelVersionText.Text = "Version 0.0.0.0";
             // 
             // labelLogo
             // 
