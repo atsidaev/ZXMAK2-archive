@@ -18,6 +18,14 @@ namespace ZXMAK2.WinForms
 {
     public class RenderVideo : Render3D, IHostVideo
     {
+        #region Constants
+
+        private const byte MimicTvRatio = 4;      // mask size 1/x of pixel
+        private const byte MimicTvAlpha = 0x90;   // mask alpha
+
+        #endregion Constants
+
+
         #region Fields
 
         private Sprite m_sprite = null;
@@ -215,9 +223,6 @@ namespace ZXMAK2.WinForms
             Invalidate();
         }
 
-        private const byte MimicRatio = 4;      // 1/x
-        private const byte MimicAlpha = 0xFF;
-
         private unsafe void initTextures(Size surfaceSize)
         {
             lock (SyncRoot)
@@ -242,7 +247,7 @@ namespace ZXMAK2.WinForms
                 m_textureSize = new System.Drawing.Size(potSize, potSize);
                 m_surfaceSize = surfaceSize;
 
-                var maskTvSize = new Size(surfaceSize.Width, surfaceSize.Height * MimicRatio);
+                var maskTvSize = new Size(surfaceSize.Width, surfaceSize.Height * MimicTvRatio);
                 var maskTvPotSize = getPotSize(maskTvSize);
                 m_textureMaskTv = new Texture(D3D, maskTvPotSize, maskTvPotSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                 m_textureMaskTvSize = new Size(maskTvPotSize, maskTvPotSize);
@@ -253,7 +258,7 @@ namespace ZXMAK2.WinForms
                         {
                             var ptr = (int*)gs.InternalData;
                             var offset = y * maskTvPotSize + x;
-                            *(ptr + offset) = (y%MimicRatio)!=(MimicRatio-1) ? 0 : MimicAlpha<<24;
+                            *(ptr + offset) = (y%MimicTvRatio)!=(MimicTvRatio-1) ? 0 : MimicTvAlpha<<24;
                         }
                 }
                 m_textureMaskTv.UnlockRectangle(0);
@@ -328,7 +333,7 @@ namespace ZXMAK2.WinForms
                             0,
                             0,
                             m_surfaceSize.Width,
-                            m_surfaceSize.Height*MimicRatio);
+                            m_surfaceSize.Height*MimicTvRatio);
                         m_sprite.Begin(SpriteFlags.AlphaBlend);
                         m_sprite.Draw2D(
                             m_textureMaskTv,
