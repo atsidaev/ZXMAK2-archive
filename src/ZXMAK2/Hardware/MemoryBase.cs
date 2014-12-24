@@ -255,7 +255,7 @@ namespace ZXMAK2.Hardware
                 return "DOS";
             if (pageNo == GetRomIndex(RomName.ROM_SYS))
                 return "SYS";
-            return string.Format("#{0:X2}", pageNo);
+            return null;
         }
 
         public abstract int GetRomIndex(RomName romId);

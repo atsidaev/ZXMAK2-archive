@@ -54,7 +54,19 @@ namespace ZXMAK2.Hardware.Atm
 
         #region MemoryBase
 
-        public override bool IsMap48 { get { return false; } }
+        public override bool IsMap48 
+        { 
+            get { return false; } 
+        }
+
+        public override bool IsRom48
+        {
+            get 
+            { 
+                return MapRead0000 == RomPages[GetRomIndex(RomName.ROM_SOS)] ||
+                    MapRead0000 == RomPages[GetRomIndex(RomName.ROM_SOS)+4]; 
+            }
+        }
 
         protected override void UpdateMapping()
         {
@@ -63,7 +75,6 @@ namespace ZXMAK2.Hardware.Atm
             int romPage = (CMR0 & 0x10) != 0 ?
                 GetRomIndex(RomName.ROM_SOS) :
                 GetRomIndex(RomName.ROM_128);
-            romPage |= CMR1 & 4;    // extended 64K rom (if exists)
             
             int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 
@@ -92,6 +103,7 @@ namespace ZXMAK2.Hardware.Atm
                 else if (DOSEN)
                     romPage = GetRomIndex(RomName.ROM_DOS);
             }
+            romPage |= CMR1 & 4;    // extended 64K rom (if exists)
 
             if (m_ulaAtm != null)
             {
@@ -200,6 +212,12 @@ namespace ZXMAK2.Hardware.Atm
             throw new InvalidOperationException("Unknown RomName");
         }
 
+        public override string GetRomName(int pageNo)
+        {
+            var name = base.GetRomName(pageNo & 3);
+            return string.Format("{0}{1}", name, pageNo>>2);
+        }
+
         #endregion
 
         #region Bus Handlers
@@ -294,7 +312,7 @@ namespace ZXMAK2.Hardware.Atm
 
 
         public MemoryAtm450()
-            : base("ATM450", 4, 32)
+            : base("ATM450", 8, 32)
         {
         }
 
