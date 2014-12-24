@@ -187,9 +187,9 @@ namespace ZXMAK2.WinForms.Properties {
         ///    &lt;Key Name=&quot;W&quot; Value=&quot;W&quot; /&gt;
         ///    &lt;Key Na [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string KeyboardMap {
+        internal static string KeyboardMap_Mdx {
             get {
-                return ResourceManager.GetString("KeyboardMap", resourceCulture);
+                return ResourceManager.GetString("KeyboardMap_Mdx", resourceCulture);
             }
         }
     }

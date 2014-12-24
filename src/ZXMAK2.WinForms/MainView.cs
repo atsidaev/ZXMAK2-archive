@@ -51,6 +51,9 @@ namespace ZXMAK2.WinForms
         }
 
 
+        public string KeyboardMapFile { get; set; }
+
+
         #region Commands
 
         private ICommand CommandViewFullScreen { get; set; }
@@ -249,6 +252,23 @@ namespace ZXMAK2.WinForms
                 renderVideo.InitWnd();
                 m_host = new MdxHost(this, renderVideo);
                 OnViewOpened();
+                LoadConfig();
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+        }
+
+        private void LoadConfig()
+        {
+            if (string.IsNullOrEmpty(KeyboardMapFile))
+            {
+                return;
+            }
+            try
+            {
+                m_host.Keyboard.LoadConfiguration(KeyboardMapFile);
             }
             catch (Exception ex)
             {

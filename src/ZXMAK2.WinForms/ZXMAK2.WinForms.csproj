@@ -127,7 +127,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="KeyboardMap.xml" />
+    <Content Include="KeyboardMap.Mdx.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\EmuColdReset_32x32.png" />
     <Content Include="Resources\EmuFileOpen_32x32.png" />
     <Content Include="Resources\EmuFileSave_32x32.png" />

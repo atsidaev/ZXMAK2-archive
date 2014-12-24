@@ -47,6 +47,8 @@ namespace ZXMAK2.XNA4.Views
             m_deviceManager = new GraphicsDeviceManager(this);
         }
 
+        public string KeyboardMapFile { get; set; }
+
 
         #region IMainView
 
@@ -219,6 +221,23 @@ namespace ZXMAK2.XNA4.Views
             m_deviceManager.ApplyChanges();
             m_sprite = new SpriteBatch(m_deviceManager.GraphicsDevice);
             //m_deviceManager.SynchronizeWithVerticalRetrace = false;
+            LoadConfig();
+        }
+
+        private void LoadConfig()
+        {
+            if (string.IsNullOrEmpty(KeyboardMapFile))
+            {
+                return;
+            }
+            try
+            {
+                m_host.Keyboard.LoadConfiguration(KeyboardMapFile);
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
         }
 
         protected override void OnExiting(object sender, EventArgs args)

@@ -9,6 +9,8 @@ using ZXMAK2.Entities;
 using ZxmakKey = ZXMAK2.Interfaces.Key;
 using MdxKey = Microsoft.DirectX.DirectInput.Key;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 
 namespace ZXMAK2.MDX
@@ -35,7 +37,7 @@ namespace ZXMAK2.MDX
                 WndActivated(null, null);
             }
             m_mapper.LoadMapFromString(
-                global::ZXMAK2.WinForms.Properties.Resources.KeyboardMap);
+                global::ZXMAK2.WinForms.Properties.Resources.KeyboardMap_Mdx);
         }
 
         public void Dispose()
@@ -84,6 +86,15 @@ namespace ZXMAK2.MDX
             catch
             {
                 WndActivated(null, null); return;
+            }
+        }
+
+        public void LoadConfiguration(string fileName)
+        {
+            using (var reader = (TextReader)new StreamReader(fileName))
+            {
+                var xml = reader.ReadToEnd();
+                m_mapper.LoadMapFromString(xml);
             }
         }
 
