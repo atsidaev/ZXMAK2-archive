@@ -72,8 +72,20 @@ namespace ZXMAK2.Controls.Debugger
         private string findPageName(byte[] wndRead)
         {
             for (int i = 0; i < m_memory.RomPages.Length; i++)
+            {
                 if (m_memory.RomPages[i] == wndRead)
-                    return string.Format("ROM {0}", m_memory.GetRomName(i));
+                {
+                    var romName = m_memory.GetRomName(i);
+                    if (string.IsNullOrEmpty(romName))
+                    {
+                        return string.Format("ROM #{0:X2}", i);
+                    }
+                    else
+                    {
+                        return string.Format("ROM #{0:X2} ({1})", i, m_memory.GetRomName(i));
+                    }
+                }
+            }
             for (int i = 0; i < m_memory.RamPages.Length; i++)
                 if (m_memory.RamPages[i] == wndRead)
                     return string.Format("RAM #{0:X2}", i);
