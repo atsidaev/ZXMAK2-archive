@@ -258,6 +258,15 @@ namespace ZXMAK2.WinForms
         {
             base.OnShown(e);
             m_allowSaveSize = true;
+
+            if (renderVideo.IsReadScanlineSupported)
+            {
+                menuViewVBlankSync.ToolTipText = null;
+            }
+            else
+            {
+                menuViewVBlankSync.ToolTipText = "Warning! ReadScanLine capability is not supported by your videocard!";
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)

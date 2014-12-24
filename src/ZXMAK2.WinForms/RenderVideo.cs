@@ -28,6 +28,8 @@ namespace ZXMAK2.WinForms
 
         #region Fields
 
+        private readonly bool _isSingleThreadCpu;
+        private bool _isReadScanlineSupported;
         private Sprite m_sprite = null;
         private Texture m_texture = null;
         private Texture m_textureMaskTv = null;
@@ -78,11 +80,14 @@ namespace ZXMAK2.WinForms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DisplayIcon { get; set; }
 
+        public bool IsReadScanlineSupported { get; private set; }
+        
         #endregion Properties
 
         
         public unsafe RenderVideo()
         {
+            _isSingleThreadCpu = Environment.ProcessorCount <= 1;
             m_drawFilter = drawFrame;
             DisplayIcon = true;
             ScaleMode = ScaleMode.FixedPixelSize;
@@ -96,13 +101,21 @@ namespace ZXMAK2.WinForms
 
         public void WaitFrame()
         {
+            if (!IsReadScanlineSupported)
+            {
+                Thread.Sleep(1);
+                return;
+            }
             // FIXME: stupid synchronization, 
             // because there is no event from Direct3D
             var frameRest = D3D.DisplayMode.RefreshRate % 50;
             var frameRatio = frameRest != 0 ? 50 / frameRest : 0;
             _isCancel = false;
             var priority = Thread.CurrentThread.Priority;
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            if (!_isSingleThreadCpu)
+            {
+                Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            }
             try
             {
                 while (!_isCancel)
@@ -128,7 +141,10 @@ namespace ZXMAK2.WinForms
             }
             finally
             {
-                Thread.CurrentThread.Priority = priority;
+                if (!_isSingleThreadCpu)
+                {
+                    Thread.CurrentThread.Priority = priority;
+                }
             }
         }
 
@@ -155,6 +171,7 @@ namespace ZXMAK2.WinForms
             base.OnCreateDevice();
             m_sprite = new Sprite(D3D);
             m_iconSprite = new Sprite(D3D);
+            IsReadScanlineSupported = D3D.DeviceCaps.DriverCaps.ReadScanLine;
         }
 
         protected override void OnDestroyDevice()
