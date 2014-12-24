@@ -54,6 +54,7 @@ namespace ZXMAK2.WinForms
         #region Commands
 
         private ICommand CommandViewFullScreen { get; set; }
+        private ICommand CommandViewSyncVBlank { get; set; }
         private ICommand CommandVmPause { get; set; }
         private ICommand CommandVmMaxSpeed { get; set; }
         private ICommand CommandVmWarmReset { get; set; }
@@ -163,6 +164,7 @@ namespace ZXMAK2.WinForms
                 }));
 
             CommandViewFullScreen = presenter.CommandViewFullScreen;
+            CommandViewSyncVBlank = presenter.CommandViewSyncVBlank;
             CommandVmPause = presenter.CommandVmPause;
             CommandVmMaxSpeed = presenter.CommandVmMaxSpeed;
             CommandVmWarmReset = presenter.CommandVmWarmReset;
@@ -706,13 +708,21 @@ namespace ZXMAK2.WinForms
             }
         }
 
-        private void ApplyRenderSetting()
+        private void ApplyRenderSetting(bool menuClick=false)
         {
             renderVideo.Smoothing = menuViewSmoothing.Checked;
             renderVideo.MimicTv = menuViewMimicTv.Checked;
             renderVideo.NoFlic = menuViewNoFlic.Checked;
             renderVideo.ScaleMode = GetSelectedScaleMode();
             //renderVideo.VBlankSync = menuViewVBlankSync.Checked && !menuVmMaximumSpeed.Checked;
+            if (!menuClick)
+            {
+                if (CommandViewSyncVBlank != null)
+                {
+                    // set back to apply registry setting
+                    OnCommand(CommandViewSyncVBlank, menuViewVBlankSync.Checked);
+                }
+            }
             renderVideo.DisplayIcon = menuViewDisplayIcon.Checked;
             renderVideo.DebugInfo = menuViewDebugInfo.Checked;
             renderVideo.Invalidate();
@@ -804,9 +814,16 @@ namespace ZXMAK2.WinForms
             menuViewScaleModeKeepProportion.Checked = scaleMode == ScaleMode.KeepProportion;
             menuViewScaleModeFixedPixelSize.Checked = scaleMode == ScaleMode.FixedPixelSize;
             menuViewScaleModeSquarePixelSize.Checked = scaleMode == ScaleMode.SquarePixelSize;
+            ApplyRenderSetting(true);
+            SaveRenderSetting();
+        }
+
+        private void menuViewRender_CheckStateChanged(object sender, EventArgs e)
+        {
             ApplyRenderSetting();
             SaveRenderSetting();
         }
+
 
         private void SortMenuTools()
         {

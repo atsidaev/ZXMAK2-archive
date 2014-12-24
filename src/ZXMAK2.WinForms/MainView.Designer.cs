@@ -50,6 +50,7 @@
             this.menuViewScaleModeStretch = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewScaleModeKeepProportion = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewScaleModeFixedPixelSize = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuViewScaleModeSquarePixelSize = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.menuViewSmoothing = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewMimicTv = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,7 +87,6 @@
             this.tbrButtonSettings = new System.Windows.Forms.ToolStripButton();
             this.sbrStrip = new System.Windows.Forms.StatusStrip();
             this.renderVideo = new ZXMAK2.WinForms.RenderVideo();
-            this.menuViewScaleModeSquarePixelSize = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuStrip.SuspendLayout();
             this.tbrStrip.SuspendLayout();
             this.SuspendLayout();
@@ -273,6 +273,13 @@
             this.menuViewScaleModeFixedPixelSize.Text = "Fixed Pixel Size";
             this.menuViewScaleModeFixedPixelSize.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
+            // menuViewScaleModeSquarePixelSize
+            // 
+            this.menuViewScaleModeSquarePixelSize.Name = "menuViewScaleModeSquarePixelSize";
+            this.menuViewScaleModeSquarePixelSize.Size = new System.Drawing.Size(160, 22);
+            this.menuViewScaleModeSquarePixelSize.Text = "Square Pixel Size";
+            this.menuViewScaleModeSquarePixelSize.Click += new System.EventHandler(this.menuViewRender_Click);
+            // 
             // menuViewSeparator3
             // 
             this.menuViewSeparator3.Name = "menuViewSeparator3";
@@ -307,7 +314,7 @@
             this.menuViewVBlankSync.Name = "menuViewVBlankSync";
             this.menuViewVBlankSync.Size = new System.Drawing.Size(188, 22);
             this.menuViewVBlankSync.Text = "VBlank Sync";
-            this.menuViewVBlankSync.Click += new System.EventHandler(this.menuViewRender_Click);
+            this.menuViewVBlankSync.CheckStateChanged += new System.EventHandler(this.menuViewRender_CheckStateChanged);
             // 
             // menuViewDisplayIcon
             // 
@@ -556,13 +563,6 @@
             this.renderVideo.DoubleClick += new System.EventHandler(this.renderVideo_DoubleClick);
             this.renderVideo.MouseMove += new System.Windows.Forms.MouseEventHandler(this.renderVideo_MouseMove);
             this.renderVideo.Resize += new System.EventHandler(this.renderVideo_Resize);
-            // 
-            // menuViewScaleModeSquarePixelSize
-            // 
-            this.menuViewScaleModeSquarePixelSize.Name = "menuViewScaleModeSquarePixelSize";
-            this.menuViewScaleModeSquarePixelSize.Size = new System.Drawing.Size(160, 22);
-            this.menuViewScaleModeSquarePixelSize.Text = "Square Pixel Size";
-            this.menuViewScaleModeSquarePixelSize.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // MainView
             // 
