@@ -6,6 +6,7 @@ using ZXMAK2.Interfaces;
 using System.Xml;
 using System.Reflection;
 using ZXMAK2.Entities;
+using System.IO;
 
 
 namespace ZXMAK2.XNA4.Host
@@ -19,7 +20,7 @@ namespace ZXMAK2.XNA4.Host
         public XnaKeyboard()
         {
             m_mapper.LoadMapFromString(
-                global::ZXMAK2.XNA4.Properties.Resources.KeyboardMap);
+                global::ZXMAK2.XNA4.Properties.Resources.KeyboardMap_Xna);
         }
 
         public void Update(KeyboardState state)
@@ -50,6 +51,15 @@ namespace ZXMAK2.XNA4.Host
 
         public void Scan()
         {
+        }
+
+        public void LoadConfiguration(string fileName)
+        {
+            using (var reader = (TextReader)new StreamReader(fileName))
+            {
+                var xml = reader.ReadToEnd();
+                m_mapper.LoadMapFromString(xml);
+            }
         }
 
         #endregion IHostKeyboard

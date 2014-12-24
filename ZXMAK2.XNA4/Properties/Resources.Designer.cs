@@ -77,9 +77,9 @@ namespace ZXMAK2.XNA4.Properties {
         ///    &lt;Key Name=&quot;W&quot; Value=&quot;W&quot; /&gt;
         ///    &lt;Key N [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string KeyboardMap {
+        internal static string KeyboardMap_Xna {
             get {
-                return ResourceManager.GetString("KeyboardMap", resourceCulture);
+                return ResourceManager.GetString("KeyboardMap_Xna", resourceCulture);
             }
         }
         

@@ -54,13 +54,7 @@ namespace ZXMAK2.WinForms
 				}
 				else
 				{
-					e.Graphics.FillRectangle(Brushes.Black, e.ClipRectangle);
-					e.Graphics.DrawImage(SystemIcons.Warning.ToBitmap(), new Point(10, 10));
-					e.Graphics.DrawString(
-						"Direct3D not initialized!",
-						new System.Drawing.Font(Font.FontFamily, 20),
-						Brushes.White,
-						new PointF(10 + SystemIcons.Warning.Width + 10, 10));
+                    RenderError(e, "Direct3D initialization failed!\nProbably DirectX 9 (June 2010) is not installed");
 				}
 			}
 			catch (Exception ex)
@@ -68,6 +62,20 @@ namespace ZXMAK2.WinForms
 				LogAgent.Error(ex);
 			}
 		}
+
+        protected void RenderError(PaintEventArgs e, string message)
+        {
+            e.Graphics.FillRectangle(Brushes.Black, e.ClipRectangle);
+            e.Graphics.DrawImage(SystemIcons.Warning.ToBitmap(), new Point(10, 10));
+            using (var font = new System.Drawing.Font(Font.FontFamily, 20))
+            {
+                e.Graphics.DrawString(
+                    message,
+                    font,
+                    Brushes.White,
+                    new PointF(10 + SystemIcons.Warning.Width + 10, 10));
+            }
+        }
 
 		private void init()
 		{

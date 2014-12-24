@@ -29,7 +29,7 @@ namespace ZXMAK2.WinForms
         #region Fields
 
         private readonly bool _isSingleThreadCpu;
-        private bool _isReadScanlineSupported;
+        private bool _isInitialized;
         private Sprite m_sprite = null;
         private Texture m_texture = null;
         private Texture m_textureMaskTv = null;
@@ -101,6 +101,15 @@ namespace ZXMAK2.WinForms
 
         public void WaitFrame()
         {
+            if (!_isInitialized)
+            {
+                return;
+            }
+            WaitFrameInt();
+        }
+
+        private void WaitFrameInt()
+        {
             if (!IsReadScanlineSupported)
             {
                 Thread.Sleep(1);
@@ -156,8 +165,12 @@ namespace ZXMAK2.WinForms
         public void PushFrame(VirtualMachine vm)
         {
             m_fpsUpdate.Frame();
-            UpdateIcons(vm.Spectrum.BusManager.IconDescriptorArray);
             m_debugFrameStart = vm.DebugFrameStartTact;
+            if (!_isInitialized)
+            {
+                return;
+            }
+            UpdateIcons(vm.Spectrum.BusManager.IconDescriptorArray);
             UpdateSurface(vm.VideoData);
         }
 
@@ -169,9 +182,16 @@ namespace ZXMAK2.WinForms
         protected override void OnCreateDevice()
         {
             base.OnCreateDevice();
+            _isInitialized = false;
+            OnCreateDeviceInt();
+            _isInitialized = true;
+        }
+
+        private void OnCreateDeviceInt()
+        {
+            IsReadScanlineSupported = D3D.DeviceCaps.DriverCaps.ReadScanLine;
             m_sprite = new Sprite(D3D);
             m_iconSprite = new Sprite(D3D);
-            IsReadScanlineSupported = D3D.DeviceCaps.DriverCaps.ReadScanLine;
         }
 
         protected override void OnDestroyDevice()
@@ -208,6 +228,26 @@ namespace ZXMAK2.WinForms
             }
             base.OnDestroyDevice();
         }
+
+        protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+        {
+            try
+            {
+                if (_isInitialized)
+                {
+                    base.OnPaint(e);
+                }
+                else
+                {
+                    RenderError(e, "Direct3DX initialization failed!\nProbably DirectX 9 (June 2010) is not installed");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogAgent.Error(ex);
+            }
+        }
+
 
         private unsafe void UpdateSurface(IVideoData videoData)
         {
@@ -305,6 +345,15 @@ namespace ZXMAK2.WinForms
         }
 
         protected override void OnRenderScene()
+        {
+            if (!_isInitialized)
+            {
+                return;
+            }
+            OnRenderSceneInt();
+        }
+
+        private void OnRenderSceneInt()
         {
             lock (SyncRoot)
             {
