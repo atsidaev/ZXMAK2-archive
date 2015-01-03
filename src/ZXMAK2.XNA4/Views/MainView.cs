@@ -12,6 +12,7 @@ using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.MVP;
 using ZXMAK2.XNA4.Properties;
 using ZXMAK2.XNA4.Host;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.XNA4.Views

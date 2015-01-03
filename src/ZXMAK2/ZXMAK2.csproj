@@ -76,23 +76,18 @@
     <Compile Include="Controls\FormView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Engine\VideoData.cs" />
-    <Compile Include="Entities\KeyboardMapper.cs" />
     <Compile Include="Entities\SyncSource.cs" />
-    <Compile Include="Entities\VideoFrame.cs" />
     <Compile Include="Hardware\Adlers\UI\TcpHelper.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Hardware\Adlers\UI\TcpHelper.Designer.cs">
       <DependentUpon>TcpHelper.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interfaces\IVideoFrame.cs" />
-    <Compile Include="Interfaces\IIconDescriptor.cs" />
+    <Compile Include="Interfaces\IJoystickDevice.cs" />
+    <Compile Include="Interfaces\IKeyboardDevice.cs" />
     <Compile Include="Interfaces\ILauncher.cs" />
-    <Compile Include="Interfaces\IUserQuery.cs" />
-    <Compile Include="Interfaces\IUserMessage.cs" />
-    <Compile Include="Interfaces\IVideoData.cs" />
     <Compile Include="Engine\FpsMonitor.cs" />
+    <Compile Include="Interfaces\IMouseDevice.cs" />
     <Compile Include="MVP\Interfaces\IView.cs" />
     <Compile Include="MVP\Interfaces\IMainPresenter.cs" />
     <Compile Include="MVP\Interfaces\IViewResolver.cs" />
@@ -100,22 +95,11 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\ICommand.cs" />
-    <Compile Include="Interfaces\IHostUi.cs" />
-    <Compile Include="Interfaces\IHost.cs" />
-    <Compile Include="Interfaces\IHostJoystick.cs" />
-    <Compile Include="Interfaces\IHostKeyboard.cs" />
-    <Compile Include="Interfaces\IHostMouse.cs" />
-    <Compile Include="Interfaces\IHostSound.cs" />
-    <Compile Include="Interfaces\IHostVideo.cs" />
-    <Compile Include="Interfaces\IJoystickDevice.cs" />
     <Compile Include="Interfaces\IMachineState.cs" />
     <Compile Include="Interfaces\IBusManager.cs" />
     <Compile Include="Interfaces\IDebuggable.cs" />
     <Compile Include="Interfaces\IJtagDevice.cs" />
-    <Compile Include="Interfaces\IKeyboardDevice.cs" />
     <Compile Include="Interfaces\IMemoryDevice.cs" />
-    <Compile Include="Interfaces\IMouseDevice.cs" />
     <Compile Include="Interfaces\IRzxFrameSource.cs" />
     <Compile Include="Interfaces\IRzxState.cs" />
     <Compile Include="Interfaces\ISoundRenderer.cs" />
@@ -131,7 +115,6 @@
     <Compile Include="MVP\Interfaces\IMainView.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\CommandDelegate.cs" />
     <Compile Include="Controls\Configuration\CtlSettingsHayesModem.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -218,7 +201,6 @@
       <DependentUpon>dbgWD1793.cs</DependentUpon>
     </Compile>
     <Compile Include="Engine\DeviceEnumerator.cs" />
-    <Compile Include="Entities\HostDeviceInfo.cs" />
     <Compile Include="Entities\RzxFrame.cs" />
     <Compile Include="Entities\BusDeviceCategory.cs" />
     <Compile Include="Entities\BusDeviceDescriptor.cs" />
@@ -332,7 +314,6 @@
     <Compile Include="Hardware\Spectrum\UlaSpectrum48.cs" />
     <Compile Include="Hardware\Spectrum\UlaSpectrum48snow.cs" />
     <Compile Include="Hardware\Clone\ZebestUla.cs" />
-    <Compile Include="Entities\IconDescriptor.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRenderer.cs" />
     <Compile Include="Hardware\ZXBYTE\UlaByte.cs" />
     <Compile Include="Hardware\General\KempstonMouseDevice.cs" />
@@ -566,6 +547,11 @@
     <ProjectReference Include="..\ZXMAK2.Engine\ZXMAK2.Engine.csproj">
       <Project>{FCE1FEFA-24FC-4867-9770-6635D3CBAEAA}</Project>
       <Name>ZXMAK2.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Host\ZXMAK2.Host.csproj">
+      <Project>{7267B638-8145-46BD-AC72-60D0D6002B51}</Project>
+      <Name>ZXMAK2.Host</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">

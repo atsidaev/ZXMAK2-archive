@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
+using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Entities;
 
 
 namespace ZXMAK2.Hardware.Sprinter
@@ -21,98 +23,100 @@ namespace ZXMAK2.Hardware.Sprinter
         private KbdHits m_kbdhits = new KbdHits();
 
         #region ScanCodes
-        private Key[] m_kbd_sc_num = {
-                                         Key.Escape,
-                                         Key.F1,
-                                         Key.F2,
-                                         Key.F3,
-                                         Key.F4,
-                                         Key.F5,
-                                         Key.F6,
-                                         Key.F7,
-                                         Key.F8,
-                                         Key.F9,
-                                         Key.F10,
-                                         Key.F11,
-                                         Key.F12,
-                                         Key.Delete,
-                                         Key.Insert,
-                                         Key.UpArrow,
-                                         Key.DownArrow,
-                                         Key.LeftArrow,
-                                         Key.RightArrow,
-                                         Key.Home,
-                                         Key.End,
-                                         Key.PageUp,
-                                         Key.PageDown,
-                                         Key.LeftAlt,
-                                         Key.RightAlt,
-                                         Key.Space,
-                                         Key.LeftControl,
-                                         Key.RightControl,
-                                         Key.LeftShift,
-                                         Key.RightShift,
-                                         Key.NumPadEnter,
-                                         Key.CapsLock,
-                                         Key.Tab,
-                                         Key.Grave,    //Должно быть `~ Equals?
-                                         Key.D1,
-                                         Key.D2,
-                                         Key.D3,
-                                         Key.D4,
-                                         Key.D5,
-                                         Key.D6,
-                                         Key.D7,
-                                         Key.D8,
-                                         Key.D9,
-                                         Key.D0,
-                                         Key.Minus,//NumPadMinus
-                                         Key.Equals,//NumPadPlus
-                                         Key.BackSpace,
 
-                                         Key.Q,
-                                         Key.W,
-                                         Key.E,
-                                         Key.R,
-                                         Key.T,
+        private static Key[] m_kbd_sc_num = 
+        {
+            Key.Escape,
+            Key.F1,
+            Key.F2,
+            Key.F3,
+            Key.F4,
+            Key.F5,
+            Key.F6,
+            Key.F7,
+            Key.F8,
+            Key.F9,
+            Key.F10,
+            Key.F11,
+            Key.F12,
+            Key.Delete,
+            Key.Insert,
+            Key.UpArrow,
+            Key.DownArrow,
+            Key.LeftArrow,
+            Key.RightArrow,
+            Key.Home,
+            Key.End,
+            Key.PageUp,
+            Key.PageDown,
+            Key.LeftAlt,
+            Key.RightAlt,
+            Key.Space,
+            Key.LeftControl,
+            Key.RightControl,
+            Key.LeftShift,
+            Key.RightShift,
+            Key.NumPadEnter,
+            Key.CapsLock,
+            Key.Tab,
+            Key.Grave,    //Должно быть `~ Equals?
+            Key.D1,
+            Key.D2,
+            Key.D3,
+            Key.D4,
+            Key.D5,
+            Key.D6,
+            Key.D7,
+            Key.D8,
+            Key.D9,
+            Key.D0,
+            Key.Minus,//NumPadMinus
+            Key.Equals,//NumPadPlus
+            Key.BackSpace,
 
-                                         Key.Y,
-                                         Key.U,
-                                         Key.I,
-                                         Key.O,
-                                         Key.P,
+            Key.Q,
+            Key.W,
+            Key.E,
+            Key.R,
+            Key.T,
 
-                                         Key.A,
-                                         Key.S,
-                                         Key.D,
-                                         Key.F,
-                                         Key.G,
+            Key.Y,
+            Key.U,
+            Key.I,
+            Key.O,
+            Key.P,
 
-                                         Key.H,
-                                         Key.J,
-                                         Key.K,
-                                         Key.L,
+            Key.A,
+            Key.S,
+            Key.D,
+            Key.F,
+            Key.G,
 
-                                         Key.Z,
-                                         Key.X,
-                                         Key.C,
-                                         Key.V,
-                                         Key.B,
-                                         Key.N,
-                                         Key.M,
+            Key.H,
+            Key.J,
+            Key.K,
+            Key.L,
 
-                                         Key.Apostrophe,    //"'"
-                                         Key.BackSlash,     //"\"
+            Key.Z,
+            Key.X,
+            Key.C,
+            Key.V,
+            Key.B,
+            Key.N,
+            Key.M,
 
-                                         Key.Return,        //Enter
-                                         Key.Period,    //"."
-//                                         Key.NumPadSlash,
-                                         Key.SemiColon, //";"
-                                         Key.Slash,      //"/"
-                                         Key.Comma,      //","
-                                         Key.LeftBracket,   //"["
-                                         Key.RightBracket   //"]"
-                                     };
+            Key.Apostrophe,    //"'"
+            Key.BackSlash,     //"\"
+
+            Key.Return,        //Enter
+            Key.Period,    //"."
+//            Key.NumPadSlash,
+            Key.SemiColon, //";"
+            Key.Slash,      //"/"
+            Key.Comma,      //","
+            Key.LeftBracket,   //"["
+            Key.RightBracket   //"]"
+        };
 
         private byte[][] m_kbd_scancodes = new byte[][] {
                                                new byte[]{0x76,0x00}, //Esc,        110

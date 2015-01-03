@@ -9,6 +9,7 @@ using System.Text;
 using FastColoredTextBoxNS;
 using System.Diagnostics;
 using ZXMAK2.Dependency;
+using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {

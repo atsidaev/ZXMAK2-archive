@@ -5,6 +5,7 @@ using System.Threading;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Audio;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.XNA4.Host

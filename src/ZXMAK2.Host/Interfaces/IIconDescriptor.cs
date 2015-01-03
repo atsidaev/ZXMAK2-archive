@@ -3,7 +3,7 @@ using System.IO;
 using System.Drawing;
 
 
-namespace ZXMAK2.Interfaces
+namespace ZXMAK2.Host.Interfaces
 {
     public interface IIconDescriptor
     {

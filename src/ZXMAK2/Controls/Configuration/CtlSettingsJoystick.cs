@@ -7,6 +7,7 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware;
+using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Controls.Configuration
 {
@@ -40,7 +41,7 @@ namespace ZXMAK2.Controls.Configuration
             cbxType.SelectedIndex = -1;
             for (var i = 0; i < cbxType.Items.Count; i++)
             {
-                var hdi = (HostDeviceInfo)cbxType.Items[i];
+                var hdi = (IHostDeviceInfo)cbxType.Items[i];
                 if (m_device.HostId == hdi.HostId)
                 {
                     cbxType.SelectedIndex = i;
@@ -52,7 +53,7 @@ namespace ZXMAK2.Controls.Configuration
 
         public override void Apply()
         {
-            var hdi = (HostDeviceInfo)cbxType.SelectedItem;
+            var hdi = (IHostDeviceInfo)cbxType.SelectedItem;
             if (hdi != null)
             {
                 m_device.HostId = hdi.HostId;

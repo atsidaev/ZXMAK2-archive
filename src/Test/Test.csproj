@@ -63,6 +63,11 @@
       <Name>ZXMAK2.Engine.Cpu</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Host\ZXMAK2.Host.csproj">
+      <Project>{7267B638-8145-46BD-AC72-60D0D6002B51}</Project>
+      <Name>ZXMAK2.Host</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2\ZXMAK2.csproj">
       <Project>{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}</Project>
       <Name>ZXMAK2</Name>

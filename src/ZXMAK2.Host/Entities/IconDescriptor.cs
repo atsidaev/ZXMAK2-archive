@@ -4,9 +4,9 @@ using System.Text;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-using ZXMAK2.Interfaces;
+using ZXMAK2.Host.Interfaces;
 
-namespace ZXMAK2.Entities
+namespace ZXMAK2.Host.Entities
 {
     public class IconDescriptor : IIconDescriptor
 	{

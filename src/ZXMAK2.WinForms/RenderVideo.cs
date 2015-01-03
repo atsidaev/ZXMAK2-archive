@@ -3,15 +3,16 @@
 /// Date: 27.03.2008
 using System;
 using System.Drawing;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+using System.ComponentModel;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using ZXMAK2.Engine;
-using System.Collections.Generic;
 using ZXMAK2.Entities;
-using System.Diagnostics;
 using ZXMAK2.Interfaces;
-using System.Threading;
-using System.ComponentModel;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.WinForms

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Microsoft.DirectX.DirectSound;
 using ZXMAK2.Interfaces;
 using System.Collections.Generic;
+using ZXMAK2.Host.Interfaces;
 
 
 

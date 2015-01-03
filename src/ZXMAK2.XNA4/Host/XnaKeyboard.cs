@@ -7,6 +7,9 @@ using System.Xml;
 using System.Reflection;
 using ZXMAK2.Entities;
 using System.IO;
+using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Entities.Tools;
+using ZXMAK2.Host.Entities;
 
 
 namespace ZXMAK2.XNA4.Host

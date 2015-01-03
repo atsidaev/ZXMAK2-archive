@@ -1,13 +1,7 @@
-﻿using System;
+﻿
 
-
-namespace ZXMAK2.Interfaces
+namespace ZXMAK2.Host.Interfaces
 {
-    public interface IMouseDevice //: BusDeviceBase
-    {
-		IMouseState MouseState { get; set; }
-    }
-
 	public interface IMouseState
 	{
 		int X { get; }

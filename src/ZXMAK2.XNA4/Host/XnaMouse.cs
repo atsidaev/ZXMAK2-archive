@@ -2,6 +2,7 @@
 using System.Linq;
 using ZXMAK2.Interfaces;
 using Microsoft.Xna.Framework.Input;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.XNA4.Host

@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ZXMAK2.Host.Entities;
 
-namespace ZXMAK2.Interfaces
+
+namespace ZXMAK2.Host.Interfaces
 {
     public interface IUserQuery
     {
         DlgResult Show(
-            String message,
-            String caption,
+            string message,
+            string caption,
             DlgButtonSet buttonSet,
             DlgIcon icon);
         
@@ -26,36 +25,5 @@ namespace ZXMAK2.Interfaces
             ref int value,
             int min,
             int max);
-    }
-
-    public enum DlgResult
-    {
-        None = 0,
-        OK = 1,
-        Cancel = 2,
-        Abort = 3,
-        Retry = 4,
-        Ignore = 5,
-        Yes = 6,
-        No = 7,
-    }
-
-    public enum DlgButtonSet
-    {
-        OK = 0,
-        OKCancel = 1,
-        AbortRetryIgnore = 2,
-        YesNoCancel = 3,
-        YesNo = 4,
-        RetryCancel = 5,
-    }
-
-    public enum DlgIcon
-    {
-        None = 0,
-        Error = 16,
-        Question = 32,
-        Warning = 48,
-        Information = 64,
     }
 }

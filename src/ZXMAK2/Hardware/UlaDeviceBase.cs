@@ -8,6 +8,7 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 using System.Collections.Generic;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.Hardware
