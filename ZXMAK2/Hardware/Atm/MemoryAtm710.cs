@@ -1,6 +1,6 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Attributes;
 
 namespace ZXMAK2.Hardware.Atm
@@ -9,7 +9,7 @@ namespace ZXMAK2.Hardware.Atm
     {
         #region Fields
 
-        protected Z80CPU m_cpu;
+        protected CpuUnit m_cpu;
         private bool m_lock = false;
         private UlaAtm450 m_ulaAtm;
 

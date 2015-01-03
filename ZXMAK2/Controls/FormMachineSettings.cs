@@ -10,6 +10,8 @@ using ZXMAK2.Engine;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Controls.Configuration;
 using ZXMAK2.Entities;
+using ZXMAK2.Engine.Cpu;
+using ZXMAK2.Serializers;
 
 
 namespace ZXMAK2.Controls
@@ -416,7 +418,7 @@ namespace ZXMAK2.Controls
             m_vm = vm;
 
             m_workBus = new BusManager();
-            m_workBus.Init(new Engine.Z80.Z80CPU(), new ZXMAK2.Serializers.LoadManager(null), true);
+            m_workBus.Init(new CpuUnit(), new LoadManager(null), true);
 
             var xml = new XmlDocument();
             var root = xml.AppendChild(xml.CreateElement("Bus"));

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Text;
+using ZXMAK2.Engine.Cpu.Processor;
 
 
-namespace ZXMAK2.Engine.Z80
+namespace ZXMAK2.Engine.Cpu.Tools
 {
     public class TimingTool
     {

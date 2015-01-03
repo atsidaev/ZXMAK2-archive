@@ -3,7 +3,7 @@
 /// Date: 13.04.2007
 using System;
 
-namespace ZXMAK2.Engine.Z80
+namespace ZXMAK2.Engine.Cpu.Processor
 {
     public partial class Z80CPU
     {
@@ -374,7 +374,7 @@ namespace ZXMAK2.Engine.Z80
 
             RDNOMREQ(regs.IR); Tact += 1;
             int rr = (cmd & 0x30) >> 4;
-            ushort val = rr == REGS.ZR_SP ? regs.AF : regs.GetPair(rr);
+            ushort val = rr == CpuRegId.ZR_SP ? regs.AF : regs.GetPair(rr);
 
             regs.SP--;
             WRMEM(regs.SP, (byte)(val >> 8)); Tact += 3;
@@ -394,7 +394,7 @@ namespace ZXMAK2.Engine.Z80
             val |= (ushort)(RDMEM(regs.SP) << 8);
             regs.SP++;
             int rr = (cmd & 0x30) >> 4;
-            if (rr == REGS.ZR_SP) regs.AF = val;
+            if (rr == CpuRegId.ZR_SP) regs.AF = val;
             else regs.SetPair(rr, val);
             Tact += 3;
         }

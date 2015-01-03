@@ -2,7 +2,7 @@
 using System.Xml;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Hardware.IC;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.Controls.Debugger;
@@ -18,7 +18,7 @@ namespace ZXMAK2.Hardware.General
         private bool m_sandbox = false;
         private IconDescriptor m_iconRd = new IconDescriptor("FDDRD", Utils.GetIconStream("Fdd.png"));
         private IconDescriptor m_iconWr = new IconDescriptor("FDDWR", Utils.GetIconStream("FddWr.png"));
-        protected Z80CPU m_cpu;
+        protected CpuUnit m_cpu;
         protected IMemoryDevice m_memory;
         protected Wd1793 m_wd = new Wd1793();
 

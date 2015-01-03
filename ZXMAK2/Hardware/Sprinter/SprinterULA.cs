@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Interfaces;
 
 
@@ -17,7 +17,7 @@ namespace ZXMAK2.Hardware.Sprinter
         protected int _flashCounter = 0;          // flash attr counter
 
 
-        private Z80CPU m_cpu;
+        private CpuUnit m_cpu;
 
         public SprinterULA()
         {

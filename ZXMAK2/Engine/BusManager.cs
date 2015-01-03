@@ -5,7 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 using ZXMAK2.Interfaces;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Serializers;
 using ZXMAK2.Entities;
 
@@ -16,7 +16,7 @@ namespace ZXMAK2.Engine
         private bool m_connected = false;
         private bool m_sandBox = false;
         private String m_machineFile = null;
-        private Z80CPU m_cpu;
+        private CpuUnit m_cpu;
         private LoadManager m_loadManager;
         private IUlaDevice m_ula;
         private IDebuggable m_debuggable;
@@ -53,7 +53,7 @@ namespace ZXMAK2.Engine
         public IconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
         public IconDescriptor IconPause { get { return m_iconPause; } }
 
-        public void Init(Z80CPU cpu, LoadManager loadManager, bool sandBox)
+        public void Init(CpuUnit cpu, LoadManager loadManager, bool sandBox)
         {
             m_loadManager = loadManager;
             m_sandBox = sandBox;
@@ -219,7 +219,7 @@ namespace ZXMAK2.Engine
             }
         }
 
-        Z80CPU IBusManager.CPU
+        CpuUnit IBusManager.CPU
         {
             get { return m_cpu; }
         }

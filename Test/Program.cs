@@ -7,6 +7,9 @@ using System.Reflection;
 using System.Diagnostics;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
+using ZXMAK2.Engine.Cpu;
+using ZXMAK2.Dependency;
+using ZXMAK2;
 
 namespace Test
 {
@@ -14,7 +17,10 @@ namespace Test
 	{
 		static void Main(string[] args)
 		{
-			if (args.Length >= 1 && args[0].ToLower() == "/zexall")
+            var resolver = new ResolverUnity();
+            Locator.Instance = resolver;
+			
+            if (args.Length >= 1 && args[0].ToLower() == "/zexall")
 			{
 				runZexall();
 				return;
@@ -101,8 +107,8 @@ namespace Test
 			p128.CPU.IFF1 = p128.CPU.IFF2 = false;
 			p128.CPU.IM = 2;
 			p128.CPU.BINT = false;
-			p128.CPU.FX = ZXMAK2.Engine.Z80.OPFX.NONE;
-			p128.CPU.XFX = ZXMAK2.Engine.Z80.OPXFX.NONE;
+			p128.CPU.FX = OPFX.NONE;
+			p128.CPU.XFX = OPXFX.NONE;
 
 			long needsTact = pattern[0];
 			long frameTact = p128.CPU.Tact % ula.FrameTactCount;

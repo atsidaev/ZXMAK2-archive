@@ -3,29 +3,14 @@
 /// Date: 18.03.2007
 using System;
 using System.Runtime.InteropServices;
+using ZXMAK2.Engine.Cpu.Processor;
 
 
-namespace ZXMAK2.Engine.Z80
+namespace ZXMAK2.Engine.Cpu
 {
-    [Flags]
-    public enum ZFLAGS : byte
-    {
-        S = 0x80,
-        Z = 0x40,
-        F5 = 0x20,
-        H = 0x10,
-        F3 = 0x08,
-        PV = 0x04,
-        N = 0x02,
-        C = 0x01
-    }
-
     [StructLayout(LayoutKind.Explicit)]
     public class REGS
     {
-        public const int ZR_BC = 0, ZR_DE = 1, ZR_HL = 2, ZR_SP = 3;
-        public const int ZR_B = 0, ZR_C = 1, ZR_D = 2, ZR_E = 3, ZR_H = 4, ZR_L = 5, ZR_F = 6, ZR_A = 7;
-
         #region storage
 
         [FieldOffset(0)]
@@ -121,14 +106,14 @@ namespace ZXMAK2.Engine.Z80
             {
                 switch (index)
                 {
-                    case ZR_B: return B;
-                    case ZR_C: return C;
-                    case ZR_D: return D;
-                    case ZR_E: return E;
-                    case ZR_H: return H;
-                    case ZR_L: return L;
-                    case ZR_A: return A;
-                    case ZR_F: return F;
+                    case CpuRegId.ZR_B: return B;
+                    case CpuRegId.ZR_C: return C;
+                    case CpuRegId.ZR_D: return D;
+                    case CpuRegId.ZR_E: return E;
+                    case CpuRegId.ZR_H: return H;
+                    case CpuRegId.ZR_L: return L;
+                    case CpuRegId.ZR_A: return A;
+                    case CpuRegId.ZR_F: return F;
                     default:
                         throw new Exception("RegistersZ80 indexer wrong!");
                 }
@@ -137,14 +122,14 @@ namespace ZXMAK2.Engine.Z80
             {
                 switch (index)
                 {
-                    case ZR_B: B = value; break;
-                    case ZR_C: C = value; break;
-                    case ZR_D: D = value; break;
-                    case ZR_E: E = value; break;
-                    case ZR_H: H = value; break;
-                    case ZR_L: L = value; break;
-                    case ZR_A: A = value; break;
-                    case ZR_F: F = value; break;
+                    case CpuRegId.ZR_B: B = value; break;
+                    case CpuRegId.ZR_C: C = value; break;
+                    case CpuRegId.ZR_D: D = value; break;
+                    case CpuRegId.ZR_E: E = value; break;
+                    case CpuRegId.ZR_H: H = value; break;
+                    case CpuRegId.ZR_L: L = value; break;
+                    case CpuRegId.ZR_A: A = value; break;
+                    case CpuRegId.ZR_F: F = value; break;
                     default:
                         throw new Exception("RegistersZ80 indexer wrong!");
                 }
@@ -155,10 +140,10 @@ namespace ZXMAK2.Engine.Z80
         {
             switch (RR)
             {
-                case ZR_BC: BC = value; return;
-                case ZR_DE: DE = value; return;
-                case ZR_HL: HL = value; return;
-                case ZR_SP: SP = value; return;
+                case CpuRegId.ZR_BC: BC = value; return;
+                case CpuRegId.ZR_DE: DE = value; return;
+                case CpuRegId.ZR_HL: HL = value; return;
+                case CpuRegId.ZR_SP: SP = value; return;
             }
             throw new Exception("RegistersZ80 SetPair index wrong!");
         }
@@ -167,10 +152,10 @@ namespace ZXMAK2.Engine.Z80
         {
             switch (RR)
             {
-                case ZR_BC: return BC;
-                case ZR_DE: return DE;
-                case ZR_HL: return HL;
-                case ZR_SP: return SP;
+                case CpuRegId.ZR_BC: return BC;
+                case CpuRegId.ZR_DE: return DE;
+                case CpuRegId.ZR_HL: return HL;
+                case CpuRegId.ZR_SP: return SP;
             }
             throw new Exception("RegistersZ80 GetPair index wrong!");
         }

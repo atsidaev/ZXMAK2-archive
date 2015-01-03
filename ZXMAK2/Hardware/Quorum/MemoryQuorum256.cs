@@ -1,6 +1,6 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 
 namespace ZXMAK2.Hardware.Quorum
 {
@@ -19,7 +19,7 @@ namespace ZXMAK2.Hardware.Quorum
 
         #region Fields
 
-        private Z80CPU m_cpu;
+        private CpuUnit m_cpu;
         private bool m_lock;
 
         #endregion Fields

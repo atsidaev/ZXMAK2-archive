@@ -4,7 +4,7 @@ using System.Xml;
 using System.Drawing;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Serializers.ScreenshotSerializers;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace ZXMAK2.Hardware
     {
         #region Fields
 
-        protected Z80CPU CPU;
+        protected CpuUnit CPU;
         private IUlaRenderer m_renderer;
         private IMemoryDevice m_memory;
         private int m_lastFrameTact = 0;         // last processed tact

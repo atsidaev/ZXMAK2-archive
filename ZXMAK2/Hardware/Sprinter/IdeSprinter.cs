@@ -1,7 +1,7 @@
 ﻿using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware.IC;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using System.Xml;
 
 
@@ -12,7 +12,7 @@ namespace ZXMAK2.Hardware.Sprinter
         #region Fields
 
         private bool m_sandbox = false;
-        private Z80CPU m_cpu;
+        private CpuUnit m_cpu;
         private IconDescriptor m_iconHdd = new IconDescriptor("HDD", Utils.GetIconStream("hdd.png"));
         private AtaPort m_ata = new AtaPort();
         private string m_ideFileName;

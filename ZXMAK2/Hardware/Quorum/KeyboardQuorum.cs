@@ -1,6 +1,6 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 
@@ -12,7 +12,7 @@ namespace ZXMAK2.Hardware.Quorum
         private UInt64 m_extState;
         private IKeyboardState m_keyboardState;
         private IBusManager m_busManager;
-        private Z80CPU m_cpu;
+        private CpuUnit m_cpu;
         private bool m_nmiTriggered;
 
         public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Xml;
-using ZXMAK2.Engine.Z80;
 using ZXMAK2.Serializers;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
+using ZXMAK2.Engine.Cpu;
 
 namespace ZXMAK2.Interfaces
 {
@@ -30,7 +30,7 @@ namespace ZXMAK2.Interfaces
 
         void AddCommandUi(ICommand command);
 
-		Z80CPU CPU { get; }
+		CpuUnit CPU { get; }
 		bool IsSandbox { get; }
 		String GetSatelliteFileName(string extension);
 

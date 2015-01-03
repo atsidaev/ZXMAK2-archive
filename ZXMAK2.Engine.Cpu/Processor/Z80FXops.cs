@@ -3,7 +3,7 @@
 /// Date: 13.04.2007
 using System;
 
-namespace ZXMAK2.Engine.Z80
+namespace ZXMAK2.Engine.Cpu.Processor
 {
     public partial class Z80CPU
     {

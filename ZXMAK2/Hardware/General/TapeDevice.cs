@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using ZXMAK2.Serializers;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Serializers.TapeSerializers;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
@@ -25,7 +25,7 @@ namespace ZXMAK2.Hardware.General
     {
         #region Fields
 
-        private Z80CPU m_cpu;
+        private CpuUnit m_cpu;
         private IMemoryDevice m_memory;
         private IconDescriptor m_iconTape = new IconDescriptor("TAPE", Utils.GetIconStream("cassette.png"));
         private bool m_trapsAllowed = true;

@@ -5,7 +5,7 @@ using System;
 using System.IO;
 
 
-namespace ZXMAK2.Engine.Z80
+namespace ZXMAK2.Engine.Cpu.Processor
 {
     public partial class Z80CPU
     {

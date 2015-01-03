@@ -3,14 +3,16 @@
 /// Date: 18.03.2008
 using System;
 using System.Xml;
+using System.Collections.Generic;
 
-using ZXMAK2.Engine.Z80;
 using ZXMAK2.Serializers;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Controls.Debugger;
-using System.Collections.Generic;
 using ZXMAK2.Entities;
+using ZXMAK2.Engine.Cpu;
+using ZXMAK2.Engine.Cpu.Tools;
+
 
 namespace ZXMAK2.Engine
 {
@@ -133,7 +135,7 @@ namespace ZXMAK2.Engine
 
         #region public fields
 
-        public abstract Z80CPU CPU { get; }
+        public abstract CpuUnit CPU { get; }
         public abstract BusManager BusManager { get; }
         public abstract LoadManager Loader { get; }
 
