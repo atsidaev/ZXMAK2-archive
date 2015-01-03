@@ -39,7 +39,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cpu.cs" />
+    <Compile Include="CpuUnit.cs" />
     <Compile Include="CpuFlags.cs" />
     <Compile Include="CpuType.cs" />
     <Compile Include="OPFX.cs" />
