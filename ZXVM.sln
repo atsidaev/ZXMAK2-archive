@@ -24,9 +24,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{155BB3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Engine.Cpu", "ZXMAK2.Engine.Cpu\ZXMAK2.Engine.Cpu.csproj", "{DA58F7C5-8365-4483-AAE4-0C6A90D42C35}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.ZipLib", "ZXMAK2.ZipLib\ZXMAK2.ZipLib.csproj", "{23BFF161-E4E8-4365-AC71-19A46E8C86E1}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 9
+		SccNumberOfProjects = 10
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath0 = .
@@ -54,6 +56,9 @@ Global
 		SccProjectUniqueName8 = ZXMAK2.Engine.Cpu\\ZXMAK2.Engine.Cpu.csproj
 		SccProjectName8 = ZXMAK2.Engine.Cpu
 		SccLocalPath8 = ZXMAK2.Engine.Cpu
+		SccProjectUniqueName9 = ZXMAK2.ZipLib\\ZXMAK2.ZipLib.csproj
+		SccProjectName9 = ZXMAK2.ZipLib
+		SccLocalPath9 = ZXMAK2.ZipLib
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +149,16 @@ Global
 		{DA58F7C5-8365-4483-AAE4-0C6A90D42C35}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DA58F7C5-8365-4483-AAE4-0C6A90D42C35}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DA58F7C5-8365-4483-AAE4-0C6A90D42C35}.Release|x86.ActiveCfg = Release|Any CPU
+		{23BFF161-E4E8-4365-AC71-19A46E8C86E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23BFF161-E4E8-4365-AC71-19A46E8C86E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23BFF161-E4E8-4365-AC71-19A46E8C86E1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{23BFF161-E4E8-4365-AC71-19A46E8C86E1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{23BFF161-E4E8-4365-AC71-19A46E8C86E1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{23BFF161-E4E8-4365-AC71-19A46E8C86E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23BFF161-E4E8-4365-AC71-19A46E8C86E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23BFF161-E4E8-4365-AC71-19A46E8C86E1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{23BFF161-E4E8-4365-AC71-19A46E8C86E1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{23BFF161-E4E8-4365-AC71-19A46E8C86E1}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
