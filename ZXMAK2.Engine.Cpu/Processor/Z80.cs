@@ -7,12 +7,6 @@ using System.Collections.Generic;
 
 namespace ZXMAK2.Engine.Cpu.Processor
 {
-    public delegate void OnNOMREQ(ushort addr);
-    public delegate void OnBUSAK();
-    public delegate byte OnRDBUS(ushort ADDR);
-    public delegate void OnWRBUS(ushort ADDR, byte value);
-
-
     public partial class Z80CPU
     {
         public CpuType CpuType = CpuType.Z80;
@@ -33,16 +27,16 @@ namespace ZXMAK2.Engine.Cpu.Processor
         public bool RST = false;
         public byte BUS = 0xFF;     // state of free data bus
 
-        public OnBUSAK RESET = null;
-        public OnBUSAK NMIACK_M1 = null;
-        public OnBUSAK INTACK_M1 = null;
-        public OnRDBUS RDMEM_M1 = null;
-        public OnRDBUS RDMEM = null;
-        public OnWRBUS WRMEM = null;
-        public OnRDBUS RDPORT = null;
-        public OnWRBUS WRPORT = null;
-        public OnNOMREQ RDNOMREQ = null;
-        public OnNOMREQ WRNOMREQ = null;
+        public Action RESET = null;
+        public Action NMIACK_M1 = null;
+        public Action INTACK_M1 = null;
+        public Func<ushort, byte> RDMEM_M1 = null;
+        public Func<ushort, byte> RDMEM = null;
+        public Action<ushort, byte> WRMEM = null;
+        public Func<ushort, byte> RDPORT = null;
+        public Action<ushort, byte> WRPORT = null;
+        public Action<ushort> RDNOMREQ = null;
+        public Action<ushort> WRNOMREQ = null;
 
         public Z80CPU()
         {
