@@ -48,7 +48,7 @@ using ZXMAK2.Entities;
                   //LogAgent.Info("RZX: get {0}:{1}=#{2:X2}  RZX={3} PC=#{4:X4}", m_playFrame, m_playIndex, frame.IOData[m_playIndex], m_cpu.RzxCounter, m_cpu.regs.PC);
                   return frame.InputData[m_playIndex++];
               }
-              LogAgent.Error(
+              Logger.Error(
                   "RZX: frame={0}/{1}  fetch={2}/{3}  input={4}/{5}  PC=#{6:X4} - unexpected end of input",
                   Frame,
                   FrameCount,
@@ -96,7 +96,7 @@ using ZXMAK2.Entities;
               //LogAgent.Info("RZX: ---- int  RZX={0} PC=#{1:X4} ----", m_cpu.RzxCounter, m_cpu.regs.PC, m_busMgr.GetFrameTact());
               if (m_playIndex != frame.InputData.Length)
               {
-                  LogAgent.Error(
+                  Logger.Error(
                       "RZX: frame={0}/{1}  fetch={2}/{3}  input={4}/{5}  PC=#{6:X4} - unexpected frame",
                       Frame,
                       FrameCount,

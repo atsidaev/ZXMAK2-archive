@@ -121,7 +121,7 @@ namespace ZXMAK2.Hardware.Atm
             {
                 if (LogIo)
                 {
-                    LogAgent.Info("IDE WR DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+                    Logger.Info("IDE WR DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
                 }
                 m_ide_wr_hi = value;
                 return;
@@ -137,7 +137,7 @@ namespace ZXMAK2.Hardware.Atm
                 var data = value | (m_ide_wr_hi << 8);
                 if (LogIo)
                 {
-                    LogAgent.Info("IDE WR DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, data);
+                    Logger.Info("IDE WR DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, data);
                 }
                 m_ata.WriteData((ushort)data);
             }
@@ -157,7 +157,7 @@ namespace ZXMAK2.Hardware.Atm
                 value = m_ide_rd_hi;
                 if (LogIo)
                 {
-                    LogAgent.Info("IDE RD DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+                    Logger.Info("IDE RD DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
                 }
                 return;
             }
@@ -174,7 +174,7 @@ namespace ZXMAK2.Hardware.Atm
                 value = (byte)data;
                 if (LogIo)
                 {
-                    LogAgent.Info("IDE RD DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, data);
+                    Logger.Info("IDE RD DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, data);
                 }
             }
             // ??value = m_ata.read_intrq() & 0x80
@@ -184,7 +184,7 @@ namespace ZXMAK2.Hardware.Atm
         {
             if (LogIo)
             {
-                LogAgent.Info("IDE WR {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
+                Logger.Info("IDE WR {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
             }
             m_ata.Write(ataReg, value);
         }
@@ -194,7 +194,7 @@ namespace ZXMAK2.Hardware.Atm
             var value = m_ata.Read(ataReg);
             if (LogIo)
             {
-                LogAgent.Info("IDE RD {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
+                Logger.Info("IDE RD {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
             }
             return value;
         }

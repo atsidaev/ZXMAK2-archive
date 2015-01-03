@@ -44,7 +44,7 @@ namespace ZXMAK2.Hardware.General
                 }
                 catch (Exception ex)
                 {
-                    LogAgent.Error(ex);
+                    Logger.Error(ex);
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace ZXMAK2.Hardware.General
                 }
                 catch (Exception ex)
                 {
-                    LogAgent.Error(ex);
+                    Logger.Error(ex);
                     port = null;
                 }
             }

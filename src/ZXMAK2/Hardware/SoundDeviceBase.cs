@@ -170,7 +170,7 @@ namespace ZXMAK2.Hardware
 			}
 			catch (Exception ex)
 			{
-				LogAgent.Error(ex);
+				Logger.Error(ex);
 			}
 		}
 

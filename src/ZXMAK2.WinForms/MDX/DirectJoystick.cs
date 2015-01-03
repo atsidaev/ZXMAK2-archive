@@ -106,7 +106,7 @@ namespace ZXMAK2.MDX
                     }
                     catch (Exception ex)
                     {
-                        LogAgent.Error(ex);
+                        Logger.Error(ex);
                         joystick.Dispose();
                         joystick = null;
                     }
@@ -119,7 +119,7 @@ namespace ZXMAK2.MDX
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -144,7 +144,7 @@ namespace ZXMAK2.MDX
                 }
                 catch (Exception ex)
                 {
-                    LogAgent.Error(ex);
+                    Logger.Error(ex);
                 }
                 m_devices.Remove(hostId);
                 if (m_states.ContainsKey(hostId))
@@ -154,7 +154,7 @@ namespace ZXMAK2.MDX
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -193,7 +193,7 @@ namespace ZXMAK2.MDX
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
             list.Sort();
             list.Insert(
@@ -318,7 +318,7 @@ namespace ZXMAK2.MDX
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
             return StateWrapper.Empty;
         }

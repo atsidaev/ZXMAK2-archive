@@ -74,7 +74,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                         "(ExtensionSize = {0},\n" +
                         "supported only ExtensionSize={{0(old format), 23, 54}})",
                         hdr1[Z80HDR1_EXTSIZE]);
-                    LogAgent.Warn("{0}", msg);
+                    Logger.Warn("{0}", msg);
                     Locator.Resolve<IUserMessage>().Error(
                         "Z80 loader\n\n{0}", msg);
                     return;
@@ -126,7 +126,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			{
                 if (hdr1[Z80HDR1_IF1PAGED] == 0xFF)
                 {
-                    LogAgent.Warn("Z80Serializer.loadFromStream: Interface I not implemented, but Interface I ROM required!");
+                    Logger.Warn("Z80Serializer.loadFromStream: Interface I not implemented, but Interface I ROM required!");
                 }
 
 				// Load AY-3-8910 registers
@@ -152,7 +152,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 					case 1:  // 48k + If.1
 						break;
 					case 2:  // SamRam
-						LogAgent.Warn("Z80Serializer.loadFromStream: SamRam not implemented!");
+						Logger.Warn("Z80Serializer.loadFromStream: SamRam not implemented!");
 						break;
 					case 3:  // 128k
 					case 4:  // 128k + If.1
@@ -161,7 +161,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 						mode128 = true;
 						break;
 					default:
-						LogAgent.Warn(
+						Logger.Warn(
 							"Z80Serializer.loadFromStream: Unrecognized ZX Spectrum config (Z80HDR1_HWMODE=0x{0:2X})!", 
                             hdr1[Z80HDR1_HWMODE]);
 						break;
@@ -174,7 +174,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 					case 0:  // 48k
 					case 1:  // 48k + If.1
 					case 2:  // SamRam
-						LogAgent.Warn("Z80Serializer.loadFromStream: SamRam not implemented!");
+						Logger.Warn("Z80Serializer.loadFromStream: SamRam not implemented!");
 						break;
 					case 3:  // 48k + M.G.T.
 						break;
@@ -186,7 +186,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 						mode128 = true;
 						break;
 					default:
-						LogAgent.Warn(
+						Logger.Warn(
 							"Z80Serializer.loadFromStream: Unrecognized ZX Spectrum config (Z80HDR1_HWMODE=0x{0:2X})!", 
                             hdr1[Z80HDR1_HWMODE]);
 						break;
@@ -287,14 +287,14 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                         //int rom48index = memory.GetRomIndex(RomName.ROM_SOS);
                         //for (int i = 0; i < 0x4000; i++)
                         //    memory.RomPages[rom48index][i] = rawdata[i];
-                        LogAgent.Warn("Z80Serializer.loadFromStream: Skip ROM 48K image!");
+                        Logger.Warn("Z80Serializer.loadFromStream: Skip ROM 48K image!");
 					}
 					else if (blockNumber == 2)
 					{
                         //int rom128index = memory.GetRomIndex(RomName.ROM_128);
                         //for (int i = 0; i < 0x4000; i++)
                         //    memory.RomPages[rom128index][i] = rawdata[i];
-                        LogAgent.Warn("Z80Serializer.loadFromStream: Skip ROM 128K image!");
+                        Logger.Warn("Z80Serializer.loadFromStream: Skip ROM 128K image!");
 					}
 				}
 			}
@@ -667,7 +667,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                     "Decompression error - file corrupt? (j={0}, size={1})", 
                     j, 
                     size);
-                LogAgent.Error("Z80Serializer: {0}", msg);
+                Logger.Error("Z80Serializer: {0}", msg);
                 Locator.Resolve<IUserMessage>()
                     .Error("Z80 loader\n\n{0}", msg);
 				return 1;

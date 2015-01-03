@@ -134,7 +134,7 @@ namespace ZXMAK2.MDX
 				}
 				catch (Exception ex)
 				{
-					LogAgent.Error(ex);
+					Logger.Error(ex);
 				}
 			}
 		}

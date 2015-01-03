@@ -59,7 +59,7 @@ namespace ZXMAK2.Controls
                 }
                 catch (Exception ex)
                 {
-                    LogAgent.Error(ex);
+                    Logger.Error(ex);
                 }
             }
         }

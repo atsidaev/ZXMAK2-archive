@@ -67,7 +67,7 @@ namespace ZXMAK2.Hardware.Pentagon
                 case RomName.ROM_DOS: return 2;
                 case RomName.ROM_SYS: return 3;
             }
-            LogAgent.Error("Unknown RomName: {0}", romId);
+            Logger.Error("Unknown RomName: {0}", romId);
             throw new InvalidOperationException("Unknown RomName");
         }
 

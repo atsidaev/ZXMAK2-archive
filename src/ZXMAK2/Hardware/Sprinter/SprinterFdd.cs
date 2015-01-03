@@ -214,7 +214,7 @@ namespace ZXMAK2.Hardware.Sprinter
                 
                 if (LogIo)
                 {
-                    LogAgent.Debug(
+                    Logger.Debug(
                         "WD93 BDI MODE <== #{0:X2} [PC=#{1:X4}, T={2}]",
                         value,
                         m_cpu.regs.PC,
@@ -282,7 +282,7 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             if (LogIo)
             {
-                LogAgent.Debug(
+                Logger.Debug(
                     "WD93 {0} <== #{1:X2} [PC=#{2:X4}, T={3}]",
                     reg,
                     value,
@@ -295,7 +295,7 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             if (LogIo)
             {
-                LogAgent.Debug(
+                Logger.Debug(
                     "WD93 {0} ==> #{1:X2} [PC=#{2:X4}, T={3}]",
                     reg,
                     value,

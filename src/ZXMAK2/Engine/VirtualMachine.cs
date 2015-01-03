@@ -84,7 +84,7 @@ namespace ZXMAK2.Engine
             var busNode = parent.SelectSingleNode("Bus");
             if (busNode == null)
             {
-                LogAgent.Error("Machine bus configuration not found!");
+                Logger.Error("Machine bus configuration not found!");
                 throw new ArgumentException("Machine bus configuration not found!");
             }
 
@@ -186,7 +186,7 @@ namespace ZXMAK2.Engine
             var root = xml.SelectSingleNode("/VirtualMachine");
             if (root == null)
             {
-                LogAgent.Error("Invalid Machine Configuration File");
+                Logger.Error("Invalid Machine Configuration File");
                 throw new ArgumentException("Invalid Machine Configuration File");
             }
             LoadConfigXml(root);
@@ -331,7 +331,7 @@ namespace ZXMAK2.Engine
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 

@@ -482,7 +482,7 @@ namespace ZXMAK2.Engine
             {
                 try { device.BusInit(this); }
                 catch (Exception ex)
-                { success = false; LogAgent.Error(ex); }
+                { success = false; Logger.Error(ex); }
             }
             m_frameTactCount = m_ula.FrameTactCount;
             foreach (var device in m_deviceList)
@@ -490,7 +490,7 @@ namespace ZXMAK2.Engine
                 device.ConfigChanged += Device_OnConfigChanged;
                 try { device.BusConnect(); }
                 catch (Exception ex)
-                { success = false; LogAgent.Error(ex); }
+                { success = false; Logger.Error(ex); }
             }
             OnBeginFrame();
             if (m_debuggable != null)
@@ -534,7 +534,7 @@ namespace ZXMAK2.Engine
                 }
                 catch (Exception ex)
                 {
-                    LogAgent.Error(ex);
+                    Logger.Error(ex);
                 }
             }
         }
@@ -591,7 +591,7 @@ namespace ZXMAK2.Engine
         {
             if (m_frameOpened)
             {
-                LogAgent.Warn("Trying to begin frame twice");
+                Logger.Warn("Trying to begin frame twice");
                 return;
             }
             m_frameOpened = true;
@@ -607,7 +607,7 @@ namespace ZXMAK2.Engine
         {
             if (!m_frameOpened)
             {
-                LogAgent.Warn("Trying to end frame twice");
+                Logger.Warn("Trying to end frame twice");
                 return;
             }
             m_frameOpened = false;
@@ -699,19 +699,19 @@ namespace ZXMAK2.Engine
                     }
                     if (node.Attributes["type"] == null)
                     {
-                        LogAgent.Error("Device type not specified!");
+                        Logger.Error("Device type not specified!");
                         continue;
                     }
                     string typeName = node.Attributes["type"].InnerText;
                     Type type = asm.GetType(typeName);
                     if (type == null)
                     {
-                        LogAgent.Error("Device not found: {0}", typeName);
+                        Logger.Error("Device not found: {0}", typeName);
                         continue;
                     }
                     if (!typeof(BusDeviceBase).IsAssignableFrom(type))
                     {
-                        LogAgent.Error("Invalid Device: {0}", type.FullName);
+                        Logger.Error("Invalid Device: {0}", type.FullName);
                         continue;
                     }
                     BusDeviceBase device = null;
@@ -733,7 +733,7 @@ namespace ZXMAK2.Engine
                 }
                 catch (Exception ex)
                 {
-                    LogAgent.Error(ex);
+                    Logger.Error(ex);
                     Locator.Resolve<IUserMessage>()
                         .Error("Load device failed: {0}", ex.Message);
                 }
@@ -769,7 +769,7 @@ namespace ZXMAK2.Engine
                 }
                 catch (Exception ex)
                 {
-                    LogAgent.Error(ex);
+                    Logger.Error(ex);
                 }
             }
             //LogAgent.Debug("time end BusManager.SaveConfig");

@@ -199,7 +199,7 @@ namespace ZXMAK2.Hardware.General
             value = m_ide_rd_hi;
             if (LogIo)
             {
-                LogAgent.Info("IDE RD DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+                Logger.Info("IDE RD DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
             }
         }
 
@@ -213,7 +213,7 @@ namespace ZXMAK2.Hardware.General
             value |= (byte)(m_ata.read_intrq() & 0x80);
             if (LogIo)
             {
-                LogAgent.Info("IDE RD SYS: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+                Logger.Info("IDE RD SYS: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
             }
         }
 
@@ -233,7 +233,7 @@ namespace ZXMAK2.Hardware.General
                     value = (byte)rd;
                     if (LogIo)
                     {
-                        LogAgent.Info("IDE RD DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, rd);
+                        Logger.Info("IDE RD DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, rd);
                     }
                 }
                 else
@@ -279,7 +279,7 @@ namespace ZXMAK2.Hardware.General
 
             if (LogIo)
             {
-                LogAgent.Info("IDE WR DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+                Logger.Info("IDE WR DATA HI: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
             }
             m_ide_wr_hi = value;
         }
@@ -292,7 +292,7 @@ namespace ZXMAK2.Hardware.General
 
             if (LogIo)
             {
-                LogAgent.Info("IDE WR SYS: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
+                Logger.Info("IDE WR SYS: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
             }
             if ((value & 1) != 0)
             {
@@ -316,7 +316,7 @@ namespace ZXMAK2.Hardware.General
                     var data = (UInt16)((m_ide_wr_hi << 8) | value);
                     if (LogIo)
                     {
-                        LogAgent.Info("IDE WR DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, data);
+                        Logger.Info("IDE WR DATA LO: #{0:X2} @ PC=#{1:X4} [#{2:X4}]", value, m_cpu.regs.PC, data);
                     }
                     m_ata.WriteData(data);
                 }
@@ -335,7 +335,7 @@ namespace ZXMAK2.Hardware.General
         {
             if (LogIo)
             {
-                LogAgent.Info("IDE WR {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
+                Logger.Info("IDE WR {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
             }
             m_ata.Write(ataReg, value);
         }
@@ -345,7 +345,7 @@ namespace ZXMAK2.Hardware.General
             var value = m_ata.Read(ataReg);
             if (LogIo)
             {
-                LogAgent.Info("IDE RD {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
+                Logger.Info("IDE RD {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
             }
             return value;
         }

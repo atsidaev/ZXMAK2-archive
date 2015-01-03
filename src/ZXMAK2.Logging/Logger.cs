@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace ZXMAK2
 {
-    public static class LogAgent
+    public static class Logger
     {
         private static readonly ILog _logger = LogManager.GetLogger("ZXMAK2");
         

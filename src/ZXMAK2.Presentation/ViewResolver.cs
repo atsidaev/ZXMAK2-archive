@@ -31,7 +31,7 @@ namespace ZXMAK2.Presentation
                 {
                     return view;
                 }
-                LogAgent.Error("ViewResolver: Cannot resolve {0}", typeof(T).Name);
+                Logger.Error("ViewResolver: Cannot resolve {0}", typeof(T).Name);
             }
             return m_resolver.TryResolve<T>("WinForms");
         }

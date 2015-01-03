@@ -174,7 +174,7 @@ namespace ZXMAK2.Hardware.General
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -273,7 +273,7 @@ namespace ZXMAK2.Hardware.General
         {
             if (LogIo)
             {
-                LogAgent.Debug(
+                Logger.Debug(
                     "WD93 {0} <== #{1:X2} [PC=#{2:X4}, T={3}]",
                     reg,
                     value,
@@ -286,7 +286,7 @@ namespace ZXMAK2.Hardware.General
         {
             if (LogIo)
             {
-                LogAgent.Debug(
+                Logger.Debug(
                     "WD93 {0} ==> #{1:X2} [PC=#{2:X4}, T={3}]",
                     reg,
                     value,

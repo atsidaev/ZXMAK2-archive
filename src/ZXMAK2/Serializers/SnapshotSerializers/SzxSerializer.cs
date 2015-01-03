@@ -192,7 +192,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
             if (chPageNo >= memory.RamPages.Length)
             {
-                LogAgent.Warn(
+                Logger.Warn(
                     "SzxSerializer: skip block 'RAMP' chPageNo={0} (incompatible)",
                     chPageNo);
                 return;

@@ -458,7 +458,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             catch (Exception ex)
             {
                 this.richCompileMessages.Text += "\n\nFile " + i_fileName + " read ERROR!";
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 return false;
             }
         }

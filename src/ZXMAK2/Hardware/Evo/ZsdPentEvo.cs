@@ -188,7 +188,7 @@ namespace ZXMAK2.Hardware.Evo
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 

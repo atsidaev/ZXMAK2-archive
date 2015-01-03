@@ -247,7 +247,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                         }
                         catch (Exception exception)
                         {
-                            LogAgent.Error(exception);
+                            Logger.Error(exception);
                             Locator.Resolve<IUserMessage>().ErrorDetails(exception);
                         }
                         UpdateCPU(true);
@@ -264,7 +264,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                         }
                         catch (Exception exception2)
                         {
-                            LogAgent.Error(exception2);
+                            Logger.Error(exception2);
                             Locator.Resolve<IUserMessage>().ErrorDetails(exception2);
                         }
                         UpdateCPU(true);

@@ -54,7 +54,7 @@ namespace ZXMAK2.Engine.Cpu.Tools
                 }
                 if (perfTime > 1500000)
                 {
-                    LogAgent.Warn("TimingTool.GetTiming: {0}T reached!", perfTime); 
+                    Logger.Warn("TimingTool.GetTiming: {0}T reached!", perfTime); 
                     return null;
                 }
             }
@@ -98,7 +98,7 @@ namespace ZXMAK2.Engine.Cpu.Tools
                 case 0xBB:
                     return RepFlagTime(perfTime, 0x0C, 0x0C, 0x11);
             }
-            LogAgent.Error(
+            Logger.Error(
                 "TimingTool.GetTiming: unexpected opCode #{0:2X}", 
                 opCode);
             return null;
