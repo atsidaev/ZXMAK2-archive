@@ -1,8 +1,8 @@
 ﻿using System;
 using ZXMAK2.Hardware.Atm;
 using ZXMAK2.Interfaces;
-using ZXMAK2.Attributes;
 using ZXMAK2.Engine.Cpu;
+using ZXMAK2.Engine.Attributes;
 
 
 namespace ZXMAK2.Hardware.Evo
@@ -341,7 +341,7 @@ namespace ZXMAK2.Hardware.Evo
             set { RG = (int)value & 7; RGEX = (int)value >> 3; }
         }
 
-        [ReadOnly(true)]
+        [HardwareReadOnly(true)]
         [HardwareValue("RU2", Description = "RU2 RAM memory manager content")]
         public int[] RU2
         {

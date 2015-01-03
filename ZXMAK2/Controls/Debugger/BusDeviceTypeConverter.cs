@@ -1,10 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
-using ZXMAK2.Entities;
 using System.Collections.Generic;
 using System.Reflection;
-using ZXMAK2.Attributes;
 using System.Globalization;
+using ZXMAK2.Entities;
+using ZXMAK2.Engine.Attributes;
+
 
 namespace ZXMAK2.Controls.Debugger
 {
@@ -28,7 +29,7 @@ namespace ZXMAK2.Controls.Debugger
                     //list.Add(at);
                     var hwValue = at as HardwareValueAttribute;
                     var hwSwitch = at as HardwareSwitchAttribute;
-                    var ro = at as ZXMAK2.Attributes.ReadOnlyAttribute;
+                    var ro = at as HardwareReadOnlyAttribute;
                     if (hwValue != null)
                     {
                         display |= true;
@@ -41,7 +42,7 @@ namespace ZXMAK2.Controls.Debugger
                     }
                     if (ro != null)
                     {
-                        list.Add(new System.ComponentModel.ReadOnlyAttribute(ro.IsReadOnly));
+                        list.Add(new ReadOnlyAttribute(ro.IsReadOnly));
                     }
                 }
                 if (!display)
