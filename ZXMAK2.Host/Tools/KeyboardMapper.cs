@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Interfaces;
 using System.Xml;
+using System.Collections.Generic;
+using ZXMAK2.Host.Interfaces;
 
-namespace ZXMAK2.Entities
+
+namespace ZXMAK2.Host.Entities.Tools
 {
     public class KeyboardStateMapper<T>
         where T : struct

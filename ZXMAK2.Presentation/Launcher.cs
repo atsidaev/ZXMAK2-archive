@@ -4,6 +4,7 @@ using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.MVP;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Dependency;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.Presentation

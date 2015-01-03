@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
-using ZXMAK2.Interfaces;
+using ZXMAK2.Host.Interfaces;
 
 
-namespace ZXMAK2.Engine
+namespace ZXMAK2.Host.Engine
 {
     public class VideoData : IVideoData
     {

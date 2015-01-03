@@ -1,8 +1,9 @@
 ﻿using System;
+using ZXMAK2.Host.Interfaces;
 
-namespace ZXMAK2.Entities
+namespace ZXMAK2.Host.Entities
 {
-    public class HostDeviceInfo : IComparable
+    public class HostDeviceInfo : IHostDeviceInfo
     {
         public string Name { get; private set; }
         public string HostId { get; private set; }

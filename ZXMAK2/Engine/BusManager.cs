@@ -9,6 +9,8 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Serializers;
 using ZXMAK2.Entities;
 using ZXMAK2.Dependency;
+using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Entities;
 
 namespace ZXMAK2.Engine
 {
@@ -36,7 +38,7 @@ namespace ZXMAK2.Engine
         private BusSignalProc m_intAck;
         private BusFrameEventHandler m_beginFrame;
         private BusFrameEventHandler m_endFrame;
-        private IconDescriptor[] m_iconDescList = new IconDescriptor[0];
+        private IIconDescriptor[] m_iconDescList = new IIconDescriptor[0];
         private IconDescriptor m_iconPause = new IconDescriptor(
             "PAUSE", 
             global::ZXMAK2.Properties.Resources.EmuPause_32x32);
@@ -51,7 +53,7 @@ namespace ZXMAK2.Engine
 
         public IHostUi HostUi { get; set; }
         public RzxHandler RzxHandler { get; set; }
-        public IconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
+        public IIconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
         public IconDescriptor IconPause { get { return m_iconPause; } }
 
         public void Init(CpuUnit cpu, LoadManager loadManager, bool sandBox)
@@ -205,9 +207,9 @@ namespace ZXMAK2.Engine
                 m_loadManager.AddSerializer(serializer);
         }
 
-        void IBusManager.RegisterIcon(IconDescriptor iconDesc)
+        void IBusManager.RegisterIcon(IIconDescriptor iconDesc)
         {
-            List<IconDescriptor> list = new List<IconDescriptor>(m_iconDescList);
+            var list = new List<IIconDescriptor>(m_iconDescList);
             list.Add(iconDesc);
             m_iconDescList = list.ToArray();
         }

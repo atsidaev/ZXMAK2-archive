@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ZXMAK2.Interfaces;
+using ZXMAK2.Host.Interfaces;
 
-namespace ZXMAK2.Entities
+namespace ZXMAK2.Host.Entities
 {
     public class VideoFrame : IVideoFrame
     {

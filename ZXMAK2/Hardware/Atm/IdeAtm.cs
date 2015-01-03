@@ -4,6 +4,8 @@ using ZXMAK2.Entities;
 using ZXMAK2.Hardware.IC;
 using ZXMAK2.Engine.Cpu;
 using System.Xml;
+using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Entities;
 
 
 namespace ZXMAK2.Hardware.Atm

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ZXMAK2.Interfaces;
 using System.Windows.Forms;
+using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.MDX
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Drawing;
+using ZXMAK2.Host.Interfaces;
+
 
 namespace ZXMAK2.Interfaces
 {

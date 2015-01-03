@@ -4,6 +4,7 @@ using ZXMAK2.Serializers;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 using ZXMAK2.Engine.Cpu;
+using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Interfaces
 {
@@ -26,7 +27,7 @@ namespace ZXMAK2.Interfaces
 		void SubscribeEndFrame(BusFrameEventHandler handler);
 
 		void AddSerializer(FormatSerializer serializer);
-		void RegisterIcon(IconDescriptor iconDesc);
+		void RegisterIcon(IIconDescriptor iconDesc);
 
         void AddCommandUi(ICommand command);
 

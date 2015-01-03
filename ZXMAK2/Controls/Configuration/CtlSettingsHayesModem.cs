@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using ZXMAK2.Engine;
 using ZXMAK2.Hardware.General;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Controls.Configuration
 {

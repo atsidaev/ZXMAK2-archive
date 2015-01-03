@@ -1,5 +1,7 @@
 ﻿using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
+using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Entities;
 
 
 namespace ZXMAK2.Hardware.Atm

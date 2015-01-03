@@ -6,6 +6,9 @@ using System.Globalization;
 using Microsoft.DirectX.DirectInput;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
+using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Entities;
+using ZxmakKey = ZXMAK2.Host.Entities.Key;
 
 
 namespace ZXMAK2.MDX
@@ -46,12 +49,12 @@ namespace ZXMAK2.MDX
             }
             if (IsKeyboardStateRequired)
             {
-                var isUp = KeyboardState[Interfaces.Key.NumPad8];
-                var isDown = KeyboardState[Interfaces.Key.NumPad2];
-                var isLeft = KeyboardState[Interfaces.Key.NumPad4];
-                var isRight = KeyboardState[Interfaces.Key.NumPad6];
-                var isFire = KeyboardState[Interfaces.Key.NumPad5] ||
-                    KeyboardState[Interfaces.Key.NumPad0];
+                var isUp = KeyboardState[ZxmakKey.NumPad8];
+                var isDown = KeyboardState[ZxmakKey.NumPad2];
+                var isLeft = KeyboardState[ZxmakKey.NumPad4];
+                var isRight = KeyboardState[ZxmakKey.NumPad6];
+                var isFire = KeyboardState[ZxmakKey.NumPad5] ||
+                    KeyboardState[ZxmakKey.NumPad0];
                 m_numpadState = new StateWrapper(
                     isLeft,
                     isRight,
@@ -174,9 +177,9 @@ namespace ZXMAK2.MDX
         public IKeyboardState KeyboardState { get; set; }
         public bool IsKeyboardStateRequired { get; private set; }
 
-        public IEnumerable<HostDeviceInfo> GetAvailableJoysticks()
+        public IEnumerable<IHostDeviceInfo> GetAvailableJoysticks()
         {
-            var list = new List<HostDeviceInfo>();
+            var list = new List<IHostDeviceInfo>();
             try
             {
                 var devList = Manager.GetDevices(

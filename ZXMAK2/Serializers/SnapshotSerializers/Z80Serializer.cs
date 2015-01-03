@@ -5,6 +5,7 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Dependency;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.Serializers.SnapshotSerializers
@@ -76,8 +77,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                         "supported only ExtensionSize={{0(old format), 23, 54}})",
                         hdr1[Z80HDR1_EXTSIZE]);
                     Logger.Warn("{0}", msg);
-                    Locator.Resolve<IUserMessage>().Error(
-                        "Z80 loader\n\n{0}", msg);
+                    Locator.Resolve<IUserMessage>()
+                        .Error("Z80 loader\n\n{0}", msg);
                     return;
                 }
 			}

@@ -13,6 +13,8 @@ using ZXMAK2.Entities;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Dependency;
+using ZXMAK2.Host.Entities;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.Engine

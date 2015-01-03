@@ -3,14 +3,15 @@
 /// Date: 26.03.2008
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.DirectX.DirectInput;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
-using ZxmakKey = ZXMAK2.Interfaces.Key;
+using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Entities.Tools;
+using ZxmakKey = ZXMAK2.Host.Entities.Key;
 using MdxKey = Microsoft.DirectX.DirectInput.Key;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 
 namespace ZXMAK2.MDX

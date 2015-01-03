@@ -15,6 +15,7 @@ using ZXMAK2.Controls;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Dependency;
+using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Hardware.Sprinter.UI
 {
