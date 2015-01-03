@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Dependency;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
@@ -49,7 +50,8 @@ namespace ZXMAK2.Hardware.Adlers.UI
             }
             catch(Exception tcpException)
             {
-                Locator.Resolve<IUserMessage>().Error("Error: \n" + tcpException.Message);
+                Locator.Resolve<IUserMessage>()
+                    .Error("Error: \n" + tcpException.Message);
             }
         }
 

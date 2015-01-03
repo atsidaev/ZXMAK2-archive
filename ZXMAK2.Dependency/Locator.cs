@@ -6,7 +6,7 @@ using System.Reflection;
 using ZXMAK2.Dependency;
 
 
-namespace ZXMAK2
+namespace ZXMAK2.Dependency
 {
     public class Locator
     {

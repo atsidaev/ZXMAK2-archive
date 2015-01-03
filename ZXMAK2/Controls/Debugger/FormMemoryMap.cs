@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Drawing;
 using ZXMAK2.Interfaces;
 using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.Dependency;
 
 namespace ZXMAK2.Controls.Debugger
 {
