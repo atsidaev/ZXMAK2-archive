@@ -62,7 +62,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 			ula.PortFE = regsData[26];
 
-			REGS regs = new REGS();
+			CpuRegs regs = new CpuRegs();
 			regs.I = regsData[0];
 			regs._HL = (ushort)(regsData[1] + 256 * regsData[2]);
 			regs._DE = (ushort)(regsData[3] + 256 * regsData[4]);

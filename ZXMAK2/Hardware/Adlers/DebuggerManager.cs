@@ -370,7 +370,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             return BreakPointAccessType.Undefined;
         }
 
-        public static ushort getRegistryValueByName(REGS regs, string i_registryName)
+        public static ushort getRegistryValueByName(CpuRegs regs, string i_registryName)
         {
             string registryName = i_registryName.ToUpper();
 

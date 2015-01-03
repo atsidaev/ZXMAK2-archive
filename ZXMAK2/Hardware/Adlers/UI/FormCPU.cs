@@ -1114,18 +1114,18 @@ namespace ZXMAK2.Hardware.Adlers.UI
             if (breakpointInfo.accessType == BreakPointConditionType.registryVsValue)
             {
                 //e.g. PC == #0038
-                Type[] args = { typeof(REGS) };
+                Type[] args = { typeof(CpuRegs) };
                 DynamicMethod dynamicMethod = new DynamicMethod(
                     "RegVsValue",
                     typeof(bool), //return type
                     args,         //arguments for the method
-                    typeof(REGS).Module); //module as input
+                    typeof(CpuRegs).Module); //module as input
 
                 ILGenerator il = dynamicMethod.GetILGenerator();
 
                 //Arg0 - registry value
                 il.Emit(OpCodes.Ldarg_0); // load m_spectrum.CPU.regs on stack
-                FieldInfo testInfo1 = typeof(REGS).GetField(breakpointInfo.leftCondition, BindingFlags.Public | BindingFlags.Instance);
+                FieldInfo testInfo1 = typeof(CpuRegs).GetField(breakpointInfo.leftCondition, BindingFlags.Public | BindingFlags.Instance);
                 il.Emit(OpCodes.Ldfld, testInfo1);
                
                 //Arg1 - number
@@ -1407,9 +1407,9 @@ namespace ZXMAK2.Hardware.Adlers.UI
     public class InterfaceWrapper
     {
         //fields wrapper
-        private REGS a_Z80Registers;
+        private CpuRegs a_Z80Registers;
 
-        public void wrapFields(REGS i_regs)
+        public void wrapFields(CpuRegs i_regs)
         {
             a_Z80Registers = i_regs;
         }
