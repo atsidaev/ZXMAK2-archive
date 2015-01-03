@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using FastColoredTextBoxNS;
 using System.Diagnostics;
+using ZXMAK2.Dependency;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
@@ -226,11 +227,12 @@ namespace ZXMAK2.Hardware.Adlers.UI
             if (startAdressInCode == false && startAdressManual == false)
             {
                 //start adress for compilation not found
-                Locator.Resolve<IUserMessage>().Warning(
-                    "Compilation failed(missing start address)\n\n" +
-                    "Either check the check box for memory address(Compile to -> Memory)\n" + 
-                    "or define it using 'ORG' instruction in source code !\n\n" +
-                    "Compilation is cancelled.");
+                Locator.Resolve<IUserMessage>()
+                    .Warning(
+                        "Compilation failed(missing start address)\n\n" +
+                        "Either check the check box for memory address(Compile to -> Memory)\n" + 
+                        "or define it using 'ORG' instruction in source code !\n\n" +
+                        "Compilation is cancelled.");
                 return false;
             }
             if (startAdressInCode && startAdressManual)

@@ -12,6 +12,7 @@ using ZXMAK2.Controls.Configuration;
 using ZXMAK2.Entities;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Serializers;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2.Controls

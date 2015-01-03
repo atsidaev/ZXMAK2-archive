@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Dependency;
 
 namespace ZXMAK2.WinForms
 {

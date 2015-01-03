@@ -5,6 +5,7 @@ using System.Text;
 using ZXMAK2.Entities;
 using ZXMAK2.Crc;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2.Serializers.DiskSerializers
@@ -134,10 +135,11 @@ namespace ZXMAK2.Serializers.DiskSerializers
             var stampCrc = (UInt32)(hdr[0] | hdr[1] << 8 | hdr[2] << 16 | hdr[3] << 24);
             if (stampCrc != crc)
             {
-                Locator.Resolve<IUserMessage>().Warning(
-                    "UDI loader\n\nCRC ERROR:\nStamp: {0:X8}\nReal: {1:X8}", 
-                    stampCrc, 
-                    crc);
+                Locator.Resolve<IUserMessage>()
+                    .Warning(
+                        "UDI loader\n\nCRC ERROR:\nStamp: {0:X8}\nReal: {1:X8}", 
+                        stampCrc, 
+                        crc);
             }
         }
 

@@ -17,6 +17,7 @@ using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Cpu.Tools;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2.Hardware.Adlers.UI

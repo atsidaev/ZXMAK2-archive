@@ -14,6 +14,7 @@ using ZXMAK2.Entities;
 using ZXMAK2.Controls;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.Engine.Cpu.Tools;
+using ZXMAK2.Dependency;
 
 namespace ZXMAK2.Hardware.Sprinter.UI
 {

@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2.Engine
@@ -151,9 +152,8 @@ namespace ZXMAK2.Engine
                     catch (Exception ex)
                     {
                         Logger.Error(ex);
-                        Locator.Resolve<IUserMessage>().Warning(
-                            "Load plugin failed!\n\n{0}", 
-                            fileName);
+                        Locator.Resolve<IUserMessage>()
+                            .Warning("Load plugin failed!\n\n{0}", fileName);
                     }
                 }
             }

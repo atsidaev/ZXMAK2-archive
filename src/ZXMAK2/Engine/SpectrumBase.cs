@@ -12,6 +12,7 @@ using ZXMAK2.Controls.Debugger;
 using ZXMAK2.Entities;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Cpu.Tools;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2.Engine
