@@ -272,7 +272,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Entities\BusDeviceBase.cs" />
-    <Compile Include="Entities\TapeBlock.cs" />
     <Compile Include="Hardware\General\AyMouseDevice.cs" />
     <Compile Include="Hardware\General\BeeperDevice.cs" />
     <Compile Include="Engine\BusManager.cs" />
@@ -557,6 +556,11 @@
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">
       <Project>{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}</Project>
       <Name>ZXMAK2.Logging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Model.Tape\ZXMAK2.Model.Tape.csproj">
+      <Project>{8851E497-6345-45E3-9936-EC17A4477A71}</Project>
+      <Name>ZXMAK2.Model.Tape</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

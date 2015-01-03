@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Serializers.SnapshotSerializers;
 using ZXMAK2.Entities;
+using ZXMAK2.Model.Tape;
+using ZXMAK2.Model.Tape.Interfaces;
 
 
 namespace ZXMAK2.Serializers.TapeSerializers
@@ -31,9 +33,19 @@ namespace ZXMAK2.Serializers.TapeSerializers
 
         public override void Deserialize(Stream stream)
         {
+            m_tape.Blocks.Clear();
+            var blocks = Load(stream, m_tape.TactsPerSecond);
+            if (blocks != null)
+            {
+                m_tape.Blocks.AddRange(blocks);
+            }
+            m_tape.Reset();
+        }
+
+        private static IEnumerable<ITapeBlock> Load(Stream stream, int tactsPerSecond)
+        {
             var reader = new WavStreamReader(stream);
 
-            var tactsPerSecond = m_tape.TactsPerSecond;
             var ratio = tactsPerSecond / (double)reader.Header.FmtSampleRate; // usually 3.5mhz / 44khz
 
             var rleData = LoadRleData(reader);
@@ -65,9 +77,7 @@ namespace ZXMAK2.Serializers.TapeSerializers
                 tb.Periods = new List<int>(pulses);
                 list.Add(tb);
             }
-            m_tape.Blocks.Clear();
-            m_tape.Blocks.AddRange(list);
-            m_tape.Reset();
+            return list;
         }
 
         #endregion

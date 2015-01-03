@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.Model.Tape.Interfaces;
 
 namespace ZXMAK2.Controls
 {
@@ -277,7 +278,7 @@ namespace ZXMAK2.Controls
                 if (checkContentDifferent(blockList.Items, m_tape.Blocks))
                 {
                     blockList.Items.Clear();
-                    foreach (TapeBlock tb in m_tape.Blocks)
+                    foreach (var tb in m_tape.Blocks)
                         blockList.Items.Add(tb.Description);
                 }
                 blockList.SelectedIndex = m_tape.CurrentBlock;
@@ -288,7 +289,7 @@ namespace ZXMAK2.Controls
             btnPlay.Enabled = !btnUseAutoPlay.Checked;
         }
 
-        private bool checkContentDifferent(ListBox.ObjectCollection itemList, List<TapeBlock> list)
+        private bool checkContentDifferent(ListBox.ObjectCollection itemList, List<ITapeBlock> list)
         {
             if (itemList.Count != list.Count)
                 return true;
@@ -309,7 +310,7 @@ namespace ZXMAK2.Controls
                 curBlock = m_tape.CurrentBlock;
                 if (curBlock >= 0 && curBlock < blockCount)
                 {
-                    maximum = m_tape.Blocks[curBlock].Periods.Count;
+                    maximum = m_tape.Blocks[curBlock].Count;
                     position = m_tape.Position;
                 }
                 else
