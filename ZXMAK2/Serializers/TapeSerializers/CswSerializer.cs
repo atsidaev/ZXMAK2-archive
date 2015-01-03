@@ -8,6 +8,8 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Model.Tape.Interfaces;
+using ZXMAK2.Model.Tape;
 
 
 namespace ZXMAK2.Serializers.TapeSerializers
@@ -33,6 +35,17 @@ namespace ZXMAK2.Serializers.TapeSerializers
 
         public override void Deserialize(Stream stream)
         {
+            _tape.Blocks.Clear();
+            var blocks = Load(stream, _tape.TactsPerSecond);
+            if (blocks != null)
+            {
+                _tape.Blocks.AddRange(blocks);
+            }
+            _tape.Reset();
+        }
+
+        private static IEnumerable<ITapeBlock> Load(Stream stream, int tactsPerSecond)
+        {
             try
             {
                 var hdr = new byte[0x34];
@@ -43,14 +56,14 @@ namespace ZXMAK2.Serializers.TapeSerializers
                 {
                     Locator.Resolve<IUserMessage>()
                         .Error("CSW loader\n\nInvalid CSW file, identifier not found!");
-                    return;
+                    return null;
                 }
                 var version = hdr[0x17];
                 if (version > 2)
                 {
                     Locator.Resolve<IUserMessage>()
                         .Error("CSW loader\n\nFormat CSW V{0}.{1} not supported!", hdr[0x17], hdr[0x18]);
-                    return;
+                    return null;
                 }
                 if (version == 2)  // CSW V2
                 {
@@ -84,7 +97,6 @@ namespace ZXMAK2.Serializers.TapeSerializers
                     cswCompressionType,
                     cswPulseCount);
 
-                var tactsPerSecond = _tape.TactsPerSecond;
                 var ratio = tactsPerSecond / (double)cswSampleRate; // usually 3.5mhz / 44khz
 
                 var list = new List<TapeBlock>();
@@ -115,23 +127,21 @@ namespace ZXMAK2.Serializers.TapeSerializers
                     list.Add(tb);
                 }
 
-                _tape.Blocks.Clear();
                 if (txtInfo != string.Empty)
                 {
                     var desc = new TapeBlock();
                     desc.Periods = new List<int>();
                     desc.Description = string.Format("[{0}]", txtInfo);
-                    _tape.Blocks.Add(desc);
+                    list.Insert(0, desc);
                 }
-                _tape.Blocks.AddRange(list);
-                _tape.Reset();
+                return list;
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
                 Locator.Resolve<IUserMessage>()
                     .Error("CSW loader\n\n{0}", ex.Message);
-                return;
+                return null;
             }
         }
 

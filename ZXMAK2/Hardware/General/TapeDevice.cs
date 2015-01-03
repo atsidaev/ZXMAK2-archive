@@ -19,6 +19,7 @@ using ZXMAK2.MVP;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
+using ZXMAK2.Model.Tape.Interfaces;
 
 
 namespace ZXMAK2.Hardware.General
@@ -32,12 +33,12 @@ namespace ZXMAK2.Hardware.General
         private IconDescriptor m_iconTape = new IconDescriptor("TAPE", Utils.GetIconStream("cassette.png"));
         private bool m_trapsAllowed = true;
         private bool m_autoPlay = true;
+        private readonly int m_frequency = 3500000;
 
         // sound related
         private ushort m_dacValue0 = 0;
         private ushort m_dacValue1 = 0x1FFF;
 
-        private List<TapeBlock> m_blocks = new List<TapeBlock>();
         private int m_index = 0;
         private int m_playPosition = 0;
 
@@ -54,6 +55,7 @@ namespace ZXMAK2.Hardware.General
         
         public TapeDevice()
         {
+            Blocks = new List<ITapeBlock>();
             Volume = 20;
             CreateViewHolder();
         }
@@ -167,19 +169,20 @@ namespace ZXMAK2.Hardware.General
             }
 
             var tb = Blocks[CurrentBlock];
-            if (tb.TapData == null || tb.TapData.Length < 2)
+            var tapData = tb.GetData();
+            if (tapData == null || tapData.Length < 2)
             {
                 return;
             }
 
-            var length = tb.TapData.Length;
+            var length = tapData.Length;
             var read = length - 1;
             read = read < m_cpu.regs.DE ? read : m_cpu.regs.DE;
             if (read <= 0)
             {
                 return;
             }
-            var parity = tb.TapData[0];
+            var parity = tapData[0];
             if (parity != m_cpu.regs._AF >> 8)
             {
                 return;
@@ -189,7 +192,7 @@ namespace ZXMAK2.Hardware.General
             /* Loading or verifying determined by the carry flag of F' */
             for (var i = 0; i < read; i++)
             {
-                var value = tb.TapData[i + 1];
+                var value = tapData[i + 1];
                 m_cpu.regs.L = value;
                 parity ^= value;
                 m_cpu.WRMEM((ushort)(m_cpu.regs.IX + i), value);
@@ -198,7 +201,7 @@ namespace ZXMAK2.Hardware.General
             /* If |DE| bytes have been read and there's more data, do the parity check */
             if (m_cpu.regs.DE == read && read + 1 < length)
             {
-                var value = tb.TapData[read + 1];
+                var value = tapData[read + 1];
                 m_cpu.regs.L = value;
                 parity ^= value;
                 m_cpu.regs.B = 0xB0;
@@ -264,17 +267,13 @@ namespace ZXMAK2.Hardware.General
 
         #region Properties
 
-        public List<TapeBlock> Blocks
-        {
-            get { return m_blocks; }
-            set { m_blocks = value; }
-        }
+        public List<ITapeBlock> Blocks { get; private set; }
 
         public int CurrentBlock
         {
             get
             {
-                if (m_blocks.Count > 0)
+                if (Blocks.Count > 0)
                     return m_index;
                 else
                     return -1;
@@ -283,7 +282,7 @@ namespace ZXMAK2.Hardware.General
             {
                 if (value == m_index)
                     return;
-                if (value >= 0 && value < m_blocks.Count)
+                if (value >= 0 && value < Blocks.Count)
                 {
                     m_index = value;
                     m_playPosition = 0;
@@ -298,7 +297,7 @@ namespace ZXMAK2.Hardware.General
         {
             get
             {
-                if (m_playPosition >= m_blocks[m_index].Periods.Count)
+                if (m_playPosition >= Blocks[m_index].Count)
                     return 0;
                 return m_playPosition;
             }
@@ -339,16 +338,16 @@ namespace ZXMAK2.Hardware.General
             m_waitEdge = 0;
             m_playPosition = 0;
 
-            if (m_blocks.Count > 0 && m_index >= 0)
+            if (Blocks.Count > 0 && m_index >= 0)
             {
-                while (m_playPosition >= m_blocks[m_index].Periods.Count)
+                while (m_playPosition >= Blocks[m_index].Count)
                 {
                     m_playPosition = 0;
                     m_index++;
-                    if (m_index >= m_blocks.Count)
+                    if (m_index >= Blocks.Count)
                         break;
                 }
-                if (m_index >= m_blocks.Count)
+                if (m_index >= Blocks.Count)
                 {
                     // end of tape -> rewind & stop
                     m_index = -1;
@@ -357,7 +356,7 @@ namespace ZXMAK2.Hardware.General
                 }
 
                 //m_state = !m_state;
-                m_waitEdge = m_blocks[m_index].Periods[m_playPosition];
+                m_waitEdge = Blocks[m_index].GetPeriod(m_playPosition, m_frequency);
                 m_isPlay = true;
                 OnTapeStateChanged();
             }
@@ -366,17 +365,17 @@ namespace ZXMAK2.Hardware.General
         public void Stop()
         {
             m_isPlay = false;
-            if (m_index >= 0 && m_index < m_blocks.Count &&
-                m_playPosition >= m_blocks[m_index].Periods.Count - 1)
+            if (m_index >= 0 && m_index < Blocks.Count &&
+                m_playPosition >= Blocks[m_index].Count - 1)
             {
                 m_index++;
-                if (m_index >= m_blocks.Count)
+                if (m_index >= Blocks.Count)
                     m_index = -1;
             }
             m_lastTact = m_cpu.Tact;
             m_waitEdge = 0;
             m_playPosition = 0;
-            if (m_index < 0 && m_blocks.Count > 0)
+            if (m_index < 0 && Blocks.Count > 0)
                 m_index = 0;
             OnTapeStateChanged();
         }
@@ -407,17 +406,17 @@ namespace ZXMAK2.Hardware.General
                 m_state = !m_state;
 
                 m_playPosition++;
-                if (m_playPosition >= m_blocks[m_index].Periods.Count) // endof block?
+                if (m_playPosition >= Blocks[m_index].Count) // endof block?
                 {
-                    while (m_playPosition >= m_blocks[m_index].Periods.Count)
+                    while (m_playPosition >= Blocks[m_index].Count)
                     {
                         // skip empty blocks
                         m_playPosition = 0;
                         m_index++;
-                        if (m_index >= m_blocks.Count)
+                        if (m_index >= Blocks.Count)
                             break;
                     }
-                    if (m_index >= m_blocks.Count)
+                    if (m_index >= Blocks.Count)
                     {
                         // end of tape -> rewind & stop
                         m_index = -1;
@@ -426,7 +425,7 @@ namespace ZXMAK2.Hardware.General
                     }
                     OnTapeStateChanged();
                 }
-                m_waitEdge = m_blocks[m_index].Periods[m_playPosition];
+                m_waitEdge = Blocks[m_index].GetPeriod(m_playPosition, m_frequency);
             }
             m_lastTact = globalTact - (long)delta;
             return m_state;

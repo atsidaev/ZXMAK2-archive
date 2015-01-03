@@ -7,6 +7,9 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Model.Tape;
+using ZXMAK2.Model.Tape.Entities;
+using ZXMAK2.Model.Tape.Interfaces;
 
 
 namespace ZXMAK2.Serializers.TapeSerializers
@@ -33,6 +36,16 @@ namespace ZXMAK2.Serializers.TapeSerializers
         public override void Deserialize(Stream stream)
         {
             _tape.Blocks.Clear();
+            var blocks = Load(stream, _tape.TactsPerSecond);
+            if (blocks != null)
+            {
+                _tape.Blocks.AddRange(blocks);
+            }
+            _tape.Reset();
+        }
+
+        private static IEnumerable<ITapeBlock> Load(Stream stream, int frequency)
+        {
             byte[] snbuf = new byte[stream.Length];
             stream.Read(snbuf, 0, snbuf.Length);
 
@@ -40,7 +53,7 @@ namespace ZXMAK2.Serializers.TapeSerializers
             {
                 Locator.Resolve<IUserMessage>()
                     .Error("TZX loader\n\nInvalid TZX file, identifier not found!");
-                return;
+                return null;
             }
             //int verMajor = snbuf[0x08];
             //int verMinor = snbuf[0x09];
@@ -267,9 +280,11 @@ namespace ZXMAK2.Serializers.TapeSerializers
                                 TapeBlock repeatBlock = new TapeBlock();
                                 repeatBlock.Description = string.Format("[LOOP REPEAT {0}]", i+1);
                                 repeatBlock.Periods = new List<int>();
-                                _tape.Blocks.Add(repeatBlock);
+                                tzxBlocks.Add(repeatBlock);
                                 for (int z = 0; z < size; z++)
-                                    _tape.Blocks.Add(tzxBlocks[loop_p + z]);
+                                {
+                                    tzxBlocks.Add(tzxBlocks[loop_p + z]);
+                                }
                             }
                             break;
                         }
@@ -434,21 +449,20 @@ namespace ZXMAK2.Serializers.TapeSerializers
                         ptr += 4;
                         break;
                 }
-                _tape.Blocks.Add(tb);
                 tzxBlocks.Add(tb);
             }
-            var ltb = _tape.Blocks.Count > 0 ?
-                _tape.Blocks[_tape.Blocks.Count-1] :
+            var ltb = tzxBlocks.Count > 0 ?
+                tzxBlocks[tzxBlocks.Count-1] :
                 null;
             if (ltb != null)
             {
-                ltb.Periods.Add(_tape.TactsPerSecond / 220);
-                ltb.Periods.Add(_tape.TactsPerSecond / 220);
+                ltb.Periods.Add(frequency / 220);
+                ltb.Periods.Add(frequency / 220);
             }
-            _tape.Reset();
+            return tzxBlocks;
         }
 
-        private int ReadGeneralizedDataBlock(byte[] buf, int index, ref TapeBlock tb)
+        private static int ReadGeneralizedDataBlock(byte[] buf, int index, ref TapeBlock tb)
         {
             tb.Description = "CSW Recording";
             int size = getInt32(buf, index); index += 4;

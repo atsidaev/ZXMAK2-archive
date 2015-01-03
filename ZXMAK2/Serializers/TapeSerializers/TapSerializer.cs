@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
+using ZXMAK2.Model.Tape.Interfaces;
+using ZXMAK2.Model.Tape;
 
 
 namespace ZXMAK2.Serializers.TapeSerializers
@@ -31,6 +33,17 @@ namespace ZXMAK2.Serializers.TapeSerializers
 		public override void Deserialize(Stream stream)
 		{
             _tape.Blocks.Clear();
+            var blocks = Load(stream);
+            if (blocks != null)
+            {
+                _tape.Blocks.AddRange(blocks);
+            }
+            _tape.Reset();
+        }
+
+        private static IEnumerable<ITapeBlock> Load(Stream stream)
+        {
+            var list = new List<TapeBlock>();
             byte[] bsize = new byte[2];
             while (stream.Position < stream.Length)
 			{
@@ -39,13 +52,13 @@ namespace ZXMAK2.Serializers.TapeSerializers
 				if (size == 0) break;
 				byte[] block = new byte[size];
 				stream.Read(block, 0, size);
-				TapeBlock tb = new TapeBlock();
+				var tb = new TapeBlock();
 				tb.Description = getBlockDescription(block, 0, block.Length);
 				tb.Periods = getBlockPeriods(block, 0, block.Length, 2168, 667, 735, 855, 1710, (block[0] < 4) ? 8064 : 3220, 1000, 8);
                 tb.TapData = block;
-				_tape.Blocks.Add(tb);
+                list.Add(tb);
 			}
-			_tape.Reset();
+            return list;
 		}
 
 		#endregion
