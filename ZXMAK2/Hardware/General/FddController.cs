@@ -166,7 +166,7 @@ namespace ZXMAK2.Hardware.General
         {
             try
             {
-                var resolver = Locator.Instance.Resolve<IViewResolver>();
+                var resolver = Locator.Resolve<IViewResolver>();
                 m_viewHolder = new ViewHolder<IFddDebugView>(
                     resolver, 
                     "WD1793", 

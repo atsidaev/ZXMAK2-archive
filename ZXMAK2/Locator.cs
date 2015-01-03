@@ -10,27 +10,27 @@ namespace ZXMAK2
 {
     public class Locator
     {
-        public static IResolver Instance { get; set; }
+        private readonly static IResolver _instance = new ResolverUnity();
 
 
         public static T Resolve<T>()
         {
-            return Instance.Resolve<T>();
+            return _instance.Resolve<T>();
         }
 
         public static T Resolve<T>(string name)
         {
-            return Instance.Resolve<T>(name);
+            return _instance.Resolve<T>(name);
         }
 
         public static T TryResolve<T>()
         {
-            return Instance.TryResolve<T>();
+            return _instance.TryResolve<T>();
         }
 
         public static T TryResolve<T>(string name)
         {
-            return Instance.TryResolve<T>(name);
+            return _instance.TryResolve<T>(name);
         }
     }
 }

@@ -17,9 +17,6 @@ namespace Test
 	{
 		static void Main(string[] args)
 		{
-            var resolver = new ResolverUnity();
-            Locator.Instance = resolver;
-			
             if (args.Length >= 1 && args[0].ToLower() == "/zexall")
 			{
 				runZexall();
