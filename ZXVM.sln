@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{155BB3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Engine.Cpu", "ZXMAK2.Engine.Cpu\ZXMAK2.Engine.Cpu.csproj", "{DA58F7C5-8365-4483-AAE4-0C6A90D42C35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.ZipLib", "ZXMAK2.ZipLib\ZXMAK2.ZipLib.csproj", "{23BFF161-E4E8-4365-AC71-19A46E8C86E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipLib", "ZXMAK2.ZipLib\ZipLib.csproj", "{23BFF161-E4E8-4365-AC71-19A46E8C86E1}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -56,7 +56,7 @@ Global
 		SccProjectUniqueName8 = ZXMAK2.Engine.Cpu\\ZXMAK2.Engine.Cpu.csproj
 		SccProjectName8 = ZXMAK2.Engine.Cpu
 		SccLocalPath8 = ZXMAK2.Engine.Cpu
-		SccProjectUniqueName9 = ZXMAK2.ZipLib\\ZXMAK2.ZipLib.csproj
+		SccProjectUniqueName9 = ZXMAK2.ZipLib\\ZipLib.csproj
 		SccProjectName9 = ZXMAK2.ZipLib
 		SccLocalPath9 = ZXMAK2.ZipLib
 	EndGlobalSection
