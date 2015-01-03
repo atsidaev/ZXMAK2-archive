@@ -79,7 +79,6 @@
     <Compile Include="Engine\VideoData.cs" />
     <Compile Include="Entities\KeyboardMapper.cs" />
     <Compile Include="Entities\SyncSource.cs" />
-    <Compile Include="Func.cs" />
     <Compile Include="Hardware\Adlers\UI\TcpHelper.cs">
       <SubType>Form</SubType>
     </Compile>
