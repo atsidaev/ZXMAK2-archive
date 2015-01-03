@@ -56,9 +56,9 @@ Global
 		SccProjectUniqueName8 = ZXMAK2.Engine.Cpu\\ZXMAK2.Engine.Cpu.csproj
 		SccProjectName8 = ZXMAK2.Engine.Cpu
 		SccLocalPath8 = ZXMAK2.Engine.Cpu
-		SccProjectUniqueName9 = ZXMAK2.ZipLib\\ZipLib.csproj
-		SccProjectName9 = ZXMAK2.ZipLib
-		SccLocalPath9 = ZXMAK2.ZipLib
+		SccProjectUniqueName9 = ZipLib\\ZipLib.csproj
+		SccProjectName9 = ZipLib
+		SccLocalPath9 = ZipLib
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
