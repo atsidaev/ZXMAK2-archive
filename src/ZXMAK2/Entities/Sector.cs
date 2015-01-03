@@ -1,5 +1,5 @@
 using System;
-using ZXMAK2.Crc;
+using ZXMAK2.Engine.Crc;
 
 
 namespace ZXMAK2.Entities

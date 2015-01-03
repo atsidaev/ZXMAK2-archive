@@ -7,7 +7,7 @@ using System.Text;
 using System.Collections.Generic;
 
 using ZXMAK2.Entities;
-using ZXMAK2.Crc;
+using ZXMAK2.Engine.Crc;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;

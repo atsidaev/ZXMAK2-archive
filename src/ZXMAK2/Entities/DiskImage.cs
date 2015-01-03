@@ -6,7 +6,7 @@ using System.IO;
 using System.Collections.Generic;
 
 using ZXMAK2.Serializers;
-using ZXMAK2.Crc;
+using ZXMAK2.Engine.Crc;
 
 
 namespace ZXMAK2.Entities
