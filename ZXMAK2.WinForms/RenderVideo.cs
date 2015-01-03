@@ -162,16 +162,16 @@ namespace ZXMAK2.WinForms
             _isCancel = true;
         }
         
-        public void PushFrame(VirtualMachine vm)
+        public void PushFrame(IVideoFrame frame)
         {
             m_fpsUpdate.Frame();
-            m_debugFrameStart = vm.DebugFrameStartTact;
+            m_debugFrameStart = frame.StartTact;
             if (!_isInitialized)
             {
                 return;
             }
-            UpdateIcons(vm.Spectrum.BusManager.IconDescriptorArray);
-            UpdateSurface(vm.VideoData);
+            UpdateIcons(frame.Icons);
+            UpdateSurface(frame.VideoData);
         }
 
         #endregion IHostVideo
@@ -633,9 +633,9 @@ namespace ZXMAK2.WinForms
 
         private int m_debugFrameStart = 0;
 
-        private Dictionary<IconDescriptor, IconTextureWrapper> m_iconWrapperDict = new Dictionary<IconDescriptor, IconTextureWrapper>();
+        private Dictionary<IIconDescriptor, IconTextureWrapper> m_iconWrapperDict = new Dictionary<IIconDescriptor, IconTextureWrapper>();
 
-        private void UpdateIcons(IconDescriptor[] iconDescArray)
+        private void UpdateIcons(IIconDescriptor[] iconDescArray)
         {
             lock (SyncRoot)
             {
@@ -652,8 +652,8 @@ namespace ZXMAK2.WinForms
                         itw.Load(D3D);
                     }
                 }
-                var iconDescList = new List<IconDescriptor>(iconDescArray);
-                var deleteList = new List<IconDescriptor>();
+                var iconDescList = new List<IIconDescriptor>(iconDescArray);
+                var deleteList = new List<IIconDescriptor>();
                 foreach (var id in m_iconWrapperDict.Keys)
                 {
                     if (!iconDescList.Contains(id))
@@ -676,12 +676,12 @@ namespace ZXMAK2.WinForms
 
         private class IconTextureWrapper : IDisposable
         {
-            private IconDescriptor m_iconDesc;
+            private IIconDescriptor m_iconDesc;
 
             public Texture Texture;
             public bool Visible;
 
-            public IconTextureWrapper(IconDescriptor iconDesc)
+            public IconTextureWrapper(IIconDescriptor iconDesc)
             {
                 m_iconDesc = iconDesc;
                 Visible = iconDesc.Visible;
@@ -703,7 +703,7 @@ namespace ZXMAK2.WinForms
                 Texture = null;
                 Texture = TextureLoader.FromStream(
                     D3D,
-                    m_iconDesc.GetIconStream());
+                    m_iconDesc.GetImageStream());
             }
         }
         

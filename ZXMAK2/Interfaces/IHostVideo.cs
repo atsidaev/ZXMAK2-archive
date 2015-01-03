@@ -9,6 +9,6 @@ namespace ZXMAK2.Interfaces
     {
         void WaitFrame();
         void CancelWait();
-        void PushFrame(VirtualMachine vm);
+        void PushFrame(IVideoFrame frame);
     }
 }

@@ -4,10 +4,11 @@ using System.Text;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using ZXMAK2.Interfaces;
 
 namespace ZXMAK2.Entities
 {
-	public class IconDescriptor
+    public class IconDescriptor : IIconDescriptor
 	{
 		private readonly byte[] m_iconData;
 
@@ -38,14 +39,14 @@ namespace ZXMAK2.Entities
             Name = iconName;
 			m_iconData = new byte[iconStream.Length];
 			iconStream.Read(m_iconData, 0, m_iconData.Length);
-			using (var stream = GetIconStream())
+			using (var stream = GetImageStream())
             using (var bitmap = new Bitmap(stream))
             {
                 Size = bitmap.Size;
             }
 		}
 
-		public MemoryStream GetIconStream()
+		public Stream GetImageStream()
 		{
 			return new MemoryStream(m_iconData);
 		}

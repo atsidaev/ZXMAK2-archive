@@ -215,6 +215,11 @@ namespace ZXMAK2.Engine
             sound.PushFrame(m_soundBuffers);
         }
 
+        public void ForceUpdateVideo()
+        {
+            OnUpdateVideo();
+        }
+
         private void OnUpdateVideo()
         {
             var host = m_host;
@@ -223,7 +228,11 @@ namespace ZXMAK2.Engine
             {
                 return;
             }
-            m_host.Video.PushFrame(this);
+            m_host.Video.PushFrame(
+                new VideoFrame(
+                    VideoData,
+                    Spectrum.BusManager.IconDescriptorArray,
+                    DebugFrameStartTact));
         }
 
         private void OnUpdateFrame(object sender, EventArgs e)
