@@ -132,7 +132,7 @@ namespace ZXMAK2.MVP
             {
                 return;
             }
-            m_view.Host.Video.PushFrame(m_vm);
+            m_vm.ForceUpdateVideo();
         }
 
         #endregion MainView Event Handlers
@@ -326,7 +326,7 @@ namespace ZXMAK2.MVP
                 {
                     form.Init(m_vm);
                     form.ShowDialog(objArg as IWin32Window);
-                    m_view.Host.Video.PushFrame(m_vm);
+                    m_vm.ForceUpdateVideo();
                     
                     ((CommandDelegate)CommandTapePause).RaiseCanExecuteChanged();
                 }

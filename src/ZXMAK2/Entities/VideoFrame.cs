@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using ZXMAK2.Interfaces;
+
+namespace ZXMAK2.Entities
+{
+    public class VideoFrame : IVideoFrame
+    {
+        public IVideoData VideoData { get; private set; }
+        public IIconDescriptor[] Icons { get; private set; }
+
+        public int StartTact { get; private set; }
+
+
+        public VideoFrame(IVideoData data, IIconDescriptor[] icons, int startTact)
+        {
+            VideoData = data;
+            Icons = icons;
+            StartTact = startTact;
+        }
+    }
+}

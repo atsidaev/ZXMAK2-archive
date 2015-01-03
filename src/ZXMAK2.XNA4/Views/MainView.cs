@@ -120,10 +120,10 @@ namespace ZXMAK2.XNA4.Views
             m_cancelEvent.Set();
         }
 
-        public void PushFrame(VirtualMachine vm)
+        public void PushFrame(IVideoFrame frame)
         {
-            m_debugFrameStart = vm.DebugFrameStartTact;
-            var videoData = vm.VideoData;
+            m_debugFrameStart = frame.StartTact;
+            var videoData = frame.VideoData;
             var videoLen = videoData.Size.Width * videoData.Size.Height;
             
             // we need to translate bgra colors to rgba
