@@ -559,9 +559,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Icons\EmuPause_32x32.png" />
-    <Content Include="ZXMAK2.Dependency.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="MACHINES.PAK">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
