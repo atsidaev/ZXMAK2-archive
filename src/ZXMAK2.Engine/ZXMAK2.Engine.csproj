@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\HardwareSwitchAttribute.cs" />
+    <Compile Include="Attributes\HardwareValueAttribute.cs" />
+    <Compile Include="Attributes\HardwareReadOnlyAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

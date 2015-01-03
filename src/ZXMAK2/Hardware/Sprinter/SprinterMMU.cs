@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ZXMAK2.Interfaces;
-using ZXMAK2.Attributes;
+using ZXMAK2.Engine.Attributes;
 
 
 namespace ZXMAK2.Hardware.Sprinter

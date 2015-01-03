@@ -8,8 +8,8 @@
     <ProjectGuid>{23BFF161-E4E8-4365-AC71-19A46E8C86E1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ZXMAK2.ZipLib</RootNamespace>
-    <AssemblyName>ZXMAK2.ZipLib</AssemblyName>
+    <RootNamespace>ZipLib</RootNamespace>
+    <AssemblyName>ZipLib</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>

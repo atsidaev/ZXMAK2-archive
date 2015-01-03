@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace ZXMAK2.Attributes
+
+namespace ZXMAK2.Engine.Attributes
 {
 	[AttributeUsage(AttributeTargets.Property)]
 	public class HardwareValueAttribute : Attribute

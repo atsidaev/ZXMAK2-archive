@@ -3,7 +3,7 @@
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Engine.Cpu;
-using ZXMAK2.Attributes;
+using ZXMAK2.Engine.Attributes;
 
 
 namespace ZXMAK2.Hardware.Profi

@@ -97,11 +97,6 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\HardwareSwitchAttribute.cs" />
-    <Compile Include="Attributes\ReadOnlyAttribute.cs" />
-    <Compile Include="Attributes\HardwareValueAttribute.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Interfaces\IHostUi.cs" />
     <Compile Include="Interfaces\IHost.cs" />
