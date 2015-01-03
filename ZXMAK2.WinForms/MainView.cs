@@ -256,7 +256,7 @@ namespace ZXMAK2.WinForms
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -272,7 +272,7 @@ namespace ZXMAK2.WinForms
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -312,7 +312,7 @@ namespace ZXMAK2.WinForms
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 m_resolver.Resolve<IUserMessage>().ErrorDetails(ex);
             }
         }
@@ -443,7 +443,7 @@ namespace ZXMAK2.WinForms
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -487,7 +487,7 @@ namespace ZXMAK2.WinForms
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -617,7 +617,7 @@ namespace ZXMAK2.WinForms
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -651,7 +651,7 @@ namespace ZXMAK2.WinForms
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -675,7 +675,7 @@ namespace ZXMAK2.WinForms
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -724,7 +724,7 @@ namespace ZXMAK2.WinForms
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 

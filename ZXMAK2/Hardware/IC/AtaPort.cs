@@ -144,7 +144,7 @@ namespace ZXMAK2.Hardware.IC
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -287,7 +287,7 @@ namespace ZXMAK2.Hardware.IC
             }
             if ((reg.status & HD_STATUS.STATUS_DRDY) == 0 && !atapi)
             {
-                LogAgent.Warn("hdd not ready cmd = #{0:X2} (ignored)", data);
+                Logger.Warn("hdd not ready cmd = #{0:X2} (ignored)", data);
                 return;
             }
 
@@ -502,7 +502,7 @@ namespace ZXMAK2.Hardware.IC
                 return true;
             }
 
-            LogAgent.Error("*** unknown ATA cmd #{0:X2} ***", cmd);
+            Logger.Error("*** unknown ATA cmd #{0:X2} ***", cmd);
             return false;
         }
 
@@ -546,7 +546,7 @@ namespace ZXMAK2.Hardware.IC
                 return true;
             }
 
-            LogAgent.Error("*** unknown ATAPI cmd #{0:X2} ***\n", cmd);
+            Logger.Error("*** unknown ATAPI cmd #{0:X2} ***\n", cmd);
             // "command aborted" with ATAPI signature
             reg.count = 1;
             reg.sec = 1;
@@ -608,7 +608,7 @@ namespace ZXMAK2.Hardware.IC
             //printf("[seek %I64d]", ((__int64)pos) << 9);
             if (LogIo)
             {
-                LogAgent.Info("IDE HDD SEEK lba={0} [fileOffset=#{1:X8}]", pos, ((long)pos) << 9);
+                Logger.Info("IDE HDD SEEK lba={0} [fileOffset=#{1:X8}]", pos, ((long)pos) << 9);
             }
             if (!ata_p.seek(pos))
             {
@@ -729,7 +729,7 @@ namespace ZXMAK2.Hardware.IC
 
             if (LogIo)
             {
-                LogAgent.Info("IDE HDD READ SECTOR ****************************************************************");
+                Logger.Info("IDE HDD READ SECTOR ****************************************************************");
             }
             if (!ata_p.read_sector(transbf, 0))
             {
@@ -793,7 +793,7 @@ namespace ZXMAK2.Hardware.IC
 
             if (LogIo)
             {
-                LogAgent.Info("IDE HDD WRITE SECTOR ***************************************************************");
+                Logger.Info("IDE HDD WRITE SECTOR ***************************************************************");
             }
             if (!ata_p.write_sector(transbf, 0))
             {
@@ -831,12 +831,12 @@ namespace ZXMAK2.Hardware.IC
 
         public void handle_atapi_packet()
         {
-            LogAgent.Error("handle_atapi_packet: method not implemented");
+            Logger.Error("handle_atapi_packet: method not implemented");
         }
 
         public void handle_atapi_packet_emulate()
         {
-            LogAgent.Error("handle_atapi_packet_emulate: method not implemented");
+            Logger.Error("handle_atapi_packet_emulate: method not implemented");
         }
 
         public void exec_mode_select()
@@ -1074,7 +1074,7 @@ namespace ZXMAK2.Hardware.IC
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 return false;
             }
         }
@@ -1118,7 +1118,7 @@ namespace ZXMAK2.Hardware.IC
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 return false;
             }
         }
@@ -1132,7 +1132,7 @@ namespace ZXMAK2.Hardware.IC
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 return false;
             }
         }

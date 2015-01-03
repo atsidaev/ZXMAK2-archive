@@ -159,8 +159,8 @@ namespace ZXMAK2.Hardware
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
-                LogAgent.Error(
+                Logger.Error(ex);
+                Logger.Error(
                     "Load RomSet failed, romSet=\"{0}\"",
                     romSetName);
             }
@@ -185,7 +185,7 @@ namespace ZXMAK2.Hardware
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
             return list;
         }

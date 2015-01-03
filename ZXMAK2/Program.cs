@@ -13,7 +13,7 @@ namespace ZXMAK2
         [STAThread]
         static void Main(string[] args)
         {
-            LogAgent.Start();
+            Logger.Start();
             try
             {
                 var resolver = new ResolverUnity();
@@ -26,11 +26,11 @@ namespace ZXMAK2
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
             finally
             {
-                LogAgent.Finish();
+                Logger.Finish();
             }
         }
     }

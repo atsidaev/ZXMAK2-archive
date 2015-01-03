@@ -251,7 +251,7 @@ namespace ZXMAK2.Hardware.General.UI
                     }
                     catch (Exception ex)
                     {
-                        LogAgent.Error(ex);
+                        Logger.Error(ex);
                         Locator.Resolve<IUserMessage>().ErrorDetails(ex);
                     }
                     UpdateCPU(true);
@@ -265,7 +265,7 @@ namespace ZXMAK2.Hardware.General.UI
                     }
                     catch (Exception ex)
                     {
-                        LogAgent.Error(ex);
+                        Logger.Error(ex);
                         Locator.Resolve<IUserMessage>().ErrorDetails(ex);
                     }
                     UpdateCPU(true);

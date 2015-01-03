@@ -82,7 +82,7 @@ namespace ZXMAK2.Hardware.Adlers
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
     }

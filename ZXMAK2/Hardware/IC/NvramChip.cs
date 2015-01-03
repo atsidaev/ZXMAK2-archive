@@ -193,7 +193,7 @@ namespace ZXMAK2.Hardware.IC
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -208,7 +208,7 @@ namespace ZXMAK2.Hardware.IC
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
     }

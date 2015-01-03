@@ -90,7 +90,7 @@ namespace ZXMAK2.MVP
         {
             if (m_vm != null)
             {
-                LogAgent.Warn("IMainView.ViewOpened event raised twice!");
+                Logger.Warn("IMainView.ViewOpened event raised twice!");
                 return;
             }
             m_vm = new VirtualMachine(m_view.Host);
@@ -121,7 +121,7 @@ namespace ZXMAK2.MVP
         {
             if (m_vm == null)
             {
-                LogAgent.Warn("IMainView.ViewClosed: object is not initialized!");
+                Logger.Warn("IMainView.ViewClosed: object is not initialized!");
             }
             Dispose();
         }
@@ -333,7 +333,7 @@ namespace ZXMAK2.MVP
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 m_userMessage.Error(ex);
             }
         }
@@ -418,7 +418,7 @@ namespace ZXMAK2.MVP
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 return false;
             }
         }
@@ -448,7 +448,7 @@ namespace ZXMAK2.MVP
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 m_userMessage.Error(ex);
             }
         }
@@ -475,7 +475,7 @@ namespace ZXMAK2.MVP
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 e.Cancel = true;
                 m_userMessage.Error(ex);
             }
@@ -503,7 +503,7 @@ namespace ZXMAK2.MVP
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 m_userMessage.Error(ex);
             }
             finally
@@ -531,7 +531,7 @@ namespace ZXMAK2.MVP
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 m_userMessage.Error(ex);
             }
             finally

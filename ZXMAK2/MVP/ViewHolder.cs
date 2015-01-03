@@ -128,7 +128,7 @@ namespace ZXMAK2.MVP
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
     }

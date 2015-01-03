@@ -59,7 +59,7 @@ namespace ZXMAK2.WinForms
 			}
 			catch (Exception ex)
 			{
-				LogAgent.Error(ex);
+				Logger.Error(ex);
 			}
 		}
 
@@ -116,7 +116,7 @@ namespace ZXMAK2.WinForms
 			}
 			catch (Exception ex)
 			{
-				LogAgent.Error(ex);
+				Logger.Error(ex);
 			}
 		}
 
@@ -136,7 +136,7 @@ namespace ZXMAK2.WinForms
 			}
 			catch (Exception ex)
 			{
-				LogAgent.Error(ex);
+				Logger.Error(ex);
 			}
 		}
 
@@ -165,7 +165,7 @@ namespace ZXMAK2.WinForms
 			}
 			catch (Exception ex)
 			{
-				LogAgent.Error(ex);
+				Logger.Error(ex);
 			}
 		}
 
@@ -178,7 +178,7 @@ namespace ZXMAK2.WinForms
 			}
 			catch (Exception ex)
 			{
-				LogAgent.Error(ex);
+				Logger.Error(ex);
 			}
 		}
 
@@ -234,7 +234,7 @@ namespace ZXMAK2.WinForms
 								D3D.Present();
 								break;
 							default:
-								LogAgent.Info("CheckCooperativeLevel = {0}", resultCode);
+								Logger.Info("CheckCooperativeLevel = {0}", resultCode);
 								break;
 						}
 						m_frameCounter++;
@@ -243,7 +243,7 @@ namespace ZXMAK2.WinForms
 			}
 			catch (Exception ex)
 			{
-				LogAgent.Error(ex);
+				Logger.Error(ex);
 			}
 		}
 

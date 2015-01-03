@@ -236,7 +236,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                 ushort ID = getUInt16(result._buffer, 0);
                 if (ID != 0x4454 && ID != 0x6474) // "TD"/"td"
                 {
-                    LogAgent.Error("TD0 loader: Invalid header ID");
+                    Logger.Error("TD0 loader: Invalid header ID");
                     Locator.Resolve<IUserMessage>()
                         .Error("TD0 loader\n\nInvalid header ID");
                     return null;
@@ -246,7 +246,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                 ushort stampcrc = getUInt16(result._buffer, 0xA);
                 if (stampcrc != crc)
                 {
-                    LogAgent.Warn("TD0 loader: Main header had bad CRC=0x" + crc.ToString("X4") + " (stamp crc=0x" + stampcrc.ToString("X4") + ")");
+                    Logger.Warn("TD0 loader: Main header had bad CRC=0x" + crc.ToString("X4") + " (stamp crc=0x" + stampcrc.ToString("X4") + ")");
                     Locator.Resolve<IUserMessage>()
                         .Warning("TD0 loader\n\nWrong main header CRC");
                 }
@@ -294,7 +294,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                     var crc = CrcTd0.Calculate(hdr._rawData, 0, 3);
                     if (hdr._rawData[3] != (crc & 0xFF))
                     {
-                        LogAgent.Warn("TD0 loader: Track header had bad CRC=0x" + crc.ToString("X4") + " (stamp crc=0x" + hdr._rawData[3].ToString("X2") + ") [CYL:0x" + hdr._rawData[1].ToString("X2") + ";SIDE:" + hdr._rawData[2].ToString("X2"));
+                        Logger.Warn("TD0 loader: Track header had bad CRC=0x" + crc.ToString("X4") + " (stamp crc=0x" + hdr._rawData[3].ToString("X2") + ") [CYL:0x" + hdr._rawData[1].ToString("X2") + ";SIDE:" + hdr._rawData[2].ToString("X2"));
                         Locator.Resolve<IUserMessage>()
                             .Warning("TD0 loader\n\nTrack header had bad CRC");
                     }
@@ -396,7 +396,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                 var crc = CrcTd0.Calculate(sector._data, 0, sector._data.Length);
                 if (adm[5] != (crc & 0xFF))
                 {
-                    LogAgent.Warn(
+                    Logger.Warn(
                         "TD0 loader: Sector data had bad CRC=0x{0:X4} (stamp crc=0x{1:X2}) [C:{2:X2};H:{3:X2};R:{4:X2};N:{5:X2}",
                         crc,
                         adm[5],
@@ -461,7 +461,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                                     }
                                     break;
                                 default:
-                                    LogAgent.Warn("Unknown sector encoding!");
+                                    Logger.Warn("Unknown sector encoding!");
                                     Locator.Resolve<IUserMessage>()
                                         .Warning("TD0 loader\n\nUnknown sector encoding!");
                                     index = buffer.Length;

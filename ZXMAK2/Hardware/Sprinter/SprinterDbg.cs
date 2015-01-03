@@ -96,7 +96,7 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 

@@ -165,7 +165,7 @@ namespace ZXMAK2.Hardware.Evo
                 var dataWord = (ushort)(data | (m_ide_write << 8));
                 if (LogIo)
                 {
-                    LogAgent.Info("IDE WR DATA: #{0:X4} @ PC=#{1:X4}", dataWord, m_cpu.regs.PC);
+                    Logger.Info("IDE WR DATA: #{0:X4} @ PC=#{1:X4}", dataWord, m_cpu.regs.PC);
                 }
                 m_ata.WriteData(dataWord);
             }
@@ -209,7 +209,7 @@ namespace ZXMAK2.Hardware.Evo
             var dataWord = m_ata.ReadData();
             if (LogIo)
             {
-                LogAgent.Info("IDE RD DATA: #{0:X4} @ PC=#{1:X4}", dataWord, m_cpu.regs.PC);
+                Logger.Info("IDE RD DATA: #{0:X4} @ PC=#{1:X4}", dataWord, m_cpu.regs.PC);
             }
             m_ide_read = (dataWord >> 8) & 0xFF;
             value = (byte)dataWord;
@@ -242,7 +242,7 @@ namespace ZXMAK2.Hardware.Evo
         {
             if (LogIo)
             {
-                LogAgent.Info("IDE WR {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
+                Logger.Info("IDE WR {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
             }
             m_ata.Write(ataReg, value);
         }
@@ -252,7 +252,7 @@ namespace ZXMAK2.Hardware.Evo
             var value = m_ata.Read(ataReg);
             if (LogIo)
             {
-                LogAgent.Info("IDE RD {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
+                Logger.Info("IDE RD {0,-13}: #{1:X2} @ PC=#{2:X4}", ataReg, value, m_cpu.regs.PC);
             }
             return value;
         }

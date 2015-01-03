@@ -520,7 +520,7 @@ namespace ZXMAK2.Hardware.General
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 

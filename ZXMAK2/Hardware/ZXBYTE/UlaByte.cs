@@ -248,7 +248,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
     }

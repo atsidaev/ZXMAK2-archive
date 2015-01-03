@@ -55,7 +55,7 @@ namespace ZXMAK2.Entities
                         T devKey = (T)Enum.Parse(typeof(T), value);
                         if (m_map.ContainsKey(emuKey))
                         {
-                            LogAgent.Warn(
+                            Logger.Warn(
                                 "Duplicate keyboard mapping \"{0}\", \"{1}\"",
                                 name,
                                 value);
@@ -65,7 +65,7 @@ namespace ZXMAK2.Entities
                     }
                     catch (Exception ex)
                     {
-                        LogAgent.Warn(
+                        Logger.Warn(
                             "Invalid keyboard mapping \"{0}\", \"{1}\" ({2})",
                             name,
                             value,
@@ -75,7 +75,7 @@ namespace ZXMAK2.Entities
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 

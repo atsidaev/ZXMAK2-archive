@@ -126,7 +126,7 @@ namespace ZXMAK2.Serializers.TapeSerializers
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 Locator.Resolve<IUserMessage>()
                     .Error("CSW loader\n\n{0}", ex.Message);
                 return;

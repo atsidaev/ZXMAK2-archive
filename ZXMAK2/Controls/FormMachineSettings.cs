@@ -316,7 +316,7 @@ namespace ZXMAK2.Controls
                                 var vmNode = xml.SelectSingleNode("/VirtualMachine");
                                 if (vmNode == null)
                                 {
-                                    LogAgent.Warn(
+                                    Logger.Warn(
                                         "Invalid machine configuration file: {0}\\{1}",
                                         csMachinesPakFileName,
                                         entry.Name);
@@ -332,13 +332,13 @@ namespace ZXMAK2.Controls
                             }
                             catch (Exception ex)
                             {
-                                LogAgent.Error(ex);
+                                Logger.Error(ex);
                             }
                         }
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -432,7 +432,7 @@ namespace ZXMAK2.Controls
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -470,7 +470,7 @@ namespace ZXMAK2.Controls
                 }
                 catch (Exception ex)
                 {
-                    LogAgent.Error(ex);
+                    Logger.Error(ex);
                     Locator.Resolve<IUserMessage>().Error(
                         "The following device was failed to initialize and will be removed:\n{0}", 
                         device.GetType());
@@ -615,7 +615,7 @@ namespace ZXMAK2.Controls
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 m_workBus.Disconnect();
                 Locator.Resolve<IUserMessage>()
                     .Error("Apply failed!\n\n{0}", ex.Message);
@@ -674,7 +674,7 @@ namespace ZXMAK2.Controls
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 Locator.Resolve<IUserMessage>()
                     .Error("Add failed!\n\n{0}", ex.Message);
             }

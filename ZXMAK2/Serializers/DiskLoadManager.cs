@@ -30,7 +30,7 @@ namespace ZXMAK2.Serializers
         {
             if (sender.IsWP)
             {
-                LogAgent.Error("Write protected disk was changed! Autosave canceled");
+                Logger.Error("Write protected disk was changed! Autosave canceled");
                 return;
             }
 

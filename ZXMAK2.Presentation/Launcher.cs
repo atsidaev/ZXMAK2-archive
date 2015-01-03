@@ -46,7 +46,7 @@ namespace ZXMAK2.Presentation
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 if (service != null)
                 {
                     service.ErrorDetails(ex);

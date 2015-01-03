@@ -244,7 +244,7 @@ namespace ZXMAK2.WinForms
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -274,7 +274,7 @@ namespace ZXMAK2.WinForms
                 }
                 catch (Exception ex)
                 {
-                    LogAgent.Error(ex);
+                    Logger.Error(ex);
                 }
             }
             Invalidate();

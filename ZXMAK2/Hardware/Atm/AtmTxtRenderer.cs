@@ -302,7 +302,7 @@ namespace ZXMAK2.Hardware.Atm
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 

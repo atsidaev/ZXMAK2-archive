@@ -56,14 +56,14 @@ namespace ZXMAK2.Engine
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogAgent.Error(ex);
+                                    Logger.Error(ex);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogAgent.Error(ex);
+                        Logger.Error(ex);
                     }
                 }
                 s_descriptors = listDescriptors;
@@ -150,7 +150,7 @@ namespace ZXMAK2.Engine
                     }
                     catch (Exception ex)
                     {
-                        LogAgent.Error(ex);
+                        Logger.Error(ex);
                         Locator.Resolve<IUserMessage>().Warning(
                             "Load plugin failed!\n\n{0}", 
                             fileName);

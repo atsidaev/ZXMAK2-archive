@@ -236,7 +236,7 @@ namespace ZXMAK2.XNA4.Views
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 

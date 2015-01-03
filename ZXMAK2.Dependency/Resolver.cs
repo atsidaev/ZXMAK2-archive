@@ -38,7 +38,7 @@ namespace ZXMAK2.Dependency
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
                 return default(T);
             }
         }

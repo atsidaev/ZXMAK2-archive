@@ -208,7 +208,7 @@ namespace ZXMAK2.Hardware.Atm
                 case RomName.ROM_DOS: return 1;
                 case RomName.ROM_SYS: return 0;
             }
-            LogAgent.Error("Unknown RomName: {0}", romId);
+            Logger.Error("Unknown RomName: {0}", romId);
             throw new InvalidOperationException("Unknown RomName");
         }
 

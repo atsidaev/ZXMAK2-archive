@@ -56,7 +56,7 @@ namespace ZXMAK2.Hardware.IC
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -67,7 +67,7 @@ namespace ZXMAK2.Hardware.IC
                 var fileInfo = new FileInfo(fileName);
                 if (fileInfo.Exists && fileInfo.IsReadOnly)
                 {
-                    LogAgent.Warn("The CMOS image could not be written to disk because marked with read only attribute: {0}", fileName);
+                    Logger.Warn("The CMOS image could not be written to disk because marked with read only attribute: {0}", fileName);
                     return;
                 }
                 using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
@@ -77,7 +77,7 @@ namespace ZXMAK2.Hardware.IC
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
         }
 

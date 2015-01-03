@@ -64,9 +64,9 @@ namespace ZXMAK2.Controls
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
-            LogAgent.Warn("content-disposition bad format: {0}", header);
+            Logger.Warn("content-disposition bad format: {0}", header);
             try
             {
                 var contDisp = new ContentDispositionEx(header);
@@ -75,7 +75,7 @@ namespace ZXMAK2.Controls
             }
             catch (Exception ex)
             {
-                LogAgent.Error(ex);
+                Logger.Error(ex);
             }
             return null;
         }
@@ -163,7 +163,7 @@ namespace ZXMAK2.Controls
                 int index = keyPair.IndexOf('=');
                 if (index < 0)
                 {
-                    LogAgent.Error(
+                    Logger.Error(
                         "ContentDispositionEx.Parse: invalid key pair '{0}'",
                         keyPair);
                     continue;
