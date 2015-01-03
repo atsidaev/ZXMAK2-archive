@@ -55,7 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\DasmTool.cs" />
     <Compile Include="Tools\TimingTool.cs" />
-    <Compile Include="Z80REGS.cs" />
+    <Compile Include="CpuRegs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">

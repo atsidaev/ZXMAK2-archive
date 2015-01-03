@@ -18,7 +18,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         public CpuType CpuType = CpuType.Z80;
         public int RzxCounter = 0;
         public long Tact = 0;
-        public REGS regs = new REGS();
+        public CpuRegs regs = new CpuRegs();
         public bool HALTED;
         public bool IFF1;
         public bool IFF2;
