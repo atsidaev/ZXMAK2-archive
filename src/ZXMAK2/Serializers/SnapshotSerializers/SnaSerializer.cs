@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 
-using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Engine.Cpu;
 
 
 namespace ZXMAK2.Serializers.SnapshotSerializers
@@ -62,7 +62,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 			ula.PortFE = regsData[26];
 
-			CpuRegs regs = new CpuRegs();
+			var regs = _spec.CPU.regs;
 			regs.I = regsData[0];
 			regs._HL = (ushort)(regsData[1] + 256 * regsData[2]);
 			regs._DE = (ushort)(regsData[3] + 256 * regsData[4]);
