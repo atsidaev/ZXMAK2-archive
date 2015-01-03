@@ -80,7 +80,7 @@ namespace ZXMAK2.Hardware.General
         {
             try
             {
-                var resolver = Locator.Instance.Resolve<IViewResolver>();
+                var resolver = Locator.Resolve<IViewResolver>();
                 m_viewHolder = new ViewHolder<IDebuggerGeneralView>(resolver, "Debugger");
             }
             catch (Exception ex)

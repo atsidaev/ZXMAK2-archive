@@ -16,12 +16,7 @@ namespace ZXMAK2
             Logger.Start();
             try
             {
-                var resolver = new ResolverUnity();
-                //var resolver = new Resolver();
-                //resolver.Load("ZXMAK2.Dependency.xml");
-                Locator.Instance = resolver;
-
-                var launcher = Locator.Instance.Resolve<ILauncher>();
+                var launcher = Locator.Resolve<ILauncher>();
                 launcher.Run(args);
             }
             catch (Exception ex)

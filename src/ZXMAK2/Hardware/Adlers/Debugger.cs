@@ -77,7 +77,7 @@ namespace ZXMAK2.Hardware.Adlers
         {
             try
             {
-                var resolver = Locator.Instance.Resolve<IViewResolver>();
+                var resolver = Locator.Resolve<IViewResolver>();
                 m_viewHolder = new ViewHolder<IDebuggerAdlersView>(resolver, "Debugger");
             }
             catch (Exception ex)

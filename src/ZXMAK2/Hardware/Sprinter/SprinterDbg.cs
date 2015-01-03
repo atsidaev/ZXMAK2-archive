@@ -91,7 +91,7 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             try
             {
-                var resolver = Locator.Instance.Resolve<IViewResolver>();
+                var resolver = Locator.Resolve<IViewResolver>();
                 m_viewHolder = new ViewHolder<IDebuggerSprinterView>(resolver, "Debugger");
             }
             catch (Exception ex)
