@@ -3,7 +3,7 @@
 /// Date: 13.04.2007
 using System;
 
-namespace ZXMAK2.Engine.Z80
+namespace ZXMAK2.Engine.Cpu.Processor
 {
     public partial class Z80CPU
     {
@@ -441,7 +441,7 @@ namespace ZXMAK2.Engine.Z80
             byte pval = RDPORT(regs.BC);
             regs.MW++;
             int reg = (cmd & 0x38) >> 3;
-            if (reg != REGS.ZR_F)
+            if (reg != CpuRegId.ZR_F)
                 regs[reg] = pval;
             regs.F = (byte)(log_f[pval] | (regs.F & (int)ZFLAGS.C));
             Tact += 4;
@@ -454,10 +454,10 @@ namespace ZXMAK2.Engine.Z80
             regs.MW = regs.BC;
             int reg = (cmd & 0x38) >> 3;
 
-            if (reg != REGS.ZR_F)
+            if (reg != CpuRegId.ZR_F)
                 WRPORT(regs.BC, regs[reg]);
             else
-                WRPORT(regs.BC, (byte)(CpuType == Z80.CpuType.Z80 ? 0x00 : 0xFF));	// 0 for Z80 and 0xFF for Z84
+                WRPORT(regs.BC, (byte)(CpuType == CpuType.Z80 ? 0x00 : 0xFF));	// 0 for Z80 and 0xFF for Z84
             regs.MW++;
             Tact += 4;
         }

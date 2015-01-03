@@ -2,7 +2,7 @@
 
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Attributes;
 
 
@@ -12,7 +12,7 @@ namespace ZXMAK2.Hardware.Profi
     {
         #region Fields
 
-        private Z80CPU m_cpu;
+        private CpuUnit m_cpu;
         private UlaProfi3XX m_ulaProfi;
         private bool m_lock = false;
         private int m_cmr1mask;

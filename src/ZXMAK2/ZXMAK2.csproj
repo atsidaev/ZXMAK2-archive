@@ -369,8 +369,6 @@
     <Compile Include="Hardware\Profi\UlaProfi3XX.cs" />
     <Compile Include="Hardware\Quorum\UlaQuorum.cs" />
     <Compile Include="Hardware\Scorpion\UlaScorpionYellow.cs" />
-    <Compile Include="Engine\Z80\TimingTool.cs" />
-    <Compile Include="Engine\Z80\Z80FXCBops.cs" />
     <Compile Include="Hardware\Spectrum\UlaPlus3.cs" />
     <Compile Include="Hardware\General\AY8910.cs" />
     <Compile Include="Entities\DiskImage.cs" />
@@ -399,14 +397,6 @@
     <Compile Include="Serializers\TapeSerializers\TzxSerializer.cs" />
     <Compile Include="Engine\SpectrumBase.cs" />
     <Compile Include="Hardware\General\TapeDevice.cs" />
-    <Compile Include="Engine\Z80\DasmTool.cs" />
-    <Compile Include="Engine\Z80\Z80.cs" />
-    <Compile Include="Engine\Z80\Z80ALU.cs" />
-    <Compile Include="Engine\Z80\Z80CBops.cs" />
-    <Compile Include="Engine\Z80\Z80EDops.cs" />
-    <Compile Include="Engine\Z80\Z80FXops.cs" />
-    <Compile Include="Engine\Z80\Z80OPS.cs" />
-    <Compile Include="Engine\Z80\Z80REGS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Engine\VirtualMachine.cs" />
     <Compile Include="Hardware\Sprinter\UI\DebugForm.cs">
@@ -608,9 +598,15 @@
       <Name>ZXMAK2.Dependency</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Engine.Cpu\ZXMAK2.Engine.Cpu.csproj">
+      <Project>{DA58F7C5-8365-4483-AAE4-0C6A90D42C35}</Project>
+      <Name>ZXMAK2.Engine.Cpu</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">
       <Project>{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}</Project>
       <Name>ZXMAK2.Logging</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

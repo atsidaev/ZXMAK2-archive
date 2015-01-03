@@ -7,12 +7,13 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 using ZXMAK2.Interfaces;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine;
 using ZXMAK2.Hardware.General.UI;
 using ZXMAK2.Entities;
 using ZXMAK2.Controls;
 using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.Engine.Cpu.Tools;
 
 namespace ZXMAK2.Hardware.Sprinter.UI
 {
@@ -358,8 +359,8 @@ namespace ZXMAK2.Hardware.Sprinter.UI
 
                     case 3:
                         {
-                            Z80CPU cPU = m_spectrum.CPU;
-                            cPU.IM = (byte)(cPU.IM + 1);
+                            var cpu = m_spectrum.CPU;
+                            cpu.IM = (byte)(cpu.IM + 1);
                             if (m_spectrum.CPU.IM > 2)
                             {
                                 m_spectrum.CPU.IM = 0;
@@ -381,7 +382,7 @@ namespace ZXMAK2.Hardware.Sprinter.UI
                                 {
                                     num2 += m_spectrum.FrameTactCount;
                                 }
-                                Z80CPU zcpu2 = m_spectrum.CPU;
+                                var zcpu2 = m_spectrum.CPU;
                                 zcpu2.Tact += num2;
                             }
                             break;

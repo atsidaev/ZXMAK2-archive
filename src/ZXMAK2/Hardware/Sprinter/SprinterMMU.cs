@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-using ZXMAK2.Engine.Z80;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Attributes;
 
@@ -172,7 +171,6 @@ namespace ZXMAK2.Hardware.Sprinter
 
         //        System.Windows.Forms.ListBox lb;
 
-        private Z80CPU m_cpu;
         private SprinterULA m_ulaSprinter;
         private SprinterFdd m_SprinterBDI;
 
@@ -212,7 +210,6 @@ namespace ZXMAK2.Hardware.Sprinter
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            this.m_cpu = bmgr.CPU;
 
             this.m_ulaSprinter = bmgr.FindDevice<SprinterULA>();
             if (this.m_ulaSprinter != null)

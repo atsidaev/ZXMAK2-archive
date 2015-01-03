@@ -4,7 +4,7 @@
 using System;
 
 
-namespace ZXMAK2.Engine.Z80
+namespace ZXMAK2.Engine.Cpu.Tools
 {
     public class DasmTool
     {

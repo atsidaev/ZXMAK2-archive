@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Collections.Generic;
 
 using ZXMAK2.Interfaces;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine;
 using ZXMAK2.Serializers;
 using ZXMAK2.Controls.Debugger;
@@ -18,7 +18,7 @@ namespace ZXMAK2.Engine
     {
         #region private data
 
-        private Z80CPU _cpu;
+        private CpuUnit _cpu;
         private BusManager _bus;
         private LoadManager _loader;
 
@@ -30,7 +30,7 @@ namespace ZXMAK2.Engine
 
         public override BusManager BusManager { get { return _bus; } }
 
-        public override Z80CPU CPU { get { return _cpu; } }
+        public override CpuUnit CPU { get { return _cpu; } }
         public override LoadManager Loader { get { return _loader; } }
 
         public override int FrameStartTact { get { return m_frameStartTact; } }
@@ -38,7 +38,7 @@ namespace ZXMAK2.Engine
         public SpectrumConcrete()
         {
             _loader = new LoadManager(this);
-            _cpu = new Z80CPU();
+            _cpu = new CpuUnit();
             _bus = new BusManager();
         }
 

@@ -5,15 +5,12 @@ using System;
 using System.Threading;
 using System.Collections.Generic;
 
-namespace ZXMAK2.Engine.Z80
+namespace ZXMAK2.Engine.Cpu.Processor
 {
     public delegate void OnNOMREQ(ushort addr);
     public delegate void OnBUSAK();
     public delegate byte OnRDBUS(ushort ADDR);
     public delegate void OnWRBUS(ushort ADDR, byte value);
-    public enum OPFX { NONE, IX, IY }
-    public enum OPXFX { NONE, CB, ED }
-    public enum CpuType { Z80 = 0, Z84 }
 
 
     public partial class Z80CPU

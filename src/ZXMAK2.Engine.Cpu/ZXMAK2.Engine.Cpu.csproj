@@ -39,7 +39,23 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cpu.cs" />
+    <Compile Include="CpuFlags.cs" />
+    <Compile Include="CpuType.cs" />
+    <Compile Include="OPFX.cs" />
+    <Compile Include="OPXFX.cs" />
+    <Compile Include="Processor\CpuRegId.cs" />
+    <Compile Include="Processor\Z80.cs" />
+    <Compile Include="Processor\Z80ALU.cs" />
+    <Compile Include="Processor\Z80CBops.cs" />
+    <Compile Include="Processor\Z80EDops.cs" />
+    <Compile Include="Processor\Z80FXCBops.cs" />
+    <Compile Include="Processor\Z80FXops.cs" />
+    <Compile Include="Processor\Z80OPS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\DasmTool.cs" />
+    <Compile Include="Tools\TimingTool.cs" />
+    <Compile Include="Z80REGS.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">

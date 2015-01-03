@@ -11,6 +11,7 @@ using ZXMAK2.Engine;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Controls.Debugger;
 using ZXMAK2.Entities;
+using ZXMAK2.Engine.Cpu;
 
 namespace ZXMAK2.Engine
 {
@@ -525,7 +526,7 @@ namespace ZXMAK2.Engine
             }
         }
 
-        public Engine.Z80.Z80CPU CPU
+        public CpuUnit CPU
         {
             get
             {

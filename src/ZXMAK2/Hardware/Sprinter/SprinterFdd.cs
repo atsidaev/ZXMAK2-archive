@@ -1,9 +1,9 @@
 ﻿using System.Xml;
 using ZXMAK2.Engine;
-using ZXMAK2.Engine.Z80;
 using ZXMAK2.Entities;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Hardware.IC;
+using ZXMAK2.Engine.Cpu;
 
 
 namespace ZXMAK2.Hardware.Sprinter
@@ -15,7 +15,7 @@ namespace ZXMAK2.Hardware.Sprinter
         private bool m_sandbox = false;
         private IconDescriptor m_iconRd = new IconDescriptor("FDDRD", Utils.GetIconStream("Fdd.png"));
         private IconDescriptor m_iconWr = new IconDescriptor("FDDWR", Utils.GetIconStream("FddWr.png"));
-        protected Z80CPU m_cpu;
+        protected CpuUnit m_cpu;
         protected IMemoryDevice m_memory;
         protected Wd1793 m_wd = new Wd1793(2);
 

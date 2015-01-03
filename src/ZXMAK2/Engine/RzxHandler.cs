@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 using ZXMAK2.Interfaces;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Entities;
 
 ﻿﻿namespace ZXMAK2.Engine
   {
       public class RzxHandler : IRzxState
       {
-          private Z80CPU m_cpu;
+          private CpuUnit m_cpu;
           private BusManager m_busMgr;
 
           public bool IsPlayback;
@@ -20,7 +20,7 @@ using ZXMAK2.Entities;
           private int m_playIndex;
           private IRzxFrameSource m_frameSource;
 
-          public RzxHandler(Z80CPU cpu, BusManager busMgr)
+          public RzxHandler(CpuUnit cpu, BusManager busMgr)
           {
               m_cpu = cpu;
               m_busMgr = busMgr;

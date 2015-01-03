@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Controls.Debugger;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
@@ -29,7 +29,7 @@ namespace ZXMAK2.Interfaces
 		event EventHandler UpdateState;
 		event EventHandler Breakpoint;
 		bool IsRunning { get; }
-		Z80CPU CPU { get; }
+		CpuUnit CPU { get; }
 		int GetFrameTact();
 		int FrameTactCount { get; }
 

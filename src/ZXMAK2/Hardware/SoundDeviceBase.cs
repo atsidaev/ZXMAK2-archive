@@ -5,9 +5,9 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 using ZXMAK2.Interfaces;
-using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
+using ZXMAK2.Engine.Cpu;
 
 namespace ZXMAK2.Hardware
 {
@@ -110,7 +110,7 @@ namespace ZXMAK2.Hardware
 		#endregion
 
 
-		private Z80CPU m_cpu;
+		private CpuUnit m_cpu;
 
 		private int m_volume = 100;
 		private int m_frameTactCount = 0;

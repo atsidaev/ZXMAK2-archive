@@ -7,8 +7,9 @@ using ZXMAK2.Interfaces;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Reflection.Emit;
-using ZXMAK2.Engine.Z80;
 using ZXMAK2.Engine;
+using ZXMAK2.Engine.Cpu;
+
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
@@ -369,7 +370,7 @@ namespace ZXMAK2.Hardware.Adlers.UI
             return BreakPointAccessType.Undefined;
         }
 
-        public static ushort getRegistryValueByName( ZXMAK2.Engine.Z80.REGS regs, string i_registryName)
+        public static ushort getRegistryValueByName(REGS regs, string i_registryName)
         {
             string registryName = i_registryName.ToUpper();
 

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 
 
 namespace ZXMAK2.Serializers.SnapshotSerializers

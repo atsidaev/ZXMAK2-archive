@@ -7,13 +7,14 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine;
 using System.Collections.Generic;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Controls;
 using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.Engine.Cpu.Tools;
 
 namespace ZXMAK2.Hardware.General.UI
 {

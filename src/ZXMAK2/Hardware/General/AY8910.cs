@@ -4,7 +4,7 @@
 using System;
 using System.Xml;
 using ZXMAK2.Interfaces;
-using ZXMAK2.Engine.Z80;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 
@@ -287,7 +287,7 @@ namespace ZXMAK2.Hardware.General
         }
 
 
-        private Z80CPU m_cpu;
+        private CpuUnit m_cpu;
 
         #region registers
 
