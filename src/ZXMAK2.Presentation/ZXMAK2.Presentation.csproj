@@ -41,6 +41,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\CommandDelegate.cs" />
+    <Compile Include="Interfaces\ICommand.cs" />
+    <Compile Include="Interfaces\IHostUi.cs" />
     <Compile Include="Interfaces\ILauncher.cs" />
     <Compile Include="Interfaces\IMainPresenter.cs" />
     <Compile Include="Interfaces\IMainView.cs" />
