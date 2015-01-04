@@ -62,6 +62,7 @@
     <Compile Include="Interfaces\IIconDescriptor.cs" />
     <Compile Include="Interfaces\IJoystickState.cs" />
     <Compile Include="Interfaces\IKeyboardState.cs" />
+    <Compile Include="Interfaces\ILauncher.cs" />
     <Compile Include="Interfaces\IMouseState.cs" />
     <Compile Include="Interfaces\IUserMessage.cs" />
     <Compile Include="Interfaces\IUserQuery.cs" />
