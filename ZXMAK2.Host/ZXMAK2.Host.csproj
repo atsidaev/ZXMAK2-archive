@@ -70,7 +70,7 @@
     <Compile Include="Interfaces\IVideoFrame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\KeyboardMapper.cs" />
-    <Compile Include="UserMessage.cs" />
+    <Compile Include="Services\UserMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZXMAK2.Dependency\ZXMAK2.Dependency.csproj">
