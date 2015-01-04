@@ -88,7 +88,6 @@
     </Compile>
     <Compile Include="Interfaces\IJoystickDevice.cs" />
     <Compile Include="Interfaces\IKeyboardDevice.cs" />
-    <Compile Include="Interfaces\ILauncher.cs" />
     <Compile Include="Engine\FpsMonitor.cs" />
     <Compile Include="Interfaces\IMouseDevice.cs" />
     <Compile Include="MVP\Interfaces\IView.cs" />
