@@ -4,6 +4,7 @@ using ZXMAK2.Entities;
 using ZXMAK2.Hardware.IC.SecureDigital;
 using System.Windows.Forms;
 using ZXMAK2.Host.Entities;
+using ZXMAK2.Presentation.Entities;
 
 
 namespace ZXMAK2.Hardware.Evo

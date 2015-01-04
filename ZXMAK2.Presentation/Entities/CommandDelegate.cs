@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Presentation.Interfaces;
 
 
-namespace ZXMAK2.Host.Entities
+namespace ZXMAK2.Presentation.Entities
 {
     public class CommandDelegate : ICommand
     {
