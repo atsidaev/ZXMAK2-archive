@@ -100,14 +100,14 @@ namespace ZXMAK2.Hardware.Evo
 
         public override bool IsMap48 { get { return false; } }
 
-        public override int GetRomIndex(RomName romId)
+        public override int GetRomIndex(RomId romId)
         {
             switch (romId)
             {
-                case RomName.ROM_SOS: return 0x1C;
-                case RomName.ROM_DOS: return 0x1D;
-                case RomName.ROM_128: return 0x1E;
-                case RomName.ROM_SYS: return 0x1F;
+                case RomId.ROM_SOS: return 0x1C;
+                case RomId.ROM_DOS: return 0x1D;
+                case RomId.ROM_128: return 0x1E;
+                case RomId.ROM_SYS: return 0x1F;
             }
             throw new NotImplementedException();
         }

@@ -90,14 +90,14 @@ namespace ZXMAK2.Hardware.Atm
         public override bool IsMap48 { get { return false; } }
         public override bool IsRom48 { get { return !DOSEN && (CMR0 & 0x10) != 0; } }
 
-        public override int GetRomIndex(RomName romId)
+        public override int GetRomIndex(RomId romId)
         {
             switch (romId)
             {
-                case RomName.ROM_SOS: return 4;
-                case RomName.ROM_DOS: return 5;
-                case RomName.ROM_128: return 6;
-                case RomName.ROM_SYS: return 7;
+                case RomId.ROM_SOS: return 4;
+                case RomId.ROM_DOS: return 5;
+                case RomId.ROM_128: return 6;
+                case RomId.ROM_SYS: return 7;
             }
             throw new NotImplementedException();
         }

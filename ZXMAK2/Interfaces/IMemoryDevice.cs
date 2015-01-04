@@ -10,7 +10,7 @@ namespace ZXMAK2.Interfaces
 
         byte[][] RamPages { get; }
         byte[][] RomPages { get; }
-        int GetRomIndex(RomName rom);
+        int GetRomIndex(RomId rom);
 
         byte CMR0 { get; set; }
         byte CMR1 { get; set; }
@@ -34,7 +34,7 @@ namespace ZXMAK2.Interfaces
         bool IsRom48 { get; }
     }
 
-    public enum RomName
+    public enum RomId
     {
         ROM_128 = 0,
         ROM_SOS = 1,

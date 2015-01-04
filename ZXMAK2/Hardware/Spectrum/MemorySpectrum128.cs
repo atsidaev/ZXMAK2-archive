@@ -32,12 +32,12 @@ namespace ZXMAK2.Hardware.Spectrum
             m_lock = (CMR0 & 0x20) != 0;
             int ramPage = CMR0 & 7;
             int romPage = (CMR0 & 0x10) != 0 ?
-                GetRomIndex(RomName.ROM_SOS) :
-                GetRomIndex(RomName.ROM_128);
+                GetRomIndex(RomId.ROM_SOS) :
+                GetRomIndex(RomId.ROM_128);
             int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 
             if (DOSEN)      // trdos or 48/128
-                romPage = GetRomIndex(RomName.ROM_DOS);
+                romPage = GetRomIndex(RomId.ROM_DOS);
 
             m_ula.SetPageMapping(videoPage, -1, 5, 2, ramPage);
             MapRead0000 = RomPages[romPage];
@@ -56,14 +56,14 @@ namespace ZXMAK2.Hardware.Spectrum
             Map48[3] = ramPage;
         }
 
-        public override int GetRomIndex(RomName romId)
+        public override int GetRomIndex(RomId romId)
         {
             switch (romId)
             {
-                case RomName.ROM_128: return 0;
-                case RomName.ROM_SOS: return 1;
-                case RomName.ROM_DOS: return 2;
-                case RomName.ROM_SYS: return 3;
+                case RomId.ROM_128: return 0;
+                case RomId.ROM_SOS: return 1;
+                case RomId.ROM_DOS: return 2;
+                case RomId.ROM_SYS: return 3;
             }
             Logger.Error("Unknown RomName: {0}", romId);
             throw new InvalidOperationException("Unknown RomName");
