@@ -9,7 +9,7 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Model.Tape.Interfaces;
 using ZXMAK2.Resources;
-using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.Presentation.Interfaces;
 
 
 namespace ZXMAK2.Controls
