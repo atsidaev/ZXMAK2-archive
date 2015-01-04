@@ -65,10 +65,6 @@
     <Compile Include="Xna\XnaSound.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZXMAK2.Host.Presentation\ZXMAK2.Host.Presentation.csproj">
-      <Project>{3BD6BE76-E868-4B46-84AF-175BF5975B2A}</Project>
-      <Name>ZXMAK2.Host.Presentation</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Host\ZXMAK2.Host.csproj">
       <Project>{7267B638-8145-46BD-AC72-60D0D6002B51}</Project>
       <Name>ZXMAK2.Host</Name>
@@ -77,6 +73,11 @@
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">
       <Project>{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}</Project>
       <Name>ZXMAK2.Logging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Presentation\ZXMAK2.Presentation.csproj">
+      <Project>{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}</Project>
+      <Name>ZXMAK2.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2\ZXMAK2.csproj">
