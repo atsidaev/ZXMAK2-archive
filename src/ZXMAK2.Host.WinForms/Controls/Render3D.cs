@@ -8,7 +8,7 @@ using Microsoft.DirectX.Direct3D;
 
 
 
-namespace ZXMAK2.Host.WinForms
+namespace ZXMAK2.Host.WinForms.Controls
 {
 	public class Render3D : Control
 	{

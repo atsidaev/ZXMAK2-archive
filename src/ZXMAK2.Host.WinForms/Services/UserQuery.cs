@@ -6,7 +6,7 @@ using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Interfaces;
 
 
-namespace ZXMAK2.Host.WinForms
+namespace ZXMAK2.Host.WinForms.Services
 {
     public class UserQuery : IUserQuery
     {

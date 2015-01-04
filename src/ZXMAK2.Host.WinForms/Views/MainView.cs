@@ -14,9 +14,11 @@ using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.WinForms.Mdx;
+using ZXMAK2.Host.WinForms.Services;
+using ZXMAK2.Host.WinForms.Controls;
 
 
-namespace ZXMAK2.Host.WinForms
+namespace ZXMAK2.Host.WinForms.Views
 {
     public partial class MainView : Form, IMainView, IHostUi
     {

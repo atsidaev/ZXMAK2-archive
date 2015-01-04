@@ -15,7 +15,7 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Host.Interfaces;
 
 
-namespace ZXMAK2.Host.WinForms
+namespace ZXMAK2.Host.WinForms.Controls
 {
     public class RenderVideo : Render3D, IHostVideo
     {
