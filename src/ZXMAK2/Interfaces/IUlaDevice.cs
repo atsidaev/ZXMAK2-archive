@@ -9,6 +9,8 @@ namespace ZXMAK2.Interfaces
 	{
         IVideoData VideoData { get; }
 
+        bool IsEarlyTimings { get; }
+
 		void LoadScreenData(Stream stream);
 		void SaveScreenData(Stream stream);
 		void ForceRedrawFrame();

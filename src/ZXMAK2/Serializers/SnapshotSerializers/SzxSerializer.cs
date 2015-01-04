@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Runtime.InteropServices;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Serializers.SnapshotSerializers
 {
@@ -160,8 +161,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             ula.PortFE = pFE;
             switch (header.MachineId)
             {
-                case MachineId.ZXSTMID_16K:
-                case MachineId.ZXSTMID_48K:
+                case SzxModelId.ZXSTMID_16K:
+                case SzxModelId.ZXSTMID_48K:
                     memory.CMR0 = 0x30;
                     memory.CMR1 = 0;
                     break;
@@ -313,38 +314,22 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
             // very ugly, because there is no option for custom configuration machine
             var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
-            header.MachineId = MachineId.ZXSTMID_128K;
-            if (memory is ZXMAK2.Hardware.Pentagon.MemoryPentagon128)
+
+            header.MachineId = GetModelId(_spec.BusManager.ModelId);
+            if (header.MachineId == SzxModelId.ZXSTMID_CUSTOM)
             {
-                header.MachineId = MachineId.ZXSTMID_PENTAGON128;
+                if (memory.RamPages.Length == 8)
+                {
+                    header.MachineId = SzxModelId.ZXSTMID_PENTAGON128;
+                }
+                else if (memory.IsMap48)
+                {
+                    header.MachineId = SzxModelId.ZXSTMID_48K;
+                }
             }
-            else if (memory is ZXMAK2.Hardware.Spectrum.MemorySpectrum128)
-            {
-                header.MachineId = MachineId.ZXSTMID_128K;
-            }
-            else if (memory is ZXMAK2.Hardware.Spectrum.MemoryPlus3)
-            {
-                header.MachineId = MachineId.ZXSTMID_PLUS3;
-            }
-            else if (memory.RamPages.Length != 8)
-            {
-                header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
-                if (memory is ZXMAK2.Hardware.Pentagon.MemoryPentagon512)
-                    header.MachineId = MachineId.ZXSTMID_PENTAGON512;
-                else if (memory is ZXMAK2.Hardware.Pentagon.MemoryPentagon1024)
-                    header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
-                else if (memory is ZXMAK2.Hardware.Scorpion.MemoryScorpion1024)
-                    header.MachineId = MachineId.ZXSTMID_PENTAGON1024;
-                else if (memory is ZXMAK2.Hardware.Scorpion.MemoryScorpion256)
-                    header.MachineId = MachineId.ZXSTMID_SCORPION;
-            }
-            else if (memory.IsMap48)
-            {
-                header.MachineId = MachineId.ZXSTMID_48K;
-            }
+            
             var ula = _spec.BusManager.FindDevice<IUlaDevice>();
-            if (ula.GetType() == typeof(ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early) ||
-                ula.GetType() == typeof(ZXMAK2.Hardware.Spectrum.UlaSpectrum128_Early))
+            if (ula.IsEarlyTimings)
             {
                 header.Flags = (byte)(header.Flags & ~ZXSTMF_ALTERNATETIMINGS);
             }
@@ -355,10 +340,10 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             save_SPCR(stream, header);
             switch (header.MachineId)
             {
-                case MachineId.ZXSTMID_16K:
+                case SzxModelId.ZXSTMID_16K:
                     save_RAMP(stream, 5, memory.RamPages[memory.Map48[1]]);
                     break;
-                case MachineId.ZXSTMID_48K:
+                case SzxModelId.ZXSTMID_48K:
                     save_RAMP(stream, 5, memory.RamPages[memory.Map48[1]]);
                     save_RAMP(stream, 2, memory.RamPages[memory.Map48[2]]);
                     save_RAMP(stream, 0, memory.RamPages[memory.Map48[3]]);
@@ -370,6 +355,21 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             }
             save_AY(stream);
             save_B128(stream);
+        }
+
+        private SzxModelId GetModelId(ModelId modelId)
+        {
+            switch (modelId)
+            {
+                case ModelId.Pentagon128: return SzxModelId.ZXSTMID_PENTAGON128;
+                case ModelId.Pentagon512: return SzxModelId.ZXSTMID_PENTAGON512;
+                case ModelId.Pentagon1024: return SzxModelId.ZXSTMID_PENTAGON1024;
+                case ModelId.Sinclair48: return SzxModelId.ZXSTMID_48K;
+                case ModelId.Sinclair128: return SzxModelId.ZXSTMID_128K;
+                case ModelId.SinclairPlus3: return SzxModelId.ZXSTMID_PLUS3;
+                case ModelId.Scorpion: return SzxModelId.ZXSTMID_SCORPION;
+            }
+            return SzxModelId.ZXSTMID_CUSTOM;
         }
 
         private void save_CRTR(Stream stream)
@@ -443,8 +443,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             byte cmr1 = memory.CMR1;
             switch (header.MachineId)
             {
-                case MachineId.ZXSTMID_16K:
-                case MachineId.ZXSTMID_48K:
+                case SzxModelId.ZXSTMID_16K:
+                case SzxModelId.ZXSTMID_48K:
                     cmr0 = 0x30;
                     cmr1 = 0x00;
                     break;
@@ -560,7 +560,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         #region Struct
 
-        private enum MachineId : byte
+        private enum SzxModelId : byte
         {
             ZXSTMID_16K = 0,
             ZXSTMID_48K = 1,
@@ -579,6 +579,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             ZXSTMID_PENTAGON1024 = 14,
             ZXSTMID_NTSC48K = 15,
             ZXSTMID_128KE = 16,
+            ZXSTMID_CUSTOM = 255,
         }
 
         private const int ZXSTMF_ALTERNATETIMINGS = 1;
@@ -588,7 +589,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             public uint Magic = 0x5453585A;	// ZXST
             public byte MajorVersion = 1;
             public byte MinorVersion = 4;
-            public MachineId MachineId = MachineId.ZXSTMID_PENTAGON128;
+            public SzxModelId MachineId = SzxModelId.ZXSTMID_PENTAGON128;
             public byte Flags = ZXSTMF_ALTERNATETIMINGS;					  // use late model
 
             public void Serialize(Stream stream)
@@ -607,7 +608,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                 StreamHelper.Read(stream, out MinorVersion);
                 byte mId;
                 StreamHelper.Read(stream, out mId);
-                MachineId = (MachineId)mId;
+                MachineId = (SzxModelId)mId;
                 StreamHelper.Read(stream, out Flags);
             }
         }

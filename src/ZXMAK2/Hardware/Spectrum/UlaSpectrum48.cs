@@ -25,6 +25,11 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #endregion
 
+        public override bool IsEarlyTimings
+        {
+            get { return true; }
+        }
+
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
             // ZX Spectrum 48
@@ -237,6 +242,11 @@ namespace ZXMAK2.Hardware.Spectrum
     public class UlaSpectrum48 : UlaSpectrum48_Early
     {
         public override string Name { get { return "ZX Spectrum 48 [late model]"; } }
+
+        public override bool IsEarlyTimings
+        {
+            get { return false; }
+        }
 
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
