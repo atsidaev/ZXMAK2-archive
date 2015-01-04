@@ -13,11 +13,6 @@ namespace ZXMAK2
 {
     public static class Utils
     {
-        public static Icon GetAppIcon()
-        {
-            return ImageResources.ZXMAK2;
-        }
-
         #region Xml Helpers
 
         public static void SetXmlAttribute(XmlNode node, string name, Int32 value)

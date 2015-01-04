@@ -125,6 +125,11 @@
       <Name>ZXMAK2.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Resources\ZXMAK2.Resources.csproj">
+      <Project>{1D3FFF75-30F8-4E8A-B650-B7FB3DA9C776}</Project>
+      <Name>ZXMAK2.Resources</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2\ZXMAK2.csproj">
       <Project>{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}</Project>
       <Name>ZXMAK2</Name>
