@@ -76,11 +76,11 @@
     <Compile Include="MainView.Designer.cs">
       <DependentUpon>MainView.cs</DependentUpon>
     </Compile>
-    <Compile Include="MDX\DirectJoystick.cs" />
-    <Compile Include="MDX\DirectKeyboard.cs" />
-    <Compile Include="MDX\DirectMouse.cs" />
-    <Compile Include="MDX\DirectSound.cs" />
-    <Compile Include="MDX\MdxHost.cs" />
+    <Compile Include="Mdx\DirectJoystick.cs" />
+    <Compile Include="Mdx\DirectKeyboard.cs" />
+    <Compile Include="Mdx\DirectMouse.cs" />
+    <Compile Include="Mdx\DirectSound.cs" />
+    <Compile Include="Mdx\MdxHost.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
