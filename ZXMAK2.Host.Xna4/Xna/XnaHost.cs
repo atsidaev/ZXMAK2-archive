@@ -35,7 +35,6 @@ namespace ZXMAK2.Host.Xna4.Xna
         }
 
 
-        public IHostUi HostUi { get; private set; }
         public IHostVideo Video { get; private set; }
         public IHostSound Sound { get; private set; }
         public IHostKeyboard Keyboard { get; private set; }

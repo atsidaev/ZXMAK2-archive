@@ -96,7 +96,7 @@ namespace ZXMAK2.MVP
                 Logger.Warn("IMainView.ViewOpened event raised twice!");
                 return;
             }
-            m_vm = new VirtualMachine(m_view.Host);
+            m_vm = new VirtualMachine(m_view.Host, m_view.CommandManager);
             m_vm.Init();
             m_vm.UpdateState += VirtualMachine_OnUpdateState;
 

@@ -57,7 +57,7 @@ namespace ZXMAK2.Engine
 
         #region .ctor
 
-        public unsafe VirtualMachine(IHost host)
+        public unsafe VirtualMachine(IHost host, IHostUi commandManager)
         {
             m_host = host;
             SyncSource = SyncSource.Sound;
@@ -65,7 +65,7 @@ namespace ZXMAK2.Engine
             Spectrum.UpdateState += OnUpdateState;
             Spectrum.Breakpoint += OnBreakpoint;
             Spectrum.UpdateFrame += OnUpdateFrame;
-            Spectrum.BusManager.HostUi = host.HostUi;
+            Spectrum.BusManager.HostUi = commandManager;
             Spectrum.BusManager.ConfigChanged += BusManager_OnConfigChanged;
         }
 

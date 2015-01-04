@@ -97,6 +97,11 @@ namespace ZXMAK2.Host.WinForms.Views
             get { return m_host; }
         }
 
+        public IHostUi CommandManager
+        {
+            get { return this; }
+        }
+
         public Func<IVideoData> GetVideoData { get; set; }
 
         public event EventHandler ViewOpened;

@@ -83,6 +83,11 @@ namespace ZXMAK2.Host.Xna4.Views
             get { return m_host; }
         }
 
+        public IHostUi CommandManager
+        {
+            get { return null; }
+        }
+
         public Func<IVideoData> GetVideoData { get; set; }
 
         public event EventHandler ViewOpened;
