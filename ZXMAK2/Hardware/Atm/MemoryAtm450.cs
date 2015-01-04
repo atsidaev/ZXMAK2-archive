@@ -2,6 +2,7 @@
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Attributes;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Hardware.Atm

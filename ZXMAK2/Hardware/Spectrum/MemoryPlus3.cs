@@ -1,5 +1,6 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
 
 namespace ZXMAK2.Hardware.Spectrum
 {
