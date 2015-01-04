@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using ZXMAK2.MVP.Interfaces;
-using ZXMAK2.Entities;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;

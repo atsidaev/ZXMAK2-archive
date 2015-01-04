@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Host.Interfaces;
 
 
