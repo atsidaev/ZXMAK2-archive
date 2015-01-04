@@ -173,6 +173,7 @@ namespace ZXMAK2.WinForms.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
         ///&lt;KeyboardMap Type=&quot;Microsoft.DirectX.DirectInput.Key&quot;&gt;
+        ///    &lt;!-- Name=keyName, Value=Microsoft.DirectX.DirectInput.Key --&gt;
         ///    &lt;Key Name=&quot;D1&quot; Value=&quot;D1&quot; /&gt;
         ///    &lt;Key Name=&quot;D2&quot; Value=&quot;D2&quot; /&gt;
         ///    &lt;Key Name=&quot;D3&quot; Value=&quot;D3&quot; /&gt;
@@ -183,13 +184,11 @@ namespace ZXMAK2.WinForms.Properties {
         ///    &lt;Key Name=&quot;D8&quot; Value=&quot;D8&quot; /&gt;
         ///    &lt;Key Name=&quot;D9&quot; Value=&quot;D9&quot; /&gt;
         ///    &lt;Key Name=&quot;D0&quot; Value=&quot;D0&quot; /&gt;
-        ///    &lt;Key Name=&quot;Q&quot; Value=&quot;Q&quot; /&gt;
-        ///    &lt;Key Name=&quot;W&quot; Value=&quot;W&quot; /&gt;
-        ///    &lt;Key Na [rest of string was truncated]&quot;;.
+        ///    &lt;Ke [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string KeyboardMap_Mdx {
+        internal static string Keyboard_Mdx {
             get {
-                return ResourceManager.GetString("KeyboardMap_Mdx", resourceCulture);
+                return ResourceManager.GetString("Keyboard_Mdx", resourceCulture);
             }
         }
     }

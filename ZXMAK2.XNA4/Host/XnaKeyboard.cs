@@ -23,7 +23,7 @@ namespace ZXMAK2.XNA4.Host
         public XnaKeyboard()
         {
             m_mapper.LoadMapFromString(
-                global::ZXMAK2.XNA4.Properties.Resources.KeyboardMap_Xna);
+                global::ZXMAK2.XNA4.Properties.Resources.Keyboard_Xna);
         }
 
         public void Update(KeyboardState state)

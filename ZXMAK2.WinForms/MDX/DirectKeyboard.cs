@@ -38,7 +38,7 @@ namespace ZXMAK2.MDX
                 WndActivated(null, null);
             }
             m_mapper.LoadMapFromString(
-                global::ZXMAK2.WinForms.Properties.Resources.KeyboardMap_Mdx);
+                global::ZXMAK2.WinForms.Properties.Resources.Keyboard_Mdx);
         }
 
         public void Dispose()
