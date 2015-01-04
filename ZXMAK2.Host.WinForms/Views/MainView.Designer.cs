@@ -1,4 +1,4 @@
-﻿namespace ZXMAK2.Host.WinForms
+﻿namespace ZXMAK2.Host.WinForms.Views
 {
     partial class MainView
     {
@@ -86,7 +86,7 @@
             this.tbrButtonQuickLoad = new System.Windows.Forms.ToolStripButton();
             this.tbrButtonSettings = new System.Windows.Forms.ToolStripButton();
             this.sbrStrip = new System.Windows.Forms.StatusStrip();
-            this.renderVideo = new ZXMAK2.Host.WinForms.RenderVideo();
+            this.renderVideo = new ZXMAK2.Host.WinForms.Controls.RenderVideo();
             this.mnuStrip.SuspendLayout();
             this.tbrStrip.SuspendLayout();
             this.SuspendLayout();
@@ -603,7 +603,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tbrButtonFullScreen;
         private System.Windows.Forms.ToolStripButton tbrButtonSettings;
-        private RenderVideo renderVideo;
+        private ZXMAK2.Host.WinForms.Controls.RenderVideo renderVideo;
         private System.Windows.Forms.ToolStripMenuItem menuFileOpen;
         private System.Windows.Forms.ToolStripMenuItem menuFileSaveAs;
         private System.Windows.Forms.ToolStripSeparator menuFileSeparator;
@@ -644,8 +644,8 @@
         private System.Windows.Forms.StatusStrip sbrStrip;
         private System.Windows.Forms.ToolStripButton tbrButtonColdReset;
         private System.Windows.Forms.ToolStripMenuItem menuVmColdReset;
-        private Controls.MenuStripEx mnuStrip;
-        private Controls.ToolStripEx tbrStrip;
+        private ZXMAK2.Controls.MenuStripEx mnuStrip;
+        private ZXMAK2.Controls.ToolStripEx tbrStrip;
         private System.Windows.Forms.ToolStripButton tbrButtonQuickLoad;
         private System.Windows.Forms.ToolStripMenuItem menuViewMimicTv;
         private System.Windows.Forms.ToolStripMenuItem menuViewScaleModeSquarePixelSize;

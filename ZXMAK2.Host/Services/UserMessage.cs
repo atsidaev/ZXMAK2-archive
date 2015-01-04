@@ -4,7 +4,7 @@ using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Interfaces;
 
 
-namespace ZXMAK2.Host
+namespace ZXMAK2.Host.Services
 {
     public class UserMessage : IUserMessage
     {
