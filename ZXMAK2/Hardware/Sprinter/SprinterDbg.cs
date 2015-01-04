@@ -9,7 +9,7 @@ using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware.Sprinter.UI;
 using ZXMAK2.Dependency;
-using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.MVP;
 
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ZXMAK2.Dependency;
-using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.Presentation.Interfaces;
 
 
 namespace ZXMAK2.Presentation

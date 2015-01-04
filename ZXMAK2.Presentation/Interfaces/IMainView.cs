@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Drawing;
 using ZXMAK2.Host.Interfaces;
 
 
-namespace ZXMAK2.Host.Presentation.Interfaces
+namespace ZXMAK2.Presentation.Interfaces
 {
     public interface IMainView : IDisposable
     {
