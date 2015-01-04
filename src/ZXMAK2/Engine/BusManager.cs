@@ -54,7 +54,7 @@ namespace ZXMAK2.Engine
         private int m_pendingNmi;
         private long m_pendingNmiLastTact;
 
-        public IHostUi HostUi { get; set; }
+        public ICommandManager CommandManager { get; set; }
         public RzxHandler RzxHandler { get; set; }
         public IIconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
         public IconDescriptor IconPause { get { return m_iconPause; } }
@@ -73,9 +73,9 @@ namespace ZXMAK2.Engine
                 m_loadManager.AddStandardSerializers();
             }
             m_iconDescList = new IconDescriptor[0];
-            if (HostUi != null)
+            if (CommandManager != null)
             {
-                HostUi.ClearCommandsUi();
+                CommandManager.ClearCommandsUi();
             }
             if (m_cpu != null)
             {
@@ -223,9 +223,9 @@ namespace ZXMAK2.Engine
 
         void IBusManager.AddCommandUi(ICommand command)
         {
-            if (HostUi != null)
+            if (CommandManager != null)
             {
-                HostUi.AddCommandUi(command);
+                CommandManager.AddCommandUi(command);
             }
         }
 
@@ -484,9 +484,9 @@ namespace ZXMAK2.Engine
                 m_loadManager.AddStandardSerializers();
             }
             m_iconDescList = new IconDescriptor[] { m_iconPause };
-            if (HostUi != null)
+            if (CommandManager != null)
             {
-                HostUi.ClearCommandsUi();
+                CommandManager.ClearCommandsUi();
             }
             foreach (var device in m_deviceList)
             {
@@ -525,9 +525,9 @@ namespace ZXMAK2.Engine
                 m_loadManager.Clear();
             }
             m_iconDescList = new IconDescriptor[0];
-            if (HostUi != null)
+            if (CommandManager != null)
             {
-                HostUi.ClearCommandsUi();
+                CommandManager.ClearCommandsUi();
             }
             if (m_debuggable != null)
             {
