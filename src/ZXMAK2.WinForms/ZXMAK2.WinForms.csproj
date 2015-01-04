@@ -133,9 +133,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="KeyboardMap.Mdx.xml">
+    <None Include="Keyboard.Mdx.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="Resources\EmuColdReset_32x32.png" />
     <Content Include="Resources\EmuFileOpen_32x32.png" />
     <Content Include="Resources\EmuFileSave_32x32.png" />

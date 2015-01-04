@@ -83,9 +83,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\SansSerifBold.xnb" />
-    <Content Include="KeyboardMap.Xna.xml">
+    <None Include="Keyboard.Xna.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
