@@ -8,11 +8,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
-using ZXMAK2.MVP.Interfaces;
-using ZXMAK2.MVP;
 using ZXMAK2.Host.Xna4.Properties;
 using ZXMAK2.Host.Xna4.Xna;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.MVP;
 
 
 namespace ZXMAK2.Host.Xna4.Views
