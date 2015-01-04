@@ -9,6 +9,7 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.Model.Tape.Interfaces;
+using ZXMAK2.Resources;
 
 namespace ZXMAK2.Controls
 {
@@ -90,7 +91,7 @@ namespace ZXMAK2.Controls
             // btnRewind
             // 
             this.btnRewind.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnRewind.Image = global::ZXMAK2.Properties.Resources.RewindIcon;
+            this.btnRewind.Image = global::ZXMAK2.Resources.ImageResources.Rewind_16x16;
             this.btnRewind.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRewind.Name = "btnRewind";
             this.btnRewind.Size = new System.Drawing.Size(23, 24);
@@ -100,7 +101,7 @@ namespace ZXMAK2.Controls
             // btnPrev
             // 
             this.btnPrev.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnPrev.Image = global::ZXMAK2.Properties.Resources.PrevIcon;
+            this.btnPrev.Image = global::ZXMAK2.Resources.ImageResources.Prev_16x16;
             this.btnPrev.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPrev.Name = "btnPrev";
             this.btnPrev.Size = new System.Drawing.Size(23, 24);
@@ -110,7 +111,7 @@ namespace ZXMAK2.Controls
             // btnPlay
             // 
             this.btnPlay.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnPlay.Image = global::ZXMAK2.Properties.Resources.PlayIcon;
+            this.btnPlay.Image = global::ZXMAK2.Resources.ImageResources.Play_16x16;
             this.btnPlay.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(23, 24);
@@ -120,7 +121,7 @@ namespace ZXMAK2.Controls
             // btnNext
             // 
             this.btnNext.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnNext.Image = global::ZXMAK2.Properties.Resources.NextIcon;
+            this.btnNext.Image = global::ZXMAK2.Resources.ImageResources.Next_16x16;
             this.btnNext.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(23, 24);
@@ -139,7 +140,7 @@ namespace ZXMAK2.Controls
             // 
             this.btnUseTraps.CheckOnClick = true;
             this.btnUseTraps.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnUseTraps.Image = global::ZXMAK2.Properties.Resources.rocket;
+            this.btnUseTraps.Image = global::ZXMAK2.Resources.ImageResources.Rocket_32x32;
             this.btnUseTraps.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUseTraps.Name = "btnTraps";
             this.btnUseTraps.Size = new System.Drawing.Size(23, 24);
@@ -150,7 +151,7 @@ namespace ZXMAK2.Controls
             // 
             this.btnUseAutoPlay.CheckOnClick = true;
             this.btnUseAutoPlay.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnUseAutoPlay.Image = global::ZXMAK2.Properties.Resources.Autoplay;
+            this.btnUseAutoPlay.Image = global::ZXMAK2.Resources.ImageResources.Autoplay_64x64;
             this.btnUseAutoPlay.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUseAutoPlay.Name = "btnAutoPlay";
             this.btnUseAutoPlay.Size = new System.Drawing.Size(23, 24);
@@ -272,9 +273,9 @@ namespace ZXMAK2.Controls
                 btnNext.Enabled = btnPrev.Enabled = !m_tape.IsPlay;
                 btnRewind.Enabled = btnPlay.Enabled = true;
                 if (m_tape.IsPlay)
-                    btnPlay.Image = global::ZXMAK2.Properties.Resources.StopIcon;
+                    btnPlay.Image = ImageResources.Stop_16x16;
                 else
-                    btnPlay.Image = global::ZXMAK2.Properties.Resources.PlayIcon;
+                    btnPlay.Image = ImageResources.Play_16x16;
                 if (checkContentDifferent(blockList.Items, m_tape.Blocks))
                 {
                     blockList.Items.Clear();

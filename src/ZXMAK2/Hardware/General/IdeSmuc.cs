@@ -6,6 +6,7 @@ using System.Xml;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
+using ZXMAK2.Resources;
 
 
 namespace ZXMAK2.Hardware.General
@@ -19,7 +20,7 @@ namespace ZXMAK2.Hardware.General
 
         private bool m_sandbox = false;
         private CpuUnit m_cpu;
-        private IconDescriptor m_iconHdd = new IconDescriptor("HDD", Utils.GetIconStream("hdd.png"));
+        private IconDescriptor m_iconHdd = new IconDescriptor("HDD", ImageResources.HddRd_128x128);
         private IMemoryDevice m_memory = null;
         private AtaPort m_ata = new AtaPort();
         private RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);

@@ -6,6 +6,7 @@ using ZXMAK2.Hardware.IC;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
+using ZXMAK2.Resources;
 
 
 namespace ZXMAK2.Hardware.Sprinter
@@ -15,8 +16,8 @@ namespace ZXMAK2.Hardware.Sprinter
         #region Fields
 
         private bool m_sandbox = false;
-        private IconDescriptor m_iconRd = new IconDescriptor("FDDRD", Utils.GetIconStream("Fdd.png"));
-        private IconDescriptor m_iconWr = new IconDescriptor("FDDWR", Utils.GetIconStream("FddWr.png"));
+        private IconDescriptor m_iconRd = new IconDescriptor("FDDRD", ImageResources.FddRd_128x128);
+        private IconDescriptor m_iconWr = new IconDescriptor("FDDWR", ImageResources.FddWr_128x128);
         protected CpuUnit m_cpu;
         protected IMemoryDevice m_memory;
         protected Wd1793 m_wd = new Wd1793(2);

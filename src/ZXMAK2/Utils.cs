@@ -6,22 +6,16 @@ using System.Drawing;
 using System.Globalization;
 using System.Security.Principal;
 using System.Security.AccessControl;
+using ZXMAK2.Resources;
 
 
 namespace ZXMAK2
 {
     public static class Utils
     {
-        public static Stream GetIconStream(string fileName)
-        {
-            string intName = string.Format("ZXMAK2.Icons.{0}", fileName);
-            return Assembly.GetExecutingAssembly().GetManifestResourceStream(intName);
-        }
-
         public static Icon GetAppIcon()
         {
-            using (Stream stream = GetIconStream("ZXMAK2.ICO"))
-                return new Icon(stream);
+            return ImageResources.ZXMAK2;
         }
 
         #region Xml Helpers

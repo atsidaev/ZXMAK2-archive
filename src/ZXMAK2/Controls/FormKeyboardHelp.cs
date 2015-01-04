@@ -35,7 +35,7 @@ namespace ZXMAK2.Controls
 			// 
 			// pictureBox
 			// 
-			this.pictureBox.Image = global::ZXMAK2.Properties.Resources.Keyboard48k;
+			this.pictureBox.Image = global::ZXMAK2.Resources.ImageResources.KeyboardHelp;
 			this.pictureBox.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox.Name = "pictureBox";
 			this.pictureBox.Size = new System.Drawing.Size(541, 201);

@@ -20,6 +20,7 @@ using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Model.Tape.Interfaces;
+using ZXMAK2.Resources;
 
 
 namespace ZXMAK2.Hardware.General
@@ -30,7 +31,7 @@ namespace ZXMAK2.Hardware.General
 
         private CpuUnit m_cpu;
         private IMemoryDevice m_memory;
-        private IconDescriptor m_iconTape = new IconDescriptor("TAPE", Utils.GetIconStream("cassette.png"));
+        private IconDescriptor m_iconTape = new IconDescriptor("TAPE", ImageResources.TapeRd_128x128);
         private bool m_trapsAllowed = true;
         private bool m_autoPlay = true;
         private readonly int m_frequency = 3500000;
