@@ -56,7 +56,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             var ula = _spec.BusManager.FindDevice<IUlaDevice>();
 			ula.PortFE = hdr[27];
 
-            int rom48index = memory.GetRomIndex(RomName.ROM_SOS);
+            int rom48index = memory.GetRomIndex(RomId.ROM_SOS);
             for (int i = 0; i < 0x4000; i++)
                 memory.RomPages[rom48index][i] = romdump[i];
 			for (int i = 0; i < 0x4000; i++)

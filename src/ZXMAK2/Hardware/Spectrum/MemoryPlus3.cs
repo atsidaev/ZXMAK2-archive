@@ -32,14 +32,14 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #region MemoryBase
 
-        public override int GetRomIndex(RomName romId)
+        public override int GetRomIndex(RomId romId)
         {
             switch (romId)
             {
-                case RomName.ROM_128: return 0;		// +3 Editor
-                case RomName.ROM_SYS: return 1;		// +3 Syntax
-                case RomName.ROM_DOS: return 2;		// +3 DOS
-                case RomName.ROM_SOS: return 3;		// +3 SOS
+                case RomId.ROM_128: return 0;		// +3 Editor
+                case RomId.ROM_SYS: return 1;		// +3 Syntax
+                case RomId.ROM_DOS: return 2;		// +3 DOS
+                case RomId.ROM_SOS: return 3;		// +3 SOS
             }
             Logger.Error("Unknown RomName: {0}", romId);
             throw new InvalidOperationException("Unknown RomName");

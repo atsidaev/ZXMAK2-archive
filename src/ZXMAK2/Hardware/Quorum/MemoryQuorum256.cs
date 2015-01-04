@@ -72,8 +72,8 @@ namespace ZXMAK2.Hardware.Quorum
             ramPage &= 0x0F;     //256K
 
             var romPage = (CMR0 & 0x10) != 0 ?
-                GetRomIndex(RomName.ROM_SOS) :
-                GetRomIndex(RomName.ROM_128);
+                GetRomIndex(RomId.ROM_SOS) :
+                GetRomIndex(RomId.ROM_128);
             var videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 
             var ramPage0000 = ((CMR1 & Q_RAM_8) != 0) ? 8 : 0;
@@ -85,11 +85,11 @@ namespace ZXMAK2.Hardware.Quorum
 
             if (SYSEN && !isDosRom)
             {
-                romPage = GetRomIndex(RomName.ROM_SYS);
+                romPage = GetRomIndex(RomId.ROM_SYS);
             }
             if (DOSEN)      // trdos or 48/128
             {
-                romPage = GetRomIndex(RomName.ROM_DOS);
+                romPage = GetRomIndex(RomId.ROM_DOS);
                 isNoRom = !isDosRom;
             }
 
@@ -124,14 +124,14 @@ namespace ZXMAK2.Hardware.Quorum
             }
         }
 
-        public override int GetRomIndex(RomName romId)
+        public override int GetRomIndex(RomId romId)
         {
             switch (romId)
             {
-                case RomName.ROM_128: return 2;
-                case RomName.ROM_SOS: return 3;
-                case RomName.ROM_DOS: return 1;
-                case RomName.ROM_SYS: return 0;
+                case RomId.ROM_128: return 2;
+                case RomId.ROM_SOS: return 3;
+                case RomId.ROM_DOS: return 1;
+                case RomId.ROM_SYS: return 0;
             }
             Logger.Error("Unknown RomName: {0}", romId);
             throw new InvalidOperationException("Unknown RomName");

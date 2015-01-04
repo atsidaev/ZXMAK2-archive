@@ -200,7 +200,7 @@ namespace ZXMAK2.Hardware
 
         public virtual bool IsRom48
         {
-            get { return MapRead0000 == RomPages[GetRomIndex(RomName.ROM_SOS)]; }
+            get { return MapRead0000 == RomPages[GetRomIndex(RomId.ROM_SOS)]; }
         }
 
         #endregion
@@ -247,18 +247,18 @@ namespace ZXMAK2.Hardware
 
         public virtual string GetRomName(int pageNo)
         {
-            if (pageNo == GetRomIndex(RomName.ROM_128))
+            if (pageNo == GetRomIndex(RomId.ROM_128))
                 return "128";
-            if (pageNo == GetRomIndex(RomName.ROM_SOS))
+            if (pageNo == GetRomIndex(RomId.ROM_SOS))
                 return "SOS";
-            if (pageNo == GetRomIndex(RomName.ROM_DOS))
+            if (pageNo == GetRomIndex(RomId.ROM_DOS))
                 return "DOS";
-            if (pageNo == GetRomIndex(RomName.ROM_SYS))
+            if (pageNo == GetRomIndex(RomId.ROM_SYS))
                 return "SYS";
             return null;
         }
 
-        public abstract int GetRomIndex(RomName romId);
+        public abstract int GetRomIndex(RomId romId);
 
         
         #region RD/WR MEM
@@ -360,10 +360,10 @@ namespace ZXMAK2.Hardware
             var pageNo = -1;
             switch (pageName.ToUpper())
             {
-                case "128": pageNo = GetRomIndex(RomName.ROM_128); break;
-                case "SOS": pageNo = GetRomIndex(RomName.ROM_SOS); break;
-                case "DOS": pageNo = GetRomIndex(RomName.ROM_DOS); break;
-                case "SYS": pageNo = GetRomIndex(RomName.ROM_SYS); break;
+                case "128": pageNo = GetRomIndex(RomId.ROM_128); break;
+                case "SOS": pageNo = GetRomIndex(RomId.ROM_SOS); break;
+                case "DOS": pageNo = GetRomIndex(RomId.ROM_DOS); break;
+                case "SYS": pageNo = GetRomIndex(RomId.ROM_SYS); break;
                 case "RAW":
                     {
                         var capLen = (data.Length / 0x4000) * 0x4000;
