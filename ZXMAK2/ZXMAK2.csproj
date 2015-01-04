@@ -76,6 +76,7 @@
     <Compile Include="Controls\FormView.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Controls\MachinesConfig.cs" />
     <Compile Include="Entities\ModelId.cs" />
     <Compile Include="Entities\RomId.cs" />
     <Compile Include="Entities\SyncSource.cs" />
@@ -454,6 +455,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="app.config" />
+    <None Include="machines.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="unity.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -462,9 +466,6 @@
     <None Include="boot.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="MACHINES.PAK">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="ROMS.PAK">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
