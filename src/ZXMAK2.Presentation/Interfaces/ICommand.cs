@@ -2,7 +2,7 @@
 using System.ComponentModel;
 
 
-namespace ZXMAK2.Host.Interfaces
+namespace ZXMAK2.Presentation.Interfaces
 {
     public interface ICommand : INotifyPropertyChanged
     {
