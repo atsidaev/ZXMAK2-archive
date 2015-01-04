@@ -11,6 +11,7 @@ using ZXMAK2.Entities;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
+using ZXMAK2.Resources;
 
 namespace ZXMAK2.Engine
 {
@@ -40,8 +41,8 @@ namespace ZXMAK2.Engine
         private BusFrameEventHandler m_endFrame;
         private IIconDescriptor[] m_iconDescList = new IIconDescriptor[0];
         private IconDescriptor m_iconPause = new IconDescriptor(
-            "PAUSE", 
-            global::ZXMAK2.Properties.Resources.EmuPause_32x32);
+            "PAUSE",
+            ImageResources.Pause_32x32);
 
         public event BusFrameEventHandler FrameReady;
         public event EventHandler BusConnected;

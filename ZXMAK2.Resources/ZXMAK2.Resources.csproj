@@ -37,11 +37,40 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImageResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ImageResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Icons\Autoplay_64x64.png" />
+    <Content Include="Icons\FddRd_128x128.png" />
+    <Content Include="Icons\FddWr_128x128.png" />
+    <Content Include="Icons\HddRd_128x128.png" />
+    <Content Include="Icons\Next_16x16.png" />
+    <Content Include="Icons\Pause_32x32.png" />
+    <Content Include="Icons\Play_16x16.png" />
+    <Content Include="Icons\Prev_16x16.png" />
+    <Content Include="Icons\Record_16x16.png" />
+    <Content Include="Icons\Rewind_16x16.png" />
+    <Content Include="Icons\Rocket_32x32.png" />
+    <Content Include="Icons\Stop_16x16.png" />
+    <Content Include="Icons\TapeRd_128x128.png" />
+    <Content Include="Icons\ZXMAK2.ICO" />
+    <Content Include="Pictures\KeyboardHelp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ImageResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ImageResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

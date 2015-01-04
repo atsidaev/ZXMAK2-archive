@@ -60,7 +60,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icons\ZXMAK2.ICO</ApplicationIcon>
+    <ApplicationIcon>..\ZXMAK2.Resources\Icons\ZXMAK2.ICO</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -316,11 +316,6 @@
     <Compile Include="Hardware\General\KempstonMouseDevice.cs" />
     <Compile Include="Hardware\General\KeyboardDevice.cs" />
     <Compile Include="Engine\RzxHandler.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Serializers\DiskSerializers\ProSerializer.cs" />
     <Compile Include="Serializers\DiskSerializers\ImgSerializer.cs" />
     <Compile Include="Serializers\DiskSerializers\QdiSerializer.cs" />
@@ -387,6 +382,7 @@
     <Compile Include="Hardware\Sprinter\SprinterMouse.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRTC.cs" />
     <Compile Include="Hardware\Sprinter\SprinterULA.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Utils.cs" />
     <EmbeddedResource Include="Controls\Configuration\CtlSettingsHayesModem.resx">
       <DependentUpon>CtlSettingsHayesModem.cs</DependentUpon>
@@ -452,11 +448,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <None Include="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
@@ -476,25 +467,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Icons\Fdd.png" />
-    <EmbeddedResource Include="Icons\ZXMAK2.ICO" />
-    <None Include="Icons\PlayIcon.png" />
-    <None Include="Icons\RewindIcon.png" />
-    <None Include="Icons\PrevIcon.png" />
-    <None Include="Icons\NextIcon.png" />
-    <None Include="Icons\StopIcon.png" />
-    <None Include="Icons\Rocket.png" />
-    <None Include="Icons\Autoplay.png" />
-    <EmbeddedResource Include="Icons\FddWr.png" />
-    <EmbeddedResource Include="Icons\cassette.png" />
-    <EmbeddedResource Include="Icons\hdd.png" />
-    <None Include="Icons\Keyboard48k.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="boot.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Icons\EmuPause_32x32.png" />
     <Content Include="MACHINES.PAK">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -559,6 +534,11 @@
     <ProjectReference Include="..\ZXMAK2.Model.Tape\ZXMAK2.Model.Tape.csproj">
       <Project>{8851E497-6345-45E3-9936-EC17A4477A71}</Project>
       <Name>ZXMAK2.Model.Tape</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Resources\ZXMAK2.Resources.csproj">
+      <Project>{1D3FFF75-30F8-4E8A-B650-B7FB3DA9C776}</Project>
+      <Name>ZXMAK2.Resources</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
