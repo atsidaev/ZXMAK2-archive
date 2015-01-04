@@ -1,9 +1,10 @@
 ﻿using System;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Interfaces
 {
-    public interface IMemoryDevice //: BusDeviceBase
+    public interface IMemoryDevice
     {
         byte RDMEM_DBG(ushort addr);
         void WRMEM_DBG(ushort addr, byte value);
@@ -32,13 +33,5 @@ namespace ZXMAK2.Interfaces
         /// </summary>
         #endregion
         bool IsRom48 { get; }
-    }
-
-    public enum RomId
-    {
-        ROM_128 = 0,
-        ROM_SOS = 1,
-        ROM_DOS = 2,
-        ROM_SYS = 3,
     }
 }

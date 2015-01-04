@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Attributes;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Hardware.Sprinter

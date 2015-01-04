@@ -2,6 +2,7 @@
 using System.IO;
 
 using ZXMAK2.Interfaces;
+using ZXMAK2.Entities;
 
 
 namespace ZXMAK2.Hardware.Pentagon
