@@ -56,7 +56,10 @@ namespace ZXMAK2.Engine
         public RzxHandler RzxHandler { get; set; }
         public IIconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
         public IconDescriptor IconPause { get { return m_iconPause; } }
+        
         public ModelId ModelId { get; set; }
+        public string Name { get; set; }
+
 
         public void Init(CpuUnit cpu, LoadManager loadManager, bool sandBox)
         {
@@ -685,17 +688,25 @@ namespace ZXMAK2.Engine
             //LogAgent.Debug("time begin BusManager.LoadConfig");
             Disconnect();
 
-            var modelId = ModelId.None;
+            Name = null;
+            if (busNode.Attributes["name"] != null)
+            {
+                Name = busNode.Attributes["name"].InnerText;
+            }
+            ModelId = ModelId.None;
             if (busNode.Attributes["modelId"] != null)
             {
                 var value = busNode.Attributes["modelId"].InnerText;
+                var modelId = ModelId.None;
                 if (!Enum.TryParse<ModelId>(value, out modelId))
                 {
                     Logger.Warn("Unknown modelId: {0}", value);
-                    modelId = ModelId.None;
+                }
+                else
+                {
+                    ModelId = modelId;
                 }
             }
-            ModelId = modelId;
 
             // store old devices to allow reuse & save state
             var oldDevices = new Dictionary<string, BusDeviceBase>();
@@ -772,6 +783,11 @@ namespace ZXMAK2.Engine
         public void SaveConfigXml(XmlNode busNode)
         {
             //LogAgent.Debug("time begin BusManager.SaveConfig");
+            if (!string.IsNullOrEmpty(Name))
+            {
+                var el = (XmlElement)busNode;
+                el.SetAttribute("name", Name);
+            }
             if (ModelId != ModelId.None)
             {
                 var el = (XmlElement)busNode;

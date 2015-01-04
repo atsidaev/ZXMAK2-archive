@@ -275,10 +275,11 @@ namespace ZXMAK2.Controls
 
         #endregion
 
-        private const string csMachinesPakFileName = "Machines.PAK";
+        private const string csMachinesConfigFileName = "machines.config";
 
         #region private
 
+        private readonly MachinesConfig m_machines = new MachinesConfig();
         private readonly IHost m_host;
         private VirtualMachine m_vm;
         private BusManager m_workBus;
@@ -292,51 +293,24 @@ namespace ZXMAK2.Controls
         {
             m_host = host;
             InitializeComponent();
-            loadMachines();
+            LoadMachines();
             btnWizard.Enabled = ctxMenuWizard.Items.Count > 0;
         }
 
-        private void loadMachines()
+        private void LoadMachines()
         {
-            string folderName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string fileName = Path.Combine(folderName, csMachinesPakFileName);
+            var folderName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var fileName = Path.Combine(folderName, csMachinesConfigFileName);
             try
             {
-                if (!File.Exists(fileName))
-                    return;
-                using (ZipLib.Zip.ZipFile zip = new ZipLib.Zip.ZipFile(fileName))
-                    foreach (ZipLib.Zip.ZipEntry entry in zip)
-                        if (entry.IsFile && entry.CanDecompress && Path.GetExtension(entry.Name).ToUpper() == ".VMZ")
-                        {
-                            try
-                            {
-                                var xml = new XmlDocument();
-                                using (Stream s = zip.GetInputStream(entry))
-                                {
-                                    xml.Load(s);
-                                }
-                                var vmNode = xml.SelectSingleNode("/VirtualMachine");
-                                if (vmNode == null)
-                                {
-                                    Logger.Warn(
-                                        "Invalid machine configuration file: {0}\\{1}",
-                                        csMachinesPakFileName,
-                                        entry.Name);
-                                    continue;
-                                }
-                                string name = Path.GetFileNameWithoutExtension(entry.Name);
-                                if (vmNode.Attributes["name"] != null)
-                                    name = vmNode.Attributes["name"].InnerText;
-
-                                var item = ctxMenuWizard.Items.Add(name);
-                                item.Tag = xml;
-                                item.Click += new EventHandler(ctxMenuWizardItem_Click);
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Error(ex);
-                            }
-                        }
+                m_machines.Load(fileName);
+                foreach (var name in m_machines.GetNames())
+                {
+                    var node = m_machines.GetConfig(name);
+                    var item = ctxMenuWizard.Items.Add(name);
+                    item.Tag = node;
+                    item.Click += new EventHandler(ctxMenuWizardItem_Click);
+                }
             }
             catch (Exception ex)
             {
@@ -782,8 +756,7 @@ namespace ZXMAK2.Controls
             {
                 return;
             }
-            var xml = item.Tag as XmlDocument;
-            var busNode = xml.SelectSingleNode("/VirtualMachine/Bus");
+            var busNode = item.Tag as XmlNode;
 
             if (busNode != null)
             {
