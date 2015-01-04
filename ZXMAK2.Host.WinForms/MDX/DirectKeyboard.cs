@@ -14,7 +14,7 @@ using ZxmakKey = ZXMAK2.Host.Entities.Key;
 using MdxKey = Microsoft.DirectX.DirectInput.Key;
 
 
-namespace ZXMAK2.Host.WinForms.MDX
+namespace ZXMAK2.Host.WinForms.Mdx
 {
     public class DirectKeyboard : IHostKeyboard, IKeyboardState, IDisposable
     {
