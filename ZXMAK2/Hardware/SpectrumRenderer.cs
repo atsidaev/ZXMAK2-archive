@@ -6,7 +6,7 @@ using System.Drawing;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Host.Interfaces;
-using ZXMAK2.Host.Engine;
+using ZXMAK2.Host.Entities;
 
 namespace ZXMAK2.Hardware
 {

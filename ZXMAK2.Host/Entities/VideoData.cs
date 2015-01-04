@@ -3,7 +3,7 @@ using System.Drawing;
 using ZXMAK2.Host.Interfaces;
 
 
-namespace ZXMAK2.Host.Engine
+namespace ZXMAK2.Host.Entities
 {
     public class VideoData : IVideoData
     {
