@@ -8,8 +8,8 @@
     <ProjectGuid>{E7AFB7C0-7BAF-4C0F-A1FB-FA2DB5A3AD11}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ZXMAK2.WinForms</RootNamespace>
-    <AssemblyName>ZXMAK2.WinForms</AssemblyName>
+    <RootNamespace>ZXMAK2.Host.WinForms</RootNamespace>
+    <AssemblyName>ZXMAK2.Host.WinForms</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>

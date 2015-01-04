@@ -8,8 +8,8 @@
     <ProjectGuid>{A3B89835-284D-4264-9033-57AF328AF8B0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ZXMAK2.XNA4</RootNamespace>
-    <AssemblyName>ZXMAK2.XNA4</AssemblyName>
+    <RootNamespace>ZXMAK2.Host.Xna4</RootNamespace>
+    <AssemblyName>ZXMAK2.Host.Xna4</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
