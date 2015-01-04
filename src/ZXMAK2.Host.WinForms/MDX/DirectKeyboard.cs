@@ -14,7 +14,7 @@ using ZxmakKey = ZXMAK2.Host.Entities.Key;
 using MdxKey = Microsoft.DirectX.DirectInput.Key;
 
 
-namespace ZXMAK2.MDX
+namespace ZXMAK2.Host.WinForms.MDX
 {
     public class DirectKeyboard : IHostKeyboard, IKeyboardState, IDisposable
     {
@@ -38,7 +38,7 @@ namespace ZXMAK2.MDX
                 WndActivated(null, null);
             }
             m_mapper.LoadMapFromString(
-                global::ZXMAK2.WinForms.Properties.Resources.Keyboard_Mdx);
+                global::ZXMAK2.Host.WinForms.Properties.Resources.Keyboard_Mdx);
         }
 
         public void Dispose()

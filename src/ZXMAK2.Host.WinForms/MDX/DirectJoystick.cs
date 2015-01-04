@@ -11,7 +11,7 @@ using ZXMAK2.Host.Entities;
 using ZxmakKey = ZXMAK2.Host.Entities.Key;
 
 
-namespace ZXMAK2.MDX
+namespace ZXMAK2.Host.WinForms.MDX
 {
     public class DirectJoystick : IHostJoystick, IDisposable
     {

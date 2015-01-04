@@ -9,14 +9,14 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
-using ZXMAK2.MDX;
 using ZXMAK2.Entities;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.WinForms.MDX;
 
 
-namespace ZXMAK2.WinForms
+namespace ZXMAK2.Host.WinForms
 {
     public partial class MainView : Form, IMainView, IHostUi
     {
@@ -144,11 +144,11 @@ namespace ZXMAK2.WinForms
                 {
                     if (value == "Pause")
                     {
-                        tbrButtonPause.Image = global::ZXMAK2.WinForms.Properties.Resources.EmuPause_32x32;
+                        tbrButtonPause.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuPause_32x32;
                     }
                     else
                     {
-                        tbrButtonPause.Image = global::ZXMAK2.WinForms.Properties.Resources.EmuResume_32x32;
+                        tbrButtonPause.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuResume_32x32;
                     }
                     Title = Title;
                 }));
@@ -159,11 +159,11 @@ namespace ZXMAK2.WinForms
                 {
                     if (value == "Windowed")
                     {
-                        tbrButtonFullScreen.Image = global::ZXMAK2.WinForms.Properties.Resources.EmuWindowed_32x32;
+                        tbrButtonFullScreen.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuWindowed_32x32;
                     }
                     else
                     {
-                        tbrButtonFullScreen.Image = global::ZXMAK2.WinForms.Properties.Resources.EmuFullScreen_32x32;
+                        tbrButtonFullScreen.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuFullScreen_32x32;
                     }
                 }));
 
