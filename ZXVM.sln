@@ -34,9 +34,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Model.Tape", "ZXMAK2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Resources", "ZXMAK2.Resources\ZXMAK2.Resources.csproj", "{1D3FFF75-30F8-4E8A-B650-B7FB3DA9C776}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Host.Presentation", "ZXMAK2.Host.Presentation\ZXMAK2.Host.Presentation.csproj", "{3BD6BE76-E868-4B46-84AF-175BF5975B2A}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 14
+		SccNumberOfProjects = 15
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath0 = .
@@ -73,12 +75,15 @@ Global
 		SccProjectUniqueName11 = ZXMAK2.Resources\\ZXMAK2.Resources.csproj
 		SccProjectName11 = ZXMAK2.Resources
 		SccLocalPath11 = ZXMAK2.Resources
-		SccProjectUniqueName12 = ZXMAK2.WinForms\\ZXMAK2.Host.WinForms.csproj
-		SccProjectName12 = ZXMAK2.WinForms
-		SccLocalPath12 = ZXMAK2.WinForms
-		SccProjectUniqueName13 = ZXMAK2.XNA4\\ZXMAK2.Host.XNA4.csproj
-		SccProjectName13 = ZXMAK2.XNA4
-		SccLocalPath13 = ZXMAK2.XNA4
+		SccProjectUniqueName12 = ZXMAK2.Host.Xna4\\ZXMAK2.Host.Xna4.csproj
+		SccProjectName12 = ZXMAK2.Host.Xna4
+		SccLocalPath12 = ZXMAK2.Host.Xna4
+		SccProjectUniqueName13 = ZXMAK2.Host.WinForms\\ZXMAK2.Host.WinForms.csproj
+		SccProjectName13 = ZXMAK2.Host.WinForms
+		SccLocalPath13 = ZXMAK2.Host.WinForms
+		SccProjectUniqueName14 = ZXMAK2.Host.Presentation\\ZXMAK2.Host.Presentation.csproj
+		SccProjectName14 = ZXMAK2.Host.Presentation
+		SccLocalPath14 = ZXMAK2.Host.Presentation
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -219,6 +224,16 @@ Global
 		{1D3FFF75-30F8-4E8A-B650-B7FB3DA9C776}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{1D3FFF75-30F8-4E8A-B650-B7FB3DA9C776}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1D3FFF75-30F8-4E8A-B650-B7FB3DA9C776}.Release|x86.ActiveCfg = Release|Any CPU
+		{3BD6BE76-E868-4B46-84AF-175BF5975B2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BD6BE76-E868-4B46-84AF-175BF5975B2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BD6BE76-E868-4B46-84AF-175BF5975B2A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3BD6BE76-E868-4B46-84AF-175BF5975B2A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3BD6BE76-E868-4B46-84AF-175BF5975B2A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3BD6BE76-E868-4B46-84AF-175BF5975B2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BD6BE76-E868-4B46-84AF-175BF5975B2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BD6BE76-E868-4B46-84AF-175BF5975B2A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3BD6BE76-E868-4B46-84AF-175BF5975B2A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3BD6BE76-E868-4B46-84AF-175BF5975B2A}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
