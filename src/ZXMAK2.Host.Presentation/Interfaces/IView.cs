@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel;
 
-namespace ZXMAK2.MVP.Interfaces
+namespace ZXMAK2.Host.Presentation.Interfaces
 {
     public interface IView : IDisposable
     {

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
-using ZXMAK2.MVP.Interfaces;
 using System.ComponentModel;
+using System.Windows.Forms;
+using ZXMAK2.Host.Presentation.Interfaces;
+
 
 namespace ZXMAK2.Controls
 {

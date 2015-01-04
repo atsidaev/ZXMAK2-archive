@@ -2,7 +2,7 @@
 using ZXMAK2.Host.Interfaces;
 
 
-namespace ZXMAK2.MVP.Interfaces
+namespace ZXMAK2.Host.Presentation.Interfaces
 {
     public interface IViewHolder
     {

@@ -6,7 +6,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using ZXMAK2.Hardware.IC;
-using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.Host.Presentation.Interfaces;
 
 
 namespace ZXMAK2.Controls.Debugger
