@@ -56,6 +56,7 @@ namespace ZXMAK2.Engine
         public RzxHandler RzxHandler { get; set; }
         public IIconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
         public IconDescriptor IconPause { get { return m_iconPause; } }
+        public ModelId ModelId { get; set; }
 
         public void Init(CpuUnit cpu, LoadManager loadManager, bool sandBox)
         {
@@ -683,6 +684,19 @@ namespace ZXMAK2.Engine
         {
             //LogAgent.Debug("time begin BusManager.LoadConfig");
             Disconnect();
+
+            var modelId = ModelId.None;
+            if (busNode.Attributes["modelId"] != null)
+            {
+                var value = busNode.Attributes["modelId"].InnerText;
+                if (!Enum.TryParse<ModelId>(value, out modelId))
+                {
+                    Logger.Warn("Unknown modelId: {0}", value);
+                    modelId = ModelId.None;
+                }
+            }
+            ModelId = modelId;
+
             // store old devices to allow reuse & save state
             var oldDevices = new Dictionary<string, BusDeviceBase>();
             foreach (BusDeviceBase device in m_deviceList)
@@ -758,17 +772,22 @@ namespace ZXMAK2.Engine
         public void SaveConfigXml(XmlNode busNode)
         {
             //LogAgent.Debug("time begin BusManager.SaveConfig");
+            if (ModelId != ModelId.None)
+            {
+                var el = (XmlElement)busNode;
+                el.SetAttribute("modelId", ModelId.ToString());
+            }
             foreach (BusDeviceBase device in m_deviceList)
             {
                 try
                 {
-                    XmlElement xe = busNode.OwnerDocument.CreateElement("Device");
+                    var xe = busNode.OwnerDocument.CreateElement("Device");
                     if (device.GetType().Assembly != Assembly.GetExecutingAssembly())
                     {
                         xe.SetAttribute("assembly", device.GetType().Assembly.Location);
                     }
                     xe.SetAttribute("type", device.GetType().FullName);
-                    XmlNode node = busNode.AppendChild(xe);
+                    var node = busNode.AppendChild(xe);
                     device.SaveConfigXml(node);
                 }
                 catch (Exception ex)

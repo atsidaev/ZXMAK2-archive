@@ -179,7 +179,15 @@ namespace ZXMAK2.Hardware
             get { return Renderer.FrameLength; }
         }
 
-        public IVideoData VideoData { get { return m_renderer.VideoData; } }
+        public IVideoData VideoData 
+        { 
+            get { return m_renderer.VideoData; } 
+        }
+
+        public virtual bool IsEarlyTimings
+        {
+            get { return false; }
+        }
 
         public void LoadScreenData(Stream stream)
         {

@@ -76,6 +76,7 @@
     <Compile Include="Controls\FormView.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Entities\ModelId.cs" />
     <Compile Include="Entities\RomId.cs" />
     <Compile Include="Entities\SyncSource.cs" />
     <Compile Include="Hardware\Adlers\UI\TcpHelper.cs">
