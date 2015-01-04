@@ -59,10 +59,10 @@
     </Compile>
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Host\XnaHost.cs" />
-    <Compile Include="Host\XnaKeyboard.cs" />
-    <Compile Include="Host\XnaMouse.cs" />
-    <Compile Include="Host\XnaSound.cs" />
+    <Compile Include="Xna\XnaHost.cs" />
+    <Compile Include="Xna\XnaKeyboard.cs" />
+    <Compile Include="Xna\XnaMouse.cs" />
+    <Compile Include="Xna\XnaSound.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZXMAK2.Host\ZXMAK2.Host.csproj">

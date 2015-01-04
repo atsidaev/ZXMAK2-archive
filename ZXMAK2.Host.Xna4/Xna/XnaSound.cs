@@ -8,7 +8,7 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Host.Interfaces;
 
 
-namespace ZXMAK2.Host.Xna4.Host
+namespace ZXMAK2.Host.Xna4.Xna
 {
     public unsafe class XnaSound : IHostSound
     {

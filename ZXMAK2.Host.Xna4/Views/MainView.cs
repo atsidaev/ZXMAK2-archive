@@ -11,7 +11,7 @@ using ZXMAK2.Engine;
 using ZXMAK2.MVP.Interfaces;
 using ZXMAK2.MVP;
 using ZXMAK2.Host.Xna4.Properties;
-using ZXMAK2.Host.Xna4.Host;
+using ZXMAK2.Host.Xna4.Xna;
 using ZXMAK2.Host.Interfaces;
 
 

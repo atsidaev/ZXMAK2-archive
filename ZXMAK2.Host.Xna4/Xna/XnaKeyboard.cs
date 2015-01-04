@@ -12,7 +12,7 @@ using ZXMAK2.Host.Entities.Tools;
 using ZXMAK2.Host.Entities;
 
 
-namespace ZXMAK2.Host.Xna4.Host
+namespace ZXMAK2.Host.Xna4.Xna
 {
     public class XnaKeyboard : IHostKeyboard, IKeyboardState
     {
