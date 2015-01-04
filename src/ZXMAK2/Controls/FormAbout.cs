@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Diagnostics;
 using ZXMAK2.MVP.Interfaces;
+using ZXMAK2.Resources;
 
 
 namespace ZXMAK2.Controls
@@ -149,8 +150,10 @@ namespace ZXMAK2.Controls
         public FormAbout()
 		{
 			InitializeComponent();
-			using (System.Drawing.Icon icon = Utils.GetAppIcon())
-				pctLogo.Image = icon.ToBitmap();
+            using (var icon = ImageResources.ZXMAK2)
+            {
+                pctLogo.Image = icon.ToBitmap();
+            }
 			labelVersionText.Text = labelVersionText.Text.Replace("0.0.0.0", Application.ProductVersion);
 			lnkUrl.Links.Clear();
 			lnkUrl.Links.Add(new LinkLabel.Link(0, lnkUrl.Text.Length, lnkUrl.Text));

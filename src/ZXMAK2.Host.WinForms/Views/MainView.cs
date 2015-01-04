@@ -17,6 +17,7 @@ using ZXMAK2.Host.WinForms.Mdx;
 using ZXMAK2.Host.WinForms.Services;
 using ZXMAK2.Host.WinForms.Controls;
 using ZXMAK2.Host.WinForms.Tools;
+using ZXMAK2.Resources;
 
 
 namespace ZXMAK2.Host.WinForms.Views
@@ -45,7 +46,7 @@ namespace ZXMAK2.Host.WinForms.Views
             m_resolver = resolver;
             SetStyle(ControlStyles.Opaque | ControlStyles.AllPaintingInWmPaint, true);
             InitializeComponent();
-            this.Icon = Utils.GetAppIcon();
+            Icon = ImageResources.ZXMAK2;
 
             menuViewCustomizeShowToolBar.Checked = true;
             SetRenderSize(new Size(640, 512));
