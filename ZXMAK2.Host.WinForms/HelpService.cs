@@ -8,7 +8,7 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 
-namespace ZXMAK2.WinForms
+namespace ZXMAK2.Host.WinForms
 {
     public static class HelpService
     {

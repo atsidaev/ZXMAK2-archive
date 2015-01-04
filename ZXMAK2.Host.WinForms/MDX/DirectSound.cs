@@ -3,16 +3,16 @@
 /// Date: 26.03.2008
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectSound;
 using ZXMAK2.Interfaces;
-using System.Collections.Generic;
 using ZXMAK2.Host.Interfaces;
 
 
 
-namespace ZXMAK2.MDX
+namespace ZXMAK2.Host.WinForms.MDX
 {
 	public unsafe class DirectSound : IHostSound, IDisposable
 	{
