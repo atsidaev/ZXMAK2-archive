@@ -75,7 +75,7 @@ namespace ZXMAK2.Engine
             m_iconDescList = new IconDescriptor[0];
             if (CommandManager != null)
             {
-                CommandManager.ClearCommandsUi();
+                CommandManager.Clear();
             }
             if (m_cpu != null)
             {
@@ -225,7 +225,7 @@ namespace ZXMAK2.Engine
         {
             if (CommandManager != null)
             {
-                CommandManager.AddCommandUi(command);
+                CommandManager.Add(command);
             }
         }
 
@@ -486,7 +486,7 @@ namespace ZXMAK2.Engine
             m_iconDescList = new IconDescriptor[] { m_iconPause };
             if (CommandManager != null)
             {
-                CommandManager.ClearCommandsUi();
+                CommandManager.Clear();
             }
             foreach (var device in m_deviceList)
             {
@@ -527,7 +527,7 @@ namespace ZXMAK2.Engine
             m_iconDescList = new IconDescriptor[0];
             if (CommandManager != null)
             {
-                CommandManager.ClearCommandsUi();
+                CommandManager.Clear();
             }
             if (m_debuggable != null)
             {

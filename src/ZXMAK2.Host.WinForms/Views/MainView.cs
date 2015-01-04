@@ -201,12 +201,12 @@ namespace ZXMAK2.Host.WinForms.Views
 
         #region IHostUi
 
-        public void ClearCommandsUi()
+        public void Clear()
         {
             menuTools.DropDownItems.Clear();
         }
 
-        public void AddCommandUi(ICommand command)
+        public void Add(ICommand command)
         {
             var subMenu = menuTools.DropDownItems.Add(command.Text) as ToolStripMenuItem;
             if (subMenu == null)
