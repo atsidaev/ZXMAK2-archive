@@ -22,7 +22,7 @@ using ZXMAK2.Presentation.Interfaces;
 
 namespace ZXMAK2.Host.WinForms.Views
 {
-    public partial class MainView : Form, IMainView, IHostUi
+    public partial class MainView : Form, IMainView, ICommandManager
     {
         private IResolver m_resolver;
         private MdxHost m_host;
@@ -97,7 +97,7 @@ namespace ZXMAK2.Host.WinForms.Views
             get { return m_host; }
         }
 
-        public IHostUi CommandManager
+        public ICommandManager CommandManager
         {
             get { return this; }
         }

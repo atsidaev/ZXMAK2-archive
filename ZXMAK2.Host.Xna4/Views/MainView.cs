@@ -83,7 +83,7 @@ namespace ZXMAK2.Host.Xna4.Views
             get { return m_host; }
         }
 
-        public IHostUi CommandManager
+        public ICommandManager CommandManager
         {
             get { return null; }
         }
