@@ -257,6 +257,12 @@ namespace ZXMAK2.Host.Xna4.Views
             }
         }
 
+        protected override bool ShowMissingRequirementMessage(Exception exception)
+        {
+            Logger.Error(exception);
+            return base.ShowMissingRequirementMessage(exception);
+        }
+
         protected override void LoadContent()
         {
             Content = new ResourceContentManager(Services, Resources.ResourceManager);
