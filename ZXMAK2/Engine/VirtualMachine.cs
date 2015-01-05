@@ -415,7 +415,10 @@ namespace ZXMAK2.Engine
                 m_thread = null;
                 m_thread = new Thread(new ThreadStart(runThreadProc));
                 m_thread.Name = "VirtualMachine.runThreadProc";
-                m_thread.Priority = ThreadPriority.AboveNormal;
+                if (Environment.ProcessorCount > 1)
+                {
+                    m_thread.Priority = ThreadPriority.AboveNormal;
+                }
                 m_thread.Start();
                 while (!IsRunning)
                 {

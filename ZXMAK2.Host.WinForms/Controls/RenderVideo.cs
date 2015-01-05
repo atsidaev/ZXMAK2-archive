@@ -29,7 +29,6 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         #region Fields
 
-        private readonly bool _isSingleThreadCpu;
         private bool _isInitialized;
         private Sprite m_sprite = null;
         private Texture m_texture = null;
@@ -88,7 +87,6 @@ namespace ZXMAK2.Host.WinForms.Controls
         
         public unsafe RenderVideo()
         {
-            _isSingleThreadCpu = Environment.ProcessorCount <= 1;
             m_drawFilter = drawFrame;
             DisplayIcon = true;
             ScaleMode = ScaleMode.FixedPixelSize;
@@ -122,10 +120,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             var frameRatio = frameRest != 0 ? 50 / frameRest : 0;
             _isCancel = false;
             var priority = Thread.CurrentThread.Priority;
-            if (!_isSingleThreadCpu)
-            {
-                Thread.CurrentThread.Priority = ThreadPriority.Highest;
-            }
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
             try
             {
                 while (!_isCancel)
@@ -151,10 +146,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
             finally
             {
-                if (!_isSingleThreadCpu)
-                {
-                    Thread.CurrentThread.Priority = priority;
-                }
+                Thread.CurrentThread.Priority = priority;
             }
         }
 
