@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -40,6 +41,15 @@ namespace ZXMAK2.Engine
                 {
                     try
                     {
+                        var refName = typeof(BusDeviceBase).Assembly.GetName().FullName;
+                        var hasRef = asm.GetName().FullName==refName ||
+                            asm.GetReferencedAssemblies()
+                                .Any(name => name.FullName == refName);
+                        if (!hasRef)
+                        {
+                            // skip assemblies without reference on assembly which contains BusDeviceBase 
+                            continue;
+                        }
                         foreach (var type in asm.GetTypes())
                         {
                             if (type.IsClass &&
@@ -58,14 +68,14 @@ namespace ZXMAK2.Engine
                                 }
                                 catch (Exception ex)
                                 {
-                                    Logger.Error(ex);
+                                    Logger.Error(ex, type.FullName);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error(ex);
+                        Logger.Error(ex, asm.FullName);
                     }
                 }
                 s_descriptors = listDescriptors;

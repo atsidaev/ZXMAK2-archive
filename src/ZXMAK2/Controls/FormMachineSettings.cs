@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 using System.Xml;
 using System.Drawing;
@@ -367,23 +368,46 @@ namespace ZXMAK2.Controls
 
         private UserControl CreateConfigScreenControl(BusManager bmgr, object objTarget)
         {
-            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
-                foreach (Type type in asm.GetTypes())
+                try
                 {
-                    if (type.IsClass &&
-                        !type.IsAbstract &&
-                        type != typeof(CtlSettingsGenericDevice) &&
-                        typeof(ConfigScreenControl).IsAssignableFrom(type) &&
-                        typeof(UserControl).IsAssignableFrom(type))
+                    var refName = typeof(ConfigScreenControl).Assembly.GetName().FullName;
+                    var hasRef = asm.GetName().FullName == refName ||
+                        asm.GetReferencedAssemblies()
+                            .Any(name => name.FullName == refName);
+                    if (!hasRef)
                     {
-                        var mi = type.GetMethod("Init", new Type[] { typeof(BusManager), typeof(IHost), objTarget.GetType() });
-                        if (mi == null)
-                            continue;
-                        var obj = (UserControl)Activator.CreateInstance(type);
-                        mi.Invoke(obj, new object[] { bmgr, m_host, objTarget });
-                        return obj;
+                        // skip assemblies without reference on assembly which contains ConfigScreenControl 
+                        continue;
                     }
+                    foreach (Type type in asm.GetTypes())
+                    {
+                        try
+                        {
+                            if (type.IsClass &&
+                                !type.IsAbstract &&
+                                type != typeof(CtlSettingsGenericDevice) &&
+                                typeof(ConfigScreenControl).IsAssignableFrom(type) &&
+                                typeof(UserControl).IsAssignableFrom(type))
+                            {
+                                var mi = type.GetMethod("Init", new Type[] { typeof(BusManager), typeof(IHost), objTarget.GetType() });
+                                if (mi == null)
+                                    continue;
+                                var obj = (UserControl)Activator.CreateInstance(type);
+                                mi.Invoke(obj, new object[] { bmgr, m_host, objTarget });
+                                return obj;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex, type.FullName);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, asm.FullName);
                 }
             }
             return null;
