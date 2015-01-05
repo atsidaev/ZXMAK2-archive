@@ -69,7 +69,7 @@ namespace ZXMAK2.Controls
             this.labelVersionText.AutoSize = true;
             this.labelVersionText.Location = new System.Drawing.Point(93, 51);
             this.labelVersionText.Name = "labelVersionText";
-            this.labelVersionText.Size = new System.Drawing.Size(114, 13);
+            this.labelVersionText.Size = new System.Drawing.Size(81, 13);
             this.labelVersionText.TabIndex = 3;
             this.labelVersionText.Text = "Version 0.0.0.0";
             // 
