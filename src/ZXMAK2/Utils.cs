@@ -163,17 +163,24 @@ namespace ZXMAK2
         {
             var appName = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
             var appFolder = Path.GetDirectoryName(appName);
-            if (!Utils.IsFolderWritable(appFolder))
+            try
             {
-                // Folder is not writable?
-                // Then use %Users%/<username>/AppData/Roaming/ZXMAK2/
-                appFolder = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "ZXMAK2");
-                if (!Directory.Exists(appFolder))
+                if (!Utils.IsFolderWritable(appFolder))
                 {
-                    Directory.CreateDirectory(appFolder);
+                    // Folder is not writable?
+                    // Then use %Users%/<username>/AppData/Roaming/ZXMAK2/
+                    appFolder = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "ZXMAK2");
+                    if (!Directory.Exists(appFolder))
+                    {
+                        Directory.CreateDirectory(appFolder);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
             return appFolder;
         }
