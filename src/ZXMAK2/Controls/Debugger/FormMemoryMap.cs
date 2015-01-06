@@ -70,6 +70,7 @@ namespace ZXMAK2.Controls.Debugger
             lblWndC000.Text = findPageName(m_memory.WindowC000);
             chkDosen.Checked = m_memory.DOSEN;
             chkSysen.Checked = m_memory.SYSEN;
+            propGrid.Refresh();
         }
 
         private string findPageName(byte[] wndRead)
