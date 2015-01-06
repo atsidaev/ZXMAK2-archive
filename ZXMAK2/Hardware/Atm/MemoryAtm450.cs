@@ -14,8 +14,8 @@ namespace ZXMAK2.Hardware.Atm
         protected CpuUnit m_cpu;
         private bool m_lock = false;
         private UlaAtm450 m_ulaAtm;
-        private byte m_aFE = 0x80;
-        private byte m_aFB = 0x80;
+        private byte m_aFE;
+        private byte m_aFB;
 
         private bool m_cfg_mem_swap = true;  // ATM 7.10 hi-res video modes swap RAM/CPU address bus A5-A7<=>A8-A10
         
@@ -73,43 +73,47 @@ namespace ZXMAK2.Hardware.Atm
         protected override void UpdateMapping()
         {
             m_lock = (CMR0 & 0x20) != 0;
-            int ramPage = CMR0 & 7;
-            int romPage = (CMR0 & 0x10) != 0 ?
-                GetRomIndex(RomId.ROM_SOS) :
-                GetRomIndex(RomId.ROM_128);
-            
-            int videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
 
-            if (DOSEN)      // trdos or 48/128
-            {
-                if (romPage == 1)
-                    romPage = GetRomIndex(RomId.ROM_DOS);
-                else
-                    romPage = GetRomIndex(RomId.ROM_SYS);
-            }
-
-            int sega = CMR1 & 3;   // & 7  for 1024K
-            ramPage |= sega << 3;
-
-            bool norom = CPUS;                 // CPUS
+            var norom = CPUS;                 // CPUS
             if (!norom)
             {
                 if (m_lock)
-                    m_aFB = (byte)(m_aFB & ~0x80);
-                if (DOSEN && CPNET)   //CPNET?
-                    m_aFB |= 0x80; // more priority, then 7FFD
+                {
+                    SetAfeAfb(AFE, (byte)(AFB & 0x7F), false);
+                }
+                if (DOSEN && CPNET)   // what is CPNET?
+                {
+                    // more priority, then 7FFD
+                    SetAfeAfb(AFE, (byte)(AFB | 0x80), false);
+                }
+            }
 
-                bool cpsys = CPSYS;                     // CPSYS
-                if (cpsys)
-                    romPage = GetRomIndex(RomId.ROM_SYS);
-                else if (DOSEN)
-                    romPage = GetRomIndex(RomId.ROM_DOS);
+            int romPage;
+            if (CPSYS)
+            {
+                romPage = GetRomIndex(RomId.ROM_SYS);
+            }
+            else if (DOSEN)      // trdos or 48/128
+            {
+                romPage = GetRomIndex(RomId.ROM_DOS);
+            }
+            else
+            {
+                romPage = (CMR0 & 0x10) != 0 ?
+                    GetRomIndex(RomId.ROM_SOS) :
+                    GetRomIndex(RomId.ROM_128);
             }
             romPage |= CMR1 & 4;    // extended 64K rom (if exists)
 
+            var videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
+
+            var ramPage = CMR0 & 7;
+            var sega = CMR1 & 3;   // & 7  for 1024K
+            ramPage |= sega << 3;
+
             if (m_ulaAtm != null)
             {
-                AtmVideoMode videoMode = (AtmVideoMode)(((m_aFE >> 6) & 1) | ((m_aFE >> 4) & 2)); // (m_aFE >> 5) & 3
+                var videoMode = (AtmVideoMode)(((AFE >> 6) & 1) | ((AFE >> 4) & 2)); // (m_aFE >> 5) & 3
                 m_ulaAtm.SetPageMappingAtm(
                     videoMode,
                     videoPage,
@@ -133,38 +137,122 @@ namespace ZXMAK2.Hardware.Atm
             MapRead8000 = RamPages[2];
             MapReadC000 = RamPages[ramPage];
 
-            MapWrite0000 = norom ? RamPages[0] : m_trashPage;
+            MapWrite0000 = norom ? MapRead0000 : m_trashPage;
             MapWrite4000 = MapRead4000;
             MapWrite8000 = MapRead8000;
             MapWriteC000 = MapReadC000;
+        }
+
+        //protected override void UpdateMapping()
+        //{
+        //    m_lock = (CMR0 & 0x20) != 0;
+        //    var ramPage = CMR0 & 7;
+        //    var romPage = (CMR0 & 0x10) != 0 ?
+        //        GetRomIndex(RomId.ROM_SOS) :
+        //        GetRomIndex(RomId.ROM_128);
+
+        //    var videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
+
+        //    if (DOSEN)      // trdos or 48/128
+        //    {
+        //        if (romPage == 1)
+        //            romPage = GetRomIndex(RomId.ROM_DOS);
+        //        else
+        //            romPage = GetRomIndex(RomId.ROM_SYS);
+        //    }
+
+        //    var sega = CMR1 & 3;   // & 7  for 1024K
+        //    ramPage |= sega << 3;
+
+        //    var norom = CPUS;                 // CPUS
+        //    if (!norom)
+        //    {
+        //        if (m_lock)
+        //            SetAfeAfb(AFE, (byte)(AFB & 0x7F), false);
+        //        if (DOSEN && CPNET)   //CPNET?
+        //            SetAfeAfb(AFE, (byte)(AFB | 0x80), false); // more priority, then 7FFD
+
+        //        if (CPSYS)
+        //            romPage = GetRomIndex(RomId.ROM_SYS);
+        //        else if (DOSEN)
+        //            romPage = GetRomIndex(RomId.ROM_DOS);
+        //    }
+        //    romPage |= CMR1 & 4;    // extended 64K rom (if exists)
+
+        //    if (m_ulaAtm != null)
+        //    {
+        //        var videoMode = (AtmVideoMode)(((AFE >> 6) & 1) | ((AFE >> 4) & 2)); // (m_aFE >> 5) & 3
+        //        m_ulaAtm.SetPageMappingAtm(
+        //            videoMode,
+        //            videoPage,
+        //            norom ? 0 : -1,
+        //            norom ? 4 : 5,
+        //            2,
+        //            ramPage);
+        //    }
+        //    else
+        //    {
+        //        m_ula.SetPageMapping(
+        //            videoPage,
+        //            norom ? 0 : -1,
+        //            norom ? 4 : 5,
+        //            2,
+        //            ramPage);
+        //    }
+
+        //    MapRead0000 = norom ? RamPages[0] : RomPages[romPage];
+        //    MapRead4000 = norom ? RamPages[4] : RamPages[5];
+        //    MapRead8000 = RamPages[2];
+        //    MapReadC000 = RamPages[ramPage];
+
+        //    MapWrite0000 = norom ? RamPages[0] : m_trashPage;
+        //    MapWrite4000 = MapRead4000;
+        //    MapWrite8000 = MapRead8000;
+        //    MapWriteC000 = MapReadC000;
+        //}
+
+        private void SetAfeAfb(byte afe, byte afb, bool updateMapping)
+        {
+            var changeAfe = afe ^ m_aFE;
+            var changeAfb = afb ^ m_aFB;
+            m_aFE = afe;
+            m_aFB = afb;
+            if ((changeAfe & 0x40) != 0)
+            {
+                MemSwap();
+            }
+            if (updateMapping && ((changeAfe & 0xE0) != 0 || changeAfb != 0))
+            {
+                UpdateMapping();
+            }
         }
 
         [HardwareValue("AFE", Description="High address byte of the last port #FE output")]
         public byte AFE
         {
             get { return m_aFE; }
-            set { m_aFE = value; }
+            set { SetAfeAfb(value, AFB, true); }
         }
 
         [HardwareValue("AFB", Description="High address byte of the last port #FB output")]
         public byte AFB
         {
             get { return m_aFB; }
-            set { m_aFB = value; }
+            set { SetAfeAfb(AFE, value, true); }
         }
 
         [HardwareValue("CPUS", Description="Enable RAM cache")]
         public bool CPUS
         {
-            get { return (m_aFE & 0x80) == 0; }
-            set { m_aFE = (byte)((m_aFE & ~0x80) | (value ? 0x80:0)); }
+            get { return (AFE & 0x80) == 0; }
+            set { AFE = (byte)((AFE & ~0x80) | (value ? 0x80:0)); }
         }
 
         [HardwareValue("CPSYS", Description="Select system ROM")]
         public bool CPSYS
         {
-            get { return (m_aFB & 0x80) != 0; }
-            set { m_aFB = (byte)((m_aFB & ~0x80) | (value ? 0x80:0)); }
+            get { return (AFB & 0x80) != 0; }
+            set { AFB = (byte)((AFB & ~0x80) | (value ? 0x80:0)); }
         }
 
         [HardwareValue("CPNET", Description="")]
@@ -173,32 +261,29 @@ namespace ZXMAK2.Hardware.Atm
             get { return (CMR1 & 8) != 0; }
             set { CMR1 = (byte)((CMR1 & ~8) | (value ? 8:0)); }
         }
-        
-
 
         [HardwareValue("SYSEN", Description="")]
         public override bool SYSEN
         {
-            get { return (m_aFB & 0x80) != 0 && (m_aFE & 0x80) != 0; }
+            get { return (AFB & 0x80) != 0 && (AFE & 0x80) != 0; }
             set
             {
-                byte old_aFE = m_aFE;
                 if (value)
                 {
-                    m_aFE = 0x80;
-                    m_aFB = 0x80;
+                    SetAfeAfb((byte)(AFE | 0x80), (byte)(AFB | 0x80), true);
                 }
                 else
                 {
-                    m_aFE = 0x80 | 0x60;
-                    m_aFB = 0x7F;
+                    SetAfeAfb((byte)(AFE | 0x80), (byte)(AFB & 0x7F), true);
                 }
-                if (((m_aFE ^ old_aFE) & 0x40) != 0)
-                {
-                    atm_memswap();
-                }
-                UpdateMapping();
             }
+        }
+
+        [HardwareValue("MEMSWAP", Description = "Swap A5-A7 and A8-A10")]
+        public bool MEMSWAP
+        {
+            get { return (AFE & 0x40) != 0; }
+            set { AFE = (byte)((AFE & 0xBF) | (value ? 0x40 : 0)); }
         }
 
         public override int GetRomIndex(RomId romId)
@@ -232,23 +317,12 @@ namespace ZXMAK2.Hardware.Atm
 
         protected virtual void BusReadPortFB(ushort addr, ref byte value, ref bool iorqge)
         {
-            m_aFB = (byte)addr;
-            UpdateMapping();
+            AFB = (byte)addr;
         }
 
         protected virtual void BusWritePortFE(ushort addr, byte value, ref bool iorqge)
         {
-            addr &= 0x00FF;
-            byte old_aFE = m_aFE;
-            m_aFE = (byte)addr;
-            if (((addr ^ old_aFE) & 0x40) != 0)
-            {
-                atm_memswap();
-            }
-            if (((addr ^ old_aFE) & 0x80) != 0)
-            {
-                UpdateMapping();
-            }
+            AFE = (byte)addr;
         }
 
         protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
@@ -291,23 +365,17 @@ namespace ZXMAK2.Hardware.Atm
 
         protected virtual void BusReset()
         {
+            DOSEN = false;
             CMR0 = 0;
             CMR1 = 0;
-            DOSEN = false;
 
-            byte old_aFE = m_aFE;
             //RM_DOS
-            //m_aFE = 0x80 | 0x60;
             //m_aFB = 0;
 
             //DEFAULT
-            m_aFE = 0x80;
-            m_aFB = 0x80;
-
-            m_aFE |= 0x60;  // set mode 3 (standard spectrum 256x192)
-
-            if (((m_aFE ^ old_aFE) & 0x40) != 0) atm_memswap();
-            UpdateMapping();
+            //0x60 => set mode 3 (standard spectrum 256x192)
+            //SetAfeAfb(0x80 | 0x60, 0x80, true);
+            SetAfeAfb((byte)(AFE | 0x80), (byte)(AFB | 0x80), true);
         }
 
         #endregion
@@ -321,18 +389,27 @@ namespace ZXMAK2.Hardware.Atm
 
         #region Private
 
-        private void atm_memswap()
+        private void MemSwap()
         {
-            if (!m_cfg_mem_swap) return;
-            byte[] buffer = new byte[2048];
-            for (int subPage = 0; subPage < RamPages.Length * 2; subPage++)
+            // swap memory address bits A5-A7 and A8-A10 
+            if (!m_cfg_mem_swap)
             {
-                byte[] bankPage = RamPages[subPage / 2];
-                int bankIndex = (subPage % 2) * 2048;
-                for (int addr = 0; addr < 2048; addr++)
-                    buffer[addr] = bankPage[bankIndex + (addr & 0x1F) + ((addr >> 3) & 0xE0) + ((addr << 3) & 0x700)];
-                for (int addr = 0; addr < 2048; addr++)
-                    bankPage[bankIndex + addr] = buffer[addr];
+                return;
+            }
+            foreach (var page in RamPages)
+            {
+                var buffer = new byte[16384];
+                for (var addr = 0; addr < buffer.Length; addr++)
+                {
+                    var eaddr = (addr & 0x381F) |
+                        ((addr >> 3) & 0xE0) |
+                        ((addr << 3) & 0x700);
+                    buffer[addr] = page[eaddr];
+                }
+                for (var addr = 0; addr < buffer.Length; addr++)
+                {
+                    page[addr] = buffer[addr];
+                }
             }
         }
 
