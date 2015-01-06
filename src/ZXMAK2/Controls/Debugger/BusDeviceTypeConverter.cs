@@ -86,9 +86,8 @@ namespace ZXMAK2.Controls.Debugger
             public override void SetValue(object component, object value)
             {
                 var obj = ((BusDeviceProxy)component).Device;
-                ComponentType
-                    .GetProperty(Name)
-                    .SetValue(obj, value, null);
+                var propInfo = ComponentType.GetProperty(Name);
+                propInfo.SetValue(obj, Convert.ChangeType(value, propInfo.PropertyType), null);
             }
         }
     }
