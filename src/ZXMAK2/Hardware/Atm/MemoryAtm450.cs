@@ -11,13 +11,12 @@ namespace ZXMAK2.Hardware.Atm
     {
         #region Fields
 
-        protected CpuUnit m_cpu;
-        private bool m_lock = false;
         private UlaAtm450 m_ulaAtm;
+        protected CpuUnit m_cpu;
+        
+        private bool m_lock = false;
         private byte m_aFE;
         private byte m_aFB;
-
-        private bool m_cfg_mem_swap = true;  // ATM 7.10 hi-res video modes swap RAM/CPU address bus A5-A7<=>A8-A10
         
         #endregion Fields
 
@@ -143,74 +142,6 @@ namespace ZXMAK2.Hardware.Atm
             MapWriteC000 = MapReadC000;
         }
 
-        //protected override void UpdateMapping()
-        //{
-        //    m_lock = (CMR0 & 0x20) != 0;
-        //    var ramPage = CMR0 & 7;
-        //    var romPage = (CMR0 & 0x10) != 0 ?
-        //        GetRomIndex(RomId.ROM_SOS) :
-        //        GetRomIndex(RomId.ROM_128);
-
-        //    var videoPage = (CMR0 & 0x08) == 0 ? 5 : 7;
-
-        //    if (DOSEN)      // trdos or 48/128
-        //    {
-        //        if (romPage == 1)
-        //            romPage = GetRomIndex(RomId.ROM_DOS);
-        //        else
-        //            romPage = GetRomIndex(RomId.ROM_SYS);
-        //    }
-
-        //    var sega = CMR1 & 3;   // & 7  for 1024K
-        //    ramPage |= sega << 3;
-
-        //    var norom = CPUS;                 // CPUS
-        //    if (!norom)
-        //    {
-        //        if (m_lock)
-        //            SetAfeAfb(AFE, (byte)(AFB & 0x7F), false);
-        //        if (DOSEN && CPNET)   //CPNET?
-        //            SetAfeAfb(AFE, (byte)(AFB | 0x80), false); // more priority, then 7FFD
-
-        //        if (CPSYS)
-        //            romPage = GetRomIndex(RomId.ROM_SYS);
-        //        else if (DOSEN)
-        //            romPage = GetRomIndex(RomId.ROM_DOS);
-        //    }
-        //    romPage |= CMR1 & 4;    // extended 64K rom (if exists)
-
-        //    if (m_ulaAtm != null)
-        //    {
-        //        var videoMode = (AtmVideoMode)(((AFE >> 6) & 1) | ((AFE >> 4) & 2)); // (m_aFE >> 5) & 3
-        //        m_ulaAtm.SetPageMappingAtm(
-        //            videoMode,
-        //            videoPage,
-        //            norom ? 0 : -1,
-        //            norom ? 4 : 5,
-        //            2,
-        //            ramPage);
-        //    }
-        //    else
-        //    {
-        //        m_ula.SetPageMapping(
-        //            videoPage,
-        //            norom ? 0 : -1,
-        //            norom ? 4 : 5,
-        //            2,
-        //            ramPage);
-        //    }
-
-        //    MapRead0000 = norom ? RamPages[0] : RomPages[romPage];
-        //    MapRead4000 = norom ? RamPages[4] : RamPages[5];
-        //    MapRead8000 = RamPages[2];
-        //    MapReadC000 = RamPages[ramPage];
-
-        //    MapWrite0000 = norom ? RamPages[0] : m_trashPage;
-        //    MapWrite4000 = MapRead4000;
-        //    MapWrite8000 = MapRead8000;
-        //    MapWriteC000 = MapReadC000;
-        //}
-
         private void SetAfeAfb(byte afe, byte afb, bool updateMapping)
         {
             var changeAfe = afe ^ m_aFE;
@@ -307,12 +238,13 @@ namespace ZXMAK2.Hardware.Atm
 
         #endregion
 
+        
         #region Bus Handlers
 
         protected virtual void BusReadPortFE(ushort addr, ref byte value, ref bool iorqge)
         {
             value &= 0x7F;
-            value |= atm450_z((int)(m_cpu.Tact % m_ula.FrameTactCount));
+            value |= Atm450_z((int)(m_cpu.Tact % m_ula.FrameTactCount));
         }
 
         protected virtual void BusReadPortFB(ushort addr, ref byte value, ref bool iorqge)
@@ -391,11 +323,7 @@ namespace ZXMAK2.Hardware.Atm
 
         private void MemSwap()
         {
-            // swap memory address bits A5-A7 and A8-A10 
-            if (!m_cfg_mem_swap)
-            {
-                return;
-            }
+            // ATM hi-res video modes swap RAM/CPU address bus A5-A7<=>A8-A10
             foreach (var page in RamPages)
             {
                 var buffer = new byte[16384];
@@ -413,7 +341,7 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        private byte atm450_z(int t)
+        private byte Atm450_z(int t)
         {
             // PAL hardware gives 3 zeros in secret short time intervals
             if (m_ula.FrameTactCount < 80000)
