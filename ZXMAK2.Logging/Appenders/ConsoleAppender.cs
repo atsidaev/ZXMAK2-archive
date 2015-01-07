@@ -88,7 +88,9 @@ namespace ZXMAK2.Logging.Appenders
             if (handle != IntPtr.Zero)
             {
                 //WinApi.SetConsoleTitle(Name);
-                WinApi.ShowWindow(handle, SW_SHOW);
+                WinApi.ShowWindow(handle, SW_SHOWNOACTIVATE);
+                var hMenu = WinApi.GetSystemMenu(handle, false);
+                WinApi.DeleteMenu(hMenu, SC_CLOSE, MF_BYCOMMAND);
             }
             base.ActivateOptions();
         }
@@ -109,12 +111,15 @@ namespace ZXMAK2.Logging.Appenders
 
         private const int SW_HIDE = 0;
         private const int SW_SHOW = 5;
+        private const int SW_SHOWNOACTIVATE = 4;
         private const UInt32 STD_INPUT_HANDLE = 0xFFFFFFF6;
         private const UInt32 STD_OUTPUT_HANDLE = 0xFFFFFFF5;
         private const UInt32 STD_ERROR_HANDLE = 0xFFFFFFF4;
         private const UInt32 ATTACH_PARENT_PROCESS = 0xFFFFFFFF;
         private const UInt32 ALLOCATED_HANDLE = 7;
 
+        private const int MF_BYCOMMAND = 0x00000000;
+        public const int SC_CLOSE = 0xF060;
 
         private static class WinApi
         {
@@ -135,6 +140,12 @@ namespace ZXMAK2.Logging.Appenders
 
             [DllImport("user32.dll", SetLastError = true)]
             public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
         }
     }
 }
