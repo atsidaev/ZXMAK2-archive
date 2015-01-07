@@ -16,8 +16,7 @@ namespace ZXMAK2
             Logger.Start();
             try
             {
-                var launcher = Locator.Resolve<ILauncher>();
-                launcher.Run(args);
+                RunSafe(args);
             }
             catch (Exception ex)
             {
@@ -27,6 +26,12 @@ namespace ZXMAK2
             {
                 Logger.Finish();
             }
+        }
+
+        private static void RunSafe(string[] args)
+        {
+            var launcher = Locator.Resolve<ILauncher>();
+            launcher.Run(args);
         }
     }
 }
