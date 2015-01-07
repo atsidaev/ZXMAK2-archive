@@ -535,6 +535,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.targets\Common.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
