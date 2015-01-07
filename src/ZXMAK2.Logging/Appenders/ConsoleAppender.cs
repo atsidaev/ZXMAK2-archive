@@ -13,6 +13,8 @@ namespace ZXMAK2.Logging.Appenders
     {
         private bool _isAllocated;
         private bool _isOwner;
+        private GCHandle _callbackHandle;
+        private IntPtr _pinnedCallback;
         
         public ConsoleAllocMode AllocMode { get; set; }
         public Level AutoLevel { get; set; }
@@ -44,8 +46,7 @@ namespace ZXMAK2.Logging.Appenders
 
         protected override void Append(LoggingEvent loggingEvent)
         {
-            if (!_isAllocated && 
-                AllocMode == ConsoleAllocMode.Auto &&
+            if (AllocMode == ConsoleAllocMode.Auto &&
                 loggingEvent != null && 
                 loggingEvent.Level >= AutoLevel)
             {
@@ -68,17 +69,17 @@ namespace ZXMAK2.Logging.Appenders
 
         private void Allocate()
         {
+            var handle = WinApi.GetConsoleWindow();
+            if (handle != IntPtr.Zero)
+            {
+                WinApi.ShowWindow(handle, SW_SHOWNOACTIVATE);
+                return;
+            }
             if (_isAllocated)
             {
                 return;
             }
             _isAllocated = true;
-            //WinApi.AttachConsole(ATTACH_PARENT_PROCESS)
-            var handle = WinApi.GetConsoleWindow();
-            if (handle != IntPtr.Zero)
-            {
-                return;
-            }
             if (!WinApi.AllocConsole())
             {
                 return;
@@ -87,10 +88,16 @@ namespace ZXMAK2.Logging.Appenders
             handle = WinApi.GetConsoleWindow();
             if (handle != IntPtr.Zero)
             {
-                //WinApi.SetConsoleTitle(Name);
+                Console.Title = string.Format("{0} [Ctrl+C to hide]", Console.Title);
+                
                 WinApi.ShowWindow(handle, SW_SHOWNOACTIVATE);
                 var hMenu = WinApi.GetSystemMenu(handle, false);
                 WinApi.DeleteMenu(hMenu, SC_CLOSE, MF_BYCOMMAND);
+
+                var callbackHandler = new HandlerRoutine(ConsoleHandlerCallback);
+                _callbackHandle = GCHandle.Alloc(callbackHandler);
+                _pinnedCallback = Marshal.GetFunctionPointerForDelegate(callbackHandler);
+                WinApi.SetConsoleCtrlHandler(_pinnedCallback, true);
             }
             base.ActivateOptions();
         }
@@ -106,26 +113,43 @@ namespace ZXMAK2.Logging.Appenders
             {
                 return;
             }
+            WinApi.SetConsoleCtrlHandler(_pinnedCallback, false);
             WinApi.FreeConsole();
+            if (_callbackHandle.IsAllocated)
+            {
+                _callbackHandle.Free();
+            }
         }
+
+        private bool ConsoleHandlerCallback(int dwCtrlType)
+        {
+            if (dwCtrlType == CTRL_C_EVENT ||
+                dwCtrlType == CTRL_BREAK_EVENT)
+            {
+                var handle = WinApi.GetConsoleWindow();
+                WinApi.ShowWindow(handle, SW_HIDE);
+            }
+            return true;
+        }
+
+
+        private const int CTRL_C_EVENT = 0;
+        private const int CTRL_BREAK_EVENT = 1;
+        private const int CTRL_CLOSE_EVENT = 2;
+        private const int CTRL_LOGOFF_EVENT = 5;
+        private const int CTRL_SHUTDOWN_EVENT = 6;
 
         private const int SW_HIDE = 0;
         private const int SW_SHOW = 5;
         private const int SW_SHOWNOACTIVATE = 4;
-        private const UInt32 STD_INPUT_HANDLE = 0xFFFFFFF6;
-        private const UInt32 STD_OUTPUT_HANDLE = 0xFFFFFFF5;
-        private const UInt32 STD_ERROR_HANDLE = 0xFFFFFFF4;
-        private const UInt32 ATTACH_PARENT_PROCESS = 0xFFFFFFFF;
-        private const UInt32 ALLOCATED_HANDLE = 7;
 
-        private const int MF_BYCOMMAND = 0x00000000;
-        public const int SC_CLOSE = 0xF060;
+        private const uint MF_BYCOMMAND = 0x00000000;
+        private const uint SC_CLOSE = 0xF060;
+
+        private delegate bool HandlerRoutine(int dwCtrlType);
 
         private static class WinApi
         {
-            [DllImport("kernel32.dll", SetLastError = true)]
-            public static extern bool AttachConsole(UInt32 dwProcessId);
-
             [DllImport("kernel32.dll", SetLastError = true)]
             public static extern bool AllocConsole();
 
@@ -135,17 +159,20 @@ namespace ZXMAK2.Logging.Appenders
             [DllImport("kernel32.dll", SetLastError = true)]
             public static extern IntPtr GetConsoleWindow();
 
-            [DllImport("kernel32.dll", SetLastError = true)]
-            public static extern bool SetConsoleTitle(string lpConsoleTitle);
-
             [DllImport("user32.dll", SetLastError = true)]
             public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-            [DllImport("user32.dll", SetLastError = true)]
-            public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern bool SetConsoleCtrlHandler(IntPtr handler, bool add);
 
             [DllImport("user32.dll", SetLastError = true)]
             public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern int DeleteMenu(
+                IntPtr hMenu,
+                uint nPosition,
+                uint wFlags);
         }
     }
 }
