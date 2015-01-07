@@ -46,6 +46,21 @@ namespace ZXMAK2.Engine.Cpu.Processor
             initExecED();
             initExecCB();
             initFXCB();
+
+            regs.AF = 0xFF;
+            regs.BC = 0xFF;
+            regs.DE = 0xFF;
+            regs.HL = 0xFF;
+            regs._AF = 0xFF;
+            regs._BC = 0xFF;
+            regs._DE = 0xFF;
+            regs._HL = 0xFF;
+            regs.IX = 0xFF;
+            regs.IY = 0xFF;
+            regs.IR = 0xFF;
+            regs.PC = 0xFF;
+            regs.SP = 0xFF;
+            regs.MW = 0xFF;
         }
 
 
@@ -176,9 +191,9 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 IFF2 = false;
                 regs.PC = 0;
                 regs.IR = 0;
-                regs.SP = 0xFFFF;
-                regs.AF = 0xFFFF;
-                //IM = 0;         // ?
+                IM = 0;
+                //regs.SP = 0xFFFF;
+                //regs.AF = 0xFFFF;
 
                 Tact += 2;      // total should be 3T?
                 return true;
