@@ -15,6 +15,7 @@ namespace ZXMAK2.Logging.Appenders
         private bool _isOwner;
         private GCHandle _callbackHandle;
         private IntPtr _pinnedCallback;
+        private bool _isShown;
         
         public ConsoleAllocMode AllocMode { get; set; }
         public Level AutoLevel { get; set; }
@@ -72,7 +73,11 @@ namespace ZXMAK2.Logging.Appenders
             var handle = WinApi.GetConsoleWindow();
             if (handle != IntPtr.Zero)
             {
-                WinApi.ShowWindow(handle, SW_SHOWNOACTIVATE);
+                if (!_isShown)
+                {
+                    WinApi.ShowWindow(handle, SW_SHOWNOACTIVATE);
+                    _isShown = true;
+                }
                 return;
             }
             if (_isAllocated)
@@ -89,8 +94,9 @@ namespace ZXMAK2.Logging.Appenders
             if (handle != IntPtr.Zero)
             {
                 Console.Title = string.Format("{0} [Ctrl+C to hide]", Console.Title);
-                
+
                 WinApi.ShowWindow(handle, SW_SHOWNOACTIVATE);
+                _isShown = true;
                 var hMenu = WinApi.GetSystemMenu(handle, false);
                 WinApi.DeleteMenu(hMenu, SC_CLOSE, MF_BYCOMMAND);
 
@@ -115,6 +121,7 @@ namespace ZXMAK2.Logging.Appenders
             }
             WinApi.SetConsoleCtrlHandler(_pinnedCallback, false);
             WinApi.FreeConsole();
+            _isShown = false;
             if (_callbackHandle.IsAllocated)
             {
                 _callbackHandle.Free();
@@ -128,6 +135,7 @@ namespace ZXMAK2.Logging.Appenders
             {
                 var handle = WinApi.GetConsoleWindow();
                 WinApi.ShowWindow(handle, SW_HIDE);
+                _isShown = false;
             }
             return true;
         }
