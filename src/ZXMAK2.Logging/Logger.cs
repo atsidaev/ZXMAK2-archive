@@ -71,6 +71,18 @@ namespace ZXMAK2
             }
         }
 
+        public static void Fatal(string fmt, params object[] args)
+        {
+            try
+            {
+                _logger.FatalFormat(CultureInfo.InvariantCulture, fmt, args);
+            }
+            catch (Exception ex)
+            {
+                Error(ex);
+            }
+        }
+
         public static void Debug(Exception exception, string fmt, params object[] args)
         {
             try
@@ -123,6 +135,19 @@ namespace ZXMAK2
             }
         }
 
+        public static void Fatal(Exception exception, string fmt, params object[] args)
+        {
+            try
+            {
+                var msg = fmt != null ? string.Format(fmt, args) : null;
+                _logger.Fatal(msg, exception);
+            }
+            catch (Exception ex)
+            {
+                Error(ex);
+            }
+        }
+
         #endregion Redirect
 
 
@@ -144,6 +169,11 @@ namespace ZXMAK2
         public static void Error(Exception exception)
         {
             Error(exception, null);
+        }
+
+        public static void Fatal(Exception exception)
+        {
+            Fatal(exception, null);
         }
 
 
