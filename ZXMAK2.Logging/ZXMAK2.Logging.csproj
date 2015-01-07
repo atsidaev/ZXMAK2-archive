@@ -48,6 +48,7 @@
     <Compile Include="Appenders\AsyncAppender.cs" />
     <Compile Include="Appenders\ConsoleAllocMode.cs" />
     <Compile Include="Appenders\ConsoleAppender.cs" />
+    <Compile Include="Appenders\ConsoleWindow.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
