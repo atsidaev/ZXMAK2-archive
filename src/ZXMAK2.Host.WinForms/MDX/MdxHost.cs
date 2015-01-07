@@ -20,10 +20,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             HostUi = form as ICommandManager;
             Video = hostVideo;
-            m_sound = new DirectSound(form, -1, 44100, 16, 2, 882 * 2 * 2, 4);
-            m_keyboard = new DirectKeyboard(form);
-            m_mouse = new DirectMouse(form);
-            m_joystick = new DirectJoystick(form);
+            SafeExecute(() => m_sound = new DirectSound(form, -1, 44100, 16, 2, 882 * 2 * 2, 4));
+            SafeExecute(() => m_keyboard = new DirectKeyboard(form));
+            SafeExecute(() => m_mouse = new DirectMouse(form));
+            SafeExecute(() => m_joystick = new DirectJoystick(form));
         }
 
         public void Dispose()
@@ -68,6 +68,18 @@ namespace ZXMAK2.Host.WinForms.Mdx
             if (m_mouse != null)
             {
                 m_mouse.StartCapture();
+            }
+        }
+
+        private void SafeExecute(Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
         }
     }
