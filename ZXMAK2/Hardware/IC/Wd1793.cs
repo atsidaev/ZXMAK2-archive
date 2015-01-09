@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ZXMAK2.Entities;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Crc;
+
 
 namespace ZXMAK2.Hardware.IC
 {
