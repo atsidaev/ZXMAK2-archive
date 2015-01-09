@@ -53,7 +53,7 @@ namespace ZXMAK2.Serializers
             string fileName = image.FileName;
             if (fileName != string.Empty)
             {
-                FormatSerializer serializer = GetSerializer(Path.GetExtension(fileName));
+                var serializer = GetSerializer(Path.GetExtension(fileName));
                 if (serializer == null || !serializer.CanSerialize)
                     fileName = string.Empty;
             }

@@ -28,7 +28,7 @@ namespace ZXMAK2.Interfaces
 		void SubscribeBeginFrame(BusFrameEventHandler handler);
 		void SubscribeEndFrame(BusFrameEventHandler handler);
 
-		void AddSerializer(FormatSerializer serializer);
+		void AddSerializer(IFormatSerializer serializer);
 		void RegisterIcon(IIconDescriptor iconDesc);
 
         void AddCommandUi(ICommand command);

@@ -13,6 +13,6 @@ namespace ZXMAK2.Interfaces
         bool NoDelay { get; set; }
         bool LogIo { get; set; }
 
-        DiskLoadManager LoadManager { get; }
+        ISerializeManager LoadManager { get; }
 	}
 }

@@ -40,7 +40,7 @@ namespace ZXMAK2.Hardware.General
             CreateViewHolder();
         }
 
-        public DiskLoadManager LoadManager { get; private set; }
+        public ISerializeManager LoadManager { get; private set; }
         
         #region IBusDevice
 

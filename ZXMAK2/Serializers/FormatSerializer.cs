@@ -1,10 +1,11 @@
 using System;
 using System.IO;
+using ZXMAK2.Interfaces;
 
 
 namespace ZXMAK2.Serializers
 {
-	public abstract class FormatSerializer
+    public abstract class FormatSerializer : IFormatSerializer
 	{
 		public abstract string FormatGroup { get; }
 		public abstract string FormatName { get; }

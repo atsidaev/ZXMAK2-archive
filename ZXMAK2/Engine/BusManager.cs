@@ -23,7 +23,7 @@ namespace ZXMAK2.Engine
         private bool m_sandBox = false;
         private String m_machineFile = null;
         private CpuUnit m_cpu;
-        private LoadManager m_loadManager;
+        private ISerializeManager m_loadManager;
         private IUlaDevice m_ula;
         private IDebuggable m_debuggable;
         private List<BusDeviceBase> m_deviceList = new List<BusDeviceBase>();
@@ -70,7 +70,6 @@ namespace ZXMAK2.Engine
             if (m_loadManager != null)
             {
                 m_loadManager.Clear();
-                m_loadManager.AddStandardSerializers();
             }
             m_iconDescList = new IconDescriptor[0];
             if (CommandManager != null)
@@ -208,7 +207,7 @@ namespace ZXMAK2.Engine
             m_endFrame += handler;
         }
 
-        void IBusManager.AddSerializer(FormatSerializer serializer)
+        void IBusManager.AddSerializer(IFormatSerializer serializer)
         {
             if (m_loadManager != null)
                 m_loadManager.AddSerializer(serializer);
@@ -481,7 +480,6 @@ namespace ZXMAK2.Engine
             if (m_loadManager != null)
             {
                 m_loadManager.Clear();
-                m_loadManager.AddStandardSerializers();
             }
             m_iconDescList = new IconDescriptor[] { m_iconPause };
             if (CommandManager != null)
