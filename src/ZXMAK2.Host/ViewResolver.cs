@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using ZXMAK2.Dependency;
-using ZXMAK2.Presentation.Interfaces;
+using ZXMAK2.Host.Interfaces;
 
 
-namespace ZXMAK2.Presentation
+namespace ZXMAK2.Host
 {
     public class ViewResolver : IViewResolver
     {
