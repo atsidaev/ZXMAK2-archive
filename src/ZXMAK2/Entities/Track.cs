@@ -3,7 +3,8 @@
 /// Date: 13.04.2007
 using System;
 using System.Collections.Generic;
-using ZXMAK2.Engine.Crc;
+using ZXMAK2.Crc;
+
 
 namespace ZXMAK2.Entities
 {
