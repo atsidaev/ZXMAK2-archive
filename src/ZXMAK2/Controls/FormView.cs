@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Presentation.Interfaces;
 
 
 namespace ZXMAK2.Controls

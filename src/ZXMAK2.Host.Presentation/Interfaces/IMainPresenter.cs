@@ -2,7 +2,7 @@
 using ZXMAK2.Presentation.Interfaces;
 
 
-namespace ZXMAK2.Host.Interfaces
+namespace ZXMAK2.Host.Presentation.Interfaces
 {
     public interface IMainPresenter : IDisposable
     {

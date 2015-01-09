@@ -21,6 +21,7 @@ using ZXMAK2.Model.Tape.Interfaces;
 using ZXMAK2.Resources;
 using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.MVP;
+using ZXMAK2.Host.Presentation.Interfaces;
 
 
 namespace ZXMAK2.Hardware.General
