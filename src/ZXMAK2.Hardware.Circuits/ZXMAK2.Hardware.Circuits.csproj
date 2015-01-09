@@ -40,9 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\ZXMAK2\Hardware\IC\AtaPort.cs">
-      <Link>AtaPort.cs</Link>
-    </Compile>
+    <Compile Include="AtaPort.cs" />
     <Compile Include="NvramChip.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RtcChip.cs" />
@@ -56,10 +54,12 @@
     <ProjectReference Include="..\ZXMAK2.Dependency\ZXMAK2.Dependency.csproj">
       <Project>{BB32EB49-52FF-4976-9586-5C4E415CD730}</Project>
       <Name>ZXMAK2.Dependency</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">
       <Project>{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}</Project>
       <Name>ZXMAK2.Logging</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
