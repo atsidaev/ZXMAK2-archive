@@ -2,7 +2,7 @@
 using System.IO;
 
 
-namespace ZXMAK2.Hardware.IC.SecureDigital
+namespace ZXMAK2.Hardware.Circuits.SecureDigital
 {
     /// <summary>
     /// SD Card emulator

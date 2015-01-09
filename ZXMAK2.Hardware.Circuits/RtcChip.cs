@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
-namespace ZXMAK2.Hardware.IC
+
+namespace ZXMAK2.Hardware.Circuits
 {
     /// <summary>
     /// RTC IC emulator

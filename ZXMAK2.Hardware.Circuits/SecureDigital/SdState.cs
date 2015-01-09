@@ -1,6 +1,6 @@
 ﻿
 
-namespace ZXMAK2.Hardware.IC.SecureDigital
+namespace ZXMAK2.Hardware.Circuits.SecureDigital
 {
     public enum SdState
     {

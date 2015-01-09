@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Text;
-using System.Collections.Generic;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
-using ZXMAK2.Hardware.IC;
+using ZXMAK2.Hardware.Circuits;
+
 
 namespace ZXMAK2.Hardware.Profi
 {
