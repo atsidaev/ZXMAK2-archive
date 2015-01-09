@@ -2,7 +2,7 @@
 using System.ComponentModel;
 
 
-namespace ZXMAK2.Host.Interfaces
+namespace ZXMAK2.Host.Presentation.Interfaces
 {
     public interface IView : IDisposable
     {

@@ -18,6 +18,7 @@ using ZXMAK2.Host.WinForms.Controls;
 using ZXMAK2.Host.WinForms.Tools;
 using ZXMAK2.Resources;
 using ZXMAK2.Presentation.Interfaces;
+using ZXMAK2.Host.Presentation.Interfaces;
 
 
 namespace ZXMAK2.Host.WinForms.Views

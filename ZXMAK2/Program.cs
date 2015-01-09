@@ -1,6 +1,6 @@
 ﻿using System;
 using ZXMAK2.Dependency;
-using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Presentation.Interfaces;
 
 
 namespace ZXMAK2

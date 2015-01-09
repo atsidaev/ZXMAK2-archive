@@ -59,22 +59,14 @@
     <Compile Include="Interfaces\IIconDescriptor.cs" />
     <Compile Include="Interfaces\IJoystickState.cs" />
     <Compile Include="Interfaces\IKeyboardState.cs" />
-    <Compile Include="Interfaces\ILauncher.cs" />
-    <Compile Include="Interfaces\IMainPresenter.cs" />
-    <Compile Include="Interfaces\IMainView.cs" />
     <Compile Include="Interfaces\IMouseState.cs" />
     <Compile Include="Interfaces\IUserMessage.cs" />
     <Compile Include="Interfaces\IUserQuery.cs" />
     <Compile Include="Interfaces\IVideoData.cs" />
     <Compile Include="Interfaces\IVideoFrame.cs" />
-    <Compile Include="Interfaces\IView.cs" />
-    <Compile Include="Interfaces\IViewHolder.cs" />
-    <Compile Include="Interfaces\IViewResolver.cs" />
-    <Compile Include="Launcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\KeyboardMapper.cs" />
     <Compile Include="Services\UserMessage.cs" />
-    <Compile Include="ViewResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZXMAK2.Dependency\ZXMAK2.Dependency.csproj">
