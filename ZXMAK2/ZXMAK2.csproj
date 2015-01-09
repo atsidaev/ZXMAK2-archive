@@ -234,7 +234,6 @@
     <Compile Include="Hardware\Evo\ZsdPentEvo.cs" />
     <Compile Include="Hardware\General\FddController.cs" />
     <Compile Include="Hardware\General\HayesModem.cs" />
-    <Compile Include="Hardware\IC\Wd1793.cs" />
     <Compile Include="Hardware\Pentagon\CovoxPentagon.cs" />
     <Compile Include="Hardware\Profi\CovoxProfi.cs" />
     <Compile Include="Hardware\Profi\IdeProfi.cs" />
