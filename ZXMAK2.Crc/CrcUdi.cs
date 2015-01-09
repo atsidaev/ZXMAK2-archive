@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace ZXMAK2.Engine.Crc
+namespace ZXMAK2.Crc
 {
     public sealed class CrcUdi
     {

@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-using ZXMAK2.Engine.Crc;
+using ZXMAK2.Crc;
 
 
 namespace ZXMAK2.Entities
