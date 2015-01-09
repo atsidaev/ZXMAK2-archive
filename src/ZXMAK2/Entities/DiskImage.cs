@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-using ZXMAK2.Serializers;
 using ZXMAK2.Engine.Crc;
 
 
@@ -18,6 +17,7 @@ namespace ZXMAK2.Entities
         TrackLevel = 2
     }
     public delegate void SaveDiskDelegate(DiskImage sender);
+    public delegate void LoadDiskDelegate(DiskImage sender, bool readOnly);
 
     // TODO: DiskImage.Present logic
     public class DiskImage
@@ -55,10 +55,7 @@ namespace ZXMAK2.Entities
             _rotateTime = rotateTime;
             _indexTime = rotateTime / 50;
             _nullTrack = new Track(rotateTime);
-            SerializeManager = new DiskLoadManager(this);
         }
-
-        public DiskLoadManager SerializeManager { get; private set; }
 
         public string Description = string.Empty;
 
@@ -69,12 +66,8 @@ namespace ZXMAK2.Entities
         }
 
         public event SaveDiskDelegate SaveDisk;
-        protected void OnSaveDisk()
-        {
-            if (SaveDisk != null)
-                SaveDisk(this);
-        }
-
+        public event LoadDiskDelegate LoadDisk;
+        
         public string FileName
         {
             get { return _fileName; }
@@ -349,15 +342,7 @@ namespace ZXMAK2.Entities
         {
             if (Present)
             {
-                if (!string.IsNullOrEmpty(FileName))
-                {
-                    SerializeManager.OpenFileName(FileName, IsWP);
-                }
-                else
-                {
-                    SetPhysics(80, 2);
-                    FormatTrdos();
-                }
+                OnLoadDisk(IsWP);
             }
             IsConnected = true;
         }
@@ -370,5 +355,23 @@ namespace ZXMAK2.Entities
         }
 
         public bool IsConnected { get; private set; }
+
+        protected void OnSaveDisk()
+        {
+            var handler = SaveDisk;
+            if (handler != null)
+            {
+                handler(this);
+            }
+        }
+
+        protected void OnLoadDisk(bool readOnly)
+        {
+            var handler = LoadDisk;
+            if (handler != null)
+            {
+                handler(this, readOnly);
+            }
+        }
     }
 }

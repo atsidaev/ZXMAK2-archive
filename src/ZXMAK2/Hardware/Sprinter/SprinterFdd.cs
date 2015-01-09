@@ -7,6 +7,7 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Resources;
+using ZXMAK2.Serializers;
 
 
 namespace ZXMAK2.Hardware.Sprinter
@@ -26,8 +27,16 @@ namespace ZXMAK2.Hardware.Sprinter
         
         #endregion
 
+        public SprinterFdd()
+        {
+            LoadManager = new DiskLoadManager(m_wd.FDD[0]);
+        }
+
+
 
         #region Properties
+
+        public DiskLoadManager LoadManager { get; private set; }
 
         public bool OpenPorts { get; set; }
 
@@ -62,7 +71,7 @@ namespace ZXMAK2.Hardware.Sprinter
             bmgr.SubscribeNmiRq(BusNmiRq);
             bmgr.SubscribeNmiAck(BusNmiAck);
 
-            foreach (var fs in FDD[0].SerializeManager.GetSerializers())
+            foreach (var fs in LoadManager.GetSerializers())
             {
                 bmgr.AddSerializer(fs);
             }

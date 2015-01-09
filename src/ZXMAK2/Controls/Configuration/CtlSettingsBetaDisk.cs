@@ -114,7 +114,7 @@ namespace ZXMAK2.Controls.Configuration
             loadDialog.InitialDirectory = ".";
             loadDialog.SupportMultiDottedExtensions = true;
             loadDialog.Title = "Open...";
-            loadDialog.Filter = m_device.FDD[0].SerializeManager.GetOpenExtFilter();
+            loadDialog.Filter = m_device.LoadManager.GetOpenExtFilter();
             loadDialog.DefaultExt = ""; //m_betaDisk.BetaDisk.FDD[drive].Serializer.GetDefaultExtension();
             loadDialog.FileName = "";
             loadDialog.ShowReadOnly = true;
@@ -134,7 +134,7 @@ namespace ZXMAK2.Controls.Configuration
         {
             OpenFileDialog loadDialog = sender as OpenFileDialog;
             if (loadDialog == null) return;
-            e.Cancel = !m_device.FDD[0].SerializeManager.CheckCanOpenFileName(loadDialog.FileName);
+            e.Cancel = !m_device.LoadManager.CheckCanOpenFileName(loadDialog.FileName);
         }
 
         private void chkPresent_CheckedChanged(object sender, EventArgs e)

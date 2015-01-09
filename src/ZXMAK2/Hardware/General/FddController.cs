@@ -12,6 +12,7 @@ using ZXMAK2.Host.Entities;
 using ZXMAK2.Resources;
 using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.MVP;
+using ZXMAK2.Serializers;
 
 
 namespace ZXMAK2.Hardware.General
@@ -34,9 +35,11 @@ namespace ZXMAK2.Hardware.General
 
         public FddController()
         {
+            LoadManager = new DiskLoadManager(m_wd.FDD[0]);
             CreateViewHolder();
         }
 
+        public DiskLoadManager LoadManager { get; private set; }
         
         #region IBusDevice
 
@@ -57,7 +60,7 @@ namespace ZXMAK2.Hardware.General
             
             OnSubscribeIo(bmgr);
 
-            foreach (var fs in m_wd.FDD[0].SerializeManager.GetSerializers())
+            foreach (var fs in LoadManager.GetSerializers())
             {
                 bmgr.AddSerializer(fs);
             }
