@@ -2,6 +2,8 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using ZXMAK2.Hardware.Circuits;
+using System.Reflection;
 
 
 namespace ZXMAK2.Hardware.IC
@@ -644,7 +646,7 @@ namespace ZXMAK2.Hardware.IC
             {
                 for (int i = 0; i < 512; i++)
                     transbf[i] = 0;
-                string firmwareVersion = System.Windows.Forms.Application.ProductVersion;
+                string firmwareVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
                 make_ata_string(transbf, 10 * 2, 10, "00000000001234567890");	// Serial number
                 make_ata_string(transbf, 23 * 2, 4, firmwareVersion);			// Firmware revision

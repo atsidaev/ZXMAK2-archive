@@ -235,13 +235,6 @@
     <Compile Include="Hardware\Evo\ZsdPentEvo.cs" />
     <Compile Include="Hardware\General\FddController.cs" />
     <Compile Include="Hardware\General\HayesModem.cs" />
-    <Compile Include="Hardware\IC\AtaPort.cs" />
-    <Compile Include="Hardware\IC\NvramChip.cs" />
-    <Compile Include="Hardware\IC\RtcChip.cs" />
-    <Compile Include="Hardware\IC\SecureDigital\SdCard.cs" />
-    <Compile Include="Hardware\IC\SecureDigital\SdCommand.cs" />
-    <Compile Include="Hardware\IC\SecureDigital\SdState.cs" />
-    <Compile Include="Hardware\IC\SecureDigital\SdStatus.cs" />
     <Compile Include="Hardware\IC\Wd1793.cs" />
     <Compile Include="Hardware\Pentagon\CovoxPentagon.cs" />
     <Compile Include="Hardware\Profi\CovoxProfi.cs" />
@@ -505,6 +498,11 @@
     <ProjectReference Include="..\ZXMAK2.Engine\ZXMAK2.Engine.csproj">
       <Project>{FCE1FEFA-24FC-4867-9770-6635D3CBAEAA}</Project>
       <Name>ZXMAK2.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Hardware.Circuits\ZXMAK2.Hardware.Circuits.csproj">
+      <Project>{24F7E5E1-9524-41AA-93E6-95D9B10869A7}</Project>
+      <Name>ZXMAK2.Hardware.Circuits</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Host\ZXMAK2.Host.csproj">
