@@ -33,7 +33,7 @@ namespace ZXMAK2.Host.Entities.Tools
         {
             var xml = new XmlDocument();
             xml.LoadXml(xmlString);
-            LoadMapFromXml(xml);
+            LoadMapFromXml(xml.DocumentElement);
         }
         
         public void LoadMapFromXml(XmlNode xml)
@@ -41,8 +41,14 @@ namespace ZXMAK2.Host.Entities.Tools
             m_map.Clear();
             try
             {
-                foreach (XmlNode node in xml.SelectNodes("/KeyboardMap/Key[count(@Name)>0 and count(@Value)>0]"))
+                foreach (XmlNode node in xml.ChildNodes)
                 {
+                    if (string.Compare(node.Name, "Key", true) != 0 ||
+                        node.Attributes["Name"] == null ||
+                        node.Attributes["Value"] == null)
+                    {
+                        continue;
+                    }
                     var name = node.Attributes["Name"].Value.Trim();
                     var value = node.Attributes["Value"].Value.Trim();
                     if (name == string.Empty || value == string.Empty)

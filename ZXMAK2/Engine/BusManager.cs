@@ -718,8 +718,13 @@ namespace ZXMAK2.Engine
             }
             Clear();
             var orderCounter = 0;
-            foreach (XmlNode node in busNode.SelectNodes("Device"))
+            // "Device"
+            foreach (XmlNode node in busNode.ChildNodes)
             {
+                if (string.Compare(node.Name, "Device", true)!=0)
+                {
+                    continue;
+                }
                 try
                 {
                     var asm = Assembly.GetExecutingAssembly();

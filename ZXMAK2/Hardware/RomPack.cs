@@ -88,8 +88,13 @@ namespace ZXMAK2.Hardware
             {
                 mapping.Load(stream);
             }
-            foreach (XmlNode romNode in mapping.SelectNodes("/Mapping/Rom"))
+            // "/Mapping/Rom"
+            foreach (XmlNode romNode in mapping.DocumentElement.ChildNodes)
             {
+                if (string.Compare(romNode.Name, "Rom", true) != 0)
+                {
+                    continue;
+                }
                 if (romNode.Attributes["name"] == null ||
                     romNode.Attributes["image"] == null)
                 {
@@ -117,16 +122,26 @@ namespace ZXMAK2.Hardware
                 {
                     mapping.Load(stream);
                 }
-                foreach (XmlNode romSetNode in mapping.SelectNodes("/Mapping/RomSet"))
+                // "/Mapping/RomSet"
+                foreach (XmlNode romSetNode in mapping.DocumentElement.ChildNodes)
                 {
+                    if (string.Compare(romSetNode.Name, "RomSet", true) != 0)
+                    {
+                        continue;
+                    }
                     var romSet = Utils.GetXmlAttributeAsString(romSetNode, "name", string.Empty);
                     if (romSet == string.Empty ||
                         string.Compare(romSetName, romSet, true) != 0)
                     {
                         continue;
                     }
-                    foreach (XmlNode pageNode in romSetNode.SelectNodes("Page"))
+                    // "Page"
+                    foreach (XmlNode pageNode in romSetNode.ChildNodes)
                     {
+                        if (string.Compare(pageNode.Name, "Page", true) != 0)
+                        {
+                            continue;
+                        }
                         var pageName = Utils.GetXmlAttributeAsString(pageNode, "name", string.Empty);
                         var pageImage = Utils.GetXmlAttributeAsString(pageNode, "image", string.Empty);
                         if (pageName == string.Empty ||
@@ -177,8 +192,13 @@ namespace ZXMAK2.Hardware
                 {
                     mapping.Load(stream);
                 }
-                foreach (XmlNode romSetNode in mapping.SelectNodes("/Mapping/RomSet"))
+                // "/Mapping/RomSet"                
+                foreach (XmlNode romSetNode in mapping.DocumentElement.ChildNodes)
                 {
+                    if (string.Compare(romSetNode.Name, "RomSet", true) != 0)
+                    {
+                        continue;
+                    }
                     var romSet = Utils.GetXmlAttributeAsString(romSetNode, "name", string.Empty);
                     list.Add(romSet);
                 }
