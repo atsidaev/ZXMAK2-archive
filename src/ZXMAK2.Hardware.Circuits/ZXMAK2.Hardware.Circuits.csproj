@@ -49,8 +49,14 @@
     <Compile Include="SecureDigital\SdState.cs" />
     <Compile Include="SecureDigital\SdStatus.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="Wd1793.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ZXMAK2.Crc\ZXMAK2.Crc.csproj">
+      <Project>{C89EFDAC-656D-4383-8B9C-590043BDBAE0}</Project>
+      <Name>ZXMAK2.Crc</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Dependency\ZXMAK2.Dependency.csproj">
       <Project>{BB32EB49-52FF-4976-9586-5C4E415CD730}</Project>
       <Name>ZXMAK2.Dependency</Name>
@@ -59,6 +65,11 @@
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">
       <Project>{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}</Project>
       <Name>ZXMAK2.Logging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Model.Disk\ZXMAK2.Model.Disk.csproj">
+      <Project>{90D40289-355D-44B1-8572-B4E441280DA2}</Project>
+      <Name>ZXMAK2.Model.Disk</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
