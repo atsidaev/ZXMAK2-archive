@@ -1,5 +1,5 @@
 ﻿using System;
-using ZXMAK2.Entities;
+using ZXMAK2.Model.Disk;
 using ZXMAK2.Crc;
 
 

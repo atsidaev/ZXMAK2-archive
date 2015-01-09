@@ -2,7 +2,7 @@ using System;
 using ZXMAK2.Crc;
 
 
-namespace ZXMAK2.Entities
+namespace ZXMAK2.Model.Disk
 {
     public abstract class Sector
     {
