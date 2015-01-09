@@ -55,9 +55,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Hardware.Circuits", "ZXMAK2.Hardware.Circuits\ZXMAK2.Hardware.Circuits.csproj", "{24F7E5E1-9524-41AA-93E6-95D9B10869A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXMAK2.Crc", "ZXMAK2.Crc\ZXMAK2.Crc.csproj", "{C89EFDAC-656D-4383-8B9C-590043BDBAE0}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 15
+		SccNumberOfProjects = 16
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath0 = .
@@ -103,6 +105,9 @@ Global
 		SccProjectUniqueName14 = ZXMAK2.Hardware.Circuits\\ZXMAK2.Hardware.Circuits.csproj
 		SccProjectName14 = ZXMAK2.Hardware.Circuits
 		SccLocalPath14 = ZXMAK2.Hardware.Circuits
+		SccProjectUniqueName15 = ZXMAK2.Crc\\ZXMAK2.Crc.csproj
+		SccProjectName15 = ZXMAK2.Crc
+		SccLocalPath15 = ZXMAK2.Crc
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -253,6 +258,16 @@ Global
 		{24F7E5E1-9524-41AA-93E6-95D9B10869A7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{24F7E5E1-9524-41AA-93E6-95D9B10869A7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{24F7E5E1-9524-41AA-93E6-95D9B10869A7}.Release|x86.ActiveCfg = Release|Any CPU
+		{C89EFDAC-656D-4383-8B9C-590043BDBAE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C89EFDAC-656D-4383-8B9C-590043BDBAE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C89EFDAC-656D-4383-8B9C-590043BDBAE0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C89EFDAC-656D-4383-8B9C-590043BDBAE0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C89EFDAC-656D-4383-8B9C-590043BDBAE0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C89EFDAC-656D-4383-8B9C-590043BDBAE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C89EFDAC-656D-4383-8B9C-590043BDBAE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C89EFDAC-656D-4383-8B9C-590043BDBAE0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C89EFDAC-656D-4383-8B9C-590043BDBAE0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C89EFDAC-656D-4383-8B9C-590043BDBAE0}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
