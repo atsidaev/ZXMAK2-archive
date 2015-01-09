@@ -69,7 +69,7 @@ namespace ZXMAK2.Hardware.IC
 
     public class AtaPort
     {
-        public AtaDevice[] dev;
+        private AtaDevice[] dev;
 
         public AtaPort()
         {
@@ -165,41 +165,47 @@ namespace ZXMAK2.Hardware.IC
     /// ATA device emulation 
     /// based on unrealspeccy source
     /// </summary>
-    public class AtaDevice
+    public class AtaDevice : IDisposable
     {
-        public UInt32 c, h, s, lba;
-        public byte[] regs { get { return reg.__regs; } }
-        public AtaRegsUnion reg = new AtaRegsUnion();
+        private UInt32 c, h, s, lba;
+        private byte[] regs { get { return reg.__regs; } }
+        private AtaRegsUnion reg = new AtaRegsUnion();
 
-        public bool intrq;
-        public bool readOnly;
+        private bool intrq;
         public byte device_id;             // 0x00 - master, 0x10 - slave
-        public bool atapi;                 // flag for CD-ROM device
+        private bool atapi;                 // flag for CD-ROM device
 
-        public HD_STATE state;
-        public uint transptr, transcount;
-        public int phys_dev;
-        public byte[] transbf = new byte[0xFFFF]; // ATAPI is able to tranfer 0xFFFF bytes. passing more leads to error
+        private HD_STATE state;
+        private uint transptr, transcount;
+        private int phys_dev;
+        private byte[] transbf = new byte[0xFFFF]; // ATAPI is able to tranfer 0xFFFF bytes. passing more leads to error
 
-        public ATA_PASSER ata_p = new ATA_PASSER();
+        private AtaPasser ata_p = new AtaPasser();
         //ATAPI_PASSER atapi_p;
+        
         public bool LedIo;
         public bool LogIo;
+
+
+        public void Dispose()
+        {
+            ata_p.Dispose();
+        }
+
 
         public bool loaded()
         {
             //was crashed at atapi_p.loaded() if no master or slave device!!! see fix in ATAPI_PASSER //Alone Coder
-            return ata_p.loaded();// || atapi_p.loaded(); 
+            return ata_p.IsLoaded();// || atapi_p.loaded(); 
         }
 
         public void configure(IdeDiskDescriptor cfg)
         {
-            ata_p.close();
+            ata_p.Close();
             c = cfg.c;
             h = cfg.h;
             s = cfg.s;
             lba = cfg.lba;
-            readOnly = cfg.readOnly;
 
             for (int i = 0; i < regs.Length; i++)	// clear registers
                 regs[i] = 0;
@@ -209,7 +215,7 @@ namespace ZXMAK2.Hardware.IC
             if (String.IsNullOrEmpty(cfg.image))
                 return;
 
-            PHYS_DEVICE filedev = new PHYS_DEVICE();
+            var filedev = new PhysicalDeviceInfo();
             filedev.filename = cfg.image;
             filedev.type = cfg.cd ? DEVTYPE.ATA_FILECD : DEVTYPE.ATA_FILEHDD;
 
@@ -217,7 +223,7 @@ namespace ZXMAK2.Hardware.IC
             if (filedev.type == DEVTYPE.ATA_FILEHDD)
             {
                 filedev.usage = DEVUSAGE.ATA_OP_USE;
-                success = ata_p.open(filedev);
+                success = ata_p.Open(filedev, cfg.readOnly);
                 atapi = false;
             }
             //if (filedev.type == DEVTYPE.ATA_FILECD)
@@ -440,8 +446,6 @@ namespace ZXMAK2.Hardware.IC
 
             if ((cmd & 0xFE) == 0x30) // ATA-3 (mandatory), write sectors
             {
-                if (readOnly)
-                    return false;
                 if (seek())
                 {
                     state = HD_STATE.S_WRITE_SECTORS;
@@ -473,7 +477,7 @@ namespace ZXMAK2.Hardware.IC
 
             if (cmd == 0xE7)
             { // FLUSH CACHE
-                if (ata_p.flush())
+                if (ata_p.Flush())
                 {
                     command_ok();
                     intrq = true;
@@ -610,7 +614,7 @@ namespace ZXMAK2.Hardware.IC
             {
                 Logger.Info("IDE HDD SEEK lba={0} [fileOffset=#{1:X8}]", pos, ((long)pos) << 9);
             }
-            if (!ata_p.seek(pos))
+            if (!ata_p.Seek(pos))
             {
                 reg.status = HD_STATUS.STATUS_DRDY | HD_STATUS.STATUS_DF | HD_STATUS.STATUS_ERR;
                 reg.err = HD_ERROR.ERR_IDNF | HD_ERROR.ERR_ABRT;
@@ -731,7 +735,7 @@ namespace ZXMAK2.Hardware.IC
             {
                 Logger.Info("IDE HDD READ SECTOR ****************************************************************");
             }
-            if (!ata_p.read_sector(transbf, 0))
+            if (!ata_p.ReadSector(transbf, 0))
             {
                 reg.status = HD_STATUS.STATUS_DRDY | HD_STATUS.STATUS_DSC | HD_STATUS.STATUS_ERR;
                 reg.err = HD_ERROR.ERR_UNC | HD_ERROR.ERR_IDNF;
@@ -795,7 +799,7 @@ namespace ZXMAK2.Hardware.IC
             {
                 Logger.Info("IDE HDD WRITE SECTOR ***************************************************************");
             }
-            if (!ata_p.write_sector(transbf, 0))
+            if (!ata_p.WriteSector(transbf, 0))
             {
                 reg.status = HD_STATUS.STATUS_DRDY | HD_STATUS.STATUS_DSC | HD_STATUS.STATUS_ERR;
                 reg.err = HD_ERROR.ERR_UNC;
@@ -1032,7 +1036,7 @@ namespace ZXMAK2.Hardware.IC
     public enum DEVTYPE { ATA_NONE, ATA_FILEHDD, /*ATA_NTHDD, ATA_SPTI_CD, ATA_ASPI_CD,*/ ATA_FILECD };
     public enum DEVUSAGE { ATA_OP_ENUM_ONLY, ATA_OP_USE };
 
-    public class PHYS_DEVICE
+    public class PhysicalDeviceInfo
     {
         public DEVTYPE type;
         public DEVUSAGE usage;
@@ -1045,28 +1049,27 @@ namespace ZXMAK2.Hardware.IC
     };
 
 
-    public class ATA_PASSER : IDisposable
+    public class AtaPasser : IDisposable
     {
-        public FileStream hDevice;
-        public PHYS_DEVICE dev;
+        private FileStream _hDevice;
+        private PhysicalDeviceInfo _deviceInfo;
+        private bool _isReadOnly;
 
-        public ATA_PASSER()
-        {
-            hDevice = null;
-        }
 
         public void Dispose()
         {
-            close();
+            Close();
         }
 
-        public bool open(PHYS_DEVICE dev)
+        
+        public bool Open(PhysicalDeviceInfo deviceInfo, bool isReadOnly)
         {
             try
             {
-                this.dev = dev;
-                hDevice = new FileStream(
-                    dev.filename,
+                _deviceInfo = deviceInfo;
+                _isReadOnly = isReadOnly;
+                _hDevice = new FileStream(
+                    _deviceInfo.filename,
                     FileMode.OpenOrCreate,
                     FileAccess.ReadWrite,
                     FileShare.ReadWrite);
@@ -1079,41 +1082,43 @@ namespace ZXMAK2.Hardware.IC
             }
         }
 
-        public void close()
+        public void Close()
         {
-            if (hDevice != null)
+            if (_hDevice != null)
             {
-                hDevice.Dispose();
+                _hDevice.Dispose();
             }
-            hDevice = null;
-            dev = null;
+            _hDevice = null;
+            _deviceInfo = null;
         }
 
-        public bool loaded()
+        public bool IsLoaded()
         {
-            return hDevice != null;
+            return _hDevice != null;
         }
 
-        public bool flush()
+        public bool Flush()
         {
-            hDevice.Flush();
+            _hDevice.Flush();
             return true;
         }
 
-        public bool seek(uint nsector)
+        public bool Seek(uint nsector)
         {
-            long offset = ((long)nsector) << 9;
-            long newOffset = hDevice.Seek(offset, SeekOrigin.Begin);
+            var offset = ((long)nsector) << 9;
+            var newOffset = _hDevice.Seek(offset, SeekOrigin.Begin);
             return newOffset == offset && offset >= 0;
         }
 
-        public bool read_sector(byte[] dst, int offset)
+        public bool ReadSector(byte[] dst, int offset)
         {
             try
             {
-                int read = hDevice.Read(dst, offset, 512);
-                for (int i = read; i < 512; i++)
+                var read = _hDevice.Read(dst, offset, 512);
+                for (var i = read; i < 512; i++)
+                {
                     dst[i + offset] = 0;
+                }
                 return true;
             }
             catch (Exception ex)
@@ -1123,11 +1128,14 @@ namespace ZXMAK2.Hardware.IC
             }
         }
 
-        public bool write_sector(byte[] src, int offset)
+        public bool WriteSector(byte[] src, int offset)
         {
             try
             {
-                hDevice.Write(src, offset, 512);
+                if (!_isReadOnly)
+                {
+                    _hDevice.Write(src, offset, 512);
+                }
                 return true;
             }
             catch (Exception ex)
