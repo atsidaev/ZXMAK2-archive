@@ -22,15 +22,16 @@ namespace ZXMAK2.Serializers
 			_spec = spec;
 		}
 
-		public void AddStandardSerializers()
-		{
-			// Snapshots...
-			AddSerializer(new SzxSerializer(_spec));
-			AddSerializer(new Z80Serializer(_spec));
-			AddSerializer(new SnaSerializer(_spec));
-			AddSerializer(new SitSerializer(_spec));
-			AddSerializer(new ZxSerializer(_spec));
-			AddSerializer(new RzxSerializer(_spec));
-		}
+        public override void Clear()
+        {
+            base.Clear();
+            // Default Serializers (Snapshots)...
+            AddSerializer(new SzxSerializer(_spec));
+            AddSerializer(new Z80Serializer(_spec));
+            AddSerializer(new SnaSerializer(_spec));
+            AddSerializer(new SitSerializer(_spec));
+            AddSerializer(new ZxSerializer(_spec));
+            AddSerializer(new RzxSerializer(_spec));
+        }
 	}
 }

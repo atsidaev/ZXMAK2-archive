@@ -86,10 +86,12 @@
     <Compile Include="Hardware\Adlers\UI\TcpHelper.Designer.cs">
       <DependentUpon>TcpHelper.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IFormatSerializer.cs" />
     <Compile Include="Interfaces\IJoystickDevice.cs" />
     <Compile Include="Interfaces\IKeyboardDevice.cs" />
     <Compile Include="Engine\FpsMonitor.cs" />
     <Compile Include="Interfaces\IMouseDevice.cs" />
+    <Compile Include="Interfaces\ISerializeManager.cs" />
     <Compile Include="MVP\ViewHolder.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>

@@ -10,9 +10,9 @@ using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Serializers
 {
-	public abstract class SerializeManager
+    public abstract class SerializeManager : ISerializeManager
 	{
-		private Dictionary<string, FormatSerializer> _formats = new Dictionary<string, FormatSerializer>();
+		private Dictionary<string, IFormatSerializer> _formats = new Dictionary<string, IFormatSerializer>();
 
 
 		public string GetOpenExtFilter()
@@ -285,7 +285,7 @@ namespace ZXMAK2.Serializers
 
 		public string GetDefaultExtension()
 		{
-			foreach (FormatSerializer fs in _formats.Values)
+			foreach (var fs in _formats.Values)
 				if (fs.CanSerialize && fs.FormatExtension != "$")
 					return "." + fs.FormatExtension;
 			return string.Empty;
@@ -295,7 +295,7 @@ namespace ZXMAK2.Serializers
 
 		private void saveStream(Stream stream, string ext, string source)
 		{
-			FormatSerializer serializer = GetSerializer(ext);
+			var serializer = GetSerializer(ext);
 			if (serializer == null || !serializer.CanSerialize)
 			{
                 Locator.Resolve<IUserMessage>()
@@ -308,7 +308,7 @@ namespace ZXMAK2.Serializers
 
 		private void openStream(Stream stream, string ext, string source, bool wp)
 		{
-			FormatSerializer serializer = GetSerializer(ext);
+			var serializer = GetSerializer(ext);
 			if (serializer == null)
 			{
                 Locator.Resolve<IUserMessage>()
@@ -333,8 +333,8 @@ namespace ZXMAK2.Serializers
 
 		private bool intCheckCanSaveFileName(string fileName)
 		{
-			string ext = Path.GetExtension(fileName).ToUpper();
-			foreach (string se in SaveFileExtensionList)
+			var ext = Path.GetExtension(fileName).ToUpper();
+			foreach (var se in SaveFileExtensionList)
 			{
 				if (ext == se) return true;
 				if (se.IndexOf('*') >= 0 && ext.Length >= 2 && (ext.Substring(0, 2) == ".!" || ext.Substring(0, 2) == ".$")) return true;
@@ -346,8 +346,8 @@ namespace ZXMAK2.Serializers
 		{
 			get
 			{
-				List<string> list = new List<string>();
-				foreach (FormatSerializer serializer in _formats.Values)
+				var list = new List<string>();
+				foreach (var serializer in _formats.Values)
 				{
 					if (serializer.CanDeserialize)
 					{
@@ -368,8 +368,8 @@ namespace ZXMAK2.Serializers
 		{
 			get
 			{
-				List<string> list = new List<string>();
-				foreach (FormatSerializer serializer in _formats.Values)
+				var list = new List<string>();
+				foreach (var serializer in _formats.Values)
 				{
 					if (serializer.CanSerialize)
 					{
@@ -386,12 +386,12 @@ namespace ZXMAK2.Serializers
 			}
 		}
 
-		public void Clear()
+		public virtual void Clear()
 		{
 			_formats.Clear();
 		}
 
-		public void AddSerializer(FormatSerializer serializer)
+		public void AddSerializer(IFormatSerializer serializer)
 		{
 			string key = serializer.FormatExtension.ToUpper();
 			if (_formats.ContainsKey(key))
@@ -399,10 +399,10 @@ namespace ZXMAK2.Serializers
 			_formats.Add(key, serializer);
 		}
 
-		public FormatSerializer GetSerializer(string ext)
+		public IFormatSerializer GetSerializer(string ext)
 		{
 			ext = ext.ToUpper();
-			FormatSerializer serializer = null;
+			IFormatSerializer serializer = null;
 			if (ext.Length >= 2 && ext.Substring(0, 2) == ".!" || ext.Substring(0, 2) == ".$")
 			{
 				serializer = _formats["$"];
@@ -417,9 +417,9 @@ namespace ZXMAK2.Serializers
 			return serializer;
 		}
 
-		public List<FormatSerializer> GetSerializers()
+		public IEnumerable<IFormatSerializer> GetSerializers()
 		{
-			return new List<FormatSerializer>(_formats.Values);
+			return _formats.Values;
 		}
 		#endregion
 
