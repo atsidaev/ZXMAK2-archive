@@ -8,6 +8,7 @@ using ZXMAK2.Controls.Debugger;
 using ZXMAK2.Dependency;
 using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.MVP;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.Hardware
