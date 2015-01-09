@@ -3,7 +3,7 @@ using ZXMAK2.Model.Disk;
 using ZXMAK2.Crc;
 
 
-namespace ZXMAK2.Hardware.IC
+namespace ZXMAK2.Hardware.Circuits
 {
     public class Wd1793
     {
