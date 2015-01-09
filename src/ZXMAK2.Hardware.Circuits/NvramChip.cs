@@ -2,7 +2,7 @@
 using System.IO;
 
 
-namespace ZXMAK2.Hardware.IC
+namespace ZXMAK2.Hardware.Circuits
 {
     /// <summary>
     /// 24C16 SPI NVRAM emulator

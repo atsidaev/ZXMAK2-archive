@@ -2,11 +2,10 @@
 using System.IO;
 using System.Xml;
 using System.Text;
-using ZXMAK2.Hardware.Circuits;
 using System.Reflection;
 
 
-namespace ZXMAK2.Hardware.IC
+namespace ZXMAK2.Hardware.Circuits
 {
     public enum AtaReg
     {
