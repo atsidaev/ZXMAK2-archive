@@ -39,6 +39,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CrcTd0.cs" />
+    <Compile Include="CrcUdi.cs" />
+    <Compile Include="CrcVg93.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
