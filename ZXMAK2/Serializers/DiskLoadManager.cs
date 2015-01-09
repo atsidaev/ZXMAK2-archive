@@ -26,18 +26,32 @@ namespace ZXMAK2.Serializers
             AddSerializer(new SclSerializer(diskImage));
             AddSerializer(new HobetaSerializer(diskImage));
 
-            diskImage.SaveDisk += new SaveDiskDelegate(saveDisk);
+            diskImage.LoadDisk += LoadDisk;
+            diskImage.SaveDisk += SaveDisk;
         }
 
-        private void saveDisk(DiskImage sender)
+        private void LoadDisk(DiskImage image, bool readOnly)
         {
-            if (sender.IsWP)
+            if (!string.IsNullOrEmpty(image.FileName))
+            {
+                OpenFileName(image.FileName, readOnly);
+            }
+            else
+            {
+                image.SetPhysics(80, 2);
+                image.FormatTrdos();
+            }
+        }
+
+        private void SaveDisk(DiskImage image)
+        {
+            if (image.IsWP)
             {
                 Logger.Error("Write protected disk was changed! Autosave canceled");
                 return;
             }
 
-            string fileName = sender.FileName;
+            string fileName = image.FileName;
             if (fileName != string.Empty)
             {
                 FormatSerializer serializer = GetSerializer(Path.GetExtension(fileName));
@@ -90,11 +104,11 @@ namespace ZXMAK2.Serializers
                     string folderName = Path.GetDirectoryName(fileName);
                     if (!Directory.Exists(folderName))
                         Directory.CreateDirectory(folderName);
-                    sender.FileName = fileName;
-                    SaveFileName(sender.FileName);
+                    image.FileName = fileName;
+                    SaveFileName(image.FileName);
                     Locator.Resolve<IUserMessage>().Info(
                         "Disk image successfuly saved!\n{0}", 
-                        sender.FileName);
+                        image.FileName);
                 }
             }
         }

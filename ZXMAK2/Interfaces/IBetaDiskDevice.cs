@@ -1,6 +1,7 @@
 using System;
 
 using ZXMAK2.Entities;
+using ZXMAK2.Serializers;
 
 
 namespace ZXMAK2.Interfaces
@@ -11,5 +12,7 @@ namespace ZXMAK2.Interfaces
         DiskImage[] FDD { get; }
         bool NoDelay { get; set; }
         bool LogIo { get; set; }
+
+        DiskLoadManager LoadManager { get; }
 	}
 }
