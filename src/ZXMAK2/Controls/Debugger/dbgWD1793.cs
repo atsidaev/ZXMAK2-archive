@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-using ZXMAK2.Hardware.IC;
+using ZXMAK2.Hardware.Circuits;
 using ZXMAK2.Presentation.Interfaces;
 
 

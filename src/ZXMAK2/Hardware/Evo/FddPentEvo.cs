@@ -1,7 +1,7 @@
 ﻿using System;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Hardware.General;
-using ZXMAK2.Hardware.IC;
+using ZXMAK2.Hardware.Circuits;
 
 
 namespace ZXMAK2.Hardware.Evo
