@@ -198,7 +198,6 @@
     <Compile Include="Entities\RzxFrame.cs" />
     <Compile Include="Entities\BusDeviceCategory.cs" />
     <Compile Include="Entities\BusDeviceDescriptor.cs" />
-    <Compile Include="Entities\SectorHeader.cs" />
     <Compile Include="Hardware\Adlers\Debugger.cs" />
     <Compile Include="Hardware\Adlers\UI\Assembler.cs">
       <SubType>Form</SubType>
@@ -329,10 +328,6 @@
     <Compile Include="Hardware\Scorpion\UlaScorpionYellow.cs" />
     <Compile Include="Hardware\Spectrum\UlaPlus3.cs" />
     <Compile Include="Hardware\General\AY8910.cs" />
-    <Compile Include="Entities\DiskImage.cs" />
-    <Compile Include="Entities\Sector.cs" />
-    <Compile Include="Entities\SimpleSector.cs" />
-    <Compile Include="Entities\Track.cs" />
     <Compile Include="Hardware\General\BetaDiskInterface.cs" />
     <Compile Include="Serializers\DiskLoadManager.cs" />
     <Compile Include="Serializers\DiskSerializers\FdiSerializer.cs" />
@@ -518,6 +513,11 @@
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">
       <Project>{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}</Project>
       <Name>ZXMAK2.Logging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Model.Disk\ZXMAK2.Model.Disk.csproj">
+      <Project>{90D40289-355D-44B1-8572-B4E441280DA2}</Project>
+      <Name>ZXMAK2.Model.Disk</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Model.Tape\ZXMAK2.Model.Tape.csproj">
