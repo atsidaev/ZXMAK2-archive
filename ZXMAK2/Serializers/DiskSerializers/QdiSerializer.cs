@@ -1,6 +1,4 @@
-﻿using ZXMAK2.Entities;
-using System.IO;
-using System.Collections.Generic;
+﻿using ZXMAK2.Model.Disk;
 
 
 namespace ZXMAK2.Serializers.DiskSerializers

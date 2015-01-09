@@ -1,10 +1,6 @@
 ﻿// IMG serializer
 // Author: zx.pk.ru\Дмитрий
-using System;
-using System.Collections.Generic;
-using System.IO;
-
-using ZXMAK2.Entities;
+using ZXMAK2.Model.Disk;
 
 
 namespace ZXMAK2.Serializers.DiskSerializers

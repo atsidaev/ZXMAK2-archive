@@ -1,4 +1,4 @@
-﻿using ZXMAK2.Entities;
+﻿using ZXMAK2.Model.Disk;
 
 
 namespace ZXMAK2.Serializers.DiskSerializers

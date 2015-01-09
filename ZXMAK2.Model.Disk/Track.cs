@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using ZXMAK2.Crc;
 
 
-namespace ZXMAK2.Entities
+namespace ZXMAK2.Model.Disk
 {
     public class Track
     {

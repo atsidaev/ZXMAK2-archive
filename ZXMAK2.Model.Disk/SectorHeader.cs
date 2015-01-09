@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
-namespace ZXMAK2.Entities
+namespace ZXMAK2.Model.Disk
 {
     public class SectorHeader
     {
