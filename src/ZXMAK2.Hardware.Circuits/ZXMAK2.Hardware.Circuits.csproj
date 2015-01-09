@@ -40,7 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\ZXMAK2\Hardware\IC\AtaPort.cs">
+      <Link>AtaPort.cs</Link>
+    </Compile>
+    <Compile Include="NvramChip.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RtcChip.cs" />
+    <Compile Include="SecureDigital\SdCard.cs" />
+    <Compile Include="SecureDigital\SdCommand.cs" />
+    <Compile Include="SecureDigital\SdState.cs" />
+    <Compile Include="SecureDigital\SdStatus.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZXMAK2.Dependency\ZXMAK2.Dependency.csproj">
