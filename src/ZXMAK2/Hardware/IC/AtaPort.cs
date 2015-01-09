@@ -223,7 +223,7 @@ namespace ZXMAK2.Hardware.IC
             if (filedev.type == DEVTYPE.ATA_FILEHDD)
             {
                 filedev.usage = DEVUSAGE.ATA_OP_USE;
-                success = ata_p.Open(filedev, cfg.readOnly);
+                success = ata_p.Open(filedev, cfg.readOnly | cfg.cd);
                 atapi = false;
             }
             //if (filedev.type == DEVTYPE.ATA_FILECD)
@@ -1070,8 +1070,8 @@ namespace ZXMAK2.Hardware.IC
                 _isReadOnly = isReadOnly;
                 _hDevice = new FileStream(
                     _deviceInfo.filename,
-                    FileMode.OpenOrCreate,
-                    FileAccess.ReadWrite,
+                    _isReadOnly ? FileMode.Open : FileMode.OpenOrCreate,
+                    _isReadOnly ? FileAccess.Read : FileAccess.ReadWrite,
                     FileShare.ReadWrite);
                 return true;
             }
@@ -1084,12 +1084,19 @@ namespace ZXMAK2.Hardware.IC
 
         public void Close()
         {
-            if (_hDevice != null)
+            try
             {
-                _hDevice.Dispose();
+                if (_hDevice != null)
+                {
+                    _hDevice.Dispose();
+                }
+                _hDevice = null;
+                _deviceInfo = null;
             }
-            _hDevice = null;
-            _deviceInfo = null;
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         public bool IsLoaded()
@@ -1099,21 +1106,52 @@ namespace ZXMAK2.Hardware.IC
 
         public bool Flush()
         {
-            _hDevice.Flush();
-            return true;
+            try
+            {
+                if (_isReadOnly)
+                {
+                    return true;
+                }
+                if (_hDevice != null)
+                {
+                    _hDevice.Flush();
+                }
+                return _hDevice != null;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return false;
+            }
         }
 
         public bool Seek(uint nsector)
         {
-            var offset = ((long)nsector) << 9;
-            var newOffset = _hDevice.Seek(offset, SeekOrigin.Begin);
-            return newOffset == offset && offset >= 0;
+            try
+            {
+                if (_hDevice == null)
+                {
+                    return false;
+                }
+                var offset = ((long)nsector) << 9;
+                var newOffset = _hDevice.Seek(offset, SeekOrigin.Begin);
+                return newOffset == offset && offset >= 0;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return false;
+            }
         }
 
         public bool ReadSector(byte[] dst, int offset)
         {
             try
             {
+                if (_hDevice == null)
+                {
+                    return false;
+                }
                 var read = _hDevice.Read(dst, offset, 512);
                 for (var i = read; i < 512; i++)
                 {
@@ -1132,11 +1170,15 @@ namespace ZXMAK2.Hardware.IC
         {
             try
             {
-                if (!_isReadOnly)
+                if (_isReadOnly)
+                {
+                    return true;
+                }
+                if (_hDevice != null)
                 {
                     _hDevice.Write(src, offset, 512);
                 }
-                return true;
+                return _hDevice != null;
             }
             catch (Exception ex)
             {
