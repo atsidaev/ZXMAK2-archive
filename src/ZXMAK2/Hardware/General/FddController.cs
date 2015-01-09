@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Xml;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
@@ -102,7 +103,12 @@ namespace ZXMAK2.Hardware.General
                 var inserted = false;
                 var readOnly = true;
                 var fileName = string.Empty;
-                var node = itemNode.SelectSingleNode(string.Format("Drive[@index='{0}']", i));
+                // "Drive[@index='{0}']", i
+                var node = itemNode.ChildNodes
+                    .OfType<XmlNode>()
+                    .FirstOrDefault(n=>string.Compare(n.Name, "Drive", true)==0 &&
+                        n.Attributes["index"] != null &&
+                        n.Attributes["index"].InnerText==i.ToString());
                 if (node != null)
                 {
                     inserted = Utils.GetXmlAttributeAsBool(node, "inserted", inserted);
