@@ -28,7 +28,6 @@ namespace ZXMAK2.MVP
     {
         private readonly IResolver m_resolver;
         private readonly IUserMessage m_userMessage;
-        private readonly IUserHelp m_userHelp;
         private readonly IMainView m_view;
         private readonly string m_startupImage;
         private VirtualMachine m_vm;
@@ -37,13 +36,11 @@ namespace ZXMAK2.MVP
         public MainPresenter(
             IResolver resolver,
             IUserMessage userMessage,
-            IUserHelp userHelp,
             IMainView view, 
             params string[] args)
         {
             m_resolver = resolver;
             m_userMessage = userMessage;
-            m_userHelp = userHelp;
             m_view = view;
             if (args.Length > 0 && File.Exists(args[0]))
             {
@@ -151,8 +148,8 @@ namespace ZXMAK2.MVP
 
         private void CreateCommands()
         {
-            CommandFileOpen = new CommandDelegate(CommandFileOpen_OnExecute);
-            CommandFileSave = new CommandDelegate(CommandFileSave_OnExecute);
+            CommandFileOpen = new CommandDelegate(CommandFileOpen_OnExecute, CommandFileOpen_OnCanExecute);
+            CommandFileSave = new CommandDelegate(CommandFileSave_OnExecute, CommandFileSave_OnCanExecute);
             CommandFileExit = new CommandDelegate(CommandFileExit_OnExecute);
             CommandViewFullScreen = new CommandDelegate(CommandViewFullScreen_OnExecute);
             CommandViewSyncVBlank = new CommandDelegate(CommandViewSyncVBlank_OnExecute);
@@ -161,7 +158,7 @@ namespace ZXMAK2.MVP
             CommandVmWarmReset = new CommandDelegate(CommandVmWarmReset_OnExecute);
             CommandVmNmi = new CommandDelegate(CommandVmNmi_OnExecute);
             CommandVmSettings = new CommandDelegate(CommandVmSettings_OnExecute);
-            CommandHelpViewHelp = new CommandDelegate(arg=>m_userHelp.ShowHelp(arg), arg=>m_userHelp!=null&&m_userHelp.CanShow(arg));
+            CommandHelpViewHelp = new CommandDelegate(CommandHelpViewHelp_OnExecute, CommandHelpViewHelp_OnCanExecute);
             CommandHelpKeyboardHelp = CreateViewHolderCommand<IKeyboardView>();
             CommandHelpAbout = CreateViewHolderCommand<IAboutView>();
             CommandTapePause = new CommandDelegate(CommandTapePause_OnExecute, CommandTapePause_CanExecute);
@@ -176,24 +173,36 @@ namespace ZXMAK2.MVP
             return viewHolder.CommandOpen;
         }
 
-        private void CommandFileOpen_OnExecute(Object objArg)
+        private bool CommandFileOpen_OnCanExecute()
         {
             if (m_vm == null)
             {
+                return false;
+            }
+            var dialog = GetViewService<IOpenFileDialog>();
+            if (dialog != null)
+            {
+                dialog.Dispose();
+            }
+            return dialog != null;
+        }
+
+        private void CommandFileOpen_OnExecute()
+        {
+            if (!CommandFileOpen_OnCanExecute())
+            {
                 return;
             }
-            using (var loadDialog = new OpenFileDialog())
+            using (var loadDialog = GetViewService<IOpenFileDialog>())
             {
-                loadDialog.SupportMultiDottedExtensions = true;
                 loadDialog.Title = "Open...";
                 loadDialog.Filter = m_vm.Spectrum.Loader.GetOpenExtFilter();
-                loadDialog.DefaultExt = "";
                 loadDialog.FileName = "";
                 loadDialog.ShowReadOnly = true;
                 loadDialog.ReadOnlyChecked = true;
                 loadDialog.CheckFileExists = true;
                 loadDialog.FileOk += LoadDialog_FileOk;
-                if (loadDialog.ShowDialog(objArg as IWin32Window) != DialogResult.OK)
+                if (loadDialog.ShowDialog(m_view) != DlgResult.OK)
                 {
                     return;
                 }
@@ -201,21 +210,34 @@ namespace ZXMAK2.MVP
             }
         }
 
-        private void CommandFileSave_OnExecute(Object objArg)
+        private bool CommandFileSave_OnCanExecute()
         {
             if (m_vm == null)
             {
+                return false;
+            }
+            var dialog = GetViewService<ISaveFileDialog>();
+            if (dialog != null)
+            {
+                dialog.Dispose();
+            }
+            return dialog != null;
+        }
+
+        private void CommandFileSave_OnExecute()
+        {
+            if (!CommandFileSave_OnCanExecute())
+            {
                 return;
             }
-            using (var saveDialog = new SaveFileDialog())
+            using (var saveDialog = GetViewService<ISaveFileDialog>())
             {
-                saveDialog.SupportMultiDottedExtensions = true;
                 saveDialog.Title = "Save...";
                 saveDialog.Filter = m_vm.Spectrum.Loader.GetSaveExtFilter();
                 saveDialog.DefaultExt = m_vm.Spectrum.Loader.GetDefaultExtension();
-                saveDialog.FileName = "";
+                saveDialog.FileName = string.Empty;
                 saveDialog.OverwritePrompt = true;
-                if (saveDialog.ShowDialog(objArg as IWin32Window) != DialogResult.OK)
+                if (saveDialog.ShowDialog(m_view) != DlgResult.OK)
                 {
                     return;
                 }
@@ -226,6 +248,12 @@ namespace ZXMAK2.MVP
         private void CommandFileExit_OnExecute()
         {
             m_view.Close();
+        }
+
+        private T GetViewService<T>()
+        {
+            var viewResolver = m_resolver.Resolve<IResolver>("View");
+            return viewResolver.TryResolve<T>();
         }
 
         private void CommandViewFullScreen_OnExecute(object objState)
@@ -345,6 +373,22 @@ namespace ZXMAK2.MVP
                 Logger.Error(ex);
                 m_userMessage.Error(ex);
             }
+        }
+
+        private bool CommandHelpViewHelp_OnCanExecute(object arg)
+        {
+            var service = GetViewService<IUserHelp>();
+            return service != null && service.CanShow(arg);
+        }
+
+        private void CommandHelpViewHelp_OnExecute(object arg)
+        {
+            if (!CommandHelpViewHelp_OnCanExecute(arg))
+            {
+                return;
+            }
+            var service = GetViewService<IUserHelp>();
+            service.ShowHelp(arg);
         }
 
         private bool CommandTapePause_CanExecute()
