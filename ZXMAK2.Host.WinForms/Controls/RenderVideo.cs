@@ -177,6 +177,14 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         public Size FrameSize { get; private set; }
 
+        private bool _isRunning;
+
+        public bool IsRunning 
+        {
+            get { return _isRunning; }
+            set { _isRunning = value; m_fpsUpdate.Reset(); }
+        }
+
         #region Private
 
         protected override void OnCreateDevice()
@@ -360,6 +368,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                 if (m_texture != null)
                 {
                     m_fpsRender.Frame();
+
                     m_sprite.Begin(SpriteFlags.None);
 
                     ////if (d3d.DeviceCaps.TextureFilterCaps.SupportsMinifyAnisotropic)
@@ -419,7 +428,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                         var textValue = string.Format(
                             "Render FPS: {0:F3}\nUpdate FPS: {1:F3}\nDevice FPS: {2}\nBack: [{3}, {4}]\nClient: [{5}, {6}]\nSurface: [{7}, {8}]\nFrameStart: {9}T",
                             m_fpsRender.Value,
-                            m_fpsUpdate.Value,
+                            IsRunning ? m_fpsUpdate.Value : (double?)null,
                             D3D.DisplayMode.RefreshRate,
                             wndSize.Width,
                             wndSize.Height,

@@ -11,7 +11,6 @@ namespace ZXMAK2.Engine
 
         public double Value { get; private set; }
 
-
         public FpsMonitor()
         {
             Value = 0;
@@ -23,7 +22,7 @@ namespace ZXMAK2.Engine
         {
             var time = m_watch.ElapsedTicks;
             m_frameCounter++;
-            if (time >= Stopwatch.Frequency/3)
+            if (m_frameCounter >= 50)// time >= Stopwatch.Frequency/3)
             {
                 m_watch.Stop();
                 m_watch.Reset();
@@ -31,6 +30,12 @@ namespace ZXMAK2.Engine
                 Value = m_frameCounter * (double)Stopwatch.Frequency / time;
                 m_frameCounter = 0;
             }
+        }
+
+        public void Reset()
+        {
+            Frame();
+            Value = 0;
         }
     }
 }
