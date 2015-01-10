@@ -22,7 +22,7 @@ namespace ZXMAK2.Host.Presentation
             var service = m_resolver.TryResolve<IUserMessage>();
             try
             {
-                //m_resolver.RegisterInstance<string>("viewContainer", "XNA");
+                //m_resolver.RegisterInstance<string>("viewType", "XNA");
 
                 var viewResolver = m_resolver.Resolve<IResolver>("View");
                 var view = viewResolver.Resolve<IMainView>();
