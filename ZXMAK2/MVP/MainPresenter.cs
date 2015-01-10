@@ -44,10 +44,9 @@ namespace ZXMAK2.MVP
             {
                 m_startupImage = Path.GetFullPath(args[0]);
             }
-            m_view.GetVideoData = () => m_vm.VideoData;
             m_view.ViewOpened += MainView_OnViewOpened;
             m_view.ViewClosed += MainView_OnViewClosed;
-            m_view.ViewInvalidate += MainView_OnViewInvalidate;
+            m_view.RequestFrame += MainView_OnRequestFrame;
             CreateCommands();
         }
 
@@ -131,13 +130,13 @@ namespace ZXMAK2.MVP
             Dispose();
         }
 
-        private void MainView_OnViewInvalidate(object sender, EventArgs e)
+        private void MainView_OnRequestFrame(object sender, EventArgs e)
         {
             if (m_view == null || m_view.Host == null)
             {
                 return;
             }
-            m_vm.ForceUpdateVideo();
+            m_vm.RequestFrame();
         }
 
         #endregion MainView Event Handlers
@@ -331,7 +330,7 @@ namespace ZXMAK2.MVP
                 {
                     form.Init(m_vm);
                     form.ShowDialog(objArg as IWin32Window);
-                    m_vm.ForceUpdateVideo();
+                    m_vm.RequestFrame();
                     
                     ((CommandDelegate)CommandTapePause).RaiseCanExecuteChanged();
                 }

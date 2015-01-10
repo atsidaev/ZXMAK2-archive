@@ -11,11 +11,10 @@ namespace ZXMAK2.Host.Presentation.Interfaces
         bool IsFullScreen { get; set; }
         IHost Host { get; }
         ICommandManager CommandManager { get; }
-        Func<IVideoData> GetVideoData { get; set; }
 
         event EventHandler ViewOpened;
         event EventHandler ViewClosed;
-        event EventHandler ViewInvalidate;
+        event EventHandler RequestFrame;
 
         void Run();
         void Bind(IMainPresenter presenter);

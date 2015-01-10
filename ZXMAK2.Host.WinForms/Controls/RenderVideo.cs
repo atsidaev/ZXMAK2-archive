@@ -155,10 +155,16 @@ namespace ZXMAK2.Host.WinForms.Controls
             _isCancel = true;
         }
         
-        public void PushFrame(IVideoFrame frame)
+        public void PushFrame(IVideoFrame frame, bool isRequested)
         {
-            m_fpsUpdate.Frame();
+            if (!isRequested)
+            {
+                m_fpsUpdate.Frame();
+            }
             m_debugFrameStart = frame.StartTact;
+            FrameSize = new Size(
+                frame.VideoData.Size.Width,
+                (int)(frame.VideoData.Size.Height * frame.VideoData.Ratio + 0.5F));
             if (!_isInitialized)
             {
                 return;
@@ -169,6 +175,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         #endregion IHostVideo
 
+        public Size FrameSize { get; private set; }
 
         #region Private
 

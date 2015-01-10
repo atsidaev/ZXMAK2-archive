@@ -9,7 +9,7 @@ using ZXMAK2.Presentation.Attributes;
 
 namespace ZXMAK2.Presentation
 {
-    public abstract class ViewModelBase : INotifyPropertyChanged, IDataErrorInfo
+    public abstract class ViewModelBase : INotifyPropertyChanged
     {
         private readonly IEnumerable<PropertyInfo> _propInfos;
         private readonly Dictionary<string, string[]> _propGraph;
@@ -20,34 +20,6 @@ namespace ZXMAK2.Presentation
             _propGraph = BuildDependencyGraph(GetType());
         }
 
-
-        #region IDataErrorInfo
-
-        private string _error;
-
-        public string Error
-        {
-            get { return _error; }
-            set { PropertyChangeRef("Error", ref _error, value); }
-        }
-
-        public string this[string columnName]
-        {
-            get { return OnPropertyValidate(columnName); }
-        }
-
-        protected virtual string OnPropertyValidate(string propName)
-        {
-            return null;
-        }
-
-        #endregion IDataErrorInfo
-
-
-        public bool HasError()
-        {
-            return _propInfos.Any(pi => !string.IsNullOrEmpty(this[pi.Name]));
-        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
