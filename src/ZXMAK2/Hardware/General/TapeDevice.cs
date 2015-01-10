@@ -515,9 +515,7 @@ namespace ZXMAK2.Hardware.General
         {
             try
             {
-                var resolver = Locator.Resolve<IViewResolver>();
                 m_viewHolder = new ViewHolder<ITapeView>(
-                    resolver,
                     "Tape",
                     new Argument("tapeDevice", this));
             }

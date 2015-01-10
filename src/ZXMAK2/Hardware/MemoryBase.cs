@@ -413,9 +413,7 @@ namespace ZXMAK2.Hardware
         {
             try
             {
-                var resolver = Locator.Resolve<IViewResolver>();
                 m_viewHolder = new ViewHolder<IMemoryMapView>(
-                    resolver, 
                     "Memory Map", 
                     new Argument("memory", this));
             }

@@ -12,7 +12,6 @@ namespace ZXMAK2.Dependency
     {
         private readonly static IResolver _instance = new ResolverUnity();
 
-
         public static T Resolve<T>()
         {
             return _instance.Resolve<T>();

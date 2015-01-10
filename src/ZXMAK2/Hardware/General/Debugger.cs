@@ -83,8 +83,7 @@ namespace ZXMAK2.Hardware.General
         {
             try
             {
-                var resolver = Locator.Resolve<IViewResolver>();
-                m_viewHolder = new ViewHolder<IDebuggerGeneralView>(resolver, "Debugger");
+                m_viewHolder = new ViewHolder<IDebuggerGeneralView>("Debugger");
             }
             catch (Exception ex)
             {
