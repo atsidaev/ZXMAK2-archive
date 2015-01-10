@@ -59,14 +59,15 @@ namespace ZXMAK2.Host.Services
         private void Show(string msg, string caption, DlgIcon icon)
         {
             var service = m_resolver.TryResolve<IUserQuery>();
-            if (service != null)
+            if (service == null)
             {
-                service.Show(
-                    msg,
-                    caption,
-                    DlgButtonSet.OK,
-                    icon);
+                return;
             }
+            service.Show(
+                msg,
+                caption,
+                DlgButtonSet.OK,
+                icon);
         }
     }
 }
