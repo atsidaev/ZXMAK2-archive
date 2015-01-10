@@ -47,6 +47,7 @@
     <Compile Include="Interfaces\IViewResolver.cs" />
     <Compile Include="Launcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewResolver.cs" />
   </ItemGroup>
   <ItemGroup>
