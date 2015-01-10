@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
@@ -22,8 +23,7 @@ namespace ZXMAK2.Host.Presentation
             var service = m_resolver.TryResolve<IUserMessage>();
             try
             {
-                //m_resolver.RegisterInstance<string>("viewType", "XNA");
-
+                args = ProcessHostOption(args);
                 var viewResolver = m_resolver.Resolve<IResolver>("View");
                 var view = viewResolver.Resolve<IMainView>();
                 if (view==null)
@@ -53,6 +53,20 @@ namespace ZXMAK2.Host.Presentation
                     service.ErrorDetails(ex);
                 }
             }
+        }
+
+        private string[] ProcessHostOption(string[] args)
+        {
+            var argsList = new List<string>(args);
+            var hostSwitch = argsList.FirstOrDefault(arg => arg.StartsWith("/host:", StringComparison.InvariantCultureIgnoreCase));
+            if (hostSwitch != null)
+            {
+                argsList.Remove(hostSwitch);
+                hostSwitch = hostSwitch.Substring(6);
+                m_resolver.RegisterInstance<string>("viewType", hostSwitch);
+                return argsList.ToArray();
+            }
+            return args;
         }
     }
 }
