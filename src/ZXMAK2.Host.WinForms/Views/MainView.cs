@@ -187,16 +187,6 @@ namespace ZXMAK2.Host.WinForms.Views
             CommandOpenUri = presenter.CommandOpenUri;
         }
 
-        public void ShowHelp(object obj)
-        {
-            var control = obj as Control;
-            if (control == null)
-            {
-                return;
-            }
-            HelpService.ShowHelp(control);
-        }
-
         #endregion IMainView
 
 
