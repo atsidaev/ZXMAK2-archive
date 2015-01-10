@@ -8,7 +8,7 @@ using ZXMAK2.Presentation.Entities;
 using ZXMAK2.Host.Presentation.Interfaces;
 
 
-namespace ZXMAK2.MVP
+namespace ZXMAK2.Host.Presentation
 {
     public class ViewHolder<T> : IViewHolder
         where T : IView
