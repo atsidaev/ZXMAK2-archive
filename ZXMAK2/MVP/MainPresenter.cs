@@ -24,24 +24,24 @@ namespace ZXMAK2.MVP
 {
     public class MainPresenter : IMainPresenter
     {
+        private readonly IResolver m_resolver;
         private readonly IUserMessage m_userMessage;
         private readonly IUserHelp m_userHelp;
-        private readonly IViewResolver m_viewResolver;
         private readonly IMainView m_view;
         private readonly string m_startupImage;
         private VirtualMachine m_vm;
         
         
         public MainPresenter(
+            IResolver resolver,
             IUserMessage userMessage,
             IUserHelp userHelp,
-            IViewResolver viewResolver, 
             IMainView view, 
             params string[] args)
         {
+            m_resolver = resolver;
             m_userMessage = userMessage;
             m_userHelp = userHelp;
-            m_viewResolver = viewResolver;
             m_view = view;
             if (args.Length > 0 && File.Exists(args[0]))
             {
@@ -170,7 +170,7 @@ namespace ZXMAK2.MVP
         private ICommand CreateViewHolderCommand<T>()
             where T : IView
         {
-            var viewHolder = new ViewHolder<T>(m_viewResolver, null);
+            var viewHolder = new ViewHolder<T>(null);
             return viewHolder.CommandOpen;
         }
 

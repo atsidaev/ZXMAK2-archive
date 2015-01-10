@@ -80,8 +80,7 @@ namespace ZXMAK2.Hardware.Adlers
         {
             try
             {
-                var resolver = Locator.Resolve<IViewResolver>();
-                m_viewHolder = new ViewHolder<IDebuggerAdlersView>(resolver, "Debugger");
+                m_viewHolder = new ViewHolder<IDebuggerAdlersView>("Debugger");
             }
             catch (Exception ex)
             {

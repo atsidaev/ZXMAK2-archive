@@ -14,7 +14,6 @@ namespace ZXMAK2.MVP
         where T : IView
     {
         private readonly string m_name;
-        private readonly IViewResolver m_viewResolver;
         private Argument[] m_args;
         private IMainView m_hostView;
         private ICommand m_command;
@@ -23,11 +22,9 @@ namespace ZXMAK2.MVP
 
 
         public ViewHolder(
-            IViewResolver viewResolver, 
             string name, 
             params Argument[] args)
         {
-            m_viewResolver = viewResolver;
             m_name = name;
             m_args = args;
         }
@@ -65,13 +62,14 @@ namespace ZXMAK2.MVP
         private void CreateTargetForm()
         {
             m_canClose = false;
+            var viewResolver = Locator.Resolve<IResolver>("View");
             if (m_args != null && m_args.Length > 0)
             {
-                m_view = m_viewResolver.Resolve<T>(m_args);
+                m_view = viewResolver.Resolve<T>(m_args);
             }
             else
             {
-                m_view = m_viewResolver.Resolve<T>();
+                m_view = viewResolver.Resolve<T>();
             }
             m_view.ViewClosed += (s, e) =>
             {

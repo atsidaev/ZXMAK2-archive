@@ -11,12 +11,10 @@ namespace ZXMAK2.Host.Presentation
     public class Launcher : ILauncher
     {
         private readonly IResolver m_resolver;
-        private readonly IViewResolver m_viewResolver;
         
-        public Launcher(IResolver resolver, IViewResolver viewResolver)
+        public Launcher(IResolver resolver)
         {
             m_resolver = resolver;
-            m_viewResolver = viewResolver;
         }
         
         public void Run(string[] args)
@@ -24,7 +22,10 @@ namespace ZXMAK2.Host.Presentation
             var service = m_resolver.TryResolve<IUserMessage>();
             try
             {
-                var view = m_viewResolver.Resolve<IMainView>();
+                //m_resolver.RegisterInstance<string>("viewContainer", "XNA");
+
+                var viewResolver = m_resolver.Resolve<IResolver>("View");
+                var view = viewResolver.Resolve<IMainView>();
                 if (view==null)
                 {
                     if(service != null)
