@@ -60,13 +60,14 @@
     <Compile Include="Interfaces\IJoystickState.cs" />
     <Compile Include="Interfaces\IKeyboardState.cs" />
     <Compile Include="Interfaces\IMouseState.cs" />
+    <Compile Include="Interfaces\IOpenFileDialog.cs" />
+    <Compile Include="Interfaces\ISaveFileDialog.cs" />
     <Compile Include="Interfaces\IUserHelp.cs" />
     <Compile Include="Interfaces\IUserMessage.cs" />
     <Compile Include="Interfaces\IUserQuery.cs" />
     <Compile Include="Interfaces\IVideoData.cs" />
     <Compile Include="Interfaces\IVideoFrame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\UserHelpProxy.cs" />
     <Compile Include="Services\UserQueryProxy.cs" />
     <Compile Include="Tools\KeyboardMapper.cs" />
     <Compile Include="Services\UserMessage.cs" />
