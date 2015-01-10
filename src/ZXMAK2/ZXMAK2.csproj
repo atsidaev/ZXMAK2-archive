@@ -92,7 +92,6 @@
     <Compile Include="Engine\FpsMonitor.cs" />
     <Compile Include="Interfaces\IMouseDevice.cs" />
     <Compile Include="Interfaces\ISerializeManager.cs" />
-    <Compile Include="MVP\ViewHolder.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

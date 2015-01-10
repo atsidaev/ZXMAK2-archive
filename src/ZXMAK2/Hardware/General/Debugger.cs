@@ -5,10 +5,10 @@ using ZXMAK2.Entities;
 using ZXMAK2.Hardware.General.UI;
 using ZXMAK2.Dependency;
 using ZXMAK2.Presentation.Interfaces;
-using ZXMAK2.MVP;
-using UI = ZXMAK2.Controls.Debugger;
+using ZXMAK2.Host.Presentation;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
+using UI = ZXMAK2.Controls.Debugger;
 
 
 namespace ZXMAK2.Hardware.General
