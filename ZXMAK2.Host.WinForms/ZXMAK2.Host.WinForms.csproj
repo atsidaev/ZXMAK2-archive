@@ -71,7 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Services\HelpService.cs" />
+    <Compile Include="Services\UserHelp.cs" />
     <Compile Include="Tools\DragDataWrapper.cs" />
     <Compile Include="Views\MainView.cs">
       <SubType>Form</SubType>

@@ -19,6 +19,5 @@ namespace ZXMAK2.Host.Presentation.Interfaces
         void Run();
         void Bind(IMainPresenter presenter);
         void Close();
-        void ShowHelp(object obj);
     }
 }

@@ -25,6 +25,7 @@ namespace ZXMAK2.MVP
     public class MainPresenter : IMainPresenter
     {
         private readonly IUserMessage m_userMessage;
+        private readonly IUserHelp m_userHelp;
         private readonly IViewResolver m_viewResolver;
         private readonly IMainView m_view;
         private readonly string m_startupImage;
@@ -33,11 +34,13 @@ namespace ZXMAK2.MVP
         
         public MainPresenter(
             IUserMessage userMessage,
+            IUserHelp userHelp,
             IViewResolver viewResolver, 
             IMainView view, 
             params string[] args)
         {
             m_userMessage = userMessage;
+            m_userHelp = userHelp;
             m_viewResolver = viewResolver;
             m_view = view;
             if (args.Length > 0 && File.Exists(args[0]))
@@ -156,7 +159,7 @@ namespace ZXMAK2.MVP
             CommandVmWarmReset = new CommandDelegate(CommandVmWarmReset_OnExecute);
             CommandVmNmi = new CommandDelegate(CommandVmNmi_OnExecute);
             CommandVmSettings = new CommandDelegate(CommandVmSettings_OnExecute);
-            CommandHelpViewHelp = new CommandDelegate((obj)=>m_view.ShowHelp(obj));
+            CommandHelpViewHelp = new CommandDelegate(arg=>m_userHelp.ShowHelp(arg), arg=>m_userHelp!=null&&m_userHelp.CanShow(arg));
             CommandHelpKeyboardHelp = CreateViewHolderCommand<IKeyboardView>();
             CommandHelpAbout = CreateViewHolderCommand<IAboutView>();
             CommandTapePause = new CommandDelegate(CommandTapePause_OnExecute, CommandTapePause_CanExecute);
