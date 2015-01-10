@@ -153,10 +153,12 @@ namespace ZXMAK2.Host.WinForms.Views
                     if (value == "Pause")
                     {
                         tbrButtonPause.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuPause_32x32;
+                        renderVideo.IsRunning = true;
                     }
                     else
                     {
                         tbrButtonPause.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuResume_32x32;
+                        renderVideo.IsRunning = false;
                     }
                     Title = Title;
                 }));
