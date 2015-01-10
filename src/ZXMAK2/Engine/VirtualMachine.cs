@@ -47,16 +47,6 @@ namespace ZXMAK2.Engine
         #endregion Fields
 
 
-        public IVideoData VideoData
-        {
-            get
-            {
-                var ula = Spectrum.BusManager.FindDevice<IUlaDevice>();
-                return ula != null && ula.VideoData != null ? ula.VideoData : m_blankData;
-            }
-        }
-
-
         #region .ctor
 
         public unsafe VirtualMachine(IHost host, ICommandManager commandManager)
@@ -219,12 +209,12 @@ namespace ZXMAK2.Engine
             sound.PushFrame(m_soundBuffers);
         }
 
-        public void ForceUpdateVideo()
+        public void RequestFrame()
         {
-            OnUpdateVideo();
+            OnUpdateVideo(true);
         }
 
-        private void OnUpdateVideo()
+        private void OnUpdateVideo(bool isRequested = false)
         {
             var host = m_host;
             var video = host != null ? host.Video : null;
@@ -232,11 +222,14 @@ namespace ZXMAK2.Engine
             {
                 return;
             }
+            var ula = Spectrum.BusManager.FindDevice<IUlaDevice>();
+            var videoData = ula != null && ula.VideoData != null ? ula.VideoData : m_blankData;
             m_host.Video.PushFrame(
                 new VideoFrame(
-                    VideoData,
+                    videoData,
                     Spectrum.BusManager.IconDescriptorArray,
-                    DebugFrameStartTact));
+                    DebugFrameStartTact),
+                isRequested);
         }
 
         private void OnUpdateFrame(object sender, EventArgs e)

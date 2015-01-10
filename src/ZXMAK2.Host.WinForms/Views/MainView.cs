@@ -103,11 +103,9 @@ namespace ZXMAK2.Host.WinForms.Views
             get { return this; }
         }
 
-        public Func<IVideoData> GetVideoData { get; set; }
-
         public event EventHandler ViewOpened;
         public event EventHandler ViewClosed;
-        public event EventHandler ViewInvalidate;
+        public event EventHandler RequestFrame;
 
         public void Run()
         {
@@ -241,9 +239,9 @@ namespace ZXMAK2.Host.WinForms.Views
             }
         }
 
-        private void OnViewInvalidate()
+        private void OnRequestFrame()
         {
-            var handler = ViewInvalidate;
+            var handler = RequestFrame;
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);
@@ -588,7 +586,7 @@ namespace ZXMAK2.Host.WinForms.Views
 
         private void renderVideo_DeviceReset(object sender, EventArgs e)
         {
-            OnViewInvalidate();
+            OnRequestFrame();
         }
 
         private void renderVideo_DoubleClick(object sender, EventArgs e)
@@ -778,10 +776,8 @@ namespace ZXMAK2.Host.WinForms.Views
         {
             menuViewFullScreen.Checked = m_fullScreen;
 
-            var videoData = GetVideoData();
-            var videoSize = new Size(
-                videoData.Size.Width, 
-                (int)((float)videoData.Size.Height * videoData.Ratio));
+            OnRequestFrame();
+            var videoSize = renderVideo.FrameSize;
             menuViewSizeX1.Enabled = m_fullScreen || renderVideo.Size != videoSize;
             menuViewSizeX1.Checked = !m_fullScreen && renderVideo.Size == videoSize;
             menuViewSizeX2.Enabled = m_fullScreen || renderVideo.Size != new Size(videoSize.Width * 2, videoSize.Height * 2);
@@ -826,10 +822,11 @@ namespace ZXMAK2.Host.WinForms.Views
                 mult = 3;
             if (sender == menuViewSizeX4)
                 mult = 4;
-            var videoData = GetVideoData();
+            OnRequestFrame();
+            var videoSize = renderVideo.FrameSize;
             var size = new Size(
-                videoData.Size.Width * mult,
-                (int)((float)videoData.Size.Height * videoData.Ratio) * mult);
+                videoSize.Width * mult,
+                videoSize.Height * mult);
             SetRenderSize(size);
         }
 

@@ -37,6 +37,7 @@ namespace ZXMAK2.Host.Xna4.Views
         private XnaHost m_host;
         private int[] m_translateBuffer;
         private int m_debugFrameStart;
+        private IVideoData m_videoData;
 
         private ICommand CommandViewFullScreen { get; set; }
         private ICommand CommandVmWarmReset { get; set; }
@@ -89,11 +90,9 @@ namespace ZXMAK2.Host.Xna4.Views
             get { return null; }
         }
 
-        public Func<IVideoData> GetVideoData { get; set; }
-
         public event EventHandler ViewOpened;
         public event EventHandler ViewClosed;
-        public event EventHandler ViewInvalidate;
+        public event EventHandler RequestFrame;
 
         public void Bind(IMainPresenter presenter)
         {
@@ -127,11 +126,16 @@ namespace ZXMAK2.Host.Xna4.Views
             m_cancelEvent.Set();
         }
 
-        public void PushFrame(IVideoFrame frame)
+        public void PushFrame(IVideoFrame frame, bool isRequested)
         {
+            if (!isRequested)
+            {
+                m_fpsUpdate.Frame();
+            }
             m_debugFrameStart = frame.StartTact;
-            var videoData = frame.VideoData;
-            var videoLen = videoData.Size.Width * videoData.Size.Height;
+            m_videoData = frame.VideoData;
+            
+            var videoLen = m_videoData.Size.Width * m_videoData.Size.Height;
             
             // we need to translate bgra colors to rgba
             // because brga color support was removed from XNA4
@@ -140,7 +144,7 @@ namespace ZXMAK2.Host.Xna4.Views
             {
                 m_translateBuffer = new int[videoLen];
             }
-            fixed (int* pBuffer = videoData.Buffer)
+            fixed (int* pBuffer = m_videoData.Buffer)
             {
                 Marshal.Copy(
                     (IntPtr)pBuffer,
@@ -198,9 +202,9 @@ namespace ZXMAK2.Host.Xna4.Views
             }
         }
 
-        private void OnViewInvalidate()
+        private void OnRequestFrame()
         {
-            var handler = ViewInvalidate;
+            var handler = RequestFrame;
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);
@@ -221,9 +225,9 @@ namespace ZXMAK2.Host.Xna4.Views
             m_host = new XnaHost(this);
             OnViewOpened();
 
-            var videoData = GetVideoData();
-            m_deviceManager.PreferredBackBufferWidth = videoData.Size.Width * 2;
-            m_deviceManager.PreferredBackBufferHeight = videoData.Size.Height * 2;
+            OnRequestFrame();
+            m_deviceManager.PreferredBackBufferWidth = m_videoData.Size.Width * 2;
+            m_deviceManager.PreferredBackBufferHeight = m_videoData.Size.Height * 2;
             m_deviceManager.PreferredBackBufferFormat = SurfaceFormat.Color;
             m_deviceManager.ApplyChanges();
             m_sprite = new SpriteBatch(m_deviceManager.GraphicsDevice);
@@ -273,7 +277,6 @@ namespace ZXMAK2.Host.Xna4.Views
 
         protected override void Update(GameTime gameTime)
         {
-            m_fpsUpdate.Frame();
             base.Update(gameTime);
 
             var kbdState = Keyboard.GetState();
@@ -294,11 +297,10 @@ namespace ZXMAK2.Host.Xna4.Views
 
         private void CheckTexture()
         {
-            var videoData = GetVideoData();
             var texture = m_texture[m_textureIndex];
             if (texture == null ||
-                texture.Width != videoData.Size.Width ||
-                texture.Height != videoData.Size.Height)
+                texture.Width != m_videoData.Size.Width ||
+                texture.Height != m_videoData.Size.Height)
             {
                 if (m_texture[m_textureIndex] != null)
                 {
@@ -312,8 +314,8 @@ namespace ZXMAK2.Host.Xna4.Views
                 }
                 m_texture[m_textureIndex] = new Texture2D(
                     m_deviceManager.GraphicsDevice,
-                    videoData.Size.Width,
-                    videoData.Size.Height,
+                    m_videoData.Size.Width,
+                    m_videoData.Size.Height,
                     false,
                     SurfaceFormat.Color);
             }
@@ -361,11 +363,10 @@ namespace ZXMAK2.Host.Xna4.Views
                     m_deviceManager.GraphicsDevice.PresentationParameters.BackBufferWidth,
                     m_deviceManager.GraphicsDevice.PresentationParameters.BackBufferHeight,
                     m_deviceManager.GraphicsDevice.PresentationParameters.BackBufferFormat);
-                var videoData = GetVideoData();
                 WriteLine(
                     "Surface: [{0}, {1}]", 
-                    videoData.Size.Width,
-                    videoData.Size.Height);
+                    m_videoData.Size.Width,
+                    m_videoData.Size.Height);
                 WriteLine("FrameStart: {0}T", m_debugFrameStart);
             }
             m_sprite.End();
