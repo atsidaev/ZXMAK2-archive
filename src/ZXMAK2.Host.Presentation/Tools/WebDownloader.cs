@@ -6,7 +6,7 @@ using System.IO;
 using System.Net.Mime;
 using System.Collections.Specialized;
 
-namespace ZXMAK2.Controls
+namespace ZXMAK2.Host.Presentation.Tools
 {
     public class WebDownloader
     {
