@@ -76,6 +76,7 @@
     <Compile Include="Services\UserHelp.cs" />
     <Compile Include="Tools\DragDataWrapper.cs" />
     <Compile Include="Tools\EnumMapper.cs" />
+    <Compile Include="Views\FormAbout.cs" />
     <Compile Include="Views\MainView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -102,6 +103,9 @@
     <Compile Include="Services\UserQuery.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Views\FormAbout.resx">
+      <DependentUpon>FormAbout.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\MainView.resx">
       <DependentUpon>MainView.cs</DependentUpon>
     </EmbeddedResource>
