@@ -13,10 +13,6 @@ using ZXMAK2.Host.Presentation.Interfaces;
 
 namespace ZXMAK2.Controls.Debugger
 {
-    public interface IFddDebugView : IView
-    {
-    }
-    
     public partial class dbgWD1793 : FormView, IFddDebugView
     {
         private Wd1793 _wd1793;

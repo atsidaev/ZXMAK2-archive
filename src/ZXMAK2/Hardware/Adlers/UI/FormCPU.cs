@@ -24,10 +24,6 @@ using ZXMAK2.Host.Presentation.Interfaces;
 
 namespace ZXMAK2.Hardware.Adlers.UI
 {
-    public interface IDebuggerAdlersView : IView
-    {
-    }
-    
     public partial class FormCpu : FormView, IDebuggerAdlersView
     {
         private IDebuggable m_spectrum;

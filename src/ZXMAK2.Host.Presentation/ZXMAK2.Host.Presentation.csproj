@@ -39,6 +39,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IAboutView.cs" />
     <Compile Include="Interfaces\ILauncher.cs" />
     <Compile Include="Interfaces\IMainPresenter.cs" />
     <Compile Include="Interfaces\IMainView.cs" />

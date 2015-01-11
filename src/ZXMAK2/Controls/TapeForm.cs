@@ -16,10 +16,6 @@ using ZXMAK2.Host.Presentation.Interfaces;
 
 namespace ZXMAK2.Controls
 {
-    public interface ITapeView : IView
-    {
-    }
-
     public class TapeForm : FormView, ITapeView
     {
         #region Windows Form Designer generated code

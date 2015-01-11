@@ -12,10 +12,6 @@ using ZXMAK2.Host.Presentation.Interfaces;
 
 namespace ZXMAK2.Controls.Debugger
 {
-    public interface IMemoryMapView : IView
-    {
-    }
-    
     public partial class FormMemoryMap : FormView, IMemoryMapView
     {
         private const string CS_UNKNOWN = "???";

@@ -9,10 +9,6 @@ using ZXMAK2.Host.Presentation.Interfaces;
 
 namespace ZXMAK2.Controls
 {
-    public interface IAboutView : IView
-    {
-    }
-    
     public class FormAbout : FormView, IAboutView
 	{
 		#region Windows Form Designer generated code
