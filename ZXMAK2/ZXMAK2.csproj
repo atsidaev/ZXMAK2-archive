@@ -120,7 +120,6 @@
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\WebDownloader.cs" />
     <Compile Include="Engine\InputAggregator.cs" />
     <Compile Include="Entities\Breakpoint.cs" />
     <Compile Include="Controls\Configuration\ConfigScreenControl.cs">
