@@ -9,7 +9,7 @@ namespace ZXMAK2.Host.WinForms.Controls
     /// It allows click-through functionality.
     /// http://blogs.msdn.com/b/rickbrew/archive/2006/01/09/511003.aspx
     /// </summary>
-    public class ToolStripEx : ToolStrip
+    public class MenuStripEx : MenuStrip
     {
         protected override void WndProc(ref Message m)
         {

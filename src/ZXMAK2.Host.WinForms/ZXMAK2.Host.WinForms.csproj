@@ -75,7 +75,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\ToolStripEx.cs" />
+    <Compile Include="Controls\MenuStripEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ToolStripEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="HardwareViews\Adlers\Assembler.cs">
       <SubType>Form</SubType>
     </Compile>
