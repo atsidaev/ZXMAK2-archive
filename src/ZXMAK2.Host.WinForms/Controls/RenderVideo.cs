@@ -493,16 +493,18 @@ namespace ZXMAK2.Host.WinForms.Controls
                             var graphRender = GetGraph(m_renderGraph, ref m_renderGraphIndex);
                             var graphLoad = GetGraph(m_loadGraph, ref m_loadGraphIndex);
                             var maxTime = Math.Max(graphRender.Max(), graphLoad.Max());
-                            var limitTime = (double)Stopwatch.Frequency / D3D.DisplayMode.RefreshRate;
+                            var limitDisplay = (double)Stopwatch.Frequency / D3D.DisplayMode.RefreshRate;
+                            var limit50 = (double)Stopwatch.Frequency / 50F;
                             var graphRect = new Rectangle(
                                 textRect.Left,
                                 textRect.Top + textRect.Height,
                                 GraphLength,
                                 (int)(wndSize.Height - textRect.Top - textRect.Height));
                             FillRect(graphRect, Color.FromArgb(192, Color.Black));
-                            RenderGraph(graphRender, maxTime, graphRect, Color.FromArgb(196, Color.Yellow));
-                            RenderGraph(graphLoad, maxTime, graphRect, Color.FromArgb(196, Color.Lime));
-                            RenderLimit(limitTime, maxTime, graphRect, Color.FromArgb(196, Color.Red));
+                            RenderGraph(graphRender, maxTime, graphRect, Color.FromArgb(196, Color.Lime));
+                            RenderGraph(graphLoad, maxTime, graphRect, Color.FromArgb(196, Color.Red));
+                            RenderLimit(limitDisplay, maxTime, graphRect, Color.FromArgb(196, Color.Yellow));
+                            RenderLimit(limit50, maxTime, graphRect, Color.FromArgb(196, Color.Magenta));
                         }
                     }
 
