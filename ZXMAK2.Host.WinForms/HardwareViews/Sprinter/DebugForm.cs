@@ -18,6 +18,7 @@ using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.WinForms.HardwareViews.General;
 using ZXMAK2.Hardware.Sprinter;
+using ZXMAK2.Host.WinForms.Views;
 
 
 namespace ZXMAK2.Host.WinForms.HardwareViews.Sprinter

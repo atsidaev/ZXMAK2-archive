@@ -6,7 +6,7 @@ using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
 
 
-namespace ZXMAK2.Controls
+namespace ZXMAK2.Host.WinForms.Views
 {
     public class FormView : Form, IView
     {
