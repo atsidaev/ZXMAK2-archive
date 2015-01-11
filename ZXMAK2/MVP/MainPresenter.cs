@@ -522,7 +522,7 @@ namespace ZXMAK2.MVP
         {
             try
             {
-                var loadDialog = sender as OpenFileDialog;
+                var loadDialog = sender as IOpenFileDialog;
                 if (loadDialog == null) return;
                 e.Cancel = !m_vm.Spectrum.Loader.CheckCanOpenFileName(loadDialog.FileName);
             }
