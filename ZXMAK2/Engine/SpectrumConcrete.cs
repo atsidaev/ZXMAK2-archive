@@ -17,9 +17,7 @@ namespace ZXMAK2.Engine
     {
         #region private data
 
-        private CpuUnit _cpu;
         private BusManager _bus;
-        private LoadManager _loader;
 
         private List<Breakpoint> _breakpoints = new List<Breakpoint>();
 
@@ -27,25 +25,32 @@ namespace ZXMAK2.Engine
 
         #endregion
 
-        public override BusManager BusManager { get { return _bus; } }
+        public override BusManager BusManager 
+        { 
+            get { return _bus; } 
+        }
 
-        public override CpuUnit CPU { get { return _cpu; } }
-        public override LoadManager Loader { get { return _loader; } }
-
-        public override int FrameStartTact { get { return m_frameStartTact; } }
+        public override CpuUnit CPU 
+        { 
+            get { return _bus.Cpu; } 
+        }
+        
+        public override int FrameStartTact 
+        { 
+            get { return m_frameStartTact; } 
+        }
 
         public SpectrumConcrete()
         {
-            _loader = new LoadManager(this);
-            _cpu = new CpuUnit();
             _bus = new BusManager();
         }
 
         public override void Init()
         {
             base.Init();
-            _bus.Init(_cpu, _loader, false);
+            _bus.Init(this, false);
             _bus.FrameReady += OnUpdateFrame;
+            
             //default devices...
             _bus.Add(new ZXMAK2.Hardware.Pentagon.MemoryPentagon128());
             _bus.Add(new ZXMAK2.Hardware.Pentagon.UlaPentagon());
@@ -58,10 +63,11 @@ namespace ZXMAK2.Engine
             _bus.Add(new ZXMAK2.Hardware.General.AyMouseDevice());
             _bus.Add(new ZXMAK2.Hardware.General.Debugger());
             _bus.Connect();
-            _cpu.RST = true;
-            _cpu.ExecCycle();
-            _cpu.RST = false;
-            _cpu.Tact = 0;
+
+            _bus.Cpu.RST = true;
+            _bus.Cpu.ExecCycle();
+            _bus.Cpu.RST = false;
+            _bus.Cpu.Tact = 0;
         }
 
         #region debugger methods
@@ -115,13 +121,14 @@ namespace ZXMAK2.Engine
             //stopwatch.Start();
 
             int frameTact = _bus.GetFrameTact();
-            long t = _cpu.Tact - frameTact + _bus.FrameTactCount;
+            var cpu = _bus.Cpu;
+            long t = cpu.Tact - frameTact + _bus.FrameTactCount;
 
-            while (t > _cpu.Tact/* && IsRunning*/)
+            while (t > cpu.Tact/* && IsRunning*/)
             {
                 // Alex: performance critical block, do not modify!
                 _bus.ExecCycle();
-                if (_breakpoints.Count == 0 || _cpu.HALTED)
+                if (_breakpoints.Count == 0 || cpu.HALTED)
                 {
                     continue;
                 }
@@ -129,7 +136,7 @@ namespace ZXMAK2.Engine
 
                 if (CheckBreakpoint())
                 {
-                    int delta1 = (int)(_cpu.Tact - t);
+                    int delta1 = (int)(cpu.Tact - t);
                     if (delta1 >= 0)
                         m_frameStartTact = delta1;
                     IsRunning = false;
@@ -138,7 +145,7 @@ namespace ZXMAK2.Engine
                     return;
                 }
             }
-            int delta = (int)(_cpu.Tact - t);
+            int delta = (int)(cpu.Tact - t);
             if (delta >= 0)
                 m_frameStartTact = delta;
 
@@ -149,9 +156,10 @@ namespace ZXMAK2.Engine
         protected override void OnExecCycle()
         {
             int frameTact = _bus.GetFrameTact();
-            long t = _cpu.Tact - frameTact + _bus.FrameTactCount;
+            var cpu = _bus.Cpu;
+            long t = cpu.Tact - frameTact + _bus.FrameTactCount;
             _bus.ExecCycle();
-            int delta = (int)(_cpu.Tact - t);
+            int delta = (int)(cpu.Tact - t);
             if (delta >= 0)
                 m_frameStartTact = delta;
             if (CheckBreakpoint())

@@ -118,7 +118,7 @@ namespace ZXMAK2.MVP
             }
             if (m_startupImage != null)
             {
-                m_view.Title = m_vm.Spectrum.Loader.OpenFileName(m_startupImage, true);
+                m_view.Title = m_vm.Spectrum.BusManager.LoadManager.OpenFileName(m_startupImage, true);
             }
             m_view.Bind(this);
             m_vm.DoRun();
@@ -197,7 +197,7 @@ namespace ZXMAK2.MVP
             using (var loadDialog = GetViewService<IOpenFileDialog>())
             {
                 loadDialog.Title = "Open...";
-                loadDialog.Filter = m_vm.Spectrum.Loader.GetOpenExtFilter();
+                loadDialog.Filter = m_vm.Spectrum.BusManager.LoadManager.GetOpenExtFilter();
                 loadDialog.FileName = "";
                 loadDialog.ShowReadOnly = true;
                 loadDialog.ReadOnlyChecked = true;
@@ -234,8 +234,8 @@ namespace ZXMAK2.MVP
             using (var saveDialog = GetViewService<ISaveFileDialog>())
             {
                 saveDialog.Title = "Save...";
-                saveDialog.Filter = m_vm.Spectrum.Loader.GetSaveExtFilter();
-                saveDialog.DefaultExt = m_vm.Spectrum.Loader.GetDefaultExtension();
+                saveDialog.Filter = m_vm.Spectrum.BusManager.LoadManager.GetSaveExtFilter();
+                saveDialog.DefaultExt = m_vm.Spectrum.BusManager.LoadManager.GetDefaultExtension();
                 saveDialog.FileName = string.Empty;
                 saveDialog.OverwritePrompt = true;
                 if (saveDialog.ShowDialog(m_view) != DlgResult.OK)
@@ -441,9 +441,9 @@ namespace ZXMAK2.MVP
             m_vm.DoStop();
             try
             {
-                if (m_vm.Spectrum.Loader.CheckCanOpenFileName(fileName))
+                if (m_vm.Spectrum.BusManager.LoadManager.CheckCanOpenFileName(fileName))
                 {
-                    m_vm.Spectrum.Loader.OpenFileName(fileName, true);
+                    m_vm.Spectrum.BusManager.LoadManager.OpenFileName(fileName, true);
                 }
                 else
                 {
@@ -468,7 +468,7 @@ namespace ZXMAK2.MVP
                 var uri = (Uri)objUri;
                 return uri != null && 
                     (!uri.IsLoopback ||
-                    m_vm.Spectrum.Loader.CheckCanOpenFileName(uri.LocalPath));
+                    m_vm.Spectrum.BusManager.LoadManager.CheckCanOpenFileName(uri.LocalPath));
             }
             catch (Exception ex)
             {
@@ -525,7 +525,7 @@ namespace ZXMAK2.MVP
             {
                 var loadDialog = sender as IOpenFileDialog;
                 if (loadDialog == null) return;
-                e.Cancel = !m_vm.Spectrum.Loader.CheckCanOpenFileName(loadDialog.FileName);
+                e.Cancel = !m_vm.Spectrum.BusManager.LoadManager.CheckCanOpenFileName(loadDialog.FileName);
             }
             catch (Exception ex)
             {
@@ -541,9 +541,9 @@ namespace ZXMAK2.MVP
             m_vm.DoStop();
             try
             {
-                if (m_vm.Spectrum.Loader.CheckCanOpenFileName(fileName))
+                if (m_vm.Spectrum.BusManager.LoadManager.CheckCanOpenFileName(fileName))
                 {
-                    string imageName = m_vm.Spectrum.Loader.OpenFileName(fileName, readOnly);
+                    string imageName = m_vm.Spectrum.BusManager.LoadManager.OpenFileName(fileName, readOnly);
                     if (imageName != string.Empty)
                     {
                         m_view.Title = imageName;
@@ -573,9 +573,9 @@ namespace ZXMAK2.MVP
             m_vm.DoStop();
             try
             {
-                if (m_vm.Spectrum.Loader.CheckCanSaveFileName(fileName))
+                if (m_vm.Spectrum.BusManager.LoadManager.CheckCanSaveFileName(fileName))
                 {
-                    m_view.Title = m_vm.Spectrum.Loader.SaveFileName(fileName);
+                    m_view.Title = m_vm.Spectrum.BusManager.LoadManager.SaveFileName(fileName);
                     m_vm.SaveConfig();
                 }
                 else
@@ -601,9 +601,9 @@ namespace ZXMAK2.MVP
             m_vm.DoStop();
             try
             {
-                if (m_vm.Spectrum.Loader.CheckCanOpenFileStream(fileName, fileStream))
+                if (m_vm.Spectrum.BusManager.LoadManager.CheckCanOpenFileStream(fileName, fileStream))
                 {
-                    string imageName = m_vm.Spectrum.Loader.OpenFileStream(fileName, fileStream);
+                    string imageName = m_vm.Spectrum.BusManager.LoadManager.OpenFileStream(fileName, fileStream);
                     if (imageName != string.Empty)
                     {
                         m_view.Title = imageName;

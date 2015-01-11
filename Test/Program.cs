@@ -332,7 +332,7 @@ namespace Test
 
             using (Stream testStream = GetTestStream("zexall.sna"))
             {
-                p128.Loader.GetSerializer(Path.GetExtension("zexall.sna")).Deserialize(testStream);
+                p128.BusManager.LoadManager.GetSerializer(Path.GetExtension("zexall.sna")).Deserialize(testStream);
             }
 			p128.IsRunning = true;
 			int frame;
@@ -342,10 +342,10 @@ namespace Test
 				if (frame % 30000 == 0 || ((frame > 630000 && frame < 660000) && frame % 10000 == 0))
 				{
 					Console.WriteLine(string.Format("{0:D8}", frame));
-					p128.Loader.SaveFileName(string.Format("{0:D8}.PNG", frame));
+                    p128.BusManager.LoadManager.SaveFileName(string.Format("{0:D8}.PNG", frame));
 				}
 			}
-			p128.Loader.SaveFileName(string.Format("{0:D8}.PNG", frame));
+            p128.BusManager.LoadManager.SaveFileName(string.Format("{0:D8}.PNG", frame));
 			p128.BusManager.Disconnect();
 		}
 
@@ -359,7 +359,7 @@ namespace Test
 
 			p128.IsRunning = false;
 			using (Stream testStream = GetTestStream(testName))
-				p128.Loader.GetSerializer(Path.GetExtension(testName)).Deserialize(testStream);
+                p128.BusManager.LoadManager.GetSerializer(Path.GetExtension(testName)).Deserialize(testStream);
 			p128.IsRunning = true;
 
 
