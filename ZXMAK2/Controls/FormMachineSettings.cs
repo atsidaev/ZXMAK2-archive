@@ -276,8 +276,6 @@ namespace ZXMAK2.Controls
 
         #endregion
 
-        private const string csMachinesConfigFileName = "machines.config";
-
         #region private
 
         private readonly MachinesConfig m_machines = new MachinesConfig();
