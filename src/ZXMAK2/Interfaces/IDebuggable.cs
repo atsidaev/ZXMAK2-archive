@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using ZXMAK2.Engine.Cpu;
-using ZXMAK2.Controls.Debugger;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
 

@@ -75,16 +75,32 @@
       <Link>FormView.cs</Link>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Services\ObjectSelectorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Services\OpenFileDialog.cs" />
     <Compile Include="Services\SaveFileDialog.cs" />
     <Compile Include="Services\UserHelp.cs" />
+    <Compile Include="Tools\BusDeviceTypeConverter.cs" />
     <Compile Include="Tools\DragDataWrapper.cs" />
     <Compile Include="Tools\EnumMapper.cs" />
+    <Compile Include="Views\dbgWD1793.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\dbgWD1793.Designer.cs">
+      <DependentUpon>dbgWD1793.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\FormAbout.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Views\FormKeyboardHelp.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\FormMemoryMap.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\FormMemoryMap.Designer.cs">
+      <DependentUpon>FormMemoryMap.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\MainView.cs">
       <SubType>Form</SubType>
@@ -110,13 +126,25 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Services\UserQuery.cs" />
+    <Compile Include="Views\TapeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Services\ObjectSelectorDialog.resx">
+      <DependentUpon>ObjectSelectorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\dbgWD1793.resx">
+      <DependentUpon>dbgWD1793.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\FormAbout.resx">
       <DependentUpon>FormAbout.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\FormKeyboardHelp.resx">
       <DependentUpon>FormKeyboardHelp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FormMemoryMap.resx">
+      <DependentUpon>FormMemoryMap.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\MainView.resx">
       <DependentUpon>MainView.cs</DependentUpon>
@@ -125,11 +153,24 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\TapeForm.resx">
+      <DependentUpon>TapeForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZXMAK2.Dependency\ZXMAK2.Dependency.csproj">
       <Project>{BB32EB49-52FF-4976-9586-5C4E415CD730}</Project>
       <Name>ZXMAK2.Dependency</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Engine\ZXMAK2.Engine.csproj">
+      <Project>{FCE1FEFA-24FC-4867-9770-6635D3CBAEAA}</Project>
+      <Name>ZXMAK2.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Hardware.Circuits\ZXMAK2.Hardware.Circuits.csproj">
+      <Project>{24F7E5E1-9524-41AA-93E6-95D9B10869A7}</Project>
+      <Name>ZXMAK2.Hardware.Circuits</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Host.Presentation\ZXMAK2.Host.Presentation.csproj">
@@ -145,6 +186,11 @@
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">
       <Project>{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}</Project>
       <Name>ZXMAK2.Logging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Model.Tape\ZXMAK2.Model.Tape.csproj">
+      <Project>{8851E497-6345-45E3-9936-EC17A4477A71}</Project>
+      <Name>ZXMAK2.Model.Tape</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Presentation\ZXMAK2.Presentation.csproj">
