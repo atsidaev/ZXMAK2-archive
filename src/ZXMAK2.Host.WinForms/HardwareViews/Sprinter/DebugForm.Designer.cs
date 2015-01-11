@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-namespace ZXMAK2.Hardware.Sprinter.UI
+namespace ZXMAK2.Host.WinForms.HardwareViews.Sprinter
 {
     partial class DebugForm
     {
@@ -71,10 +71,10 @@ namespace ZXMAK2.Hardware.Sprinter.UI
             this.listREGS = new System.Windows.Forms.ListBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panelMem = new System.Windows.Forms.Panel();
-            this.dataPanel = new ZXMAK2.Hardware.General.UI.DataPanel();
+            this.dataPanel = new ZXMAK2.Host.WinForms.HardwareViews.General.DataPanel();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.panelDasm = new System.Windows.Forms.Panel();
-            this.dasmPanel = new ZXMAK2.Hardware.General.UI.DasmPanel();
+            this.dasmPanel = new ZXMAK2.Host.WinForms.HardwareViews.General.DasmPanel();
             this.contextMenuDasm = new System.Windows.Forms.ContextMenu();
             this.menuItemDasmGotoADDR = new System.Windows.Forms.MenuItem();
             this.menuItemDasmGotoPC = new System.Windows.Forms.MenuItem();

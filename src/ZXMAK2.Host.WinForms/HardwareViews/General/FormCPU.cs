@@ -19,7 +19,7 @@ using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
 
 
-namespace ZXMAK2.Hardware.General.UI
+namespace ZXMAK2.Host.WinForms.HardwareViews.General
 {
     public partial class FormCpu : FormView, IDebuggerGeneralView
     {

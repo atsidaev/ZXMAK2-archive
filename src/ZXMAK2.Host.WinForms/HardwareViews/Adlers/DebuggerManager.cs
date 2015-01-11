@@ -11,7 +11,7 @@ using ZXMAK2.Engine;
 using ZXMAK2.Engine.Cpu;
 
 
-namespace ZXMAK2.Hardware.Adlers.UI
+namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 {
     //CIL
     public delegate TRetVal checkBreakpointDelegate<TRetVal>();
