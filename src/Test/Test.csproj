@@ -45,12 +45,22 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="testVideo.z80" />
     <EmbeddedResource Include="zexall.sna" />
     <EmbeddedResource Include="testOutFe.z80" />
+    <None Include="machines.test.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZXMAK2.Dependency\ZXMAK2.Dependency.csproj">

@@ -11,6 +11,7 @@ using ZXMAK2.Engine;
 using ZXMAK2.Serializers;
 using ZXMAK2.Entities;
 
+
 namespace ZXMAK2.Engine
 {
     public unsafe class SpectrumConcrete : SpectrumBase
@@ -43,27 +44,13 @@ namespace ZXMAK2.Engine
         public SpectrumConcrete()
         {
             _bus = new BusManager();
+            _bus.FrameReady += OnUpdateFrame;
         }
 
         public override void Init()
         {
             base.Init();
             _bus.Init(this, false);
-            _bus.FrameReady += OnUpdateFrame;
-            
-            //default devices...
-            _bus.Add(new ZXMAK2.Hardware.Pentagon.MemoryPentagon128());
-            _bus.Add(new ZXMAK2.Hardware.Pentagon.UlaPentagon());
-            _bus.Add(new ZXMAK2.Hardware.General.BetaDiskInterface());
-            _bus.Add(new ZXMAK2.Hardware.General.AY8910());
-            _bus.Add(new ZXMAK2.Hardware.General.BeeperDevice());
-            _bus.Add(new ZXMAK2.Hardware.General.TapeDevice());
-            _bus.Add(new ZXMAK2.Hardware.General.KeyboardDevice());
-            _bus.Add(new ZXMAK2.Hardware.General.KempstonMouseDevice());
-            _bus.Add(new ZXMAK2.Hardware.General.AyMouseDevice());
-            _bus.Add(new ZXMAK2.Hardware.General.Debugger());
-            _bus.Connect();
-
             _bus.Cpu.RST = true;
             _bus.Cpu.ExecCycle();
             _bus.Cpu.RST = false;
