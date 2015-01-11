@@ -39,6 +39,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         private Size m_textureSize = new Size(0, 0);
         private Size m_textureMaskTvSize = new Size(0, 0);
         private float m_surfaceHeightScale = 1F;
+        private bool _isDebugInfo;
 
         private Sprite m_iconSprite = null;
         private Microsoft.DirectX.Direct3D.Font m_font = null;
@@ -70,7 +71,16 @@ namespace ZXMAK2.Host.WinForms.Controls
         public ScaleMode ScaleMode { get; set; }
         
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool DebugInfo { get; set; }
+        public bool DebugInfo 
+        {
+            get { return _isDebugInfo; }
+            set
+            {
+                _isDebugInfo = value;
+                ClearGraph(m_renderGraph, ref m_renderGraphIndex);
+                ClearGraph(m_loadGraph, ref m_loadGraphIndex);
+            }
+        }
 
         public unsafe bool NoFlic
         {
@@ -596,10 +606,10 @@ namespace ZXMAK2.Host.WinForms.Controls
             var colorInt = color.ToArgb();
             var rectv = new[]
             {
-                new CustomVertex.TransformedColored(rect.Left+0.5F, rect.Top+rect.Height+0.5F, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(rect.Left+0.5F, rect.Top+0.5F, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(rect.Left+rect.Width+0.5F, rect.Top+rect.Height+0.5F, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(rect.Left+rect.Width+0.5F, rect.Top+0.5F, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left, rect.Top+rect.Height+0.5F, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left, rect.Top, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top+rect.Height+0.5F, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top, 0, 0, colorInt),
             };
             D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
             D3D.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, rectv);
