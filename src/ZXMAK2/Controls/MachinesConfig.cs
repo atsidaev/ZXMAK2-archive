@@ -17,32 +17,57 @@ namespace ZXMAK2.Controls
 
         public IEnumerable<string> GetNames()
         {
-            var list = new List<string>();
-            foreach (XmlNode node in m_config.DocumentElement.ChildNodes)
-            {
-                if (string.Compare(node.Name, "Bus", true) != 0 ||
-                    node.Attributes["name"] == null)
-                {
-                    continue;
-                }
-                list.Add(node.Attributes["name"].InnerText);
-            }
-            return list;
+            var names = m_config.DocumentElement.ChildNodes
+                .OfType<XmlNode>()
+                .Where(node => node.Name == "Bus")
+                .Select(node => GetAttrString(node, "name"))
+                .Where(v => !string.IsNullOrEmpty(v));
+            return names;
         }
 
         public XmlNode GetConfig(string name)
         {
-            foreach (XmlNode node in m_config.DocumentElement.ChildNodes)
+            var configNode = m_config.DocumentElement.ChildNodes
+                .OfType<XmlNode>()
+                .FirstOrDefault(node => node.Name=="Bus" && GetAttrString(node, "name")==name);
+            return configNode;
+        }
+
+        public XmlNode GetDefaultConfig()
+        {
+            var configNode = m_config.DocumentElement.ChildNodes
+                .OfType<XmlNode>()
+                .FirstOrDefault(node => GetAttrBool(node, "isDefault", false));
+            if (configNode != null)
             {
-                if (string.Compare(node.Name, "Bus", true) != 0 ||
-                    node.Attributes["name"] == null ||
-                    node.Attributes["name"].InnerText != name)
-                {
-                    continue;
-                }
-                return node;
+                return configNode;
             }
-            return null;
+            var firstName = GetNames().FirstOrDefault();
+            if (firstName == null)
+            {
+                return null;
+            }
+            return GetConfig(firstName);
+        }
+
+        private static string GetAttrString(XmlNode node, string name)
+        {
+            var attr = node.Attributes[name];
+            if (attr == null)
+            {
+                return null;
+            }
+            return attr.InnerText;
+        }
+
+        private static bool GetAttrBool(XmlNode node, string name, bool defValue)
+        {
+            var attr = node.Attributes[name];
+            if (attr == null)
+            {
+                return defValue;
+            }
+            return string.Compare(attr.InnerText, "true", true)==0;
         }
     }
 }
