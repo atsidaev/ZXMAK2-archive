@@ -25,7 +25,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private ZXMAK2.Controls.ToolStripEx toolBar;
+        private ZXMAK2.Host.WinForms.Controls.ToolStripEx toolBar;
         private System.Windows.Forms.Panel panelList;
         private System.Windows.Forms.ListBox blockList;
         private System.Windows.Forms.ToolStripButton btnRewind;
@@ -57,7 +57,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.toolBar = new ZXMAK2.Controls.ToolStripEx();
+            this.toolBar = new ZXMAK2.Host.WinForms.Controls.ToolStripEx();
             this.btnRewind = new System.Windows.Forms.ToolStripButton();
             this.btnPrev = new System.Windows.Forms.ToolStripButton();
             this.btnPlay = new System.Windows.Forms.ToolStripButton();

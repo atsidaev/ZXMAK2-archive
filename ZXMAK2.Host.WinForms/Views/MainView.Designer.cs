@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.mnuStrip = new ZXMAK2.Controls.MenuStripEx();
+            this.mnuStrip = new ZXMAK2.Host.WinForms.Controls.MenuStripEx();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFileOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFileSaveAs = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,7 +73,7 @@
             this.menuHelpKeyboardHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHelpSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.menuHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.tbrStrip = new ZXMAK2.Controls.ToolStripEx();
+            this.tbrStrip = new ZXMAK2.Host.WinForms.Controls.ToolStripEx();
             this.tbrButtonOpen = new System.Windows.Forms.ToolStripButton();
             this.tbrButtonSave = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -644,8 +644,8 @@
         private System.Windows.Forms.StatusStrip sbrStrip;
         private System.Windows.Forms.ToolStripButton tbrButtonColdReset;
         private System.Windows.Forms.ToolStripMenuItem menuVmColdReset;
-        private ZXMAK2.Controls.MenuStripEx mnuStrip;
-        private ZXMAK2.Controls.ToolStripEx tbrStrip;
+        private ZXMAK2.Host.WinForms.Controls.MenuStripEx mnuStrip;
+        private ZXMAK2.Host.WinForms.Controls.ToolStripEx tbrStrip;
         private System.Windows.Forms.ToolStripButton tbrButtonQuickLoad;
         private System.Windows.Forms.ToolStripMenuItem menuViewMimicTv;
         private System.Windows.Forms.ToolStripMenuItem menuViewScaleModeSquarePixelSize;
