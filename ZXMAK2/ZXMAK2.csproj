@@ -188,9 +188,6 @@
     <Compile Include="Controls\ObjectSelectorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\FormAbout.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Controls\Debugger\dbgWD1793.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -402,9 +399,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ObjectSelectorDialog.resx">
       <DependentUpon>ObjectSelectorDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FormAbout.resx">
-      <DependentUpon>FormAbout.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Debugger\dbgWD1793.resx">
       <DependentUpon>dbgWD1793.cs</DependentUpon>
