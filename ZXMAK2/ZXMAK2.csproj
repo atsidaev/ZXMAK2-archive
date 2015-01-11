@@ -72,7 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\MachinesConfig.cs" />
+    <Compile Include="Engine\MachinesConfig.cs" />
     <Compile Include="Entities\ModelId.cs" />
     <Compile Include="Entities\RomId.cs" />
     <Compile Include="Entities\SyncSource.cs" />
