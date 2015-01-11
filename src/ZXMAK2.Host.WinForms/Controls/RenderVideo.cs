@@ -492,7 +492,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                             FillRect(graphRect, Color.FromArgb(192, Color.Black));
                             RenderGraph(graphRender, maxTime, graphRect, Color.FromArgb(196, Color.Yellow));
                             RenderGraph(graphLoad, maxTime, graphRect, Color.FromArgb(196, Color.Lime));
-                            RenderLimit(limitTime, maxTime, graphRect, Color.FromArgb(255, Color.Red));
+                            RenderLimit(limitTime, maxTime, graphRect, Color.FromArgb(196, Color.Red));
                         }
                     }
 
@@ -596,10 +596,10 @@ namespace ZXMAK2.Host.WinForms.Controls
             var colorInt = color.ToArgb();
             var rectv = new[]
             {
-                new CustomVertex.TransformedColored(rect.Left, rect.Top+rect.Height+1, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(rect.Left, rect.Top, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top+rect.Height+1, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left+0.5F, rect.Top+rect.Height+0.5F, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left+0.5F, rect.Top+0.5F, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left+rect.Width+0.5F, rect.Top+rect.Height+0.5F, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left+rect.Width+0.5F, rect.Top+0.5F, 0, 0, colorInt),
             };
             D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
             D3D.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, rectv);
