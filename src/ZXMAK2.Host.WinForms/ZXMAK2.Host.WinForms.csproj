@@ -123,10 +123,10 @@
     <Compile Include="Tools\BusDeviceTypeConverter.cs" />
     <Compile Include="Tools\DragDataWrapper.cs" />
     <Compile Include="Tools\EnumMapper.cs" />
-    <Compile Include="Views\dbgWD1793.cs">
+    <Compile Include="HardwareViews\dbgWD1793.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\dbgWD1793.Designer.cs">
+    <Compile Include="HardwareViews\dbgWD1793.Designer.cs">
       <DependentUpon>dbgWD1793.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\FormAbout.cs">
@@ -135,10 +135,10 @@
     <Compile Include="Views\FormKeyboardHelp.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\FormMemoryMap.cs">
+    <Compile Include="HardwareViews\FormMemoryMap.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\FormMemoryMap.Designer.cs">
+    <Compile Include="HardwareViews\FormMemoryMap.Designer.cs">
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\FormView.cs" />
@@ -166,7 +166,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Services\UserQuery.cs" />
-    <Compile Include="Views\TapeForm.cs">
+    <Compile Include="HardwareViews\TapeForm.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
@@ -189,7 +189,7 @@
     <EmbeddedResource Include="Services\ObjectSelectorDialog.resx">
       <DependentUpon>ObjectSelectorDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\dbgWD1793.resx">
+    <EmbeddedResource Include="HardwareViews\dbgWD1793.resx">
       <DependentUpon>dbgWD1793.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\FormAbout.resx">
@@ -198,7 +198,7 @@
     <EmbeddedResource Include="Views\FormKeyboardHelp.resx">
       <DependentUpon>FormKeyboardHelp.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\FormMemoryMap.resx">
+    <EmbeddedResource Include="HardwareViews\FormMemoryMap.resx">
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\MainView.resx">
@@ -208,7 +208,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\TapeForm.resx">
+    <EmbeddedResource Include="HardwareViews\TapeForm.resx">
       <DependentUpon>TapeForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
