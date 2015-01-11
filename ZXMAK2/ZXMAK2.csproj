@@ -127,7 +127,6 @@
     <Compile Include="Controls\Configuration\CtlSettingsJoystick.Designer.cs">
       <DependentUpon>CtlSettingsJoystick.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Debugger\BusDeviceTypeConverter.cs" />
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -175,19 +174,6 @@
     </Compile>
     <Compile Include="Controls\FormAddDeviceWizard.Designer.cs">
       <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Debugger\FormMemoryMap.cs" />
-    <Compile Include="Controls\Debugger\FormMemoryMap.Designer.cs">
-      <DependentUpon>FormMemoryMap.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ObjectSelectorDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\Debugger\dbgWD1793.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\Debugger\dbgWD1793.designer.cs">
-      <DependentUpon>dbgWD1793.cs</DependentUpon>
     </Compile>
     <Compile Include="Engine\DeviceEnumerator.cs" />
     <Compile Include="Entities\RzxFrame.cs" />
@@ -247,9 +233,6 @@
     </Compile>
     <Compile Include="Hardware\General\UI\FormCPU.designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\TapeForm.cs">
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Entities\BusDeviceBase.cs" />
     <Compile Include="Hardware\General\AyMouseDevice.cs" />
@@ -386,15 +369,6 @@
       <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Debugger\FormMemoryMap.resx">
-      <DependentUpon>FormMemoryMap.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ObjectSelectorDialog.resx">
-      <DependentUpon>ObjectSelectorDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Debugger\dbgWD1793.resx">
-      <DependentUpon>dbgWD1793.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Hardware\Adlers\UI\Assembler.resx">
       <DependentUpon>Assembler.cs</DependentUpon>
     </EmbeddedResource>
@@ -410,9 +384,6 @@
     <EmbeddedResource Include="Controls\FormMachineSettings.resx">
       <DependentUpon>FormMachineSettings.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TapeForm.resx">
-      <DependentUpon>TapeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Hardware\Sprinter\UI\DebugForm.resx">
       <DependentUpon>DebugForm.cs</DependentUpon>
@@ -529,7 +500,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Controls\Debugger\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.targets\Common.targets" />
   <PropertyGroup>

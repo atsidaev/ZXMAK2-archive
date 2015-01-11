@@ -9,7 +9,6 @@ using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine;
 using ZXMAK2.Serializers;
-using ZXMAK2.Controls.Debugger;
 using ZXMAK2.Entities;
 
 namespace ZXMAK2.Engine
