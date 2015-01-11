@@ -66,16 +66,12 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="..\Libraries\FastColoredTextBox.dll" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\FormView.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Controls\MachinesConfig.cs" />
     <Compile Include="Entities\ModelId.cs" />
     <Compile Include="Entities\RomId.cs" />
