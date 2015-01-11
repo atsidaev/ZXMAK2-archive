@@ -2,13 +2,25 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
+using System.IO;
+using System.Reflection;
 
 
-namespace ZXMAK2.Controls
+namespace ZXMAK2.Engine
 {
     public class MachinesConfig
     {
         private XmlDocument m_config = new XmlDocument();
+
+        public void Load()
+        {
+            var folderName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var fileName = Path.Combine(folderName, "machines.config");
+            if (File.Exists(fileName))
+            {
+                Load(fileName);
+            }
+        }
 
         public void Load(string fileName)
         {

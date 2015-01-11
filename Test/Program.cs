@@ -12,6 +12,7 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
+using System.Xml;
 
 namespace Test
 {
@@ -71,7 +72,7 @@ namespace Test
 		private static void SanityUla(string name, IUlaDevice ula, byte[] opcode, int[] pattern)
 		{
 			IMemoryDevice mem = new ZXMAK2.Hardware.Spectrum.MemorySpectrum48();// MemoryPentagon128();
-			SpectrumConcrete p128 = new SpectrumConcrete();
+            var p128 = GetDefaultTestMachine();
 			p128.Init();
 			p128.BusManager.Disconnect();
 			p128.BusManager.Clear();
@@ -146,6 +147,19 @@ namespace Test
 			Console.WriteLine("Sanity ULA {0} [{1}]:\tpassed", ula.GetType().Name, name);
 			Console.ForegroundColor = tmp2;
 		}
+
+        private static SpectrumBase GetDefaultTestMachine()
+        {
+            var config = new XmlDocument();
+            config.LoadXml(Resources.machines_test);
+            var machine = new SpectrumConcrete();
+            machine.BusManager.LoadConfigXml(config.DocumentElement);
+            //var sxml = new XmlDocument();
+            //var node = sxml.AppendChild(sxml.CreateElement("Bus"));
+            //machine.BusManager.SaveConfigXml(node);
+            //sxml.Save("AAAA.xml");
+            return machine;
+        }
 
 		#region ULA PATTERNS
 
@@ -319,7 +333,7 @@ namespace Test
 
 		private static void runZexall()
 		{
-			SpectrumConcrete p128 = new SpectrumConcrete();
+            var p128 = GetDefaultTestMachine();
 			p128.Init();
 			p128.IsRunning = true;
 			p128.DoReset();
@@ -351,7 +365,7 @@ namespace Test
 
 		private static void ExecTests(string testName, int frameCount)
 		{
-			SpectrumConcrete p128 = new SpectrumConcrete();
+            var p128 = GetDefaultTestMachine();
 			p128.Init();
 			p128.IsRunning = true;
 			p128.DoReset();

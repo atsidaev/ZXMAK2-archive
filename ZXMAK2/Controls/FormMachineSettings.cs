@@ -300,11 +300,9 @@ namespace ZXMAK2.Controls
 
         private void LoadMachines()
         {
-            var folderName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var fileName = Path.Combine(folderName, csMachinesConfigFileName);
             try
             {
-                m_machines.Load(fileName);
+                m_machines.Load();
                 foreach (var name in m_machines.GetNames())
                 {
                     var node = m_machines.GetConfig(name);

@@ -104,6 +104,10 @@ namespace ZXMAK2.Engine
             m_preCycle = null;
             m_beginFrame = null;
             m_endFrame = null;
+
+            var config = new MachinesConfig();
+            config.Load();
+            LoadConfigXml(config.GetDefaultConfig());
         }
 
         #region IBusManager
