@@ -176,14 +176,9 @@
     <Compile Include="Controls\FormAddDeviceWizard.Designer.cs">
       <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Debugger\FormMemoryMap.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Controls\Debugger\FormMemoryMap.cs" />
     <Compile Include="Controls\Debugger\FormMemoryMap.Designer.cs">
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\FormKeyboardHelp.cs">
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Controls\ObjectSelectorDialog.cs">
       <SubType>Form</SubType>
@@ -393,9 +388,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Debugger\FormMemoryMap.resx">
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FormKeyboardHelp.resx">
-      <DependentUpon>FormKeyboardHelp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ObjectSelectorDialog.resx">
       <DependentUpon>ObjectSelectorDialog.cs</DependentUpon>
