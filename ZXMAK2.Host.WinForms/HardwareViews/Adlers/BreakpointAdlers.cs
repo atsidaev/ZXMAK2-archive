@@ -2,7 +2,7 @@
 using ZXMAK2.Entities;
 using ZXMAK2.Interfaces;
 
-namespace ZXMAK2.Hardware.Adlers.UI
+namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 {
     public class BreakpointAdlers : Breakpoint
     {

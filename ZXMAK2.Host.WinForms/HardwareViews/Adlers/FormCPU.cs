@@ -12,7 +12,6 @@ using System.Reflection.Emit;
 using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Controls;
-using ZXMAK2.Hardware.Adlers.UI;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Cpu.Tools;
@@ -22,7 +21,7 @@ using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
 
 
-namespace ZXMAK2.Hardware.Adlers.UI
+namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 {
     public partial class FormCpu : FormView, IDebuggerAdlersView
     {

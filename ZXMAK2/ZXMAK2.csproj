@@ -448,9 +448,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\Debugger\" />
-    <Folder Include="Hardware\Adlers\UI\" />
-    <Folder Include="Hardware\General\UI\" />
-    <Folder Include="Hardware\Sprinter\UI\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.targets\Common.targets" />

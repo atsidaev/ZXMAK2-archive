@@ -1,4 +1,4 @@
-﻿namespace ZXMAK2.Hardware.Adlers.UI
+﻿namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 {
     partial class TcpHelper
     {

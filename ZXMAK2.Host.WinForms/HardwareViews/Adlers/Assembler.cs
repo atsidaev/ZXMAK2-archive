@@ -11,7 +11,7 @@ using System.Diagnostics;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 
-namespace ZXMAK2.Hardware.Adlers.UI
+namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 {
     public partial class Assembler : Form
     {
