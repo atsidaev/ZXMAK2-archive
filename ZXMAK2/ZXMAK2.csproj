@@ -87,6 +87,7 @@
       <DependentUpon>TcpHelper.cs</DependentUpon>
     </Compile>
     <Compile Include="Hardware\DeviceExample.cs" />
+    <Compile Include="Hardware\Evo\AYCHRV.cs" />
     <Compile Include="Interfaces\IFormatSerializer.cs" />
     <Compile Include="Interfaces\IJoystickDevice.cs" />
     <Compile Include="Interfaces\IKeyboardDevice.cs" />
