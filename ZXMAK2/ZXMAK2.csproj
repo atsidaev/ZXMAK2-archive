@@ -86,6 +86,7 @@
     <Compile Include="Hardware\Adlers\UI\TcpHelper.Designer.cs">
       <DependentUpon>TcpHelper.cs</DependentUpon>
     </Compile>
+    <Compile Include="Hardware\DeviceExample.cs" />
     <Compile Include="Interfaces\IFormatSerializer.cs" />
     <Compile Include="Interfaces\IJoystickDevice.cs" />
     <Compile Include="Interfaces\IKeyboardDevice.cs" />
