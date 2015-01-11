@@ -80,12 +80,6 @@
     <Compile Include="Entities\ModelId.cs" />
     <Compile Include="Entities\RomId.cs" />
     <Compile Include="Entities\SyncSource.cs" />
-    <Compile Include="Hardware\Adlers\UI\TcpHelper.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Hardware\Adlers\UI\TcpHelper.Designer.cs">
-      <DependentUpon>TcpHelper.cs</DependentUpon>
-    </Compile>
     <Compile Include="Hardware\DeviceExample.cs" />
     <Compile Include="Hardware\Evo\AYCHRV.cs" />
     <Compile Include="Interfaces\IFormatSerializer.cs" />
@@ -180,24 +174,6 @@
     <Compile Include="Entities\BusDeviceCategory.cs" />
     <Compile Include="Entities\BusDeviceDescriptor.cs" />
     <Compile Include="Hardware\Adlers\Debugger.cs" />
-    <Compile Include="Hardware\Adlers\UI\Assembler.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Hardware\Adlers\UI\Assembler.Designer.cs">
-      <DependentUpon>Assembler.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Hardware\Adlers\BreakpointAdlers.cs" />
-    <Compile Include="Hardware\Adlers\DebuggerManager.cs" />
-    <Compile Include="Hardware\Adlers\DebugPanels.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Hardware\Adlers\DictionarySafe.cs" />
-    <Compile Include="Hardware\Adlers\UI\FormCPU.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Hardware\Adlers\UI\FormCPU.designer.cs">
-      <DependentUpon>FormCPU.cs</DependentUpon>
-    </Compile>
     <Compile Include="Hardware\Atm\Atm320Renderer.cs" />
     <Compile Include="Hardware\Atm\Atm640Renderer.cs" />
     <Compile Include="Hardware\Atm\EvoA16Renderer.cs" />
@@ -225,15 +201,6 @@
     <Compile Include="Hardware\ZXBYTE\BeeperByte.cs" />
     <Compile Include="Hardware\ZXBYTE\MemoryByte128.cs" />
     <Compile Include="Hardware\ZXBYTE\MemoryByte.cs" />
-    <Compile Include="Hardware\General\UI\DebugPanels.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Hardware\General\UI\FormCPU.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Hardware\General\UI\FormCPU.designer.cs">
-      <DependentUpon>FormCPU.cs</DependentUpon>
-    </Compile>
     <Compile Include="Entities\BusDeviceBase.cs" />
     <Compile Include="Hardware\General\AyMouseDevice.cs" />
     <Compile Include="Hardware\General\BeeperDevice.cs" />
@@ -329,12 +296,6 @@
     <Compile Include="Hardware\General\TapeDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Engine\VirtualMachine.cs" />
-    <Compile Include="Hardware\Sprinter\UI\DebugForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Hardware\Sprinter\UI\DebugForm.designer.cs">
-      <DependentUpon>DebugForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Hardware\Sprinter\KbdHits.cs" />
     <Compile Include="Hardware\Sprinter\SprinterFdd.cs" />
     <Compile Include="Hardware\Sprinter\SprinterDbg.cs" />
@@ -369,24 +330,9 @@
       <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Hardware\Adlers\UI\Assembler.resx">
-      <DependentUpon>Assembler.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Hardware\Adlers\UI\FormCPU.resx">
-      <DependentUpon>FormCPU.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Hardware\Adlers\UI\TcpHelper.resx">
-      <DependentUpon>TcpHelper.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Hardware\General\UI\FormCPU.resx">
-      <DependentUpon>FormCPU.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\FormMachineSettings.resx">
       <DependentUpon>FormMachineSettings.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Hardware\Sprinter\UI\DebugForm.resx">
-      <DependentUpon>DebugForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -502,6 +448,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\Debugger\" />
+    <Folder Include="Hardware\Adlers\UI\" />
+    <Folder Include="Hardware\General\UI\" />
+    <Folder Include="Hardware\Sprinter\UI\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.targets\Common.targets" />
