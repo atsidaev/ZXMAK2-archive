@@ -15,6 +15,7 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Presentation.Interfaces;
+using System.Diagnostics;
 
 
 namespace ZXMAK2.Engine
@@ -228,7 +229,8 @@ namespace ZXMAK2.Engine
                 new VideoFrame(
                     videoData,
                     Spectrum.BusManager.IconDescriptorArray,
-                    DebugFrameStartTact),
+                    DebugFrameStartTact,
+                    m_instantTime),
                 isRequested);
         }
 
@@ -291,7 +293,7 @@ namespace ZXMAK2.Engine
                 var host = m_host;
                 var sound = host != null ? host.Sound : null;
                 var video = host != null ? host.Video : null;
-
+                var watch = new Stopwatch();
                 using (var input = new InputAggregator(
                     host,
                     bus.FindDevices<IKeyboardDevice>().ToArray(),
@@ -328,8 +330,11 @@ namespace ZXMAK2.Engine
                                 }
                                 break;
                         }
-
+                        watch.Reset();
+                        watch.Start();
                         Spectrum.ExecuteFrame();
+                        watch.Stop();
+                        m_instantTime = watch.ElapsedTicks;
                     }
 
                     m_soundBuffers = null;
@@ -340,6 +345,8 @@ namespace ZXMAK2.Engine
                 Logger.Error(ex);
             }
         }
+
+        private double m_instantTime;
 
         #endregion
 
