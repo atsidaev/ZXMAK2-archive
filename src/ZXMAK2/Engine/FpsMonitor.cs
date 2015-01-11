@@ -8,8 +8,10 @@ namespace ZXMAK2.Engine
     {
         private readonly Stopwatch m_watch;
         private int m_frameCounter;
+        private long m_lastTime;
 
         public double Value { get; private set; }
+        public double InstantTime { get; private set; }
 
         public FpsMonitor()
         {
@@ -27,9 +29,27 @@ namespace ZXMAK2.Engine
                 m_watch.Stop();
                 m_watch.Reset();
                 m_watch.Start();
-                Value = m_frameCounter * (double)Stopwatch.Frequency / time;
+                Value = CalcAverage(time, m_frameCounter);// m_frameCounter * (double)Stopwatch.Frequency / time;
+                InstantTime = CalcInstant(time);
                 m_frameCounter = 0;
+                m_lastTime = 0;
             }
+            else
+            {
+                InstantTime = CalcInstant(time);
+            }
+        }
+
+        private double CalcAverage(long time, int frameCount)
+        {
+            return frameCount * (double)Stopwatch.Frequency / time;
+        }
+
+        private double CalcInstant(long time)
+        {
+            var delta = time - m_lastTime;
+            m_lastTime = time;
+            return delta;
         }
 
         public void Reset()

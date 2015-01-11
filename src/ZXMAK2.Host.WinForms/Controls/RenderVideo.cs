@@ -2,6 +2,7 @@
 /// Author: Alex Makeev
 /// Date: 27.03.2008
 using System;
+using System.Linq;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,6 +24,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private const byte MimicTvRatio = 4;      // mask size 1/x of pixel
         private const byte MimicTvAlpha = 0x90;   // mask alpha
+        private const int GraphLength = 200;
 
         #endregion Constants
 
@@ -45,6 +47,13 @@ namespace ZXMAK2.Host.WinForms.Controls
         private unsafe delegate void DrawFilterDelegate(int* dstBuffer, int* srcBuffer);
         private readonly FpsMonitor m_fpsUpdate = new FpsMonitor();
         private readonly FpsMonitor m_fpsRender = new FpsMonitor();
+        //private List<double> m_renderGraph = new List<double>();
+        //private List<double> m_loadGraph = new List<double>();
+        private readonly double[] m_renderGraph = new double[GraphLength];
+        private readonly double[] m_loadGraph = new double[GraphLength];
+        private int m_renderGraphIndex;
+        private int m_loadGraphIndex;
+
 
         #endregion Fields
 
@@ -160,6 +169,15 @@ namespace ZXMAK2.Host.WinForms.Controls
             if (!isRequested)
             {
                 m_fpsUpdate.Frame();
+                if (DebugInfo)
+                {
+                    PushGraphValue(m_loadGraph, ref m_loadGraphIndex, frame.InstantTime);
+                    //m_loadGraph.Add(frame.InstantTime);
+                    //if (m_loadGraph.Count > GraphLength)
+                    //{
+                    //    m_loadGraph.RemoveAt(0);
+                    //}
+                }
             }
             m_debugFrameStart = frame.StartTact;
             FrameSize = new Size(
@@ -182,7 +200,13 @@ namespace ZXMAK2.Host.WinForms.Controls
         public bool IsRunning 
         {
             get { return _isRunning; }
-            set { _isRunning = value; m_fpsUpdate.Reset(); }
+            set 
+            { 
+                _isRunning = value; 
+                m_fpsUpdate.Reset();
+                ClearGraph(m_renderGraph, ref m_renderGraphIndex);
+                ClearGraph(m_loadGraph, ref m_loadGraphIndex);
+            }
         }
 
         #region Private
@@ -368,6 +392,10 @@ namespace ZXMAK2.Host.WinForms.Controls
                 if (m_texture != null)
                 {
                     m_fpsRender.Frame();
+                    if (DebugInfo)
+                    {
+                        PushGraphValue(m_renderGraph, ref m_renderGraphIndex, m_fpsRender.InstantTime);
+                    }
 
                     m_sprite.Begin(SpriteFlags.None);
 
@@ -445,17 +473,32 @@ namespace ZXMAK2.Host.WinForms.Controls
                         textRect = new Rectangle(
                             textRect.Left,
                             textRect.Top,
-                            textRect.Width + 10,
+                            Math.Max(textRect.Width + 10, GraphLength),
                             textRect.Height);
-
-                        FillRect(textRect, Color.FromArgb(64, Color.Green));
-
+                        FillRect(textRect, Color.FromArgb(192, Color.Green));
                         m_font.DrawText(
                             null,
                             textValue,
                             textRect,
                             DrawTextFormat.NoClip,
                             Color.Yellow);
+                        if (IsRunning)
+                        {
+                            // Draw graphs
+                            var graphRender = GetGraph(m_renderGraph, ref m_renderGraphIndex);
+                            var graphLoad = GetGraph(m_loadGraph, ref m_loadGraphIndex);
+                            var maxTime = Math.Max(graphRender.Max(), graphLoad.Max());
+                            var limitTime = (double)Stopwatch.Frequency / D3D.DisplayMode.RefreshRate;
+                            var graphRect = new Rectangle(
+                                textRect.Left,
+                                textRect.Top + textRect.Height,
+                                GraphLength,
+                                (int)(wndSize.Height - textRect.Top - textRect.Height));
+                            FillRect(graphRect, Color.FromArgb(192, Color.Black));
+                            RenderGraph(graphRender, maxTime, graphRect, Color.FromArgb(196, Color.Yellow));
+                            RenderGraph(graphLoad, maxTime, graphRect, Color.FromArgb(196, Color.Lime));
+                            RenderLimit(limitTime, maxTime, graphRect, Color.FromArgb(255, Color.Red));
+                        }
                     }
 
                     if (DisplayIcon)
@@ -486,7 +529,68 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
-        private void FillRect(Rectangle textRect, Color color)
+        private void RenderLimit(double limit, double maxValue, Rectangle rect, Color color)
+        {
+            if (limit < 0 || limit > maxValue)
+            {
+                return;
+            }
+            var alphaBlendEnabled = D3D.RenderState.AlphaBlendEnable;
+            D3D.RenderState.AlphaBlendEnable = true;
+            D3D.RenderState.SourceBlend = Blend.SourceAlpha;
+            D3D.RenderState.DestinationBlend = Blend.InvSourceAlpha;
+            D3D.RenderState.BlendOperation = BlendOperation.Add;
+            var colorInt = color.ToArgb();
+            var list = new List<Point>();
+            var value = 1D - (limit / maxValue);
+            if (value < 0D)
+            {
+                value = 0;
+            }
+            var hValue = (int)(value * rect.Height);
+            list.Add(new Point(rect.Left, rect.Top + hValue));
+            list.Add(new Point(rect.Left+rect.Width, rect.Top + hValue));
+            var vertices = list
+                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 0, colorInt))
+                .ToArray();
+            D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
+            D3D.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
+            D3D.RenderState.AlphaBlendEnable = alphaBlendEnabled;
+        }
+
+        private void RenderGraph(double[] graph, double maxValue, Rectangle rect, Color color)
+        {
+            if (graph.Length < 1)
+            {
+                return;
+            }
+            var alphaBlendEnabled = D3D.RenderState.AlphaBlendEnable;
+            D3D.RenderState.AlphaBlendEnable = true;
+            D3D.RenderState.SourceBlend = Blend.SourceAlpha;
+            D3D.RenderState.DestinationBlend = Blend.InvSourceAlpha;
+            D3D.RenderState.BlendOperation = BlendOperation.Add;
+            var colorInt = color.ToArgb();
+            var list = new List<Point>();
+            for (var x = 0; x < graph.Length && x < rect.Width; x++)
+            {
+                var value = 1D - (graph[x] / maxValue);
+                if (value < 0D)
+                {
+                    value = 0;
+                }
+                var hValue = (int)(value * rect.Height);
+                list.Add(new Point(rect.Left + x, rect.Top + rect.Height));
+                list.Add(new Point(rect.Left + x, rect.Top + hValue));
+            }
+            var vertices = list
+                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 0, colorInt))
+                .ToArray();
+            D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
+            D3D.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length/2, vertices);
+            D3D.RenderState.AlphaBlendEnable = alphaBlendEnabled;
+        }
+
+        private void FillRect(Rectangle rect, Color color)
         {
             var alphaBlendEnabled = D3D.RenderState.AlphaBlendEnable;
             //D3D.RenderState.ScissorTestEnable = false;
@@ -497,10 +601,10 @@ namespace ZXMAK2.Host.WinForms.Controls
             var colorInt = color.ToArgb();
             var rectv = new[]
             {
-                new CustomVertex.TransformedColored(textRect.Left, textRect.Top+textRect.Height, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(textRect.Left, textRect.Top, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(textRect.Left+textRect.Width, textRect.Top+textRect.Height, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(textRect.Left+textRect.Width, 0, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left, rect.Top+rect.Height+1, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left, rect.Top, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top+rect.Height+1, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top, 0, 0, colorInt),
             };
             D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
             D3D.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, rectv);
@@ -582,6 +686,32 @@ namespace ZXMAK2.Host.WinForms.Controls
                     dstLine[i] = srcLine[i];
                 }
             }
+        }
+
+        private static void PushGraphValue(double[] graph, ref int index, double value)
+        {
+            graph[index] = value;
+            index = (index + 1) % graph.Length;
+        }
+
+        private static void ClearGraph(double[] graph, ref int index)
+        {
+            for (var i = 0; i < graph.Length; i++)
+            {
+                graph[i] = 0;
+            }
+            index = 0;
+        }
+
+        private static double[] GetGraph(double[] graph, ref int index)
+        {
+            var array = new double[graph.Length];
+            var fixedIndex = index;
+            for (var i = 0; i < graph.Length; i++)
+            {
+                array[i] = graph[(fixedIndex + i) % graph.Length];
+            }
+            return array;
         }
 
         private int[] m_lastBuffer = new int[0];
