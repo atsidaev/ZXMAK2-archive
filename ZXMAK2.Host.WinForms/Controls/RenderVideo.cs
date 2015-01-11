@@ -172,11 +172,6 @@ namespace ZXMAK2.Host.WinForms.Controls
                 if (DebugInfo)
                 {
                     PushGraphValue(m_loadGraph, ref m_loadGraphIndex, frame.InstantTime);
-                    //m_loadGraph.Add(frame.InstantTime);
-                    //if (m_loadGraph.Count > GraphLength)
-                    //{
-                    //    m_loadGraph.RemoveAt(0);
-                    //}
                 }
             }
             m_debugFrameStart = frame.StartTact;
