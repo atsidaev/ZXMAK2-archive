@@ -24,7 +24,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private const byte MimicTvRatio = 4;      // mask size 1/x of pixel
         private const byte MimicTvAlpha = 0x90;   // mask alpha
-        private const int GraphLength = 200;
+        private const int GraphLength = 150;
 
         #endregion Constants
 
