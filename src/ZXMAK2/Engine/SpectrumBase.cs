@@ -139,7 +139,6 @@ namespace ZXMAK2.Engine
 
         public abstract CpuUnit CPU { get; }
         public abstract BusManager BusManager { get; }
-        public abstract LoadManager Loader { get; }
 
         public abstract int FrameStartTact { get; }
 

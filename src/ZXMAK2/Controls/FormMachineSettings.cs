@@ -418,7 +418,7 @@ namespace ZXMAK2.Controls
             m_vm = vm;
 
             m_workBus = new BusManager();
-            m_workBus.Init(new CpuUnit(), new LoadManager(null), true);
+            m_workBus.Init(null, true);
 
             var xml = new XmlDocument();
             var root = xml.AppendChild(xml.CreateElement("Bus"));

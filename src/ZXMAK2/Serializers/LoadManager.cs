@@ -15,12 +15,13 @@ namespace ZXMAK2.Serializers
 {
 	public class LoadManager : SerializeManager
 	{
-		private SpectrumBase _spec;
+		private readonly SpectrumBase _spec;
 
-		public LoadManager(SpectrumBase spec)
-		{
-			_spec = spec;
-		}
+        public LoadManager(SpectrumBase spec)
+        {
+            _spec = spec;
+            Clear();
+        }
 
         public override void Clear()
         {

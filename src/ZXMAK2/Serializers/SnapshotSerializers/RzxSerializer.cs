@@ -119,7 +119,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
         private void loadSnap(RzxBlockSnapshot rzxSnap)
         {
             Logger.Debug("RZX-LOAD-SNAP: {0}", rzxSnap.Extension);
-            var fs = m_spectrum.Loader.GetSerializer("." + rzxSnap.Extension);
+            var fs = m_spectrum.BusManager.LoadManager.GetSerializer("." + rzxSnap.Extension);
             if (fs.CanDeserialize)
             {
                 using (Stream stream = rzxSnap.GetSnapshotStream())
