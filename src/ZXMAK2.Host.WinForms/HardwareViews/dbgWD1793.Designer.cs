@@ -1,4 +1,4 @@
-namespace ZXMAK2.Controls.Debugger
+namespace ZXMAK2.Host.WinForms.HardwareViews
 {
    partial class dbgWD1793
    {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 
-namespace ZXMAK2.Controls
+namespace ZXMAK2.Host.WinForms.Services
 {
     public class ObjectSelectorDialog : Form
     {

@@ -7,7 +7,7 @@ using ZXMAK2.Entities;
 using ZXMAK2.Engine.Attributes;
 
 
-namespace ZXMAK2.Controls.Debugger
+namespace ZXMAK2.Host.WinForms.Tools
 {
     public class BusDeviceTypeConverter : TypeConverter
     {
