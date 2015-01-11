@@ -21,10 +21,6 @@ using ZXMAK2.Host.Presentation.Interfaces;
 
 namespace ZXMAK2.Hardware.General.UI
 {
-    public interface IDebuggerGeneralView : IView
-    {
-    }
-    
     public partial class FormCpu : FormView, IDebuggerGeneralView
     {
         private IDebuggable m_spectrum;

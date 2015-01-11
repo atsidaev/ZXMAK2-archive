@@ -7,10 +7,6 @@ using ZXMAK2.Host.Presentation.Interfaces;
 
 namespace ZXMAK2.Controls
 {
-    public interface IKeyboardView : IView
-    {
-    }
-	
     public class FormKeyboardHelp : FormView, IKeyboardView
 	{
 		#region Windows Form Designer generated code

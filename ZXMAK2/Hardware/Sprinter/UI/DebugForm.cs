@@ -21,10 +21,6 @@ using ZXMAK2.Host.Presentation.Interfaces;
 
 namespace ZXMAK2.Hardware.Sprinter.UI
 {
-    public interface IDebuggerSprinterView : IView
-    {
-    }
-
     public partial class DebugForm : FormView, IDebuggerSprinterView
     {
         private DasmPanel dasmPanel;
