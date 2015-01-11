@@ -75,10 +75,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\ZXMAK2\Controls\FormView.cs">
-      <Link>FormView.cs</Link>
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="HardwareViews\Adlers\Assembler.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -145,6 +141,7 @@
     <Compile Include="Views\FormMemoryMap.Designer.cs">
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\FormView.cs" />
     <Compile Include="Views\MainView.cs">
       <SubType>Form</SubType>
     </Compile>
