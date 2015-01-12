@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Presentation.Interfaces;
 

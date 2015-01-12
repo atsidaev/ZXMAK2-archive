@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
+using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Hardware.Profi
 {
@@ -10,7 +10,7 @@ namespace ZXMAK2.Hardware.Profi
 
         public override string Name { get { return "PROFI 5.xx"; } }
 
-        public override void BusInit(Interfaces.IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
             bmgr.SubscribeReset(busReset);

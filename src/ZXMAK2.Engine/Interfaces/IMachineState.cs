@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Engine.Cpu;
-using ZXMAK2.Engine;
+﻿using ZXMAK2.Engine.Cpu;
 
-namespace ZXMAK2.Interfaces
+
+namespace ZXMAK2.Engine.Interfaces
 {
 	public interface IMachineState
 	{

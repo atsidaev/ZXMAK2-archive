@@ -1,5 +1,4 @@
 ﻿using System.Xml;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware.Circuits;
 using ZXMAK2.Engine;
@@ -7,6 +6,7 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Resources;
+using ZXMAK2.Engine.Interfaces;
 
 
 namespace ZXMAK2.Hardware.Sprinter

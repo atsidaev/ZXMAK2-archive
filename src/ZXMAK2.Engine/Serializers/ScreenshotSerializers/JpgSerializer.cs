@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-using ZXMAK2.Interfaces;
+using ZXMAK2.Engine.Interfaces;
 
 
 namespace ZXMAK2.Serializers.ScreenshotSerializers

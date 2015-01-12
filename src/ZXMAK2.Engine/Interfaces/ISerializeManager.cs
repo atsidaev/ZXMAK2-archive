@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Collections.Generic;
 
-namespace ZXMAK2.Interfaces
+
+namespace ZXMAK2.Engine.Interfaces
 {
     public interface ISerializeManager
     {

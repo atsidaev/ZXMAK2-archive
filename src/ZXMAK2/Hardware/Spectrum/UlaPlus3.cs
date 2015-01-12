@@ -1,5 +1,5 @@
 ﻿using System;
-using ZXMAK2.Interfaces;
+using ZXMAK2.Engine.Interfaces;
 
 // Contended memory info links:
 //  +3: http://scratchpad.wikia.com/wiki/Contended_memory#Instruction_breakdown

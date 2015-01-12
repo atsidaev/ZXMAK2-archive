@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware.General;
+using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Hardware.Lec
 {
@@ -20,7 +21,7 @@ namespace ZXMAK2.Hardware.Lec
         public override string Name { get { return "BDI LEC (beta)"; } }
         public override string Description { get { return "Beta Disk Interface + LEC extension hack"; } }
 
-        public override void BusInit(Interfaces.IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
             bmgr.SubscribeWrIo(0x8002, 0x00FD & 0x8002, BusWriteBdiHack);

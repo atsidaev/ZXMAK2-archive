@@ -3,7 +3,7 @@ using System.IO;
 using ZXMAK2.Host.Interfaces;
 
 
-namespace ZXMAK2.Interfaces
+namespace ZXMAK2.Engine.Interfaces
 {
     public interface IUlaRenderer
     {
