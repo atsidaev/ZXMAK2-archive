@@ -14,11 +14,13 @@ using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
+using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.Host.Entities;
 
 
 namespace ZXMAK2.Controls
 {
-    public class FormMachineSettings : Form
+    public class FormMachineSettings : Form, IMachineSettingsView
     {
         #region Windows Form Designer generated code
 
@@ -278,7 +280,7 @@ namespace ZXMAK2.Controls
         #region private
 
         private readonly MachinesConfig m_machines = new MachinesConfig();
-        private readonly IHost m_host;
+        private IHost m_host;
         private IVirtualMachine m_vm;
         private BusManager m_workBus;
         private List<ConfigScreenControl> m_ctlList = new List<ConfigScreenControl>();
@@ -287,9 +289,8 @@ namespace ZXMAK2.Controls
         #endregion
 
 
-        public FormMachineSettings(IHost host)
+        public FormMachineSettings()
         {
-            m_host = host;
             InitializeComponent();
             LoadMachines();
             btnWizard.Enabled = ctxMenuWizard.Items.Count > 0;
@@ -408,8 +409,9 @@ namespace ZXMAK2.Controls
             return null;
         }
 
-        public void Init(IVirtualMachine vm)
+        public void Init(IHost host, IVirtualMachine vm)
         {
+            m_host = host;
             m_vm = vm;
 
             m_workBus = new BusManager();
@@ -430,6 +432,22 @@ namespace ZXMAK2.Controls
                 Logger.Error(ex);
             }
         }
+
+        public DlgResult ShowDialog(object owner)
+        {
+            var win32owner = owner as IWin32Window;
+            if (win32owner != null)
+            {
+                base.ShowDialog(win32owner);
+            }
+            else
+            {
+                base.ShowDialog();
+            }
+            // TODO: convert result
+            return DlgResult.None;
+        }
+
 
         private void initConfig(XmlNode busNode)
         {

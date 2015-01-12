@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Interfaces\IAboutView.cs" />
     <Compile Include="Interfaces\ILauncher.cs" />
+    <Compile Include="Interfaces\IMachineSettingsView.cs" />
     <Compile Include="Interfaces\IMainPresenter.cs" />
     <Compile Include="Interfaces\IMainView.cs" />
     <Compile Include="Interfaces\IView.cs" />
@@ -56,6 +57,10 @@
       <Project>{BB32EB49-52FF-4976-9586-5C4E415CD730}</Project>
       <Name>ZXMAK2.Dependency</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Engine\ZXMAK2.Engine.csproj">
+      <Project>{FCE1FEFA-24FC-4867-9770-6635D3CBAEAA}</Project>
+      <Name>ZXMAK2.Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Host\ZXMAK2.Host.csproj">
       <Project>{7267B638-8145-46BD-AC72-60D0D6002B51}</Project>

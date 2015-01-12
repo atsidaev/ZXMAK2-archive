@@ -169,5 +169,10 @@ namespace ZXMAK2.Engine
             }
             return appFolder;
         }
+
+        public static string GetAppFolder()
+        {
+            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        }
     }
 }
