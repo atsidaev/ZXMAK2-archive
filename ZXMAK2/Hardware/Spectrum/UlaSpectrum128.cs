@@ -1,5 +1,5 @@
 ﻿using System;
-using ZXMAK2.Interfaces;
+using ZXMAK2.Engine.Interfaces;
 
 // Contended memory info links:
 // 128: http://www.worldofspectrum.org/faq/reference/128kreference.htm

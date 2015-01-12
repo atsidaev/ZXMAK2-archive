@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-using ZXMAK2.Interfaces;
+using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Serializers.ScreenshotSerializers
 {

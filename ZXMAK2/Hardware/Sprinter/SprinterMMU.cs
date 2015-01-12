@@ -3,9 +3,9 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-using ZXMAK2.Interfaces;
 using ZXMAK2.Engine.Attributes;
 using ZXMAK2.Entities;
+using ZXMAK2.Engine.Interfaces;
 
 
 namespace ZXMAK2.Hardware.Sprinter

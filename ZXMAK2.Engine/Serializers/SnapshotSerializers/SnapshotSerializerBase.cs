@@ -1,7 +1,8 @@
 ﻿using System;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Entities;
+using ZXMAK2.Engine.Interfaces;
+
 
 namespace ZXMAK2.Serializers.SnapshotSerializers
 {

@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-using ZXMAK2.Interfaces;
 using ZXMAK2.Serializers.ScreenshotSerializers;
 using ZXMAK2.Serializers.SnapshotSerializers;
 using ZXMAK2.Serializers.TapeSerializers;

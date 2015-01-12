@@ -4,7 +4,6 @@
 using System;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectInput;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Host.Interfaces;
 
 

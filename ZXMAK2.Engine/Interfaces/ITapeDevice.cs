@@ -4,7 +4,7 @@ using ZXMAK2.Entities;
 using ZXMAK2.Model.Tape.Interfaces;
 
 
-namespace ZXMAK2.Interfaces
+namespace ZXMAK2.Engine.Interfaces
 {
 	public interface ITapeDevice
 	{

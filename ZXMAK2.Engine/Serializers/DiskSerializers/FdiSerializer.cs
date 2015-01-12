@@ -3,12 +3,10 @@
 /// Date: 15.04.2007
 using System;
 using System.IO;
-using System.Text;
 using System.Collections.Generic;
 
 using ZXMAK2.Model.Disk;
 using ZXMAK2.Crc;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 

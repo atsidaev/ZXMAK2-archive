@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Drawing;
-using ZXMAK2.Interfaces;
+using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Hardware.Atm
 {
@@ -40,7 +40,7 @@ namespace ZXMAK2.Hardware.Atm
 
         public override string Name { get { return "ATM"; } }
 
-        public override void BusInit(Interfaces.IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
             bmgr.SubscribeReset(busReset);

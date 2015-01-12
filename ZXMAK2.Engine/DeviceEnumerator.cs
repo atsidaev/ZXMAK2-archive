@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;

@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 
 using ZXMAK2.Model.Disk;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Interfaces;

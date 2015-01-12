@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 

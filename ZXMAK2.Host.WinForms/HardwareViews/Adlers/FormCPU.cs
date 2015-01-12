@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Controls;
 using ZXMAK2.Engine;
@@ -20,6 +19,7 @@ using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.WinForms.Views;
+using ZXMAK2.Engine.Interfaces;
 
 
 namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers

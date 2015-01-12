@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-using ZXMAK2.Interfaces;
+using ZXMAK2.Engine.Interfaces;
 
 
 namespace ZXMAK2.Serializers.ScreenshotSerializers

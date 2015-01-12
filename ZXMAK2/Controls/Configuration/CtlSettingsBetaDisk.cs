@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-using ZXMAK2.Interfaces;
 using ZXMAK2.Model.Disk;
 using ZXMAK2.Hardware.General;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Engine.Interfaces;
 
 
 namespace ZXMAK2.Controls.Configuration

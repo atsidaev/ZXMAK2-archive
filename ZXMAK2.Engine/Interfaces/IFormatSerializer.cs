@@ -1,7 +1,7 @@
 ﻿using System.IO;
 
 
-namespace ZXMAK2.Interfaces
+namespace ZXMAK2.Engine.Interfaces
 {
     public interface IFormatSerializer
     {

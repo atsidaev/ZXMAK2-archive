@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using ZXMAK2.Interfaces;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.IO;
@@ -10,6 +9,7 @@ using FastColoredTextBoxNS;
 using System.Diagnostics;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 {

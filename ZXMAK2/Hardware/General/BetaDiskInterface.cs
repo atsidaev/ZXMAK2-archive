@@ -1,8 +1,8 @@
 using System;
 using System.Xml;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Hardware.Circuits;
+using ZXMAK2.Engine.Interfaces;
 
 
 namespace ZXMAK2.Hardware.General

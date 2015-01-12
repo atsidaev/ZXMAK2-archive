@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ZXMAK2.Controls;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Dependency;
 using ZXMAK2.Presentation.Interfaces;

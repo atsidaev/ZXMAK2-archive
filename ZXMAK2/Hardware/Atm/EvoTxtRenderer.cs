@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Drawing;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
+using ZXMAK2.Engine.Interfaces;
 
 
 namespace ZXMAK2.Hardware.Atm

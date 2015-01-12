@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
+using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Hardware.Lec
 {
@@ -13,7 +12,7 @@ namespace ZXMAK2.Hardware.Lec
         public override string Name { get { return "LEC 48/528K (beta)"; } }
         public override string Description { get { return "LEC Memory Extension by Jiri Lamac"; } }
 
-        public override void BusInit(Interfaces.IBusManager bmgr)
+        public override void BusInit(IBusManager bmgr)
         {
             bmgr.SubscribeWrIo(0x0002, 0x00FD & 0x0002, BusWriteCmr1);
             bmgr.SubscribeReset(BusReset);

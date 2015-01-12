@@ -6,15 +6,16 @@ using System.Text;
 using System.Drawing;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 using ZXMAK2.Engine;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Entities;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Presentation.Interfaces;
-using System.Diagnostics;
+using ZXMAK2.Engine.Interfaces;
+
 
 
 namespace ZXMAK2.Engine

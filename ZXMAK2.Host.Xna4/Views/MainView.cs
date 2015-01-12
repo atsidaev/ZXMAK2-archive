@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-using ZXMAK2.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Host.Xna4.Properties;
 using ZXMAK2.Host.Xna4.Xna;
