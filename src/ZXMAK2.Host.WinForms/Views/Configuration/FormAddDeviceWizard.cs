@@ -8,7 +8,7 @@ using System.Reflection;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Entities;
 
-namespace ZXMAK2.Controls
+namespace ZXMAK2.Host.WinForms.Views
 {
     public partial class FormAddDeviceWizard : Form
     {

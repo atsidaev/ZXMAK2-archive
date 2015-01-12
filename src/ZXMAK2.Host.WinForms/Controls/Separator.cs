@@ -4,7 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace ZXMAK2.Controls
+namespace ZXMAK2.Host.WinForms.Controls
 {
     public class Separator : Control
     {
