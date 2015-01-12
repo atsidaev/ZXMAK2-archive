@@ -23,6 +23,7 @@ namespace ZXMAK2.Engine
         private bool m_connected = false;
         private bool m_sandBox = false;
         private String m_machineFile = null;
+        private CpuUnit m_cpu;
         private IUlaDevice m_ula;
         private IDebuggable m_debuggable;
         private List<BusDeviceBase> m_deviceList = new List<BusDeviceBase>();
@@ -53,7 +54,7 @@ namespace ZXMAK2.Engine
         private int m_pendingNmi;
         private long m_pendingNmiLastTact;
 
-        public CpuUnit Cpu { get; private set; }
+        public CpuUnit Cpu { get { return m_cpu; } }
         public ISerializeManager LoadManager { get; private set; }
         public ICommandManager CommandManager { get; set; }
         public RzxHandler RzxHandler { get; set; }
@@ -66,18 +67,18 @@ namespace ZXMAK2.Engine
         
         public BusManager()
         {
-            Cpu = new CpuUnit();
-            Cpu.RDMEM_M1 = RDMEM_M1;
-            Cpu.INTACK_M1 = INTACK_M1;
-            Cpu.NMIACK_M1 = NMIACK_M1;
-            Cpu.RDMEM = RDMEM;
-            Cpu.WRMEM = WRMEM;
-            Cpu.RDPORT = RDPORT;
-            Cpu.WRPORT = WRPORT;
-            Cpu.RDNOMREQ = RDNOMREQ;
-            Cpu.WRNOMREQ = WRNOMREQ;
+            m_cpu = new CpuUnit();
+            m_cpu.RDMEM_M1 = RDMEM_M1;
+            m_cpu.INTACK_M1 = INTACK_M1;
+            m_cpu.NMIACK_M1 = NMIACK_M1;
+            m_cpu.RDMEM = RDMEM;
+            m_cpu.WRMEM = WRMEM;
+            m_cpu.RDPORT = RDPORT;
+            m_cpu.WRPORT = WRPORT;
+            m_cpu.RDNOMREQ = RDNOMREQ;
+            m_cpu.WRNOMREQ = WRNOMREQ;
             //m_cpu.OnCycle = OnCpuCycle;
-            Cpu.RESET = RESET;
+            m_cpu.RESET = RESET;
         }
 
 
@@ -90,7 +91,7 @@ namespace ZXMAK2.Engine
             {
                 CommandManager.Clear();
             }
-            RzxHandler = new RzxHandler(Cpu, this);
+            RzxHandler = new RzxHandler(m_cpu, this);
 
             m_deviceList.Clear();
             m_mapReadMemoryM1 = null;
@@ -220,7 +221,7 @@ namespace ZXMAK2.Engine
 
         CpuUnit IBusManager.CPU
         {
-            get { return Cpu; }
+            get { return m_cpu; }
         }
 
         bool IBusManager.IsSandbox
@@ -270,7 +271,7 @@ namespace ZXMAK2.Engine
         private byte RDMEM_M1(ushort addr)
         {
             BusReadProc proc = m_mapReadMemoryM1[addr];
-            byte result = Cpu.BUS;
+            byte result = m_cpu.BUS;
             if (proc != null)
                 proc(addr, ref result);
             //LogAgent.Info(
@@ -285,7 +286,7 @@ namespace ZXMAK2.Engine
         private byte RDMEM(ushort addr)
         {
             BusReadProc proc = m_mapReadMemory[addr];
-            byte result = Cpu.BUS;
+            byte result = m_cpu.BUS;
             if (proc != null)
                 proc(addr, ref result);
             return result;
@@ -301,7 +302,7 @@ namespace ZXMAK2.Engine
         private byte RDPORT(ushort addr)
         {
             var proc = m_mapReadPort[addr];
-            var result = Cpu.BUS;
+            var result = m_cpu.BUS;
             if (proc != null)
             {
                 var iorqge = true;
@@ -580,7 +581,7 @@ namespace ZXMAK2.Engine
         private int m_frameTactCount;
         public int GetFrameTact()
         {
-            return (int)(Cpu.Tact % m_frameTactCount);
+            return (int)(m_cpu.Tact % m_frameTactCount);
         }
 
         private bool m_frameOpened = false;
@@ -634,13 +635,13 @@ namespace ZXMAK2.Engine
             }
             m_lastFrameTact = frameTact;
 
-            Cpu.INT = RzxHandler.IsPlayback ?
+            m_cpu.INT = RzxHandler.IsPlayback ?
                 RzxHandler.CheckInt(frameTact) :
                 m_ula.CheckInt(frameTact);
             if (m_pendingNmi > 0)
             {
-                var delta = (int)(Cpu.Tact - m_pendingNmiLastTact);
-                m_pendingNmiLastTact = Cpu.Tact;
+                var delta = (int)(m_cpu.Tact - m_pendingNmiLastTact);
+                m_pendingNmiLastTact = m_cpu.Tact;
                 m_pendingNmi -= delta;
                 var e = new BusCancelArgs();
                 if (m_nmiRq != null)
@@ -649,20 +650,20 @@ namespace ZXMAK2.Engine
                 }
                 if (!e.Cancel)
                 {
-                    Cpu.NMI = true;
+                    m_cpu.NMI = true;
                     m_pendingNmi = 0;
                 }
             }
             else
             {
-                Cpu.NMI = false;
+                m_cpu.NMI = false;
             }
 
             if (m_preCycle != null)
             {
                 m_preCycle(frameTact);
             }
-            Cpu.ExecCycle();
+            m_cpu.ExecCycle();
         }
 
         internal String MachineFile
@@ -896,7 +897,7 @@ namespace ZXMAK2.Engine
 
         public void RequestNmi(int timeOut)
         {
-            m_pendingNmiLastTact = Cpu.Tact;
+            m_pendingNmiLastTact = m_cpu.Tact;
             m_pendingNmi = timeOut;
         }
     }
