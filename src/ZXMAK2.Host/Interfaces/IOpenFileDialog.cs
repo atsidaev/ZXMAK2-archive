@@ -17,6 +17,7 @@ namespace ZXMAK2.Host.Interfaces
         bool ShowReadOnly { get; set; }
         bool ReadOnlyChecked { get; set; }
         bool CheckFileExists { get; set; }
+        bool Multiselect { get; set; }
 
         DlgResult ShowDialog(object owner);
     }

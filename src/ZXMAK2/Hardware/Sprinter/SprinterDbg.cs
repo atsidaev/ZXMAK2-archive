@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 using ZXMAK2.Dependency;
 using ZXMAK2.Engine;

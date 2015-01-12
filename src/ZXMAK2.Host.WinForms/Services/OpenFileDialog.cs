@@ -69,6 +69,12 @@ namespace ZXMAK2.Host.WinForms.Services
             set { _hostDialog.CheckFileExists = value; }
         }
 
+        public bool Multiselect
+        {
+            get { return _hostDialog.Multiselect; }
+            set { _hostDialog.Multiselect = value; }
+        }
+
         public DlgResult ShowDialog(object owner)
         {
             var win32owner = owner as System.Windows.Forms.IWin32Window;
