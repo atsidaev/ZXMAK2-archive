@@ -78,6 +78,9 @@
     <Compile Include="Controls\MenuStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\Separator.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\ToolStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -135,6 +138,58 @@
     <Compile Include="HardwareViews\dbgWD1793.Designer.cs">
       <DependentUpon>dbgWD1793.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Configuration\Devices\ConfigScreenControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsBetaDisk.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsBetaDisk.Designer.cs">
+      <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsGenericDevice.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsGenericDevice.Designer.cs">
+      <DependentUpon>CtlSettingsGenericDevice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsGenericSound.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsGenericSound.Designer.cs">
+      <DependentUpon>CtlSettingsGenericSound.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsHayesModem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsHayesModem.Designer.cs">
+      <DependentUpon>CtlSettingsHayesModem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsJoystick.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsJoystick.Designer.cs">
+      <DependentUpon>CtlSettingsJoystick.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsMemory.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsMemory.Designer.cs">
+      <DependentUpon>CtlSettingsMemory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsUla.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\CtlSettingsUla.Designer.cs">
+      <DependentUpon>CtlSettingsUla.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\Devices\IBusDeviceConfigControl.cs" />
+    <Compile Include="Views\Configuration\FormAddDeviceWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\FormAddDeviceWizard.Designer.cs">
+      <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\FormAbout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -146,6 +201,9 @@
     </Compile>
     <Compile Include="HardwareViews\FormMemoryMap.Designer.cs">
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FormMachineSettings.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Views\FormView.cs" />
     <Compile Include="Views\MainView.cs">
@@ -198,6 +256,30 @@
     <EmbeddedResource Include="HardwareViews\dbgWD1793.resx">
       <DependentUpon>dbgWD1793.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Configuration\Devices\CtlSettingsBetaDisk.resx">
+      <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Configuration\Devices\CtlSettingsGenericDevice.resx">
+      <DependentUpon>CtlSettingsGenericDevice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Configuration\Devices\CtlSettingsGenericSound.resx">
+      <DependentUpon>CtlSettingsGenericSound.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Configuration\Devices\CtlSettingsHayesModem.resx">
+      <DependentUpon>CtlSettingsHayesModem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Configuration\Devices\CtlSettingsJoystick.resx">
+      <DependentUpon>CtlSettingsJoystick.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Configuration\Devices\CtlSettingsMemory.resx">
+      <DependentUpon>CtlSettingsMemory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Configuration\Devices\CtlSettingsUla.resx">
+      <DependentUpon>CtlSettingsUla.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Configuration\FormAddDeviceWizard.resx">
+      <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\FormAbout.resx">
       <DependentUpon>FormAbout.cs</DependentUpon>
     </EmbeddedResource>
@@ -206,6 +288,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HardwareViews\FormMemoryMap.resx">
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FormMachineSettings.resx">
+      <DependentUpon>FormMachineSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\MainView.resx">
       <DependentUpon>MainView.cs</DependentUpon>
@@ -252,6 +337,11 @@
     <ProjectReference Include="..\ZXMAK2.Logging\ZXMAK2.Logging.csproj">
       <Project>{B75EFD3C-BEC5-4090-AAFA-CC9E5906C876}</Project>
       <Name>ZXMAK2.Logging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Model.Disk\ZXMAK2.Model.Disk.csproj">
+      <Project>{90D40289-355D-44B1-8572-B4E441280DA2}</Project>
+      <Name>ZXMAK2.Model.Disk</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Model.Tape\ZXMAK2.Model.Tape.csproj">
