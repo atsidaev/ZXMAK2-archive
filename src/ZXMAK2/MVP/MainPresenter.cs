@@ -1,23 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using System.Drawing;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
-using System.Threading;
-using System.Windows.Forms;
 
 using ZXMAK2.Dependency;
+using ZXMAK2.Presentation.Interfaces;
+using ZXMAK2.Presentation.Entities;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
-using ZXMAK2.Presentation.Interfaces;
-using ZXMAK2.Engine;
-using ZXMAK2.Controls;
-using ZXMAK2.Presentation.Entities;
 using ZXMAK2.Host.Presentation;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation.Tools;
+using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 
@@ -360,10 +354,15 @@ namespace ZXMAK2.MVP
                 {
                     return;
                 }
-                using (var form = new FormMachineSettings(m_view.Host))
+                var viewSettings = GetViewService<IMachineSettingsView>();
+                if (viewSettings == null)
                 {
-                    form.Init(m_vm);
-                    form.ShowDialog(objArg as IWin32Window);
+                    return;
+                }
+                using (viewSettings)
+                {
+                    viewSettings.Init(m_view.Host, m_vm);
+                    viewSettings.ShowDialog(m_view);
                     m_vm.RequestFrame();
                     
                     ((CommandDelegate)CommandTapePause).RaiseCanExecuteChanged();
@@ -429,9 +428,7 @@ namespace ZXMAK2.MVP
             {
                 return;
             }
-            var fileName = Path.GetDirectoryName(
-                Assembly.GetExecutingAssembly().Location);
-            fileName = Path.Combine(fileName, "boot.zip");
+            var fileName = Path.Combine(Utils.GetAppFolder(), "boot.zip");
             if (!File.Exists(fileName))
             {
                 m_userMessage.Error("Quick snapshot boot.zip is missing!");
