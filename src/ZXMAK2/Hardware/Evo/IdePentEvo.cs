@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml;
+using ZXMAK2.Engine;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Entities;
 using ZXMAK2.Interfaces;
