@@ -218,11 +218,6 @@
       <Name>ZipLib</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\ZXMAK2.Crc\ZXMAK2.Crc.csproj">
-      <Project>{C89EFDAC-656D-4383-8B9C-590043BDBAE0}</Project>
-      <Name>ZXMAK2.Crc</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Dependency\ZXMAK2.Dependency.csproj">
       <Project>{BB32EB49-52FF-4976-9586-5C4E415CD730}</Project>
       <Name>ZXMAK2.Dependency</Name>

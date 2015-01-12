@@ -102,11 +102,6 @@
       <Name>ZXMAK2.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\ZXMAK2\ZXMAK2.csproj">
-      <Project>{BD6C8153-4D66-4F21-A03F-4C2B108F33DB}</Project>
-      <Name>ZXMAK2</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\SansSerifBold.xnb" />
