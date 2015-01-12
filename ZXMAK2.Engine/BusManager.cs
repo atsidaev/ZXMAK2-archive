@@ -18,7 +18,7 @@ using ZXMAK2.Engine.Entities;
 
 namespace ZXMAK2.Engine
 {
-    public class BusManager : IBusManager
+    public class BusManager : IBus, IBusManager
     {
         private bool m_connected = false;
         private bool m_sandBox = false;

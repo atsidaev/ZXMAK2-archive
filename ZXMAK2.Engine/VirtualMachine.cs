@@ -20,7 +20,7 @@ using ZXMAK2.Engine.Entities;
 
 namespace ZXMAK2.Engine
 {
-    public class VirtualMachine : IDebuggable, IDisposable
+    public class VirtualMachine : IVirtualMachine, IDebuggable
     {
         #region Fields
 
@@ -37,6 +37,8 @@ namespace ZXMAK2.Engine
         private IHost m_host;
 
         public SpectrumBase Spectrum { get; private set; }
+        public IBus Bus { get { return Spectrum.BusManager; } }
+
         
         public int DebugFrameStartTact 
         { 

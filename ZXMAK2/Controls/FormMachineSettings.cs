@@ -14,7 +14,6 @@ using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
-using ZXMAK2.Engine.Cpu;
 
 
 namespace ZXMAK2.Controls
@@ -280,7 +279,7 @@ namespace ZXMAK2.Controls
 
         private readonly MachinesConfig m_machines = new MachinesConfig();
         private readonly IHost m_host;
-        private VirtualMachine m_vm;
+        private IVirtualMachine m_vm;
         private BusManager m_workBus;
         private List<ConfigScreenControl> m_ctlList = new List<ConfigScreenControl>();
         private List<BusDeviceBase> m_devList = new List<BusDeviceBase>();
@@ -409,7 +408,7 @@ namespace ZXMAK2.Controls
             return null;
         }
 
-        public void Init(VirtualMachine vm)
+        public void Init(IVirtualMachine vm)
         {
             m_vm = vm;
 
@@ -420,7 +419,7 @@ namespace ZXMAK2.Controls
             var root = xml.AppendChild(xml.CreateElement("Bus"));
             try
             {
-                m_vm.Spectrum.BusManager.SaveConfigXml(root);
+                m_vm.Bus.SaveConfigXml(root);
 
                 m_workBus.LoadConfigXml(root);
                 m_workBus.Disconnect();
@@ -590,7 +589,7 @@ namespace ZXMAK2.Controls
                 m_vm.DoStop();
 
 
-                var bmgr = m_vm.Spectrum.BusManager;
+                var bmgr = m_vm.Bus;
 
                 // workaround to save border color + Reset in case when memory changed
                 var ula = bmgr.FindDevice<IUlaDevice>();
