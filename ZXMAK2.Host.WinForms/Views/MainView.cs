@@ -935,6 +935,7 @@ namespace ZXMAK2.Host.WinForms.Views
                     action();
                 }
             };
+            toolItem.Enabled = command.CanExecute(arg);
             if (!string.IsNullOrEmpty(command.Text))
             {
                 toolItem.Text = command.Text;
