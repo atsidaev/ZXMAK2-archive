@@ -18,7 +18,7 @@ using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.Entities;
 
 
-namespace ZXMAK2.Controls
+namespace ZXMAK2.Host.WinForms.Views
 {
     public class FormMachineSettings : Form, IMachineSettingsView
     {
@@ -37,7 +37,7 @@ namespace ZXMAK2.Controls
         private Button btnDown;
         private Button btnWizard;
         private ContextMenuStrip ctxMenuWizard;
-        private Separator separator1;
+        private ZXMAK2.Host.WinForms.Controls.Separator separator1;
         private System.Windows.Forms.ImageList imageList;
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ZXMAK2.Controls
             this.btnDown = new System.Windows.Forms.Button();
             this.btnWizard = new System.Windows.Forms.Button();
             this.ctxMenuWizard = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.separator1 = new ZXMAK2.Controls.Separator();
+            this.separator1 = new ZXMAK2.Host.WinForms.Controls.Separator();
             this.SuspendLayout();
             // 
             // lstNavigation

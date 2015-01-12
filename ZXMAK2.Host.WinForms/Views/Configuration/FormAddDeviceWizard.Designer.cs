@@ -1,4 +1,4 @@
-﻿namespace ZXMAK2.Controls
+﻿namespace ZXMAK2.Host.WinForms.Views
 {
     partial class FormAddDeviceWizard
     {
@@ -55,8 +55,8 @@
             this.colCategory = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.separator1 = new ZXMAK2.Controls.Separator();
-            this.sepTop = new ZXMAK2.Controls.Separator();
+            this.separator1 = new ZXMAK2.Host.WinForms.Controls.Separator();
+            this.sepTop = new ZXMAK2.Host.WinForms.Controls.Separator();
             this.pnlTop.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -333,8 +333,8 @@
         private System.Windows.Forms.ListView lstCategory;
         private System.Windows.Forms.ColumnHeader colCategory;
         private System.Windows.Forms.ImageList imageList;
-        private Separator sepTop;
-        private Separator separator1;
+        private ZXMAK2.Host.WinForms.Controls.Separator sepTop;
+        private ZXMAK2.Host.WinForms.Controls.Separator separator1;
         private System.Windows.Forms.Label lblCategory;
         private System.Windows.Forms.Label lblDevices;
         private System.Windows.Forms.ListBox lstDevices;
