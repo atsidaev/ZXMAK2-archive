@@ -72,34 +72,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Engine\MachinesConfig.cs" />
-    <Compile Include="Entities\ModelId.cs" />
-    <Compile Include="Entities\RomId.cs" />
-    <Compile Include="Entities\SyncSource.cs" />
     <Compile Include="Hardware\DeviceExample.cs" />
     <Compile Include="Hardware\Evo\AYCHRV.cs" />
-    <Compile Include="Interfaces\IFormatSerializer.cs" />
-    <Compile Include="Interfaces\IJoystickDevice.cs" />
-    <Compile Include="Interfaces\IKeyboardDevice.cs" />
-    <Compile Include="Engine\FpsMonitor.cs" />
-    <Compile Include="Interfaces\IMouseDevice.cs" />
-    <Compile Include="Interfaces\ISerializeManager.cs" />
     <Compile Include="Program.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Interfaces\IMachineState.cs" />
-    <Compile Include="Interfaces\IBusManager.cs" />
-    <Compile Include="Interfaces\IDebuggable.cs" />
-    <Compile Include="Interfaces\IJtagDevice.cs" />
-    <Compile Include="Interfaces\IMemoryDevice.cs" />
-    <Compile Include="Interfaces\IRzxFrameSource.cs" />
-    <Compile Include="Interfaces\IRzxState.cs" />
-    <Compile Include="Interfaces\ISoundRenderer.cs" />
-    <Compile Include="Interfaces\IUlaDevice.cs" />
-    <Compile Include="Interfaces\IUlaRenderer.cs" />
-    <Compile Include="Interfaces\IAyDevice.cs" />
-    <Compile Include="Interfaces\IBetaDiskDevice.cs" />
-    <Compile Include="Interfaces\ITapeDevice.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MVP\MainPresenter.cs" />
@@ -120,8 +95,6 @@
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Engine\InputAggregator.cs" />
-    <Compile Include="Entities\Breakpoint.cs" />
     <Compile Include="Controls\Configuration\ConfigScreenControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -161,10 +134,6 @@
     <Compile Include="Controls\FormAddDeviceWizard.Designer.cs">
       <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
     </Compile>
-    <Compile Include="Engine\DeviceEnumerator.cs" />
-    <Compile Include="Entities\RzxFrame.cs" />
-    <Compile Include="Entities\BusDeviceCategory.cs" />
-    <Compile Include="Entities\BusDeviceDescriptor.cs" />
     <Compile Include="Hardware\Adlers\Debugger.cs" />
     <Compile Include="Hardware\Atm\Atm320Renderer.cs" />
     <Compile Include="Hardware\Atm\Atm640Renderer.cs" />
@@ -193,10 +162,8 @@
     <Compile Include="Hardware\ZXBYTE\BeeperByte.cs" />
     <Compile Include="Hardware\ZXBYTE\MemoryByte128.cs" />
     <Compile Include="Hardware\ZXBYTE\MemoryByte.cs" />
-    <Compile Include="Entities\BusDeviceBase.cs" />
     <Compile Include="Hardware\General\AyMouseDevice.cs" />
     <Compile Include="Hardware\General\BeeperDevice.cs" />
-    <Compile Include="Engine\BusManager.cs" />
     <Compile Include="Hardware\Profi\KeyboardProfi.cs" />
     <Compile Include="Hardware\Profi\ProfiRenderer.cs" />
     <Compile Include="Hardware\Quorum\BeeperQuorum.cs" />
@@ -239,21 +206,7 @@
     <Compile Include="Hardware\ZXBYTE\UlaByte.cs" />
     <Compile Include="Hardware\General\KempstonMouseDevice.cs" />
     <Compile Include="Hardware\General\KeyboardDevice.cs" />
-    <Compile Include="Engine\RzxHandler.cs" />
-    <Compile Include="Serializers\DiskSerializers\ProSerializer.cs" />
-    <Compile Include="Serializers\DiskSerializers\ImgSerializer.cs" />
-    <Compile Include="Serializers\DiskSerializers\QdiSerializer.cs" />
-    <Compile Include="Serializers\DiskSerializers\SectorImageSerializerBase.cs" />
-    <Compile Include="Serializers\ScreenshotSerializers\BmpSerializer.cs" />
-    <Compile Include="Serializers\ScreenshotSerializers\JpgSerializer.cs" />
-    <Compile Include="Serializers\ScreenshotSerializers\PngSerializer.cs" />
-    <Compile Include="Serializers\ScreenshotSerializers\ScreenshotSerializerBase.cs" />
-    <Compile Include="Serializers\SnapshotSerializers\RzxSerializer.cs" />
-    <Compile Include="Serializers\SnapshotSerializers\SnapshotSerializerBase.cs" />
     <Compile Include="Hardware\Pentagon\MemoryPentagon128.cs" />
-    <Compile Include="Serializers\SnapshotSerializers\SzxSerializer.cs" />
-    <Compile Include="Serializers\TapeSerializers\WavSerializer.cs" />
-    <Compile Include="Engine\SpectrumConcrete.cs" />
     <Compile Include="Controls\FormMachineSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -265,29 +218,8 @@
     <Compile Include="Hardware\Spectrum\UlaPlus3.cs" />
     <Compile Include="Hardware\General\AY8910.cs" />
     <Compile Include="Hardware\General\BetaDiskInterface.cs" />
-    <Compile Include="Serializers\DiskLoadManager.cs" />
-    <Compile Include="Serializers\DiskSerializers\FdiSerializer.cs" />
-    <Compile Include="Serializers\DiskSerializers\HobetaSerializer.cs" />
-    <Compile Include="Serializers\DiskSerializers\LzssHuffmanStream.cs" />
-    <Compile Include="Serializers\DiskSerializers\SclSerializer.cs" />
-    <Compile Include="Serializers\DiskSerializers\Td0Serializer.cs" />
-    <Compile Include="Serializers\DiskSerializers\TrdSerializer.cs" />
-    <Compile Include="Serializers\DiskSerializers\UdiSerializer.cs" />
-    <Compile Include="Serializers\FormatSerializer.cs" />
-    <Compile Include="Serializers\LoadManager.cs" />
-    <Compile Include="Serializers\SerializeManager.cs" />
-    <Compile Include="Serializers\ScreenshotSerializers\ScrSerializer.cs" />
-    <Compile Include="Serializers\SnapshotSerializers\SitSerializer.cs" />
-    <Compile Include="Serializers\SnapshotSerializers\SnaSerializer.cs" />
-    <Compile Include="Serializers\SnapshotSerializers\Z80Serializer.cs" />
-    <Compile Include="Serializers\SnapshotSerializers\ZxSerializer.cs" />
-    <Compile Include="Serializers\TapeSerializers\CswSerializer.cs" />
-    <Compile Include="Serializers\TapeSerializers\TapSerializer.cs" />
-    <Compile Include="Serializers\TapeSerializers\TzxSerializer.cs" />
-    <Compile Include="Engine\SpectrumBase.cs" />
     <Compile Include="Hardware\General\TapeDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Engine\VirtualMachine.cs" />
     <Compile Include="Hardware\Sprinter\KbdHits.cs" />
     <Compile Include="Hardware\Sprinter\SprinterFdd.cs" />
     <Compile Include="Hardware\Sprinter\SprinterDbg.cs" />
@@ -296,7 +228,6 @@
     <Compile Include="Hardware\Sprinter\SprinterMouse.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRTC.cs" />
     <Compile Include="Hardware\Sprinter\SprinterULA.cs" />
-    <Compile Include="Utils.cs" />
     <EmbeddedResource Include="Controls\Configuration\CtlSettingsHayesModem.resx">
       <DependentUpon>CtlSettingsHayesModem.cs</DependentUpon>
     </EmbeddedResource>
@@ -438,7 +369,15 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Engine\" />
+    <Folder Include="Entities\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Serializers\DiskSerializers\" />
+    <Folder Include="Serializers\ScreenshotSerializers\" />
+    <Folder Include="Serializers\SnapshotSerializers\" />
+    <Folder Include="Serializers\TapeSerializers\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.targets\Common.targets" />
   <PropertyGroup>

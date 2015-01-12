@@ -77,6 +77,11 @@
     <Compile Include="Xna\XnaSound.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ZXMAK2.Engine\ZXMAK2.Engine.csproj">
+      <Project>{FCE1FEFA-24FC-4867-9770-6635D3CBAEAA}</Project>
+      <Name>ZXMAK2.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Host.Presentation\ZXMAK2.Host.Presentation.csproj">
       <Project>{5AB428BF-1378-456E-BD06-4412A4399B13}</Project>
       <Name>ZXMAK2.Host.Presentation</Name>
