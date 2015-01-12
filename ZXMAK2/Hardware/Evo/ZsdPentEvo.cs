@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Windows.Forms;
 
 using ZXMAK2.Hardware.Circuits.SecureDigital;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Presentation.Entities;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
+using ZXMAK2.Dependency;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.Hardware.Evo
@@ -164,26 +165,35 @@ namespace ZXMAK2.Hardware.Evo
 
         private bool CommandUi_OnCanExecute(Object arg)
         {
-            return arg is IWin32Window;
+            var viewResolver = Locator.TryResolve<IResolver>("View");
+            var view = viewResolver.TryResolve<IOpenFileDialog>();
+            if (view != null)
+            {
+                view.Dispose();
+            }
+            return view != null;
         }
 
         private void CommandUi_OnExecute(Object arg)
         {
+            if (!CommandUi_OnCanExecute(arg))
+            {
+                return;
+            }
             try
             {
-                var hostWindow = arg as IWin32Window;
-                if (hostWindow == null)
+                var viewResolver = Locator.TryResolve<IResolver>("View");
+                var dlg = viewResolver.TryResolve<IOpenFileDialog>();
+                if (dlg == null)
                 {
                     return;
                 }
-                var dlg = new System.Windows.Forms.OpenFileDialog();
                 dlg.CheckFileExists = true;
-                dlg.CheckPathExists = true;
-                dlg.DefaultExt = "img|ima";
+                //dlg.CheckPathExists = true;
+                //dlg.DefaultExt = "img|ima";
                 dlg.Filter = "Disk image file (*.img, *.ima)|*.img;*.ima";
                 dlg.Multiselect = false;
-
-                if (dlg.ShowDialog(hostWindow) != System.Windows.Forms.DialogResult.OK)
+                if (dlg.ShowDialog(arg) != DlgResult.OK)
                 {
                     return;
                 }
