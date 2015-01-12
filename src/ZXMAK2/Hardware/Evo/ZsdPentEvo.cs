@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using ZXMAK2.Entities;
 using ZXMAK2.Hardware.Circuits.SecureDigital;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Presentation.Entities;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Engine.Entities;
 
 
 namespace ZXMAK2.Hardware.Evo

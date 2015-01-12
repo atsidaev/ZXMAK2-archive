@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.DirectX.DirectInput;
-using ZXMAK2.Entities;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities.Tools;
 using ZxmakKey = ZXMAK2.Host.Entities.Key;

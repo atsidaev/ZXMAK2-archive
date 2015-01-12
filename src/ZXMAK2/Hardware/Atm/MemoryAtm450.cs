@@ -1,8 +1,8 @@
 ﻿using System;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Attributes;
-using ZXMAK2.Entities;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Engine.Entities;
 
 
 namespace ZXMAK2.Hardware.Atm

@@ -1,7 +1,7 @@
 ﻿using System;
-using ZXMAK2.Engine.Cpu;
-using ZXMAK2.Entities;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Engine.Entities;
+using ZXMAK2.Engine.Cpu;
 
 
 namespace ZXMAK2.Hardware.Scorpion

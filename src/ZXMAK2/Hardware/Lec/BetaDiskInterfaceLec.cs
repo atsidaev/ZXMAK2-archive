@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Entities;
 using ZXMAK2.Hardware.General;
 using ZXMAK2.Engine.Interfaces;
 

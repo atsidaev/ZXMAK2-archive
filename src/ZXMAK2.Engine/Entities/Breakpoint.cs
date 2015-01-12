@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ZXMAK2.Engine.Interfaces;
 
 
-namespace ZXMAK2.Entities
+namespace ZXMAK2.Engine.Entities
 {
 	public class Breakpoint
 	{

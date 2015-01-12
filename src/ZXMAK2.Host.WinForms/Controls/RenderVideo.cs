@@ -10,9 +10,8 @@ using System.Threading;
 using System.ComponentModel;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-using ZXMAK2.Engine;
-using ZXMAK2.Entities;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Engine;
 
 
 namespace ZXMAK2.Host.WinForms.Controls

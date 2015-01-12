@@ -3,15 +3,15 @@ using System.Text;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ZXMAK2.Controls;
+using ZXMAK2.Dependency;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Entities;
-using ZXMAK2.Dependency;
+using ZXMAK2.Engine.Entities;
 using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.Controls;
 
 
 namespace ZXMAK2.Hardware.Sprinter

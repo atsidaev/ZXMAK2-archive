@@ -3,8 +3,8 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Globalization;
-using ZXMAK2.Entities;
 using ZXMAK2.Engine.Attributes;
+using ZXMAK2.Engine.Entities;
 
 
 namespace ZXMAK2.Host.WinForms.Tools

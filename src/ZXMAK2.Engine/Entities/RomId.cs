@@ -1,6 +1,6 @@
 ﻿
 
-namespace ZXMAK2.Entities
+namespace ZXMAK2.Engine.Entities
 {
     public enum RomId
     {

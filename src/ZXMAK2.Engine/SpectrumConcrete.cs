@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine;
 using ZXMAK2.Serializers;
-using ZXMAK2.Entities;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Engine.Entities;
 
 
 namespace ZXMAK2.Engine

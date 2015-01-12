@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZXMAK2.Entities
+namespace ZXMAK2.Engine.Entities
 {
     public enum BusDeviceCategory
     {

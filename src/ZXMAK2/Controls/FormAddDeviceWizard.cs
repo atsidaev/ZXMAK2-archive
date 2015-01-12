@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 using ZXMAK2.Engine;
-using ZXMAK2.Entities;
+using ZXMAK2.Engine.Entities;
 
 namespace ZXMAK2.Controls
 {
