@@ -77,60 +77,6 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\Configuration\CtlSettingsHayesModem.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsHayesModem.designer.cs">
-      <DependentUpon>CtlSettingsHayesModem.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsJoystick.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsJoystick.Designer.cs">
-      <DependentUpon>CtlSettingsJoystick.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Separator.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\Configuration\ConfigScreenControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsBetaDisk.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsBetaDisk.Designer.cs">
-      <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsGenericDevice.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsGenericDevice.Designer.cs">
-      <DependentUpon>CtlSettingsGenericDevice.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsMemory.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsMemory.Designer.cs">
-      <DependentUpon>CtlSettingsMemory.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsUla.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsUla.Designer.cs">
-      <DependentUpon>CtlSettingsUla.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsGenericSound.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Configuration\CtlSettingsGenericSound.Designer.cs">
-      <DependentUpon>CtlSettingsGenericSound.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\FormAddDeviceWizard.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\FormAddDeviceWizard.Designer.cs">
-      <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
-    </Compile>
     <Compile Include="Hardware\Adlers\Debugger.cs" />
     <Compile Include="Hardware\Atm\Atm320Renderer.cs" />
     <Compile Include="Hardware\Atm\Atm640Renderer.cs" />
@@ -204,9 +150,6 @@
     <Compile Include="Hardware\General\KempstonMouseDevice.cs" />
     <Compile Include="Hardware\General\KeyboardDevice.cs" />
     <Compile Include="Hardware\Pentagon\MemoryPentagon128.cs" />
-    <Compile Include="Controls\FormMachineSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Hardware\Atm\UlaAtm450.cs" />
     <Compile Include="Hardware\UlaDeviceBase.cs" />
     <Compile Include="Hardware\Profi\UlaProfi3XX.cs" />
@@ -225,35 +168,6 @@
     <Compile Include="Hardware\Sprinter\SprinterMouse.cs" />
     <Compile Include="Hardware\Sprinter\SprinterRTC.cs" />
     <Compile Include="Hardware\Sprinter\SprinterULA.cs" />
-    <EmbeddedResource Include="Controls\Configuration\CtlSettingsHayesModem.resx">
-      <DependentUpon>CtlSettingsHayesModem.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Configuration\CtlSettingsJoystick.resx">
-      <DependentUpon>CtlSettingsJoystick.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Configuration\CtlSettingsBetaDisk.resx">
-      <DependentUpon>CtlSettingsBetaDisk.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Configuration\CtlSettingsGenericDevice.resx">
-      <DependentUpon>CtlSettingsGenericDevice.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Configuration\CtlSettingsMemory.resx">
-      <DependentUpon>CtlSettingsMemory.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Configuration\CtlSettingsUla.resx">
-      <DependentUpon>CtlSettingsUla.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Configuration\CtlSettingsGenericSound.resx">
-      <DependentUpon>CtlSettingsGenericSound.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FormAddDeviceWizard.resx">
-      <DependentUpon>FormAddDeviceWizard.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FormMachineSettings.resx">
-      <DependentUpon>FormMachineSettings.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="log4net.config">
@@ -366,7 +280,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Controls\Configuration\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.targets\Common.targets" />
   <PropertyGroup>

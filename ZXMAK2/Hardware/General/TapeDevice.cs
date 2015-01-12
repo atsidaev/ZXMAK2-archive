@@ -9,7 +9,6 @@ using System.Collections.Generic;
 
 using ZXMAK2.Serializers;
 using ZXMAK2.Serializers.TapeSerializers;
-using ZXMAK2.Controls;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
