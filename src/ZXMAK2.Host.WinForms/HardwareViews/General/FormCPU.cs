@@ -7,7 +7,6 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ZXMAK2.Controls;
 using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
