@@ -77,9 +77,6 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MVP\MainPresenter.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Controls\Configuration\CtlSettingsHayesModem.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -369,7 +366,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MVP\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.targets\Common.targets" />
   <PropertyGroup>
