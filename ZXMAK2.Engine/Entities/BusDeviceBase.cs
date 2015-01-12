@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Xml;
-using ZXMAK2.Entities;
 using ZXMAK2.Engine.Interfaces;
 
 
-namespace ZXMAK2.Entities
+namespace ZXMAK2.Engine.Entities
 {
 	public abstract class BusDeviceBase
 	{

@@ -7,8 +7,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
-using ZXMAK2.Engine;
-using ZXMAK2.Entities;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.WinForms.Mdx;
@@ -18,6 +16,7 @@ using ZXMAK2.Host.WinForms.Tools;
 using ZXMAK2.Resources;
 using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.Engine;
 
 
 namespace ZXMAK2.Host.WinForms.Views

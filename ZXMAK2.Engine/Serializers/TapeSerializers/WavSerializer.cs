@@ -4,7 +4,6 @@ using System.Text;
 using System.Collections.Generic;
 
 using ZXMAK2.Serializers.SnapshotSerializers;
-using ZXMAK2.Entities;
 using ZXMAK2.Model.Tape;
 using ZXMAK2.Model.Tape.Interfaces;
 using ZXMAK2.Engine.Interfaces;

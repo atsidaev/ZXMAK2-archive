@@ -1,5 +1,5 @@
 ﻿using System;
-using ZXMAK2.Entities;
+using ZXMAK2.Engine.Entities;
 
 
 namespace ZXMAK2.Engine.Interfaces

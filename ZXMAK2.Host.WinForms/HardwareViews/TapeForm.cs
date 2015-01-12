@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-using ZXMAK2.Entities;
 using ZXMAK2.Model.Tape.Interfaces;
 using ZXMAK2.Resources;
 using ZXMAK2.Presentation.Interfaces;

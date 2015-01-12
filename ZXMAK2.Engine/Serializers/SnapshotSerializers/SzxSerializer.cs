@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using ZXMAK2.Engine;
-using ZXMAK2.Entities;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Engine.Entities;
 
 
 namespace ZXMAK2.Serializers.SnapshotSerializers
