@@ -10,7 +10,7 @@ using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 
 
-namespace ZXMAK2.Controls.Configuration
+namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
 {
     public partial class CtlSettingsUla : ConfigScreenControl
     {

@@ -1,4 +1,4 @@
-﻿namespace ZXMAK2.Controls.Configuration
+﻿namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
 {
 	partial class CtlSettingsUla
 	{

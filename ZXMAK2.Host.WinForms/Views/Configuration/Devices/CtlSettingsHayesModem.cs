@@ -9,7 +9,7 @@ using ZXMAK2.Engine;
 using ZXMAK2.Hardware.General;
 using ZXMAK2.Host.Interfaces;
 
-namespace ZXMAK2.Controls.Configuration
+namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
 {
     public partial class CtlSettingsHayesModem : ConfigScreenControl
     {
