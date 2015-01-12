@@ -61,6 +61,7 @@
     <Compile Include="InputAggregator.cs" />
     <Compile Include="Interfaces\IAyDevice.cs" />
     <Compile Include="Interfaces\IBetaDiskDevice.cs" />
+    <Compile Include="Interfaces\IBus.cs" />
     <Compile Include="Interfaces\IBusManager.cs" />
     <Compile Include="Interfaces\IDebuggable.cs" />
     <Compile Include="Interfaces\IFormatSerializer.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Interfaces\ITapeDevice.cs" />
     <Compile Include="Interfaces\IUlaDevice.cs" />
     <Compile Include="Interfaces\IUlaRenderer.cs" />
+    <Compile Include="Interfaces\IVirtualMachine.cs" />
     <Compile Include="MachinesConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RzxHandler.cs" />
