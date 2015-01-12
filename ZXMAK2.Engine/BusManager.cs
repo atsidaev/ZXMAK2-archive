@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 using System.Xml;
 using System.Text;
@@ -706,30 +707,20 @@ namespace ZXMAK2.Engine
             Clear();
             var orderCounter = 0;
             // "Device"
-            foreach (XmlNode node in busNode.ChildNodes)
+            var deviceNodes = busNode.ChildNodes
+                .OfType<XmlNode>()
+                .Where(node => string.Compare(node.Name, "Device", true) == 0)
+                .Where(node => !string.IsNullOrEmpty(GetAttrString(node, "type")))
+                .Where(node => GetAttrString(node, "type").Trim() != string.Empty);
+            foreach (XmlNode node in deviceNodes)
             {
-                if (string.Compare(node.Name, "Device", true)!=0)
-                {
-                    continue;
-                }
                 try
                 {
-                    var asm = Assembly.GetExecutingAssembly();
-                    if (node.Attributes["assembly"] != null)
-                    {
-                        string assemblyFile = node.Attributes["assembly"].InnerText;
-                        asm = Assembly.LoadFrom(assemblyFile);
-                    }
-                    if (node.Attributes["type"] == null)
-                    {
-                        Logger.Error("Device type not specified!");
-                        continue;
-                    }
-                    string typeName = node.Attributes["type"].InnerText;
-                    Type type = asm.GetType(typeName);
+                    var fullTypeName = GetAttrString(node, "type");
+                    var type = GetTypeByName(fullTypeName, GetAttrString(node, "assembly"));
                     if (type == null)
                     {
-                        Logger.Error("Device not found: {0}", typeName);
+                        Logger.Error("Type not found: {0}", fullTypeName);
                         continue;
                     }
                     if (!typeof(BusDeviceBase).IsAssignableFrom(type))
@@ -766,6 +757,71 @@ namespace ZXMAK2.Engine
             //LogAgent.Debug("time end BusManager.LoadConfig");
         }
 
+        private static string GetNameByType(Type type)
+        {
+            return string.Format(
+                "{0}, {1}",
+                type.FullName,
+                type.Assembly.GetName().Name);
+        }
+
+        private static bool CheckIsLocalAssembly(Assembly asm)
+        {
+            var asmPath = Path.GetDirectoryName(Path.GetFullPath(asm.Location));
+            var localPath = Path.GetDirectoryName(Path.GetFullPath(Assembly.GetExecutingAssembly().Location));
+            return string.Compare(asmPath, localPath, true) == 0;
+        }
+
+        private static Type GetTypeByName(string fullTypeName, string oldAsmName)
+        {
+            var asmName = (string)null;
+            var typeName = fullTypeName;
+            if (fullTypeName.Contains(','))
+            {
+                var nameParts = fullTypeName.Split(',')
+                    .Select(namePart => namePart.Trim());
+                typeName = nameParts.First();
+                asmName = nameParts.Skip(1).First();
+            }
+            asmName = GetTrimmedString(asmName);
+            if (asmName == null)
+            {
+                asmName = "ZXMAK2";
+            }
+            var asm = asmName != null ?
+                Assembly.Load(asmName) :
+                oldAsmName != null ? Assembly.LoadFrom(oldAsmName) : null;
+            if (asm != null)
+            {
+                return asm.GetType(typeName);
+            }
+            return null;
+        }
+
+        private static string GetTrimmedString(string value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+            value = value.Trim();
+            if (value == string.Empty)
+            {
+                return null;
+            }
+            return value;
+        }
+
+        private static string GetAttrString(XmlNode node, string name)
+        {
+            var attr = node.Attributes[name];
+            if (attr == null)
+            {
+                return null;
+            }
+            return attr.InnerText;
+        }
+
         private string getDeviceKey(Type type)
         {
             string asm = string.Empty;
@@ -787,16 +843,19 @@ namespace ZXMAK2.Engine
                 var el = (XmlElement)busNode;
                 el.SetAttribute("modelId", ModelId.ToString());
             }
-            foreach (BusDeviceBase device in m_deviceList)
+            foreach (var device in m_deviceList)
             {
                 try
                 {
+                    var type = device.GetType();
+                    var fullTypeName = GetNameByType(type);
                     var xe = busNode.OwnerDocument.CreateElement("Device");
-                    if (device.GetType().Assembly != Assembly.GetExecutingAssembly())
+                    xe.SetAttribute("type", fullTypeName);
+                    if (!CheckIsLocalAssembly(type.Assembly))
                     {
-                        xe.SetAttribute("assembly", device.GetType().Assembly.Location);
+                        // non local assembly
+                        xe.SetAttribute("assembly", type.Assembly.Location);
                     }
-                    xe.SetAttribute("type", device.GetType().FullName);
                     var node = busNode.AppendChild(xe);
                     device.SaveConfigXml(node);
                 }
