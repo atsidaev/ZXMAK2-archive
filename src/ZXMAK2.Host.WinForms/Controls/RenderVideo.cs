@@ -556,7 +556,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             list.Add(new Point(rect.Left, rect.Top + hValue));
             list.Add(new Point(rect.Left+rect.Width, rect.Top + hValue));
             var vertices = list
-                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 0, colorInt))
+                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, colorInt))
                 .ToArray();
             D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
             D3D.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
@@ -588,7 +588,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                 list.Add(new Point(rect.Left + x, rect.Top + hValue));
             }
             var vertices = list
-                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 0, colorInt))
+                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, colorInt))
                 .ToArray();
             D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
             D3D.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length/2, vertices);
@@ -606,10 +606,10 @@ namespace ZXMAK2.Host.WinForms.Controls
             var colorInt = color.ToArgb();
             var rectv = new[]
             {
-                new CustomVertex.TransformedColored(rect.Left, rect.Top+rect.Height+0.5F, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(rect.Left, rect.Top, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top+rect.Height+0.5F, 0, 0, colorInt),
-                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top, 0, 0, colorInt),
+                new CustomVertex.TransformedColored(rect.Left, rect.Top+rect.Height+0.5F, 0, 1f, colorInt),
+                new CustomVertex.TransformedColored(rect.Left, rect.Top, 0, 1f, colorInt),
+                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top+rect.Height+0.5F, 0, 1f, colorInt),
+                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top, 0, 1f, colorInt),
             };
             D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
             D3D.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, rectv);
