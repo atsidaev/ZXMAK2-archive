@@ -18,7 +18,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
     {
         private readonly Form m_form;
         private Device m_device = null;
-        private readonly KeyboardStateMapper<MdxKey> m_mapper = new KeyboardStateMapper<MdxKey>();
+        private KeyboardStateMapper<MdxKey> m_mapper = new KeyboardStateMapper<MdxKey>();
         private readonly Dictionary<ZxmakKey, bool> m_state = new Dictionary<ZxmakKey, bool>();
         private bool m_isActive = false;
 
@@ -93,7 +93,9 @@ namespace ZXMAK2.Host.WinForms.Mdx
             using (var reader = (TextReader)new StreamReader(fileName))
             {
                 var xml = reader.ReadToEnd();
-                m_mapper.LoadMapFromString(xml);
+                var mapper = new KeyboardStateMapper<MdxKey>();
+                mapper.LoadMapFromString(xml);
+                m_mapper = mapper;
             }
         }
 

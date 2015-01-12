@@ -8,14 +8,16 @@ using Microsoft.Xna.Framework.Input;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities.Tools;
 using ZXMAK2.Host.Entities;
+using ZxmakKey = ZXMAK2.Host.Entities.Key;
+using XnaKey = Microsoft.Xna.Framework.Input.Keys;
 
 
 namespace ZXMAK2.Host.Xna4.Xna
 {
     public class XnaKeyboard : IHostKeyboard, IKeyboardState
     {
-        private readonly KeyboardStateMapper<Keys> m_mapper = new KeyboardStateMapper<Keys>();
-        private readonly Dictionary<Key, bool> m_state = new Dictionary<Key, bool>();
+        private KeyboardStateMapper<XnaKey> m_mapper = new KeyboardStateMapper<XnaKey>();
+        private readonly Dictionary<ZxmakKey, bool> m_state = new Dictionary<ZxmakKey, bool>();
 
 
         public XnaKeyboard()
@@ -35,7 +37,7 @@ namespace ZXMAK2.Host.Xna4.Xna
 
         #region IKeyboardState
 
-        public bool this[Key key]
+        public bool this[ZxmakKey key]
         {
             get { return m_state.ContainsKey(key) && m_state[key]; }
         }
@@ -59,7 +61,9 @@ namespace ZXMAK2.Host.Xna4.Xna
             using (var reader = (TextReader)new StreamReader(fileName))
             {
                 var xml = reader.ReadToEnd();
-                m_mapper.LoadMapFromString(xml);
+                var mapper = new KeyboardStateMapper<XnaKey>();
+                mapper.LoadMapFromString(xml);
+                m_mapper = mapper;
             }
         }
 
