@@ -9,7 +9,7 @@ using System.Security.AccessControl;
 using ZXMAK2.Resources;
 
 
-namespace ZXMAK2
+namespace ZXMAK2.Engine
 {
     public static class Utils
     {
