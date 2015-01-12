@@ -151,12 +151,12 @@ namespace ZXMAK2.Host.Presentation
             CommandVmMaxSpeed = new CommandDelegate(CommandVmMaxSpeed_OnExecute);
             CommandVmWarmReset = new CommandDelegate(CommandVmWarmReset_OnExecute);
             CommandVmNmi = new CommandDelegate(CommandVmNmi_OnExecute);
-            CommandVmSettings = new CommandDelegate(CommandVmSettings_OnExecute);
+            CommandVmSettings = new CommandDelegate(CommandVmSettings_OnExecute, CommandVmSettings_OnCanExecute);
             CommandHelpViewHelp = new CommandDelegate(CommandHelpViewHelp_OnExecute, CommandHelpViewHelp_OnCanExecute);
             CommandHelpKeyboardHelp = CreateViewHolderCommand<IKeyboardView>();
             CommandHelpAbout = CreateViewHolderCommand<IAboutView>();
             CommandTapePause = new CommandDelegate(CommandTapePause_OnExecute, CommandTapePause_CanExecute);
-            CommandQuickLoad = new CommandDelegate(CommandQuickLoad_OnExecute);
+            CommandQuickLoad = new CommandDelegate(CommandQuickLoad_OnExecute, CommandQuickLoad_OnCanExecute);
             CommandOpenUri = new CommandDelegate(CommandOpenUri_OnExecute, CommandOpenUri_OnCanExecute);
         }
 
@@ -169,16 +169,8 @@ namespace ZXMAK2.Host.Presentation
 
         private bool CommandFileOpen_OnCanExecute()
         {
-            if (m_vm == null)
-            {
-                return false;
-            }
-            var dialog = GetViewService<IOpenFileDialog>();
-            if (dialog != null)
-            {
-                dialog.Dispose();
-            }
-            return dialog != null;
+            return CheckViewAvailable<IOpenFileDialog>() &&
+                m_vm != null;
         }
 
         private void CommandFileOpen_OnExecute()
@@ -187,7 +179,12 @@ namespace ZXMAK2.Host.Presentation
             {
                 return;
             }
-            using (var loadDialog = GetViewService<IOpenFileDialog>())
+            var loadDialog = GetView<IOpenFileDialog>();
+            if (loadDialog == null)
+            {
+                return;
+            }
+            using (loadDialog)
             {
                 loadDialog.Title = "Open...";
                 loadDialog.Filter = m_vm.Spectrum.BusManager.LoadManager.GetOpenExtFilter();
@@ -206,16 +203,8 @@ namespace ZXMAK2.Host.Presentation
 
         private bool CommandFileSave_OnCanExecute()
         {
-            if (m_vm == null)
-            {
-                return false;
-            }
-            var dialog = GetViewService<ISaveFileDialog>();
-            if (dialog != null)
-            {
-                dialog.Dispose();
-            }
-            return dialog != null;
+            return CheckViewAvailable<ISaveFileDialog>() &&
+                m_vm != null;
         }
 
         private void CommandFileSave_OnExecute()
@@ -224,7 +213,12 @@ namespace ZXMAK2.Host.Presentation
             {
                 return;
             }
-            using (var saveDialog = GetViewService<ISaveFileDialog>())
+            var saveDialog = GetView<ISaveFileDialog>();
+            if (saveDialog == null)
+            {
+                return;
+            }
+            using (saveDialog)
             {
                 saveDialog.Title = "Save...";
                 saveDialog.Filter = m_vm.Spectrum.BusManager.LoadManager.GetSaveExtFilter();
@@ -244,7 +238,13 @@ namespace ZXMAK2.Host.Presentation
             m_view.Close();
         }
 
-        private T GetViewService<T>()
+        private bool CheckViewAvailable<T>()
+        {
+            var viewResolver = m_resolver.Resolve<IResolver>("View");
+            return viewResolver.CheckAvailable<T>();
+        }
+        
+        private T GetView<T>()
         {
             var viewResolver = m_resolver.Resolve<IResolver>("View");
             return viewResolver.TryResolve<T>();
@@ -345,6 +345,12 @@ namespace ZXMAK2.Host.Presentation
             m_vm.DoNmi();
         }
 
+        private bool CommandVmSettings_OnCanExecute(Object objArg)
+        {
+            return CheckViewAvailable<IMachineSettingsView>() &&
+                m_vm != null;
+        }
+
         private void CommandVmSettings_OnExecute(Object objArg)
         {
             try
@@ -353,7 +359,7 @@ namespace ZXMAK2.Host.Presentation
                 {
                     return;
                 }
-                var viewSettings = GetViewService<IMachineSettingsView>();
+                var viewSettings = GetView<IMachineSettingsView>();
                 if (viewSettings == null)
                 {
                     return;
@@ -376,7 +382,11 @@ namespace ZXMAK2.Host.Presentation
 
         private bool CommandHelpViewHelp_OnCanExecute(object arg)
         {
-            var service = GetViewService<IUserHelp>();
+            if (!CheckViewAvailable<IUserHelp>())
+            {
+                return false;
+            }
+            var service = GetView<IUserHelp>();
             return service != null && service.CanShow(arg);
         }
 
@@ -386,7 +396,7 @@ namespace ZXMAK2.Host.Presentation
             {
                 return;
             }
-            var service = GetViewService<IUserHelp>();
+            var service = GetView<IUserHelp>();
             service.ShowHelp(arg);
         }
 
@@ -421,9 +431,16 @@ namespace ZXMAK2.Host.Presentation
             }
         }
 
+        private bool CommandQuickLoad_OnCanExecute()
+        {
+            var fileName = Path.Combine(Utils.GetAppFolder(), "boot.zip");
+            return m_vm != null &&
+                File.Exists(fileName);
+        }
+
         private void CommandQuickLoad_OnExecute()
         {
-            if (m_vm == null)
+            if (!CommandQuickLoad_OnCanExecute())
             {
                 return;
             }
@@ -475,6 +492,10 @@ namespace ZXMAK2.Host.Presentation
 
         private void CommandOpenUri_OnExecute(object objUri)
         {
+            if (!CommandOpenUri_OnCanExecute(objUri))
+            {
+                return;
+            }
             try
             {
                 if (m_vm == null)
