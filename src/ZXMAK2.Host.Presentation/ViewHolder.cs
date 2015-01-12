@@ -87,7 +87,12 @@ namespace ZXMAK2.Host.Presentation
 
         private bool Command_OnCanExecute(Object arg)
         {
-            return arg is IMainView;//arg is IWin32Window;
+            var viewResolver = Locator.Resolve<IResolver>("View");
+            if (!viewResolver.CheckAvailable<T>())
+            {
+                return false;
+            }
+            return arg is IMainView;
         }
 
         private void Command_OnExecute(Object arg)

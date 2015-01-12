@@ -51,7 +51,7 @@ namespace ZXMAK2.Dependency
         {
             try
             {
-                if (!_container.IsRegistered<T>())
+                if (!CheckAvailable<T>())
                 {
                     return default(T);
                 }
@@ -64,16 +64,11 @@ namespace ZXMAK2.Dependency
             }
         }
 
-        public void RegisterInstance<T>(string name, T instance)
-        {
-            _container.RegisterInstance<T>(name, instance);
-        }
-
         public T TryResolve<T>(string name, params Argument[] args)
         {
             try
             {
-                if (!_container.IsRegistered<T>(name))
+                if (!CheckAvailable<T>(name))
                 {
                     return default(T);
                 }
@@ -84,6 +79,21 @@ namespace ZXMAK2.Dependency
                 Logger.Error(ex);
                 return default(T);
             }
+        }
+
+        public bool CheckAvailable<T>(params Argument[] args)
+        {
+            return _container.IsRegistered<T>();
+        }
+
+        public bool CheckAvailable<T>(string name, params Argument[] args)
+        {
+            return _container.IsRegistered<T>(name);
+        }
+
+        public void RegisterInstance<T>(string name, T instance)
+        {
+            _container.RegisterInstance<T>(name, instance);
         }
     }
 }
