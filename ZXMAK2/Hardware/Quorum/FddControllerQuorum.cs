@@ -1,7 +1,7 @@
 ﻿using System;
-using ZXMAK2.Hardware.General;
-using ZXMAK2.Hardware.Circuits;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Hardware.General;
+using ZXMAK2.Hardware.Circuits.Fdd;
 
 
 namespace ZXMAK2.Hardware.Quorum
