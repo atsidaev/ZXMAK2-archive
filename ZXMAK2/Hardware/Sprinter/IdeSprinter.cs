@@ -1,4 +1,6 @@
-﻿using System.Xml;
+﻿using System;
+using System.IO;
+using System.Xml;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
@@ -76,10 +78,24 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             if (!m_sandbox)
             {
-                if (m_ideFileName != null)
-                {
-                    m_ata.Devices[0].Open(m_ideFileName);
-                }
+                Load();
+                m_ata.Open();
+            }
+        }
+
+        private void Load()
+        {
+            if (string.IsNullOrEmpty(m_ideFileName))
+            {
+                return;
+            }
+            if (File.Exists(m_ideFileName))
+            {
+                m_ata.Devices[0].DeviceInfo.Load(m_ideFileName);
+            }
+            else
+            {
+                m_ata.Devices[0].DeviceInfo.Save(m_ideFileName);
             }
         }
 

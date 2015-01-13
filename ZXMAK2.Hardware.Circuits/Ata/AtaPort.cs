@@ -21,6 +21,12 @@ namespace ZXMAK2.Hardware.Circuits.Ata
             };
         }
 
+        public void Open()
+        {
+            Devices[0].Open();
+            Devices[1].Open();
+        }
+
         public void Reset()
         {
             //Logger.Debug("AtaPort.reset");
