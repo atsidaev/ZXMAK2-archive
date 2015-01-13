@@ -18,7 +18,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         }
         private void ALU_ADCR(byte src)
         {
-            byte carry = (byte)(regs.F & (byte)ZFLAGS.C);
+            byte carry = (byte)(regs.F & (byte)CpuFlags.C);
             regs.F = adcf[regs.A + src * 0x100 + 0x10000 * carry];
             regs.A += (byte)(src + carry);
         }
@@ -29,14 +29,14 @@ namespace ZXMAK2.Engine.Cpu.Processor
         }
         private void ALU_SBCR(byte src)
         {
-            byte carry = (byte)(regs.F & (byte)ZFLAGS.C);
+            byte carry = (byte)(regs.F & (byte)CpuFlags.C);
             regs.F = sbcf[regs.A * 0x100 + src + 0x10000 * carry];
             regs.A -= (byte)(src + carry);
         }
         private void ALU_ANDR(byte src)
         {
             regs.A &= src;
-            regs.F = (byte)(log_f[regs.A] | (byte)ZFLAGS.H);
+            regs.F = (byte)(log_f[regs.A] | (byte)CpuFlags.H);
         }
         private void ALU_XORR(byte src)
         {
@@ -55,25 +55,25 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private byte ALU_INCR(byte x)
         {
-            regs.F = (byte)(incf[x] | (regs.F & (byte)ZFLAGS.C));
+            regs.F = (byte)(incf[x] | (regs.F & (byte)CpuFlags.C));
             x++;
             return x;
         }
         private byte ALU_DECR(byte x)
         {
-            regs.F = (byte)(decf[x] | (regs.F & (byte)ZFLAGS.C));
+            regs.F = (byte)(decf[x] | (regs.F & (byte)CpuFlags.C));
             x--;
             return x;
         }
 
         private ushort ALU_ADDHLRR(ushort rhl, ushort rde)
         {
-            regs.F = (byte)(regs.F & ~(byte)(ZFLAGS.N | ZFLAGS.C | ZFLAGS.F5 | ZFLAGS.F3 | ZFLAGS.H));
-            regs.F |= (byte)((((rhl & 0x0FFF) + (rde & 0x0FFF)) >> 8) & (byte)ZFLAGS.H);
+            regs.F = (byte)(regs.F & ~(byte)(CpuFlags.N | CpuFlags.C | CpuFlags.F5 | CpuFlags.F3 | CpuFlags.H));
+            regs.F |= (byte)((((rhl & 0x0FFF) + (rde & 0x0FFF)) >> 8) & (byte)CpuFlags.H);
             uint res = (uint)((rhl & 0xFFFF) + (rde & 0xFFFF));
 
-            if ((res & 0x10000) != 0) regs.F |= (byte)ZFLAGS.C;
-            regs.F |= (byte)((byte)((res >> 8) & 0xFF) & (byte)(ZFLAGS.F5 | ZFLAGS.F3));
+            if ((res & 0x10000) != 0) regs.F |= (byte)CpuFlags.C;
+            regs.F |= (byte)((byte)((res >> 8) & 0xFF) & (byte)(CpuFlags.F5 | CpuFlags.F3));
             return (ushort)(res & 0xFFFF);
         }
 
@@ -97,7 +97,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         }
         private byte ALU_RL(int x)
         {
-            if ((regs.F & (byte)ZFLAGS.C) != 0)
+            if ((regs.F & (byte)CpuFlags.C) != 0)
             {
                 regs.F = rl1[x];
                 x <<= 1;
@@ -112,7 +112,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         }
         private byte ALU_RR(int x)
         {
-            if ((regs.F & (byte)ZFLAGS.C) != 0)
+            if ((regs.F & (byte)CpuFlags.C) != 0)
             {
                 regs.F = rr1[x];
                 x >>= 1;
@@ -152,12 +152,12 @@ namespace ZXMAK2.Engine.Cpu.Processor
         }
         private void ALU_BIT(byte src, int bit)
         {
-            regs.F = (byte)(log_f[src & (1 << bit)] | (int)ZFLAGS.H | (regs.F & (int)ZFLAGS.C) | (src & (int)(ZFLAGS.F3 | ZFLAGS.F5)));
+            regs.F = (byte)(log_f[src & (1 << bit)] | (int)CpuFlags.H | (regs.F & (int)CpuFlags.C) | (src & (int)(CpuFlags.F3 | CpuFlags.F5)));
         }
         private void ALU_BITMEM(byte src, int bit)
         {
-            regs.F = (byte)(log_f[src & (1 << bit)] | (int)ZFLAGS.H | (regs.F & (int)ZFLAGS.C));
-            regs.F = (byte)((regs.F & (int)~(ZFLAGS.F3 | ZFLAGS.F5)) | (regs.MH & (int)(ZFLAGS.F3 | ZFLAGS.F5)));
+            regs.F = (byte)(log_f[src & (1 << bit)] | (int)CpuFlags.H | (regs.F & (int)CpuFlags.C));
+            regs.F = (byte)((regs.F & (int)~(CpuFlags.F3 | CpuFlags.F5)) | (regs.MH & (int)(CpuFlags.F3 | CpuFlags.F5)));
         }
 
         #endregion
@@ -179,13 +179,13 @@ namespace ZXMAK2.Engine.Cpu.Processor
             log_f = new byte[0x100];
             for (int x = 0; x < 0x100; x++)
             {
-                byte fl = (byte)(x & (byte)(ZFLAGS.F3 | ZFLAGS.F5 | ZFLAGS.S));
-                byte p = (byte)(ZFLAGS.PV);
+                byte fl = (byte)(x & (byte)(CpuFlags.F3 | CpuFlags.F5 | CpuFlags.S));
+                byte p = (byte)(CpuFlags.Pv);
                 for (int i = 0x80; i != 0; i /= 2)
-                    if ((x & i) == i) p ^= (byte)ZFLAGS.PV;
+                    if ((x & i) == i) p ^= (byte)CpuFlags.Pv;
                 log_f[x] = (byte)(fl | p);
             }
-            log_f[0] |= (byte)ZFLAGS.Z;
+            log_f[0] |= (byte)CpuFlags.Z;
         }
         private byte[] log_f;
 
@@ -199,20 +199,20 @@ namespace ZXMAK2.Engine.Cpu.Processor
                     for (int y = 0; y < 0x100; y++)
                     {
                         int res = x - y - c;
-                        byte fl = (byte)(res & (byte)(ZFLAGS.F3 | ZFLAGS.F5 | ZFLAGS.S));
-                        if ((res & 0xFF) == 0) fl |= (byte)ZFLAGS.Z;
-                        if ((res & 0x10000) != 0) fl |= (byte)ZFLAGS.C;
+                        byte fl = (byte)(res & (byte)(CpuFlags.F3 | CpuFlags.F5 | CpuFlags.S));
+                        if ((res & 0xFF) == 0) fl |= (byte)CpuFlags.Z;
+                        if ((res & 0x10000) != 0) fl |= (byte)CpuFlags.C;
                         int r = (sbyte)x - (sbyte)y - c;
-                        if (r >= 0x80 || r < -0x80) fl |= (byte)ZFLAGS.PV;
-                        if ((((x & 0x0F) - (res & 0x0F) - c) & 0x10) != 0) fl |= (byte)ZFLAGS.H;
-                        fl |= (byte)ZFLAGS.N;
+                        if (r >= 0x80 || r < -0x80) fl |= (byte)CpuFlags.Pv;
+                        if ((((x & 0x0F) - (res & 0x0F) - c) & 0x10) != 0) fl |= (byte)CpuFlags.H;
+                        fl |= (byte)CpuFlags.N;
                         sbcf[c * 0x10000 + x * 0x100 + y] = fl;
                     }
             for (int i = 0; i < 0x10000; i++)
             {
-                cpf[i] = (byte)((sbcf[i] & (int)~(ZFLAGS.F3 | ZFLAGS.F5)) | (i & (int)(ZFLAGS.F3 | ZFLAGS.F5)));
-                byte val = (byte)((i >> 8) - (i & 0xFF) - ((sbcf[i] & (int)ZFLAGS.H) >> 4));
-                cpf8b[i] = (byte)((sbcf[i] & (int)~(ZFLAGS.F3 | ZFLAGS.F5 | ZFLAGS.PV | ZFLAGS.C)) + (val & (int)ZFLAGS.F3) + ((val << 4) & (int)ZFLAGS.F5));
+                cpf[i] = (byte)((sbcf[i] & (int)~(CpuFlags.F3 | CpuFlags.F5)) | (i & (int)(CpuFlags.F3 | CpuFlags.F5)));
+                byte val = (byte)((i >> 8) - (i & 0xFF) - ((sbcf[i] & (int)CpuFlags.H) >> 4));
+                cpf8b[i] = (byte)((sbcf[i] & (int)~(CpuFlags.F3 | CpuFlags.F5 | CpuFlags.Pv | CpuFlags.C)) + (val & (int)CpuFlags.F3) + ((val << 4) & (int)CpuFlags.F5));
             }
         }
         private byte[] sbcf;    // flags for sub and sbc
@@ -228,12 +228,12 @@ namespace ZXMAK2.Engine.Cpu.Processor
                     {
                         uint res = (uint)(x + y + c);
                         byte fl = 0;
-                        if ((res & 0xFF) == 0) fl |= (byte)ZFLAGS.Z;
-                        fl |= (byte)(res & (byte)(ZFLAGS.F3 | ZFLAGS.F5 | ZFLAGS.S));
-                        if (res >= 0x100) fl |= (byte)ZFLAGS.C;
-                        if ((((x & 0x0F) + (y & 0x0F) + c) & 0x10) != 0) fl |= (byte)ZFLAGS.H;
+                        if ((res & 0xFF) == 0) fl |= (byte)CpuFlags.Z;
+                        fl |= (byte)(res & (byte)(CpuFlags.F3 | CpuFlags.F5 | CpuFlags.S));
+                        if (res >= 0x100) fl |= (byte)CpuFlags.C;
+                        if ((((x & 0x0F) + (y & 0x0F) + c) & 0x10) != 0) fl |= (byte)CpuFlags.H;
                         int ri = (sbyte)x + (sbyte)y + c;
-                        if (ri >= 0x80 || ri <= -0x81) fl |= (byte)ZFLAGS.PV;
+                        if (ri >= 0x80 || ri <= -0x81) fl |= (byte)CpuFlags.Pv;
                         adcf[c * 0x10000 + x * 0x100 + y] = fl;
                     }
         }
