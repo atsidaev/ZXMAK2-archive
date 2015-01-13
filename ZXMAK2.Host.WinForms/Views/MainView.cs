@@ -551,8 +551,9 @@ namespace ZXMAK2.Host.WinForms.Views
                     m_size = ClientSize;
 
                     FormBorderStyle = FormBorderStyle.None;
-                    Location = new Point(0, 0);
-                    Size = Screen.PrimaryScreen.Bounds.Size;
+                    var screen = Screen.FromControl(this);
+                    Location = screen.Bounds.Location;
+                    Size = screen.Bounds.Size;
 
                     //m_host.StartInputCapture();
 
