@@ -82,8 +82,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			_spec.CPU.regs._AF = getUInt16(hdr, 24);
 
 			_spec.CPU.BINT = false;
-			_spec.CPU.XFX = OPXFX.NONE;
-			_spec.CPU.FX = OPFX.NONE;
+			_spec.CPU.XFX = CpuModeEx.None;
+			_spec.CPU.FX = CpuModeIndex.None;
 			_spec.CPU.HALTED = false;
 
 			_spec.CPU.IFF1 = _spec.CPU.IFF2 = (hdr[26] & 1) != 0;    // ?

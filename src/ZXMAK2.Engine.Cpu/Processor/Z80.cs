@@ -18,8 +18,8 @@ namespace ZXMAK2.Engine.Cpu.Processor
         public bool IFF2;
         public byte IM;
         public bool BINT;       // last opcode was EI or DD/FD prefix (to prevent INT handling)
-        public OPFX FX;
-        public OPXFX XFX;
+        public CpuModeIndex FX;
+        public CpuModeEx XFX;
         public ushort LPC;      // last opcode PC
 
         public bool INT = false;
@@ -67,7 +67,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         public void ExecCycle()
         {
             byte cmd = 0;
-            if (XFX == OPXFX.NONE && FX == OPFX.NONE)
+            if (XFX == CpuModeEx.None && FX == CpuModeIndex.None)
             {
                 if (ProcessSignals())
                     return;
@@ -82,43 +82,43 @@ namespace ZXMAK2.Engine.Cpu.Processor
             }
             Tact += 3;
             regs.PC++;
-            if (XFX == OPXFX.CB)
+            if (XFX == CpuModeEx.Cb)
             {
                 BINT = false;
                 ExecCB(cmd);
-                XFX = OPXFX.NONE;
-                FX = OPFX.NONE;
+                XFX = CpuModeEx.None;
+                FX = CpuModeIndex.None;
             }
-            else if (XFX == OPXFX.ED)
+            else if (XFX == CpuModeEx.Ed)
             {
                 refresh();
                 BINT = false;
                 ExecED(cmd);
-                XFX = OPXFX.NONE;
-                FX = OPFX.NONE;
+                XFX = CpuModeEx.None;
+                FX = CpuModeIndex.None;
             }
             else if (cmd == 0xDD)
             {
                 refresh();
-                FX = OPFX.IX;
+                FX = CpuModeIndex.Ix;
                 BINT = true;
             }
             else if (cmd == 0xFD)
             {
                 refresh();
-                FX = OPFX.IY;
+                FX = CpuModeIndex.Iy;
                 BINT = true;
             }
             else if (cmd == 0xCB)
             {
                 refresh();
-                XFX = OPXFX.CB;
+                XFX = CpuModeEx.Cb;
                 BINT = true;
             }
             else if (cmd == 0xED)
             {
                 refresh();
-                XFX = OPXFX.ED;
+                XFX = CpuModeEx.Ed;
                 BINT = true;
             }
             else
@@ -126,7 +126,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 refresh();
                 BINT = false;
                 ExecDirect(cmd);
-                FX = OPFX.NONE;
+                FX = CpuModeIndex.None;
             }
         }
 
@@ -139,14 +139,14 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void ExecCB(byte cmd)
         {
-            if (FX != OPFX.NONE)
+            if (FX != CpuModeIndex.None)
             {
                 // elapsed T: 4, 4, 3
                 // will be T: 4, 4, 3, 5
 
                 int drel = (sbyte)cmd;
 
-                regs.MW = FX == OPFX.IX ? (ushort)(regs.IX + drel) : (ushort)(regs.IY + drel);
+                regs.MW = FX == CpuModeIndex.Ix ? (ushort)(regs.IX + drel) : (ushort)(regs.IY + drel);
                 cmd = RDMEM(regs.PC); Tact += 3;
                 RDNOMREQ(regs.PC); Tact++;
                 RDNOMREQ(regs.PC); Tact++;
@@ -163,7 +163,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void ExecDirect(byte cmd)
         {
-            XFXOPDO opdo = FX == OPFX.NONE ? opTABLE[cmd] : fxopTABLE[cmd];
+            XFXOPDO opdo = FX == CpuModeIndex.None ? opTABLE[cmd] : fxopTABLE[cmd];
             if (opdo != null)
                 opdo(cmd);
         }
@@ -183,8 +183,8 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 RESET();
                 refresh();      //+1T
 
-                FX = OPFX.NONE;
-                XFX = OPXFX.NONE;
+                FX = CpuModeIndex.None;
+                XFX = CpuModeEx.None;
                 HALTED = false;
 
                 IFF1 = false;

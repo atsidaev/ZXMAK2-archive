@@ -269,7 +269,7 @@ namespace ZXMAK2.Engine
             do
             {
                 OnExecCycle();
-            } while (CPU.FX != OPFX.NONE || CPU.XFX != OPXFX.NONE);
+            } while (CPU.FX != CpuModeIndex.None || CPU.XFX != CpuModeEx.None);
         }
 
         private void StepOver()

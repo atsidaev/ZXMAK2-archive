@@ -106,8 +106,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			_spec.CPU.regs.PC = (version == 1) ? getUInt16(hdr, Z80HDR_PC) : getUInt16(hdr1, Z80HDR1_PC);
 
 			_spec.CPU.BINT = false;
-			_spec.CPU.XFX = OPXFX.NONE;
-			_spec.CPU.FX = OPFX.NONE;
+			_spec.CPU.XFX = CpuModeEx.None;
+			_spec.CPU.FX = CpuModeIndex.None;
 			_spec.CPU.HALTED = false;
 
 			// CPU.Status...
