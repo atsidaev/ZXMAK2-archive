@@ -7,7 +7,5 @@ namespace ZXMAK2.Engine.Interfaces
 	{
 		CpuUnit CPU { get; }
 		BusManager BusManager { get; }
-		byte ReadMemory(ushort addr);
-		void WriteMemory(ushort addr, byte value);
 	}
 }

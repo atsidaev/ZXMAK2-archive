@@ -33,7 +33,6 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Sprinter
         private static int s_len;
 
         // ZEK +++
-        IBusManager bus;
         private SprinterMMU sprint_mmu;
         private SprinterULA sprint_ula;
         //private BDI pevo_bdi;
@@ -313,10 +312,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Sprinter
                 {
                     m_spectrum = debugTarget;
                     // ZEK +++
-                    bus = ((ZXMAK2.Engine.VirtualMachine)m_spectrum).Spectrum.BusManager;
-                    sprint_mmu = bus.FindDevice<SprinterMMU>();
-                    sprint_ula = bus.FindDevice<SprinterULA>();
-                    //pevo_bdi = bus.FindDevice(typeof(BDI)) as BDI;
+                    sprint_mmu = m_spectrum.Bus.FindDevice<SprinterMMU>();
+                    sprint_ula = m_spectrum.Bus.FindDevice<SprinterULA>();
+                    //pevo_bdi = m_spectrum.Bus.FindDevice(typeof(BDI)) as BDI;
                     // ZEK ---
 
                     m_dasmTool = new DasmTool(debugTarget.ReadMemory);

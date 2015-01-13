@@ -31,14 +31,14 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
         {
             //IMemory memory = _spec.BusManager.FindDevice(typeof(IMemory)) as IMemory;
             //return memory.RDMEM_DBG(addr);
-            return _spec.ReadMemory(addr);
+            return _spec.DebugReadMemory(addr);
         }
 
         public void WriteMemory(ushort addr, byte value)
         {
             //IMemory memory = _spec.BusManager.FindDevice(typeof(IMemory)) as IMemory;
             //memory.WRMEM_DBG(addr, value);
-            _spec.WriteMemory(addr, value);
+            _spec.DebugWriteMemory(addr, value);
         }
 
         public int GetFrameTact()
@@ -63,7 +63,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         public void InitStd128K()
         {
-            _spec.DoReset();
+            _spec.DebugReset();
             foreach (var device in _spec.BusManager.FindDevices<BusDeviceBase>())
             {
                 device.ResetState();

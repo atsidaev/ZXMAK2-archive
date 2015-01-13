@@ -80,7 +80,7 @@ namespace Test
 			p128.BusManager.Add((BusDeviceBase)ula);
 			p128.BusManager.Connect();
 			p128.IsRunning = true;
-			p128.DoReset();
+			p128.DebugReset();
 			p128.ExecuteFrame();
 			p128.IsRunning = false;
 
@@ -124,7 +124,7 @@ namespace Test
 
 			for (int i = 0; i < pattern.Length - 1; i++)
 			{
-				p128.DoStepInto();
+				p128.DebugStepInto();
 				frameTact = p128.CPU.Tact % ula.FrameTactCount;
 				if (frameTact != pattern[i + 1])
 				{
@@ -336,7 +336,7 @@ namespace Test
             var p128 = GetDefaultTestMachine();
 			p128.Init();
 			p128.IsRunning = true;
-			p128.DoReset();
+			p128.DebugReset();
 			p128.ExecuteFrame();
 			p128.IsRunning = false;
             foreach (var kbd in p128.BusManager.FindDevices<IKeyboardDevice>())
@@ -368,7 +368,7 @@ namespace Test
             var p128 = GetDefaultTestMachine();
 			p128.Init();
 			p128.IsRunning = true;
-			p128.DoReset();
+			p128.DebugReset();
 			p128.ExecuteFrame();
 
 			p128.IsRunning = false;
