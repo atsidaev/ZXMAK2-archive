@@ -100,7 +100,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void RLCA(byte cmd)
         {
-            regs.F = (byte)(rlcaf[regs.A] | (regs.F & (byte)(ZFLAGS.S | ZFLAGS.Z | ZFLAGS.PV)));
+            regs.F = (byte)(rlcaf[regs.A] | (regs.F & (byte)(CpuFlags.S | CpuFlags.Z | CpuFlags.Pv)));
             int x = regs.A;
             x <<= 1;
             if ((x & 0x100) != 0) x = (x | 0x01) & 0xFF;
@@ -109,7 +109,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void RRCA(byte cmd)
         {
-            regs.F = (byte)(rrcaf[regs.A] | (regs.F & (byte)(ZFLAGS.S | ZFLAGS.Z | ZFLAGS.PV)));
+            regs.F = (byte)(rrcaf[regs.A] | (regs.F & (byte)(CpuFlags.S | CpuFlags.Z | CpuFlags.Pv)));
             int x = regs.A;
             if ((x & 0x01) != 0) x = (x >> 1) | 0x80;
             else x >>= 1;
@@ -118,16 +118,16 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void RLA(byte cmd)
         {
-            bool carry = (regs.F & (byte)ZFLAGS.C) != 0;
-            regs.F = (byte)(rlcaf[regs.A] | (regs.F & (byte)(ZFLAGS.S | ZFLAGS.Z | ZFLAGS.PV))); // use same table with rlca
+            bool carry = (regs.F & (byte)CpuFlags.C) != 0;
+            regs.F = (byte)(rlcaf[regs.A] | (regs.F & (byte)(CpuFlags.S | CpuFlags.Z | CpuFlags.Pv))); // use same table with rlca
             regs.A = (byte)((regs.A << 1) & 0xFF);
             if (carry) regs.A |= (byte)0x01;
         }
 
         private void RRA(byte cmd)
         {
-            bool carry = (regs.F & (byte)ZFLAGS.C) != 0;
-            regs.F = (byte)(rrcaf[regs.A] | (regs.F & (byte)(ZFLAGS.S | ZFLAGS.Z | ZFLAGS.PV))); // use same table with rrca
+            bool carry = (regs.F & (byte)CpuFlags.C) != 0;
+            regs.F = (byte)(rrcaf[regs.A] | (regs.F & (byte)(CpuFlags.S | CpuFlags.Z | CpuFlags.Pv))); // use same table with rrca
             regs.A = (byte)(regs.A >> 1);
             if (carry) regs.A |= (byte)0x80;
         }
@@ -140,22 +140,22 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void CPL(byte cmd)
         {
             regs.A ^= (byte)0xFF;
-            regs.F = (byte)((regs.F & (int)~(ZFLAGS.F3 | ZFLAGS.F5)) | (int)(ZFLAGS.N | ZFLAGS.H) | (regs.A & (int)(ZFLAGS.F3 | ZFLAGS.F5)));
+            regs.F = (byte)((regs.F & (int)~(CpuFlags.F3 | CpuFlags.F5)) | (int)(CpuFlags.N | CpuFlags.H) | (regs.A & (int)(CpuFlags.F3 | CpuFlags.F5)));
         }
 
         private void SCF(byte cmd)
         {
             //regs.F = (byte)((regs.F & (int)~(ZFLAGS.H | ZFLAGS.N)) | (regs.A & (int)(ZFLAGS.F3 | ZFLAGS.F5)) | (int)ZFLAGS.C);
-            regs.F = (byte)((regs.F & ((int)ZFLAGS.PV | (int)ZFLAGS.Z | (int)ZFLAGS.S)) |
-                (regs.A & ((int)ZFLAGS.F3 | (int)ZFLAGS.F5)) |
-                (int)ZFLAGS.C);
+            regs.F = (byte)((regs.F & ((int)CpuFlags.Pv | (int)CpuFlags.Z | (int)CpuFlags.S)) |
+                (regs.A & ((int)CpuFlags.F3 | (int)CpuFlags.F5)) |
+                (int)CpuFlags.C);
         }
 
         private void CCF(byte cmd)
         {
             //regs.F = (byte)(((regs.F & (int)~(ZFLAGS.N | ZFLAGS.H)) | ((regs.F << 4) & (int)ZFLAGS.H) | (regs.A & (int)(ZFLAGS.F3 | ZFLAGS.F5))) ^ (int)ZFLAGS.C);
-            regs.F = (byte)((regs.F & ((int)ZFLAGS.PV | (int)ZFLAGS.Z | (int)ZFLAGS.S)) |
-                ((regs.F & (int)ZFLAGS.C) != 0 ? (int)ZFLAGS.H : (int)ZFLAGS.C) | (regs.A & ((int)ZFLAGS.F3 | (int)ZFLAGS.F5)));
+            regs.F = (byte)((regs.F & ((int)CpuFlags.Pv | (int)CpuFlags.Z | (int)CpuFlags.S)) |
+                ((regs.F & (int)CpuFlags.C) != 0 ? (int)CpuFlags.H : (int)CpuFlags.C) | (regs.A & ((int)CpuFlags.F3 | (int)CpuFlags.F5)));
         }
 
         #endregion
@@ -164,10 +164,10 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         static private byte[] conds = new byte[4] 
         { 
-            (byte)ZFLAGS.Z, 
-            (byte)ZFLAGS.C, 
-            (byte)ZFLAGS.PV, 
-            (byte)ZFLAGS.S 
+            (byte)CpuFlags.Z, 
+            (byte)CpuFlags.C, 
+            (byte)CpuFlags.Pv, 
+            (byte)CpuFlags.S 
         };
 
         private void DJNZ(byte cmd)      // DJNZ nn

@@ -24,16 +24,16 @@ namespace ZXMAK2.Engine.Cpu.Processor
             regs.BC--;
             val += regs.A;
 
-            regs.F = (byte)((regs.F & (int)~(ZFLAGS.N | ZFLAGS.H | ZFLAGS.PV | ZFLAGS.F3 | ZFLAGS.F5)) |
-                (val & (int)ZFLAGS.F3) | ((val << 4) & (int)ZFLAGS.F5));
-            if (regs.BC != 0) regs.F |= (byte)ZFLAGS.PV;
+            regs.F = (byte)((regs.F & (int)~(CpuFlags.N | CpuFlags.H | CpuFlags.Pv | CpuFlags.F3 | CpuFlags.F5)) |
+                (val & (int)CpuFlags.F3) | ((val << 4) & (int)CpuFlags.F5));
+            if (regs.BC != 0) regs.F |= (byte)CpuFlags.Pv;
         }
 
         private void ED_CPI(byte cmd)
         {
             // 16T (4, 4, 3, 5)
 
-            byte cf = (byte)(regs.F & (int)ZFLAGS.C);
+            byte cf = (byte)(regs.F & (int)CpuFlags.C);
             byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             RDNOMREQ(regs.HL); Tact++;
@@ -43,7 +43,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             regs.HL++;
             regs.F = (byte)(cpf8b[regs.A * 0x100 + val] + cf);
-            if (--regs.BC != 0) regs.F |= (byte)ZFLAGS.PV;
+            if (--regs.BC != 0) regs.F |= (byte)CpuFlags.Pv;
             regs.MW++;
         }
 
@@ -63,10 +63,10 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             //FUSE
             byte flgtmp = (byte)(val + regs.C + 1);
-            regs.F = (byte)(log_f[regs.B] & (int)~ZFLAGS.PV);
-            if ((log_f[(flgtmp & 0x07) ^ regs.B] & (int)ZFLAGS.PV) != 0) regs.F |= (byte)ZFLAGS.PV;
-            if (flgtmp < val) regs.F |= (byte)(ZFLAGS.H | ZFLAGS.C);
-            if ((val & 0x80) != 0) regs.F |= (byte)ZFLAGS.N;
+            regs.F = (byte)(log_f[regs.B] & (int)~CpuFlags.Pv);
+            if ((log_f[(flgtmp & 0x07) ^ regs.B] & (int)CpuFlags.Pv) != 0) regs.F |= (byte)CpuFlags.Pv;
+            if (flgtmp < val) regs.F |= (byte)(CpuFlags.H | CpuFlags.C);
+            if ((val & 0x80) != 0) regs.F |= (byte)CpuFlags.N;
 
             Tact++; //?? really?
         }
@@ -87,10 +87,10 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             //FUSE
             byte flgtmp = (byte)(val + regs.L);
-            regs.F = (byte)(log_f[regs.B] & (int)~ZFLAGS.PV);
-            if ((log_f[(flgtmp & 0x07) ^ regs.B] & (int)ZFLAGS.PV) != 0) regs.F |= (byte)ZFLAGS.PV;
-            if (flgtmp < val) regs.F |= (byte)(ZFLAGS.H | ZFLAGS.C);
-            if ((val & 0x80) != 0) regs.F |= (byte)ZFLAGS.N;
+            regs.F = (byte)(log_f[regs.B] & (int)~CpuFlags.Pv);
+            if ((log_f[(flgtmp & 0x07) ^ regs.B] & (int)CpuFlags.Pv) != 0) regs.F |= (byte)CpuFlags.Pv;
+            if (flgtmp < val) regs.F |= (byte)(CpuFlags.H | CpuFlags.C);
+            if ((val & 0x80) != 0) regs.F |= (byte)CpuFlags.N;
 
             Tact++; //?? really?
         }
@@ -110,16 +110,16 @@ namespace ZXMAK2.Engine.Cpu.Processor
             regs.BC--;
             val += regs.A;
 
-            regs.F = (byte)((regs.F & (int)~(ZFLAGS.N | ZFLAGS.H | ZFLAGS.PV | ZFLAGS.F3 | ZFLAGS.F5)) |
-                (val & (int)ZFLAGS.F3) | ((val << 4) & (int)ZFLAGS.F5));
-            if (regs.BC != 0) regs.F |= (byte)ZFLAGS.PV;
+            regs.F = (byte)((regs.F & (int)~(CpuFlags.N | CpuFlags.H | CpuFlags.Pv | CpuFlags.F3 | CpuFlags.F5)) |
+                (val & (int)CpuFlags.F3) | ((val << 4) & (int)CpuFlags.F5));
+            if (regs.BC != 0) regs.F |= (byte)CpuFlags.Pv;
         }
 
         private void ED_CPD(byte cmd)
         {
             // 16T (4, 4, 3, 5)
 
-            byte cf = (byte)(regs.F & (int)ZFLAGS.C);
+            byte cf = (byte)(regs.F & (int)CpuFlags.C);
             byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             RDNOMREQ(regs.HL); Tact++;
@@ -131,7 +131,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             regs.BC--;
             regs.MW--;
             regs.F = (byte)(cpf8b[regs.A * 0x100 + val] + cf);
-            if (regs.BC != 0) regs.F |= (byte)ZFLAGS.PV;
+            if (regs.BC != 0) regs.F |= (byte)CpuFlags.Pv;
         }
 
         private void ED_IND(byte cmd)   // IND [16T]
@@ -150,10 +150,10 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             //FUSE
             byte flgtmp = (byte)(val + regs.C - 1);
-            regs.F = (byte)(log_f[regs.B] & (int)~ZFLAGS.PV);
-            if ((log_f[(flgtmp & 0x07) ^ regs.B] & (int)ZFLAGS.PV) != 0) regs.F |= (byte)ZFLAGS.PV;
-            if (flgtmp < val) regs.F |= (byte)(ZFLAGS.H | ZFLAGS.C);
-            if ((val & 0x80) != 0) regs.F |= (byte)ZFLAGS.N;
+            regs.F = (byte)(log_f[regs.B] & (int)~CpuFlags.Pv);
+            if ((log_f[(flgtmp & 0x07) ^ regs.B] & (int)CpuFlags.Pv) != 0) regs.F |= (byte)CpuFlags.Pv;
+            if (flgtmp < val) regs.F |= (byte)(CpuFlags.H | CpuFlags.C);
+            if ((val & 0x80) != 0) regs.F |= (byte)CpuFlags.N;
 
             Tact++; // ?? really?
         }
@@ -174,10 +174,10 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             //FUSE
             byte flgtmp = (byte)(val + regs.L);
-            regs.F = (byte)(log_f[regs.B] & (int)~ZFLAGS.PV);
-            if ((log_f[(flgtmp & 0x07) ^ regs.B] & (int)ZFLAGS.PV) != 0) regs.F |= (byte)ZFLAGS.PV;
-            if (flgtmp < val) regs.F |= (byte)(ZFLAGS.H | ZFLAGS.C);
-            if ((val & 0x80) != 0) regs.F |= (byte)ZFLAGS.N;
+            regs.F = (byte)(log_f[regs.B] & (int)~CpuFlags.Pv);
+            if ((log_f[(flgtmp & 0x07) ^ regs.B] & (int)CpuFlags.Pv) != 0) regs.F |= (byte)CpuFlags.Pv;
+            if (flgtmp < val) regs.F |= (byte)(CpuFlags.H | CpuFlags.C);
+            if ((val & 0x80) != 0) regs.F |= (byte)CpuFlags.N;
 
             Tact++; // ?? really?
         }
@@ -196,8 +196,8 @@ namespace ZXMAK2.Engine.Cpu.Processor
             regs.BC--;
             val += regs.A;
 
-            regs.F = (byte)((regs.F & (int)~(ZFLAGS.N | ZFLAGS.H | ZFLAGS.PV | ZFLAGS.F3 | ZFLAGS.F5)) |
-                (val & (int)ZFLAGS.F3) | ((val << 4) & (int)ZFLAGS.F5));
+            regs.F = (byte)((regs.F & (int)~(CpuFlags.N | CpuFlags.H | CpuFlags.Pv | CpuFlags.F3 | CpuFlags.F5)) |
+                (val & (int)CpuFlags.F3) | ((val << 4) & (int)CpuFlags.F5));
             if (regs.BC != 0)
             {
                 WRNOMREQ(regs.DE); Tact++;
@@ -208,7 +208,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 regs.PC--;
                 regs.MW = regs.PC;
                 regs.PC--;
-                regs.F |= (byte)ZFLAGS.PV;
+                regs.F |= (byte)CpuFlags.Pv;
             }
             regs.HL++;
             regs.DE++;
@@ -220,7 +220,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             //BC!=0 => 21T (4, 4, 3, 5, 5)
 
             regs.MW++;
-            byte cf = (byte)(regs.F & (int)ZFLAGS.C);
+            byte cf = (byte)(regs.F & (int)CpuFlags.C);
             byte val = RDMEM(regs.HL); Tact += 3;
             RDNOMREQ(regs.HL); Tact++;
             RDNOMREQ(regs.HL); Tact++;
@@ -233,8 +233,8 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             if (regs.BC != 0)
             {
-                regs.F |= (byte)ZFLAGS.PV;
-                if ((regs.F & (int)ZFLAGS.Z) == 0)
+                regs.F |= (byte)CpuFlags.Pv;
+                if ((regs.F & (int)CpuFlags.Z) == 0)
                 {
                     RDNOMREQ(regs.HL); Tact++;
                     RDNOMREQ(regs.HL); Tact++;
@@ -271,9 +271,9 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 WRNOMREQ(regs.HL); Tact++;
                 WRNOMREQ(regs.HL); Tact++;
                 regs.PC -= 2;
-                regs.F |= (byte)ZFLAGS.PV;
+                regs.F |= (byte)CpuFlags.Pv;
             }
-            else regs.F &= (byte)~ZFLAGS.PV;
+            else regs.F &= (byte)~CpuFlags.Pv;
             regs.HL++;
         }
 
@@ -299,11 +299,11 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 RDNOMREQ(regs.BC); Tact++;
                 RDNOMREQ(regs.BC); Tact++;
                 regs.PC -= 2;
-                regs.F |= (byte)ZFLAGS.PV;
+                regs.F |= (byte)CpuFlags.Pv;
             }
-            else regs.F &= (byte)~ZFLAGS.PV;
-            regs.F &= (byte)~ZFLAGS.C;
-            if (regs.L == 0) regs.F |= (byte)ZFLAGS.C;
+            else regs.F &= (byte)~CpuFlags.Pv;
+            regs.F &= (byte)~CpuFlags.C;
+            if (regs.L == 0) regs.F |= (byte)CpuFlags.C;
             regs.MW = (ushort)(regs.BC + 1);
         }
 
@@ -321,8 +321,8 @@ namespace ZXMAK2.Engine.Cpu.Processor
             regs.BC--;
             val += regs.A;
 
-            regs.F = (byte)((regs.F & (int)~(ZFLAGS.N | ZFLAGS.H | ZFLAGS.PV | ZFLAGS.F3 | ZFLAGS.F5)) |
-                (val & (int)ZFLAGS.F3) | ((val << 4) & (int)ZFLAGS.F5));
+            regs.F = (byte)((regs.F & (int)~(CpuFlags.N | CpuFlags.H | CpuFlags.Pv | CpuFlags.F3 | CpuFlags.F5)) |
+                (val & (int)CpuFlags.F3) | ((val << 4) & (int)CpuFlags.F5));
             if (regs.BC != 0)
             {
                 WRNOMREQ(regs.DE); Tact++;
@@ -333,7 +333,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 regs.PC--;
                 regs.MW = regs.PC;
                 regs.PC--;
-                regs.F |= (byte)ZFLAGS.PV;
+                regs.F |= (byte)CpuFlags.Pv;
             }
             regs.HL--;
             regs.DE--;
@@ -345,7 +345,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             // BC!=0 => 21T (4, 4, 3, 5, 5)
 
             regs.MW--;
-            byte cf = (byte)(regs.F & (int)ZFLAGS.C);
+            byte cf = (byte)(regs.F & (int)CpuFlags.C);
             byte val = RDMEM(regs.HL); Tact += 3;
 
             RDNOMREQ(regs.HL); Tact++;
@@ -358,8 +358,8 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             if (regs.BC != 0)
             {
-                regs.F |= (byte)ZFLAGS.PV;
-                if ((regs.F & (int)ZFLAGS.Z) == 0)
+                regs.F |= (byte)CpuFlags.Pv;
+                if ((regs.F & (int)CpuFlags.Z) == 0)
                 {
                     RDNOMREQ(regs.HL); Tact++;
                     RDNOMREQ(regs.HL); Tact++;
@@ -397,9 +397,9 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 WRNOMREQ(regs.HL); Tact++;
                 WRNOMREQ(regs.HL); Tact++;
                 regs.PC -= 2;
-                regs.F |= (byte)ZFLAGS.PV;
+                regs.F |= (byte)CpuFlags.Pv;
             }
-            else regs.F &= (byte)~ZFLAGS.PV;
+            else regs.F &= (byte)~CpuFlags.Pv;
             regs.HL--;
         }
 
@@ -424,11 +424,11 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 RDNOMREQ(regs.BC); Tact++;
                 RDNOMREQ(regs.BC); Tact++;
                 regs.PC -= 2;
-                regs.F |= (byte)ZFLAGS.PV;
+                regs.F |= (byte)CpuFlags.Pv;
             }
-            else regs.F &= (byte)~ZFLAGS.PV;
-            regs.F &= (byte)~ZFLAGS.C;
-            if (regs.L == 0xFF) regs.F |= (byte)ZFLAGS.C;
+            else regs.F &= (byte)~CpuFlags.Pv;
+            regs.F &= (byte)~CpuFlags.C;
+            if (regs.L == 0xFF) regs.F |= (byte)CpuFlags.C;
             regs.MW = (ushort)(regs.BC - 1);
             regs.HL--;
         }
@@ -443,7 +443,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             int reg = (cmd & 0x38) >> 3;
             if (reg != CpuRegId.ZR_F)
                 regs[reg] = pval;
-            regs.F = (byte)(log_f[pval] | (regs.F & (int)ZFLAGS.C));
+            regs.F = (byte)(log_f[pval] | (regs.F & (int)CpuFlags.C));
             Tact += 4;
         }
 
@@ -474,14 +474,14 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             regs.MW = (ushort)(regs.HL + 1);
             int reg = (cmd & 0x30) >> 4;
-            byte fl = (byte)((((regs.HL & 0x0FFF) + (regs.GetPair(reg) & 0x0FFF) + (regs.F & (int)ZFLAGS.C)) >> 8) & (int)ZFLAGS.H);
-            uint tmp = (uint)((regs.HL & 0xFFFF) + (regs.GetPair(reg) & 0xFFFF) + (regs.F & (int)ZFLAGS.C));  // AF???
-            if ((tmp & 0x10000) != 0) fl |= (byte)ZFLAGS.C;
-            if ((tmp & 0xFFFF) == 0) fl |= (byte)ZFLAGS.Z;
-            int ri = (int)(short)regs.HL + (int)(short)regs.GetPair(reg) + (int)(regs.F & (int)ZFLAGS.C);
-            if (ri < -0x8000 || ri >= 0x8000) fl |= (byte)ZFLAGS.PV;
+            byte fl = (byte)((((regs.HL & 0x0FFF) + (regs.GetPair(reg) & 0x0FFF) + (regs.F & (int)CpuFlags.C)) >> 8) & (int)CpuFlags.H);
+            uint tmp = (uint)((regs.HL & 0xFFFF) + (regs.GetPair(reg) & 0xFFFF) + (regs.F & (int)CpuFlags.C));  // AF???
+            if ((tmp & 0x10000) != 0) fl |= (byte)CpuFlags.C;
+            if ((tmp & 0xFFFF) == 0) fl |= (byte)CpuFlags.Z;
+            int ri = (int)(short)regs.HL + (int)(short)regs.GetPair(reg) + (int)(regs.F & (int)CpuFlags.C);
+            if (ri < -0x8000 || ri >= 0x8000) fl |= (byte)CpuFlags.Pv;
             regs.HL = (ushort)tmp;
-            regs.F = (byte)(fl | (regs.H & (int)(ZFLAGS.F3 | ZFLAGS.F5 | ZFLAGS.S)));
+            regs.F = (byte)(fl | (regs.H & (int)(CpuFlags.F3 | CpuFlags.F5 | CpuFlags.S)));
         }
 
         private void ED_SBCHLRR(byte cmd)   // sbc hl,RR
@@ -496,15 +496,15 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             regs.MW = (ushort)(regs.HL + 1);
             int reg = (cmd & 0x30) >> 4;
-            byte fl = (byte)ZFLAGS.N;
-            fl |= (byte)((((regs.HL & 0x0FFF) - (regs.GetPair(reg) & 0x0FFF) - (regs.F & (int)ZFLAGS.C)) >> 8) & (int)ZFLAGS.H);
-            uint tmp = (uint)((regs.HL & 0xFFFF) - (regs.GetPair(reg) & 0xFFFF) - (regs.F & (int)ZFLAGS.C));  // AF???
-            if ((tmp & 0x10000) != 0) fl |= (byte)ZFLAGS.C;
-            if ((tmp & 0xFFFF) == 0) fl |= (byte)ZFLAGS.Z;
-            int ri = (int)(short)regs.HL - (int)(short)regs.GetPair(reg) - (int)(regs.F & (int)ZFLAGS.C);
-            if (ri < -0x8000 || ri >= 0x8000) fl |= (byte)ZFLAGS.PV;
+            byte fl = (byte)CpuFlags.N;
+            fl |= (byte)((((regs.HL & 0x0FFF) - (regs.GetPair(reg) & 0x0FFF) - (regs.F & (int)CpuFlags.C)) >> 8) & (int)CpuFlags.H);
+            uint tmp = (uint)((regs.HL & 0xFFFF) - (regs.GetPair(reg) & 0xFFFF) - (regs.F & (int)CpuFlags.C));  // AF???
+            if ((tmp & 0x10000) != 0) fl |= (byte)CpuFlags.C;
+            if ((tmp & 0xFFFF) == 0) fl |= (byte)CpuFlags.Z;
+            int ri = (int)(short)regs.HL - (int)(short)regs.GetPair(reg) - (int)(regs.F & (int)CpuFlags.C);
+            if (ri < -0x8000 || ri >= 0x8000) fl |= (byte)CpuFlags.Pv;
             regs.HL = (ushort)tmp;
-            regs.F = (byte)(fl | (regs.H & (int)(ZFLAGS.F3 | ZFLAGS.F5 | ZFLAGS.S)));
+            regs.F = (byte)(fl | (regs.H & (int)(CpuFlags.F3 | CpuFlags.F5 | CpuFlags.S)));
         }
 
         private void ED_LDRR_NN_(byte cmd)  // ld RR,(NN)
@@ -592,11 +592,11 @@ namespace ZXMAK2.Engine.Cpu.Processor
             else
                 regs.A = regs.R;
 
-            regs.F = (byte)(((regs.F & (byte)ZFLAGS.C) | log_f[regs.A]) & ~(byte)ZFLAGS.PV);
+            regs.F = (byte)(((regs.F & (byte)CpuFlags.C) | log_f[regs.A]) & ~(byte)CpuFlags.Pv);
 
             if (!(INT && IFF1) && IFF2)
             {
-                regs.F |= (byte)ZFLAGS.PV;
+                regs.F |= (byte)CpuFlags.Pv;
             }
         }
 
@@ -616,7 +616,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             WRMEM(regs.HL, val); Tact += 3;
             regs.A = (byte)((regs.A & 0xF0) | (tmp & 0x0F));
-            regs.F = (byte)(log_f[regs.A] | (regs.F & (int)ZFLAGS.C));
+            regs.F = (byte)(log_f[regs.A] | (regs.F & (int)CpuFlags.C));
         }
 
         private void ED_RLD(byte cmd)       // RLD
@@ -635,7 +635,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             WRMEM(regs.HL, val); Tact += 3;
             regs.A = (byte)((regs.A & 0xF0) | (tmp >> 4));
-            regs.F = (byte)(log_f[regs.A] | (regs.F & (int)ZFLAGS.C));
+            regs.F = (byte)(log_f[regs.A] | (regs.F & (int)CpuFlags.C));
         }
 
         private void ED_NEG(byte cmd)       // NEG

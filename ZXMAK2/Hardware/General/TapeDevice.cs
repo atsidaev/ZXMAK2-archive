@@ -164,7 +164,7 @@ namespace ZXMAK2.Hardware.General
             ushort addr = m_cpu.regs.PC;
             if (!UseTraps || !m_memory.IsRom48 ||
                 !(addr == 0x056B || addr == 0x059E) ||
-                (m_cpu.regs._AF & (int)ZFLAGS.C) == 0) // verify?
+                (m_cpu.regs._AF & (int)CpuFlags.C) == 0) // verify?
             {
                 return;
             }
