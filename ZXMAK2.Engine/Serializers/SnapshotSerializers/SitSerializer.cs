@@ -12,7 +12,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 {
     public class SitSerializer : SnapshotSerializerBase
 	{
-		public SitSerializer(SpectrumBase spec)
+		public SitSerializer(Spectrum spec)
             : base(spec)
 		{
 		}

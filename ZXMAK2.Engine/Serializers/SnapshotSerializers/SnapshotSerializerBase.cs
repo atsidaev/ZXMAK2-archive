@@ -8,10 +8,10 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 {
     public abstract class SnapshotSerializerBase : FormatSerializer
     {
-        protected SpectrumBase _spec;
+        protected Spectrum _spec;
 
 
-        public SnapshotSerializerBase(SpectrumBase spec)
+        public SnapshotSerializerBase(Spectrum spec)
         {
             _spec = spec;
         }

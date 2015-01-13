@@ -14,9 +14,9 @@ namespace ZXMAK2.Serializers
 {
 	public class LoadManager : SerializeManager
 	{
-		private readonly SpectrumBase _spec;
+		private readonly Spectrum _spec;
 
-        public LoadManager(SpectrumBase spec)
+        public LoadManager(Spectrum spec)
         {
             _spec = spec;
             Clear();
