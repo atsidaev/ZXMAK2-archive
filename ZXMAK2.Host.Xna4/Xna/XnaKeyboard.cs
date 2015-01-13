@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.IO;
-using System.Xml;
-using System.Reflection;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
+
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities.Tools;
-using ZXMAK2.Host.Entities;
 using ZxmakKey = ZXMAK2.Host.Entities.Key;
 using XnaKey = Microsoft.Xna.Framework.Input.Keys;
 

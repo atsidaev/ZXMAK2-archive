@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
-using System.Diagnostics;
 using Microsoft.Xna.Framework.Audio;
 using ZXMAK2.Host.Interfaces;
 
@@ -30,8 +29,6 @@ namespace ZXMAK2.Host.Xna4.Xna
             
             var needSize = m_soundEffect.GetSampleSizeInBytes(
                 TimeSpan.FromMilliseconds(20));
-            Trace.WriteLine(
-                string.Format("GetSampleSizeInBytes = {0}", needSize));
             var bufferCount = needSize * 2 / m_bufferLength;
             if (bufferCount < 2)
             {
