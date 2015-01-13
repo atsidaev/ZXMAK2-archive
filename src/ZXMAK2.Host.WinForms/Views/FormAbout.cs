@@ -1,9 +1,8 @@
 using System;
 using System.Windows.Forms;
 using System.Diagnostics;
+
 using ZXMAK2.Resources;
-using ZXMAK2.Presentation.Interfaces;
-using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
 
 
