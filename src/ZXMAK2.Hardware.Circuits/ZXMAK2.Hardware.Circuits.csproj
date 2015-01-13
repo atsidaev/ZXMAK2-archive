@@ -56,7 +56,7 @@
     <Compile Include="SecureDigital\SdState.cs" />
     <Compile Include="SecureDigital\SdStatus.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="Wd1793.cs" />
+    <Compile Include="Fdd\Wd1793.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZXMAK2.Crc\ZXMAK2.Crc.csproj">
