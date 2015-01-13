@@ -104,8 +104,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 string  asmToCompileOrFileName;
                 byte[]  compiledOut = new byte[65536-16384 + 2/*memory start when --binfile is used*/];
                 byte[]  errReason = new byte[1024];
-                int     codeSize;
-                int     errFileLine;
+                int     codeSize = 0;
+                int     errFileLine = 0;
                 byte[]  errFileName = new byte[512];
 
                 string compileOption;
