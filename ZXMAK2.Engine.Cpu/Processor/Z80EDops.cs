@@ -441,7 +441,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             byte pval = RDPORT(regs.BC);
             regs.MW++;
             int reg = (cmd & 0x38) >> 3;
-            if (reg != CpuRegId.ZR_F)
+            if (reg != CpuRegId.F)
                 regs[reg] = pval;
             regs.F = (byte)(log_f[pval] | (regs.F & (int)CpuFlags.C));
             Tact += 4;
@@ -454,7 +454,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             regs.MW = regs.BC;
             int reg = (cmd & 0x38) >> 3;
 
-            if (reg != CpuRegId.ZR_F)
+            if (reg != CpuRegId.F)
                 WRPORT(regs.BC, regs[reg]);
             else
                 WRPORT(regs.BC, (byte)(CpuType == CpuType.Z80 ? 0x00 : 0xFF));	// 0 for Z80 and 0xFF for Z84

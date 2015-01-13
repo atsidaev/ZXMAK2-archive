@@ -374,7 +374,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
             RDNOMREQ(regs.IR); Tact += 1;
             int rr = (cmd & 0x30) >> 4;
-            ushort val = rr == CpuRegId.ZR_SP ? regs.AF : regs.GetPair(rr);
+            ushort val = rr == CpuRegId.Sp ? regs.AF : regs.GetPair(rr);
 
             regs.SP--;
             WRMEM(regs.SP, (byte)(val >> 8)); Tact += 3;
@@ -394,7 +394,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             val |= (ushort)(RDMEM(regs.SP) << 8);
             regs.SP++;
             int rr = (cmd & 0x30) >> 4;
-            if (rr == CpuRegId.ZR_SP) regs.AF = val;
+            if (rr == CpuRegId.Sp) regs.AF = val;
             else regs.SetPair(rr, val);
             Tact += 3;
         }
