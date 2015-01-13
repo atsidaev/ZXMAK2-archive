@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectSound;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.WinForms.Tools;
 
 
 
@@ -161,10 +162,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
             fixed (byte* srcb = buf)
             {
                 uint* src = (uint*)srcb;
-                for (var i = 0; i < length / 4; i++)
-                {
-                    dst[i] = src[i];
-                }
+                NativeMethods.CopyMemory(dst, src, length);
+                //for (var i = 0; i < length / 4; i++)
+                //{
+                //    dst[i] = src[i];
+                //}
                 lastSample = dst[length / 4 - 1];
             }
             lock (_fillQueue)
