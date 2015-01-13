@@ -58,7 +58,7 @@ namespace ZXMAK2.Hardware.Profi
             {
                 if (m_ideFileName != null)
                 {
-                    m_ata.Load(m_ideFileName);
+                    m_ata.Devices[0].Open(m_ideFileName);
                 }
             }
         }

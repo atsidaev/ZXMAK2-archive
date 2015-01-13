@@ -86,7 +86,7 @@ namespace ZXMAK2.Hardware.General
                 if (m_nvramFileName != null)
                     m_nvram.Load(m_nvramFileName);
                 if (m_ideFileName != null)
-                    m_ata.Load(m_ideFileName);
+                    m_ata.Devices[0].Open(m_ideFileName);
             }
         }
 
@@ -215,7 +215,7 @@ namespace ZXMAK2.Hardware.General
             iorqge = false;
             value = m_nvram.Read();
             value &= 0x7F;
-            value |= (byte)(m_ata.read_intrq() & 0x80);
+            value |= (byte)(m_ata.GetIntRq() & 0x80);
             if (LogIo)
             {
                 Logger.Info("IDE RD SYS: #{0:X2} @ PC=#{1:X4}", value, m_cpu.regs.PC);
