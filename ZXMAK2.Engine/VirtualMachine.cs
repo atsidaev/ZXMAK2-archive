@@ -56,7 +56,7 @@ namespace ZXMAK2.Engine
         {
             m_host = host;
             SyncSource = SyncSource.Sound;
-            Spectrum = new SpectrumConcrete();
+            Spectrum = new SpectrumBase();
             Spectrum.UpdateState += OnUpdateState;
             Spectrum.Breakpoint += OnBreakpoint;
             Spectrum.UpdateFrame += OnUpdateFrame;

@@ -152,7 +152,7 @@ namespace Test
         {
             var config = new XmlDocument();
             config.LoadXml(Resources.machines_test);
-            var machine = new SpectrumConcrete();
+            var machine = new SpectrumBase();
             machine.BusManager.LoadConfigXml(config.DocumentElement);
             //var sxml = new XmlDocument();
             //var node = sxml.AppendChild(sxml.CreateElement("Bus"));
