@@ -36,7 +36,7 @@ namespace ZXMAK2.Engine
 
         private IHost m_host;
 
-        public SpectrumBase Spectrum { get; private set; }
+        public Spectrum Spectrum { get; private set; }
         public IBus Bus { get { return Spectrum.BusManager; } }
 
         
@@ -56,7 +56,7 @@ namespace ZXMAK2.Engine
         {
             m_host = host;
             SyncSource = SyncSource.Sound;
-            Spectrum = new SpectrumBase();
+            Spectrum = new Spectrum();
             Spectrum.UpdateState += OnUpdateState;
             Spectrum.Breakpoint += OnBreakpoint;
             Spectrum.UpdateFrame += OnUpdateFrame;

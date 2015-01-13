@@ -14,7 +14,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 {
     public class SzxSerializer : SnapshotSerializerBase
     {
-        public SzxSerializer(SpectrumBase spec)
+        public SzxSerializer(Spectrum spec)
             : base(spec)
         {
         }

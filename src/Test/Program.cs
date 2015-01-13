@@ -148,11 +148,11 @@ namespace Test
 			Console.ForegroundColor = tmp2;
 		}
 
-        private static SpectrumBase GetDefaultTestMachine()
+        private static Spectrum GetDefaultTestMachine()
         {
             var config = new XmlDocument();
             config.LoadXml(Resources.machines_test);
-            var machine = new SpectrumBase();
+            var machine = new Spectrum();
             machine.BusManager.LoadConfigXml(config.DocumentElement);
             //var sxml = new XmlDocument();
             //var node = sxml.AppendChild(sxml.CreateElement("Bus"));

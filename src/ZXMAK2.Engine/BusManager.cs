@@ -82,7 +82,7 @@ namespace ZXMAK2.Engine
         }
 
 
-        public void Init(SpectrumBase spectrum, bool sandBox)
+        public void Init(Spectrum spectrum, bool sandBox)
         {
             m_sandBox = sandBox;
             LoadManager = new LoadManager(spectrum);

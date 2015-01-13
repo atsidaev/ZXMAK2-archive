@@ -12,7 +12,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 {
     public class RzxSerializer : SnapshotSerializerBase
     {
-        public RzxSerializer(SpectrumBase spec)
+        public RzxSerializer(Spectrum spec)
             : base(spec)
         {
         }
@@ -43,14 +43,14 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
         #endregion
 
 
-        private SpectrumBase m_spectrum;
+        private Spectrum m_spectrum;
         private Stream m_stream;
         private UInt32 m_flags;
         private int m_majorRevision;
         private int m_minorRevision;
 
 
-        public RzxBlockReader(SpectrumBase spectrum, Stream stream)
+        public RzxBlockReader(Spectrum spectrum, Stream stream)
         {
             m_spectrum = spectrum;
             m_stream = stream;
