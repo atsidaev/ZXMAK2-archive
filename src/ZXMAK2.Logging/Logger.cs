@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Text;
-using System.Diagnostics;
 using System.IO;
-using log4net;
 using System.Globalization;
+using log4net;
+
 
 namespace ZXMAK2
 {
