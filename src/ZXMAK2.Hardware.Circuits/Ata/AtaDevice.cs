@@ -71,28 +71,28 @@ namespace ZXMAK2.Hardware.Circuits.Ata
         private void configure(AtaDeviceInfo cfg)
         {
             ata_p.Close();
-            c = cfg.c;
-            h = cfg.h;
-            s = cfg.s;
-            lba = cfg.lba;
+            c = cfg.Cylinders;
+            h = cfg.Heads;
+            s = cfg.Sectors;
+            lba = cfg.Lba;
 
             for (int i = 0; i < regs.Length; i++)	// clear registers
                 regs[i] = 0;
             command_ok(); // reset state and transfer position
 
             phys_dev = -1;
-            if (String.IsNullOrEmpty(cfg.image))
+            if (String.IsNullOrEmpty(cfg.FileName))
                 return;
 
             var filedev = new PhysicalDeviceInfo();
-            filedev.filename = cfg.image;
-            filedev.type = cfg.cd ? DEVTYPE.ATA_FILECD : DEVTYPE.ATA_FILEHDD;
+            filedev.filename = cfg.FileName;
+            filedev.type = cfg.IsCdrom ? DEVTYPE.ATA_FILECD : DEVTYPE.ATA_FILEHDD;
 
             bool success = false;
             if (filedev.type == DEVTYPE.ATA_FILEHDD)
             {
                 filedev.usage = DEVUSAGE.ATA_OP_USE;
-                success = ata_p.Open(filedev, cfg.readOnly | cfg.cd);
+                success = ata_p.Open(filedev, cfg.ReadOnly | cfg.IsCdrom);
                 atapi = false;
             }
             //if (filedev.type == DEVTYPE.ATA_FILECD)
@@ -102,8 +102,10 @@ namespace ZXMAK2.Hardware.Circuits.Ata
             //    atapi = 1;
             //}
             if (success)
+            {
                 return;
-            cfg.image = string.Empty;
+            }
+            filedev.filename = string.Empty;
         }
 
 
