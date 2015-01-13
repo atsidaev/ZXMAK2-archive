@@ -5,31 +5,32 @@ using ZXMAK2.Engine.Entities;
 
 namespace ZXMAK2.Engine.Interfaces
 {
-	public interface IDebuggable
-	{
-		void DoReset();
-		void DoStepInto();
-		void DoStepOver();
-		void DoRun();
-		void DoStop();
+    public interface IDebuggable
+    {
+        void DoReset();
+        void DoStepInto();
+        void DoStepOver();
+        void DoRun();
+        void DoStop();
 
-		byte ReadMemory(ushort addr);
-		void WriteMemory(ushort addr, byte value);
-		void ReadMemory(ushort addr, byte[] data, int offset, int length);
-		void WriteMemory(ushort addr, byte[] data, int offset, int length);
+        byte ReadMemory(ushort addr);
+        void WriteMemory(ushort addr, byte value);
+        void ReadMemory(ushort addr, byte[] data, int offset, int length);
+        void WriteMemory(ushort addr, byte[] data, int offset, int length);
 
-		void AddBreakpoint(Breakpoint bp);
-		void RemoveBreakpoint(Breakpoint bp);
-		Breakpoint[] GetBreakpointList();
-		void ClearBreakpoints();
+        void AddBreakpoint(Breakpoint bp);
+        void RemoveBreakpoint(Breakpoint bp);
+        Breakpoint[] GetBreakpointList();
+        void ClearBreakpoints();
 
-		event EventHandler UpdateState;
-		event EventHandler Breakpoint;
-		bool IsRunning { get; }
-		CpuUnit CPU { get; }
-		int GetFrameTact();
-		int FrameTactCount { get; }
+        event EventHandler UpdateState;
+        event EventHandler Breakpoint;
+        bool IsRunning { get; }
+        CpuUnit CPU { get; }
+        IBus Bus { get; }
+        int GetFrameTact();
+        int FrameTactCount { get; }
 
-		IRzxState RzxState { get; }
-	}
+        IRzxState RzxState { get; }
+    }
 }

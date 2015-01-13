@@ -132,7 +132,7 @@ namespace ZXMAK2.Engine
 
         #region Debugger
 
-        public void DoReset()
+        public void DebugReset()
         {
             CPU.RST = true;
             OnExecCycle();
@@ -140,13 +140,13 @@ namespace ZXMAK2.Engine
             OnUpdateState();
         }
 
-        public void DoNmi()
+        public void DebugNmi()
         {
             BusManager.RequestNmi(BusManager.FrameTactCount * 50);
             OnUpdateState();
         }
 
-        public void DoStepInto()
+        public void DebugStepInto()
         {
             if (IsRunning)
             {
@@ -156,7 +156,7 @@ namespace ZXMAK2.Engine
             OnUpdateState();
         }
 
-        public void DoStepOver()
+        public void DebugStepOver()
         {
             if (IsRunning)
             {
@@ -166,7 +166,7 @@ namespace ZXMAK2.Engine
             OnUpdateState();
         }
 
-        public byte ReadMemory(ushort addr)
+        public byte DebugReadMemory(ushort addr)
         {
             var memory = _bus.FindDevice<IMemoryDevice>();
             if (memory == null)
@@ -176,7 +176,7 @@ namespace ZXMAK2.Engine
             return memory.RDMEM_DBG(addr);
         }
 
-        public void WriteMemory(ushort addr, byte value)
+        public void DebugWriteMemory(ushort addr, byte value)
         {
             var memory = _bus.FindDevice<IMemoryDevice>();
             if (memory == null)
@@ -187,22 +187,22 @@ namespace ZXMAK2.Engine
             OnUpdateState();
         }
 
-        public void AddBreakpoint(Breakpoint bp)
+        public void DebugAddBreakpoint(Breakpoint bp)
         {
             _breakpoints.Add(bp);
         }
 
-        public void RemoveBreakpoint(Breakpoint bp)
+        public void DebugRemoveBreakpoint(Breakpoint bp)
         {
             _breakpoints.Remove(bp);
         }
 
-        public Breakpoint[] GetBreakpointList()
+        public Breakpoint[] DebugGetBreakpointList()
         {
             return _breakpoints.ToArray();
         }
 
-        public void ClearBreakpoints()
+        public void DebugClearBreakpoints()
         {
             _breakpoints.Clear();
         }
@@ -276,7 +276,7 @@ namespace ZXMAK2.Engine
         {
             var tactLimit = _tactLimitStepOver;
             var t = CPU.Tact;
-            var dasmTool = new DasmTool(ReadMemory);
+            var dasmTool = new DasmTool(DebugReadMemory);
             int len;
             var opCodeStr = dasmTool.GetMnemonic(CPU.regs.PC, out len);
             var nextAddr = (ushort)((CPU.regs.PC + len) & 0xFFFF);

@@ -281,7 +281,7 @@ namespace ZXMAK2.Engine
         public void Init()
         {
             Spectrum.Init();
-            Spectrum.DoReset();
+            Spectrum.DebugReset();
             Spectrum.BusManager.SetDebuggable(this);
         }
 
@@ -363,7 +363,7 @@ namespace ZXMAK2.Engine
                 var run = IsRunning;
                 DoStop();
                 m_bpTriggered = false;
-                Spectrum.DoReset();
+                Spectrum.DebugReset();
                 if (run && !m_bpTriggered)
                 {
                     DoRun();
@@ -379,7 +379,7 @@ namespace ZXMAK2.Engine
                 var run = IsRunning;
                 DoStop();
                 m_bpTriggered = false;
-                Spectrum.DoNmi();
+                Spectrum.DebugNmi();
                 if (run && !m_bpTriggered)
                 {
                     DoRun();
@@ -392,7 +392,7 @@ namespace ZXMAK2.Engine
         {
             lock (m_sync)
             {
-                Spectrum.DoStepInto();
+                Spectrum.DebugStepInto();
             }
             OnUpdateVideo();
         }
@@ -401,7 +401,7 @@ namespace ZXMAK2.Engine
         {
             lock (m_sync)
             {
-                Spectrum.DoStepOver();
+                Spectrum.DebugStepOver();
             }
             OnUpdateVideo();
         }
@@ -502,7 +502,7 @@ namespace ZXMAK2.Engine
         {
             lock (m_sync)
             {
-                Spectrum.AddBreakpoint(bp);
+                Spectrum.DebugAddBreakpoint(bp);
             }
         }
 
@@ -510,7 +510,7 @@ namespace ZXMAK2.Engine
         {
             lock (m_sync)
             {
-                Spectrum.RemoveBreakpoint(bp);
+                Spectrum.DebugRemoveBreakpoint(bp);
             }
         }
 
@@ -518,7 +518,7 @@ namespace ZXMAK2.Engine
         {
             lock (m_sync)
             {
-                return Spectrum.GetBreakpointList();
+                return Spectrum.DebugGetBreakpointList();
             }
         }
 
@@ -526,7 +526,7 @@ namespace ZXMAK2.Engine
         {
             lock (m_sync)
             {
-                Spectrum.ClearBreakpoints();
+                Spectrum.DebugClearBreakpoints();
             }
         }
 
