@@ -164,7 +164,7 @@ namespace ZXMAK2.Hardware.Circuits.Ata
             }
             if ((reg.status & HD_STATUS.STATUS_DRDY) == 0 && !atapi)
             {
-                Logger.Warn("hdd not ready cmd = #{0:X2} (ignored)", data);
+                Logger.Warn("ATA{0:X2}: hdd not ready cmd = #{1:X2} (ignored)", Id, data);
                 return;
             }
 
@@ -377,7 +377,7 @@ namespace ZXMAK2.Hardware.Circuits.Ata
                 return true;
             }
 
-            Logger.Error("*** unknown ATA cmd #{0:X2} ***", cmd);
+            Logger.Error("ATA{0:X2}: Unknown ATA command #{1:X2}", Id, cmd);
             return false;
         }
 
@@ -421,7 +421,7 @@ namespace ZXMAK2.Hardware.Circuits.Ata
                 return true;
             }
 
-            Logger.Error("*** unknown ATAPI cmd #{0:X2} ***\n", cmd);
+            Logger.Error("ATA{0:X2}: Unknown ATAPI command #{1:X2}", Id, cmd);
             // "command aborted" with ATAPI signature
             reg.count = 1;
             reg.sec = 1;
@@ -483,7 +483,7 @@ namespace ZXMAK2.Hardware.Circuits.Ata
             //printf("[seek %I64d]", ((__int64)pos) << 9);
             if (LogIo)
             {
-                Logger.Info("IDE HDD SEEK lba={0} [fileOffset=#{1:X8}]", pos, ((long)pos) << 9);
+                Logger.Info("ATA{0:X2}: IDE HDD SEEK lba={1} [fileOffset=#{2:X8}]", Id, pos, ((long)pos) << 9);
             }
             if (!ata_p.Seek(pos))
             {
@@ -602,7 +602,7 @@ namespace ZXMAK2.Hardware.Circuits.Ata
 
             if (LogIo)
             {
-                Logger.Info("IDE HDD READ SECTOR ****************************************************************");
+                Logger.Info("ATA{0:X2}: IDE HDD READ SECTOR", Id);
             }
             if (!ata_p.ReadSector(transbf, 0))
             {
@@ -666,7 +666,7 @@ namespace ZXMAK2.Hardware.Circuits.Ata
 
             if (LogIo)
             {
-                Logger.Info("IDE HDD WRITE SECTOR ***************************************************************");
+                Logger.Info("ATA{0:X2}: IDE HDD WRITE SECTOR", Id);
             }
             if (!ata_p.WriteSector(transbf, 0))
             {
@@ -704,12 +704,12 @@ namespace ZXMAK2.Hardware.Circuits.Ata
 
         public void handle_atapi_packet()
         {
-            Logger.Error("handle_atapi_packet: method not implemented");
+            Logger.Error("ATA{0:X2}: handle_atapi_packet: method not implemented", Id);
         }
 
         public void handle_atapi_packet_emulate()
         {
-            Logger.Error("handle_atapi_packet_emulate: method not implemented");
+            Logger.Error("ATA{0:X2}: handle_atapi_packet_emulate: method not implemented", Id);
         }
 
         public void exec_mode_select()
