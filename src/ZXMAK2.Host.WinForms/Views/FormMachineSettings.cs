@@ -13,6 +13,7 @@ using ZXMAK2.Engine.Entities;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.WinForms.Views.Configuration.Devices;
+using ZXMAK2.Host.WinForms.Tools;
 
 
 namespace ZXMAK2.Host.WinForms.Views
@@ -435,14 +436,12 @@ namespace ZXMAK2.Host.WinForms.Views
             var win32owner = owner as IWin32Window;
             if (win32owner != null)
             {
-                base.ShowDialog(win32owner);
+                return EnumMapper.GetDlgResult(base.ShowDialog(win32owner));
             }
             else
             {
-                base.ShowDialog();
+                return EnumMapper.GetDlgResult(base.ShowDialog());
             }
-            // TODO: convert result
-            return DlgResult.None;
         }
 
 
