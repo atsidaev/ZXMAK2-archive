@@ -8,13 +8,13 @@ namespace ZXMAK2.Engine
 {
     public class InputAggregator : IDisposable
     {
-        private IHostKeyboard m_hostKeyboard;
-        private IHostMouse m_hostMouse;
-        private IHostJoystick m_hostJoystick;
+        private readonly IHostKeyboard m_hostKeyboard;
+        private readonly IHostMouse m_hostMouse;
+        private readonly IHostJoystick m_hostJoystick;
         
-        private IKeyboardDevice[] m_keyboards;
-        private IMouseDevice[] m_mouses;
-        private IJoystickDevice[] m_joysticks;
+        private readonly IKeyboardDevice[] m_keyboards;
+        private readonly IMouseDevice[] m_mouses;
+        private readonly IJoystickDevice[] m_joysticks;
 
 
         public InputAggregator(
