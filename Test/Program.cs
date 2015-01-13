@@ -107,8 +107,8 @@ namespace Test
 			p128.CPU.IFF1 = p128.CPU.IFF2 = false;
 			p128.CPU.IM = 2;
 			p128.CPU.BINT = false;
-			p128.CPU.FX = OPFX.NONE;
-			p128.CPU.XFX = OPXFX.NONE;
+			p128.CPU.FX = CpuModeIndex.None;
+			p128.CPU.XFX = CpuModeEx.None;
 
 			long needsTact = pattern[0];
 			long frameTact = p128.CPU.Tact % ula.FrameTactCount;

@@ -91,7 +91,7 @@ using ZXMAK2.Engine.Entities;
               {
                   return false;
               }
-              if (m_cpu.FX != OPFX.NONE || m_cpu.XFX != OPXFX.NONE)
+              if (m_cpu.FX != CpuModeIndex.None || m_cpu.XFX != CpuModeEx.None)
               {
                   return true;
               }

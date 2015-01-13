@@ -13,7 +13,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         {
             RDNOMREQ(regs.IR); Tact++;
             RDNOMREQ(regs.IR); Tact++;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.SP = regs.IX;
             else
                 regs.SP = regs.IY;
@@ -30,7 +30,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             regs.MW += (ushort)(RDMEM(tmpsp) * 0x100); Tact += 3;
             RDNOMREQ(tmpsp); Tact++;
 
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
             {
                 WRMEM(tmpsp, regs.XH); Tact += 3;
                 tmpsp--;
@@ -54,7 +54,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void FX_JP_HL_(byte cmd)       // JP (IX) 
         {
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.PC = regs.IX;
             else
                 regs.PC = regs.IY;
@@ -65,7 +65,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             // 15 (4, 5, 3, 3)
 
             RDNOMREQ(regs.IR); Tact++;
-            ushort val = FX == OPFX.IX ? regs.IX : regs.IY;
+            ushort val = FX == CpuModeIndex.Ix ? regs.IX : regs.IY;
             regs.SP--;
 
             WRMEM(regs.SP, (byte)(val >> 8)); Tact += 3;
@@ -84,7 +84,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             
             val |= (ushort)(RDMEM(regs.SP) << 8);
             regs.SP++;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.IX = val;
             else
                 regs.IY = val;
@@ -94,7 +94,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void FX_ALUAXH(byte cmd)       // ADD/ADC/SUB/SBC/AND/XOR/OR/CP A,XH
         {
             byte val;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 val = (byte)(regs.IX >> 8);
             else
                 val = (byte)(regs.IY >> 8);
@@ -104,7 +104,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void FX_ALUAXL(byte cmd)       // ADD/ADC/SUB/SBC/AND/XOR/OR/CP A,XL
         {
             byte val;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 val = (byte)(regs.IX & 0xFF);
             else
                 val = (byte)(regs.IY & 0xFF);
@@ -124,7 +124,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             RDNOMREQ(regs.PC); Tact++;
             
             regs.PC++;
-            regs.MW = FX == OPFX.IX ? regs.IX : regs.IY;
+            regs.MW = FX == CpuModeIndex.Ix ? regs.IX : regs.IY;
             regs.MW = (ushort)(regs.MW + drel);
 
             byte val = RDMEM(regs.MW); Tact += 3;
@@ -148,13 +148,13 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 case 0: rde = regs.BC; break;
                 case 1: rde = regs.DE; break;
                 case 2:
-                    if (FX == OPFX.IX) rde = regs.IX;
+                    if (FX == CpuModeIndex.Ix) rde = regs.IX;
                     else rde = regs.IY;
                     break;
                 case 3: rde = regs.SP; break;
                 default: throw new Exception();
             }
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
             {
                 regs.MW = (ushort)(regs.IX + 1);
                 regs.IX = ALU_ADDHLRR(regs.IX, rde);
@@ -170,7 +170,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         {
             RDNOMREQ(regs.IR); Tact++;
             RDNOMREQ(regs.IR); Tact++;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.IX--;
             else
                 regs.IY--;
@@ -180,7 +180,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         {
             RDNOMREQ(regs.IR); Tact++;
             RDNOMREQ(regs.IR); Tact++;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.IX++;
             else
                 regs.IY++;
@@ -203,7 +203,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             Tact += 3;
             
             val += (ushort)(RDMEM(regs.MW) * 0x100);
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.IX = val;
             else
                 regs.IY = val;
@@ -214,7 +214,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         {
             // 20 (4, 4, 3, 3, 3, 3)
             
-            ushort hl = FX == OPFX.IX ? regs.IX : regs.IY;
+            ushort hl = FX == CpuModeIndex.Ix ? regs.IX : regs.IY;
             ushort adr = RDMEM(regs.PC);
             regs.PC++;
             Tact += 3;
@@ -241,7 +241,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             
             val |= (ushort)(RDMEM(regs.PC) << 8);
             regs.PC++;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.IX = val;
             else
                 regs.IY = val;
@@ -261,7 +261,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             RDNOMREQ(regs.PC); Tact++;
             
             regs.PC++;
-            regs.MW = FX == OPFX.IX ? regs.IX : regs.IY;
+            regs.MW = FX == CpuModeIndex.Ix ? regs.IX : regs.IY;
             regs.MW = (ushort)(regs.MW + drel);
 
             byte val = RDMEM(regs.MW); Tact += 3;
@@ -284,7 +284,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             RDNOMREQ(regs.PC); Tact++;
 
             regs.PC++;
-            regs.MW = FX == OPFX.IX ? regs.IX : regs.IY;
+            regs.MW = FX == CpuModeIndex.Ix ? regs.IX : regs.IY;
             regs.MW = (ushort)(regs.MW + drel);
 
             byte val = RDMEM(regs.MW); Tact += 3;
@@ -306,7 +306,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             RDNOMREQ(regs.PC); Tact++;
 
             regs.PC++;
-            regs.MW = FX == OPFX.IX ? regs.IX : regs.IY;
+            regs.MW = FX == CpuModeIndex.Ix ? regs.IX : regs.IY;
             regs.MW = (ushort)(regs.MW + drel);
             
             WRMEM(regs.MW, val); Tact += 3;
@@ -325,7 +325,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             RDNOMREQ(regs.PC); Tact++;
 
             regs.PC++;
-            regs.MW = FX == OPFX.IX ? regs.IX : regs.IY;
+            regs.MW = FX == CpuModeIndex.Ix ? regs.IX : regs.IY;
             regs.MW = (ushort)(regs.MW + drel);
 
             int rsrc = cmd & 0x07;
@@ -345,7 +345,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             RDNOMREQ(regs.PC); Tact++;
             
             regs.PC++;
-            regs.MW = FX == OPFX.IX ? regs.IX : regs.IY;
+            regs.MW = FX == CpuModeIndex.Ix ? regs.IX : regs.IY;
             regs.MW = (ushort)(regs.MW + drel);
 
             int rdst = (cmd & 0x38) >> 3;
@@ -358,7 +358,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void FX_LDHL(byte cmd)
         {
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.XH = regs.XL;
             else
                 regs.YH = regs.YL;
@@ -366,7 +366,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void FX_LDLH(byte cmd)
         {
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.XL = regs.XH;
             else
                 regs.YL = regs.YH;
@@ -375,7 +375,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void FX_LDRL(byte cmd)
         {
             int rdst = (cmd & 0x38) >> 3;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs[rdst] = regs.XL;
             else
                 regs[rdst] = regs.YL;
@@ -384,7 +384,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void FX_LDRH(byte cmd)
         {
             int rdst = (cmd & 0x38) >> 3;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs[rdst] = regs.XH;
             else
                 regs[rdst] = regs.YH;
@@ -393,7 +393,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void FX_LDLR(byte cmd)
         {
             int rsrc = cmd & 0x07;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.XL = regs[rsrc];
             else
                 regs.YL = regs[rsrc];
@@ -402,7 +402,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void FX_LDHR(byte cmd)
         {
             int rsrc = cmd & 0x07;
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.XH = regs[rsrc];
             else
                 regs.YH = regs[rsrc];
@@ -412,7 +412,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         {
             // 11T (4, 4, 3)
             
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.XL = RDMEM(regs.PC);
             else
                 regs.YL = RDMEM(regs.PC);
@@ -424,7 +424,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         {
             // 11T (4, 4, 3)
             
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.XH = RDMEM(regs.PC);
             else
                 regs.YH = RDMEM(regs.PC);
@@ -434,7 +434,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void FX_INCL(byte cmd)      // INC XL
         {
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.XL = ALU_INCR(regs.XL);
             else
                 regs.YL = ALU_INCR(regs.YL);
@@ -442,7 +442,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void FX_INCH(byte cmd)      // INC XH
         {
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.XH = ALU_INCR(regs.XH);
             else
                 regs.YH = ALU_INCR(regs.YH);
@@ -450,7 +450,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void FX_DECL(byte cmd)      // DEC XL
         {
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.XL = ALU_DECR(regs.XL);
             else
                 regs.YL = ALU_DECR(regs.YL);
@@ -458,7 +458,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void FX_DECH(byte cmd)      // DEC XH
         {
-            if (FX == OPFX.IX)
+            if (FX == CpuModeIndex.Ix)
                 regs.XH = ALU_DECR(regs.XH);
             else
                 regs.YH = ALU_DECR(regs.YH);

@@ -81,8 +81,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			_spec.CPU.regs = regs;
 
 			_spec.CPU.BINT = false;
-			_spec.CPU.XFX = OPXFX.NONE;
-			_spec.CPU.FX = OPFX.NONE;
+			_spec.CPU.XFX = CpuModeEx.None;
+			_spec.CPU.FX = CpuModeIndex.None;
 			_spec.CPU.HALTED = false;
 
 			_spec.CPU.IFF1 = _spec.CPU.IFF2 = (regsData[19] & 0x04) == 0x04;

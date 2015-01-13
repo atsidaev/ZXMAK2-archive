@@ -2,10 +2,10 @@
 
 namespace ZXMAK2.Engine.Cpu
 {
-    public enum OPXFX 
+    public enum CpuModeEx 
     { 
-        NONE = 0, 
-        CB, 
-        ED 
+        None = 0, 
+        Cb, 
+        Ed, 
     }
 }
