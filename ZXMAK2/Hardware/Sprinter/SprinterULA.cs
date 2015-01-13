@@ -98,14 +98,16 @@ namespace ZXMAK2.Hardware.Sprinter
         */
         private int ColorPaletteToRGB(int color, int palette)
         {
-            int _Red, _Green, _Blue;
+            int red, green, blue;
 
-            _Red = m_vram[(color & 0xf0) >> 4][((color & 0x0f) * 1024) + 0x03e0 + palette * 4];
-            _Green = m_vram[(color & 0xf0) >> 4][((color & 0x0f) * 1024) + 0x03e1 + palette * 4];
-            _Blue = m_vram[(color & 0xf0) >> 4][((color & 0x0f) * 1024) + 0x03e2 + palette * 4];
+            var index1 = (color & 0xf0) >> 4;
+            var index2 = ((color & 0x0f) * 1024) + 0x03e0 + palette * 4;
+            red = m_vram[index1][index2];
+            green = m_vram[index1][index2+1];
+            blue = m_vram[index1][index2+2];
+            return (red << 16) | (green << 8) | blue;
             //return _Red * 65536 + _Green * 256 + _Blue;
-            return (_Red << 16) | (_Green << 8) | _Blue;
-//            return System.Drawing.Color.FromArgb(255, _Red, _Green, _Blue).ToArgb();
+            //return System.Drawing.Color.FromArgb(255, _Red, _Green, _Blue).ToArgb();
         }
 
         protected override void EndFrame()
