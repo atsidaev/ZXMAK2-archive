@@ -5,7 +5,7 @@ using System.Text;
 using System.Reflection;
 
 
-namespace ZXMAK2.Hardware.Circuits
+namespace ZXMAK2.Hardware.Circuits.Ata
 {
     public enum AtaReg
     {
