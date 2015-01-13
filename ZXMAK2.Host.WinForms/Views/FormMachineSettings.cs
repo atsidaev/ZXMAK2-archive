@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.IO;
 using System.Xml;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Reflection;
 
 using ZXMAK2.Dependency;
-using ZXMAK2.Serializers;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
