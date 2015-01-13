@@ -7,31 +7,44 @@ namespace ZXMAK2.Hardware.Circuits.Ata
 {
     public class AtaDeviceInfo
     {
-        public string image = string.Empty;
-        public uint c = 20, h = 16, s = 63, lba = 20160;
-        public bool readOnly = true;
-        public bool cd = false;
+        public string FileName { get; private set; }
+        public uint Cylinders { get; private set; }
+        public uint Heads { get; private set; }
+        public uint Sectors { get; private set; }
+        public uint Lba { get; private set; }
+        public bool ReadOnly { get; private set; }
+        public bool IsCdrom { get; private set; }
 
+        
+        public AtaDeviceInfo()
+        {
+            Cylinders = 20; 
+            Heads = 16;
+            Sectors = 63; 
+            Lba = 20160;
+            ReadOnly = true;
+            IsCdrom = false;
+        }
         
         public void Save(string fileName)
         {
             XmlDocument xml = new XmlDocument();
             XmlNode root = xml.AppendChild(xml.CreateElement("IdeDiskDescriptor"));
             XmlNode imageNode = root.AppendChild(xml.CreateElement("Image"));
-            string imageFile = image ?? string.Empty;
+            string imageFile = FileName ?? string.Empty;
             if (imageFile != string.Empty &&
                 Path.GetDirectoryName(imageFile) == Path.GetDirectoryName(fileName))
             {
                 imageFile = Path.GetFileName(imageFile);
             }
             Utils.SetXmlAttribute(imageNode, "fileName", imageFile);
-            Utils.SetXmlAttribute(imageNode, "isCdrom", cd);
-            Utils.SetXmlAttribute(imageNode, "isReadOnly", readOnly);
+            Utils.SetXmlAttribute(imageNode, "isCdrom", IsCdrom);
+            Utils.SetXmlAttribute(imageNode, "isReadOnly", ReadOnly);
             XmlNode geometryNode = root.AppendChild(xml.CreateElement("Geometry"));
-            Utils.SetXmlAttribute(geometryNode, "cylinders", c);
-            Utils.SetXmlAttribute(geometryNode, "heads", h);
-            Utils.SetXmlAttribute(geometryNode, "sectors", s);
-            Utils.SetXmlAttribute(geometryNode, "lba", lba);
+            Utils.SetXmlAttribute(geometryNode, "cylinders", Cylinders);
+            Utils.SetXmlAttribute(geometryNode, "heads", Heads);
+            Utils.SetXmlAttribute(geometryNode, "sectors", Sectors);
+            Utils.SetXmlAttribute(geometryNode, "lba", Lba);
             xml.Save(fileName);
         }
 
@@ -42,15 +55,15 @@ namespace ZXMAK2.Hardware.Circuits.Ata
             XmlNode root = xml["IdeDiskDescriptor"];
             XmlNode imageNode = root["Image"];
             XmlNode geometryNode = root["Geometry"];
-            image = Utils.GetXmlAttributeAsString(imageNode, "fileName", image ?? string.Empty);
-            if (image != string.Empty && !Path.IsPathRooted(image))
-                image = Utils.GetFullPathFromRelativePath(image, Path.GetDirectoryName(fileName));
-            cd = Utils.GetXmlAttributeAsBool(imageNode, "isCdrom", false);
-            readOnly = Utils.GetXmlAttributeAsBool(imageNode, "isReadOnly", true);
-            c = Utils.GetXmlAttributeAsUInt32(geometryNode, "cylinders", c);
-            h = Utils.GetXmlAttributeAsUInt32(geometryNode, "heads", h);
-            s = Utils.GetXmlAttributeAsUInt32(geometryNode, "sectors", s);
-            lba = Utils.GetXmlAttributeAsUInt32(geometryNode, "lba", lba);
+            FileName = Utils.GetXmlAttributeAsString(imageNode, "fileName", FileName ?? string.Empty);
+            if (FileName != string.Empty && !Path.IsPathRooted(FileName))
+                FileName = Utils.GetFullPathFromRelativePath(FileName, Path.GetDirectoryName(fileName));
+            IsCdrom = Utils.GetXmlAttributeAsBool(imageNode, "isCdrom", false);
+            ReadOnly = Utils.GetXmlAttributeAsBool(imageNode, "isReadOnly", true);
+            Cylinders = Utils.GetXmlAttributeAsUInt32(geometryNode, "cylinders", Cylinders);
+            Heads = Utils.GetXmlAttributeAsUInt32(geometryNode, "heads", Heads);
+            Sectors = Utils.GetXmlAttributeAsUInt32(geometryNode, "sectors", Sectors);
+            Lba = Utils.GetXmlAttributeAsUInt32(geometryNode, "lba", Lba);
         }
     }
 }
