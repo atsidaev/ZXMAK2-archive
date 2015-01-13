@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ata\AtaDevice.cs" />
-    <Compile Include="Ata\AtaDiskInfo.cs" />
+    <Compile Include="Ata\AtaDeviceInfo.cs" />
     <Compile Include="Ata\AtaPasser.cs" />
     <Compile Include="Ata\AtaPort.cs" />
     <Compile Include="Ata\AtaReg.cs" />

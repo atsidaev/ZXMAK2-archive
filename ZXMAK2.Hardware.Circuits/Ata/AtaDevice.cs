@@ -13,7 +13,7 @@ namespace ZXMAK2.Hardware.Circuits.Ata
     public class AtaDevice : IDisposable
     {
         private readonly byte device_id;             // 0x00 - master, 0x10 - slave
-        private readonly AtaDiskInfo _deviceInfo = new AtaDiskInfo();
+        private readonly AtaDeviceInfo _deviceInfo = new AtaDeviceInfo();
 
         private UInt32 c, h, s, lba;
         private byte[] regs { get { return reg.__regs; } }
@@ -51,7 +51,7 @@ namespace ZXMAK2.Hardware.Circuits.Ata
             get { return device_id; }
         }
 
-        public AtaDiskInfo DeviceInfo
+        public AtaDeviceInfo DeviceInfo
         {
             get { return _deviceInfo; }
         }
@@ -68,7 +68,7 @@ namespace ZXMAK2.Hardware.Circuits.Ata
             return ata_p.IsLoaded();// || atapi_p.loaded(); 
         }
 
-        private void configure(AtaDiskInfo cfg)
+        private void configure(AtaDeviceInfo cfg)
         {
             ata_p.Close();
             c = cfg.c;
