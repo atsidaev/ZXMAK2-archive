@@ -515,11 +515,9 @@ namespace ZXMAK2.Hardware.Circuits.Ata
             {
                 for (int i = 0; i < 512; i++)
                     transbf[i] = 0;
-                string firmwareVersion = GetVersion();
-
-                make_ata_string(transbf, 10 * 2, 10, "00000000001234567890");	// Serial number
-                make_ata_string(transbf, 23 * 2, 4, firmwareVersion);			// Firmware revision
-                make_ata_string(transbf, 27 * 2, 20, "ZXMAK2 HDD IMAGE");		// Model number
+                make_ata_string(transbf, 10 * 2, 10, _deviceInfo.SerialNumber);	    // Serial number
+                make_ata_string(transbf, 23 * 2, 4, _deviceInfo.FirmwareRevision);	// Firmware revision
+                make_ata_string(transbf, 27 * 2, 20, _deviceInfo.ModelNumber);	    // Model number
 
                 setUInt16(transbf, 0 * 2, 0x045A);		// [General configuration]
                 setUInt16(transbf, 1 * 2, (UInt16)c);
@@ -553,11 +551,6 @@ namespace ZXMAK2.Hardware.Circuits.Ata
             intrq = true;
             reg.status = HD_STATUS.STATUS_DRDY | HD_STATUS.STATUS_DRQ | HD_STATUS.STATUS_DSC;
             reg.err = HD_ERROR.ERR_NONE;
-        }
-
-        private string GetVersion()
-        {
-            return Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
 
         public void command_ok()
