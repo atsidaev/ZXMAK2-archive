@@ -42,8 +42,8 @@
     <Compile Include="CpuUnit.cs" />
     <Compile Include="CpuFlags.cs" />
     <Compile Include="CpuType.cs" />
-    <Compile Include="OPFX.cs" />
-    <Compile Include="OPXFX.cs" />
+    <Compile Include="CpuModeIndex.cs" />
+    <Compile Include="CpuModeEx.cs" />
     <Compile Include="Processor\CpuRegId.cs" />
     <Compile Include="Processor\Z80.cs" />
     <Compile Include="Processor\Z80ALU.cs" />
