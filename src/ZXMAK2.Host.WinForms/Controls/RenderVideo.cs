@@ -10,8 +10,9 @@ using System.Threading;
 using System.ComponentModel;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine;
+using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.WinForms.Tools;
 
 
 namespace ZXMAK2.Host.WinForms.Controls
@@ -46,10 +47,10 @@ namespace ZXMAK2.Host.WinForms.Controls
         private unsafe delegate void DrawFilterDelegate(int* dstBuffer, int* srcBuffer);
         private readonly FpsMonitor m_fpsUpdate = new FpsMonitor();
         private readonly FpsMonitor m_fpsRender = new FpsMonitor();
-        //private List<double> m_renderGraph = new List<double>();
-        //private List<double> m_loadGraph = new List<double>();
         private readonly double[] m_renderGraph = new double[GraphLength];
         private readonly double[] m_loadGraph = new double[GraphLength];
+        //private double[] m_copyGraph = new double[GraphLength];
+        //private int m_copyGraphIndex;
         private int m_renderGraphIndex;
         private int m_loadGraphIndex;
 
@@ -303,7 +304,12 @@ namespace ZXMAK2.Host.WinForms.Controls
                     {
                         using (GraphicsStream gs = m_texture.LockRectangle(0, LockFlags.None))
                             fixed (int* srcPtr = videoData.Buffer)
+                            {
+                                //var startTick = Stopwatch.GetTimestamp();
                                 m_drawFilter((int*)gs.InternalData, srcPtr);
+                                //var copyTime = Stopwatch.GetTimestamp() - startTick;
+                                //PushGraphValue(m_copyGraph, ref m_copyGraphIndex, copyTime);
+                            }
                         m_texture.UnlockRectangle(0);
                     }
                 }
@@ -490,6 +496,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                             // Draw graphs
                             var graphRender = GetGraph(m_renderGraph, ref m_renderGraphIndex);
                             var graphLoad = GetGraph(m_loadGraph, ref m_loadGraphIndex);
+                            //var graphCopy = GetGraph(m_copyGraph, ref m_copyGraphIndex);
                             var maxTime = Math.Max(graphRender.Max(), graphLoad.Max());
                             var limitDisplay = (double)Stopwatch.Frequency / D3D.DisplayMode.RefreshRate;
                             var limit50 = (double)Stopwatch.Frequency / 50F;
@@ -501,6 +508,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                             FillRect(graphRect, Color.FromArgb(192, Color.Black));
                             RenderGraph(graphRender, maxTime, graphRect, Color.FromArgb(196, Color.Lime));
                             RenderGraph(graphLoad, maxTime, graphRect, Color.FromArgb(196, Color.Red));
+                            //RenderGraph(graphCopy, maxTime, graphRect, Color.FromArgb(196, Color.Yellow));
                             RenderLimit(limitDisplay, maxTime, graphRect, Color.FromArgb(196, Color.Yellow));
                             RenderLimit(limit50, maxTime, graphRect, Color.FromArgb(196, Color.Magenta));
                         }
@@ -686,11 +694,17 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 var srcLine = pSrcBuffer + m_surfaceSize.Width * y;
                 var dstLine = pDstBuffer + m_textureSize.Width * y;
-                for (var i = 0; i < m_surfaceSize.Width; i++)
-                {
-                    dstLine[i] = srcLine[i];
-                }
+                NativeMethods.CopyMemory(dstLine, srcLine, m_surfaceSize.Width * 4);
             }
+            //for (var y = 0; y < m_surfaceSize.Height; y++)
+            //{
+            //    var srcLine = pSrcBuffer + m_surfaceSize.Width * y;
+            //    var dstLine = pDstBuffer + m_textureSize.Width * y;
+            //    for (var i = 0; i < m_surfaceSize.Width; i++)
+            //    {
+            //        dstLine[i] = srcLine[i];
+            //    }
+            //}
         }
 
         private static void PushGraphValue(double[] graph, ref int index, double value)

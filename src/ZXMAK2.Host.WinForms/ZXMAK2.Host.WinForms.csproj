@@ -138,6 +138,7 @@
     <Compile Include="HardwareViews\dbgWD1793.Designer.cs">
       <DependentUpon>dbgWD1793.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tools\NativeMethods.cs" />
     <Compile Include="Views\Configuration\Devices\ConfigScreenControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
