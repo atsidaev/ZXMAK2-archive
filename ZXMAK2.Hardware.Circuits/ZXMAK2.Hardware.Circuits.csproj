@@ -48,6 +48,7 @@
     <Compile Include="Ata\AtaRegsUnion.cs" />
     <Compile Include="Ata\Enums.cs" />
     <Compile Include="Ata\PhysicalDeviceInfo.cs" />
+    <Compile Include="Fdd\Enums.cs" />
     <Compile Include="NvramChip.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RtcChip.cs" />
