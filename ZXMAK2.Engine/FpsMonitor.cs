@@ -6,37 +6,30 @@ namespace ZXMAK2.Engine
 {
     public class FpsMonitor
     {
-        private readonly Stopwatch m_watch;
         private int m_frameCounter;
         private long m_lastTime;
+        private long m_lastTimeFrame;
 
         public double Value { get; private set; }
         public double InstantTime { get; private set; }
 
         public FpsMonitor()
         {
-            Value = 0;
-            m_frameCounter = 0;
-            m_watch = Stopwatch.StartNew();
+            Reset();
         }
 
         public void Frame()
         {
-            var time = m_watch.ElapsedTicks;
+            var stamp = Stopwatch.GetTimestamp();
+            InstantTime = stamp - m_lastTime;
+            m_lastTime = stamp;
             m_frameCounter++;
-            if (m_frameCounter >= 50)// time >= Stopwatch.Frequency/3)
+            if (m_frameCounter >= 50)
             {
-                m_watch.Stop();
-                m_watch.Reset();
-                m_watch.Start();
-                Value = CalcAverage(time, m_frameCounter);// m_frameCounter * (double)Stopwatch.Frequency / time;
-                InstantTime = CalcInstant(time);
+                var time = stamp - m_lastTimeFrame;
+                Value = CalcAverage(time, m_frameCounter);
                 m_frameCounter = 0;
-                m_lastTime = 0;
-            }
-            else
-            {
-                InstantTime = CalcInstant(time);
+                m_lastTimeFrame = stamp;
             }
         }
 
@@ -44,18 +37,13 @@ namespace ZXMAK2.Engine
         {
             return frameCount * (double)Stopwatch.Frequency / time;
         }
-
-        private double CalcInstant(long time)
-        {
-            var delta = time - m_lastTime;
-            m_lastTime = time;
-            return delta;
-        }
-
+        
         public void Reset()
         {
-            Frame();
             Value = 0;
+            InstantTime = 0;
+            m_frameCounter = 0;
+            m_lastTimeFrame = m_lastTime = Stopwatch.GetTimestamp();
         }
     }
 }

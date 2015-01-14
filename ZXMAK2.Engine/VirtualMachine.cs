@@ -295,7 +295,6 @@ namespace ZXMAK2.Engine
                 var host = m_host;
                 var sound = host != null ? host.Sound : null;
                 var video = host != null ? host.Video : null;
-                var watch = new Stopwatch();
                 using (var input = new InputAggregator(
                     host,
                     bus.FindDevices<IKeyboardDevice>().ToArray(),
@@ -332,11 +331,9 @@ namespace ZXMAK2.Engine
                                 }
                                 break;
                         }
-                        watch.Reset();
-                        watch.Start();
+                        var startTime = Stopwatch.GetTimestamp();
                         Spectrum.ExecuteFrame();
-                        watch.Stop();
-                        m_instantTime = watch.ElapsedTicks;
+                        m_instantTime = Stopwatch.GetTimestamp() - startTime;
                     }
 
                     m_soundBuffers = null;
