@@ -34,18 +34,21 @@ namespace ZXMAK2.Engine
                     return;
                 }
                 var time50 = Stopwatch.Frequency / 50;
-                var stamp = Stopwatch.GetTimestamp();
-                var time = stamp - _lastTimeStamp;
-                while (!_isCancel && time < time50)
+                var stamp = _lastTimeStamp;
+                var time = 0L;
+                do
                 {
-                    var rest = Stopwatch.Frequency / (time * 1000);
-                    if (rest > 1)
-                    {
-                        Thread.Sleep((int)((rest - 1) / 2));
-                    }
                     stamp = Stopwatch.GetTimestamp();
                     time = stamp - _lastTimeStamp;
-                }
+                    if (time > 0)
+                    {
+                        var rest = Stopwatch.Frequency / (time * 1000);
+                        if (rest > 1)
+                        {
+                            Thread.Sleep((int)((rest - 1) / 2));
+                        }
+                    }
+                } while (!_isCancel && time < time50);
                 if (time > time50 * 2)
                 {
                     _lastTimeStamp = stamp;
