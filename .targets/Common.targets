@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <Import Project="CommonAssemblyVersion.targets" />
     <PropertyGroup>
-        <AssemblyVersion>2.8.4.0</AssemblyVersion>
+        <AssemblyVersion>2.8.5.0</AssemblyVersion>
     </PropertyGroup>
 	<PropertyGroup>
 		<CompileDependsOn>CommonAssemblyVersion;$(CompileDependsOn);</CompileDependsOn>
