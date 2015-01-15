@@ -7,7 +7,6 @@ namespace ZXMAK2.Engine
 {
     public class SyncTime : IDisposable
     {
-        private readonly object _syncRoot = new object();
         private readonly ManualResetEvent _waitEvent = new ManualResetEvent(true);
         private long _lastTimeStamp;
         private bool _isCancel;
@@ -40,7 +39,7 @@ namespace ZXMAK2.Engine
                 if (time < time50)
                 {
                     var delay = (int)(((time50 - time) * 1000) / frequency);
-                    if (delay > 5)
+                    if (delay > 5 && delay < 40)
                     {
                         Thread.Sleep(delay - 1);
                     }
