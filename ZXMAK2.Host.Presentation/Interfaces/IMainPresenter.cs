@@ -12,7 +12,7 @@ namespace ZXMAK2.Host.Presentation.Interfaces
         ICommand CommandFileSave { get; }
         ICommand CommandFileExit { get; }
         ICommand CommandViewFullScreen { get; }
-        ICommand CommandViewSyncVBlank { get; }
+        ICommand CommandViewSyncSource { get; }
         ICommand CommandVmPause { get; }
         ICommand CommandVmMaxSpeed { get; }
         ICommand CommandVmWarmReset { get; }

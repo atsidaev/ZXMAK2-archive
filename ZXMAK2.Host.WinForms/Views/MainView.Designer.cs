@@ -38,7 +38,7 @@
             this.menuViewCustomize = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewCustomizeShowToolBar = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewCustomizeShowStatusBar = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuViewSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuViewSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuViewSize = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewSizeX1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewSizeX2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,11 +51,17 @@
             this.menuViewScaleModeKeepProportion = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewScaleModeFixedPixelSize = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewScaleModeSquarePixelSize = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuViewVideoFilter = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuViewVideoFilterNone = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuViewVideoFilterNoFlick = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuViewFrameSync = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuViewFrameSyncTime = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuViewFrameSyncSound = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuViewFrameSyncVideo = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuViewSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.menuViewSmoothing = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewMimicTv = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuViewNoFlic = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuViewVBlankSync = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewDisplayIcon = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewDebugInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.menuVm = new System.Windows.Forms.ToolStripMenuItem();
@@ -143,16 +149,17 @@
             this.menuView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.menuView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuViewCustomize,
-            this.MenuViewSeparator1,
+            this.menuViewSeparator1,
             this.menuViewSize,
             this.menuViewFullScreen,
             this.menuViewSeparator2,
             this.menuViewScaleMode,
+            this.menuViewVideoFilter,
             this.menuViewSeparator3,
+            this.menuViewFrameSync,
+            this.menuViewSeparator4,
             this.menuViewSmoothing,
             this.menuViewMimicTv,
-            this.menuViewNoFlic,
-            this.menuViewVBlankSync,
             this.menuViewDisplayIcon,
             this.menuViewDebugInfo});
             this.menuView.Name = "menuView";
@@ -185,10 +192,10 @@
             this.menuViewCustomizeShowStatusBar.Text = "Status Bar";
             this.menuViewCustomizeShowStatusBar.Click += new System.EventHandler(this.menuViewCustomize_Click);
             // 
-            // MenuViewSeparator1
+            // menuViewSeparator1
             // 
-            this.MenuViewSeparator1.Name = "MenuViewSeparator1";
-            this.MenuViewSeparator1.Size = new System.Drawing.Size(185, 6);
+            this.menuViewSeparator1.Name = "menuViewSeparator1";
+            this.menuViewSeparator1.Size = new System.Drawing.Size(185, 6);
             // 
             // menuViewSize
             // 
@@ -280,10 +287,69 @@
             this.menuViewScaleModeSquarePixelSize.Text = "Square Pixel Size";
             this.menuViewScaleModeSquarePixelSize.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
+            // menuViewVideoFilter
+            // 
+            this.menuViewVideoFilter.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuViewVideoFilterNone,
+            this.menuViewVideoFilterNoFlick});
+            this.menuViewVideoFilter.Name = "menuViewVideoFilter";
+            this.menuViewVideoFilter.Size = new System.Drawing.Size(188, 22);
+            this.menuViewVideoFilter.Text = "Video Filter";
+            // 
+            // menuViewVideoFilterNone
+            // 
+            this.menuViewVideoFilterNone.Name = "menuViewVideoFilterNone";
+            this.menuViewVideoFilterNone.Size = new System.Drawing.Size(152, 22);
+            this.menuViewVideoFilterNone.Text = "None";
+            this.menuViewVideoFilterNone.Click += new System.EventHandler(this.menuViewRender_Click);
+            // 
+            // menuViewVideoFilterNoFlick
+            // 
+            this.menuViewVideoFilterNoFlick.Name = "menuViewVideoFilterNoFlick";
+            this.menuViewVideoFilterNoFlick.Size = new System.Drawing.Size(152, 22);
+            this.menuViewVideoFilterNoFlick.Text = "No Flick";
+            this.menuViewVideoFilterNoFlick.Click += new System.EventHandler(this.menuViewRender_Click);
+            // 
             // menuViewSeparator3
             // 
             this.menuViewSeparator3.Name = "menuViewSeparator3";
             this.menuViewSeparator3.Size = new System.Drawing.Size(185, 6);
+            // 
+            // menuViewFrameSync
+            // 
+            this.menuViewFrameSync.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuViewFrameSyncTime,
+            this.menuViewFrameSyncSound,
+            this.menuViewFrameSyncVideo});
+            this.menuViewFrameSync.Name = "menuViewFrameSync";
+            this.menuViewFrameSync.Size = new System.Drawing.Size(188, 22);
+            this.menuViewFrameSync.Text = "Frame Sync Source";
+            // 
+            // menuViewFrameSyncTime
+            // 
+            this.menuViewFrameSyncTime.Name = "menuViewFrameSyncTime";
+            this.menuViewFrameSyncTime.Size = new System.Drawing.Size(108, 22);
+            this.menuViewFrameSyncTime.Text = "Time";
+            this.menuViewFrameSyncTime.Click += new System.EventHandler(this.menuViewRender_Click);
+            // 
+            // menuViewFrameSyncSound
+            // 
+            this.menuViewFrameSyncSound.Name = "menuViewFrameSyncSound";
+            this.menuViewFrameSyncSound.Size = new System.Drawing.Size(108, 22);
+            this.menuViewFrameSyncSound.Text = "Sound";
+            this.menuViewFrameSyncSound.Click += new System.EventHandler(this.menuViewRender_Click);
+            // 
+            // menuViewFrameSyncVideo
+            // 
+            this.menuViewFrameSyncVideo.Name = "menuViewFrameSyncVideo";
+            this.menuViewFrameSyncVideo.Size = new System.Drawing.Size(108, 22);
+            this.menuViewFrameSyncVideo.Text = "Video";
+            this.menuViewFrameSyncVideo.Click += new System.EventHandler(this.menuViewRender_Click);
+            // 
+            // menuViewSeparator4
+            // 
+            this.menuViewSeparator4.Name = "menuViewSeparator4";
+            this.menuViewSeparator4.Size = new System.Drawing.Size(185, 6);
             // 
             // menuViewSmoothing
             // 
@@ -300,21 +366,6 @@
             this.menuViewMimicTv.Size = new System.Drawing.Size(188, 22);
             this.menuViewMimicTv.Text = "Mimic TV";
             this.menuViewMimicTv.Click += new System.EventHandler(this.menuViewRender_Click);
-            // 
-            // menuViewNoFlic
-            // 
-            this.menuViewNoFlic.CheckOnClick = true;
-            this.menuViewNoFlic.Name = "menuViewNoFlic";
-            this.menuViewNoFlic.Size = new System.Drawing.Size(188, 22);
-            this.menuViewNoFlic.Text = "No Flic";
-            this.menuViewNoFlic.Click += new System.EventHandler(this.menuViewRender_Click);
-            // 
-            // menuViewVBlankSync
-            // 
-            this.menuViewVBlankSync.Name = "menuViewVBlankSync";
-            this.menuViewVBlankSync.Size = new System.Drawing.Size(188, 22);
-            this.menuViewVBlankSync.Text = "VBlank Sync";
-            this.menuViewVBlankSync.CheckStateChanged += new System.EventHandler(this.menuViewRender_CheckStateChanged);
             // 
             // menuViewDisplayIcon
             // 
@@ -553,6 +604,7 @@
             // 
             // renderVideo
             // 
+            this.renderVideo.IsRunning = false;
             this.renderVideo.Location = new System.Drawing.Point(0, 63);
             this.renderVideo.Name = "renderVideo";
             this.renderVideo.NoFlic = false;
@@ -619,10 +671,8 @@
         private System.Windows.Forms.ToolStripMenuItem menuViewScaleModeStretch;
         private System.Windows.Forms.ToolStripMenuItem menuViewScaleModeKeepProportion;
         private System.Windows.Forms.ToolStripMenuItem menuViewScaleModeFixedPixelSize;
-        private System.Windows.Forms.ToolStripSeparator menuViewSeparator3;
+        private System.Windows.Forms.ToolStripSeparator menuViewSeparator4;
         private System.Windows.Forms.ToolStripMenuItem menuViewSmoothing;
-        private System.Windows.Forms.ToolStripMenuItem menuViewNoFlic;
-        private System.Windows.Forms.ToolStripMenuItem menuViewVBlankSync;
         private System.Windows.Forms.ToolStripMenuItem menuViewDisplayIcon;
         private System.Windows.Forms.ToolStripMenuItem menuViewDebugInfo;
         private System.Windows.Forms.ToolStripMenuItem menuVmPause;
@@ -637,7 +687,7 @@
         private System.Windows.Forms.ToolStripSeparator menuHelpSeparator;
         private System.Windows.Forms.ToolStripMenuItem menuHelpAbout;
         private System.Windows.Forms.ToolStripMenuItem menuViewCustomize;
-        private System.Windows.Forms.ToolStripSeparator MenuViewSeparator1;
+        private System.Windows.Forms.ToolStripSeparator menuViewSeparator1;
         private System.Windows.Forms.ToolStripButton tbrButtonMaxSpeed;
         private System.Windows.Forms.ToolStripMenuItem menuViewCustomizeShowToolBar;
         private System.Windows.Forms.ToolStripMenuItem menuViewCustomizeShowStatusBar;
@@ -649,5 +699,13 @@
         private System.Windows.Forms.ToolStripButton tbrButtonQuickLoad;
         private System.Windows.Forms.ToolStripMenuItem menuViewMimicTv;
         private System.Windows.Forms.ToolStripMenuItem menuViewScaleModeSquarePixelSize;
+        private System.Windows.Forms.ToolStripSeparator menuViewSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem menuViewFrameSync;
+        private System.Windows.Forms.ToolStripMenuItem menuViewFrameSyncTime;
+        private System.Windows.Forms.ToolStripMenuItem menuViewFrameSyncSound;
+        private System.Windows.Forms.ToolStripMenuItem menuViewFrameSyncVideo;
+        private System.Windows.Forms.ToolStripMenuItem menuViewVideoFilter;
+        private System.Windows.Forms.ToolStripMenuItem menuViewVideoFilterNone;
+        private System.Windows.Forms.ToolStripMenuItem menuViewVideoFilterNoFlick;
     }
 }

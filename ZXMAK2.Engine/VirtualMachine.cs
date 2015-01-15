@@ -25,6 +25,7 @@ namespace ZXMAK2.Engine
         #region Fields
 
         private readonly object m_sync = new object();
+        private readonly SyncTime m_syncTime = new SyncTime();
         private Thread m_thread = null;
         private IVideoData m_blankData = new VideoData(320, 240, 1F);
 
@@ -68,6 +69,7 @@ namespace ZXMAK2.Engine
         {
             DoStop();
             Spectrum.BusManager.Disconnect();
+            m_syncTime.Dispose();
         }
 
         #endregion .ctor
@@ -318,6 +320,9 @@ namespace ZXMAK2.Engine
                         // because first action will be PushFrame
                         switch (SyncSource)
                         {
+                            case SyncSource.Time:
+                                m_syncTime.WaitFrame();
+                                break;
                             case SyncSource.Sound:
                                 if (sound != null)
                                 {
@@ -447,6 +452,7 @@ namespace ZXMAK2.Engine
                 {
                     video.CancelWait();
                 }
+                m_syncTime.Cancel();
                 var thread = m_thread;
                 m_thread = null;
                 thread.Join();

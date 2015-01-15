@@ -76,8 +76,8 @@ namespace ZXMAK2.Host.WinForms.Controls
             set
             {
                 _isDebugInfo = value;
-                ClearGraph(m_renderGraph, ref m_renderGraphIndex);
-                ClearGraph(m_loadGraph, ref m_loadGraphIndex);
+                //ClearGraph(m_renderGraph, ref m_renderGraphIndex);
+                //ClearGraph(m_loadGraph, ref m_loadGraphIndex);
             }
         }
 
@@ -208,8 +208,8 @@ namespace ZXMAK2.Host.WinForms.Controls
             { 
                 _isRunning = value; 
                 m_fpsUpdate.Reset();
-                ClearGraph(m_renderGraph, ref m_renderGraphIndex);
-                ClearGraph(m_loadGraph, ref m_loadGraphIndex);
+                //ClearGraph(m_renderGraph, ref m_renderGraphIndex);
+                //ClearGraph(m_loadGraph, ref m_loadGraphIndex);
             }
         }
 
@@ -870,9 +870,15 @@ namespace ZXMAK2.Host.WinForms.Controls
 
     public enum ScaleMode
     {
-        Stretch = 0,
-        KeepProportion,
+        SquarePixelSize = 0,
         FixedPixelSize,
-        SquarePixelSize,
+        KeepProportion,
+        Stretch,
+    }
+
+    public enum VideoFilter
+    {
+        None = 0,
+        NoFlick,
     }
 }
