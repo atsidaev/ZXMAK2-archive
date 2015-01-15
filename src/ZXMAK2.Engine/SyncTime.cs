@@ -33,10 +33,10 @@ namespace ZXMAK2.Engine
                 {
                     return;
                 }
-                var time50 = Stopwatch.Frequency / 50;
+                var frequency = Stopwatch.Frequency;
+                var time50 = frequency / 50;
                 var stamp = _lastTimeStamp;
                 var time = 0L;
-                var frequency = Stopwatch.Frequency;
                 do
                 {
                     stamp = Stopwatch.GetTimestamp();
