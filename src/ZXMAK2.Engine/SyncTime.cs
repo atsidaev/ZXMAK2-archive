@@ -35,23 +35,30 @@ namespace ZXMAK2.Engine
                 }
                 var frequency = Stopwatch.Frequency;
                 var time50 = frequency / 50;
-                var stamp = _lastTimeStamp;
-                var time = 0L;
-                do
+                var stamp = Stopwatch.GetTimestamp();
+                var time = stamp - _lastTimeStamp;
+                if (time < time50)
+                {
+                    var delay = (int)(((time50 - time) * 1000) / frequency);
+                    if (delay > 5)
+                    {
+                        Thread.Sleep(delay - 1);
+                    }
+                }
+                while (true)
                 {
                     stamp = Stopwatch.GetTimestamp();
                     time = stamp - _lastTimeStamp;
-                    if (time > 0)
+                    if (time >= time50)
                     {
-                        var rest = frequency / (time * 1000);
-                        if (rest > 1)
-                        {
-                            Thread.Sleep((int)(rest - 1));
-                        }
+                        break;
                     }
-                } while (!_isCancel && time < time50);
+                    // need equivalent for asm pause
+                    //Thread.MemoryBarrier();
+                }
                 if (time > time50 * 2)
                 {
+                    // resync
                     _lastTimeStamp = stamp;
                 }
                 else
