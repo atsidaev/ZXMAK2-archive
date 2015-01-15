@@ -53,8 +53,7 @@ namespace ZXMAK2.Engine
                     {
                         break;
                     }
-                    // need equivalent for asm pause
-                    //Thread.MemoryBarrier();
+                    Thread.SpinWait(1);
                 }
                 if (time > time50 * 2)
                 {
