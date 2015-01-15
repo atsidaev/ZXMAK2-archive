@@ -36,13 +36,14 @@ namespace ZXMAK2.Engine
                 var time50 = Stopwatch.Frequency / 50;
                 var stamp = _lastTimeStamp;
                 var time = 0L;
+                var frequency = Stopwatch.Frequency;
                 do
                 {
                     stamp = Stopwatch.GetTimestamp();
                     time = stamp - _lastTimeStamp;
                     if (time > 0)
                     {
-                        var rest = Stopwatch.Frequency / (time * 1000);
+                        var rest = frequency / (time * 1000);
                         if (rest > 1)
                         {
                             Thread.Sleep((int)((rest - 1) / 2));
