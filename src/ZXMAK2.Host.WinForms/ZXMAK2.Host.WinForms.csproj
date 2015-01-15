@@ -128,6 +128,7 @@
     </Compile>
     <Compile Include="Services\OpenFileDialog.cs" />
     <Compile Include="Services\SaveFileDialog.cs" />
+    <Compile Include="Services\SettingService.cs" />
     <Compile Include="Services\UserHelp.cs" />
     <Compile Include="Tools\BusDeviceTypeConverter.cs" />
     <Compile Include="Tools\DragDataWrapper.cs" />

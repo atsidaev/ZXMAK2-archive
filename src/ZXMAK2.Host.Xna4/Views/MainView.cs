@@ -94,7 +94,7 @@ namespace ZXMAK2.Host.Xna4.Views
 
         public void Bind(IMainPresenter presenter)
         {
-            presenter.CommandViewSyncVBlank.Execute(false);
+            presenter.CommandViewSyncSource.Execute(false);
             CommandViewFullScreen = presenter.CommandViewFullScreen;
             CommandVmWarmReset = presenter.CommandVmWarmReset;
         }

@@ -6,8 +6,9 @@ namespace ZXMAK2.Engine.Entities
 {
     public enum SyncSource
     {
-        None = 0,
+        Time = 0,
         Sound,
         Video,
+        None,
     }
 }
