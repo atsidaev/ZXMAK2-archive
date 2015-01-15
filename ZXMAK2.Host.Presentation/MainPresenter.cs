@@ -25,6 +25,7 @@ namespace ZXMAK2.Host.Presentation
         private readonly IMainView m_view;
         private readonly string m_startupImage;
         private VirtualMachine m_vm;
+        private SyncSource m_syncSource;
         
         
         public MainPresenter(
@@ -96,6 +97,7 @@ namespace ZXMAK2.Host.Presentation
             m_vm = new VirtualMachine(m_view.Host, m_view.CommandManager);
             m_vm.Init();
             m_vm.UpdateState += VirtualMachine_OnUpdateState;
+            m_syncSource = m_vm.SyncSource;
 
             m_view.Title = string.Empty;
             var fileName = Path.Combine(
@@ -270,8 +272,8 @@ namespace ZXMAK2.Host.Presentation
             {
                 return;
             }
-            var syncSource = (SyncSource)objState;
-            m_vm.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None : syncSource;
+            m_syncSource = (SyncSource)objState;
+            m_vm.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None : m_syncSource;
         }
 
         private void CommandVmPause_OnExecute()
@@ -300,9 +302,7 @@ namespace ZXMAK2.Host.Presentation
             {
                 return;
             }
-            m_vm.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None :
-                CommandViewSyncSource.Checked ? SyncSource.Video :
-                SyncSource.Sound;
+            m_vm.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None : m_syncSource;
             //applyRenderSetting();  ???
         }
 
