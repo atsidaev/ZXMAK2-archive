@@ -46,7 +46,7 @@ namespace ZXMAK2.Engine
                         var rest = frequency / (time * 1000);
                         if (rest > 1)
                         {
-                            Thread.Sleep((int)((rest - 1) / 2));
+                            Thread.Sleep((int)(rest - 1));
                         }
                     }
                 } while (!_isCancel && time < time50);
