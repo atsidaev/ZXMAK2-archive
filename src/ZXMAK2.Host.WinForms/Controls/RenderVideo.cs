@@ -30,6 +30,8 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         #region Fields
 
+        private readonly ManualResetEvent _waitEvent = new ManualResetEvent(true);
+
         private bool _isInitialized;
         private Sprite m_sprite = null;
         private Texture m_texture = null;
@@ -110,11 +112,21 @@ namespace ZXMAK2.Host.WinForms.Controls
             ScaleMode = ScaleMode.FixedPixelSize;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                CancelWait();
+                _waitEvent.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+
         #region IHostVideo
 
         private bool _isCancel;
         private int _syncFrame;
-        private bool _vblankValue;
 
         public void WaitFrame()
         {
@@ -127,50 +139,91 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private void WaitFrameInt()
         {
-            if (!IsReadScanlineSupported)
-            {
-                Thread.Sleep(1);
-                return;
-            }
-            // FIXME: stupid synchronization, 
-            // because there is no event from Direct3D
-            var frameRest = D3D.DisplayMode.RefreshRate % 50;
-            var frameRatio = frameRest != 0 ? 50 / frameRest : 0;
-            _isCancel = false;
-            var priority = Thread.CurrentThread.Priority;
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            _waitEvent.Reset();
             try
             {
-                while (!_isCancel)
+                if (_isCancel)
                 {
-                    // wait VBlank
+                    return;
+                }
+                if (!IsReadScanlineSupported)
+                {
+                    Thread.Sleep(1);
+                    return;
+                }
+                var refreshRate = D3D.DisplayMode.RefreshRate;
+                if (refreshRate <= 0)
+                {
+                    refreshRate = 60;
+                }
+                var frameRest = refreshRate % 50;
+                var frameRatio = frameRest != 0 ? 50 / frameRest : 0;
+                _isCancel = false;
+                var priority = Thread.CurrentThread.Priority;
+                Thread.CurrentThread.Priority = ThreadPriority.Highest;
+                try
+                {
                     while (!_isCancel)
                     {
-                        var state = D3D.RasterStatus.InVBlank;
-                        var change = state != _vblankValue;
-                        _vblankValue = state;
-                        if (change && _vblankValue)
+                        WaitVBlank(refreshRate);
+                        if (frameRatio > 0 && ++_syncFrame > frameRatio)
                         {
-                            break;
+                            _syncFrame = 0;
+                            continue;
                         }
+                        break;
                     }
-                    if (frameRatio > 0 && ++_syncFrame > frameRatio)
-                    {
-                        _syncFrame = 0;
-                        continue;
-                    }
-                    return;
+                }
+                finally
+                {
+                    Thread.CurrentThread.Priority = priority;
                 }
             }
             finally
             {
-                Thread.CurrentThread.Priority = priority;
+                _waitEvent.Set();
             }
+        }
+
+        private long m_lastBlankStamp;
+
+        private void WaitVBlank(int refreshRate)
+        {
+            // check if VBlank has already occurred 
+            var timeStamp = Stopwatch.GetTimestamp();
+            if ((timeStamp - m_lastBlankStamp) > (Stopwatch.Frequency / refreshRate))
+            {
+                // some frames was missed, so try to catch up
+                m_lastBlankStamp = timeStamp;
+                return;
+            }
+
+            // wait VBlank
+            var timeFrame = D3D.DisplayMode.Height;
+            var frequency = timeFrame * refreshRate;
+            var time = D3D.RasterStatus.ScanLine;
+            if (time < timeFrame)
+            {
+                var delay = (int)(((timeFrame - time) * 1000) / frequency);
+                if (delay > 5 && delay < 40)
+                {
+                    Thread.Sleep(delay - 1);
+                }
+            }
+            while (!_isCancel && !D3D.RasterStatus.InVBlank)
+            {
+                Thread.SpinWait(1);
+            }
+            m_lastBlankStamp = Stopwatch.GetTimestamp();
         }
 
         public void CancelWait()
         {
             _isCancel = true;
+            Thread.MemoryBarrier();
+            _waitEvent.WaitOne();
+            _isCancel = false;
+            Thread.MemoryBarrier();
         }
         
         public void PushFrame(IVideoFrame frame, bool isRequested)
