@@ -70,8 +70,8 @@ namespace ZXMAK2.Engine
             _isCancel = true;
             Thread.MemoryBarrier();
             _waitEvent.WaitOne();
-            Thread.MemoryBarrier();
             _isCancel = false;
+            Thread.MemoryBarrier();
         }
     }
 }
