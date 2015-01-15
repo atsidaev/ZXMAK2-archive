@@ -596,6 +596,82 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             dataPanel.ColCount = cols;
         }
 
+        //Save disassembly
+        private void menuItemSaveDisassembly_Click(object sender, EventArgs e)
+        {
+            string dissassembly = String.Empty;
+            int addressFrom = dasmPanel.ActiveAddress;
+            int addressTo = 0;
+            var service = Locator.Resolve<IUserQuery>();
+            if (!service.QueryValue("Save disassembly", "Address from:", "#{0:X2}", ref addressFrom, 0, 0xFFFF)) return;
+            if (!service.QueryValue("Save disassembly", "Address to:", "#{0:X2}", ref addressTo, 0, 0xFFFF)) return;
+
+            for( int counter = 0; ; )
+            {
+                int actualAddress = addressFrom + counter;
+                if( actualAddress > addressTo )
+                    break;
+
+                int len;
+                dissassembly += m_dasmTool.GetMnemonic(actualAddress, out len) + System.Environment.NewLine;
+                counter += len;
+            }
+
+            if (dissassembly != String.Empty)
+            {
+                File.WriteAllText("dis.asm", dissassembly);
+                Locator.Resolve<IUserMessage>().Info("File dis.asm saved!");
+            }
+            else
+            {
+                Locator.Resolve<IUserMessage>().Error("Nothing to save...!");
+            }
+        }
+
+        //Save memory block as bytes(DEFB)
+        private void menuItemSaveAsBytes_Click(object sender, EventArgs e)
+        {
+            string memBytes = String.Empty;
+            int addressFrom = dasmPanel.ActiveAddress;
+            int addressTo = 0;
+            var service = Locator.Resolve<IUserQuery>();
+            if (!service.QueryValue("Save disassembly", "Address from:", "#{0:X2}", ref addressFrom, 0, 0xFFFF)) return;
+            if (!service.QueryValue("Save disassembly", "Address to:", "#{0:X2}", ref addressTo, 0, 0xFFFF)) return;
+
+            for (int counter = 0; ; )
+            {
+                int actualAddress = addressFrom + counter;
+                if (actualAddress >= addressTo)
+                    break;
+
+                if (counter % 8 == 0 || counter == 0)
+                {
+                    memBytes += "DEFB ";
+                }
+
+                memBytes += String.Format("#{0:X2}", m_spectrum.ReadMemory((ushort)actualAddress));
+
+                if ((counter + 1) % 8 != 0 || counter == 0)
+                {
+                    if (actualAddress+1 < addressTo)
+                        memBytes += ", ";
+                }
+                else
+                    memBytes += System.Environment.NewLine;
+
+                counter++;
+            }
+
+            if (memBytes != String.Empty)
+            {
+                File.WriteAllText("membytes.asm", memBytes);
+                Locator.Resolve<IUserMessage>().Info("File membytes.asm saved!");
+            }
+            else
+            {
+                Locator.Resolve<IUserMessage>().Error("Nothing to save...!");
+            }
+        }
         private void dasmPanel_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
