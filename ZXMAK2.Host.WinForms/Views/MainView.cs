@@ -669,7 +669,7 @@ namespace ZXMAK2.Host.WinForms.Views
         {
             renderVideo.Smoothing = m_setting.RenderSmooth;
             renderVideo.MimicTv = m_setting.RenderMimicTv;
-            renderVideo.NoFlic = m_setting.RenderVideoFilter == VideoFilter.NoFlick;
+            renderVideo.VideoFilter = m_setting.RenderVideoFilter;
             renderVideo.ScaleMode = m_setting.RenderScaleMode;
             renderVideo.DisplayIcon = m_setting.RenderDisplayIcon;
             renderVideo.DebugInfo = m_setting.RenderDebugInfo;
