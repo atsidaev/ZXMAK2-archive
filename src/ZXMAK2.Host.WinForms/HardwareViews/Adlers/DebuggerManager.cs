@@ -256,23 +256,25 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         //
         public static UInt16 convertNumberWithPrefix(string input) //Prefix: % - binary, # - hexadecimal
         {
+            string inputTrimmed = input.Trim();
+
             try
             {
                 // % - binary
-                if (input[0] == '%')
+                if (inputTrimmed[0] == '%')
                 {
-                    string number = input.Substring(1, input.Length - 1 );
+                    string number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
                     return Convert.ToUInt16(number, 2);
                 }
 
                 // # - hexadecimal
-                if (input[0] == '#')
+                if (inputTrimmed[0] == '#')
                 {
-                    string number = input.Substring(1, input.Length - 1);
+                    string number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
                     return Convert.ToUInt16(number, 16);
                 }
 
-                return Convert.ToUInt16(input); // maybe decimal number
+                return Convert.ToUInt16(inputTrimmed); // maybe decimal number
             }
             catch (Exception ex)
             {
