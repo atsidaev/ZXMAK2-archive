@@ -286,10 +286,12 @@ namespace ZXMAK2.Host.WinForms.Views
                 menuViewFrameSyncVideo.ToolTipText = "ReadScanLine capability is not supported by your videocard!";
                 menuViewFrameSyncVideo.Enabled = false;
             }
+            NativeMethods.TimeBeginPeriod(1);
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
+            NativeMethods.TimeEndPeriod(1);
             base.OnClosing(e);
             m_allowSaveSize = false;
         }
