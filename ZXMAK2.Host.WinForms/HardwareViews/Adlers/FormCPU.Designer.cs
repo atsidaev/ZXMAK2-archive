@@ -61,11 +61,12 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             this.menuDataLoadBlock = new System.Windows.Forms.MenuItem();
             this.menuDataSaveBlock = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
+            this.menuItemSaveAsBytes = new System.Windows.Forms.MenuItem();
+            this.menuItemFindBytes = new System.Windows.Forms.MenuItem();
+            this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.menuItemDataRefresh = new System.Windows.Forms.MenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.dbgCmdLine = new System.Windows.Forms.TextBox();
-            this.menuItemSaveAsBytes = new System.Windows.Forms.MenuItem();
-            this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.panelStatus.SuspendLayout();
             this.panelState.SuspendLayout();
             this.panelRegs.SuspendLayout();
@@ -200,8 +201,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             // 
             // panelMem
             // 
-            this.panelMem.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelMem.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panelMem.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panelMem.Controls.Add(this.dataPanel);
             this.panelMem.Location = new System.Drawing.Point(0, 251);
@@ -236,9 +237,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             // 
             // panelDasm
             // 
-            this.panelDasm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelDasm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panelDasm.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panelDasm.Controls.Add(this.dasmPanel);
             this.panelDasm.Location = new System.Drawing.Point(0, 0);
@@ -356,6 +357,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             this.menuDataLoadBlock,
             this.menuDataSaveBlock,
             this.menuItem3,
+            this.menuItemFindBytes,
             this.menuItemSaveAsBytes,
             this.menuItem7,
             this.menuItemDataRefresh});
@@ -394,9 +396,26 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             this.menuItem3.Index = 5;
             this.menuItem3.Text = "-";
             // 
+            // menuItemSaveAsBytes
+            // 
+            this.menuItemSaveAsBytes.Index = 7;
+            this.menuItemSaveAsBytes.Text = "Save as bytes";
+            this.menuItemSaveAsBytes.Click += new System.EventHandler(this.menuItemSaveAsBytes_Click);
+            // 
+            // menuItemFindBytes
+            // 
+            this.menuItemFindBytes.Index = 6;
+            this.menuItemFindBytes.Text = "Find bytes in memory";
+            this.menuItemFindBytes.Click += new System.EventHandler(this.menuItemFindBytes_Click);
+            // 
+            // menuItem7
+            // 
+            this.menuItem7.Index = 8;
+            this.menuItem7.Text = "-";
+            // 
             // menuItemDataRefresh
             // 
-            this.menuItemDataRefresh.Index = 8;
+            this.menuItemDataRefresh.Index = 9;
             this.menuItemDataRefresh.Text = "Refresh";
             this.menuItemDataRefresh.Click += new System.EventHandler(this.menuItemDataRefresh_Click);
             // 
@@ -424,17 +443,6 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             this.dbgCmdLine.Size = new System.Drawing.Size(444, 17);
             this.dbgCmdLine.TabIndex = 0;
             this.dbgCmdLine.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dbgCmdLine_KeyUp);
-            // 
-            // menuItemSaveAsBytes
-            // 
-            this.menuItemSaveAsBytes.Index = 6;
-            this.menuItemSaveAsBytes.Text = "Save as bytes";
-            this.menuItemSaveAsBytes.Click += new System.EventHandler(this.menuItemSaveAsBytes_Click);
-            // 
-            // menuItem7
-            // 
-            this.menuItem7.Index = 7;
-            this.menuItem7.Text = "-";
             // 
             // FormCpu
             // 
@@ -509,5 +517,6 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         private System.Windows.Forms.MenuItem menuItemSaveDisassembly;
         private System.Windows.Forms.MenuItem menuItemSaveAsBytes;
         private System.Windows.Forms.MenuItem menuItem7;
+        private System.Windows.Forms.MenuItem menuItemFindBytes;
     }
 }

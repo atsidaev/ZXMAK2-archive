@@ -19,6 +19,7 @@ using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Engine.Entities;
+using System.Text.RegularExpressions;
 
 
 namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
@@ -635,8 +636,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             int addressFrom = dasmPanel.ActiveAddress;
             int addressTo = 0;
             var service = Locator.Resolve<IUserQuery>();
-            if (!service.QueryValue("Save disassembly", "Address from:", "#{0:X2}", ref addressFrom, 0, 0xFFFF)) return;
-            if (!service.QueryValue("Save disassembly", "Address to:", "#{0:X2}", ref addressTo, 0, 0xFFFF)) return;
+            if (!service.QueryValue("Save as bytes", "Address from:", "#{0:X2}", ref addressFrom, 0, 0xFFFF)) return;
+            if (!service.QueryValue("Save as bytes", "Address to:", "#{0:X2}", ref addressTo, 0, 0xFFFF)) return;
 
             for (int counter = 0; ; )
             {
@@ -672,6 +673,77 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 Locator.Resolve<IUserMessage>().Error("Nothing to save...!");
             }
         }
+
+        //find bytes in memory
+        private void menuItemFindBytes_Click(object sender, EventArgs e)
+        {
+            List<UInt16> bytesToFindInput = new List<UInt16>();
+            string valuesToFind = String.Empty;
+            var service = Locator.Resolve<IUserQuery>();
+
+            if (!service.QueryText("Find bytes in memory", "Bytes(comma delimited):", ref valuesToFind)) return;
+            if (valuesToFind.Trim() == String.Empty || valuesToFind.Trim().Length == 0)
+                return;
+
+            bytesToFindInput.Clear();
+            foreach (string byteCandidate in Regex.Split(valuesToFind, ","))
+            {
+                if (!String.IsNullOrEmpty(byteCandidate) && byteCandidate.Trim() != String.Empty && byteCandidate != ",")
+                {
+                    try
+                    {
+                        bytesToFindInput.Add(DebuggerManager.convertNumberWithPrefix(byteCandidate));
+                    }
+                    catch
+                    {
+                        Locator.Resolve<IUserMessage>().Error("Error in parsing the entered values!");
+                    }
+                }
+            }
+
+            if (bytesToFindInput.Count == 0)
+                return;
+
+            //finding the memory
+            List<byte> bytesToFind = new List<byte>();
+            bytesToFind.Clear();
+            foreach( UInt16 word in bytesToFindInput )
+            {
+                if (word > 0xFF)
+                {
+                    bytesToFind.Add((byte)(word / 256));
+                    bytesToFind.Add((byte)(word % 256));
+                }
+                else
+                    bytesToFind.Add((byte)word);
+            }
+
+            for (ushort counter = (ushort)(dataPanel.TopAddress + 1); counter != 0; counter++)
+            {
+                if (m_spectrum.ReadMemory(counter) == bytesToFind[0]) //check 1. byte
+                {
+                    //check next bytes
+                    bool bFound = true;
+                    ushort actualAdress = (ushort)(counter + 1);
+
+                    for (ushort counterNextBytes = 1; counterNextBytes < bytesToFind.Count; counterNextBytes++, actualAdress++)
+                    {
+                        if (m_spectrum.ReadMemory(actualAdress) != bytesToFind[counterNextBytes])
+                        {
+                            bFound = false;
+                            break;
+                        }
+                    }
+
+                    if (bFound)
+                    {
+                        dataPanel.TopAddress = counter;
+                        return;
+                    }
+                }
+            }
+        }
+
         private void dasmPanel_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -816,8 +888,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                     string actualCommand = dbgCmdLine.Text;
 
                     List<string> parsedCommand = DebuggerManager.ParseCommand(actualCommand);
-                    if (parsedCommand == null)
-                        throw new Exception("unknown debugger command");
+                    if (parsedCommand == null || parsedCommand.Count == 0)
+                        return;
 
                     DebuggerManager.CommandType commandType = DebuggerManager.getDbgCommandType(parsedCommand);
 
@@ -1017,7 +1089,6 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 }
                 catch (Exception exc)
                 {
-                    Logger.Error(exc);
                     string saveCmdLineString = dbgCmdLine.Text;
                     dbgCmdLine.BackColor = Color.Red;
                     dbgCmdLine.ForeColor = Color.Black;
