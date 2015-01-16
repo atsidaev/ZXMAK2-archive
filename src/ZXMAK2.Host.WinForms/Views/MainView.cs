@@ -257,7 +257,8 @@ namespace ZXMAK2.Host.WinForms.Views
 
         private void LoadConfig()
         {
-            if (string.IsNullOrEmpty(KeyboardMapFile))
+            if (m_host.Keyboard == null || 
+                string.IsNullOrEmpty(KeyboardMapFile))
             {
                 return;
             }
