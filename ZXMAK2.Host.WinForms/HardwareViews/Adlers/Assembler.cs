@@ -138,8 +138,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                                                   new IntPtr(perrFileName), new IntPtr(perrReason)
                                                   );
                             }
-                            catch
+                            catch (Exception ex)
                             {
+                                Logger.Error(ex);
                                 Locator.Resolve<IUserMessage>().Error( "Technical error in compilation...\nSorry, compilation cannot be executed.");
                                 return;
                             }
@@ -460,8 +461,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             }
             catch (Exception ex)
             {
-                this.richCompileMessages.Text += "\n\nFile " + i_fileName + " read ERROR!";
                 Logger.Error(ex);
+                this.richCompileMessages.Text += "\n\nFile " + i_fileName + " read ERROR!";
                 return false;
             }
         }

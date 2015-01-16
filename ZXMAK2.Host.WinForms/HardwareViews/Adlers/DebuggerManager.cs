@@ -127,8 +127,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 
                 return dbgParsed;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Error(ex);
                 return null;
             }
         }
@@ -273,8 +274,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 
                 return Convert.ToUInt16(input); // maybe decimal number
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Error(ex);
                 throw new Exception("Incorrect number in convertNumberWithPrefix(), number=" + input.ToString());
             }
         }
@@ -307,8 +309,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                         return true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Error(ex);
             }
 
             return false;
@@ -362,8 +365,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 if (isMemoryReference(left) || isMemoryReference(right))
                     return BreakPointAccessType.memoryChange;
             }
-            catch(Exception)
+            catch(Exception ex)
             {
+                Logger.Error(ex);
             }
 
             return BreakPointAccessType.Undefined;

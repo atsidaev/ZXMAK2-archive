@@ -50,6 +50,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             }
             catch(Exception tcpException)
             {
+                Logger.Error(tcpException);
                 Locator.Resolve<IUserMessage>()
                     .Error("Error: \n" + tcpException.Message);
             }
