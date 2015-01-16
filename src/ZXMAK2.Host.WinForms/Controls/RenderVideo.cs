@@ -13,6 +13,10 @@ using Microsoft.DirectX.Direct3D;
 using ZXMAK2.Engine;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.WinForms.Tools;
+using D3dFont = Microsoft.DirectX.Direct3D.Font;
+using D3dSprite = Microsoft.DirectX.Direct3D.Sprite;
+using D3dTexture = Microsoft.DirectX.Direct3D.Texture;
+using D3dTextureLoader = Microsoft.DirectX.Direct3D.TextureLoader;
 
 
 namespace ZXMAK2.Host.WinForms.Controls
@@ -31,30 +35,33 @@ namespace ZXMAK2.Host.WinForms.Controls
         #region Fields
 
         private readonly ManualResetEvent _waitEvent = new ManualResetEvent(true);
+        private readonly Dictionary<IIconDescriptor, IconTextureWrapper> _iconWrapperDict = new Dictionary<IIconDescriptor, IconTextureWrapper>();
 
-        private bool _isInitialized;
-        private Sprite m_sprite = null;
-        private Texture m_texture = null;
-        private Texture m_textureMaskTv = null;
-        private Size m_surfaceSize = new Size(0, 0);
-        private Size m_textureSize = new Size(0, 0);
-        private Size m_textureMaskTvSize = new Size(0, 0);
-        private float m_surfaceHeightScale = 1F;
-        private bool _isDebugInfo;
+        private D3dSprite _sprite = null;
+        private D3dTexture _texture = null;
+        private D3dTexture _textureMaskTv = null;
+        private D3dSprite _iconSprite = null;
+        private D3dFont _font = null;
+        private Size _surfaceSize = new Size(0, 0);
+        private Size _textureSize = new Size(0, 0);
+        private Size _textureMaskTvSize = new Size(0, 0);
 
-        private Sprite m_iconSprite = null;
-        private Microsoft.DirectX.Direct3D.Font m_font = null;
-
-        private unsafe DrawFilterDelegate m_drawFilter;
-        private unsafe delegate void DrawFilterDelegate(int* dstBuffer, int* srcBuffer);
-        private readonly FpsMonitor m_fpsUpdate = new FpsMonitor();
-        private readonly FpsMonitor m_fpsRender = new FpsMonitor();
-        private readonly double[] m_renderGraph = new double[GraphLength];
-        private readonly double[] m_loadGraph = new double[GraphLength];
-        //private double[] m_copyGraph = new double[GraphLength];
+        private VideoFilterDelegate _videoFilter;
+        private readonly FpsMonitor _fpsUpdate = new FpsMonitor();
+        private readonly FpsMonitor _fpsRender = new FpsMonitor();
+        private readonly double[] _renderGraph = new double[GraphLength];
+        private readonly double[] _loadGraph = new double[GraphLength];
+        //private readonly double[] m_copyGraph = new double[GraphLength];
         //private int m_copyGraphIndex;
-        private int m_renderGraphIndex;
-        private int m_loadGraphIndex;
+        private int _renderGraphIndex;
+        private int _loadGraphIndex;
+        private int[] _lastBuffer = new int[0];    // noflick
+        private long _lastBlankStamp;              // WaitVBlank
+        private int _debugFrameStart = 0;
+        private float m_surfaceHeightScale = 1F;
+        private bool _isInitialized;
+        private bool _isRunning;
+        private bool _isDebugInfo;
 
 
         #endregion Fields
@@ -83,31 +90,64 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
-        public unsafe bool NoFlic
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public VideoFilter VideoFilter
         {
-            get { return m_drawFilter == drawFrame_noflic; }
+            get
+            {
+                unsafe
+                {
+                    return _videoFilter == DrawFrame_None ? VideoFilter.None :
+                        _videoFilter == DrawFrame_NoFlick ? VideoFilter.NoFlick :
+                        VideoFilter.None;
+                }
+            }
             set
             {
-                m_drawFilter = value ?
-                    (DrawFilterDelegate)drawFrame_noflic :
-                    (DrawFilterDelegate)drawFrame;
+                unsafe
+                {
+                    switch (value)
+                    {
+                        case VideoFilter.NoFlick:
+                            _videoFilter = DrawFrame_NoFlick;
+                            break;
+                        case VideoFilter.None:
+                        default:
+                            _videoFilter = DrawFrame_None;
+                            break;
+                    }
+                }
             }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool IconDisk { get; set; }
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DisplayIcon { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsReadScanlineSupported { get; private set; }
-        
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Size FrameSize { get; private set; }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool IsRunning
+        {
+            get { return _isRunning; }
+            set
+            {
+                _isRunning = value;
+                _fpsUpdate.Reset();
+                //ClearGraph(m_renderGraph, ref m_renderGraphIndex);
+                //ClearGraph(m_loadGraph, ref m_loadGraphIndex);
+            }
+        }
+
         #endregion Properties
 
         
         public unsafe RenderVideo()
         {
-            m_drawFilter = drawFrame;
+            _videoFilter = DrawFrame_None;
             DisplayIcon = true;
             ScaleMode = ScaleMode.FixedPixelSize;
         }
@@ -185,16 +225,14 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
-        private long m_lastBlankStamp;
-
         private void WaitVBlank(int refreshRate)
         {
             // check if VBlank has already occurred 
             var timeStamp = Stopwatch.GetTimestamp();
-            if ((timeStamp - m_lastBlankStamp) > (Stopwatch.Frequency / refreshRate))
+            if ((timeStamp - _lastBlankStamp) > (Stopwatch.Frequency / refreshRate))
             {
                 // some frames was missed, so try to catch up
-                m_lastBlankStamp = timeStamp;
+                _lastBlankStamp = timeStamp;
                 return;
             }
 
@@ -214,7 +252,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 Thread.SpinWait(1);
             }
-            m_lastBlankStamp = Stopwatch.GetTimestamp();
+            _lastBlankStamp = Stopwatch.GetTimestamp();
         }
 
         public void CancelWait()
@@ -230,13 +268,13 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             if (!isRequested)
             {
-                m_fpsUpdate.Frame();
+                _fpsUpdate.Frame();
                 if (DebugInfo)
                 {
-                    PushGraphValue(m_loadGraph, ref m_loadGraphIndex, frame.InstantTime);
+                    PushGraphValue(_loadGraph, ref _loadGraphIndex, frame.InstantTime);
                 }
             }
-            m_debugFrameStart = frame.StartTact;
+            _debugFrameStart = frame.StartTact;
             FrameSize = new Size(
                 frame.VideoData.Size.Width,
                 (int)(frame.VideoData.Size.Height * frame.VideoData.Ratio + 0.5F));
@@ -250,22 +288,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         #endregion IHostVideo
 
-        public Size FrameSize { get; private set; }
-
-        private bool _isRunning;
-
-        public bool IsRunning 
-        {
-            get { return _isRunning; }
-            set 
-            { 
-                _isRunning = value; 
-                m_fpsUpdate.Reset();
-                //ClearGraph(m_renderGraph, ref m_renderGraphIndex);
-                //ClearGraph(m_loadGraph, ref m_loadGraphIndex);
-            }
-        }
-
+        
         #region Private
 
         protected override void OnCreateDevice()
@@ -279,41 +302,41 @@ namespace ZXMAK2.Host.WinForms.Controls
         private void OnCreateDeviceInt()
         {
             IsReadScanlineSupported = D3D.DeviceCaps.DriverCaps.ReadScanLine;
-            m_sprite = new Sprite(D3D);
-            m_iconSprite = new Sprite(D3D);
+            _sprite = new D3dSprite(D3D);
+            _iconSprite = new D3dSprite(D3D);
         }
 
         protected override void OnDestroyDevice()
         {
-            if (m_texture != null)
+            if (_texture != null)
             {
-                m_texture.Dispose();
-                m_texture = null;
+                _texture.Dispose();
+                _texture = null;
             }
-            if (m_textureMaskTv != null)
+            if (_textureMaskTv != null)
             {
-                m_textureMaskTv.Dispose();
-                m_textureMaskTv = null;
+                _textureMaskTv.Dispose();
+                _textureMaskTv = null;
             }
-            foreach (var textureWrapper in m_iconWrapperDict.Values)
+            foreach (var textureWrapper in _iconWrapperDict.Values)
             {
                 textureWrapper.Dispose();
             }
-            m_iconWrapperDict.Clear();
-            if (m_sprite != null)
+            _iconWrapperDict.Clear();
+            if (_sprite != null)
             {
-                m_sprite.Dispose();
-                m_sprite = null;
+                _sprite.Dispose();
+                _sprite = null;
             }
-            if (m_iconSprite != null)
+            if (_iconSprite != null)
             {
-                m_iconSprite.Dispose();
-                m_iconSprite = null;
+                _iconSprite.Dispose();
+                _iconSprite = null;
             }
-            if (m_font != null)
+            if (_font != null)
             {
-                m_font.Dispose();
-                m_font = null;
+                _font.Dispose();
+                _font = null;
             }
             base.OnDestroyDevice();
         }
@@ -349,21 +372,23 @@ namespace ZXMAK2.Host.WinForms.Controls
                 try
                 {
                     m_surfaceHeightScale = videoData.Ratio;
-                    if (m_surfaceSize != videoData.Size)
+                    if (_surfaceSize != videoData.Size)
                     {
-                        initTextures(videoData.Size);
+                        InitVideoTextures(videoData.Size);
                     }
-                    if (m_texture != null)
+                    if (_texture != null)
                     {
-                        using (GraphicsStream gs = m_texture.LockRectangle(0, LockFlags.None))
+                        using (GraphicsStream gs = _texture.LockRectangle(0, LockFlags.None))
+                        {
                             fixed (int* srcPtr = videoData.Buffer)
                             {
                                 //var startTick = Stopwatch.GetTimestamp();
-                                m_drawFilter((int*)gs.InternalData, srcPtr);
+                                _videoFilter((int*)gs.InternalData, srcPtr);
                                 //var copyTime = Stopwatch.GetTimestamp() - startTick;
                                 //PushGraphValue(m_copyGraph, ref m_copyGraphIndex, copyTime);
                             }
-                        m_texture.UnlockRectangle(0);
+                        }
+                        _texture.UnlockRectangle(0);
                     }
                 }
                 catch (Exception ex)
@@ -374,7 +399,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             Invalidate();
         }
 
-        private unsafe void initTextures(Size surfaceSize)
+        private unsafe void InitVideoTextures(Size surfaceSize)
         {
             lock (SyncRoot)
             {
@@ -383,59 +408,61 @@ namespace ZXMAK2.Host.WinForms.Controls
                     return;
                 }
                 //base.ResizeContext(surfaceSize);
-                int potSize = getPotSize(surfaceSize);
-                if (m_texture != null)
+                int potSize = GetPotSize(surfaceSize);
+                if (_texture != null)
                 {
-                    m_texture.Dispose();
-                    m_texture = null;
+                    _texture.Dispose();
+                    _texture = null;
                 }
-                if (m_textureMaskTv != null)
+                if (_textureMaskTv != null)
                 {
-                    m_textureMaskTv.Dispose();
-                    m_textureMaskTv = null;
+                    _textureMaskTv.Dispose();
+                    _textureMaskTv = null;
                 }
-                m_texture = new Texture(D3D, potSize, potSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-                m_textureSize = new System.Drawing.Size(potSize, potSize);
-                m_surfaceSize = surfaceSize;
+                _texture = new D3dTexture(D3D, potSize, potSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+                _textureSize = new Size(potSize, potSize);
+                _surfaceSize = surfaceSize;
 
                 var maskTvSize = new Size(surfaceSize.Width, surfaceSize.Height * MimicTvRatio);
-                var maskTvPotSize = getPotSize(maskTvSize);
-                m_textureMaskTv = new Texture(D3D, maskTvPotSize, maskTvPotSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-                m_textureMaskTvSize = new Size(maskTvPotSize, maskTvPotSize);
-                using (GraphicsStream gs = m_textureMaskTv.LockRectangle(0, LockFlags.None))
-                {                
-                    for (var x=0; x < maskTvSize.Width; x++)
-                        for (var y=0; y < maskTvSize.Height; y++)
+                var maskTvPotSize = GetPotSize(maskTvSize);
+                _textureMaskTv = new D3dTexture(D3D, maskTvPotSize, maskTvPotSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+                _textureMaskTvSize = new Size(maskTvPotSize, maskTvPotSize);
+                using (GraphicsStream gs = _textureMaskTv.LockRectangle(0, LockFlags.None))
+                {
+                    for (var x = 0; x < maskTvSize.Width; x++)
+                    {
+                        for (var y = 0; y < maskTvSize.Height; y++)
                         {
                             var ptr = (int*)gs.InternalData;
                             var offset = y * maskTvPotSize + x;
-                            *(ptr + offset) = (y%MimicTvRatio)!=(MimicTvRatio-1) ? 0 : MimicTvAlpha<<24;
+                            *(ptr + offset) = (y % MimicTvRatio) != (MimicTvRatio - 1) ? 0 : MimicTvAlpha << 24;
                         }
+                    }
                 }
-                m_textureMaskTv.UnlockRectangle(0);
+                _textureMaskTv.UnlockRectangle(0);
 
 
-                initIconTextures();
+                InitIconTextures();
             }
         }
 
-        private void initIconTextures()
+        private void InitIconTextures()
         {
-            foreach (var textureWrapper in m_iconWrapperDict.Values)
+            foreach (var textureWrapper in _iconWrapperDict.Values)
             {
                 textureWrapper.Load(D3D);
             }
-            if (m_font != null)
+            if (_font != null)
             {
-                m_font.Dispose();
-                m_font = null;
+                _font.Dispose();
+                _font = null;
             }
             var gdiFont = new System.Drawing.Font(
                 "Microsoft Sans Serif",
                 10f/*8.25f*/,
                 System.Drawing.FontStyle.Bold,
                 GraphicsUnit.Pixel);
-            m_font = new Microsoft.DirectX.Direct3D.Font(D3D, gdiFont);
+            _font = new Microsoft.DirectX.Direct3D.Font(D3D, gdiFont);
         }
 
         protected override void OnRenderScene()
@@ -451,29 +478,18 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             lock (SyncRoot)
             {
-                if (m_texture != null)
+                if (_texture != null)
                 {
-                    m_fpsRender.Frame();
+                    _fpsRender.Frame();
                     if (DebugInfo)
                     {
-                        PushGraphValue(m_renderGraph, ref m_renderGraphIndex, m_fpsRender.InstantTime);
+                        PushGraphValue(_renderGraph, ref _renderGraphIndex, _fpsRender.InstantTime);
                     }
 
-                    m_sprite.Begin(SpriteFlags.None);
+                    _sprite.Begin(SpriteFlags.None);
 
-                    ////if (d3d.DeviceCaps.TextureFilterCaps.SupportsMinifyAnisotropic)
-                    ////if (device.DeviceCaps.TextureFilterCaps.SupportsMagnifyAnisotropic)
-                    ////d3d.SamplerState[0].MipFilter = TextureFilter.Point;
-                    //TextureFilter min = D3D.SamplerState[0].MinFilter;
-                    //TextureFilter mag = D3D.SamplerState[0].MagFilter;
-                    //D3D.SamplerState[0].MinFilter = TextureFilter.Anisotropic;
-                    //D3D.SamplerState[0].MagFilter = TextureFilter.Linear;
-
-                    if (!Smoothing)
-                    {
-                        D3D.SamplerState[0].MinFilter = TextureFilter.None;
-                        D3D.SamplerState[0].MagFilter = TextureFilter.None;
-                    }
+                    D3D.SamplerState[0].MinFilter = Smoothing ? TextureFilter.Anisotropic : TextureFilter.None;
+                    D3D.SamplerState[0].MagFilter = Smoothing ? TextureFilter.Linear : TextureFilter.None;
 
                     var wndSize = GetDeviceSize();
                     var dstSize = GetDestinationSize(wndSize, GetSurfaceScaledSize());
@@ -482,31 +498,31 @@ namespace ZXMAK2.Host.WinForms.Controls
                     var srcRect = new Rectangle(
                         0,
                         0,
-                        m_surfaceSize.Width,
-                        m_surfaceSize.Height);
-                    m_sprite.Draw2D(
-                       m_texture,
+                        _surfaceSize.Width,
+                        _surfaceSize.Height);
+                    _sprite.Draw2D(
+                       _texture,
                        srcRect,
                        dstSize,
                        dstPos,
                        0x00FFFFFF);
-                    m_sprite.End();
+                    _sprite.End();
                     
                     if (MimicTv)
                     {
                         var srcRectTv = new Rectangle(
                             0,
                             0,
-                            m_surfaceSize.Width,
-                            m_surfaceSize.Height*MimicTvRatio);
-                        m_sprite.Begin(SpriteFlags.AlphaBlend);
-                        m_sprite.Draw2D(
-                            m_textureMaskTv,
+                            _surfaceSize.Width,
+                            _surfaceSize.Height*MimicTvRatio);
+                        _sprite.Begin(SpriteFlags.AlphaBlend);
+                        _sprite.Draw2D(
+                            _textureMaskTv,
                             srcRectTv,
                             dstSize,
                             dstPos,
                             -1);        
-                        m_sprite.End();
+                        _sprite.End();
                     }
 
 
@@ -517,17 +533,17 @@ namespace ZXMAK2.Host.WinForms.Controls
                     {
                         var textValue = string.Format(
                             "Render FPS: {0:F3}\nUpdate FPS: {1:F3}\nDevice FPS: {2}\nBack: [{3}, {4}]\nClient: [{5}, {6}]\nSurface: [{7}, {8}]\nFrameStart: {9}T",
-                            m_fpsRender.Value,
-                            IsRunning ? m_fpsUpdate.Value : (double?)null,
+                            _fpsRender.Value,
+                            IsRunning ? _fpsUpdate.Value : (double?)null,
                             D3D.DisplayMode.RefreshRate,
                             wndSize.Width,
                             wndSize.Height,
                             ClientSize.Width,
                             ClientSize.Height,
-                            m_surfaceSize.Width,
-                            m_surfaceSize.Height,
-                            m_debugFrameStart);
-                        var textRect = m_font.MeasureString(
+                            _surfaceSize.Width,
+                            _surfaceSize.Height,
+                            _debugFrameStart);
+                        var textRect = _font.MeasureString(
                             null,
                             textValue,
                             DrawTextFormat.NoClip,
@@ -538,7 +554,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                             Math.Max(textRect.Width + 10, GraphLength),
                             textRect.Height);
                         FillRect(textRect, Color.FromArgb(192, Color.Green));
-                        m_font.DrawText(
+                        _font.DrawText(
                             null,
                             textValue,
                             textRect,
@@ -547,8 +563,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                         if (IsRunning)
                         {
                             // Draw graphs
-                            var graphRender = GetGraph(m_renderGraph, ref m_renderGraphIndex);
-                            var graphLoad = GetGraph(m_loadGraph, ref m_loadGraphIndex);
+                            var graphRender = GetGraph(_renderGraph, ref _renderGraphIndex);
+                            var graphLoad = GetGraph(_loadGraph, ref _loadGraphIndex);
                             //var graphCopy = GetGraph(m_copyGraph, ref m_copyGraphIndex);
                             var maxTime = Math.Max(graphRender.Max(), graphLoad.Max());
                             var limitDisplay = (double)Stopwatch.Frequency / D3D.DisplayMode.RefreshRate;
@@ -570,25 +586,24 @@ namespace ZXMAK2.Host.WinForms.Controls
                     if (DisplayIcon)
                     {
                         var devIconSize = new SizeF(32, 32);
-                            //D3D.PresentationParameters.BackBufferWidth / 20,
-                            //D3D.PresentationParameters.BackBufferHeight / 15);
                         var iconNumber = 1;
-                        foreach (var itw in m_iconWrapperDict.Values)
+                        foreach (var itw in _iconWrapperDict.Values)
                         {
-                            if (itw.Visible && itw.Texture != null)
+                            if (!itw.Visible || itw.Texture == null)
                             {
-                                var iconRect = new Rectangle(new Point(0, 0), itw.Size);
-                                var devIconPos = new PointF(D3D.PresentationParameters.BackBufferWidth - devIconSize.Width * iconNumber, 0);
-                                m_iconSprite.Begin(SpriteFlags.AlphaBlend);
-                                m_iconSprite.Draw2D(
-                                   itw.Texture,
-                                   iconRect,
-                                   devIconSize,
-                                   devIconPos,
-                                   Color.FromArgb(255, 255, 255, 255));
-                                m_iconSprite.End();
-                                iconNumber++;
+                                continue;
                             }
+                            var iconRect = new Rectangle(new Point(0, 0), itw.Size);
+                            var devIconPos = new PointF(D3D.PresentationParameters.BackBufferWidth - devIconSize.Width * iconNumber, 0);
+                            _iconSprite.Begin(SpriteFlags.AlphaBlend);
+                            _iconSprite.Draw2D(
+                               itw.Texture,
+                               iconRect,
+                               devIconSize,
+                               devIconPos,
+                               Color.FromArgb(255, 255, 255, 255));
+                            _iconSprite.End();
+                            iconNumber++;
                         }
                     }
                 }
@@ -735,29 +750,10 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private SizeF GetSurfaceScaledSize()
         {
-            var surfSize = m_surfaceSize;
+            var surfSize = _surfaceSize;
             return new SizeF(
                 surfSize.Width,
                 surfSize.Height * m_surfaceHeightScale);
-        }
-
-        private unsafe void drawFrame(int* pDstBuffer, int* pSrcBuffer)
-        {
-            for (var y = 0; y < m_surfaceSize.Height; y++)
-            {
-                var srcLine = pSrcBuffer + m_surfaceSize.Width * y;
-                var dstLine = pDstBuffer + m_textureSize.Width * y;
-                NativeMethods.CopyMemory(dstLine, srcLine, m_surfaceSize.Width * 4);
-            }
-            //for (var y = 0; y < m_surfaceSize.Height; y++)
-            //{
-            //    var srcLine = pSrcBuffer + m_surfaceSize.Width * y;
-            //    var dstLine = pDstBuffer + m_textureSize.Width * y;
-            //    for (var i = 0; i < m_surfaceSize.Width; i++)
-            //    {
-            //        dstLine[i] = srcLine[i];
-            //    }
-            //}
         }
 
         private static void PushGraphValue(double[] graph, ref int index, double value)
@@ -786,24 +782,96 @@ namespace ZXMAK2.Host.WinForms.Controls
             return array;
         }
 
-        private int[] m_lastBuffer = new int[0];
-
-        private unsafe void drawFrame_noflic(int* pDstBuffer, int* pSrcBuffer)
+        private static int GetPotSize(Size surfaceSize)
         {
-            var size = m_surfaceSize.Height * m_surfaceSize.Width;
-            if (m_lastBuffer.Length < size)
+            // Create POT texture (e.g. 512x512) to render NPOT image (e.g. 320x240),
+            // because NPOT textures is not supported on some videocards
+            var size = surfaceSize.Width > surfaceSize.Height ?
+                surfaceSize.Width :
+                surfaceSize.Height;
+            var potSize = 0;
+            for (var power = 1; potSize < size; power++)
             {
-                m_lastBuffer = new int[size];
+                potSize = Pow(2, power);
             }
-            fixed (int* pSrcBuffer2 = m_lastBuffer)
+            return potSize;
+        }
+
+        private static int Pow(int value, int power)
+        {
+            var result = value;
+            for (var i = 0; i < power; i++)
             {
-                for (var y = 0; y < m_surfaceSize.Height; y++)
+                result *= value;
+            }
+            return result;
+        }
+
+        private void UpdateIcons(IIconDescriptor[] iconDescArray)
+        {
+            lock (SyncRoot)
+            {
+                foreach (var id in iconDescArray)
                 {
-                    var surfaceOffset = m_surfaceSize.Width * y;
+                    if (!_iconWrapperDict.ContainsKey(id))
+                    {
+                        _iconWrapperDict.Add(id, new IconTextureWrapper(id));
+                    }
+                    var itw = _iconWrapperDict[id];
+                    itw.Visible = id.Visible;
+                    if (itw.Texture == null && D3D != null)
+                    {
+                        itw.Load(D3D);
+                    }
+                }
+                var iconDescList = new List<IIconDescriptor>(iconDescArray);
+                var deleteList = new List<IIconDescriptor>();
+                foreach (var id in _iconWrapperDict.Keys)
+                {
+                    if (!iconDescList.Contains(id))
+                    {
+                        deleteList.Add(id);
+                    }
+                }
+                foreach (var id in deleteList)
+                {
+                    _iconWrapperDict[id].Dispose();
+                    _iconWrapperDict.Remove(id);
+                }
+            }
+        }
+
+        #endregion Private
+
+
+        #region Video Filters
+
+        private unsafe void DrawFrame_None(int* pDstBuffer, int* pSrcBuffer)
+        {
+            for (var y = 0; y < _surfaceSize.Height; y++)
+            {
+                var srcLine = pSrcBuffer + _surfaceSize.Width * y;
+                var dstLine = pDstBuffer + _textureSize.Width * y;
+                NativeMethods.CopyMemory(dstLine, srcLine, _surfaceSize.Width * 4);
+            }
+        }
+
+        private unsafe void DrawFrame_NoFlick(int* pDstBuffer, int* pSrcBuffer)
+        {
+            var size = _surfaceSize.Height * _surfaceSize.Width;
+            if (_lastBuffer.Length < size)
+            {
+                _lastBuffer = new int[size];
+            }
+            fixed (int* pSrcBuffer2 = _lastBuffer)
+            {
+                for (var y = 0; y < _surfaceSize.Height; y++)
+                {
+                    var surfaceOffset = _surfaceSize.Width * y;
                     var pSrcArray1 = pSrcBuffer + surfaceOffset;
                     var pSrcArray2 = pSrcBuffer2 + surfaceOffset;
-                    var pDstArray = pDstBuffer + m_textureSize.Width * y;
-                    for (var i = 0; i < m_surfaceSize.Width; i++)
+                    var pDstArray = pDstBuffer + _textureSize.Width * y;
+                    for (var i = 0; i < _surfaceSize.Width; i++)
                     {
                         var src1 = pSrcArray1[i];
                         var src2 = pSrcArray2[i];
@@ -817,70 +885,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
-        private static int getPotSize(Size surfaceSize)
-        {
-            // Create POT texture (e.g. 512x512) to render NPOT image (e.g. 320x240),
-            // because NPOT textures is not supported on some videocards
-            var size = surfaceSize.Width > surfaceSize.Height ?
-                surfaceSize.Width :
-                surfaceSize.Height;
-            var potSize = 0;
-            for (var power = 1; potSize < size; power++)
-            {
-                potSize = pow(2, power);
-            }
-            return potSize;
-        }
-
-        private static int pow(int value, int power)
-        {
-            var result = value;
-            for (var i = 0; i < power; i++)
-            {
-                result *= value;
-            }
-            return result;
-        }
-
-        private int m_debugFrameStart = 0;
-
-        private Dictionary<IIconDescriptor, IconTextureWrapper> m_iconWrapperDict = new Dictionary<IIconDescriptor, IconTextureWrapper>();
-
-        private void UpdateIcons(IIconDescriptor[] iconDescArray)
-        {
-            lock (SyncRoot)
-            {
-                foreach (var id in iconDescArray)
-                {
-                    if (!m_iconWrapperDict.ContainsKey(id))
-                    {
-                        m_iconWrapperDict.Add(id, new IconTextureWrapper(id));
-                    }
-                    var itw = m_iconWrapperDict[id];
-                    itw.Visible = id.Visible;
-                    if (itw.Texture == null && D3D != null)
-                    {
-                        itw.Load(D3D);
-                    }
-                }
-                var iconDescList = new List<IIconDescriptor>(iconDescArray);
-                var deleteList = new List<IIconDescriptor>();
-                foreach (var id in m_iconWrapperDict.Keys)
-                {
-                    if (!iconDescList.Contains(id))
-                    {
-                        deleteList.Add(id);
-                    }
-                }
-                foreach (var id in deleteList)
-                {
-                    m_iconWrapperDict[id].Dispose();
-                    m_iconWrapperDict.Remove(id);
-                }
-            }
-        }
-
-        #endregion Private
+        #endregion Video Filters
 
 
         #region TextureWrapper
@@ -889,7 +894,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             private IIconDescriptor m_iconDesc;
 
-            public Texture Texture;
+            public D3dTexture Texture;
             public bool Visible;
 
             public IconTextureWrapper(IIconDescriptor iconDesc)
@@ -905,20 +910,25 @@ namespace ZXMAK2.Host.WinForms.Controls
                 Texture = null;
             }
 
-            public Size Size { get { return m_iconDesc.Size; } }
+            public Size Size 
+            { 
+                get { return m_iconDesc.Size; } 
+            }
 
             public void Load(Device D3D)
             {
                 if (Texture != null)
                     Texture.Dispose();
                 Texture = null;
-                Texture = TextureLoader.FromStream(
+                Texture = D3dTextureLoader.FromStream(
                     D3D,
                     m_iconDesc.GetImageStream());
             }
         }
         
         #endregion TextureWrapper
+
+        private unsafe delegate void VideoFilterDelegate(int* dstBuffer, int* srcBuffer);
     }
 
     public enum ScaleMode

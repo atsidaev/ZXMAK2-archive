@@ -604,10 +604,8 @@
             // 
             // renderVideo
             // 
-            this.renderVideo.IsRunning = false;
             this.renderVideo.Location = new System.Drawing.Point(0, 63);
             this.renderVideo.Name = "renderVideo";
-            this.renderVideo.NoFlic = false;
             this.renderVideo.Size = new System.Drawing.Size(526, 385);
             this.renderVideo.TabIndex = 3;
             this.renderVideo.Text = "renderVideo";
