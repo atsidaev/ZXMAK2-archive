@@ -10,6 +10,7 @@ using System.Diagnostics;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Engine;
 
 namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 {
@@ -133,6 +134,12 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 
                             try
                             {
+                                if (LoadLibrary(Path.Combine(Utils.GetAppFolder(), "Pasmo2.dll"))==IntPtr.Zero)
+                                {
+                                    Locator.Resolve<IUserMessage>()
+                                        .Error("Cannot load Pasmo2.dll");
+                                    return;
+                                }
                                 retCode = compile(compileOption, asmToCompileOrFileName, new IntPtr(pcompiledOut),
                                                   new IntPtr(&codeSize), new IntPtr(&errFileLine),
                                                   new IntPtr(perrFileName), new IntPtr(perrReason)
@@ -203,6 +210,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 }
             }
         }
+
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr LoadLibrary(string fileName);
 
         private bool validateCompile()
         {
