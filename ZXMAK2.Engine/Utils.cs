@@ -4,8 +4,6 @@ using System.Reflection;
 using System.Xml;
 using System.Drawing;
 using System.Globalization;
-using System.Security.Principal;
-using System.Security.AccessControl;
 using ZXMAK2.Resources;
 
 
@@ -100,73 +98,10 @@ namespace ZXMAK2.Engine
             return value;
         }
 
-        public static bool IsFolderWritable(string fileName)
-        {
-            //if ((File.GetAttributes(fileName) & FileAttributes.ReadOnly) != 0)
-            //    return false;
-
-            // Get the access rules of the specified files (user groups and user names that have access to the file)
-            var rules = Directory
-                .GetAccessControl(fileName)
-                .GetAccessRules(
-                    true,
-                    true,
-                    typeof(System.Security.Principal.SecurityIdentifier));
-
-            // Get the identity of the current user and the groups that the user is in.
-            var groups = WindowsIdentity.GetCurrent().Groups;
-            string sidCurrentUser = WindowsIdentity.GetCurrent().User.Value;
-
-            // Check if writing to the file is explicitly denied for this user or a group the user is in.
-            foreach (FileSystemAccessRule r in rules)
-            {
-                if ((groups.Contains(r.IdentityReference) ||
-                    r.IdentityReference.Value == sidCurrentUser) &&
-                    r.AccessControlType == AccessControlType.Deny &&
-                    (r.FileSystemRights & FileSystemRights.WriteData) == System.Security.AccessControl.FileSystemRights.WriteData)
-                {
-                    return false;
-                }
-
-            }
-
-            // Check if writing is allowed
-            foreach (FileSystemAccessRule r in rules)
-            {
-                if ((groups.Contains(r.IdentityReference) ||
-                    r.IdentityReference.Value == sidCurrentUser) &&
-                    r.AccessControlType == AccessControlType.Allow &&
-                    (r.FileSystemRights & FileSystemRights.WriteData) == System.Security.AccessControl.FileSystemRights.WriteData)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public static String GetAppDataFolder()
         {
             var appName = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
             var appFolder = Path.GetDirectoryName(appName);
-            try
-            {
-                if (!Utils.IsFolderWritable(appFolder))
-                {
-                    // Folder is not writable?
-                    // Then use %Users%/<username>/AppData/Roaming/ZXMAK2/
-                    appFolder = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                        "ZXMAK2");
-                    if (!Directory.Exists(appFolder))
-                    {
-                        Directory.CreateDirectory(appFolder);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
             return appFolder;
         }
 
