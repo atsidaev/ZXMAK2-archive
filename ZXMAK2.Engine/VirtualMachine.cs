@@ -216,10 +216,10 @@ namespace ZXMAK2.Engine
 
         public void RequestFrame()
         {
-            OnUpdateVideo(true);
+            OnUpdateVideo();
         }
 
-        private void OnUpdateVideo(bool isRequested = false)
+        private void OnUpdateVideo(bool isRequested = true)
         {
             var host = m_host;
             var video = host != null ? host.Video : null;
@@ -245,7 +245,7 @@ namespace ZXMAK2.Engine
                 return;
             }
             OnUpdateSound();
-            OnUpdateVideo();
+            OnUpdateVideo(false);
         }
 
         /// <summary>
