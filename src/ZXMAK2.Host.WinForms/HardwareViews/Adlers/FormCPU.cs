@@ -1086,6 +1086,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 }
                 catch (Exception exc)
                 {
+                    Logger.Error(exc);
                     string saveCmdLineString = dbgCmdLine.Text;
                     dbgCmdLine.BackColor = Color.Red;
                     dbgCmdLine.ForeColor = Color.Black;
