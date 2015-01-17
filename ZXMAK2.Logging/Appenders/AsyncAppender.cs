@@ -153,7 +153,7 @@ namespace ZXMAK2.Logging.Appenders
         {
             var buffer = new List<LoggingEvent>();
             var record = default(LoggingEvent);
-            while (buffer.Count < 1024 && _queue.TryDequeue(out record))
+            while (_queue.TryDequeue(out record))
             {
                 buffer.Add(record);
             }
