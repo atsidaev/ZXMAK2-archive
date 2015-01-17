@@ -36,6 +36,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private readonly ManualResetEvent _waitEvent = new ManualResetEvent(true);
         private readonly Dictionary<IIconDescriptor, IconTextureWrapper> _iconWrapperDict = new Dictionary<IIconDescriptor, IconTextureWrapper>();
+        private readonly FrameResampler _frameResampler = new FrameResampler(50);
 
         private D3dSprite _sprite = null;
         private D3dTexture _texture = null;
@@ -62,6 +63,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         private bool _isInitialized;
         private bool _isRunning;
         private bool _isDebugInfo;
+        private bool _isCancelWait;
 
 
         #endregion Fields
@@ -165,9 +167,6 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         #region IHostVideo
 
-        private bool _isCancel;
-        private int _syncFrame;
-
         public void WaitFrame()
         {
             if (!_isInitialized)
@@ -182,13 +181,8 @@ namespace ZXMAK2.Host.WinForms.Controls
             _waitEvent.Reset();
             try
             {
-                if (_isCancel)
+                if (_isCancelWait || !IsReadScanlineSupported)
                 {
-                    return;
-                }
-                if (!IsReadScanlineSupported)
-                {
-                    Thread.Sleep(1);
                     return;
                 }
                 var refreshRate = D3D.DisplayMode.RefreshRate;
@@ -196,22 +190,18 @@ namespace ZXMAK2.Host.WinForms.Controls
                 {
                     refreshRate = 60;
                 }
-                var frameRest = refreshRate % 50;
-                var frameRatio = frameRest != 0 ? 50 / frameRest : 0;
-                _isCancel = false;
+                _frameResampler.SourceRate = refreshRate;
                 var priority = Thread.CurrentThread.Priority;
                 Thread.CurrentThread.Priority = ThreadPriority.Highest;
                 try
                 {
-                    while (!_isCancel)
+                    while (!_isCancelWait)
                     {
                         WaitVBlank(refreshRate);
-                        if (frameRatio > 0 && ++_syncFrame > frameRatio)
+                        if (_frameResampler.Next())
                         {
-                            _syncFrame = 0;
-                            continue;
+                            break;
                         }
-                        break;
                     }
                 }
                 finally
@@ -223,6 +213,15 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 _waitEvent.Set();
             }
+        }
+
+        public void CancelWait()
+        {
+            _isCancelWait = true;
+            Thread.MemoryBarrier();
+            _waitEvent.WaitOne();
+            _isCancelWait = false;
+            Thread.MemoryBarrier();
         }
 
         private void WaitVBlank(int refreshRate)
@@ -248,20 +247,11 @@ namespace ZXMAK2.Host.WinForms.Controls
                     Thread.Sleep(delay - 1);
                 }
             }
-            while (!_isCancel && !D3D.RasterStatus.InVBlank)
+            while (!_isCancelWait && !D3D.RasterStatus.InVBlank)
             {
                 Thread.SpinWait(1);
             }
             _lastBlankStamp = Stopwatch.GetTimestamp();
-        }
-
-        public void CancelWait()
-        {
-            _isCancel = true;
-            Thread.MemoryBarrier();
-            _waitEvent.WaitOne();
-            _isCancel = false;
-            Thread.MemoryBarrier();
         }
         
         public void PushFrame(IVideoFrame frame, bool isRequested)
