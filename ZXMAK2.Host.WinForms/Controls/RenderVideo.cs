@@ -196,19 +196,19 @@ namespace ZXMAK2.Host.WinForms.Controls
                 {
                     return;
                 }
-                var refreshRate = D3D.DisplayMode.RefreshRate;
-                if (refreshRate <= 0)
+                var frameRate = D3D.DisplayMode.RefreshRate;
+                if (frameRate <= 0)
                 {
-                    refreshRate = 75;
+                    frameRate = 75;
                 }
-                _frameResampler.SourceRate = refreshRate;
+                _frameResampler.SourceRate = frameRate;
                 var priority = Thread.CurrentThread.Priority;
                 Thread.CurrentThread.Priority = ThreadPriority.Highest;
                 try
                 {
                     while (!_isCancelWait)
                     {
-                        WaitVBlank(refreshRate);
+                        WaitVBlank(frameRate);
                         if (_frameResampler.Next())
                         {
                             break;
