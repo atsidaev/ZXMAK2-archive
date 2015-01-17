@@ -273,7 +273,6 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             if (m_acc_enable && m_acc_on && (m_acc_mode != AccelCMD.Off))
             {
-                ;
                 switch (m_acc_mode)
                 {
                     case AccelCMD.On:           //LD D,D
@@ -360,7 +359,6 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             if (m_acc_enable && m_acc_on && (m_acc_mode != AccelCMD.Off))
             {
-                ;
                 switch (m_acc_mode)
                 {
                     case AccelCMD.On:           //LD D,D

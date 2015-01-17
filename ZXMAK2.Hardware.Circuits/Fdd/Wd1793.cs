@@ -336,7 +336,6 @@ namespace ZXMAK2.Hardware.Circuits.Fdd
         {
             /*time = wd93_get_time()*/
             /*comp.t_states + cpu.t*/
-            ;
             time = toTact;
 
             // inactive drives disregard HLT bit

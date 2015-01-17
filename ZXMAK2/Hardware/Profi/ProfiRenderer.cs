@@ -246,7 +246,7 @@ namespace ZXMAK2.Hardware.Profi
 
             // profi mode timings...
             timing.c_ulaLineTime = 192;			// tacts per line
-            timing.c_ulaFirstPaperLine = 72;/* * 192*/;	// tact for left top pixel
+            timing.c_ulaFirstPaperLine = 72;    // 192	// tact for left top pixel
             timing.c_ulaFirstPaperTact = 8+16;			// tact for left pixel in line
             timing.c_ulaBorderTop = 8;
             timing.c_ulaBorderBottom = 8;
