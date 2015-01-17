@@ -1,6 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-using ZXMAK2.Engine;
+﻿using System.Windows.Forms;
 
 
 namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices

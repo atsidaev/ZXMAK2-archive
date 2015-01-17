@@ -1,10 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
-using System.Reflection;
 using ZXMAK2.Engine;
-using ZXMAK2.Hardware;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine.Interfaces;
 

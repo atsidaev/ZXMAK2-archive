@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Entities;
+
 
 namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
 {

@@ -1,6 +1,6 @@
 ﻿using System;
-using ZXMAK2.Host.Interfaces;
 using System.ComponentModel;
+using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.WinForms.Tools;
 

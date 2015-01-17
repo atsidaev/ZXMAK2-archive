@@ -2,24 +2,21 @@
 /// Author: Adlers
 using System;
 using System.IO;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text.RegularExpressions;
 
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
-using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.WinForms.Views;
-using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Engine.Entities;
-using System.Text.RegularExpressions;
 
 
 namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
