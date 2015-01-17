@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Model.Tape.Interfaces;
-using ZXMAK2.Model.Tape;
+using ZXMAK2.Model.Tape.Entities;
 using ZXMAK2.Engine.Interfaces;
 
 

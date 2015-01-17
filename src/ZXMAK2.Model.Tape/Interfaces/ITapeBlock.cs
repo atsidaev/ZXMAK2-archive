@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ZXMAK2.Model.Tape.Entities;
+﻿using ZXMAK2.Model.Tape.Entities;
 
 
 namespace ZXMAK2.Model.Tape.Interfaces

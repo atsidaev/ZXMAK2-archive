@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using ZXMAK2.Model.Tape.Interfaces;
-using ZXMAK2.Model.Tape.Entities;
 
 
-namespace ZXMAK2.Model.Tape
+namespace ZXMAK2.Model.Tape.Entities
 {
 	public class TapeBlock : ITapeBlock
     {

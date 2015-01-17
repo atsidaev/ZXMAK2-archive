@@ -3,9 +3,9 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-using ZXMAK2.Model.Tape.Interfaces;
-using ZXMAK2.Model.Tape;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Model.Tape.Interfaces;
+using ZXMAK2.Model.Tape.Entities;
 
 
 namespace ZXMAK2.Serializers.TapeSerializers
