@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 using ZXMAK2.Engine;
 using ZXMAK2.Hardware.General;
 using ZXMAK2.Host.Interfaces;
+
 
 namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
 {
@@ -40,14 +36,14 @@ namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
             foreach (var port in ports)
                 cmbPorts.Items.Add(port);
 
-            if (!String.IsNullOrEmpty(m_modem.PortName) && cmbPorts.Items.Contains(m_modem.PortName))
+            if (!string.IsNullOrEmpty(m_modem.PortName) && cmbPorts.Items.Contains(m_modem.PortName))
                 cmbPorts.SelectedIndex = cmbPorts.Items.IndexOf(m_modem.PortName);
         }
 
         public override void Apply()
         {
             if (cmbPorts.SelectedIndex == 0)
-                m_modem.PortName = String.Empty;
+                m_modem.PortName = string.Empty;
             else
                 m_modem.PortName = cmbPorts.SelectedItem.ToString();
         }

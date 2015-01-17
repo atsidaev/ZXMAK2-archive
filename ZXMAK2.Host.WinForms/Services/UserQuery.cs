@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.WinForms.Tools;
 
 
 namespace ZXMAK2.Host.WinForms.Services
@@ -14,10 +15,10 @@ namespace ZXMAK2.Host.WinForms.Services
             DlgButtonSet buttonSet,
             DlgIcon icon)
         {
-            return (DlgResult)System.Windows.Forms.MessageBox.Show(
+            return EnumMapper.GetDlgResult(MessageBox.Show(
                 message, caption,
-                (System.Windows.Forms.MessageBoxButtons)buttonSet,
-                (System.Windows.Forms.MessageBoxIcon)icon);
+                EnumMapper.GetMessageBoxButtons(buttonSet),
+                EnumMapper.GetMessageBoxIcons(icon)));
         }
 
         public object ObjectSelector(object[] objArray, string caption)

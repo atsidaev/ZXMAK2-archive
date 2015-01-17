@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 
 using ZXMAK2.Model.Disk;
-using ZXMAK2.Hardware.General;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;

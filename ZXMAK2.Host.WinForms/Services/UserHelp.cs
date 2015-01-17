@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
+using System.Windows.Forms;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
+
 
 namespace ZXMAK2.Host.WinForms.Services
 {

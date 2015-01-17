@@ -24,6 +24,33 @@ namespace ZXMAK2.Host.WinForms.Tools
             }
         }
 
+        public static MessageBoxButtons GetMessageBoxButtons(DlgButtonSet value)
+        {
+            switch (value)
+            {
+                case DlgButtonSet.AbortRetryIgnore: return MessageBoxButtons.AbortRetryIgnore;
+                case DlgButtonSet.OK: return MessageBoxButtons.OK;
+                case DlgButtonSet.OKCancel: return MessageBoxButtons.OKCancel;
+                case DlgButtonSet.RetryCancel: return MessageBoxButtons.RetryCancel;
+                case DlgButtonSet.YesNo: return MessageBoxButtons.YesNo;
+                case DlgButtonSet.YesNoCancel: return MessageBoxButtons.YesNoCancel;
+                default: return ThrowArgumentError<MessageBoxButtons>(value);
+            }
+        }
+
+        public static MessageBoxIcon GetMessageBoxIcons(DlgIcon value)
+        {
+            switch (value)
+            {
+                case DlgIcon.Error: return MessageBoxIcon.Error;
+                case DlgIcon.Information: return MessageBoxIcon.Information;
+                case DlgIcon.None: return MessageBoxIcon.None;
+                case DlgIcon.Question: return MessageBoxIcon.Question;
+                case DlgIcon.Warning: return MessageBoxIcon.Warning;
+                default: return ThrowArgumentError<MessageBoxIcon>(value);
+            }
+        }
+
         private static T ThrowArgumentError<T>(Enum value)
         {
             throw new ArgumentException(
