@@ -254,10 +254,10 @@ namespace ZXMAK2.Serializers.DiskSerializers
                 return result;
             }
 
-            public void Serialize(Stream stream)
-            {
-                stream.Write(_buffer, 0, _buffer.Length);
-            }
+            //public void Serialize(Stream stream)
+            //{
+            //    stream.Write(_buffer, 0, _buffer.Length);
+            //}
         }
 
         private class TD0_TRACK					// 4 bytes+sectors

@@ -17,13 +17,14 @@ namespace ZXMAK2.Logging.Appenders
         private bool _isStarted;
         private bool _isStopping;
 
-        
+
         public AsyncAppender()
         {
             Fix = FixFlags.Message | FixFlags.ThreadName | FixFlags.Exception;
         }
 
 
+        public int GrowSize { get; set; }
         public FixFlags Fix { get; set; }
 
 
@@ -115,7 +116,7 @@ namespace ZXMAK2.Logging.Appenders
                 try
                 {
                     var isStop = false;
-                    var logEvents = OnAcquire(_isStopping);
+                    var logEvents = GetEvents();
                     if (logEvents != null)
                     {
                         foreach (var loggingEvent in logEvents)
@@ -149,7 +150,7 @@ namespace ZXMAK2.Logging.Appenders
             }
         }
 
-        private IEnumerable<LoggingEvent> OnAcquire(bool force)
+        private IEnumerable<LoggingEvent> GetEvents()
         {
             var buffer = new List<LoggingEvent>();
             var record = default(LoggingEvent);
@@ -166,6 +167,11 @@ namespace ZXMAK2.Logging.Appenders
 
         private void OnAddEvent(LoggingEvent loggingEvent, bool force)
         {
+            if (!force && GrowSize > 0 && _queue.Count > GrowSize)
+            {
+                // TODO: implement overflow notification
+                return;
+            }
             _queue.Enqueue(loggingEvent);
             _flushEvent.Set();
         }
