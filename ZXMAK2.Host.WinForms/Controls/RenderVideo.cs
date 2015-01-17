@@ -202,22 +202,13 @@ namespace ZXMAK2.Host.WinForms.Controls
                     frameRate = 75;
                 }
                 _frameResampler.SourceRate = frameRate;
-                var priority = Thread.CurrentThread.Priority;
-                Thread.CurrentThread.Priority = ThreadPriority.Highest;
-                try
+                while (!_isCancelWait)
                 {
-                    while (!_isCancelWait)
+                    WaitVBlank(frameRate);
+                    if (_frameResampler.Next())
                     {
-                        WaitVBlank(frameRate);
-                        if (_frameResampler.Next())
-                        {
-                            break;
-                        }
+                        break;
                     }
-                }
-                finally
-                {
-                    Thread.CurrentThread.Priority = priority;
                 }
             }
             catch (Exception ex)
