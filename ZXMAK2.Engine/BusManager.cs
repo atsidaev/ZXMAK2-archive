@@ -683,7 +683,10 @@ namespace ZXMAK2.Engine
             set { m_machineFile = value; }
         }
 
-        public int FrameTactCount { get { return m_frameTactCount;/*m_ula.FrameTactCount*/; } }
+        public int FrameTactCount 
+        { 
+            get { return m_frameTactCount; } 
+        }
 
         public void LoadConfigXml(XmlNode busNode)
         {
