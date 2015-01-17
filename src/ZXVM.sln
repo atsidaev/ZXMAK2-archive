@@ -36,7 +36,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{155BB3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".targets", ".targets", "{BE792507-9570-4431-9399-CC2B6A4EBEF4}"
 	ProjectSection(SolutionItems) = preProject
-		.targets\Common.targets = .targets\Common.targets
 		.targets\CommonAssemblyVersion.targets = .targets\CommonAssemblyVersion.targets
 	EndProjectSection
 EndProject
