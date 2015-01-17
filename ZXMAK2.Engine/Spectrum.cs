@@ -5,8 +5,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using ZXMAK2.Serializers;
-using ZXMAK2.Engine;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Dependency;

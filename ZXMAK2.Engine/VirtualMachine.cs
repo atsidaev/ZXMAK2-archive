@@ -2,13 +2,9 @@
 using System.IO;
 using System.Xml;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.Threading;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
 
-using ZXMAK2.Engine;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
