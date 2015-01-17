@@ -198,7 +198,7 @@ namespace ZXMAK2.Hardware.General
             if (!iorqge || !m_memory.DOSEN)
                 return;
             iorqge = false;
-            int ab0 = (addr >> 8) & 1;
+            //int ab0 = (addr >> 8) & 1;
             // not installed
             value = 0x57; // ???
         }
