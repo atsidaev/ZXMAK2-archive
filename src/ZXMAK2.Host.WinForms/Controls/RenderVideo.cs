@@ -56,6 +56,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         //private int m_copyGraphIndex;
         private int _renderGraphIndex;
         private int _loadGraphIndex;
+        private int _graphDelayCounter;
         private int[] _lastBuffer = new int[0];    // noflick
         private long _lastBlankStamp;              // WaitVBlank
         private int _debugFrameStart = 0;
@@ -86,9 +87,14 @@ namespace ZXMAK2.Host.WinForms.Controls
             get { return _isDebugInfo; }
             set
             {
+                if (_isDebugInfo == value)
+                {
+                    return;
+                }
                 _isDebugInfo = value;
-                //ClearGraph(m_renderGraph, ref m_renderGraphIndex);
-                //ClearGraph(m_loadGraph, ref m_loadGraphIndex);
+                _graphDelayCounter = 0;
+                ClearGraph(_renderGraph, ref _renderGraphIndex);
+                ClearGraph(_loadGraph, ref _loadGraphIndex);
             }
         }
 
@@ -137,8 +143,13 @@ namespace ZXMAK2.Host.WinForms.Controls
             get { return _isRunning; }
             set
             {
+                if (_isRunning == value)
+                {
+                    return;
+                }
                 _isRunning = value;
                 _fpsUpdate.Reset();
+                _graphDelayCounter = 0;
                 //ClearGraph(m_renderGraph, ref m_renderGraphIndex);
                 //ClearGraph(m_loadGraph, ref m_loadGraphIndex);
             }
@@ -750,13 +761,22 @@ namespace ZXMAK2.Host.WinForms.Controls
                 surfSize.Height * m_surfaceHeightScale);
         }
 
-        private static void PushGraphValue(double[] graph, ref int index, double value)
+        private void PushGraphValue(double[] graph, ref int index, double value)
         {
+            if (_graphDelayCounter < 2)
+            {
+                // eliminate value of first 2 frames (startup delays)
+                if (graph == _renderGraph)
+                {
+                    _graphDelayCounter++;
+                }
+                return;
+            }
             graph[index] = value;
             index = (index + 1) % graph.Length;
         }
 
-        private static void ClearGraph(double[] graph, ref int index)
+        private void ClearGraph(double[] graph, ref int index)
         {
             for (var i = 0; i < graph.Length; i++)
             {
