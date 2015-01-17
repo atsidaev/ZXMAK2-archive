@@ -1,5 +1,4 @@
 using ZXMAK2.Model.Disk;
-using ZXMAK2.Serializers;
 
 
 namespace ZXMAK2.Engine.Interfaces

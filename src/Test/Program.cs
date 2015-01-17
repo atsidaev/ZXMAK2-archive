@@ -1,11 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics;
-using ZXMAK2;
-using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Engine;

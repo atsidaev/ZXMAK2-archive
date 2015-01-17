@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
-using ZXMAK2.Hardware.Circuits;
-using ZXMAK2.Engine;
-using ZXMAK2.Engine.Interfaces;
+﻿using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
+using ZXMAK2.Hardware.Circuits;
 
 
 namespace ZXMAK2.Hardware.Profi

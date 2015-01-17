@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using ZXMAK2.Hardware.General;
+﻿using ZXMAK2.Hardware.General;
 using ZXMAK2.Engine.Interfaces;
+
 
 namespace ZXMAK2.Hardware.Lec
 {

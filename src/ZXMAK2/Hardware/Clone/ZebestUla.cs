@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Hardware.Pentagon;
+﻿using ZXMAK2.Hardware.Pentagon;
+
 
 namespace ZXMAK2.Hardware.Clone
 {
