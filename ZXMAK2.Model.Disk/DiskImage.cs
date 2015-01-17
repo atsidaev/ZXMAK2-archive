@@ -1,8 +1,6 @@
 /// Description: Disk image emulation
 /// Author: Alex Makeev
 /// Date: 31.01.2008
-using System;
-using System.IO;
 using System.Collections.Generic;
 
 using ZXMAK2.Crc;
