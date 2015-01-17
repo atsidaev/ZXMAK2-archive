@@ -188,7 +188,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                 var refreshRate = D3D.DisplayMode.RefreshRate;
                 if (refreshRate <= 0)
                 {
-                    refreshRate = 60;
+                    refreshRate = 75;
                 }
                 _frameResampler.SourceRate = refreshRate;
                 var priority = Thread.CurrentThread.Priority;
@@ -208,6 +208,10 @@ namespace ZXMAK2.Host.WinForms.Controls
                 {
                     Thread.CurrentThread.Priority = priority;
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
             finally
             {
