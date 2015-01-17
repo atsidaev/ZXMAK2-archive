@@ -1,7 +1,4 @@
-﻿using System;
-using System.Xml;
-using ZXMAK2.Serializers;
-using ZXMAK2.Engine.Cpu;
+﻿using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Presentation.Interfaces;
 
@@ -33,7 +30,7 @@ namespace ZXMAK2.Engine.Interfaces
 
 		CpuUnit CPU { get; }
 		bool IsSandbox { get; }
-		String GetSatelliteFileName(string extension);
+		string GetSatelliteFileName(string extension);
 
         T FindDevice<T>() where T : class;
 
