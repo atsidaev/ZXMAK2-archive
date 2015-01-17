@@ -2,9 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Xml;
-using System.Drawing;
 using System.Globalization;
-using ZXMAK2.Resources;
 
 
 namespace ZXMAK2.Engine
