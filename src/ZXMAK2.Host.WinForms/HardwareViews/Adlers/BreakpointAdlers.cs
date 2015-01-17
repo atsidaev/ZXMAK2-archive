@@ -23,14 +23,6 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 
         public BreakpointInfo Info { get; private set; }
 
-        private static ushort getValuePair16bit(IntPtr pZ80Regs, int delta = 0)
-        {
-            unsafe
-            {
-                return (ushort)*((int*)pZ80Regs + delta);
-            }
-        }
-
         public bool checkInfo(IMachineState state)
         {
             var needWriteMemoryCheck = IsNeedWriteMemoryCheck;

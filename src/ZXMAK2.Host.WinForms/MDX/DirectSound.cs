@@ -28,9 +28,13 @@ namespace ZXMAK2.Host.WinForms.Mdx
 		private bool _isFinished;
 
 
-        public DirectSound(Control mainForm, int device,
-			int samplesPerSecond, short bitsPerSample, short channels,
-			int bufferSize, int bufferCount)
+        public DirectSound(
+            Control mainForm, 
+			int samplesPerSecond, 
+            short bitsPerSample, 
+            short channels,
+			int bufferSize, 
+            int bufferCount)
 		{
 			_fillQueue = new Queue<byte[]>(bufferCount);
 			_playQueue = new Queue<byte[]>(bufferCount);

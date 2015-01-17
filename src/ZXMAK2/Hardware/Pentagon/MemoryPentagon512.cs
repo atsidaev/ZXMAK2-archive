@@ -134,12 +134,6 @@ namespace ZXMAK2.Hardware.Pentagon
                 CMR0 = value;
         }
 
-        private void BusNmiRq(BusCancelArgs e)
-        {
-            // check DOSEN to avoid conflict with BDI
-            e.Cancel = DOSEN;
-        }
-
         private void BusNmiAck()
         {
             // enable shadow rom

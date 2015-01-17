@@ -372,21 +372,6 @@ namespace ZXMAK2.Hardware.Atm
 
         #region Private methods
 
-        private void atm_memswap()
-        {
-            //if (!m_cfg_mem_swap) return;
-            byte[] buffer = new byte[2048];
-            for (int subPage = 0; subPage < RamPages.Length * 2; subPage++)
-            {
-                byte[] bankPage = RamPages[subPage / 2];
-                int bankIndex = (subPage % 2) * 2048;
-                for (int addr = 0; addr < 2048; addr++)
-                    buffer[addr] = bankPage[bankIndex + (addr & 0x1F) + ((addr >> 3) & 0xE0) + ((addr << 3) & 0x700)];
-                for (int addr = 0; addr < 2048; addr++)
-                    bankPage[bankIndex + addr] = buffer[addr];
-            }
-        }
-
         private bool atm710_z(int frameTact, int frameLength)
         {
             // PAL hardware gives 3 zeros in secret short time intervals

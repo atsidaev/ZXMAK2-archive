@@ -18,7 +18,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             HostUi = form as ICommandManager;
             Video = hostVideo;
-            SafeExecute(() => m_sound = new DirectSound(form, -1, 44100, 16, 2, 882 * 2 * 2, 4));
+            SafeExecute(() => m_sound = new DirectSound(form, 44100, 16, 2, 882 * 2 * 2, 4));
             SafeExecute(() => m_keyboard = new DirectKeyboard(form));
             SafeExecute(() => m_mouse = new DirectMouse(form));
             SafeExecute(() => m_joystick = new DirectJoystick(form));
