@@ -2,25 +2,20 @@
 /// Author: Alex Makeev
 /// Date: 16.04.2007
 using System;
-using System.IO;
 using System.Xml;
-using System.Text;
 using System.Collections.Generic;
 
-using ZXMAK2.Serializers;
-using ZXMAK2.Serializers.TapeSerializers;
 using ZXMAK2.Dependency;
-using ZXMAK2.Host.Interfaces;
-using ZXMAK2.Host.Entities;
-using ZXMAK2.Model.Tape.Interfaces;
-using ZXMAK2.Resources;
-using ZXMAK2.Presentation.Interfaces;
-using ZXMAK2.Host.Presentation;
-using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Engine.Cpu;
+using ZXMAK2.Model.Tape.Interfaces;
+using ZXMAK2.Serializers.TapeSerializers;
+using ZXMAK2.Host.Entities;
+using ZXMAK2.Host.Presentation;
+using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.Resources;
 
 
 namespace ZXMAK2.Hardware.General

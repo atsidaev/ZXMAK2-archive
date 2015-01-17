@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;

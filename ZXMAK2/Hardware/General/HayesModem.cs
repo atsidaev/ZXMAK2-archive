@@ -3,11 +3,11 @@
 // (C) Alexander Tsidaev, 2013
 
 using System;
-using System.Collections.Generic;
-using ZXMAK2;
+using System.IO.Ports;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
+
 
 namespace ZXMAK2.Hardware.General
 {
@@ -21,18 +21,18 @@ namespace ZXMAK2.Hardware.General
 
         #region private
 
-        IBusManager m_bmgr;
-        System.IO.Ports.SerialPort port;
+        private IBusManager m_bmgr;
+        private SerialPort port;
         
-        const byte DLAB = 7; // 7th bit of REG_LINE_CTRL
+        private const byte DLAB = 7; // 7th bit of REG_LINE_CTRL
 
-        int REG_LINE_CTRL = 0x03; // 8N1
-        int REG_DIV = 0;
-        int REG_IRQ_ENABLE = 0;
+        private int REG_LINE_CTRL = 0x03; // 8N1
+        private int REG_DIV = 0;
+        private int REG_IRQ_ENABLE = 0;
 
-        bool RTS = false;
+        private bool RTS = false;
 
-        void UpdateSerialPortParameters()
+        private void UpdateSerialPortParameters()
         {
             if (port != null)
             {
@@ -75,7 +75,7 @@ namespace ZXMAK2.Hardware.General
             {
                 try
                 {
-                    port = new System.IO.Ports.SerialPort(PortName);
+                    port = new SerialPort(PortName);
                     port.RtsEnable = true;
                     port.Open();
                 }

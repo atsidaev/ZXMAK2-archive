@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
-using ZXMAK2.Engine;
-using ZXMAK2.Engine.Interfaces;
+﻿using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
+
 
 namespace ZXMAK2.Hardware.Spectrum
 {

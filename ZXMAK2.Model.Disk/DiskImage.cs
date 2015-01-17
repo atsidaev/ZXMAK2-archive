@@ -3,8 +3,6 @@
 /// Date: 31.01.2008
 using System.Collections.Generic;
 
-using ZXMAK2.Crc;
-
 
 namespace ZXMAK2.Model.Disk
 {

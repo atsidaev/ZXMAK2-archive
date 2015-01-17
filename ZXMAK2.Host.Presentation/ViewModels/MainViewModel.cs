@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
 using ZXMAK2.Presentation;
 using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Interfaces;
-using ZXMAK2.Host.Presentation.Interfaces;
-using System.ComponentModel;
 
 
 namespace ZXMAK2.Host.Presentation.ViewModels

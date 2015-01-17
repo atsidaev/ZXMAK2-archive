@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.ComponentModel;
 using ZXMAK2.Host.Entities;
+
 
 namespace ZXMAK2.Host.Interfaces
 {

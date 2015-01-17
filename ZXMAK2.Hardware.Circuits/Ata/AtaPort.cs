@@ -1,8 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Xml;
-using System.Text;
-using System.Reflection;
 
 
 namespace ZXMAK2.Hardware.Circuits.Ata

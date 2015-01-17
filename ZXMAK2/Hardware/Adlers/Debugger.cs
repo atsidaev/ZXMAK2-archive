@@ -1,10 +1,7 @@
 ﻿using System;
 using ZXMAK2.Dependency;
-using ZXMAK2.Presentation.Interfaces;
-using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Presentation;
 using ZXMAK2.Host.Presentation.Interfaces;
-using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 

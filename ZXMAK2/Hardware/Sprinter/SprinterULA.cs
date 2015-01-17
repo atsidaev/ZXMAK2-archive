@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Interfaces;
@@ -16,8 +15,6 @@ namespace ZXMAK2.Hardware.Sprinter
         protected int _flashState = 0;            // flash attr state (0/256)
         protected int _flashCounter = 0;          // flash attr counter
 
-
-        private CpuUnit m_cpu;
 
         public SprinterULA()
         {
@@ -59,9 +56,8 @@ namespace ZXMAK2.Hardware.Sprinter
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            this.m_cpu = bmgr.CPU;
             //bmgr.SubscribeWRIO(0x00FF, 0x0089, new BusWriteIoProc(this.writePort89h));  //write 89h
-            bmgr.SubscribeReset(new BusSignalProc(this.busReset));
+            bmgr.SubscribeReset(busReset);
 
         }
 

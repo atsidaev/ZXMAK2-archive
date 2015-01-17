@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZXMAK2.Engine.Interfaces;
+﻿using ZXMAK2.Engine.Interfaces;
+
 
 namespace ZXMAK2.Hardware.Spectrum
 {

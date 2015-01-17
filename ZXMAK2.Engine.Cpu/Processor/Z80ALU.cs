@@ -1,8 +1,6 @@
 /// Description: Z80 CPU Emulator [ALU part]
 /// Author: Alex Makeev
 /// Date: 13.04.2007
-using System;
-using System.IO;
 
 
 namespace ZXMAK2.Engine.Cpu.Processor

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;

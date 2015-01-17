@@ -1,13 +1,5 @@
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-using ZXMAK2.Serializers.ScreenshotSerializers;
-using ZXMAK2.Serializers.SnapshotSerializers;
-using ZXMAK2.Serializers.TapeSerializers;
-using ZXMAK2.Serializers.DiskSerializers;
 using ZXMAK2.Engine;
+using ZXMAK2.Serializers.SnapshotSerializers;
 
 
 namespace ZXMAK2.Serializers

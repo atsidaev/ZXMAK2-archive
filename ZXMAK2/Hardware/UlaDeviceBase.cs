@@ -1,15 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
-using System.Drawing;
-using System.Collections.Generic;
 
-using ZXMAK2.Serializers.ScreenshotSerializers;
-using ZXMAK2.Host.Interfaces;
-using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Engine.Cpu;
+using ZXMAK2.Serializers.ScreenshotSerializers;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.Hardware

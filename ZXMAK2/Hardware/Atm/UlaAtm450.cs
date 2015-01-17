@@ -1,9 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Collections.Generic;
-using System.Drawing;
-using ZXMAK2.Engine.Interfaces;
+﻿using ZXMAK2.Engine.Interfaces;
+
 
 namespace ZXMAK2.Hardware.Atm
 {

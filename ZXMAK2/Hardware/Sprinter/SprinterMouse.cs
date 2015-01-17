@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using ZXMAK2.Host.Interfaces;
-using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
+using ZXMAK2.Host.Interfaces;
 
 
 namespace ZXMAK2.Hardware.Sprinter

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
 
 namespace ZXMAK2.Hardware.Sprinter
 {
-    class KbdHitsItem
+    public class KbdHitsItem
     {
         private int m_code;
         private int m_frames;

@@ -1,6 +1,5 @@
 ﻿//#define Debug
 using System;
-using System.IO;
 
 using ZXMAK2.Engine.Attributes;
 using ZXMAK2.Engine.Interfaces;

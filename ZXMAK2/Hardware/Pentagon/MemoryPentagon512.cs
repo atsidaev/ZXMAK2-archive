@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Xml;
-using System.Collections.Generic;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;

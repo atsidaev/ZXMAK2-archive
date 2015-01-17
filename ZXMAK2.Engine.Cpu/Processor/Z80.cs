@@ -2,8 +2,6 @@
 /// Author: Alex Makeev
 /// Date: 13.04.2007
 using System;
-using System.Threading;
-using System.Collections.Generic;
 
 namespace ZXMAK2.Engine.Cpu.Processor
 {

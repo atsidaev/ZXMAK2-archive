@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net;
 using System.IO;
+using System.Net;
 using System.Net.Mime;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace ZXMAK2.Host.Presentation.Tools

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.IO.Compression;
 using System.Text;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
