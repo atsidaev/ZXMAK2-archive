@@ -123,25 +123,25 @@ namespace ZXMAK2.Hardware.ZXBYTE
             while (true)
             {
                 {
-                    var vsync = (romDd11[dd11addr & 0x1FF] & 1) != 0;
-                    var pre56 = (romDd11[dd11addr & 0x1FF] & 2) != 0;
+                    //var vsync = (romDd11[dd11addr & 0x1FF] & 1) != 0;
+                    //var pre56 = (romDd11[dd11addr & 0x1FF] & 2) != 0;
                     var hlock = (romDd11[dd11addr & 0x1FF] & 0x10) != 0;
-                    var vretr = (romDd11[dd11addr & 0x1FF] & 0x20) != 0;
+                    //var vretr = (romDd11[dd11addr & 0x1FF] & 0x20) != 0;
                     var bus75 = (romDd11[dd11addr & 0x1FF] & 0x80) != 0;
 
                     var dd10val = romDd10[dd10addr & 0x1FF];
-                    var dd11val = romDd11[dd11addr & 0x1FF];
+                    //var dd11val = romDd11[dd11addr & 0x1FF];
                     // D0 - ССИ (horizontal sync pulse)
                     var hsync = (dd10val & 1) != 0;
                     // D1 - preload DD3/DD4
-                    var pre34 = (dd10val & 2) != 0;
+                    //var pre34 = (dd10val & 2) != 0;
                     // D2 - BUS20 = A1 for DD38-DD41 (vram address generator)
                     // D3 - RAS
                     // D4 - CAS
                     // D5 - BUS23 = block CLK when BUS23=1 and mem access #4000-7FFF
                     var blclk = (dd10val & 0x20) != 0;
                     // D6 - BUS24 = attr/pixel latch, BUS24=0 -> attr latch
-                    var latch = (dd10val & 0x40) != 0;
+                    //var latch = (dd10val & 0x40) != 0;
                     // D7 - BUS142 = horizontal retrace
                     var hretr = (dd10val & 0x80) != 0;
 
@@ -155,7 +155,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
                     }
                     var intrq = intgt | bus75;
 
-                    var bus23 = blclk && !hlock;
+                    //var bus23 = blclk && !hlock;
 
                     lastHsync = hsync;
 
