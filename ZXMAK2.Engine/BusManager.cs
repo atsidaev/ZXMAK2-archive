@@ -479,17 +479,29 @@ namespace ZXMAK2.Engine
             }
             foreach (var device in m_deviceList)
             {
-                try { device.BusInit(this); }
+                try 
+                { 
+                    device.BusInit(this); 
+                }
                 catch (Exception ex)
-                { success = false; Logger.Error(ex); }
+                {
+                    Logger.Error(ex);
+                    success = false; 
+                }
             }
             m_frameTactCount = m_ula.FrameTactCount;
             foreach (var device in m_deviceList)
             {
                 device.ConfigChanged += Device_OnConfigChanged;
-                try { device.BusConnect(); }
+                try 
+                { 
+                    device.BusConnect(); 
+                }
                 catch (Exception ex)
-                { success = false; Logger.Error(ex); }
+                {
+                    Logger.Error(ex);
+                    success = false; 
+                }
             }
             OnBeginFrame();
             if (m_debuggable != null)

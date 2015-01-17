@@ -175,10 +175,7 @@ namespace ZXMAK2.Hardware
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
-                Logger.Error(
-                    "Load RomSet failed, romSet=\"{0}\"",
-                    romSetName);
+                Logger.Error(ex, "Load RomSet failed, romSet=\"{0}\"", romSetName);
             }
             return list;
         }
