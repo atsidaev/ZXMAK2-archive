@@ -117,10 +117,18 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
                 {
                     bytesRead = clientStream.Read(message, 0, 4096);
                 }
+                catch (IOException iex)
+                {
+                    var sex = iex.InnerException as SocketException;
+                    if (sex == null || sex.ErrorCode!=10004)
+                    {
+                        Logger.Error(sex);
+                    }
+                    break;
+                }
                 catch (Exception ex)
                 {
                     Logger.Error(ex);
-                    //a socket error has occured
                     break;
                 }
 
