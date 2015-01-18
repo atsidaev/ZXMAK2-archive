@@ -6,6 +6,7 @@ using System.Reflection;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine.Entities;
+using System.Xml;
 
 
 namespace ZXMAK2.Engine
@@ -149,32 +150,69 @@ namespace ZXMAK2.Engine
 
         private static void PreLoadPlugins()
         {
-            var folderName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            LoadAssemblies(folderName, "ZXMAK2.Hardware*.dll", SearchOption.TopDirectoryOnly);
-            folderName = Path.Combine(folderName, "Plugins");
-            LoadAssemblies(folderName, "*.dll", SearchOption.AllDirectories);
-        }
-
-        private static void LoadAssemblies(string folderName, string pattern, SearchOption options)
-        {
-            if (!Directory.Exists(folderName))
+            var configName = Path.Combine(Utils.GetAppFolder(), "plugins.config");
+            if (!File.Exists(configName))
             {
                 return;
             }
-            foreach (var fileName in Directory.GetFiles(folderName, pattern, options))
+            var xml = new XmlDocument();
+            xml.Load(configName);
+            var asms = xml.DocumentElement.ChildNodes
+                .OfType<XmlNode>()
+                .Where(node=>string.Compare(node.Name, "Assembly", true)==0);
+            foreach (var node in asms)
             {
+                var path = node.Attributes
+                    .OfType<XmlAttribute>()
+                    .FirstOrDefault(attr=>string.Compare(attr.Name, "path", true)==0);
+                if (path==null)
+                {
+                    continue;
+                }
+                var fileName = path.InnerXml;
+                if (string.IsNullOrEmpty(fileName) ||
+                    !File.Exists(fileName))
+                {
+                    continue;
+                }
                 try
                 {
-                    var asm = Assembly.LoadFrom(fileName);
+                    Assembly.LoadFrom(fileName);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex);
+                    Logger.Error (ex);
                     Locator.Resolve<IUserMessage>()
                         .Warning("Load plugin failed!\n\n{0}", fileName);
                 }
             }
+
+            //var folderName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            //LoadAssemblies(folderName, "ZXMAK2.Hardware*.dll", SearchOption.TopDirectoryOnly);
+            //folderName = Path.Combine(folderName, "Plugins");
+            //LoadAssemblies(folderName, "*.dll", SearchOption.AllDirectories);
         }
+
+        //private static void LoadAssemblies(string folderName, string pattern, SearchOption options)
+        //{
+        //    if (!Directory.Exists(folderName))
+        //    {
+        //        return;
+        //    }
+        //    foreach (var fileName in Directory.GetFiles(folderName, pattern, options))
+        //    {
+        //        try
+        //        {
+        //            var asm = Assembly.LoadFrom(fileName);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Logger.Error(ex);
+        //            Locator.Resolve<IUserMessage>()
+        //                .Warning("Load plugin failed!\n\n{0}", fileName);
+        //        }
+        //    }
+        //}
 
         #endregion Private
     }
