@@ -27,10 +27,14 @@ namespace ZXMAK2.Hardware.Quorum
         #endregion Fields
 
 
-        #region IBusDevice
+        public MemoryQuorum256()
+            : base("Quorum", 4, 16)
+        {
+            Name = "QUORUM 256K";
+        }
 
-        public override string Name { get { return "QUORUM 256K"; } }
-        public override string Description { get { return "QUORUM 256K Memory Manager"; } }
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -193,11 +197,5 @@ namespace ZXMAK2.Hardware.Quorum
         }
 
         #endregion
-
-
-        public MemoryQuorum256()
-            : base("Quorum", 4, 16)
-        {
-        }
     }
 }

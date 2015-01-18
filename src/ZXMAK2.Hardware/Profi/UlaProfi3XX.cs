@@ -16,9 +16,14 @@ namespace ZXMAK2.Hardware.Profi
         #endregion Fields
 
 
-        #region IBusDevice
+        public UlaProfi3XX()
+        {
+            Name = "PROFI 3.xx";
+        }
 
-        public override string Name { get { return "PROFI 3.xx"; } }
+
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -103,10 +108,6 @@ namespace ZXMAK2.Hardware.Profi
 
         #endregion
 
-
-        public UlaProfi3XX()
-        {
-        }
 
         protected override void OnRendererInit()
         {

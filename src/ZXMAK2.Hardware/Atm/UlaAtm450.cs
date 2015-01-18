@@ -32,9 +32,14 @@ namespace ZXMAK2.Hardware.Atm
         #endregion
 
 
-        #region IBusDevice
+        public UlaAtm450()
+        {
+            Name = "ATM";
+            InitStaticTables();
+        }
 
-        public override string Name { get { return "ATM"; } }
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -97,12 +102,6 @@ namespace ZXMAK2.Hardware.Atm
 
         #endregion
 
-
-
-        public UlaAtm450()
-        {
-            InitStaticTables();
-        }
 
         protected override void OnRendererInit()
         {
@@ -283,11 +282,11 @@ namespace ZXMAK2.Hardware.Atm
 
     public class UlaAtmTurbo : UlaAtm450
     {
-        public override string Name
+        public UlaAtmTurbo()
         {
-            get { return base.Name + " [turbo]"; }
+            Name = string.Format("{0} [turbo]", Name);
         }
-
+        
         protected override void OnRendererInit()
         {
             base.OnRendererInit();

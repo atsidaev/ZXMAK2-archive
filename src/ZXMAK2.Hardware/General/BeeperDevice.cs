@@ -6,11 +6,17 @@ namespace ZXMAK2.Hardware.General
 {
 	public class BeeperDevice : SoundDeviceBase
 	{
-		#region IBusDevice
+        public BeeperDevice()
+        {
+            Category = BusDeviceCategory.Sound;
+            Name = "BEEPER";
+            Description = "Standard Beeper";
+            
+            Volume = 30;
+        }
 
-		public override string Name { get { return "BEEPER"; } }
-		public override string Description { get { return "Standard Beeper"; } }
-		public override BusDeviceCategory Category { get { return BusDeviceCategory.Sound; } }
+        
+        #region IBusDevice
 
 		public override void BusInit(IBusManager bmgr)
 		{
@@ -48,11 +54,5 @@ namespace ZXMAK2.Hardware.General
 		private int _portFE = 0;
 		private ushort m_dacValue0 = 0;
 		private ushort m_dacValue1 = 0x1FFF;
-
-
-		public BeeperDevice()
-		{
-			Volume = 30;
-		}
 	}
 }

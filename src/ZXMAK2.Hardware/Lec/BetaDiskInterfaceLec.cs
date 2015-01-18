@@ -12,11 +12,15 @@ namespace ZXMAK2.Hardware.Lec
 
         #endregion
 
+        
+        public BetaDiskInterfaceLec()
+        {
+            Name = "BDI LEC (beta)";
+            Description = "Beta Disk Interface + LEC extension hack";
+        }
+
 
         #region IBusDevice
-
-        public override string Name { get { return "BDI LEC (beta)"; } }
-        public override string Description { get { return "Beta Disk Interface + LEC extension hack"; } }
 
         public override void BusInit(IBusManager bmgr)
         {

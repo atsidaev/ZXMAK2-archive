@@ -30,10 +30,23 @@ namespace ZXMAK2.Hardware.Evo
         #endregion Fields
 
 
-        #region IBusDevice
+        public MemoryPentEvo(
+            string romSetName,
+            int romPageCount,
+            int ramPageCount)
+            : base(romSetName, romPageCount, ramPageCount)
+        {
+            Name = "PentEvo";
+            Description = "PentEvo 4096K Memory Manager";
+        }
 
-        public override string Name { get { return "PentEvo"; } }
-        public override string Description { get { return "PentEvo 4096K Memory Manager"; } }
+        public MemoryPentEvo()
+            : this("PentEvo", 32, 256)
+        {
+        }
+
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -560,19 +573,5 @@ namespace ZXMAK2.Hardware.Evo
         }
 
         #endregion
-
-
-        public MemoryPentEvo(
-            String romSetName,
-            int romPageCount,
-            int ramPageCount)
-            : base(romSetName, romPageCount, ramPageCount)
-        {
-        }
-
-        public MemoryPentEvo()
-            : this("PentEvo", 32, 256)
-        {
-        }
     }
 }

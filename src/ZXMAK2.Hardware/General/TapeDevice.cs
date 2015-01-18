@@ -51,6 +51,10 @@ namespace ZXMAK2.Hardware.General
         
         public TapeDevice()
         {
+            Category = BusDeviceCategory.Tape;
+            Name = "TAPE PLAYER";
+            Description = "Common Tape Device (port #FE, mask #01)";
+
             Blocks = new List<ITapeBlock>();
             Volume = 20;
             CreateViewHolder();
@@ -58,10 +62,6 @@ namespace ZXMAK2.Hardware.General
 
 
         #region IBusDevice
-
-        public override string Name { get { return "TAPE PLAYER"; } }
-        public override string Description { get { return "Generic Tape Device"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Tape; } }
 
         public override void BusInit(IBusManager bmgr)
         {

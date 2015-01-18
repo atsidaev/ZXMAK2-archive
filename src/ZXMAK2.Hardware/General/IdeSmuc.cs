@@ -38,11 +38,15 @@ namespace ZXMAK2.Hardware.General
         #endregion Fields
 
 
-        #region IBusDevice Members
+        public IdeSmuc()
+        {
+            Category = BusDeviceCategory.Disk;
+            Name = "IDE SMUC";
+            Description = "Spectrum Multi Unit Controller\r\nPlease edit *.vmide file for configuration settings";
+        }
 
-        public override string Name { get { return "IDE SMUC"; } }
-        public override string Description { get { return "Spectrum Multi Unit Controller\r\nPlease edit *.vmide file for configuration settings"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Disk; } }
+
+        #region IBusDevice Members
 
         public override void BusInit(IBusManager bmgr)
         {

@@ -35,17 +35,19 @@ namespace ZXMAK2.Hardware.General
 
         public FddController()
         {
+            Category = BusDeviceCategory.Disk;
+            Name = "FDD WD1793";
+            Description = "FDD controller WD1793\r\nBDI-ports compatible\r\nPorts active when DOSEN=1 or SYSEN=1";
+
             LoadManager = new DiskLoadManager(m_wd.FDD[0]);
             CreateViewHolder();
         }
 
+
         public ISerializeManager LoadManager { get; private set; }
         
-        #region IBusDevice
 
-        public override string Name { get { return "FDD WD1793"; } }
-        public override string Description { get { return "FDD controller WD1793\r\nBDI-ports compatible\r\nPorts active when DOSEN=1 or SYSEN=1"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Disk; } }
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {

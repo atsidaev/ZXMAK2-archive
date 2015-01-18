@@ -7,11 +7,15 @@ namespace ZXMAK2.Hardware.Sprinter
 {
     public class SprinterRTC : BusDeviceBase
     {
-        #region IBusDevice Members
+        public SprinterRTC()
+        {
+            Category = BusDeviceCategory.Other;
+            Name = "CMOS SPRINTER";
+            Description = "Sprinter RTC";
+        }
+        
 
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
-        public override string Description { get { return "Sprinter RTC"; } }
-        public override string Name { get { return "CMOS SPRINTER"; } }
+        #region IBusDevice Members
 
         public override void BusInit(IBusManager bmgr)
         {

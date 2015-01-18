@@ -7,16 +7,15 @@ namespace ZXMAK2.Hardware.ZXBYTE
 {
     public class UlaByte_Late : UlaDeviceBase
     {
-        #region IBusDevice
-
-        public override string Name { get { return "BYTE [late model]"; } }
-        public override string Description { get { return "BYTE [late model]\r\nVersion 1.3"; } }
-
         public UlaByte_Late()
         {
+            Name = "BYTE [late model]";
+            Description = "BYTE [late model]\r\nVersion 1.3";
             InitStaticTables();
         }
 
+        
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -254,11 +253,14 @@ namespace ZXMAK2.Hardware.ZXBYTE
 
     public class UlaByte_Early : UlaByte_Late
     {
+        public UlaByte_Early()
+        {
+            Name = "BYTE [early model]";
+            Description = "BYTE [early model]\r\nVersion 1.0";
+        }
+
+        
         #region IBusDevice
-
-        public override string Name { get { return "BYTE [early model]"; } }
-        public override string Description { get { return "BYTE [early model]\r\nVersion 1.0"; } }
-
 
         public override void BusInit(IBusManager bmgr)
         {

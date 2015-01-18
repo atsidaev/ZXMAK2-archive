@@ -28,11 +28,15 @@ namespace ZXMAK2.Hardware.Atm
         #endregion Fields
 
 
-        #region IBusDevice Members
+        public IdeAtm()
+        {
+            Category = BusDeviceCategory.Disk;
+            Name = "IDE ATM";
+            Description = "ATM IDE controller\r\nPlease edit *.vmide file for configuration settings";
+        }
 
-        public override string Name { get { return "IDE ATM"; } }
-        public override string Description { get { return "ATM IDE controller\r\nPlease edit *.vmide file for configuration settings"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Disk; } }
+
+        #region IBusDevice Members
 
         public override void BusInit(IBusManager bmgr)
         {

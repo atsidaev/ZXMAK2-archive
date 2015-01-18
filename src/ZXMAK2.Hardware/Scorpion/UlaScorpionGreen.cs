@@ -4,7 +4,11 @@ namespace ZXMAK2.Hardware.Scorpion
 {
     public class UlaScorpionGreen : UlaDeviceBase
     {
-        public override string Name { get { return "Scorpion [Green]"; } }
+        public UlaScorpionGreen()
+        {
+            Name = "Scorpion [Green]";
+        }
+        
 
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {

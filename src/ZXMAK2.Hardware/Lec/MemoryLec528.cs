@@ -7,10 +7,15 @@ namespace ZXMAK2.Hardware.Lec
 {
     public class MemoryLec48528 : MemoryBase
     {
-        #region IBusDevice
+        public MemoryLec48528()
+            : base("LEC", 4, 32 + 1)
+        {
+            Name = "LEC 48/528K (beta)";
+            Description = "LEC Memory Extension (Jiri Lamac)";
+        }
 
-        public override string Name { get { return "LEC 48/528K (beta)"; } }
-        public override string Description { get { return "LEC Memory Extension by Jiri Lamac"; } }
+        
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -83,10 +88,5 @@ namespace ZXMAK2.Hardware.Lec
         }
 
         #endregion
-
-        public MemoryLec48528()
-            : base("LEC", 4, 32 + 1)
-        {
-        }
     }
 }

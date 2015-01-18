@@ -13,16 +13,17 @@ namespace ZXMAK2.Hardware.Adlers
         private IBusManager m_bmgr;
         private IViewHolder m_viewHolder;
 
+        
         public Debugger()
         {
+            Category = BusDeviceCategory.Debugger;
+            Name = "DEBUGGER ADLERS";
+            Description = "Extended debugger written by Adlers";
             CreateViewHolder();
         }
 
+        
         #region BusDeviceBase
-
-        public override string Name { get { return "DEBUGGER ADLERS"; } }
-        public override string Description { get { return "Debugger Adlers"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Debugger; } }
 
         public override void BusInit(IBusManager bmgr)
         {

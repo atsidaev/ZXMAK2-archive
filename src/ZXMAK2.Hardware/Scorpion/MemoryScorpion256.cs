@@ -16,10 +16,22 @@ namespace ZXMAK2.Hardware.Scorpion
         #endregion Fields
 
 
-        #region IBusDevice
+        public MemoryScorpion256(
+            string romSetName,
+            int romPageCount,
+            int ramPageCount)
+            : base(romSetName, romPageCount, ramPageCount)
+        {
+            Name = "Scorpion 256K";
+        }
 
-        public override string Name { get { return "Scorpion 256K"; } }
-        public override string Description { get { return "Scorpion 256K Memory Manager"; } }
+        public MemoryScorpion256()
+            : this("Scorpion", 4, 16)
+        {
+        }
+
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -169,34 +181,14 @@ namespace ZXMAK2.Hardware.Scorpion
         }
 
         #endregion
-
-
-        public MemoryScorpion256(
-            String romSetName, 
-            int romPageCount, 
-            int ramPageCount)
-            : base(romSetName, romPageCount, ramPageCount)
-        {
-        }
-
-        public MemoryScorpion256()
-            : this("Scorpion", 4, 16)
-        {
-        }
     }
 
     public class MemoryScorpion1024 : MemoryScorpion256
     {
-        #region IBusDevice
-
-        public override string Name { get { return "Scorpion 1024K"; } }
-        public override string Description { get { return "Scorpion 1024K Memory Manager"; } }
-
-        #endregion
-
         public MemoryScorpion1024()
             : base("Scorpion", 4, 64)
         {
+            Name = "Scorpion 1024K";
         }
 
         protected override int GetRamPage()

@@ -6,10 +6,19 @@ namespace ZXMAK2.Hardware.Spectrum
 {
     public class MemorySpectrum128 : MemoryBase
     {
-        #region IBusDevice
+        public MemorySpectrum128(string romSetName)
+            : base(romSetName, 4, 8)
+        {
+            Name = "ZX Spectrum 128";    
+        }
 
-        public override string Name { get { return "ZX Spectrum 128"; } }
-        public override string Description { get { return "Spectrum 128K Memory Module"; } }
+        public MemorySpectrum128()
+            : this("ZX128")
+        {
+        }
+
+        
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -95,15 +104,5 @@ namespace ZXMAK2.Hardware.Spectrum
 
 
         private bool m_lock = false;
-
-        public MemorySpectrum128(String romSetName)
-            : base(romSetName, 4, 8)
-        {
-        }
-
-        public MemorySpectrum128()
-            : this("ZX128")
-        {
-        }
     }
 }

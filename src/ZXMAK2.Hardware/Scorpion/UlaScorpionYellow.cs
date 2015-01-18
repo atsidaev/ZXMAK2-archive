@@ -6,9 +6,13 @@ namespace ZXMAK2.Hardware.Scorpion
 {
     public class UlaScorpion : UlaDeviceBase
     {
-        #region IBusDevice
+        public UlaScorpion()
+        {
+            Name = "Scorpion [Yellow]";
+        }
 
-        public override string Name { get { return "Scorpion [Yellow]"; } }
+        
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -68,8 +72,12 @@ namespace ZXMAK2.Hardware.Scorpion
 
     public class UlaScorpionEx : UlaScorpion
     {
-        public override string Name { get { return "Scorpion [Yellow - extended border]"; } }
+        public UlaScorpionEx()
+        {
+            Name = "Scorpion [Yellow - extended border]";
+        }
 
+        
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
             // Scorpion [Yellow PCB]

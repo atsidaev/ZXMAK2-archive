@@ -35,11 +35,16 @@ namespace ZXMAK2.Hardware
 
         #endregion Fields
 
+
+        protected UlaDeviceBase()
+        {
+            Category = BusDeviceCategory.ULA;
+            OnRendererInit();
+            Renderer = SpectrumRenderer;
+        }
+
         
         #region IBusDevice
-
-        public override string Description { get { return "UlaDeviceBase based ULA"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.ULA; } }
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -79,13 +84,6 @@ namespace ZXMAK2.Hardware
 
         #endregion
 
-
-
-        public UlaDeviceBase()
-        {
-            OnRendererInit();
-            Renderer = SpectrumRenderer;
-        }
 
         protected virtual void OnRendererInit()
         {

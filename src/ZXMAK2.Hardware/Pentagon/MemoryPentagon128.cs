@@ -8,10 +8,14 @@ namespace ZXMAK2.Hardware.Pentagon
 {
     public class MemoryPentagon128 : MemoryBase
     {
-        #region IBusDevice
+        public MemoryPentagon128()
+            : base("Pentagon", 4, 8)
+        {
+            Name = "Pentagon 128K";
+        }
 
-        public override string Name { get { return "Pentagon 128K"; } }
-        public override string Description { get { return "Pentagon 128K Memory Module"; } }
+        
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -75,11 +79,6 @@ namespace ZXMAK2.Hardware.Pentagon
 
 
         private bool m_lock = false;
-
-        public MemoryPentagon128()
-            : base("Pentagon", 4, 8)
-        {
-        }
 
         protected override void OnPowerOn()
         {

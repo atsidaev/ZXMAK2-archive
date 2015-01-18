@@ -24,10 +24,15 @@ namespace ZXMAK2.Hardware.ZXBYTE
         #endregion
 
 
-        #region IBusDevice
+        public MemoryByte128()
+            : base("ZXBYTE")
+        {
+            Name = "BYTE 128K";
+            Description = "Memory Module \"Byte\" 128K\r\nVersion 1.2";
+        }
 
-        public override string Name { get { return "BYTE 128K"; } }
-        public override string Description { get { return "Memory Module \"Byte\" 128K\r\nVersion 1.2"; } }
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -152,11 +157,6 @@ namespace ZXMAK2.Hardware.ZXBYTE
                     OnConfigChanged();
                 }
             }
-        }
-
-        public MemoryByte128()
-            : base("ZXBYTE")
-        {
         }
 
         

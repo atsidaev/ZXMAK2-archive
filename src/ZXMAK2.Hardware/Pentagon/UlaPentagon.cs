@@ -4,8 +4,12 @@ namespace ZXMAK2.Hardware.Pentagon
 {
     public class UlaPentagon : UlaDeviceBase
     {
-        public override string Name { get { return "Pentagon"; } }
-
+        public UlaPentagon()
+        {
+            Name = "Pentagon";
+        }
+        
+        
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
             // Pentagon 128K
@@ -36,7 +40,11 @@ namespace ZXMAK2.Hardware.Pentagon
 
     public class UlaPentagonEx : UlaPentagon
     {
-        public override string Name { get { return "Pentagon [Extended Border]"; } }
+        public UlaPentagonEx()
+        {
+            Name = "Pentagon [Extended Border]";
+        }
+
 
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {

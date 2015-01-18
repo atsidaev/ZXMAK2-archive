@@ -7,10 +7,14 @@ namespace ZXMAK2.Hardware.Scorpion
 {
     public class BeeperScorpion : BeeperDevice
     {
-        #region IBusDevice
+        public BeeperScorpion()
+        {
+            Name = "BEEPER SCORPION";
+            Description = "Scorpion ZS Beeper\r\nPort: #FE\r\nMask: #23";
+        }
 
-        public override string Name { get { return "BEEPER SCORPION"; } }
-        public override string Description { get { return "Scorpion ZS Beeper\r\nPort: #FE\r\nMask: #23"; } }
+        
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {

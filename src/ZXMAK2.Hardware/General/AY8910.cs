@@ -13,11 +13,18 @@ namespace ZXMAK2.Hardware.General
 {
     public class AY8910 : BusDeviceBase, ISoundRenderer, IAyDevice
     {
-        #region IBusDevice
+        public AY8910()
+        {
+            Category = BusDeviceCategory.Music;
+            Name = "AY8910";
+            Description = "Standard AY8910 Programmable Sound Generator";
+            
+            initTiming(44100, 70000);
+            Volume = 50;
+        }
 
-        public override string Name { get { return "AY8910"; } }
-        public override string Description { get { return "Standard AY8910 Programmable Sound Generator"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Music; } }
+        
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -280,13 +287,6 @@ namespace ZXMAK2.Hardware.General
         }
 
         #endregion
-
-        public AY8910()
-        {
-            initTiming(44100, 70000);
-            Volume = 50;
-        }
-
 
         private CpuUnit m_cpu;
 

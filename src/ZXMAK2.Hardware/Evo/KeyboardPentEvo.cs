@@ -8,11 +8,15 @@ namespace ZXMAK2.Hardware.Evo
 {
     public class KeyboardPentEvo : BusDeviceBase, IKeyboardDevice
     {
-        #region IBusDevice
+        public KeyboardPentEvo()
+        {
+            Category = BusDeviceCategory.Keyboard;
+            Name = "KEYBOARD PentEvo";
+            Description = "PentEvo Keyboard\r\nPort: #FE\r\nMask: #05";
+        }
 
-        public override string Name { get { return "KEYBOARD PentEvo"; } }
-        public override string Description { get { return "PentEvo Keyboard\r\nPort: #FE\r\nMask: #05"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }
+        
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {

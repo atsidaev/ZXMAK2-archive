@@ -6,13 +6,15 @@ namespace ZXMAK2.Hardware.Spectrum
 {
 	public class PrinterPlus3 : BusDeviceBase
 	{
-		#region IBusDevice
+        public PrinterPlus3()
+        {
+            Category = BusDeviceCategory.Other;
+            Name = "LPT PLUS-3";
+            Description = "Plus-3 LPT Printer (Centronix)\r\nPrint to the file (settings not implemented yet)";
+        }
+        
 
-		public override string Name { get { return "LPT PLUS-3"; } }
-
-        public override string Description { get { return "Plus-3 LPT Printer (Centronix)\r\nPrint to the file (settings not implemented yet)"; } }
-
-		public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
+        #region IBusDevice
 
 		public override void BusInit(IBusManager bmgr)
 		{

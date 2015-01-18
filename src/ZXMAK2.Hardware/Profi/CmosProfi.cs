@@ -17,11 +17,15 @@ namespace ZXMAK2.Hardware.Profi
         #endregion Fields
 
 
-        #region IBusDevice Members
+        public CmosProfi()
+        {
+            Category = BusDeviceCategory.Other;
+            Name = "CMOS PROFI";
+            Description = "PROFI CMOS device\nPort:\t#9F";
+        }
 
-        public override string Name { get { return "CMOS PROFI"; } }
-        public override string Description { get { return "PROFI CMOS device\nPort:\t#9F"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
+
+        #region IBusDevice Members
 
         public override void BusInit(IBusManager bmgr)
         {

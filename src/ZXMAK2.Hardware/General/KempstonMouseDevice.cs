@@ -14,11 +14,15 @@ namespace ZXMAK2.Hardware.General
         #endregion Fields
 
 
-        #region IBusDevice Members
+        public KempstonMouseDevice()
+        {
+            Category = BusDeviceCategory.Mouse;
+            Name = "MOUSE KEMPSTON";
+            Description = "Standard Kempston Mouse\n#FADF - buttons\n#FBDF - X coord\n#FFDF - Y coord";
+        }
 
-        public override string Name { get { return "MOUSE KEMPSTON"; } }
-        public override string Description { get { return "Standard Kempston Mouse\n#FADF - buttons\n#FBDF - X coord\n#FFDF - Y coord"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Mouse; } }
+
+        #region IBusDevice Members
 
         public override void BusInit(IBusManager bmgr)
         {

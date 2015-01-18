@@ -10,19 +10,18 @@ namespace ZXMAK2.Hardware.General
 {
     public class Debugger : BusDeviceBase, IJtagDevice
     {
-        #region BusDeviceBase
-
-        public override string Name { get { return "DEBUGGER"; } }
-        public override string Description { get { return "Default Debugger"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Debugger; } }
-
-        private IViewHolder m_viewHolder;
-
-
         public Debugger()
         {
+            Category = BusDeviceCategory.Debugger;
+            Name = "DEBUGGER";
+            Description = "Default Debugger";
             CreateViewHolder();
         }
+
+        
+        #region BusDeviceBase
+
+        private IViewHolder m_viewHolder;
 
 
         public override void BusInit(IBusManager bmgr)

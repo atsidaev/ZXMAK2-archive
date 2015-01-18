@@ -6,11 +6,15 @@ namespace ZXMAK2.Hardware.Pentagon
 {
     public class CovoxPentagon : SoundDeviceBase
     {
-        #region IBusDevice
+        public CovoxPentagon()
+        {
+            Category = BusDeviceCategory.Sound;
+            Name = "COVOX PENTAGON";
+            Description = "COVOX PENTAGON \r\nPort #FB - covox";
+        }
+        
 
-        public override string Name { get { return "COVOX PENTAGON"; } }
-        public override string Description { get { return "COVOX PENTAGON \r\nPort #FB - covox"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Sound; } }
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {

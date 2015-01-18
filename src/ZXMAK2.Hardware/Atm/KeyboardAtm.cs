@@ -8,11 +8,15 @@ namespace ZXMAK2.Hardware.Atm
 {
     public class KeyboardAtm : BusDeviceBase, IKeyboardDevice
     {
-        #region IBusDevice
+        public KeyboardAtm()
+        {
+            Category = BusDeviceCategory.Keyboard;
+            Name = "KEYBOARD ATM";
+            Description = "ATM Keyboard\r\nPort: #FE\r\nMask: #05";
+        }
+        
 
-        public override string Name { get { return "KEYBOARD ATM"; } }
-        public override string Description { get { return "ATM Keyboard\r\nPort: #FE\r\nMask: #05"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {

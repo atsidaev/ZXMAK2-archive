@@ -30,12 +30,20 @@ namespace ZXMAK2.Hardware
         #endregion
 
 
-        #region IBusDevice Members
-
-        public override BusDeviceCategory Category
+        protected MemoryBase(
+            string romSetName,
+            int romPageCount,
+            int ramPageCount)
         {
-            get { return BusDeviceCategory.Memory; }
+            Category = BusDeviceCategory.Memory;
+            m_romSetName = romSetName;// "Default";
+            Init(romPageCount, ramPageCount);
+            OnPowerOn();
+            CreateViewHolder();
         }
+
+
+        #region IBusDevice Members
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -203,17 +211,6 @@ namespace ZXMAK2.Hardware
 
         #endregion
 
-
-        public MemoryBase(
-            String romSetName,
-            int romPageCount,
-            int ramPageCount)
-        {
-            m_romSetName = romSetName;// "Default";
-            Init(romPageCount, ramPageCount);
-            OnPowerOn();
-            CreateViewHolder();
-        }
 
         public String RomSetName
         {

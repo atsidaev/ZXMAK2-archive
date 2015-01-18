@@ -16,6 +16,9 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public SprinterDebugger()
         {
+            Category = BusDeviceCategory.Debugger;
+            Name = "DEBUGGER SPRINTER";
+            Description = "Extended Debugger for Sprinter";
             CreateViewHolder();
         }
 
@@ -43,18 +46,6 @@ namespace ZXMAK2.Hardware.Sprinter
 
         
         #region IBusDevice
-
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Debugger; } }
-
-        public override string Name
-        {
-            get { return "DEBUGGER SPRINTER"; }
-        }
-
-        public override string Description
-        {
-            get { return "Sprinter debugger"; }
-        }
 
         public override void BusInit(IBusManager bmgr)
         {

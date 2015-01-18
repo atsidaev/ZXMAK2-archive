@@ -6,9 +6,18 @@ namespace ZXMAK2.Hardware.Spectrum
 {
     public class UlaSpectrum48snow : UlaSpectrum48
     {
-        #region IBusDevice
+        public UlaSpectrum48snow()
+        {
+            Name = "ZX Spectrum 48 [snow]";
 
-        public override string Name { get { return "ZX Spectrum 48 [snow]"; } }
+            SnowRenderer = new SpectrumSnowRenderer();
+            SnowRenderer.Params = CreateSpectrumRendererParams();
+            SnowRenderer.Palette = SpectrumSnowRenderer.CreatePalette();
+            Renderer = SnowRenderer;
+        }
+
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -28,14 +37,6 @@ namespace ZXMAK2.Hardware.Spectrum
         }
 
         protected SpectrumSnowRenderer SnowRenderer;
-
-        public UlaSpectrum48snow()
-        {
-            SnowRenderer = new SpectrumSnowRenderer();
-            SnowRenderer.Params = CreateSpectrumRendererParams();
-            SnowRenderer.Palette = SpectrumSnowRenderer.CreatePalette();
-            Renderer = SnowRenderer;
-        }
 
         protected unsafe void ReadMemM1(ushort addr, ref byte value)
         {

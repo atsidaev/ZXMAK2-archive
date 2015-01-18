@@ -24,6 +24,18 @@ namespace ZXMAK2.Hardware.Evo
         #endregion
 
 
+        public CmosPentEvo()
+        {
+            Category = BusDeviceCategory.Other;
+            Name = "CMOS PentEvo";
+            Description = "PentEvo RTC";
+            
+            eeprom = new byte[256];
+            BaseConfData = new byte[16];
+            BootVerData = new byte[16];
+        }
+
+
         public bool SHADOW
         {
             get { return (mem == null) ? false : mem.DOSEN || mem.SYSEN || mem.SHADOW; }
@@ -34,30 +46,8 @@ namespace ZXMAK2.Hardware.Evo
             get { return (mem == null) ? false : mem.CMOSEN; }
         }
 
-        public CmosPentEvo()
-        {
-            eeprom = new byte[256];
-            BaseConfData = new byte[16];
-            BootVerData = new byte[16];
-        }
-
 
         #region BusDeviceBase
-
-        public override string Name
-        {
-            get { return "CMOS PentEvo"; }
-        }
-
-        public override string Description
-        {
-            get { return "PentEvo RTC"; }
-        }
-
-        public override BusDeviceCategory Category
-        {
-            get { return BusDeviceCategory.Other; }
-        }
 
         public override void BusInit(IBusManager bmgr)
         {

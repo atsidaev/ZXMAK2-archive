@@ -25,10 +25,23 @@ namespace ZXMAK2.Hardware.Atm
         #endregion Fields
 
 
-        #region IBusDevice
+        public MemoryAtm710(
+            string romSetName,
+            int romPageCount,
+            int ramPageCount)
+            : base(romSetName, romPageCount, ramPageCount)
+        {
+            Name = "ATM710 1024K";
+            Description = "ATM710 1024K Memory Manager";
+        }
 
-        public override string Name { get { return "ATM710 1024K"; } }
-        public override string Description { get { return "ATM710 1024K Memory Manager"; } }
+        public MemoryAtm710()
+            : this("ATM710", 8, 64)
+        {
+        }
+
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -85,6 +98,7 @@ namespace ZXMAK2.Hardware.Atm
         }
 
         #endregion
+
 
         #region MemoryBase
 
@@ -213,6 +227,7 @@ namespace ZXMAK2.Hardware.Atm
 
         #endregion
 
+
         #region Hardware Values
 
         [HardwareValue("PEN", Description = "Disable memory manager")]
@@ -263,6 +278,7 @@ namespace ZXMAK2.Hardware.Atm
         }
 
         #endregion
+
 
         #region Bus Handlers
 
@@ -356,19 +372,6 @@ namespace ZXMAK2.Hardware.Atm
 
         #endregion
 
-
-        public MemoryAtm710(
-            String romSetName, 
-            int romPageCount, 
-            int ramPageCount)
-            : base(romSetName, romPageCount, ramPageCount)
-        {
-        }
-
-        public MemoryAtm710()
-            : this("ATM710", 8, 64)
-        {
-        }
 
         #region Private methods
 

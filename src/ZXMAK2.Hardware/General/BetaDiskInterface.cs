@@ -6,11 +6,14 @@ namespace ZXMAK2.Hardware.General
 {
     public class BetaDiskInterface : FddController
     {
-        #region IBusDevice
+        public BetaDiskInterface()
+        {
+            Name = "BDI-128";
+            Description = "Beta Disk Interface\r\nDOSEN enabler + WD1793";
+        }
+        
 
-        public override string Name { get { return "BDI"; } }
-        public override string Description { get { return "Beta Disk Interface\r\nDOSEN enabler + WD1793"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Disk; } }
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {

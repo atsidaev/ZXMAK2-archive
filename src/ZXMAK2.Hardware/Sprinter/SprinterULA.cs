@@ -8,6 +8,8 @@ namespace ZXMAK2.Hardware.Sprinter
 {
     public class SprinterULA : UlaDeviceBase
     {
+        #region Fields
+
         private byte m_mode;
         private byte m_rgadr;
         private byte[][] m_vram;
@@ -15,11 +17,16 @@ namespace ZXMAK2.Hardware.Sprinter
         protected int _flashState = 0;            // flash attr state (0/256)
         protected int _flashCounter = 0;          // flash attr counter
 
+        #endregion Fields
+
 
         public SprinterULA()
         {
+            Name = "Sprinter Video";
+            Description = string.Format("Sprinter Video Adapter{0}Version 0.1a", Environment.NewLine);
             Renderer = new SprinterRenderer();
         }
+
 
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
@@ -42,16 +49,6 @@ namespace ZXMAK2.Hardware.Sprinter
             return timing;
         }
 
-        public override string Description
-        {
-            get { return string.Format("Sprinter Video Adapter{0}Version 0.1a", Environment.NewLine); }
-        }
-
-        public override string Name
-        {
-            get { return "Sprinter Video"; }
-        }
-        
         #region  -- Bus IO Procs --
         public override void BusInit(IBusManager bmgr)
         {

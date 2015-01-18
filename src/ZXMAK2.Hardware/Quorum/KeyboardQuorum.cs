@@ -17,9 +17,13 @@ namespace ZXMAK2.Hardware.Quorum
         private CpuUnit m_cpu;
         private bool m_nmiTriggered;
 
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Keyboard; } }
-        public override string Name { get { return "KEYBOARD QUORUM"; } }
-        public override string Description { get { return "Quorum extended keyboard\n\n(c) Eltaron"; } }
+
+        public KeyboardQuorum()
+        {
+            Category = BusDeviceCategory.Keyboard;
+            Name = "KEYBOARD QUORUM";
+            Description = "Quorum extended keyboard\n\n(c) Eltaron";
+        }
 
 
         public override void BusConnect()

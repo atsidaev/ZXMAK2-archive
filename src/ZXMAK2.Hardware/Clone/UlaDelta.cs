@@ -7,11 +7,13 @@ namespace ZXMAK2.Hardware.Clone
 {
     public class UlaDelta : UlaDeviceBase
     {
+        public UlaDelta()
+        {
+            Name = "Delta-C [Cheboksary-91/74]";
+        }
+        
+
         #region IBusDevice
-
-        public override string Name { get { return "Delta-C [Cheboksary-91/74]"; } }
-        public override string Description { get { return base.Description + Environment.NewLine + "Delta-C [Cheboksary 1991, 74 chips]" + Environment.NewLine + "Version 1.5"; } }
-
 
         public override void BusInit(IBusManager bmgr)
         {
