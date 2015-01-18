@@ -44,9 +44,9 @@
     <Compile Include="Breakpoint.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GDBJtagDevice.cs" />
-    <Compile Include="GDB\GDBNetworkServer.cs" />
-    <Compile Include="GDB\GDBPacket.cs" />
-    <Compile Include="GDB\GDBSession.cs" />
+    <Compile Include="Gdb\GDBNetworkServer.cs" />
+    <Compile Include="Gdb\GDBPacket.cs" />
+    <Compile Include="Gdb\GDBSession.cs" />
     <Compile Include="Interfaces\IDebugBridge.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
