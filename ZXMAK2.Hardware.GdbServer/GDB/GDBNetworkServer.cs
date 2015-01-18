@@ -27,145 +27,155 @@ using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Hardware.GdbServer.Gdb
 {
-	public class GDBNetworkServer : IDisposable
-	{
-		ASCIIEncoding encoder = new ASCIIEncoding();
+    public class GDBNetworkServer : IDisposable
+    {
+        ASCIIEncoding encoder = new ASCIIEncoding();
 
-		IDebuggable emulator;
-		GDBJtagDevice jtagDevice;
+        IDebuggable emulator;
+        GDBJtagDevice jtagDevice;
 
-		TcpListener listener;
-		Thread socketListener;
-		List<TcpClient> clients = new List<TcpClient>();
+        TcpListener listener;
+        Thread socketListener;
+        List<TcpClient> clients = new List<TcpClient>();
 
-		bool log = true;
+        bool log = true;
 
-		public GDBNetworkServer(IDebuggable emulator, GDBJtagDevice jtagDevice)
-		{
-			this.emulator = emulator;
-			this.jtagDevice = jtagDevice;
-	
-			listener = new TcpListener(IPAddress.Any, 2000);
-			listener.Start ();
-			
-			socketListener = new Thread(ListeningThread);
-			socketListener.Start();
-		}
-		
-		public void Breakpoint(Breakpoint breakpoint)
-		{
-			// emulator.IsRunning= false;
+        public GDBNetworkServer(IDebuggable emulator, GDBJtagDevice jtagDevice)
+        {
+            this.emulator = emulator;
+            this.jtagDevice = jtagDevice;
 
-			// We do not need old breakpoints because GDB will set them again
-			emulator.ClearBreakpoints();
-			jtagDevice.ClearBreakpoints();
+            listener = new TcpListener(IPAddress.Any, 2000);
+            listener.Start();
 
-			SendGlobal(GDBSession.FormatResponse(GDBSession.StandartAnswers.Breakpoint));
-		}
+            socketListener = new Thread(ListeningThread);
+            socketListener.Start();
+        }
 
-		private void SendGlobal(string message)
-		{
-			foreach (var client in clients.Where(c => c.Connected))
-			{
-				var stream = client.GetStream();
-				if (stream != null)
-					SendResponse(stream, message);
-			}
-		}
-		
-		private void ListeningThread(object obj)
-		{
-			try
-			{
-				while (true)
-				{
-					TcpClient client = listener.AcceptTcpClient();
+        public void Breakpoint(Breakpoint breakpoint)
+        {
+            // emulator.IsRunning= false;
 
-					clients.Add(client);
-					clients.RemoveAll(c => !c.Connected);
+            // We do not need old breakpoints because GDB will set them again
+            emulator.ClearBreakpoints();
+            jtagDevice.ClearBreakpoints();
 
-					Thread clientThread = new Thread(GDBClientConnected);
-					clientThread.Start(client);
-				}
-			}
-			catch
-			{
-				// Here can be an exception because we interrupting blocking AcceptTcpClient()
-				// call on Dispose. We should not fail here, so try/catching
-			}
-		}
-		
-		private void GDBClientConnected(object client)
-		{
-			TcpClient tcpClient = (TcpClient)client;
-			NetworkStream clientStream = tcpClient.GetStream();
-			GDBSession session = new GDBSession(emulator, jtagDevice);
+            SendGlobal(GDBSession.FormatResponse(GDBSession.StandartAnswers.Breakpoint));
+        }
 
-			byte[] message = new byte[0x1000];
-			int bytesRead;
+        private void SendGlobal(string message)
+        {
+            foreach (var client in clients.Where(c => c.Connected))
+            {
+                var stream = client.GetStream();
+                if (stream != null)
+                    SendResponse(stream, message);
+            }
+        }
 
-			// log = new StreamWriter("c:\\temp\\log.txt");
-			// log.AutoFlush = true;
+        private void ListeningThread(object obj)
+        {
+            try
+            {
+                while (true)
+                {
+                    TcpClient client = listener.AcceptTcpClient();
 
-			emulator.DoStop();
-			
-			while (true) {
-				bytesRead = 0;
-				
-				try {
-					bytesRead = clientStream.Read(message, 0, 4096);
-				} catch {
-					//a socket error has occured
-					break;
-				}
-				
-				if (bytesRead == 0) {
-					//the client has disconnected from the server
-					break;
-				}
-				
-				if (bytesRead > 0)
-				{
-					GDBPacket packet = new GDBPacket(message, bytesRead);
-					if (log) 
-						Logger.Info("--> {0}", packet);
+                    clients.Add(client);
+                    clients.RemoveAll(c => !c.Connected);
 
-					bool isSignal;
-					string response = session.ParseRequest(packet, out isSignal);
-					if (response != null)
-					{
-						if (isSignal)
-							SendGlobal(response);
-						else
-							SendResponse(clientStream, response);
-					}
-				}
-			}
-			tcpClient.Close ();
-		}
-		
-		void SendResponse(Stream stream, string response)
-		{
-			if (log)
-				Logger.Info("<-- {0}", response);
+                    Thread clientThread = new Thread(GDBClientConnected);
+                    clientThread.Start(client);
+                }
+            }
+            catch
+            {
+                // Here can be an exception because we interrupting blocking AcceptTcpClient()
+                // call on Dispose. We should not fail here, so try/catching
+            }
+        }
 
-			byte[] bytes = encoder.GetBytes(response);
-			stream.Write(bytes, 0, bytes.Length);	
-		}
+        private void GDBClientConnected(object client)
+        {
+            TcpClient tcpClient = (TcpClient)client;
+            NetworkStream clientStream = tcpClient.GetStream();
+            GDBSession session = new GDBSession(emulator, jtagDevice);
 
-		public void Dispose()
-		{
-			if (socketListener != null)
-			{
-				listener.Stop();
+            byte[] message = new byte[0x1000];
+            int bytesRead;
 
-				foreach (var client in clients)
-					if (client.Connected)
-						client.Close();
+            // log = new StreamWriter("c:\\temp\\log.txt");
+            // log.AutoFlush = true;
 
-				socketListener.Abort();
-			}
-		}
-	}
+            emulator.DoStop();
+
+            while (true)
+            {
+                bytesRead = 0;
+
+                try
+                {
+                    bytesRead = clientStream.Read(message, 0, 4096);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                    //a socket error has occured
+                    break;
+                }
+
+                if (bytesRead == 0)
+                {
+                    //the client has disconnected from the server
+                    break;
+                }
+
+                if (bytesRead > 0)
+                {
+                    GDBPacket packet = new GDBPacket(message, bytesRead);
+                    if (log)
+                    {
+                        Logger.Info("--> {0}", packet);
+                    }
+
+                    bool isSignal;
+                    string response = session.ParseRequest(packet, out isSignal);
+                    if (response != null)
+                    {
+                        if (isSignal)
+                            SendGlobal(response);
+                        else
+                            SendResponse(clientStream, response);
+                    }
+                }
+            }
+            tcpClient.Close();
+        }
+
+        void SendResponse(Stream stream, string response)
+        {
+            if (log)
+            {
+                Logger.Info("<-- {0}", response);
+            }
+
+            byte[] bytes = encoder.GetBytes(response);
+            stream.Write(bytes, 0, bytes.Length);
+        }
+
+        public void Dispose()
+        {
+            if (socketListener != null)
+            {
+                listener.Stop();
+
+                foreach (var client in clients)
+                    if (client.Connected)
+                        client.Close();
+
+                socketListener.Abort();
+            }
+        }
+    }
 }
 
