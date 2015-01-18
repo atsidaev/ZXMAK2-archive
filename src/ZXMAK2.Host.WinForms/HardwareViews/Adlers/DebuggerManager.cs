@@ -77,7 +77,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         public static char[]   Regs8Bit  = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'H', 'L' };
 
         public enum CommandType { memoryOrRegistryManipulation, breakpointManipulation, gotoAdress, removeBreakpoint, enableBreakpoint,
-                                  disableBreakpoint, loadBreakpointsListFromFile, saveBreakpointsListToFile, showAssembler, Unidentified
+                                  disableBreakpoint, loadBreakpointsListFromFile, saveBreakpointsListToFile, showAssembler, 
+                                  showGraphicsEditor, Unidentified
                                 };
         public enum BreakPointAccessType { memoryAccess, memoryWrite, memoryChange, memoryRead, registryValue, All, Undefined };
 
@@ -92,7 +93,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         public static string DbgDisableBreakpoint = "off"; // disables breakpoint
         public static string DbgLoadBreakpointsListFromFile = "loadbrs"; // loads breakpoints from file
         public static string DbgSaveBreakpointsListFromFile = "savebrs"; // save actual breakpoints list into file
-        public static string DbgOpenAssembler = "asm"; // open Assembler Form
+        public static string DbgOpenAssembler = "asm"; // opens Assembler Form
+        public static string DbgOpenGraphicsEditor = "ge"; // opens Graphics editor
 
         static char[]  debugDelimitersOther = new char[] { '(', '=', ')', '!' };
 
@@ -122,9 +124,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 
                 return dbgParsed;
             }
-            catch (Exception ex)
+            catch (Exception /*ex*/)
             {
-                Logger.Error(ex);
+                //Logger.Error(ex); no need to log incorrect command! This is intended. 
                 return null;
             }
         }
@@ -242,6 +244,11 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 return CommandType.showAssembler;
             }
 
+            if (command[0].ToUpper() == DbgOpenGraphicsEditor.ToString().ToUpper())
+            {
+                return CommandType.showGraphicsEditor;
+            }
+
             return CommandType.Unidentified;
         }
 
@@ -271,9 +278,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 
                 return Convert.ToUInt16(inputTrimmed); // maybe decimal number
             }
-            catch (Exception ex)
+            catch (Exception /*ex*/)
             {
-                Logger.Error(ex);
+                //Logger.Error(ex); no need to log the error here...it is not an app error when user enters incorrect number !
                 throw new Exception("Incorrect number in convertNumberWithPrefix(), number=" + input.ToString());
             }
         }

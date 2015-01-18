@@ -70,6 +70,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -101,6 +102,12 @@
     </Compile>
     <Compile Include="HardwareViews\Adlers\FormCPU.Designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HardwareViews\Adlers\GraphicsEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HardwareViews\Adlers\GraphicsEditor.Designer.cs">
+      <DependentUpon>GraphicsEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="HardwareViews\Adlers\TcpHelper.cs">
       <SubType>Form</SubType>
@@ -207,7 +214,9 @@
     <Compile Include="Views\FormMachineSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\FormView.cs" />
+    <Compile Include="Views\FormView.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Views\MainView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -242,6 +251,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HardwareViews\Adlers\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HardwareViews\Adlers\GraphicsEditor.resx">
+      <DependentUpon>GraphicsEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HardwareViews\Adlers\TcpHelper.resx">
       <DependentUpon>TcpHelper.cs</DependentUpon>
