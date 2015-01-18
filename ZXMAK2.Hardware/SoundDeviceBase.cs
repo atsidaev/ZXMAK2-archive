@@ -14,10 +14,15 @@ namespace ZXMAK2.Hardware
 {
 	public abstract class SoundDeviceBase : BusDeviceBase, ISoundRenderer
 	{
-		#region IBusDevice
+        public SoundDeviceBase()
+        {
+            Category = BusDeviceCategory.Sound;
+            
+            Volume = 100;
+        }
 
-		public override string Description { get { return "Sound Device"; } }
-		public override BusDeviceCategory Category { get { return BusDeviceCategory.Sound; } }
+        
+        #region IBusDevice
 
 		public override void BusInit(IBusManager bmgr)
 		{
@@ -117,11 +122,6 @@ namespace ZXMAK2.Hardware
 		private int m_frameTactCount = 0;
 		private uint[] m_audioBuffer = new uint[882];    // beeper frame sound samples
 		private bool m_useFilter = false;
-
-		public SoundDeviceBase()
-		{
-			Volume = 100;
-		}
 
 		protected int FrameTactCount
 		{

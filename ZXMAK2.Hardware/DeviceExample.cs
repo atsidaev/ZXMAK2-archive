@@ -9,22 +9,15 @@ namespace ZXMAK2.Hardware
     {
         private byte _port00F1;
         private byte _port00F3;
-        
-        
-        public override string Name 
-        { 
-            get { return "Device Example"; }
+
+
+        public DeviceExample()
+        {
+            Category = BusDeviceCategory.Other;
+            Name = "Device Example";
+            Description = "Device example.\nThe device listens for the ports 241 and 243 and returns the sum of the outputs through the port 241";
         }
 
-        public override string Description
-        {
-            get { return "Device example.\nThe device listens for the ports 241 and 243 and returns the sum of the outputs through the port 241"; }
-        }
-
-        public override BusDeviceCategory Category
-        {
-            get { return BusDeviceCategory.Other; }
-        }
 
         public override void BusInit(IBusManager bmgr)
         {

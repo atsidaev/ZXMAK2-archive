@@ -5,10 +5,11 @@ namespace ZXMAK2.Hardware.Evo
 {
     public class UlaPentEvo : UlaAtm450
     {
-        public override string Name
+        public UlaPentEvo()
         {
-            get { return "PENTEVO"; }
+            Name = "PENTEVO";
         }
+        
 
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {

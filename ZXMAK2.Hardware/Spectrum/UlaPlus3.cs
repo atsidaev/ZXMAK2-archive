@@ -12,9 +12,12 @@ namespace ZXMAK2.Hardware.Spectrum
 {
     public class UlaPlus3 : UlaDeviceBase
     {
+        public UlaPlus3()
+        {
+            Name = "ZX Spectrum +2A/+3";
+        }
+        
         #region IBusDevice
-
-        public override string Name { get { return "ZX Spectrum +2A/+3"; } }
 
         public override void BusInit(IBusManager bmgr)
         {

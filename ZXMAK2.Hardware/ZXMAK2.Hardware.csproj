@@ -125,6 +125,7 @@
     <Compile Include="Sprinter\IdeSprinter.cs" />
     <Compile Include="Sprinter\KbdHits.cs" />
     <Compile Include="Sprinter\SprinterDbg.cs" />
+    <Compile Include="Sprinter\SprinterEnums.cs" />
     <Compile Include="Sprinter\SprinterFdd.cs" />
     <Compile Include="Sprinter\SprinterKBD.cs" />
     <Compile Include="Sprinter\SprinterMMU.cs" />

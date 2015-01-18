@@ -17,10 +17,15 @@ namespace ZXMAK2.Hardware.Pentagon
         #endregion Fields
 
 
-        #region IBusDevice
+        public MemoryPentagon512()
+            : base("Pentagon", 4, 32)
+        {
+            Name = "Pentagon 512K";
+            EnableShadow = true;
+        }
 
-        public override string Name { get { return "Pentagon 512K"; } }
-        public override string Description { get { return "Pentagon 512K Memory Module"; } }
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -148,14 +153,6 @@ namespace ZXMAK2.Hardware.Pentagon
 
         #endregion Bus Handlers
 
-
-
-
-        public MemoryPentagon512()
-            : base("Pentagon", 4, 32)
-        {
-            EnableShadow = true;
-        }
 
         public bool EnableShadow 
         {

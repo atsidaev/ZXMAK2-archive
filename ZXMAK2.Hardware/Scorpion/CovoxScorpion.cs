@@ -6,11 +6,15 @@ namespace ZXMAK2.Hardware.Scorpion
 {
     public class CovoxScorpion : SoundDeviceBase
     {
+        public CovoxScorpion()
+        {
+            Category = BusDeviceCategory.Sound;
+            Name = "COVOX SCORPION";
+            Description = "COVOX SCORPION \r\nPort #DD - covox";
+        }
+        
+        
         #region IBusDevice
-
-        public override string Name { get { return "COVOX SCORPION"; } }
-        public override string Description { get { return "COVOX SCORPION \r\nPort #DD - covox"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Sound; } }
 
         public override void BusInit(IBusManager bmgr)
         {

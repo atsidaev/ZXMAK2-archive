@@ -10,6 +10,8 @@ namespace ZXMAK2.Hardware.Sprinter
 {
     public class SprinterMouse : BusDeviceBase, IMouseDevice
     {
+        #region Fields
+
         private IMouseState m_mouseState;
         private int m_mouseX;
         private int m_mouseY;
@@ -17,6 +19,17 @@ namespace ZXMAK2.Hardware.Sprinter
         private bool m_swapbtns;
 
         private Queue<byte> m_msbuf = new Queue<byte>();
+
+        #endregion Fields
+
+        
+        public SprinterMouse()
+        {
+            Category = BusDeviceCategory.Mouse;
+            Name = "MOUSE SPRINTER";
+            Description = "Standart Sprinter Mouse";
+        }
+
 
         public override void BusConnect()
         {
@@ -143,24 +156,6 @@ namespace ZXMAK2.Hardware.Sprinter
                     //Logger.GetLogger().LogTrace(String.Format("Mouse event start, Buffer size = {0}", m_msbuf.Count));
                 }
             }
-        }
-
-        public override BusDeviceCategory Category
-        {
-            get
-            {
-                return BusDeviceCategory.Mouse;
-            }
-        }
-
-        public override string Name
-        {
-            get { return "MOUSE SPRINTER"; }
-        }
-
-        public override string Description
-        {
-            get { return "Standart Sprinter Mouse"; }
         }
     }
 }

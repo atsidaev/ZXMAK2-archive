@@ -9,13 +9,11 @@ namespace ZXMAK2.Hardware.Evo
     {
         public AYCHRV()
         {
+            Name = "AY8910-CHRV";
+            Description = "AY8910 with #FE value on IRB input (required for PentEvo)";
             UpdateIRB += OnUpdateIrb;
         }
 
-        public override string Name
-        {
-            get { return "AY8910-CHRV"; }
-        }
 
         private void OnUpdateIrb(AY8910 sender, AyPortState state)
         {

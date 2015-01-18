@@ -7,11 +7,15 @@ namespace ZXMAK2.Hardware.General
 {
     public class AyMouseDevice : BusDeviceBase, IMouseDevice
     {
-        #region IBusDevice Members
+        public AyMouseDevice()
+        {
+            Category = BusDeviceCategory.Mouse;
+            Name = "MOUSE AY";
+            Description = "AY mouse based on V.M.G. extension";
+        }
+        
 
-        public override string Name { get { return "MOUSE AY"; } }
-        public override string Description { get { return "AY Mouse based on V.M.G. extension"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Mouse; } }
+        #region IBusDevice Members
 
         public override void BusInit(IBusManager bmgr)
         {

@@ -10,10 +10,12 @@ namespace ZXMAK2.Hardware.Evo
         private byte m_p2F, m_p4F, m_p6F, m_p8F;
 
         
-        public override string Name
+        public FddPentEvo()
         {
-            get { return "FDD PentEvo"; }
+            Name = "FDD PentEvo";
+            Description = "FDD WD1793 + specific PentEvo ports";
         }
+
 
         protected override void OnSubscribeIo(IBusManager bmgr)
         {

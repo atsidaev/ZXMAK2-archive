@@ -5,9 +5,14 @@ namespace ZXMAK2.Hardware.Profi
 {
     public class UlaProfi5XX : UlaProfi3XX
     {
+        public UlaProfi5XX()
+        {
+            Name = "PROFI 5.xx";
+            InitStaticTables();
+        }
+        
+        
         #region IBusDevice
-
-        public override string Name { get { return "PROFI 5.xx"; } }
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -70,11 +75,6 @@ namespace ZXMAK2.Hardware.Profi
             0x00, 0x02, 0x10, 0x12, 0x80, 0x82, 0x90, 0x92,
             0x00, 0x03, 0x18, 0x1B, 0xC0, 0xC3, 0xD8, 0xDB,
         };
-
-        public UlaProfi5XX()
-        {
-            InitStaticTables();
-        }
 
         protected override ProfiRendererParams CreateProfiRendererParams()
         {

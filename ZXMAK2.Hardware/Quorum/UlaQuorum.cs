@@ -4,12 +4,12 @@ namespace ZXMAK2.Hardware.Quorum
 {
     public class UlaQuorum : UlaDeviceBase
     {
-        #region IBusDevice
+        public UlaQuorum()
+        {
+            Name = "QUORUM";
+        }
 
-        public override string Name { get { return "QUORUM"; } }
-
-        #endregion
-
+        
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
             // Кворум БК-04

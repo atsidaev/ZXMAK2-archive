@@ -5,37 +5,45 @@ using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Engine.Entities
 {
-	public abstract class BusDeviceBase
-	{
-        private bool m_isConfigUpdate;
-        
-        public abstract string Name { get; }
-		public abstract string Description { get; }
-		public abstract BusDeviceCategory Category { get; }
-		public int BusOrder { get; set; }
+    public abstract class BusDeviceBase
+    {
+        private bool m_isConfigLoading;
+
+
+        protected BusDeviceBase()
+        {
+            Category = BusDeviceCategory.Other;
+            Name = GetType().Name;
+            Description = null;
+        }
+
+        public BusDeviceCategory Category { get; protected set; }
+        public string Name { get; protected set; }
+        public string Description { get; protected set; }
+        public int BusOrder { get; set; }
         public event EventHandler ConfigChanged;
 
-		/// <summary>
-		/// Collect information about device. Add handlers & serializers here.
-		/// </summary>
-		public abstract void BusInit(IBusManager bmgr);
+        /// <summary>
+        /// Collect information about device. Add handlers & serializers here.
+        /// </summary>
+        public abstract void BusInit(IBusManager bmgr);
 
-		/// <summary>
-		/// Called after Init, before device will be used. Add load files here
-		/// </summary>
-		public abstract void BusConnect();
+        /// <summary>
+        /// Called after Init, before device will be used. Add load files here
+        /// </summary>
+        public abstract void BusConnect();
 
-		/// <summary>
-		/// Called when device using finished. Add flush & close files here
-		/// </summary>
-		public abstract void BusDisconnect();
+        /// <summary>
+        /// Called when device using finished. Add flush & close files here
+        /// </summary>
+        public abstract void BusDisconnect();
 
-		/// <summary>
-		/// Called to reset device to initial state (before load snapshot)
-		/// </summary>
-		public virtual void ResetState()
-		{
-		}
+        /// <summary>
+        /// Called to reset device to initial state (before load snapshot)
+        /// </summary>
+        public virtual void ResetState()
+        {
+        }
 
         protected virtual void OnConfigLoad(XmlNode itemNode)
         {
@@ -50,7 +58,7 @@ namespace ZXMAK2.Engine.Entities
         /// </summary>
         protected void OnConfigChanged()
         {
-            if (!m_isConfigUpdate)
+            if (!m_isConfigLoading)
             {
                 var handler = ConfigChanged;
                 if (handler != null)
@@ -65,14 +73,14 @@ namespace ZXMAK2.Engine.Entities
         /// </summary>
         public void LoadConfigXml(XmlNode itemNode)
         {
-            m_isConfigUpdate = true;
+            m_isConfigLoading = true;
             try
             {
                 OnConfigLoad(itemNode);
             }
             finally
             {
-                m_isConfigUpdate = false;
+                m_isConfigLoading = false;
                 OnConfigChanged();
             }
         }
@@ -82,15 +90,15 @@ namespace ZXMAK2.Engine.Entities
         /// </summary>
         public void SaveConfigXml(XmlNode itemNode)
         {
-            m_isConfigUpdate = true;
+            m_isConfigLoading = true;
             try
             {
                 OnConfigSave(itemNode);
             }
             finally
             {
-                m_isConfigUpdate = false;
+                m_isConfigLoading = false;
             }
         }
-	}
+    }
 }

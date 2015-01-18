@@ -7,14 +7,13 @@ namespace ZXMAK2.Hardware.Profi
 {
     public class FddControllerProfi : FddController
     {
-        #region IBusDevice
+        public FddControllerProfi()
+        {
+            Name = "FDD PROFI";
+            Description = "FDD controller WD1793 with PROFI port activation";
+        }
 
-        public override string Name { get { return "FDD PROFI"; } }
-        public override string Description { get { return "FDD controller WD1793 with PROFI port activation"; } }
-
-        #endregion
-
-
+        
         #region Private
 
         protected virtual bool IsNormalMode

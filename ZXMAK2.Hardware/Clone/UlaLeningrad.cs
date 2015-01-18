@@ -5,9 +5,13 @@ namespace ZXMAK2.Hardware.Clone
 {
     public class UlaLeningrad : UlaDeviceBase
     {
-        #region IBusDevice
+        public UlaLeningrad()
+        {
+            Name = "Leningrad";
+        }
+        
 
-        public override string Name { get { return "Leningrad"; } }
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {

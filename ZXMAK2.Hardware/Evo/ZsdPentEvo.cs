@@ -23,6 +23,14 @@ namespace ZXMAK2.Hardware.Evo
         #endregion
 
 
+        public ZsdPentEvo()
+        {
+            Category = BusDeviceCategory.Disk;
+            Name = "SD PentEvo";
+            Description = "PentEvo SD Card\r\nWritten by ZEK";
+        }
+
+
         public bool SHADOW
         {
             get { return (mem == null) ? false : mem.SYSEN; }
@@ -30,22 +38,6 @@ namespace ZXMAK2.Hardware.Evo
 
 
         #region IBusDevice
-
-        public override string Name
-        {
-            get { return "SD PentEvo"; }
-        }
-
-        public override string Description
-        {
-            get { return "PentEvo SD Card\r\nWritten by ZEK"; }
-        }
-
-        public override BusDeviceCategory Category
-        {
-            get { return BusDeviceCategory.Disk; }
-        }
-
 
         public override void BusInit(IBusManager bmgr)
         {

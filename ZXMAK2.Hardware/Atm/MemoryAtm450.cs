@@ -21,10 +21,15 @@ namespace ZXMAK2.Hardware.Atm
         #endregion Fields
 
 
-        #region IBusDevice
+        public MemoryAtm450()
+            : base("ATM450", 8, 32)
+        {
+            Name = "ATM450 512K";
+            Description = "ATM450 512K Memory Manager";
+        }
 
-        public override string Name { get { return "ATM450 512K"; } }
-        public override string Description { get { return "ATM450 512K Memory Manager"; } }
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -311,12 +316,6 @@ namespace ZXMAK2.Hardware.Atm
         }
 
         #endregion
-
-
-        public MemoryAtm450()
-            : base("ATM450", 8, 32)
-        {
-        }
 
 
         #region Private

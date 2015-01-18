@@ -6,9 +6,13 @@ namespace ZXMAK2.Hardware.Spectrum
 {
     public class UlaSpectrum48_Early : UlaDeviceBase
     {
-        #region IBusDevice
+        public UlaSpectrum48_Early()
+        {
+            Name = "ZX Spectrum 48 [early model]";
+        }
+        
 
-        public override string Name { get { return "ZX Spectrum 48 [early model]"; } }
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -241,8 +245,11 @@ namespace ZXMAK2.Hardware.Spectrum
 
     public class UlaSpectrum48 : UlaSpectrum48_Early
     {
-        public override string Name { get { return "ZX Spectrum 48 [late model]"; } }
-
+        public UlaSpectrum48()
+        {
+            Name = "ZX Spectrum 48 [late model]";
+        }
+        
         public override bool IsEarlyTimings
         {
             get { return false; }

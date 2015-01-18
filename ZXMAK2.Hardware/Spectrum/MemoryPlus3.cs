@@ -13,11 +13,16 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #endregion Fields
 
+
+        public MemoryPlus3()
+            : base("PLUS3", 4, 8)
+        {
+            Name = "ZX Spectrum +3";
+            Description = "Spectrum +3 MMU alpha version";
+        }
+
         
         #region IBusDevice
-
-        public override string Name { get { return "ZX Spectrum +3"; } }
-        public override string Description { get { return "Spectrum +3 Memory Module"; } }
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -140,11 +145,5 @@ namespace ZXMAK2.Hardware.Spectrum
         }
 
         #endregion
-
-
-        public MemoryPlus3()
-            : base("PLUS3", 4, 8)
-        {
-        }
     }
 }

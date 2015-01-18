@@ -11,6 +11,8 @@ namespace ZXMAK2.Hardware.Sprinter
 {
     public class SprinterKeyboard : BusDeviceBase, IKeyboardDevice
     {
+        #region Fields
+
         private IKeyboardState m_keyboardState;
 //        private long m_intState;
 //        private Microsoft.DirectX.DirectInput.Device m_keyb;
@@ -19,6 +21,17 @@ namespace ZXMAK2.Hardware.Sprinter
         private Queue<byte> m_kbdbuf = new Queue<byte>();
         //private List<int> m_kbdhits = new List<int>();
         private KbdHits m_kbdhits = new KbdHits();
+
+        #endregion Fields
+
+
+        public SprinterKeyboard()
+        {
+            Category = BusDeviceCategory.Keyboard;
+            Name = "KEYBOARD SPRINTER";
+            Description = "Sprinter AT Keyboard";
+        }
+
 
         #region ScanCodes
 
@@ -267,14 +280,6 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-        public override BusDeviceCategory Category
-        {
-            get
-            {
-                return BusDeviceCategory.Keyboard;
-            }
-        }
-
         public IKeyboardState KeyboardState
         {
             get
@@ -352,17 +357,6 @@ namespace ZXMAK2.Hardware.Sprinter
 
                 }
             }
-            
-        }
-
-        public override string Name
-        {
-            get { return "KEYBOARD SPRINTER"; }
-        }
-
-        public override string Description 
-        { 
-            get { return "Sprinter AT Keyboard"; }
         }
     }
 }

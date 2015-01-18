@@ -20,10 +20,23 @@ namespace ZXMAK2.Hardware.Profi
         #endregion Fields
 
 
-        #region IBusDevice
+        public MemoryProfi1024(
+            string romSetName,
+            int romPageCount,
+            int ramPageCount)
+            : base(romSetName, romPageCount, ramPageCount)
+        {
+            Name = "PROFI+ 1024K";
+            m_cmr1mask = (ramPageCount / 8) - 1;
+        }
 
-        public override string Name { get { return "PROFI+ 1024K"; } }
-        public override string Description { get { return "PROFI+ 1024K Memory Manager"; } }
+        public MemoryProfi1024()
+            : this("PROFI", 4, 64)
+        {
+        }
+
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -218,31 +231,14 @@ namespace ZXMAK2.Hardware.Profi
 
 
         #endregion
-
-
-        public MemoryProfi1024(
-            String romSetName, 
-            int romPageCount, 
-            int ramPageCount)
-            : base(romSetName, romPageCount, ramPageCount)
-        {
-            m_cmr1mask = (ramPageCount / 8) - 1;
-        }
-
-        public MemoryProfi1024()
-            : this("PROFI", 4, 64)
-        {
-        }
     }
 
     public class MemoryProfi512 : MemoryProfi1024
     {
-        public override string Name { get { return "PROFI+ 512K"; } }
-        public override string Description { get { return "PROFI+ 512K Memory Manager"; } }
-        
         public MemoryProfi512()
             : base("PROFI-V03", 4, 32)
         {
+            Name = "PROFI+ 512K";
         }
     }
 }

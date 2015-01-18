@@ -14,13 +14,12 @@ namespace ZXMAK2.Hardware.Quorum
 
         #endregion
 
-        
-        #region IBusDevice
 
-        public override string Name { get { return "FDD QUORUM"; } }
-        public override string Description { get { return "FDD controller WD1793 with QUORUM port activation"; } }
-
-        #endregion
+        public FddControllerQuorum()
+        {
+            Name = "FDD QUORUM";
+            Description = "FDD controller WD1793 with QUORUM port activation";
+        }
 
         
         #region BetaDiskInterface

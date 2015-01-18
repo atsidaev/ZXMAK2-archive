@@ -7,11 +7,15 @@ namespace ZXMAK2.Hardware.General
 {
     public class CmosGluck : BusDeviceBase
     {
-        #region IBusDevice Members
+        public CmosGluck()
+        {
+            Category = BusDeviceCategory.Other;
+            Name = "CMOS GLUCK";
+            Description = "GLUCK CMOS device\r\nPorts:\r\n#DFF7=address (w)\r\n#BFF7=data (r/w)";
+        }
+        
 
-        public override string Name { get { return "CMOS GLUCK"; } }
-        public override string Description { get { return "GLUCK CMOS device\r\nPorts:\r\n#DFF7=address (w)\r\n#BFF7=data (r/w)"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
+        #region IBusDevice Members
 
         public override void BusInit(IBusManager bmgr)
         {

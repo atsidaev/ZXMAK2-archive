@@ -26,12 +26,16 @@ namespace ZXMAK2.Hardware.Sprinter
 
         #endregion Fields
 
+
+        public IdeSprinter()
+        {
+            Category = BusDeviceCategory.Disk;
+            Name = "IDE SPRINTER";
+            Description = "SPRINTER IDE controller\r\nPlease edit *.vmide file for configuration settings";
+        }
+
         
         #region IBusDevice Members
-
-        public override string Name { get { return "IDE SPRINTER"; } }
-        public override string Description { get { return "SPRINTER IDE controller\r\nPlease edit *.vmide file for configuration settings"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Disk; } }
 
         public override void BusInit(IBusManager bmgr)
         {

@@ -5,12 +5,12 @@ namespace ZXMAK2.Hardware.Quorum
 {
     public class BeeperQuorum : BeeperDevice
     {
-        #region IBusDevice
-
-        public override string Name { get { return "BEEPER QUORUM"; } }
-        public override string Description { get { return "Quorum Beeper\r\nPort: #FE\r\nMask: #99"; } }
-
-        #endregion
+        public BeeperQuorum()
+        {
+            Name = "BEEPER QUORUM";
+            Description = "Quorum Beeper\r\nPort: #FE\r\nMask: #99";
+        }
+        
 
         #region BeeperDevice
 

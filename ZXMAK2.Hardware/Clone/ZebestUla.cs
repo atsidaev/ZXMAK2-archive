@@ -5,9 +5,12 @@ namespace ZXMAK2.Hardware.Clone
 {
     public class ZebestUla : UlaPentagon
     {
-        public override string Name { get { return "Zebest ULA (Pentagon+BRIGHT)"; } }
-        public override string Description { get { return "ULA device based on Pentagon + border bright mod\n\rbit 6 of port #FE = bright bit for border"; } }
-
+        public ZebestUla()
+        {
+            Name = "Zebest ULA (Pentagon+BRIGHT)";
+            Description = "ULA device based on Pentagon + border bright mod\n\rbit 6 of port #FE = bright bit for border";
+        }
+        
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
             var timing = base.CreateSpectrumRendererParams();

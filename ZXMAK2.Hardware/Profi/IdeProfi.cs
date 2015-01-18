@@ -28,11 +28,15 @@ namespace ZXMAK2.Hardware.Profi
         #endregion Fields
 
 
-        #region IBusDevice Members
+        public IdeProfi()
+        {
+            Category = BusDeviceCategory.Disk;
+            Name = "IDE PROFI";
+            Description = "PROFI IDE controller\r\nPlease edit *.vmide file for configuration settings";
+        }
 
-        public override string Name { get { return "IDE PROFI"; } }
-        public override string Description { get { return "PROFI IDE controller\r\nPlease edit *.vmide file for configuration settings"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Disk; } }
+
+        #region IBusDevice Members
 
         public override void BusInit(IBusManager bmgr)
         {

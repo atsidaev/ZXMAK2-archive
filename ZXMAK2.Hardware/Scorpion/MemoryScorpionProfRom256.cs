@@ -6,10 +6,22 @@ namespace ZXMAK2.Hardware.Scorpion
 {
     public class MemoryScorpionProfRom256 : MemoryScorpion256
     {
-        #region IBusDevice
+        public MemoryScorpionProfRom256(
+            string romSetName,
+            int romPageCount,
+            int ramPageCount)
+            : base(romSetName, romPageCount, ramPageCount)
+        {
+            Name = "Scorpion PROF-ROM 256K";
+        }
 
-        public override string Name { get { return "Scorpion PROF-ROM 256K"; } }
-        public override string Description { get { return "Scorpion PROF-ROM 256K Memory Manager"; } }
+        public MemoryScorpionProfRom256()
+            : this("Scorpion-ProfRom", 16, 16)
+        {
+        }
+        
+        
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
@@ -50,19 +62,6 @@ namespace ZXMAK2.Hardware.Scorpion
 
         private int m_profPlane = 0;
 
-        public MemoryScorpionProfRom256(
-            String romSetName, 
-            int romPageCount, 
-            int ramPageCount)
-            : base(romSetName, romPageCount, ramPageCount)
-        {
-        }
-
-        public MemoryScorpionProfRom256()
-            : this("Scorpion-ProfRom", 16, 16)
-        {
-        }
-
         // needs to allow enable DOS when m_profPlane!=0
         public override bool IsRom48
         {
@@ -85,16 +84,10 @@ namespace ZXMAK2.Hardware.Scorpion
 
     public class MemoryScorpionProfRom1024 : MemoryScorpionProfRom256
     {
-        #region IBusDevice
-
-        public override string Name { get { return "Scorpion PROF-ROM 1024K"; } }
-        public override string Description { get { return "Scorpion PROF-ROM 1024K Memory Manager"; } }
-
-        #endregion
-
         public MemoryScorpionProfRom1024()
             : base("Scorpion-ProfRom", 16, 64)
         {
+            Name = "Scorpion PROF-ROM 1024K";
         }
 
         protected override int GetRamPage()

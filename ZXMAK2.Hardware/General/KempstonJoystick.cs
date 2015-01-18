@@ -18,11 +18,15 @@ namespace ZXMAK2.Hardware.General
         #endregion Fields
 
 
-        #region IBusDevice
+        public KempstonJoystick()
+        {
+            Category = BusDeviceCategory.Other;
+            Name = "JOYSTICK KEMPSTON";
+            Description = "Kempston Joystick (port #1F, mask #E0)";
+        }
 
-        public override string Name { get { return "JOYSTICK KEMPSTON"; } }
-        public override string Description { get { return "Kempston Joystick"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
+
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {

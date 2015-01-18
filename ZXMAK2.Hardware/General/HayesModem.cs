@@ -13,6 +13,14 @@ namespace ZXMAK2.Hardware.General
 {
     public class HayesModem : BusDeviceBase
     {
+        public HayesModem()
+        {
+            Category = BusDeviceCategory.Other;
+            Name = "HAYES MODEM";
+            Description = "Hayes Modem connected using Kondratyev's scheme";
+        }
+
+        
         #region Public
 
         public string PortName { get; set; }
@@ -50,11 +58,8 @@ namespace ZXMAK2.Hardware.General
 
         #endregion
 
-        #region BusDeviceBase
 
-        public override string Name { get { return "HAYES MODEM"; } }
-        public override string Description { get { return "Hayes Modem connected using Kondratyev's scheme"; } }
-        public override BusDeviceCategory Category { get { return BusDeviceCategory.Other; } }
+        #region BusDeviceBase
 
         public override void BusInit(IBusManager bmgr)
         {

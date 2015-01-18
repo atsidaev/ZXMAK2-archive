@@ -6,10 +6,14 @@ namespace ZXMAK2.Hardware.ZXBYTE
 {
     public class BeeperByte : BeeperDevice
     {
-        #region IBusDevice
+        public BeeperByte()
+        {
+            Name = "BEEPER BYTE";
+            Description = "BYTE Beeper\r\nPort: #FE\r\nMask: #35";
+        }
+        
 
-        public override string Name { get { return "BEEPER BYTE"; } }
-        public override string Description { get { return "BYTE Beeper\r\nPort: #FE\r\nMask: #35"; } }
+        #region IBusDevice
 
         public override void BusInit(IBusManager bmgr)
         {
