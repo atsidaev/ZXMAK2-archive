@@ -42,6 +42,7 @@ namespace ZXMAK2.Hardware.GdbServer
             Category = BusDeviceCategory.Debugger;
             Name = "GDB-Z80 SERVER";
             Port = 2000;
+            Log = true;
         }
 
 
@@ -63,6 +64,8 @@ namespace ZXMAK2.Hardware.GdbServer
                 Description = builder.ToString();
             }
         }
+
+        public bool Log { get; set; }
 
         public void Attach(IDebuggable dbg)
         {
@@ -133,12 +136,14 @@ namespace ZXMAK2.Hardware.GdbServer
         {
             base.OnConfigSave(node);
             Utils.SetXmlAttribute(node, "port", Port);
+            Utils.SetXmlAttribute(node, "log", Log);
         }
 
         protected override void OnConfigLoad(XmlNode node)
         {
             base.OnConfigLoad(node);
             Port = Utils.GetXmlAttributeAsInt32(node, "port", Port);
+            Log = Utils.GetXmlAttributeAsBool(node, "log", Log);
         }
     }
 }

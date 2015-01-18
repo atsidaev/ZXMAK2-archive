@@ -38,8 +38,6 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
         Thread socketListener;
         List<TcpClient> clients = new List<TcpClient>();
 
-        bool log = true;
-
         public GDBNetworkServer(IDebuggable emulator, GDBJtagDevice jtagDevice)
         {
             this.emulator = emulator;
@@ -141,7 +139,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
                 if (bytesRead > 0)
                 {
                     GDBPacket packet = new GDBPacket(message, bytesRead);
-                    if (log)
+                    if (jtagDevice.Log)
                     {
                         Logger.Info("--> {0}", packet);
                     }
@@ -162,7 +160,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
 
         void SendResponse(Stream stream, string response)
         {
-            if (log)
+            if (jtagDevice.Log)
             {
                 Logger.Info("<-- {0}", response);
             }
