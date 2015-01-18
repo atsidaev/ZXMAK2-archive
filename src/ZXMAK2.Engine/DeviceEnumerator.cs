@@ -150,21 +150,28 @@ namespace ZXMAK2.Engine
         private static void PreLoadPlugins()
         {
             var folderName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            LoadAssemblies(folderName, "ZXMAK2.Hardware*.dll", SearchOption.TopDirectoryOnly);
             folderName = Path.Combine(folderName, "Plugins");
-            if (Directory.Exists(folderName))
+            LoadAssemblies(folderName, "*.dll", SearchOption.AllDirectories);
+        }
+
+        private static void LoadAssemblies(string folderName, string pattern, SearchOption options)
+        {
+            if (!Directory.Exists(folderName))
             {
-                foreach (var fileName in Directory.GetFiles(folderName, "*.dll", SearchOption.AllDirectories))
+                return;
+            }
+            foreach (var fileName in Directory.GetFiles(folderName, pattern, options))
+            {
+                try
                 {
-                    try
-                    {
-                        var asm = Assembly.LoadFrom(fileName);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                        Locator.Resolve<IUserMessage>()
-                            .Warning("Load plugin failed!\n\n{0}", fileName);
-                    }
+                    var asm = Assembly.LoadFrom(fileName);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                    Locator.Resolve<IUserMessage>()
+                        .Warning("Load plugin failed!\n\n{0}", fileName);
                 }
             }
         }
