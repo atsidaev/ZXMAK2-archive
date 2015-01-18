@@ -21,8 +21,9 @@ using System.Linq;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Hardware.GdbServer.Gdb;
 
-namespace z80gdbserver
+namespace ZXMAK2.Hardware.GdbServer
 {
 	public class GDBJtagDevice : BusDeviceBase, IJtagDevice
 	{

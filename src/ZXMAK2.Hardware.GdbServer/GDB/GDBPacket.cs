@@ -18,7 +18,7 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace z80gdbserver
+namespace ZXMAK2.Hardware.GdbServer.Gdb
 {
 	public class GDBPacket
 	{
