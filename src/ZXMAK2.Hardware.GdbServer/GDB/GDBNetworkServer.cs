@@ -118,7 +118,15 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
                 catch (IOException iex)
                 {
                     var sex = iex.InnerException as SocketException;
-                    if (sex == null || sex.ErrorCode!=10004)
+                    if (sex == null || sex.ErrorCode != 10004)
+                    {
+                        Logger.Error(sex);
+                    }
+                    break;
+                }
+                catch (SocketException sex)
+                {
+                    if (sex.ErrorCode != 10004)
                     {
                         Logger.Error(sex);
                     }
