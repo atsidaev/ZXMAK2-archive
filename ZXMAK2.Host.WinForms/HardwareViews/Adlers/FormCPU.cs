@@ -33,6 +33,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         private List<string> cmdLineHistory = new List<string>();
         private int cmdLineHistoryPos = 0;
 
+        static string _strBytesToFindSave = "#AFC3, 201";
+
         public FormCpu(IDebuggable debugTarget, IBusManager bmgr)
         {
             InitializeComponent();
@@ -359,6 +361,12 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                     showStack = !showStack;
                     UpdateREGS();
                     break;
+                case Keys.F:
+                    if( e.Control )
+                    {
+                        menuItemFindBytes_Click(null, null);
+                    }
+                    break;
             }
         }
 
@@ -633,8 +641,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             int addressFrom = dasmPanel.ActiveAddress;
             int addressTo = 0;
             var service = Locator.Resolve<IUserQuery>();
-            if (!service.QueryValue("Save as bytes", "Address from:", "#{0:X2}", ref addressFrom, 0, 0xFFFF)) return;
-            if (!service.QueryValue("Save as bytes", "Address to:", "#{0:X2}", ref addressTo, 0, 0xFFFF)) return;
+            if (!service.QueryValue("Save memory bytes(DEFB)", "Address from:", "#{0:X2}", ref addressFrom, 0, 0xFFFF)) return;
+            if (!service.QueryValue("Save memory bytes(DEFB)", "Address to:", "#{0:X2}", ref addressTo, 0, 0xFFFF)) return;
 
             for (int counter = 0; ; )
             {
@@ -675,15 +683,14 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         private void menuItemFindBytes_Click(object sender, EventArgs e)
         {
             List<UInt16> bytesToFindInput = new List<UInt16>();
-            string valuesToFind = String.Empty;
             var service = Locator.Resolve<IUserQuery>();
 
-            if (!service.QueryText("Find bytes in memory", "Bytes(comma delimited):", ref valuesToFind)) return;
-            if (valuesToFind.Trim() == String.Empty || valuesToFind.Trim().Length == 0)
+            if (!service.QueryText("Find bytes in memory", "Bytes(comma delimited):", ref _strBytesToFindSave)) return;
+            if (_strBytesToFindSave.Trim() == String.Empty || _strBytesToFindSave.Trim().Length == 0)
                 return;
 
             bytesToFindInput.Clear();
-            foreach (string byteCandidate in Regex.Split(valuesToFind, ","))
+            foreach (string byteCandidate in Regex.Split(_strBytesToFindSave, ","))
             {
                 if (!String.IsNullOrEmpty(byteCandidate) && byteCandidate.Trim() != String.Empty && byteCandidate != ",")
                 {
@@ -706,6 +713,12 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             bytesToFind.Clear();
             foreach( UInt16 word in bytesToFindInput )
             {
+                if (word > 0xFFFF)
+                {
+                    Locator.Resolve<IUserMessage>().Error("Input value " + word.ToString() + " exceeded.");
+                    return;
+                }
+
                 if (word > 0xFF)
                 {
                     bytesToFind.Add((byte)(word / 256));
@@ -715,7 +728,34 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                     bytesToFind.Add((byte)word);
             }
 
+            //search from actual address(dataPanel.TopAddress) until memory top(0xFFFF)
             for (ushort counter = (ushort)(dataPanel.TopAddress + 1); counter != 0; counter++)
+            {
+                if (m_spectrum.ReadMemory(counter) == bytesToFind[0]) //check 1. byte
+                {
+                    //check next bytes
+                    bool bFound = true;
+                    ushort actualAdress = (ushort)(counter + 1);
+
+                    for (ushort counterNextBytes = 1; counterNextBytes < bytesToFind.Count; counterNextBytes++, actualAdress++)
+                    {
+                        if (m_spectrum.ReadMemory(actualAdress) != bytesToFind[counterNextBytes])
+                        {
+                            bFound = false;
+                            break;
+                        }
+                    }
+
+                    if (bFound)
+                    {
+                        dataPanel.TopAddress = counter;
+                        return;
+                    }
+                }
+            }
+
+            //search from address 0 until actual address(dataPanel.TopAddress)
+            for (ushort counter = 0; counter < (ushort)(dataPanel.TopAddress + 1); counter++)
             {
                 if (m_spectrum.ReadMemory(counter) == bytesToFind[0]) //check 1. byte
                 {
@@ -950,6 +990,16 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 
                         return;
                     }
+                    else if (commandType == DebuggerManager.CommandType.showGraphicsEditor)
+                    {
+                        m_spectrum.DoStop();
+                        UpdateCPU(true);
+
+                        GraphicsEditor.Show(ref m_spectrum);
+                        GraphicsEditor.ActiveForm.Focus();
+
+                        return;
+                    }
                     else
                     {
                         // memory/registry manipulation(LD instruction)
@@ -1086,7 +1136,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 }
                 catch (Exception exc)
                 {
-                    Logger.Error(exc);
+                    //Logger.Error(exc);
                     string saveCmdLineString = dbgCmdLine.Text;
                     dbgCmdLine.BackColor = Color.Red;
                     dbgCmdLine.ForeColor = Color.Black;

@@ -61,8 +61,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             this.menuDataLoadBlock = new System.Windows.Forms.MenuItem();
             this.menuDataSaveBlock = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
-            this.menuItemSaveAsBytes = new System.Windows.Forms.MenuItem();
             this.menuItemFindBytes = new System.Windows.Forms.MenuItem();
+            this.menuItemSaveAsBytes = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.menuItemDataRefresh = new System.Windows.Forms.MenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -396,17 +396,18 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             this.menuItem3.Index = 5;
             this.menuItem3.Text = "-";
             // 
+            // menuItemFindBytes
+            // 
+            this.menuItemFindBytes.Index = 6;
+            this.menuItemFindBytes.Shortcut = System.Windows.Forms.Shortcut.CtrlF;
+            this.menuItemFindBytes.Text = "Find bytes in memory";
+            this.menuItemFindBytes.Click += new System.EventHandler(this.menuItemFindBytes_Click);
+            // 
             // menuItemSaveAsBytes
             // 
             this.menuItemSaveAsBytes.Index = 7;
             this.menuItemSaveAsBytes.Text = "Save as bytes";
             this.menuItemSaveAsBytes.Click += new System.EventHandler(this.menuItemSaveAsBytes_Click);
-            // 
-            // menuItemFindBytes
-            // 
-            this.menuItemFindBytes.Index = 6;
-            this.menuItemFindBytes.Text = "Find bytes in memory";
-            this.menuItemFindBytes.Click += new System.EventHandler(this.menuItemFindBytes_Click);
             // 
             // menuItem7
             // 
