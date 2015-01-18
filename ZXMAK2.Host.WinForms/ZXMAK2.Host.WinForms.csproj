@@ -326,6 +326,11 @@
       <Name>ZXMAK2.Hardware.Circuits</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Hardware\ZXMAK2.Hardware.csproj">
+      <Project>{8731D63C-7736-462B-88C9-A2E419020B5D}</Project>
+      <Name>ZXMAK2.Hardware</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Host.Presentation\ZXMAK2.Host.Presentation.csproj">
       <Project>{5AB428BF-1378-456E-BD06-4412A4399B13}</Project>
       <Name>ZXMAK2.Host.Presentation</Name>

@@ -71,7 +71,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Hardware\DeviceExample.cs" />
     <Compile Include="Hardware\Evo\AYCHRV.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
@@ -97,7 +96,6 @@
     <Compile Include="Hardware\Pentagon\CovoxPentagon.cs" />
     <Compile Include="Hardware\Profi\CovoxProfi.cs" />
     <Compile Include="Hardware\Profi\IdeProfi.cs" />
-    <Compile Include="Hardware\RomPack.cs" />
     <Compile Include="Hardware\Scorpion\MemoryScorpionProfRom256.cs" />
     <Compile Include="Hardware\Scorpion\CovoxScorpion.cs" />
     <Compile Include="Hardware\Sprinter\IdeSprinter.cs" />
@@ -118,13 +116,10 @@
     <Compile Include="Hardware\Quorum\FddControllerQuorum.cs" />
     <Compile Include="Hardware\General\KempstonJoystick.cs" />
     <Compile Include="Hardware\Scorpion\UlaScorpionGreen.cs" />
-    <Compile Include="Hardware\SoundDeviceBase.cs" />
     <Compile Include="Hardware\Pentagon\MemoryPentagon1024.cs" />
-    <Compile Include="Hardware\SpectrumRenderer.cs" />
     <Compile Include="Hardware\Spectrum\MemoryPlus3.cs" />
     <Compile Include="Hardware\Atm\MemoryAtm450.cs" />
     <Compile Include="Hardware\Atm\MemoryAtm710.cs" />
-    <Compile Include="Hardware\MemoryBase.cs" />
     <Compile Include="Hardware\Lec\MemoryLec528.cs" />
     <Compile Include="Hardware\Pentagon\MemoryPentagon512.cs" />
     <Compile Include="Hardware\Profi\MemoryProfi1024.cs" />
@@ -150,7 +145,6 @@
     <Compile Include="Hardware\General\KeyboardDevice.cs" />
     <Compile Include="Hardware\Pentagon\MemoryPentagon128.cs" />
     <Compile Include="Hardware\Atm\UlaAtm450.cs" />
-    <Compile Include="Hardware\UlaDeviceBase.cs" />
     <Compile Include="Hardware\Profi\UlaProfi3XX.cs" />
     <Compile Include="Hardware\Quorum\UlaQuorum.cs" />
     <Compile Include="Hardware\Scorpion\UlaScorpionYellow.cs" />
@@ -236,6 +230,11 @@
     <ProjectReference Include="..\ZXMAK2.Hardware.Circuits\ZXMAK2.Hardware.Circuits.csproj">
       <Project>{24F7E5E1-9524-41AA-93E6-95D9B10869A7}</Project>
       <Name>ZXMAK2.Hardware.Circuits</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Hardware\ZXMAK2.Hardware.csproj">
+      <Project>{8731D63C-7736-462B-88C9-A2E419020B5D}</Project>
+      <Name>ZXMAK2.Hardware</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Host.Presentation\ZXMAK2.Host.Presentation.csproj">
