@@ -255,7 +255,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
 
         string WriteRegisters(GDBPacket packet)
         {
-            string regsData = packet.GetCommandParameters()[0];
+            var regsData = packet.GetCommandParameters()[0];
             for (int i = 0, pos = 0; i < RegistersCount; i++)
             {
                 int currentRegisterLength = GetRegisterSize(i) == RegisterSize.Word ? 4 : 2;
@@ -272,64 +272,58 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
 
         string SetRegister(GDBPacket packet)
         {
-            string[] parameters = packet.GetCommandParameters()[0].Split(new char[] { '=' });
+            var parameters = packet.GetCommandParameters()[0].Split(new char[] { '=' });
             if (SetRegister(Convert.ToInt32(parameters[0], 16), parameters[1]))
                 return StandartAnswers.OK;
             else
                 return StandartAnswers.Error;
         }
 
-        string ReadMemory(GDBPacket packet)
+        private string ReadMemory(GDBPacket packet)
         {
             var parameters = packet.GetCommandParameters();
+            if (parameters.Length < 2)
+            {
+                return GetErrorAnswer(Errno.EPERM);
+            }
             var arg1 = Convert.ToUInt32(parameters[0], 16);
             var arg2 = Convert.ToUInt32(parameters[1], 16);
             if (arg1 > ushort.MaxValue || arg2 > ushort.MaxValue)
             {
-                return GetErrorAnswer(Errno.EFAULT);
+                return GetErrorAnswer(Errno.EPERM);
             }
             var addr = (ushort)arg1;
             var length = (ushort)arg2;
             var result = string.Empty;
-            if (length > 0)
+            for (var i = 0; i < length; i++)
             {
-                for (var i = 0; i < length; i++)
-                {
-                    var hex = emulator.CPU.RDMEM((ushort)(addr + i))
-                        .ToLowEndianHexString();
-                    result += hex;
-                }
-                return result;
+                var hex = emulator.CPU.RDMEM((ushort)(addr + i))
+                    .ToLowEndianHexString();
+                result += hex;
             }
-            else
-            {
-                return StandartAnswers.Error;
-            }
+            return result;
         }
 
-        string WriteMemory(GDBPacket packet)
+        private string WriteMemory(GDBPacket packet)
         {
             var parameters = packet.GetCommandParameters();
+            if (parameters.Length < 3)
+            {
+                return GetErrorAnswer(Errno.ENOENT);
+            }
             var arg1 = Convert.ToUInt32(parameters[0], 16);
             var arg2 = Convert.ToUInt32(parameters[1], 16);
             if (arg1 > ushort.MaxValue || arg2 > ushort.MaxValue)
             {
-                return GetErrorAnswer(Errno.EFAULT);
+                return GetErrorAnswer(Errno.ENOENT);
             }
             var addr = (ushort)arg1;
             var length = (ushort)arg2;
-            if (length > 0)
+            for (var i = 0; i < length; i++)
             {
-                for (var i = 0; i < length; i++)
-                {
-                    var hex = parameters[2].Substring(i * 2, 2);
-                    var value = (byte)Convert.ToByte(hex, 16);
-                    emulator.CPU.WRMEM((ushort)(addr + i), value);
-                }
-            }
-            else
-            {
-                return StandartAnswers.Error;
+                var hex = parameters[2].Substring(i * 2, 2);
+                var value = (byte)Convert.ToByte(hex, 16);
+                emulator.CPU.WRMEM((ushort)(addr + i), value);
             }
             return StandartAnswers.OK;
         }
