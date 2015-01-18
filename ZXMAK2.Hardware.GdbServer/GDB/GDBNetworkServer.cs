@@ -45,7 +45,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             this.emulator = emulator;
             this.jtagDevice = jtagDevice;
 
-            listener = new TcpListener(IPAddress.Any, 2000);
+            listener = new TcpListener(IPAddress.Any, jtagDevice.Port);
             listener.Start();
 
             socketListener = new Thread(ListeningThread);
