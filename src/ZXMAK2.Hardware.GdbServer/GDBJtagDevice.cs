@@ -22,88 +22,124 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Hardware.GdbServer.Gdb;
+using System.Xml;
+using ZXMAK2.Engine;
+using System.Text;
 
 namespace ZXMAK2.Hardware.GdbServer
 {
-	public class GDBJtagDevice : BusDeviceBase, IJtagDevice
-	{
-		GDBNetworkServer server;
-		IDebuggable emulator;
-		IBusManager busManager;
-		List<Breakpoint> accessBreakpoints = new List<Breakpoint>();
+    public class GDBJtagDevice : BusDeviceBase, IJtagDevice
+    {
+        private GDBNetworkServer server;
+        private IDebuggable emulator;
+        private IBusManager busManager;
+        private List<Breakpoint> accessBreakpoints = new List<Breakpoint>();
+        private int _port;
 
 
         public GDBJtagDevice()
         {
             Category = BusDeviceCategory.Debugger;
-            Name = "GNU Debugger Interface";
-            Description = "Interface for interaction with gdb debugger";
+            Name = "GDB-Z80 SERVER";
+            Port = 2000;
         }
 
-		public void Attach(IDebuggable dbg)
-		{
-			emulator = dbg;
-			emulator.Breakpoint += OnBreakpoint;
 
-			// For memory read/write breakpoints:
-			busManager.SubscribeWrMem(0x0000, 0x0000, new BusWriteProc(OnMemoryWrite));
-			busManager.SubscribeRdMem(0x0000, 0x0000, new BusReadProc(OnMemoryRead));
-			
+        public int Port
+        {
+            get { return _port; }
+            set
+            {
+                _port = value;
 
-			server = new GDBNetworkServer(emulator, this);
-		}
+                var builder = new StringBuilder();
+                builder.Append("Interface for interaction with gdb debugger");
+                builder.Append(Environment.NewLine);
+                builder.Append(Environment.NewLine);
+                builder.Append(string.Format("Listening on: {0}:{1}", "localhost", _port));
+                builder.Append(Environment.NewLine);
+                builder.Append(Environment.NewLine);
+                builder.Append("Use gdb-z80 to connect");
+                Description = builder.ToString();
+            }
+        }
 
-		public void Detach()
-		{
-			server.Dispose();
-		}
+        public void Attach(IDebuggable dbg)
+        {
+            emulator = dbg;
+            emulator.Breakpoint += OnBreakpoint;
 
-		public override void BusConnect()
-		{
-		}
+            // For memory read/write breakpoints:
+            busManager.SubscribeWrMem(0x0000, 0x0000, new BusWriteProc(OnMemoryWrite));
+            busManager.SubscribeRdMem(0x0000, 0x0000, new BusReadProc(OnMemoryRead));
 
-		public override void BusDisconnect()
-		{
-		}
 
-		public override void BusInit(IBusManager bmgr)
-		{
-			this.busManager = bmgr;
-		}
+            server = new GDBNetworkServer(emulator, this);
+        }
 
-		void OnBreakpoint(object sender, EventArgs args)
-		{
-			server.Breakpoint(new Breakpoint(Breakpoint.BreakpointType.Execution, emulator.CPU.regs.PC));
-		}
+        public void Detach()
+        {
+            server.Dispose();
+        }
 
-		void OnMemoryWrite(ushort addr, byte value)
-		{
-			Breakpoint breakPoint = accessBreakpoints.FirstOrDefault(bp => bp.Address == addr && (bp.Type == Breakpoint.BreakpointType.Write || bp.Type == Breakpoint.BreakpointType.Access));
-			if (breakPoint != null)
-				server.Breakpoint(breakPoint);
-		}
+        public override void BusConnect()
+        {
+        }
 
-		void OnMemoryRead(ushort addr, ref byte value)
-		{
-			Breakpoint breakPoint = accessBreakpoints.FirstOrDefault(bp => bp.Address == addr && (bp.Type == Breakpoint.BreakpointType.Read || bp.Type == Breakpoint.BreakpointType.Access));
-			if (breakPoint != null)
-				server.Breakpoint(breakPoint);
-		}
+        public override void BusDisconnect()
+        {
+        }
 
-		public void AddBreakpoint(Breakpoint.BreakpointType type, ushort address)
-		{
-			accessBreakpoints.Add(new Breakpoint(type, address));
-		}
+        public override void BusInit(IBusManager bmgr)
+        {
+            this.busManager = bmgr;
+        }
 
-		public void RemoveBreakpoint(ushort address)
-		{
-			accessBreakpoints.RemoveAll(b => b.Address == address);
-		}
+        void OnBreakpoint(object sender, EventArgs args)
+        {
+            server.Breakpoint(new Breakpoint(Breakpoint.BreakpointType.Execution, emulator.CPU.regs.PC));
+        }
 
-		public void ClearBreakpoints()
-		{
-			accessBreakpoints.Clear();
-		}
-	}
+        void OnMemoryWrite(ushort addr, byte value)
+        {
+            Breakpoint breakPoint = accessBreakpoints.FirstOrDefault(bp => bp.Address == addr && (bp.Type == Breakpoint.BreakpointType.Write || bp.Type == Breakpoint.BreakpointType.Access));
+            if (breakPoint != null)
+                server.Breakpoint(breakPoint);
+        }
+
+        void OnMemoryRead(ushort addr, ref byte value)
+        {
+            Breakpoint breakPoint = accessBreakpoints.FirstOrDefault(bp => bp.Address == addr && (bp.Type == Breakpoint.BreakpointType.Read || bp.Type == Breakpoint.BreakpointType.Access));
+            if (breakPoint != null)
+                server.Breakpoint(breakPoint);
+        }
+
+        public void AddBreakpoint(Breakpoint.BreakpointType type, ushort address)
+        {
+            accessBreakpoints.Add(new Breakpoint(type, address));
+        }
+
+        public void RemoveBreakpoint(ushort address)
+        {
+            accessBreakpoints.RemoveAll(b => b.Address == address);
+        }
+
+        public void ClearBreakpoints()
+        {
+            accessBreakpoints.Clear();
+        }
+
+        protected override void OnConfigSave(XmlNode node)
+        {
+            base.OnConfigSave(node);
+            Utils.SetXmlAttribute(node, "port", Port);
+        }
+
+        protected override void OnConfigLoad(XmlNode node)
+        {
+            base.OnConfigLoad(node);
+            Port = Utils.GetXmlAttributeAsInt32(node, "port", Port);
+        }
+    }
 }
 
