@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using log4net.Core;
 using log4net.Appender;
+using System.Diagnostics;
 
 
 namespace ZXMAK2.Logging.Appenders
@@ -54,8 +55,15 @@ namespace ZXMAK2.Logging.Appenders
             if (loggingEvent != null)
             {
                 loggingEvent.Fix = Fix;
+                DebugAppend(loggingEvent);
             }
             OnAddEvent(loggingEvent, false);
+        }
+
+        [Conditional("DEBUG")]
+        private void DebugAppend(LoggingEvent loggingEvent)
+        {
+            Debug.WriteLine(loggingEvent.RenderedMessage);
         }
 
         protected override void Append(LoggingEvent[] loggingEvents)
