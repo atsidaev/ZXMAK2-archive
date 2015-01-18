@@ -71,96 +71,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Hardware\Evo\AYCHRV.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Hardware\Adlers\Debugger.cs" />
-    <Compile Include="Hardware\Atm\Atm320Renderer.cs" />
-    <Compile Include="Hardware\Atm\Atm640Renderer.cs" />
-    <Compile Include="Hardware\Atm\EvoA16Renderer.cs" />
-    <Compile Include="Hardware\Atm\EvoHwmRenderer.cs" />
-    <Compile Include="Hardware\Atm\EvoTxtRenderer.cs" />
-    <Compile Include="Hardware\Atm\IdeAtm.cs" />
-    <Compile Include="Hardware\Atm\KeyboardAtm.cs" />
-    <Compile Include="Hardware\Atm\AtmTxtRenderer.cs" />
-    <Compile Include="Hardware\Evo\CmosPentEvo.cs" />
-    <Compile Include="Hardware\Evo\FddPentEvo.cs" />
-    <Compile Include="Hardware\Evo\IdePentEvo.cs" />
-    <Compile Include="Hardware\Evo\KeyboardPentEvo.cs" />
-    <Compile Include="Hardware\Evo\MemoryPentEvo.cs" />
-    <Compile Include="Hardware\Evo\UlaPentEvo.cs" />
-    <Compile Include="Hardware\Evo\ZsdPentEvo.cs" />
-    <Compile Include="Hardware\General\FddController.cs" />
-    <Compile Include="Hardware\General\HayesModem.cs" />
-    <Compile Include="Hardware\Pentagon\CovoxPentagon.cs" />
-    <Compile Include="Hardware\Profi\CovoxProfi.cs" />
-    <Compile Include="Hardware\Profi\IdeProfi.cs" />
-    <Compile Include="Hardware\Scorpion\MemoryScorpionProfRom256.cs" />
-    <Compile Include="Hardware\Scorpion\CovoxScorpion.cs" />
-    <Compile Include="Hardware\Sprinter\IdeSprinter.cs" />
-    <Compile Include="Hardware\ZXBYTE\BeeperByte.cs" />
-    <Compile Include="Hardware\ZXBYTE\MemoryByte128.cs" />
-    <Compile Include="Hardware\ZXBYTE\MemoryByte.cs" />
-    <Compile Include="Hardware\General\AyMouseDevice.cs" />
-    <Compile Include="Hardware\General\BeeperDevice.cs" />
-    <Compile Include="Hardware\Profi\KeyboardProfi.cs" />
-    <Compile Include="Hardware\Profi\ProfiRenderer.cs" />
-    <Compile Include="Hardware\Quorum\BeeperQuorum.cs" />
-    <Compile Include="Hardware\Scorpion\BeeperScorpion.cs" />
-    <Compile Include="Hardware\Profi\CmosProfi.cs" />
-    <Compile Include="Hardware\General\Debugger.cs" />
-    <Compile Include="Hardware\Lec\BetaDiskInterfaceLec.cs" />
-    <Compile Include="Hardware\General\CmosGluck.cs" />
-    <Compile Include="Hardware\Profi\FddControllerProfi.cs" />
-    <Compile Include="Hardware\Quorum\FddControllerQuorum.cs" />
-    <Compile Include="Hardware\General\KempstonJoystick.cs" />
-    <Compile Include="Hardware\Scorpion\UlaScorpionGreen.cs" />
-    <Compile Include="Hardware\Pentagon\MemoryPentagon1024.cs" />
-    <Compile Include="Hardware\Spectrum\MemoryPlus3.cs" />
-    <Compile Include="Hardware\Atm\MemoryAtm450.cs" />
-    <Compile Include="Hardware\Atm\MemoryAtm710.cs" />
-    <Compile Include="Hardware\Lec\MemoryLec528.cs" />
-    <Compile Include="Hardware\Pentagon\MemoryPentagon512.cs" />
-    <Compile Include="Hardware\Profi\MemoryProfi1024.cs" />
-    <Compile Include="Hardware\Scorpion\MemoryScorpion256.cs" />
-    <Compile Include="Hardware\Spectrum\MemorySpectrum128.cs" />
-    <Compile Include="Hardware\Spectrum\MemorySpectrum48.cs" />
-    <Compile Include="Hardware\Quorum\MemoryQuorum256.cs" />
-    <Compile Include="Hardware\Quorum\KeyboardQuorum.cs" />
-    <Compile Include="Hardware\Spectrum\PrinterPlus3.cs" />
-    <Compile Include="Hardware\General\IdeSmuc.cs" />
-    <Compile Include="Hardware\Clone\UlaDelta.cs" />
-    <Compile Include="Hardware\Clone\UlaLeningrad.cs" />
-    <Compile Include="Hardware\Pentagon\UlaPentagon.cs" />
-    <Compile Include="Hardware\Profi\UlaProfi5XX.cs" />
-    <Compile Include="Hardware\Spectrum\SpectrumSnowRenderer.cs" />
-    <Compile Include="Hardware\Spectrum\UlaSpectrum128.cs" />
-    <Compile Include="Hardware\Spectrum\UlaSpectrum48.cs" />
-    <Compile Include="Hardware\Spectrum\UlaSpectrum48snow.cs" />
-    <Compile Include="Hardware\Clone\ZebestUla.cs" />
-    <Compile Include="Hardware\Sprinter\SprinterRenderer.cs" />
-    <Compile Include="Hardware\ZXBYTE\UlaByte.cs" />
-    <Compile Include="Hardware\General\KempstonMouseDevice.cs" />
-    <Compile Include="Hardware\General\KeyboardDevice.cs" />
-    <Compile Include="Hardware\Pentagon\MemoryPentagon128.cs" />
-    <Compile Include="Hardware\Atm\UlaAtm450.cs" />
-    <Compile Include="Hardware\Profi\UlaProfi3XX.cs" />
-    <Compile Include="Hardware\Quorum\UlaQuorum.cs" />
-    <Compile Include="Hardware\Scorpion\UlaScorpionYellow.cs" />
-    <Compile Include="Hardware\Spectrum\UlaPlus3.cs" />
-    <Compile Include="Hardware\General\AY8910.cs" />
-    <Compile Include="Hardware\General\BetaDiskInterface.cs" />
-    <Compile Include="Hardware\General\TapeDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Hardware\Sprinter\KbdHits.cs" />
-    <Compile Include="Hardware\Sprinter\SprinterFdd.cs" />
-    <Compile Include="Hardware\Sprinter\SprinterDbg.cs" />
-    <Compile Include="Hardware\Sprinter\SprinterKBD.cs" />
-    <Compile Include="Hardware\Sprinter\SprinterMMU.cs" />
-    <Compile Include="Hardware\Sprinter\SprinterMouse.cs" />
-    <Compile Include="Hardware\Sprinter\SprinterRTC.cs" />
-    <Compile Include="Hardware\Sprinter\SprinterULA.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="log4net.config">
@@ -273,7 +187,21 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Hardware\Adlers\" />
+    <Folder Include="Hardware\Atm\" />
+    <Folder Include="Hardware\Clone\" />
+    <Folder Include="Hardware\Evo\" />
+    <Folder Include="Hardware\General\" />
+    <Folder Include="Hardware\Lec\" />
+    <Folder Include="Hardware\Pentagon\" />
+    <Folder Include="Hardware\Profi\" />
+    <Folder Include="Hardware\Quorum\" />
+    <Folder Include="Hardware\Scorpion\" />
+    <Folder Include="Hardware\Spectrum\" />
+    <Folder Include="Hardware\Sprinter\" />
+    <Folder Include="Hardware\ZXBYTE\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.targets\Common.targets" />
   <PropertyGroup>
