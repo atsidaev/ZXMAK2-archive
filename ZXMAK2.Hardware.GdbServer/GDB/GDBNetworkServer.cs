@@ -25,7 +25,7 @@ using System.Threading;
 using ZXMAK2;
 using ZXMAK2.Engine.Interfaces;
 
-namespace z80gdbserver
+namespace ZXMAK2.Hardware.GdbServer.Gdb
 {
 	public class GDBNetworkServer : IDisposable
 	{

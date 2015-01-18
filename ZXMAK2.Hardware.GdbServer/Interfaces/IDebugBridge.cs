@@ -18,7 +18,7 @@ using System;
 
 using ZXMAK2.Engine.Interfaces;
 
-namespace z80gdbserver
+namespace ZXMAK2.Hardware.GdbServer.Interfaces
 {
 	public interface IDebugBridge
 	{

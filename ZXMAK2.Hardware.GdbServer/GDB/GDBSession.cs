@@ -23,7 +23,7 @@ using System.Text.RegularExpressions;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Interfaces;
 
-namespace z80gdbserver
+namespace ZXMAK2.Hardware.GdbServer.Gdb
 {
 	public class GDBSession
 	{

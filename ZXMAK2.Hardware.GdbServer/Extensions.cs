@@ -16,7 +16,7 @@
 
 using System;
 
-namespace z80gdbserver
+namespace ZXMAK2.Hardware.GdbServer
 {
 	public static class Extensions
 	{
