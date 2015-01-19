@@ -18,16 +18,6 @@ namespace ZXMAK2.Host.WinForms.HardwareViews
             InitializeComponent();
         }
 
-        protected override void OnShown(EventArgs e)
-        {
-            base.OnShown(e);
-        }
-
-        protected override void OnFormClosed(FormClosedEventArgs e)
-        {
-            base.OnFormClosed(e);
-        }
-
         private void timerUpdate_Tick(object sender, EventArgs e)
         {
             if (_wd1793 != null)

@@ -259,16 +259,6 @@ namespace ZXMAK2.Hardware.ZXBYTE
             Description = "BYTE [early model]\r\nVersion 1.0";
         }
 
-        
-        #region IBusDevice
-
-        public override void BusInit(IBusManager bmgr)
-        {
-            base.BusInit(bmgr);
-        }
-
-        #endregion
-
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
             // Байт
