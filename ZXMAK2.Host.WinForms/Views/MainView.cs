@@ -77,14 +77,7 @@ namespace ZXMAK2.Host.WinForms.Views
             set
             {
                 m_title = value;
-                var tail = "ZXMAK2";
-                if (CommandVmPause != null && CommandVmPause.Text != "Pause")
-                {
-                    tail += " (Paused)";
-                }
-                Text = string.IsNullOrEmpty(m_title) ?
-                    tail :
-                    string.Format("[{0}] - {1}", m_title, tail);
+                UpdateTitle();
             }
         }
 
@@ -154,7 +147,7 @@ namespace ZXMAK2.Host.WinForms.Views
                         tbrButtonPause.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuResume_32x32;
                         renderVideo.IsRunning = false;
                     }
-                    Title = Title;
+                    UpdateTitle();
                 }));
             BindProperty<string>(
                 presenter.CommandViewFullScreen,
@@ -600,6 +593,18 @@ namespace ZXMAK2.Host.WinForms.Views
             OnCommand(CommandViewFullScreen, true);
         }
 
+        private void UpdateTitle()
+        {
+            var tail = "ZXMAK2";
+            if (CommandVmPause != null && CommandVmPause.Text != "Pause")
+            {
+                tail += " (Paused)";
+            }
+            Text = string.IsNullOrEmpty(m_title) ?
+                tail :
+                string.Format("[{0}] - {1}", m_title, tail);
+        }
+
         #endregion Layout
 
 
@@ -742,8 +747,6 @@ namespace ZXMAK2.Host.WinForms.Views
 
         private void menuView_DropDownOpening(object sender, EventArgs e)
         {
-            menuViewFullScreen.Checked = m_fullScreen;
-
             OnRequestFrame();
             var videoSize = renderVideo.FrameSize;
             menuViewSizeX1.Enabled = m_fullScreen || renderVideo.Size != videoSize;
