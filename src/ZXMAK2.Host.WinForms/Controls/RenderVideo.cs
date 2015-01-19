@@ -247,7 +247,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             var time = D3D.RasterStatus.ScanLine;
             if (time < timeFrame)
             {
-                var delay = (int)(((timeFrame - time) * 1000) / frequency);
+                var delay = ((timeFrame - time) * 1000) / frequency;
                 if (delay > 5 && delay < 40)
                 {
                     Thread.Sleep(delay - 1);

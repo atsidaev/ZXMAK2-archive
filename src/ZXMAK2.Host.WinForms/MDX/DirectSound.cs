@@ -55,7 +55,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
 			wf.BitsPerSample = bitsPerSample;
 			wf.Channels = channels;
 			wf.BlockAlign = (short)(wf.Channels * (wf.BitsPerSample / 8));
-			wf.AverageBytesPerSecond = (int)wf.SamplesPerSecond * (int)wf.BlockAlign;
+			wf.AverageBytesPerSecond = wf.SamplesPerSecond * wf.BlockAlign;
 
 			// Create a buffer
 			var bufferDesc = new BufferDescription(wf);
