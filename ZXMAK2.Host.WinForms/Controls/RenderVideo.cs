@@ -280,6 +280,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
             UpdateIcons(frame.Icons);
             UpdateSurface(frame.VideoData);
+            RequestPresentAsync();
         }
 
         #endregion IHostVideo
@@ -356,6 +357,31 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
+        private void RequestPresentAsync()
+        {
+            if (!Created)
+            {
+                return;
+            }
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(RequestPresentAsync));
+                return;
+            }
+            //Invalidate();
+            try
+            {
+                if (D3D == null)
+                {
+                    return;
+                }
+                RenderScene();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
 
         private unsafe void UpdateSurface(IVideoData videoData)
         {
@@ -392,7 +418,6 @@ namespace ZXMAK2.Host.WinForms.Controls
                     Logger.Error(ex);
                 }
             }
-            Invalidate();
         }
 
         private unsafe void InitVideoTextures(Size surfaceSize)
