@@ -39,7 +39,7 @@ namespace ZXMAK2.Host.WinForms.Views
             // 
             // buttonOk
             // 
-            this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonOk.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this.buttonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.buttonOk.Location = new System.Drawing.Point(406, 12);
             this.buttonOk.Name = "buttonOk";
@@ -51,7 +51,7 @@ namespace ZXMAK2.Host.WinForms.Views
             // 
             // buttonUpdate
             // 
-            this.buttonUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonUpdate.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this.buttonUpdate.Location = new System.Drawing.Point(406, 41);
             this.buttonUpdate.Name = "buttonUpdate";
             this.buttonUpdate.Size = new System.Drawing.Size(75, 23);
@@ -62,7 +62,7 @@ namespace ZXMAK2.Host.WinForms.Views
             // 
             // labelVersionText
             // 
-            this.labelVersionText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelVersionText.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this.labelVersionText.AutoSize = true;
             this.labelVersionText.Location = new System.Drawing.Point(93, 51);
             this.labelVersionText.Name = "labelVersionText";
