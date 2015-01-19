@@ -39,9 +39,14 @@
             this.label10 = new System.Windows.Forms.Label();
             this.numericUpDownActualAddress = new System.Windows.Forms.NumericUpDown();
             this.pictureZXDisplay = new System.Windows.Forms.PictureBox();
+            this.buttonRefresh = new System.Windows.Forms.Button();
+            this.buttonClose = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.numericIncDecDelta = new System.Windows.Forms.NumericUpDown();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericIncDecDelta)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox2
@@ -126,6 +131,7 @@
             this.comboDisplayType.Name = "comboDisplayType";
             this.comboDisplayType.Size = new System.Drawing.Size(107, 23);
             this.comboDisplayType.TabIndex = 23;
+            this.comboDisplayType.SelectedIndexChanged += new System.EventHandler(this.comboDisplayType_SelectedIndexChanged);
             // 
             // label7
             // 
@@ -169,21 +175,81 @@
             // 
             // pictureZXDisplay
             // 
+            this.pictureZXDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureZXDisplay.Cursor = System.Windows.Forms.Cursors.Cross;
             this.pictureZXDisplay.Image = ((System.Drawing.Image)(resources.GetObject("pictureZXDisplay.Image")));
             this.pictureZXDisplay.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureZXDisplay.InitialImage")));
             this.pictureZXDisplay.Location = new System.Drawing.Point(138, 28);
             this.pictureZXDisplay.Name = "pictureZXDisplay";
             this.pictureZXDisplay.Size = new System.Drawing.Size(512, 384);
-            this.pictureZXDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureZXDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureZXDisplay.TabIndex = 28;
             this.pictureZXDisplay.TabStop = false;
+            // 
+            // buttonRefresh
+            // 
+            this.buttonRefresh.Location = new System.Drawing.Point(670, 28);
+            this.buttonRefresh.Name = "buttonRefresh";
+            this.buttonRefresh.Size = new System.Drawing.Size(75, 23);
+            this.buttonRefresh.TabIndex = 29;
+            this.buttonRefresh.Text = "Refresh";
+            this.buttonRefresh.UseVisualStyleBackColor = true;
+            this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
+            // 
+            // buttonClose
+            // 
+            this.buttonClose.Location = new System.Drawing.Point(670, 58);
+            this.buttonClose.Name = "buttonClose";
+            this.buttonClose.Size = new System.Drawing.Size(75, 23);
+            this.buttonClose.TabIndex = 30;
+            this.buttonClose.Text = "Close";
+            this.buttonClose.UseVisualStyleBackColor = true;
+            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label1.Location = new System.Drawing.Point(9, 66);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(128, 15);
+            this.label1.TabIndex = 31;
+            this.label1.Text = "Increase/Decrease by:";
+            // 
+            // numericIncDecDelta
+            // 
+            this.numericIncDecDelta.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.numericIncDecDelta.Location = new System.Drawing.Point(84, 84);
+            this.numericIncDecDelta.Maximum = new decimal(new int[] {
+            999999,
+            0,
+            0,
+            0});
+            this.numericIncDecDelta.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericIncDecDelta.Name = "numericIncDecDelta";
+            this.numericIncDecDelta.Size = new System.Drawing.Size(48, 23);
+            this.numericIncDecDelta.TabIndex = 32;
+            this.numericIncDecDelta.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericIncDecDelta.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericIncDecDelta.ValueChanged += new System.EventHandler(this.numericIncDecDelta_ValueChanged);
             // 
             // GraphicsEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(709, 517);
+            this.ClientSize = new System.Drawing.Size(750, 517);
+            this.Controls.Add(this.numericIncDecDelta);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.buttonClose);
+            this.Controls.Add(this.buttonRefresh);
             this.Controls.Add(this.pictureZXDisplay);
             this.Controls.Add(this.numericUpDownActualAddress);
             this.Controls.Add(this.label10);
@@ -195,6 +261,7 @@
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericIncDecDelta)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -212,5 +279,9 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.NumericUpDown numericUpDownActualAddress;
         private System.Windows.Forms.PictureBox pictureZXDisplay;
+        private System.Windows.Forms.Button buttonRefresh;
+        private System.Windows.Forms.Button buttonClose;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown numericIncDecDelta;
     }
 }

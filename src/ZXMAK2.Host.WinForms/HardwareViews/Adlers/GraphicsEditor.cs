@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using ZXMAK2.Engine.Interfaces;
 
@@ -7,6 +9,9 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 {
     public partial class GraphicsEditor : Form
     {
+        private static ushort ZX_SCREEN_WIDTH  = 512;
+        private static ushort ZX_SCREEN_HEIGHT = 384;
+
         private static GraphicsEditor m_instance = null;
         private IDebuggable m_spectrum = null;
 
@@ -17,6 +22,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             InitializeComponent();
 
             comboDisplayType.SelectedIndex = 0;
+            comboDisplayTypeWidth.SelectedIndex = 0;
+            comboDisplayTypeHeight.SelectedIndex = 0;
         }
 
         public static GraphicsEditor getInstance()
@@ -31,19 +38,24 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 m_instance = new GraphicsEditor(ref spectrum);
                 m_instance.ShowInTaskbar = true;
                 m_instance.Show();
+                return;
             }
             else
                 m_instance.Show();
 
-            m_instance.MakeZXBitmap();
+            m_instance.setZXImage();
         }
 
-        public void MakeZXBitmap()
+        #region Display options
+        /// <summary>
+        /// Screen View type
+        /// </summary>
+        public void setZXScreenView()
         {
             if (m_spectrum == null)
                 return;
 
-            Bitmap bmpZXMonochromatic = new Bitmap(256, 194);
+            Bitmap bmpZXMonochromatic = new Bitmap(32*8, 24*8);
             ushort screenPointer = (ushort)numericUpDownActualAddress.Value;
 
             //Screen View
@@ -59,12 +71,12 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                         {
                             byte blockByte = m_spectrum.ReadMemory(screenPointer++);
 
-                            BitArray arrayOfBits = GraphicsEditor.getAttributePixels(blockByte);
+                            BitArray spriteBits = GraphicsEditor.getAttributePixels(blockByte);
 
                             // Cycle: fill 8 pixels for 1 attribute
                             for (int pixels = 7; pixels > -1; pixels--)
                             {
-                                if (arrayOfBits[pixels])
+                                if (spriteBits[pixels])
                                     bmpZXMonochromatic.SetPixel((7 - pixels) + (attributes * 8), linesInSegment + eightLines + (segments * 64), Color.Black);
                                 else
                                     bmpZXMonochromatic.SetPixel((7 - pixels) + (attributes * 8), linesInSegment + eightLines + (segments * 64), Color.White);
@@ -74,9 +86,47 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 }
             } // 3 segments of the ZX Screen
 
-            //Size newSize = new Size((int)(pictureZXDisplay.Width * 7), (int)(pictureZXDisplay.Height * 7));
-            pictureZXDisplay.Image = bmpZXMonochromatic; // new Bitmap(bmpZXMonochromatic, newSize);
+            //Size newSize = new Size((int)(pictureZXDisplay.Width), (int)(pictureZXDisplay.Height));
+            pictureZXDisplay.Image = bmpZXMonochromatic;
+            pictureZXDisplay.Width = ZX_SCREEN_WIDTH;
+            pictureZXDisplay.Height = ZX_SCREEN_HEIGHT;
+            pictureZXDisplay.SizeMode = PictureBoxSizeMode.StretchImage;
         }
+
+        /// <summary>
+        /// Sprite View type
+        /// </summary>
+        public void setZXSpriteView()
+        {
+            byte   spriteWidth = Convert.ToByte(comboDisplayTypeWidth.SelectedItem);
+            //byte spriteHeight;
+            ushort screenPointer = (ushort)numericUpDownActualAddress.Value;
+
+            if (m_spectrum == null)
+                return;
+
+            Bitmap bmpSpriteView = new Bitmap(spriteWidth, ZX_SCREEN_HEIGHT);
+
+            for (int line = 0; line < ZX_SCREEN_HEIGHT; line++)
+            {
+                BitArray spriteBits = GraphicsEditor.getAttributePixels(m_spectrum.ReadMemory(screenPointer++));
+
+                // Cycle: fill 8 pixels for 1 attribute
+                for (int pixels = 7; pixels > -1; pixels--)
+                {
+                    if (spriteBits[pixels])
+                        bmpSpriteView.SetPixel(pixels, line, Color.Black);
+                    else
+                        bmpSpriteView.SetPixel(pixels, line, Color.White);
+                }
+            }
+
+            Image resizedImage = bmpSpriteView.GetThumbnailImage(spriteWidth * 3, (spriteWidth * 3 * bmpSpriteView.Height) /
+                bmpSpriteView.Width, null, IntPtr.Zero);
+            pictureZXDisplay.Image = resizedImage;
+            pictureZXDisplay.SizeMode = PictureBoxSizeMode.AutoSize;
+        }
+        #endregion
 
         /************************************************************
          *                                                          *
@@ -89,43 +139,60 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
          ************************************************************/
         public static BitArray getAttributePixels(byte attribute)
         {
-            BitArray myBits = new BitArray(8); //define the size
+            BitArray bitsOut = new BitArray(8); //define the size
 
             //setting a value
-            for (byte x = 0; x < myBits.Count; x++)
+            for (byte x = 0; x < bitsOut.Count; x++)
             {
-                myBits[x] = (((attribute >> x) & 0x01) == 0x01) ? true : false;
+                bitsOut[x] = (((attribute >> x) & 0x01) == 0x01) ? true : false;
             }
 
-            return myBits;
+            return bitsOut;
         }
 
-
-
-        public static Bitmap ResizeImage(Bitmap imgToResize, Size size)
+        private void setZXImage()
         {
-            try
-            {
-                Bitmap b = new Bitmap(size.Width, size.Height);
-                using (Graphics g = Graphics.FromImage((Image)b))
-                {
-                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                    g.DrawImage(imgToResize, 0, 0, size.Width, size.Height);
-                }
-                return b;
-            }
-            catch { }
+            bool bEnableCombos = true;
+            if (comboDisplayType.SelectedIndex == 0) //screen view
+                bEnableCombos = false;
 
-            return null;
+            comboDisplayTypeWidth.Enabled = bEnableCombos;
+            comboDisplayTypeHeight.Enabled = bEnableCombos;
+
+            switch (comboDisplayType.SelectedIndex)
+            {
+                case 0: //Screen view
+                    setZXScreenView();
+                    break;
+                case 1: //Sprite view
+                    setZXSpriteView();
+                    break;
+                default:
+                    break;
+            }
         }
 
-
-
-
-        #region Events
+        #region GUI methods
         private void numericUpDownActualAddress_ValueChanged(object sender, System.EventArgs e)
         {
-            MakeZXBitmap();
+            setZXImage();
+        }
+        private void buttonClose_Click(object sender, System.EventArgs e)
+        {
+            this.Hide();
+        }
+        private void comboDisplayType_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            setZXImage();
+        }
+        private void numericIncDecDelta_ValueChanged(object sender, EventArgs e)
+        {
+            numericUpDownActualAddress.Increment = numericIncDecDelta.Value;
+        }
+        //Refresh button
+        private void buttonRefresh_Click(object sender, EventArgs e)
+        {
+            setZXImage();
         }
         #endregion
     }

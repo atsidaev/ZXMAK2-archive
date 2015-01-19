@@ -43,7 +43,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 labelStatusText.Text = "Downloading...";
                 buttonStart.Enabled = false;
 
-                m_client.DownloadFileAsync(new Uri(@"http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=pasmo2&DownloadId=991511&FileTime=130631149681430000&Build=20959"), "Pasmo2.dll");
+                m_client.DownloadFileAsync(new Uri(@"http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=pasmo2&DownloadId=1421719&FileTime=130661256882600000&Build=20959"), "Pasmo2.dll");
             }
             catch(Exception tcpException)
             {
