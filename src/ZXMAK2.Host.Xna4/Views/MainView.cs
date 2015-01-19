@@ -104,10 +104,6 @@ namespace ZXMAK2.Host.Xna4.Views
             Exit();
         }
 
-        public void ShowHelp(object obj)
-        {
-        }
-
         #endregion IMainView
 
         
