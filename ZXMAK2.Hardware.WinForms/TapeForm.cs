@@ -9,7 +9,7 @@ using ZXMAK2.Host.WinForms.Views;
 using ZXMAK2.Engine.Interfaces;
 
 
-namespace ZXMAK2.Host.WinForms.HardwareViews
+namespace ZXMAK2.Hardware.WinForms
 {
     public class TapeForm : FormView, ITapeView
     {

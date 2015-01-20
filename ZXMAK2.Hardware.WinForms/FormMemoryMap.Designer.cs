@@ -1,4 +1,4 @@
-﻿namespace ZXMAK2.Host.WinForms.HardwareViews
+﻿namespace ZXMAK2.Hardware.WinForms
 {
     partial class FormMemoryMap
     {
