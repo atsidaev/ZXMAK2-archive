@@ -5,7 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using ZXMAK2.Engine.Interfaces;
 
-namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
+namespace ZXMAK2.Hardware.Adlers.Views
 {
     public partial class GraphicsEditor : Form
     {

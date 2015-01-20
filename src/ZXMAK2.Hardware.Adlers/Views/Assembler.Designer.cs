@@ -1,6 +1,6 @@
 ﻿using FastColoredTextBoxNS;
 
-namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
+namespace ZXMAK2.Hardware.Adlers.Views
 {
     partial class Assembler
     {

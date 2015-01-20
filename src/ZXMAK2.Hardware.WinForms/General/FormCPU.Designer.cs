@@ -1,4 +1,4 @@
-namespace ZXMAK2.Host.WinForms.HardwareViews.General
+namespace ZXMAK2.Hardware.WinForms.General
 {
    partial class FormCpu
    {
@@ -58,8 +58,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.General
           this.menuDataSaveBlock = new System.Windows.Forms.MenuItem();
           this.menuItem3 = new System.Windows.Forms.MenuItem();
           this.menuItemDataRefresh = new System.Windows.Forms.MenuItem();
-          this.dasmPanel = new ZXMAK2.Host.WinForms.HardwareViews.General.DasmPanel();
-          this.dataPanel = new ZXMAK2.Host.WinForms.HardwareViews.General.DataPanel();
+          this.dasmPanel = new ZXMAK2.Hardware.WinForms.General.DasmPanel();
+          this.dataPanel = new ZXMAK2.Hardware.WinForms.General.DataPanel();
           this.panelStatus.SuspendLayout();
           this.panelState.SuspendLayout();
           this.panelRegs.SuspendLayout();
@@ -414,8 +414,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.General
       private System.Windows.Forms.ListBox listF;
       private System.Windows.Forms.Splitter splitter4;
       private System.Windows.Forms.ListBox listState;
-      private ZXMAK2.Host.WinForms.HardwareViews.General.DasmPanel dasmPanel;
-      private ZXMAK2.Host.WinForms.HardwareViews.General.DataPanel dataPanel;
+      private ZXMAK2.Hardware.WinForms.General.DasmPanel dasmPanel;
+      private ZXMAK2.Hardware.WinForms.General.DataPanel dataPanel;
       private System.Windows.Forms.ContextMenu contextMenuDasm;
       private System.Windows.Forms.MenuItem menuItemDasmGotoADDR;
       private System.Windows.Forms.MenuItem menuItem2;
