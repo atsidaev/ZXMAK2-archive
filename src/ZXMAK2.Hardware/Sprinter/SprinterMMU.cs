@@ -114,16 +114,13 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             base.BusInit(bmgr);
 
-            this.m_ulaSprinter = bmgr.FindDevice<SprinterULA>();
-            if (this.m_ulaSprinter != null)
+            m_ulaSprinter = bmgr.FindDevice<SprinterULA>();
+            m_SprinterBDI = bmgr.FindDevice<SprinterFdd>();
+            if (m_ulaSprinter != null)
             {
-                this.m_ulaSprinter.VRAM = m_vramPages;
+                m_ulaSprinter.VRAM = m_vramPages;
             }
-            else
-            {
-                throw new ApplicationException("SprinterULA not found");
-            }
-            this.m_SprinterBDI = bmgr.FindDevice<SprinterFdd>();
+
             bmgr.SubscribeWrIo(0x0000, 0x0000, new BusWriteIoProc(this.WRDCP));  //write to DCP Port
             bmgr.SubscribeRdIo(0x0000, 0x0000, new BusReadIoProc(this.RDDCP));    //read from DCP port
             bmgr.SubscribeWrIo(0x00ff, 0x0082, new BusWriteIoProc(this.writePort82h));  //write PAGE0
@@ -769,7 +766,10 @@ namespace ZXMAK2.Hardware.Sprinter
             {
                 iorqge = false;
                 m_port_y = value;
-                m_ulaSprinter.RGADR = value;
+                if (m_ulaSprinter != null)
+                {
+                    m_ulaSprinter.RGADR = value;
+                }
 
                 //Перепроверить!!! тут в TASM происходит глюк непонятный
                 /*                if ((this.CMR0 & 2) == 0)
@@ -805,8 +805,10 @@ namespace ZXMAK2.Hardware.Sprinter
             {
                 iorqge = false;
                 m_port_videomode = value;
-                m_ulaSprinter.RGMOD = value;
-
+                if (m_ulaSprinter != null)
+                {
+                    m_ulaSprinter.RGMOD = value;
+                }
 #if Debug
                 LogPort(addr, value);
 #endif
