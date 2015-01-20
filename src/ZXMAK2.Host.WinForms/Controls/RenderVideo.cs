@@ -363,24 +363,24 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 return;
             }
-            if (InvokeRequired)
-            {
-                BeginInvoke(new Action(RequestPresentAsync));
-                return;
-            }
-            //Invalidate();
-            try
-            {
-                if (D3D == null)
-                {
-                    return;
-                }
-                RenderScene();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            Invalidate();
+            //if (InvokeRequired)
+            //{
+            //    BeginInvoke(new Action(RequestPresentAsync));
+            //    return;
+            //}
+            //try
+            //{
+            //    if (D3D == null)
+            //    {
+            //        return;
+            //    }
+            //    RenderScene();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.Error(ex);
+            //}
         }
 
         private unsafe void UpdateSurface(IVideoData videoData)
