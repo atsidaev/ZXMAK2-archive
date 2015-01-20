@@ -85,36 +85,6 @@
     <Compile Include="Controls\ToolStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HardwareViews\Adlers\Assembler.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="HardwareViews\Adlers\Assembler.Designer.cs">
-      <DependentUpon>Assembler.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HardwareViews\Adlers\BreakpointAdlers.cs" />
-    <Compile Include="HardwareViews\Adlers\DebuggerManager.cs" />
-    <Compile Include="HardwareViews\Adlers\DebugPanels.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HardwareViews\Adlers\DictionarySafe.cs" />
-    <Compile Include="HardwareViews\Adlers\FormCPU.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="HardwareViews\Adlers\FormCPU.Designer.cs">
-      <DependentUpon>FormCPU.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HardwareViews\Adlers\GraphicsEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="HardwareViews\Adlers\GraphicsEditor.Designer.cs">
-      <DependentUpon>GraphicsEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HardwareViews\Adlers\TcpHelper.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="HardwareViews\Adlers\TcpHelper.Designer.cs">
-      <DependentUpon>TcpHelper.cs</DependentUpon>
-    </Compile>
     <Compile Include="Services\ObjectSelectorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -216,18 +186,6 @@
     <Compile Include="Services\UserQuery.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="HardwareViews\Adlers\Assembler.resx">
-      <DependentUpon>Assembler.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HardwareViews\Adlers\FormCPU.resx">
-      <DependentUpon>FormCPU.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HardwareViews\Adlers\GraphicsEditor.resx">
-      <DependentUpon>GraphicsEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HardwareViews\Adlers\TcpHelper.resx">
-      <DependentUpon>TcpHelper.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Services\ObjectSelectorDialog.resx">
       <DependentUpon>ObjectSelectorDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -335,6 +293,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="HardwareViews\Adlers\" />
     <Folder Include="HardwareViews\General\" />
     <Folder Include="HardwareViews\Sprinter\" />
   </ItemGroup>
