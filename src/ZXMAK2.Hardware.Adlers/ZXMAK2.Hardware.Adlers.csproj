@@ -63,7 +63,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\DictionarySafe.cs" />
-    <Compile Include="Views\FormCPU.cs" />
+    <Compile Include="Views\FormCPU.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Views\FormCPU.Designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
