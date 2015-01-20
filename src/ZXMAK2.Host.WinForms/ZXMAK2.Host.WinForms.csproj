@@ -115,21 +115,6 @@
     <Compile Include="HardwareViews\Adlers\TcpHelper.Designer.cs">
       <DependentUpon>TcpHelper.cs</DependentUpon>
     </Compile>
-    <Compile Include="HardwareViews\General\DebugPanels.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HardwareViews\General\FormCPU.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="HardwareViews\General\FormCPU.Designer.cs">
-      <DependentUpon>FormCPU.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HardwareViews\Sprinter\DebugForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="HardwareViews\Sprinter\DebugForm.Designer.cs">
-      <DependentUpon>DebugForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Services\ObjectSelectorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -243,12 +228,6 @@
     <EmbeddedResource Include="HardwareViews\Adlers\TcpHelper.resx">
       <DependentUpon>TcpHelper.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HardwareViews\General\FormCPU.resx">
-      <DependentUpon>FormCPU.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HardwareViews\Sprinter\DebugForm.resx">
-      <DependentUpon>DebugForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Services\ObjectSelectorDialog.resx">
       <DependentUpon>ObjectSelectorDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -355,7 +334,10 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="HardwareViews\General\" />
+    <Folder Include="HardwareViews\Sprinter\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Keyboard.Mdx.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
