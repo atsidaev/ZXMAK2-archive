@@ -105,6 +105,10 @@ namespace ZXMAK2.Hardware.Sprinter
 
         protected override void EndFrame()
         {
+            if (m_vram == null)
+            {
+                return;
+            }
             var videoBuffer = base.VideoData.Buffer;
             int num = 0;
             byte linenum, linenum1;
