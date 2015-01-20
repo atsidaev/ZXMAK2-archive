@@ -124,10 +124,6 @@ namespace ZXMAK2.Hardware.Sprinter
                 throw new ApplicationException("SprinterULA not found");
             }
             this.m_SprinterBDI = bmgr.FindDevice<SprinterFdd>();
-            if (this.m_SprinterBDI == null)
-            {
-                throw new ApplicationException("SprinterBDI not found");
-            }
             bmgr.SubscribeWrIo(0x0000, 0x0000, new BusWriteIoProc(this.WRDCP));  //write to DCP Port
             bmgr.SubscribeRdIo(0x0000, 0x0000, new BusReadIoProc(this.RDDCP));    //read from DCP port
             bmgr.SubscribeWrIo(0x00ff, 0x0082, new BusWriteIoProc(this.writePort82h));  //write PAGE0
@@ -886,7 +882,7 @@ namespace ZXMAK2.Hardware.Sprinter
 #endif
 
                 //                this.lb.Items.Add(String.Format("State: SYS - {0}, AROM16 - {1}", this.m_sys, this.m_romA16));
-                if ((value & 0x04) != 0)
+                if ((value & 0x04) != 0 && m_SprinterBDI != null)
                 {
                     m_SprinterBDI.OpenPorts = ((value & 0x1C) == 0x1C ? true : false);
                 }
