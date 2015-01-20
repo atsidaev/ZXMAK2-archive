@@ -292,11 +292,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="HardwareViews\Adlers\" />
-    <Folder Include="HardwareViews\General\" />
-    <Folder Include="HardwareViews\Sprinter\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Keyboard.Mdx.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

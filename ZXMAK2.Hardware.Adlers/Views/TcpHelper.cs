@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 
-namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
+namespace ZXMAK2.Hardware.Adlers.Views
 {
     public partial class TcpHelper : Form
     {

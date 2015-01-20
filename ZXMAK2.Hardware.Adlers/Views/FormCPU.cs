@@ -19,7 +19,7 @@ using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Engine.Entities;
 
 
-namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
+namespace ZXMAK2.Hardware.Adlers.Views
 {
     public partial class FormCpu : FormView, IDebuggerAdlersView
     {

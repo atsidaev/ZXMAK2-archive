@@ -5,7 +5,7 @@ using System.Reflection.Emit;
 using ZXMAK2.Engine.Cpu;
 
 
-namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
+namespace ZXMAK2.Hardware.Adlers.Views
 {
     //CIL
     public delegate TRetVal checkBreakpointDelegate<TRetVal>();

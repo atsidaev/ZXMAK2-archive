@@ -15,7 +15,7 @@ using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 
 
-namespace ZXMAK2.Host.WinForms.HardwareViews.General
+namespace ZXMAK2.Hardware.WinForms.General
 {
     public partial class FormCpu : FormView, IDebuggerGeneralView
     {

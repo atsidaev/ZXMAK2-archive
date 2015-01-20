@@ -4,17 +4,17 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using ZXMAK2.Dependency;
+using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Engine.Entities;
+using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
-using ZXMAK2.Host.WinForms.HardwareViews.General;
 using ZXMAK2.Hardware.Sprinter;
+using ZXMAK2.Hardware.WinForms.General;
 using ZXMAK2.Host.WinForms.Views;
-using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Engine.Cpu.Tools;
-using ZXMAK2.Engine.Entities;
 
 
-namespace ZXMAK2.Host.WinForms.HardwareViews.Sprinter
+namespace ZXMAK2.Hardware.WinForms.Sprinter
 {
     public partial class DebugForm : FormView, IDebuggerSprinterView
     {
