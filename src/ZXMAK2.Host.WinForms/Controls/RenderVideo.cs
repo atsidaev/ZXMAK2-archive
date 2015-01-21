@@ -234,20 +234,27 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             // check if VBlank has already occurred 
             var timeStamp = Stopwatch.GetTimestamp();
-            if ((timeStamp - _lastBlankStamp) > (Stopwatch.Frequency / refreshRate))
+            var time50 = Stopwatch.Frequency / refreshRate;
+            var delta = timeStamp - _lastBlankStamp;
+            if (delta > time50)
             {
                 // some frames was missed, so try to catch up
-                _lastBlankStamp = timeStamp;
+                _lastBlankStamp += time50;
+                if (delta > time50 * 2)
+                {
+                    // too late, so resync
+                    _lastBlankStamp = timeStamp;
+                }
                 return;
             }
 
             // wait VBlank
-            var timeFrame = D3D.DisplayMode.Height;
-            var frequency = timeFrame * refreshRate;
-            var time = D3D.RasterStatus.ScanLine;
-            if (time < timeFrame)
+            var vtimeFrame = D3D.DisplayMode.Height;
+            var vfrequency = vtimeFrame * refreshRate;
+            var vtime = D3D.RasterStatus.ScanLine;
+            if (vtime < vtimeFrame)
             {
-                var delay = ((timeFrame - time) * 1000) / frequency;
+                var delay = ((vtimeFrame - vtime) * 1000) / vfrequency;
                 if (delay > 5 && delay < 40)
                 {
                     Thread.Sleep(delay - 1);
