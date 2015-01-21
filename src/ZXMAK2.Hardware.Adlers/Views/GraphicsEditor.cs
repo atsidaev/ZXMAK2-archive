@@ -28,6 +28,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             comboDisplayType.SelectedIndex = 0;
             comboSpriteWidth.SelectedIndex = 0;
             comboSpriteHeight.SelectedIndex = 0;
+
+            bitmapGridSpriteView.Init();
         }
 
         public static GraphicsEditor getInstance()
@@ -193,7 +195,6 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 case 1: //Sprite view
                     setZXSpriteView();
                     groupBoxSpriteDetails.Enabled = true;
-                    //bitmapGridSpriteView.ResizeHeight(this.bitmapGridSpriteView.Size.Height);
                     break;
                 case 4: //JetPac style
                     groupBoxSpriteDetails.Enabled = false;
