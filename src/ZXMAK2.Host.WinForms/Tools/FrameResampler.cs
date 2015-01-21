@@ -1,13 +1,14 @@
 ﻿
 
+using System;
 namespace ZXMAK2.Host.WinForms.Tools
 {
     public class FrameResampler
     {
         private readonly int _targetRate;
         private int _sourceRate;
-        private int _ratio;
-        private int _index;
+        private double _ratio;
+        private double _time;
         
 
         public FrameResampler(int targetRate)
@@ -34,19 +35,19 @@ namespace ZXMAK2.Host.WinForms.Tools
         /// </summary>
         public bool Next()
         {
-            var isSkipped = _ratio > 0 && ++_index > _ratio;
-            if (isSkipped)
+            _time += _ratio;
+            var isSkipped = _time < 1D;
+            if (_time >= 1D)
             {
-                _index = 0;
+                _time -= Math.Floor(_time);
             }
             return !isSkipped;
         }
 
         private void Update()
         {
-            _index = 0;
-            var frameRest = _sourceRate % _targetRate;
-            _ratio = frameRest != 0 ? _targetRate / frameRest : 0;
+            _time = 0;
+            _ratio = (double)_targetRate / (double)_sourceRate;
         }
     }
 }
