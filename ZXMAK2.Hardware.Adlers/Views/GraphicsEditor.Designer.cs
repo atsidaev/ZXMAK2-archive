@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GraphicsEditor));
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBoxScreenViewType = new System.Windows.Forms.GroupBox();
             this.comboSpriteHeight = new System.Windows.Forms.ComboBox();
             this.comboSpriteWidth = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.comboDisplayType = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
+            this.labelMemoryAddress = new System.Windows.Forms.Label();
             this.numericUpDownActualAddress = new System.Windows.Forms.NumericUpDown();
             this.pictureZXDisplay = new System.Windows.Forms.PictureBox();
             this.buttonRefresh = new System.Windows.Forms.Button();
@@ -54,30 +54,59 @@
             this.label3 = new System.Windows.Forms.Label();
             this.pictureZoomedArea = new System.Windows.Forms.PictureBox();
             this.checkBoxMirror = new System.Windows.Forms.CheckBox();
-            this.groupBox2.SuspendLayout();
+            this.groupBoxSpriteDetails = new System.Windows.Forms.GroupBox();
+            this.textBoxSpriteBytes = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBoxSpriteAddress = new System.Windows.Forms.TextBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hexNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.BitmapGrid();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn13 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn14 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn15 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn16 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.groupBoxScreenViewType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericIncDecDelta)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZoomFactor)).BeginInit();
             this.groupBoxScreenInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZoomedArea)).BeginInit();
+            this.groupBoxSpriteDetails.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bitmapGridSpriteView)).BeginInit();
             this.SuspendLayout();
             // 
-            // groupBox2
+            // groupBoxScreenViewType
             // 
-            this.groupBox2.Controls.Add(this.comboSpriteHeight);
-            this.groupBox2.Controls.Add(this.comboSpriteWidth);
-            this.groupBox2.Controls.Add(this.label9);
-            this.groupBox2.Controls.Add(this.label8);
-            this.groupBox2.Controls.Add(this.comboDisplayType);
-            this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Font = new System.Drawing.Font("Calibri", 9.75F);
-            this.groupBox2.Location = new System.Drawing.Point(12, 346);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(120, 159);
-            this.groupBox2.TabIndex = 25;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Screen View Type:";
+            this.groupBoxScreenViewType.Controls.Add(this.comboSpriteHeight);
+            this.groupBoxScreenViewType.Controls.Add(this.comboSpriteWidth);
+            this.groupBoxScreenViewType.Controls.Add(this.label9);
+            this.groupBoxScreenViewType.Controls.Add(this.label8);
+            this.groupBoxScreenViewType.Controls.Add(this.comboDisplayType);
+            this.groupBoxScreenViewType.Controls.Add(this.label7);
+            this.groupBoxScreenViewType.Font = new System.Drawing.Font("Calibri", 9.75F);
+            this.groupBoxScreenViewType.Location = new System.Drawing.Point(12, 346);
+            this.groupBoxScreenViewType.Name = "groupBoxScreenViewType";
+            this.groupBoxScreenViewType.Size = new System.Drawing.Size(120, 159);
+            this.groupBoxScreenViewType.TabIndex = 25;
+            this.groupBoxScreenViewType.TabStop = false;
+            this.groupBoxScreenViewType.Text = "Screen View Type:";
             // 
             // comboSpriteHeight
             // 
@@ -160,19 +189,25 @@
             this.label7.TabIndex = 22;
             this.label7.Text = "Display Type:";
             // 
-            // label10
+            // labelMemoryAddress
             // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Calibri", 9.75F);
-            this.label10.Location = new System.Drawing.Point(9, 28);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(95, 15);
-            this.label10.TabIndex = 26;
-            this.label10.Text = "Memory adress:";
+            this.labelMemoryAddress.AutoSize = true;
+            this.labelMemoryAddress.Font = new System.Drawing.Font("Calibri", 9.75F);
+            this.labelMemoryAddress.Location = new System.Drawing.Point(9, 28);
+            this.labelMemoryAddress.Name = "labelMemoryAddress";
+            this.labelMemoryAddress.Size = new System.Drawing.Size(129, 15);
+            this.labelMemoryAddress.TabIndex = 26;
+            this.labelMemoryAddress.Text = "Memory address(hex):";
             // 
             // numericUpDownActualAddress
             // 
             this.numericUpDownActualAddress.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.numericUpDownActualAddress.Hexadecimal = true;
+            this.numericUpDownActualAddress.Increment = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
             this.numericUpDownActualAddress.Location = new System.Drawing.Point(12, 47);
             this.numericUpDownActualAddress.Maximum = new decimal(new int[] {
             65535,
@@ -372,9 +407,9 @@
             // pictureZoomedArea
             // 
             this.pictureZoomedArea.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureZoomedArea.Location = new System.Drawing.Point(4, 248);
+            this.pictureZoomedArea.Location = new System.Drawing.Point(12, 248);
             this.pictureZoomedArea.Name = "pictureZoomedArea";
-            this.pictureZoomedArea.Size = new System.Drawing.Size(128, 96);
+            this.pictureZoomedArea.Size = new System.Drawing.Size(120, 96);
             this.pictureZoomedArea.TabIndex = 36;
             this.pictureZoomedArea.TabStop = false;
             // 
@@ -390,11 +425,214 @@
             this.checkBoxMirror.UseVisualStyleBackColor = true;
             this.checkBoxMirror.CheckedChanged += new System.EventHandler(this.checkBoxMirror_CheckedChanged);
             // 
+            // groupBoxSpriteDetails
+            // 
+            this.groupBoxSpriteDetails.Controls.Add(this.bitmapGridSpriteView);
+            this.groupBoxSpriteDetails.Controls.Add(this.textBoxSpriteBytes);
+            this.groupBoxSpriteDetails.Controls.Add(this.label11);
+            this.groupBoxSpriteDetails.Controls.Add(this.label6);
+            this.groupBoxSpriteDetails.Controls.Add(this.textBoxSpriteAddress);
+            this.groupBoxSpriteDetails.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBoxSpriteDetails.Location = new System.Drawing.Point(400, 28);
+            this.groupBoxSpriteDetails.Name = "groupBoxSpriteDetails";
+            this.groupBoxSpriteDetails.Size = new System.Drawing.Size(250, 300);
+            this.groupBoxSpriteDetails.TabIndex = 38;
+            this.groupBoxSpriteDetails.TabStop = false;
+            this.groupBoxSpriteDetails.Text = "Sprite details:";
+            this.groupBoxSpriteDetails.Visible = false;
+            // 
+            // textBoxSpriteBytes
+            // 
+            this.textBoxSpriteBytes.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.textBoxSpriteBytes.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxSpriteBytes.Location = new System.Drawing.Point(105, 46);
+            this.textBoxSpriteBytes.Name = "textBoxSpriteBytes";
+            this.textBoxSpriteBytes.Size = new System.Drawing.Size(136, 23);
+            this.textBoxSpriteBytes.TabIndex = 9;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Location = new System.Drawing.Point(45, 25);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(54, 15);
+            this.label11.TabIndex = 6;
+            this.label11.Text = "Address:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(6, 54);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(100, 15);
+            this.label6.TabIndex = 8;
+            this.label6.Text = "Bytes at address:";
+            // 
+            // textBoxSpriteAddress
+            // 
+            this.textBoxSpriteAddress.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.textBoxSpriteAddress.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxSpriteAddress.Location = new System.Drawing.Point(105, 17);
+            this.textBoxSpriteAddress.Name = "textBoxSpriteAddress";
+            this.textBoxSpriteAddress.Size = new System.Drawing.Size(136, 23);
+            this.textBoxSpriteAddress.TabIndex = 7;
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.viewToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(750, 24);
+            this.menuStrip1.TabIndex = 39;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.hexNumbersToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // hexNumbersToolStripMenuItem
+            // 
+            this.hexNumbersToolStripMenuItem.Checked = true;
+            this.hexNumbersToolStripMenuItem.CheckOnClick = true;
+            this.hexNumbersToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.hexNumbersToolStripMenuItem.Name = "hexNumbersToolStripMenuItem";
+            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.hexNumbersToolStripMenuItem.Text = "Hex numbers";
+            this.hexNumbersToolStripMenuItem.Click += new System.EventHandler(this.hexNumbersToolStripMenuItem_Click);
+            // 
+            // bitmapGridSpriteView
+            // 
+            this.bitmapGridSpriteView.AllowUserToAddRows = false;
+            this.bitmapGridSpriteView.AllowUserToDeleteRows = false;
+            this.bitmapGridSpriteView.AllowUserToResizeColumns = false;
+            this.bitmapGridSpriteView.AllowUserToResizeRows = false;
+            this.bitmapGridSpriteView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.bitmapGridSpriteView.ColumnHeadersVisible = false;
+            this.bitmapGridSpriteView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn1,
+            this.dataGridViewTextBoxColumn2,
+            this.dataGridViewTextBoxColumn3,
+            this.dataGridViewTextBoxColumn4,
+            this.dataGridViewTextBoxColumn5,
+            this.dataGridViewTextBoxColumn6,
+            this.dataGridViewTextBoxColumn7,
+            this.dataGridViewTextBoxColumn8,
+            this.dataGridViewTextBoxColumn9,
+            this.dataGridViewTextBoxColumn10,
+            this.dataGridViewTextBoxColumn11,
+            this.dataGridViewTextBoxColumn12,
+            this.dataGridViewTextBoxColumn13,
+            this.dataGridViewTextBoxColumn14,
+            this.dataGridViewTextBoxColumn15,
+            this.dataGridViewTextBoxColumn16});
+            this.bitmapGridSpriteView.Location = new System.Drawing.Point(5, 72);
+            this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
+            this.bitmapGridSpriteView.RowHeadersVisible = false;
+            this.bitmapGridSpriteView.RowTemplate.Height = 8;
+            this.bitmapGridSpriteView.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.bitmapGridSpriteView.Size = new System.Drawing.Size(240, 222);
+            this.bitmapGridSpriteView.TabIndex = 10;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.Width = 14;
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.dataGridViewTextBoxColumn4.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn5
+            // 
+            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.dataGridViewTextBoxColumn5.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn6
+            // 
+            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
+            this.dataGridViewTextBoxColumn6.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn7
+            // 
+            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
+            this.dataGridViewTextBoxColumn7.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn8
+            // 
+            this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
+            this.dataGridViewTextBoxColumn8.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn9
+            // 
+            this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
+            this.dataGridViewTextBoxColumn9.Width = 14;
+            // 
+            // dataGridViewTextBoxColumn10
+            // 
+            this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
+            this.dataGridViewTextBoxColumn10.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn11
+            // 
+            this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
+            this.dataGridViewTextBoxColumn11.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn12
+            // 
+            this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
+            this.dataGridViewTextBoxColumn12.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn13
+            // 
+            this.dataGridViewTextBoxColumn13.Name = "dataGridViewTextBoxColumn13";
+            this.dataGridViewTextBoxColumn13.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn14
+            // 
+            this.dataGridViewTextBoxColumn14.Name = "dataGridViewTextBoxColumn14";
+            this.dataGridViewTextBoxColumn14.Width = 14;
+            // 
+            // dataGridViewTextBoxColumn15
+            // 
+            this.dataGridViewTextBoxColumn15.Name = "dataGridViewTextBoxColumn15";
+            this.dataGridViewTextBoxColumn15.Width = 15;
+            // 
+            // dataGridViewTextBoxColumn16
+            // 
+            this.dataGridViewTextBoxColumn16.Name = "dataGridViewTextBoxColumn16";
+            this.dataGridViewTextBoxColumn16.Width = 15;
+            // 
             // GraphicsEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(750, 517);
+            this.Controls.Add(this.groupBoxSpriteDetails);
             this.Controls.Add(this.checkBoxMirror);
             this.Controls.Add(this.pictureZoomedArea);
             this.Controls.Add(this.groupBoxScreenInfo);
@@ -406,13 +644,15 @@
             this.Controls.Add(this.buttonRefresh);
             this.Controls.Add(this.pictureZXDisplay);
             this.Controls.Add(this.numericUpDownActualAddress);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.labelMemoryAddress);
+            this.Controls.Add(this.groupBoxScreenViewType);
+            this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "GraphicsEditor";
             this.Text = "GraphicsEditor";
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.groupBoxScreenViewType.ResumeLayout(false);
+            this.groupBoxScreenViewType.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericIncDecDelta)).EndInit();
@@ -420,6 +660,11 @@
             this.groupBoxScreenInfo.ResumeLayout(false);
             this.groupBoxScreenInfo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZoomedArea)).EndInit();
+            this.groupBoxSpriteDetails.ResumeLayout(false);
+            this.groupBoxSpriteDetails.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bitmapGridSpriteView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -427,14 +672,14 @@
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBoxScreenViewType;
         private System.Windows.Forms.ComboBox comboSpriteHeight;
         private System.Windows.Forms.ComboBox comboSpriteWidth;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox comboDisplayType;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label labelMemoryAddress;
         private System.Windows.Forms.NumericUpDown numericUpDownActualAddress;
         private System.Windows.Forms.PictureBox pictureZXDisplay;
         private System.Windows.Forms.Button buttonRefresh;
@@ -452,5 +697,31 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.PictureBox pictureZoomedArea;
         private System.Windows.Forms.CheckBox checkBoxMirror;
+        private System.Windows.Forms.GroupBox groupBoxSpriteDetails;
+        private System.Windows.Forms.TextBox textBoxSpriteBytes;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox textBoxSpriteAddress;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hexNumbersToolStripMenuItem;
+        private Hardware.Adlers.Views.BitmapGrid bitmapGridSpriteView;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn13;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn14;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn15;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn16;
     }
 }
