@@ -55,13 +55,19 @@
     <Compile Include="FormMemoryMap.Designer.cs">
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
     </Compile>
-    <Compile Include="General\DebugPanels.cs" />
-    <Compile Include="General\FormCPU.cs" />
+    <Compile Include="General\DebugPanels.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="General\FormCPU.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="General\FormCPU.Designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sprinter\DebugForm.cs" />
+    <Compile Include="Sprinter\DebugForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Sprinter\DebugForm.Designer.cs">
       <DependentUpon>DebugForm.cs</DependentUpon>
     </Compile>

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Hardware.Adlers.Core;
 
 namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 {
@@ -11,8 +12,6 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
     {
         private static ushort ZX_SCREEN_WIDTH  = 512;
         private static ushort ZX_SCREEN_HEIGHT = 384;
-        public static UInt16 MAX_X_PIXEL = Convert.ToUInt16(256); // X-coordinate maximum(pixel)
-        public static UInt16 MAX_Y_PIXEL = Convert.ToUInt16(192); // Y-coordinate maximum(pixel)
 
         private static GraphicsEditor m_instance = null;
         private IDebuggable m_spectrum = null;
@@ -57,7 +56,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         /// </summary>
         public void setZXScreenView()
         {
-            if (m_spectrum == null)
+            if (m_spectrum == null || m_instance == null)
                 return;
 
             pictureZXDisplay.Width = ZX_SCREEN_WIDTH;
@@ -79,7 +78,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                         {
                             byte blockByte = m_spectrum.ReadMemory(screenPointer++);
 
-                            BitArray spriteBits = GraphicsEditor.getAttributePixels(blockByte);
+                            BitArray spriteBits = GraphicsTools.getAttributePixels(blockByte, m_instance.checkBoxMirror.Checked);
                             if (spriteBits == null)
                                 return;
 
@@ -111,7 +110,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             //byte spriteHeight;
             ushort screenPointer = (ushort)numericUpDownActualAddress.Value;
 
-            if (m_spectrum == null)
+            if (m_spectrum == null || m_instance == null)
                 return null;
 
             Bitmap bmpSpriteView = new Bitmap(spriteWidth, ZX_SCREEN_HEIGHT);
@@ -120,7 +119,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             {
                 for (int widthCounter = 0; widthCounter < (spriteWidth / 8); widthCounter++)
                 {
-                    BitArray spriteBits = GraphicsEditor.getAttributePixels(m_spectrum.ReadMemory(screenPointer++));
+                    BitArray spriteBits = GraphicsTools.getAttributePixels(m_spectrum.ReadMemory(screenPointer++), m_instance.checkBoxMirror.Checked);
                     if (spriteBits == null)
                         return null;
 
@@ -165,76 +164,12 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         }
         #endregion
 
-        /// <summary>
-        /// getAttributePixels
-        /// </summary>
-        /// <param name="attribute"></param>
-        /// <returns>BitArray</returns>
-        public static BitArray getAttributePixels(byte attribute)
+        private bool isSpriteViewType()
         {
-            if (m_instance == null)
-                return null;
+            if (comboDisplayType.SelectedIndex == 0) //screen view
+                return false;
 
-            BitArray bitsOut = new BitArray(8); //define the size
-
-            if (m_instance.checkBoxMirror.Checked) //mirror image ?
-            {
-                for (byte x = 0; x < bitsOut.Count; x++)
-                {
-                    bitsOut[x] = (((attribute >> x) & 0x01) == 0x01) ? true : false;
-                }
-            }
-            else
-            {
-                //setting a value
-                for (int x = 0; x < bitsOut.Length; x++) //mirror bits in array to be correctly displayed on screen(left to right)
-                {
-                    bitsOut[bitsOut.Length - 1 - x] = (((attribute >> x) & 0x01) == 0x01) ? true : false;
-                }
-            }
-
-            return bitsOut;
-        }
-
-        /// <summary>
-        /// getSegment
-        /// </summary>
-        /// <param name="y"></param>
-        /// <returns></returns>
-        public static short getSegment(int y)
-        {
-            if (y < 64) // segment #2
-                return 1; //<0; 63>
-
-            //<64; 127>
-            if (y > 127) // segment #3
-                return 3;
-
-            return 2;
-        }
-        /// <summary>
-        /// getScreenAdress
-        /// </summary>
-        /// <param name="xCoor"></param>
-        /// <param name="yCoor"></param>
-        /// <returns></returns>
-        public static ushort getScreenAdress(int xCoor, int yCoor)
-        {
-            int yCoorLocal = yCoor;
-            ushort sAdress = 16384;
-            short sSegment = getSegment(yCoor); // in which screen segment we are ?
-
-            sAdress += Convert.ToUInt16((sSegment - 1) * 2048);
-            yCoorLocal -= (sSegment - 1) * 64;     // move it into the ground fictive segment
-            sAdress += Convert.ToUInt16(((xCoor /*- 1*/) / 8));
-
-            //add y coordinate value
-            int attributeLineNumber = (yCoorLocal /*- 1*/) / 8;   // defines which line of attributes is it on the screen
-            int lineInAttribute = (yCoorLocal /*- 1*/) % 8;   // defines which line is it in the attribute...from above
-
-            sAdress += Convert.ToUInt16((attributeLineNumber * 32) + (lineInAttribute * MAX_X_PIXEL));
-
-            return sAdress;
+            return true;
         }
 
         private void setZXImage()
@@ -242,14 +177,13 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             if (!isInitialised)
                 return;
 
-            bool bEnableControls = true;
-            if (comboDisplayType.SelectedIndex == 0) //screen view
-                bEnableControls = false;
-
-            comboSpriteWidth.Enabled = bEnableControls;
+            bool bIsSpriteViewType = isSpriteViewType();
+            comboSpriteWidth.Enabled = bIsSpriteViewType;
             //comboSpriteHeight.Enabled = bEnableControls;
-            numericUpDownZoomFactor.Enabled = bEnableControls;
-            groupBoxScreenInfo.Visible = !bEnableControls;
+            numericUpDownZoomFactor.Enabled = bIsSpriteViewType;
+            groupBoxScreenInfo.Visible = !bIsSpriteViewType;
+            groupBoxSpriteDetails.Visible = bIsSpriteViewType;
+            pictureZoomedArea.Visible = !bIsSpriteViewType;
 
             switch (comboDisplayType.SelectedIndex)
             {
@@ -258,12 +192,23 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                     break;
                 case 1: //Sprite view
                     setZXSpriteView();
+                    groupBoxSpriteDetails.Enabled = true;
+                    //bitmapGridSpriteView.ResizeHeight(this.bitmapGridSpriteView.Size.Height);
                     break;
                 case 4: //JetPac style
+                    groupBoxSpriteDetails.Enabled = false;
                     setZXJetpacView();
                     break;
                 default:
                     break;
+            }
+
+            if (bIsSpriteViewType)
+            {
+                Point locationSpriteDetails = new Point();
+                locationSpriteDetails.X = pictureZXDisplay.Location.X + pictureZXDisplay.Size.Width + 10;
+                locationSpriteDetails.Y = groupBoxSpriteDetails.Location.Y;
+                groupBoxSpriteDetails.Location = locationSpriteDetails;
             }
         }
 
@@ -304,21 +249,45 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 
             int Xcoor = (e.X + 1) / 2;
             int Ycoor = (e.Y + 1) / 2;
-            ushort screenAdress = getScreenAdress(Xcoor, Ycoor);
 
-            textBoxScreenAddress.Text = screenAdress.ToString();
-
-            textBoxXCoorYCoor.Text = String.Format("{0}; {1}", Xcoor, Ycoor);
-
-            textBoxBytesAtAdress.Text =  String.Format("#{0:X2}", m_spectrum.ReadMemory(screenAdress));
-            for( ushort memValue = (ushort)(screenAdress+1); memValue < screenAdress + 5; memValue++ )
+            if( !isSpriteViewType() )
             {
-                textBoxBytesAtAdress.Text += "; " + String.Format("#{0:X2}", m_spectrum.ReadMemory(memValue));
+                ushort screenAdress = GraphicsTools.getScreenAdress(Xcoor, Ycoor);
+
+                textBoxScreenAddress.Text = screenAdress.ToString();
+
+                textBoxXCoorYCoor.Text = String.Format("{0}; {1}", Xcoor, Ycoor);
+
+                textBoxBytesAtAdress.Text = String.Format("#{0:X2}", m_spectrum.ReadMemory(screenAdress));
+                for (ushort memValue = (ushort)(screenAdress + 1); memValue < screenAdress + 5; memValue++)
+                {
+                    textBoxBytesAtAdress.Text += "; " + String.Format("#{0:X2}", m_spectrum.ReadMemory(memValue));
+                }
+            }
+            else if (comboDisplayType.SelectedIndex == 1) //only Sprite View for now...ToDo other view types, e.g. Jetpac type
+            {
+                ushort addressPointer = Convert.ToUInt16( numericUpDownActualAddress.Value );
+                ushort addressUnderCursor = Convert.ToUInt16(addressPointer + (Convert.ToByte(comboSpriteWidth.SelectedItem) / 8)*(Ycoor) + (Xcoor/8) );
+
+                //Sprite address
+                textBoxSpriteAddress.Text = String.Format("#{0:X2}({1})", addressUnderCursor, addressUnderCursor);
+
+                //Bytes at address
+                textBoxSpriteBytes.Text = String.Format("#{0:X2}", m_spectrum.ReadMemory(addressUnderCursor));
+                for (ushort memValue = (ushort)(addressUnderCursor + 1); memValue < addressUnderCursor + 5; memValue++)
+                {
+                    textBoxSpriteBytes.Text += "; " + String.Format("#{0:X2}", m_spectrum.ReadMemory(memValue));
+                }
             }
         }
         private void checkBoxMirror_CheckedChanged(object sender, EventArgs e)
         {
             setZXImage();
+        }
+        private void hexNumbersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            numericUpDownActualAddress.Hexadecimal = hexNumbersToolStripMenuItem.Checked;
+            labelMemoryAddress.Text = String.Format("Memory address({0}):", hexNumbersToolStripMenuItem.Checked ? "hex" : "dec");
         }
         #endregion
     }
