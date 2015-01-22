@@ -464,9 +464,9 @@
             this.groupBoxSpriteDetails.Controls.Add(this.label6);
             this.groupBoxSpriteDetails.Controls.Add(this.textBoxSpriteAddress);
             this.groupBoxSpriteDetails.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxSpriteDetails.Location = new System.Drawing.Point(400, 28);
+            this.groupBoxSpriteDetails.Location = new System.Drawing.Point(390, 28);
             this.groupBoxSpriteDetails.Name = "groupBoxSpriteDetails";
-            this.groupBoxSpriteDetails.Size = new System.Drawing.Size(264, 300);
+            this.groupBoxSpriteDetails.Size = new System.Drawing.Size(274, 346);
             this.groupBoxSpriteDetails.TabIndex = 38;
             this.groupBoxSpriteDetails.TabStop = false;
             this.groupBoxSpriteDetails.Text = "Sprite details:";
@@ -477,8 +477,9 @@
             this.bitmapGridSpriteView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.bitmapGridSpriteView.Location = new System.Drawing.Point(9, 84);
             this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
-            this.bitmapGridSpriteView.Size = new System.Drawing.Size(249, 210);
+            this.bitmapGridSpriteView.Size = new System.Drawing.Size(256, 256);
             this.bitmapGridSpriteView.TabIndex = 10;
+            this.bitmapGridSpriteView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseUp);
             // 
             // textBoxSpriteBytes
             // 
@@ -486,7 +487,7 @@
             this.textBoxSpriteBytes.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxSpriteBytes.Location = new System.Drawing.Point(106, 51);
             this.textBoxSpriteBytes.Name = "textBoxSpriteBytes";
-            this.textBoxSpriteBytes.Size = new System.Drawing.Size(152, 23);
+            this.textBoxSpriteBytes.Size = new System.Drawing.Size(159, 23);
             this.textBoxSpriteBytes.TabIndex = 9;
             // 
             // label11
@@ -515,7 +516,7 @@
             this.textBoxSpriteAddress.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxSpriteAddress.Location = new System.Drawing.Point(106, 22);
             this.textBoxSpriteAddress.Name = "textBoxSpriteAddress";
-            this.textBoxSpriteAddress.Size = new System.Drawing.Size(152, 23);
+            this.textBoxSpriteAddress.Size = new System.Drawing.Size(159, 23);
             this.textBoxSpriteAddress.TabIndex = 7;
             // 
             // menuStrip1
@@ -532,7 +533,7 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // viewToolStripMenuItem
@@ -540,7 +541,7 @@
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.hexNumbersToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // hexNumbersToolStripMenuItem
@@ -549,7 +550,7 @@
             this.hexNumbersToolStripMenuItem.CheckOnClick = true;
             this.hexNumbersToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.hexNumbersToolStripMenuItem.Name = "hexNumbersToolStripMenuItem";
-            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.hexNumbersToolStripMenuItem.Text = "Hex numbers";
             this.hexNumbersToolStripMenuItem.Click += new System.EventHandler(this.hexNumbersToolStripMenuItem_Click);
             // 
