@@ -516,8 +516,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                     }
 
                     var wndSize = GetDeviceSize();
-                    var dstSize = GetDestinationSize(wndSize, GetSurfaceScaledSize());
-                    var dstPos = GetDestinationPos(wndSize, dstSize);
+                    var dstRect = GetDestinationRect(wndSize, GetSurfaceScaledSize());
                     var srcRect = new Rectangle(
                         0,
                         0,
@@ -530,8 +529,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                     _sprite.Draw2D(
                        _texture,
                        srcRect,
-                       dstSize,
-                       dstPos,
+                       dstRect.Size,
+                       dstRect.Location,
                        -1);
                     _sprite.End();
                     
@@ -547,8 +546,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                         _sprite.Draw2D(
                             _textureMaskTv,
                             srcRectTv,
-                            dstSize,
-                            dstPos,
+                            dstRect.Size,
+                            dstRect.Location,
                             -1);        
                         _sprite.End();
                     }
@@ -714,6 +713,13 @@ namespace ZXMAK2.Host.WinForms.Controls
             D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
             D3D.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, rectv);
             D3D.RenderState.AlphaBlendEnable = alphaBlendEnabled;
+        }
+
+        private RectangleF GetDestinationRect(SizeF wndSize, SizeF size)
+        {
+            var dstSize = GetDestinationSize(wndSize, size);
+            var dstPos = GetDestinationPos(wndSize, dstSize);
+            return new RectangleF(dstPos, dstSize);
         }
 
         private PointF GetDestinationPos(SizeF wndSize, SizeF dstSize)
