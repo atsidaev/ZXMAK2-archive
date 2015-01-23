@@ -17,6 +17,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private bool _isInitialised = false;
         private bool _needRepaint = true;
 
+        private IDebuggable _spectrum = null;
+
         public BitmapGrid()
         {
         }
@@ -26,13 +28,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
             _isInitialised = true;
             _originalSize = this.Size;
         }
-        public void Init(byte i_gridWidth, byte i_gridHeight)
+        public void Init(IDebuggable i_spectrum, byte i_gridWidth, byte i_gridHeight)
         {
             Init();
+
+            _spectrum = i_spectrum;
             X_BIT_COUNT = i_gridWidth;
             Y_BIT_COUNT = i_gridHeight;
         }
 
+        public int getGridBit(int XBit, int YBit)
+        {
+            return XBit + YBit * X_BIT_COUNT;
+        }
         public void setBitmapBits(IDebuggable i_spectrum, ushort i_startAddress)
         {
             int gridBytes = X_BIT_COUNT / 8 * Y_BIT_COUNT;
@@ -108,17 +116,18 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.Draw(e);
         }
 
-        public void MouseClickGrid(MouseEventArgs e)
+        public int getClickedPixel(MouseEventArgs e)
         {
-            int XClicked = e.X / (this.Width  / X_BIT_COUNT);
-            int YClicked = e.Y / (this.Height / Y_BIT_COUNT);
-            int bitToManipulate = YClicked * X_BIT_COUNT + XClicked;
-            bool setValue = !_gridBits[bitToManipulate / 8][bitToManipulate % 8];
+            int pixelClicked = getGridBit(e.X / (this.Width / X_BIT_COUNT), e.Y / (this.Height / Y_BIT_COUNT));
+            bool setValue = !_gridBits[pixelClicked / 8][pixelClicked % 8];
 
-            _gridBits[bitToManipulate / 8][bitToManipulate % 8] = setValue;
+            _gridBits[pixelClicked / 8][pixelClicked % 8] = setValue;
 
+            //set zx memory
             _needRepaint = true;
             this.Draw(null);
+
+            return pixelClicked;
         }
     }
 }
