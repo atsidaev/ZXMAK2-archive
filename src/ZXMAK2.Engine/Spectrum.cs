@@ -34,7 +34,6 @@ namespace ZXMAK2.Engine
 
         public Spectrum()
         {
-            _bus.FrameReady += OnUpdateFrame;
         }
 
         public void Dispose()
@@ -48,7 +47,6 @@ namespace ZXMAK2.Engine
 
         public event EventHandler Breakpoint;
         public event EventHandler UpdateState;
-        public event EventHandler UpdateFrame;
 
         public CpuUnit CPU
         {
@@ -113,7 +111,7 @@ namespace ZXMAK2.Engine
                     if (delta1 >= 0)
                         _frameStartTact = delta1;
                     IsRunning = false;
-                    OnUpdateFrame();
+                    OnUpdateState();
                     OnBreakpoint();
                     return;
                 }
@@ -212,20 +210,20 @@ namespace ZXMAK2.Engine
 
         private void OnBreakpoint()
         {
-            if (Breakpoint != null)
-                Breakpoint(this, new EventArgs());
+            var handler = Breakpoint;
+            if (handler != null)
+            {
+                handler(this, new EventArgs());
+            }
         }
 
         private void OnUpdateState()
         {
-            if (UpdateState != null)
-                UpdateState(this, new EventArgs());
-        }
-
-        private void OnUpdateFrame()
-        {
-            if (UpdateFrame != null)
-                UpdateFrame(this, new EventArgs());
+            var handler = UpdateState;
+            if (handler != null)
+            {
+                handler(this, new EventArgs());
+            }
         }
 
         private bool OnMaxTactExceed(long tactLimit)
@@ -253,11 +251,13 @@ namespace ZXMAK2.Engine
             _bus.ExecCycle();
             int delta = (int)(cpu.Tact - t);
             if (delta >= 0)
+            {
                 _frameStartTact = delta;
+            }
             if (CheckBreakpoint())
             {
                 IsRunning = false;
-                OnUpdateFrame();
+                OnUpdateState();
                 OnBreakpoint();
             }
         }
@@ -292,9 +292,11 @@ namespace ZXMAK2.Engine
                 {
                     if (CPU.Tact - t >= tactLimit)
                     {
-                        OnUpdateFrame();
+                        OnUpdateState();
                         if (OnMaxTactExceed(tactLimit))
+                        {
                             break;
+                        }
                         else
                         {
                             t = CPU.Tact;
@@ -308,7 +310,7 @@ namespace ZXMAK2.Engine
 
                     if (CheckBreakpoint())
                     {
-                        OnUpdateFrame();
+                        OnUpdateState();
                         OnBreakpoint();
                         break;
                     }
