@@ -14,20 +14,20 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         private static ushort ZX_SCREEN_HEIGHT = 384;
 
         private static GraphicsEditor m_instance = null;
-        private IDebuggable m_spectrum = null;
+        private IDebuggable _spectrum = null;
 
         private bool _isInitialised = false;
 
         public GraphicsEditor(ref IDebuggable spectrum)
         {
-            m_spectrum = spectrum;
+            _spectrum = spectrum;
 
             InitializeComponent();
             comboDisplayType.SelectedIndex = 0;
             comboSpriteWidth.SelectedIndex = 0;
             comboSpriteHeight.SelectedIndex = 0;
 
-            bitmapGridSpriteView.Init(Convert.ToByte(comboSpriteWidth.SelectedItem), 24);
+            bitmapGridSpriteView.Init(_spectrum, Convert.ToByte(comboSpriteWidth.SelectedItem), 24);
 
             _isInitialised = true;
         }
@@ -58,7 +58,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         /// </summary>
         public void setZXScreenView()
         {
-            if (m_spectrum == null || m_instance == null)
+            if (_spectrum == null || m_instance == null)
                 return;
 
             pictureZXDisplay.Width = ZX_SCREEN_WIDTH;
@@ -78,7 +78,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                         // Cycle: all attributes in 1 line
                         for (int attributes = 0; attributes < 32; attributes++)
                         {
-                            byte blockByte = m_spectrum.ReadMemory(screenPointer++);
+                            byte blockByte = _spectrum.ReadMemory(screenPointer++);
 
                             BitArray spriteBits = GraphicsTools.getAttributePixels(blockByte, m_instance.checkBoxMirror.Checked);
                             if (spriteBits == null)
@@ -112,7 +112,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             //byte spriteHeight;
             ushort screenPointer = (ushort)numericUpDownActualAddress.Value;
 
-            if (m_spectrum == null || m_instance == null)
+            if (_spectrum == null || m_instance == null)
                 return null;
 
             Bitmap bmpSpriteView = new Bitmap(spriteWidth, ZX_SCREEN_HEIGHT);
@@ -121,7 +121,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             {
                 for (int widthCounter = 0; widthCounter < (spriteWidth / 8); widthCounter++)
                 {
-                    BitArray spriteBits = GraphicsTools.getAttributePixels(m_spectrum.ReadMemory(screenPointer++), m_instance.checkBoxMirror.Checked);
+                    BitArray spriteBits = GraphicsTools.getAttributePixels(_spectrum.ReadMemory(screenPointer++), m_instance.checkBoxMirror.Checked);
                     if (spriteBits == null)
                         return null;
 
@@ -157,6 +157,8 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         /// </summary>
         public void setZXJetpacView()
         {
+            comboSpriteWidth.SelectedIndex = 1;
+
             Image img = getSpriteViewImage();
 
             img.RotateFlip(RotateFlipType.Rotate180FlipY);
@@ -195,7 +197,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
                 case 1: //Sprite view
                     setZXSpriteView();
                     groupBoxSpriteDetails.Enabled = true;
-                    bitmapGridSpriteView.setBitmapBits(m_spectrum, Convert.ToUInt16(numericUpDownActualAddress.Value));
+                    bitmapGridSpriteView.setBitmapBits(_spectrum, Convert.ToUInt16(numericUpDownActualAddress.Value));
                     bitmapGridSpriteView.Draw(null);
                     break;
                 case 4: //JetPac style
@@ -246,7 +248,7 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
             if (_isInitialised)
             {
                 bitmapGridSpriteView.setGridWidth(Convert.ToByte(comboSpriteWidth.SelectedItem));
-                bitmapGridSpriteView.setBitmapBits(m_spectrum, Convert.ToUInt16(numericUpDownActualAddress.Value));
+                bitmapGridSpriteView.setBitmapBits(_spectrum, Convert.ToUInt16(numericUpDownActualAddress.Value));
             }
             setZXImage();
         }
@@ -266,25 +268,27 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
 
                 textBoxXCoorYCoor.Text = String.Format("{0}; {1}", Xcoor, Ycoor);
 
-                textBoxBytesAtAdress.Text = String.Format("#{0:X2}", m_spectrum.ReadMemory(screenAdress));
+                textBoxBytesAtAdress.Text = String.Format("#{0:X2}", _spectrum.ReadMemory(screenAdress));
                 for (ushort memValue = (ushort)(screenAdress + 1); memValue < screenAdress + 5; memValue++)
                 {
-                    textBoxBytesAtAdress.Text += "; " + String.Format("#{0:X2}", m_spectrum.ReadMemory(memValue));
+                    textBoxBytesAtAdress.Text += "; " + String.Format("#{0:X2}", _spectrum.ReadMemory(memValue));
                 }
             }
             else if (comboDisplayType.SelectedIndex == 1) //only Sprite View for now...ToDo other view types, e.g. Jetpac type
             {
+                int zoomFactor = (int)numericUpDownZoomFactor.Value;
                 ushort addressPointer = Convert.ToUInt16( numericUpDownActualAddress.Value );
-                ushort addressUnderCursor = Convert.ToUInt16(addressPointer + (Convert.ToByte(comboSpriteWidth.SelectedItem) / 8)*(Ycoor) + (Xcoor/8) ); //ToDo: zooming will crash this !
+                int addressUnderCursorBase = addressPointer + (Convert.ToByte(comboSpriteWidth.SelectedItem) / 8)*(Ycoor) + (Xcoor/8); //ToDo: zooming will crash this !
+                ushort addressUnderCursor = Convert.ToUInt16(addressUnderCursorBase > 0xFFFF ? addressUnderCursorBase-0xFFFF: addressUnderCursorBase);
 
                 //Sprite address
                 textBoxSpriteAddress.Text = String.Format("#{0:X2}({1})", addressUnderCursor, addressUnderCursor);
 
                 //Bytes at address
-                textBoxSpriteBytes.Text = String.Format("#{0:X2}", m_spectrum.ReadMemory(addressUnderCursor));
+                textBoxSpriteBytes.Text = String.Format("#{0:X2}", _spectrum.ReadMemory(addressUnderCursor));
                 for (ushort memValue = (ushort)(addressUnderCursor + 1); memValue < addressUnderCursor + 5; memValue++)
                 {
-                    textBoxSpriteBytes.Text += "; " + String.Format("#{0:X2}", m_spectrum.ReadMemory(memValue));
+                    textBoxSpriteBytes.Text += "; " + String.Format("#{0:X2}", _spectrum.ReadMemory(memValue));
                 }
             }
         }
@@ -299,8 +303,14 @@ namespace ZXMAK2.Host.WinForms.HardwareViews.Adlers
         }
         private void bitmapGridSpriteView_MouseUp(object sender, MouseEventArgs e)
         {
-            bitmapGridSpriteView.MouseClickGrid(e);
-            this.Refresh();
+            int  clickedPixel = bitmapGridSpriteView.getClickedPixel(e);
+            int  bitToToggleAddress = Convert.ToUInt16(numericUpDownActualAddress.Value) + (clickedPixel/8);
+            byte memValue = _spectrum.ReadMemory(Convert.ToUInt16(bitToToggleAddress));
+
+            memValue = (byte)GraphicsTools.ToggleBit(memValue, clickedPixel % 8);
+            _spectrum.WriteMemory(Convert.ToUInt16(bitToToggleAddress), memValue);
+
+            setZXImage(); //refresh
         }
         #endregion
     }

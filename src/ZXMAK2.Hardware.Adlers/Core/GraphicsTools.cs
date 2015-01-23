@@ -80,5 +80,27 @@ namespace ZXMAK2.Hardware.Adlers.Core
 
             return sAdress;
         }
+
+        /// <summary>
+        /// ClearBit
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bit"></param>
+        /// <returns></returns>
+        public static int ClearBit(int value, int bit)
+        {
+            return value & ~(1 << (bit - 1));
+        }
+
+        /// <summary>
+        /// ToggleBit
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bit"></param>
+        /// <returns></returns>
+        public static int ToggleBit(byte value, int bit)
+        {
+            return value ^ (1 << 7-bit);
+        }
     }
 }
