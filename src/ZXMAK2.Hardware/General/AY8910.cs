@@ -420,10 +420,10 @@ namespace ZXMAK2.Hardware.General
                 fixed (uint* pAudioBuffer = m_audioBuffer)
                     for (; m_audioBufferPos < toEndPtr; m_audioBufferPos++)
                     {
-                        m_outNoiseABC &= (byte)(((m_controlChannels & 0x38) >> 3) ^ 7);
-                        m_mixLineABC = (byte)((m_outABC & (((m_controlChannels & 0x07)) ^ 7)) | m_outNoiseABC);
+                        m_outNoiseABC |= (byte)((m_controlChannels & 0x38) >> 3);
+                        m_mixLineABC = (byte)((m_outABC | ((m_controlChannels & 0x07)) ) & m_outNoiseABC);
 
-                        if ((m_mixLineABC & 0x01) == 0)
+                        if ((m_mixLineABC & 0x01) != 0)
                         {
                             MixResultA = (byte)((m_volumeA & 0x1F) << 1);
                             if ((MixResultA & 0x20) != 0)
@@ -434,7 +434,7 @@ namespace ZXMAK2.Hardware.General
                         else
                             MixResultA = 0;
 
-                        if ((m_mixLineABC & 0x02) == 0)
+                        if ((m_mixLineABC & 0x02) != 0)
                         {
                             MixResultB = (byte)((m_volumeB & 0x1F) << 1);
                             if ((MixResultB & 0x20) != 0)
@@ -445,7 +445,7 @@ namespace ZXMAK2.Hardware.General
                         else
                             MixResultB = 0;
 
-                        if ((m_mixLineABC & 0x04) == 0)
+                        if ((m_mixLineABC & 0x04) != 0)
                         {
                             MixResultC = (byte)((m_volumeC & 0x1F) << 1);
                             if ((MixResultC & 0x20) != 0)
@@ -460,17 +460,23 @@ namespace ZXMAK2.Hardware.General
                         // end of mixer
 
 
+                        var nf = m_freqNoise & 0x1F;
                         // ...counters...
                         for (int i = 0; i < m_tactsPerSample; i++)
                         {
                             // noise counter...
-                            if (++m_counterNoise >= m_freqNoise)
+                            if (++m_counterNoise >= nf)
                             {
                                 m_counterNoise = 0;
-                                m_noiseVal &= 0x1FFFF;
-                                m_noiseVal = (((m_noiseVal >> 16) ^ (m_noiseVal >> 13)) & 1) ^ ((m_noiseVal << 1) + 1);
-                                m_outNoiseABC = (byte)((m_noiseVal >> 16) & 1);
-                                m_outNoiseABC |= (byte)((m_outNoiseABC << 1) | (m_outNoiseABC << 2));
+                                if (((m_noiseVal + 1) & 2) != 0)
+                                {
+                                    m_outNoiseABC ^= 7;
+                                }
+                                if ((m_noiseVal & 1) != 0)
+                                {
+                                    m_noiseVal ^= 0x24000;
+                                }
+                                m_noiseVal >>= 1;
                             }
 
                             // signals counters...
