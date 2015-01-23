@@ -35,7 +35,6 @@
 
 
 using System;
-using System.IO;
 
 namespace ZipLib.Core
 {

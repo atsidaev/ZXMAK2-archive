@@ -44,8 +44,6 @@ using System.IO;
 using System.Security.Cryptography;
 #endif
 
-using ZipLib.Zip.Compression;
-using ZipLib.Checksums;
 
 namespace ZipLib.Zip.Compression.Streams 
 {
