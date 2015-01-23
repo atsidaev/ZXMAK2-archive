@@ -13,15 +13,12 @@
  * You should have received a copy of the GNU General Public License along with z80gdbserver. 
  * If not, see http://www.gnu.org/licenses/.
  */
-
 using System;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Interfaces;
+
 
 namespace ZXMAK2.Hardware.GdbServer.Gdb
 {

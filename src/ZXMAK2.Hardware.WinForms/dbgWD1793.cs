@@ -1,5 +1,4 @@
 using System;
-using System.Windows.Forms;
 
 using ZXMAK2.Hardware.Circuits.Fdd;
 using ZXMAK2.Host.Presentation.Interfaces;
