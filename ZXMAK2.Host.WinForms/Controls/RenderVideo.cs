@@ -589,9 +589,11 @@ namespace ZXMAK2.Host.WinForms.Controls
                             var graphRender = GetGraph(_renderGraph, ref _renderGraphIndex);
                             var graphLoad = GetGraph(_loadGraph, ref _loadGraphIndex);
                             //var graphCopy = GetGraph(m_copyGraph, ref m_copyGraphIndex);
-                            var maxTime = Math.Max(graphRender.Max(), graphLoad.Max());
                             var limitDisplay = (double)Stopwatch.Frequency / D3D.DisplayMode.RefreshRate;
                             var limit50 = (double)Stopwatch.Frequency / 50F;
+                            var maxTime = Math.Max(graphRender.Max(), graphLoad.Max());
+                            maxTime = Math.Max(maxTime, limit50);
+                            maxTime = Math.Max(maxTime, limitDisplay);
                             var graphRect = new Rectangle(
                                 textRect.Left,
                                 textRect.Top + textRect.Height,
