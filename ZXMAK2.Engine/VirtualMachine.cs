@@ -56,7 +56,7 @@ namespace ZXMAK2.Engine
             Spectrum = new Spectrum();
             Spectrum.UpdateState += OnUpdateState;
             Spectrum.Breakpoint += OnBreakpoint;
-            Spectrum.UpdateFrame += OnUpdateFrame;
+            Spectrum.BusManager.FrameReady += Bus_OnFrameReady;
             Spectrum.BusManager.CommandManager = commandManager;
             Spectrum.BusManager.ConfigChanged += BusManager_OnConfigChanged;
         }
@@ -198,6 +198,7 @@ namespace ZXMAK2.Engine
         #endregion Config
 
         private uint[][] m_soundBuffers;
+        private IUlaDevice m_ula;
 
         private void OnUpdateSound()
         {
@@ -223,7 +224,7 @@ namespace ZXMAK2.Engine
             {
                 return;
             }
-            var ula = Spectrum.BusManager.FindDevice<IUlaDevice>();
+            var ula = m_ula ?? Spectrum.BusManager.FindDevice<IUlaDevice>();
             var videoData = ula != null && ula.VideoData != null ? ula.VideoData : m_blankData;
             m_host.Video.PushFrame(
                 new VideoFrame(
@@ -234,14 +235,14 @@ namespace ZXMAK2.Engine
                 isRequested);
         }
 
-        private void OnUpdateFrame(object sender, EventArgs e)
+        private void Bus_OnFrameReady()
         {
             if (m_host == null)
             {
                 return;
             }
-            OnUpdateSound();
             OnUpdateVideo(false);
+            OnUpdateSound();
         }
 
         /// <summary>
@@ -305,6 +306,7 @@ namespace ZXMAK2.Engine
                         list.Add(renderer.AudioBuffer);
                     }
                     m_soundBuffers = list.ToArray();
+                    m_ula = Spectrum.BusManager.FindDevice<IUlaDevice>();
 
                     // main emulation loop
                     while (Spectrum.IsRunning)
@@ -338,6 +340,7 @@ namespace ZXMAK2.Engine
                     }
 
                     m_soundBuffers = null;
+                    m_ula = null;
                 }
             }
             catch (Exception ex)
