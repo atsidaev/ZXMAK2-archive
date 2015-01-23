@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Hardware.Adlers.Core;
