@@ -14,8 +14,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private Size _originalSize;
 
-        private bool _isInitialised = false;
-        private bool _needRepaint = true;
+        //private bool _isInitialised = false;
+        //private bool _needRepaint = true;
 
         private IDebuggable _spectrum = null;
 
@@ -25,7 +25,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         public void Init()
         {
-            _isInitialised = true;
+            //_isInitialised = true;
             _originalSize = this.Size;
         }
         public void Init(IDebuggable i_spectrum, byte i_gridWidth, byte i_gridHeight)
@@ -56,13 +56,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
         public void setGridWidth(byte i_newWidth )
         {
             X_BIT_COUNT = i_newWidth;
-            _needRepaint = true;
+            //_needRepaint = true;
             //this.Draw(null);
         }
         public void setGridHeight(byte i_newHeight)
         {
             Y_BIT_COUNT = i_newHeight;
-            _needRepaint = true;
+            //_needRepaint = true;
             //this.Draw(null);
         }
 
@@ -103,7 +103,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     }
             }
 
-            _needRepaint = false;
+            //_needRepaint = false;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -124,7 +124,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             _gridBits[pixelClicked / 8][pixelClicked % 8] = setValue;
 
             //set zx memory
-            _needRepaint = true;
+            //_needRepaint = true;
             this.Draw(null);
 
             return pixelClicked;
