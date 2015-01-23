@@ -209,6 +209,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                     {
                         break;
                     }
+                    //RequestPresentAsync();
                 }
             }
             catch (Exception ex)
@@ -236,7 +237,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             var timeStamp = Stopwatch.GetTimestamp();
             var time50 = Stopwatch.Frequency / refreshRate;
             var delta = timeStamp - _lastBlankStamp;
-            if (delta > time50)
+            if (delta >= time50)
             {
                 // some frames was missed, so try to catch up
                 _lastBlankStamp += time50;
@@ -514,26 +515,24 @@ namespace ZXMAK2.Host.WinForms.Controls
                         PushGraphValue(_renderGraph, ref _renderGraphIndex, _fpsRender.InstantTime);
                     }
 
-                    _sprite.Begin(SpriteFlags.None);
-
-                    D3D.SamplerState[0].MinFilter = Smoothing ? TextureFilter.Anisotropic : TextureFilter.None;
-                    D3D.SamplerState[0].MagFilter = Smoothing ? TextureFilter.Linear : TextureFilter.None;
-
                     var wndSize = GetDeviceSize();
                     var dstSize = GetDestinationSize(wndSize, GetSurfaceScaledSize());
                     var dstPos = GetDestinationPos(wndSize, dstSize);
-
                     var srcRect = new Rectangle(
                         0,
                         0,
                         _surfaceSize.Width,
                         _surfaceSize.Height);
+
+                    _sprite.Begin(SpriteFlags.None);
+                    D3D.SamplerState[0].MinFilter = Smoothing ? TextureFilter.Anisotropic : TextureFilter.None;
+                    D3D.SamplerState[0].MagFilter = Smoothing ? TextureFilter.Linear : TextureFilter.None;
                     _sprite.Draw2D(
                        _texture,
                        srcRect,
                        dstSize,
                        dstPos,
-                       0x00FFFFFF);
+                       -1);
                     _sprite.End();
                     
                     if (MimicTv)
@@ -543,6 +542,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                             0,
                             _surfaceSize.Width,
                             _surfaceSize.Height*MimicTvRatio);
+                        
                         _sprite.Begin(SpriteFlags.AlphaBlend);
                         _sprite.Draw2D(
                             _textureMaskTv,
@@ -552,10 +552,6 @@ namespace ZXMAK2.Host.WinForms.Controls
                             -1);        
                         _sprite.End();
                     }
-
-
-                    //D3D.SamplerState[0].MinFilter = min;
-                    //D3D.SamplerState[0].MagFilter = mag;
 
                     if (DebugInfo)
                     {
