@@ -14,7 +14,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
         private const int N = 4096;    /* Size of string buffer */
         private const int F = 60;    /* Size of look-ahead buffer */
         private const int THRESHOLD = 2;
-        private const int NIL = N;    /* End of tree's node  */
+        //private const int NIL = N;    /* End of tree's node  */
 
         #endregion
 
