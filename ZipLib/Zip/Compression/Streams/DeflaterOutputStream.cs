@@ -39,7 +39,6 @@
 using System;
 using System.IO;
 using ZipLib.Checksums;
-using ZipLib.Zip.Compression;
 
 namespace ZipLib.Zip.Compression.Streams 
 {
