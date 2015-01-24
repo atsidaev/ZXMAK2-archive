@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandParseException.cs" />
+    <Compile Include="ConvertRadix.cs" />
     <Compile Include="Core\GraphicsTools.cs" />
     <Compile Include="Debugger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
