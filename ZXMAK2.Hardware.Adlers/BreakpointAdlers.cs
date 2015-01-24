@@ -48,7 +48,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 }
             }
 
-            if (!Info.isOn)
+            if (!Info.IsOn)
                 return false;
 
             //ushort leftValue = 0;
@@ -79,7 +79,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 }
             }
 
-            if (!Info.isOn)
+            if (!Info.IsOn)
                 return false;
 
             ushort leftValue = 0;

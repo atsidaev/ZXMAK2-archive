@@ -42,7 +42,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         public bool IsConditionEquals { get; set; } // true - if values must be equal
 
         //is active
-        public bool isOn;
+        public bool IsOn { get; set; }
 
         //original breakpoint string(raw data get from dbg command line)
         public string BreakpointString { get; set; }
@@ -292,7 +292,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 var number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
                 return ConvertRadix.ParseUInt16(number, 16);
             }
-            return ConvertRadix.ParseUInt16(inputTrimmed, 16);
+            return ConvertRadix.ParseUInt16(inputTrimmed, 10);
         }
 
         public static bool isRegistry(string input)
