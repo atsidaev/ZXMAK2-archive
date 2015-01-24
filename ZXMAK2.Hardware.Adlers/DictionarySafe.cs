@@ -87,7 +87,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     if (_dict.TryGetValue(key, out value))
                         return value;
                     else
-                        throw new Exception("Breakpoint with ID:" + key + " not found !" );
+                        throw new CommandParseException("Breakpoint with ID:" + key + " not found !" );
                 }
             }
             set
