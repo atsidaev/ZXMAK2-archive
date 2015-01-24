@@ -6,7 +6,7 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Hardware.Adlers;
 
 
-namespace ZXMAK2.Hardware.Adlers.Views
+namespace ZXMAK2.Hardware.Adlers
 {
     #region Debugger enums/structs, ...
     // enum BreakPointConditionType

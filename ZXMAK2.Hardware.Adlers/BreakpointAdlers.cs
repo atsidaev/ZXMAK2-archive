@@ -2,7 +2,7 @@
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 
-namespace ZXMAK2.Hardware.Adlers.Views
+namespace ZXMAK2.Hardware.Adlers
 {
     public class BreakpointAdlers : Breakpoint
     {
