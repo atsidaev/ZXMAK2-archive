@@ -3,52 +3,56 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Reflection.Emit;
 using ZXMAK2.Engine.Cpu;
+using ZXMAK2.Hardware.Adlers;
 
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {
-    //CIL
-    public delegate TRetVal checkBreakpointDelegate<TRetVal>();
-
     #region Debugger enums/structs, ...
     // enum BreakPointConditionType
     // e.g.: 1.) memoryVsValue = left is memory reference, right is number(#9C40, %1100, 6755, ...)
     //       2.) valueVsRegister = left is value, right is register value
     //
-    public enum BreakPointConditionType { memoryVsValue, valueVsRegister, registryVsValue, registryMemoryReferenceVsValue, memoryRead };
+    public enum BreakPointConditionType 
+    { 
+        memoryVsValue, 
+        valueVsRegister, 
+        registryVsValue, 
+        registryMemoryReferenceVsValue, 
+        memoryRead 
+    };
 
     //Information about extended breakpoint
     public class BreakpointInfo
     {
-        public BreakPointConditionType accessType;
+        public BreakPointConditionType AccessType { get; set; }
 
         //condition in string, e.g.: "pc", "(#9C40)"
-        public string leftCondition;
-        public string rightCondition;
+        public string LeftCondition { get; set; }
+        public string RightCondition { get; set; }
 
         //value of condition(if relevant), valid for whole values or memory access
-        public ushort leftValue;
-        public ushort rightValue;
+        public ushort LeftValue { get; set; }
+        public ushort RightValue { get; set; }
 
-        public int leftRegistryArrayIndex;
+        public int LeftRegistryArrayIndex { get; set; }
 
         //condition type
-        public string conditionTypeSign;
-        public bool conditionEquals; // true - if values must be equal
+        public string ConditionTypeSign { get; set; }
+        public bool IsConditionEquals { get; set; } // true - if values must be equal
 
         //is active
         public bool isOn;
 
         //original breakpoint string(raw data get from dbg command line)
-        public string breakpointString;
+        public string BreakpointString { get; set; }
 
         //value mask - e.g.: for F registry => 0xFF, for A registry => 0xFF00; for AF => isMasked = false
-        public bool is8Bit;
+        public bool Is8Bit { get; set; }
 
-        public checkBreakpointDelegate<bool> checkBreakpoint;
+        public Func<bool> CheckBreakpoint { get; set; }
 
-        public void SetBreakpointCheckMethod( checkBreakpointDelegate<bool> i_checkBreakpoint
-                                            )
+        public void SetBreakpointCheckMethod(Func<bool> checkBreakpoint)
         {
             /*switch (i_brkAccessType)
             {
@@ -59,14 +63,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     checkBreakpoint = (checkBreakpointDelegate<bool>)i_emittedCode.CreateDelegate(typeof(checkBreakpointDelegate<bool>), (VirtualMachine)i_spectrum);
                     break;
             }*/
-            checkBreakpoint = i_checkBreakpoint;
+            CheckBreakpoint = checkBreakpoint;
         }
 
         public BreakpointInfo()
         {
-            conditionEquals = false;
-            leftCondition = String.Empty;
-            rightCondition = String.Empty;
+            IsConditionEquals = false;
+            LeftCondition = string.Empty;
+            RightCondition = string.Empty;
         }
     }
     #endregion
@@ -76,11 +80,31 @@ namespace ZXMAK2.Hardware.Adlers.Views
         public static string[] Regs16Bit = new string[] { "AF", "BC", "DE", "HL", "IX", "IY", "SP", "IR", "PC", "AF'", "BC'", "DE'", "HL'" };
         public static char[]   Regs8Bit  = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'H', 'L' };
 
-        public enum CommandType { memoryOrRegistryManipulation, breakpointManipulation, gotoAdress, removeBreakpoint, enableBreakpoint,
-                                  disableBreakpoint, loadBreakpointsListFromFile, saveBreakpointsListToFile, showAssembler, 
-                                  showGraphicsEditor, Unidentified
-                                };
-        public enum BreakPointAccessType { memoryAccess, memoryWrite, memoryChange, memoryRead, registryValue, All, Undefined };
+        public enum CommandType 
+        { 
+            memoryOrRegistryManipulation, 
+            breakpointManipulation, 
+            gotoAdress, 
+            removeBreakpoint, 
+            enableBreakpoint,
+            disableBreakpoint, 
+            loadBreakpointsListFromFile, 
+            saveBreakpointsListToFile, 
+            showAssembler, 
+            showGraphicsEditor, 
+            Unidentified
+        };
+
+        public enum BreakPointAccessType 
+        { 
+            memoryAccess, 
+            memoryWrite, 
+            memoryChange, 
+            memoryRead, 
+            registryValue, 
+            All, 
+            Undefined 
+        };
 
         public enum CharType { Number = 0, Letter, Other };
 
@@ -96,7 +120,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         public static string DbgOpenAssembler = "asm"; // opens Assembler Form
         public static string DbgOpenGraphicsEditor = "ge"; // opens Graphics editor
 
-        static char[]  debugDelimitersOther = new char[] { '(', '=', ')', '!' };
+        private static readonly char[] DebugDelimitersOther = new char[] { '(', '=', ')', '!' };
 
         // Main method - returns string list with items entered in debug command line, e.g. : 
         //
@@ -106,34 +130,30 @@ namespace ZXMAK2.Hardware.Adlers.Views
         // 3. item: #9C40
         // 
         // Must be working: ld hl,  #4000; br (pc)==#4000; br (pc)   ==#af; br a<#FE; ld ( 16384  ), 255; ...
-        public static List<string> ParseCommand(string i_dbgCommand)
+        public static List<string> ParseCommand(string dbgCommand)
         {
             try
             {
-                string       pattern = @"(\s+|,|==|!=|<|>)";
-                List<string> dbgParsed = new List<string>();
-                dbgParsed.Clear();
-
-                string dbgCommand = TrimCommand(i_dbgCommand);
-
+                var pattern = @"(\s+|,|==|!=|<|>)";
+                var dbgParsed = new List<string>();
+                dbgCommand = TrimCommand(dbgCommand);
                 foreach (string result in Regex.Split(dbgCommand, pattern)) 
                 {
                     if (!String.IsNullOrEmpty(result) && result.Trim() != "" && result != ",")
                         dbgParsed.Add(result);
                 }
-
                 return dbgParsed;
             }
-            catch (Exception /*ex*/)
+            catch (Exception ex)
             {
-                //Logger.Error(ex); no need to log incorrect command! This is intended. 
+                Logger.Error(ex);
                 return null;
             }
         }
 
-        private static string TrimCommand(string i_strIn)
+        private static string TrimCommand(string strIn)
         {
-            string strOut = i_strIn;
+            var strOut = strIn;
 
             //trim all whitespaces after '(' until next character
             while (strOut.Contains("( "))
@@ -187,13 +207,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (Char.IsLetter(inputChar))
                 return CharType.Letter;
 
-            foreach (char c in debugDelimitersOther)
+            foreach (char c in DebugDelimitersOther)
             {
                 if (c == inputChar)
                     return CharType.Other;
             }
 
-            throw new Exception("Incorrect character found: " + inputChar);
+            throw new CommandParseException("Incorrect character found: " + inputChar);
         }
 
         //Method will resolve whether command entered is memory modification or breakpoint setting
@@ -258,31 +278,21 @@ namespace ZXMAK2.Hardware.Adlers.Views
         //
         public static UInt16 convertNumberWithPrefix(string input) //Prefix: % - binary, # - hexadecimal
         {
-            string inputTrimmed = input.Trim();
-
-            try
+            var inputTrimmed = input.Trim();
+            // % - binary
+            if (inputTrimmed[0] == '%')
             {
-                // % - binary
-                if (inputTrimmed[0] == '%')
-                {
-                    string number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
-                    return Convert.ToUInt16(number, 2);
-                }
-
-                // # - hexadecimal
-                if (inputTrimmed[0] == '#')
-                {
-                    string number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
-                    return Convert.ToUInt16(number, 16);
-                }
-
-                return Convert.ToUInt16(inputTrimmed); // maybe decimal number
+                var number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
+                return ConvertRadix.ParseUInt16(number, 2);
             }
-            catch (Exception /*ex*/)
+
+            // # - hexadecimal
+            if (inputTrimmed[0] == '#')
             {
-                //Logger.Error(ex); no need to log the error here...it is not an app error when user enters incorrect number !
-                throw new Exception("Incorrect number in convertNumberWithPrefix(), number=" + input.ToString());
+                var number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
+                return ConvertRadix.ParseUInt16(number, 16);
             }
+            return ConvertRadix.ParseUInt16(inputTrimmed, 16);
         }
 
         public static bool isRegistry(string input)
@@ -354,7 +364,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         public static UInt16 getReferencedMemoryPointer(string input)
         {
             if (!isMemoryReference(input))
-                throw new Exception("Incorrect memory reference: " + input);
+                throw new CommandParseException("Incorrect memory reference: " + input);
 
             return convertNumberWithPrefix(input.Substring(1, input.Length - 2));
         }
@@ -363,23 +373,24 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             try
             {
-                string left  = breakpoint[1];
-                string right = breakpoint[3];
+                var left  = breakpoint[1];
+                var right = breakpoint[3];
 
                 if (isMemoryReference(left) || isMemoryReference(right))
+                {
                     return BreakPointAccessType.memoryChange;
+                }
             }
             catch(Exception ex)
             {
                 Logger.Error(ex);
             }
-
             return BreakPointAccessType.Undefined;
         }
 
-        public static ushort getRegistryValueByName(CpuRegs regs, string i_registryName)
+        public static ushort getRegistryValueByName(CpuRegs regs, string registryName)
         {
-            string registryName = i_registryName.ToUpper();
+            registryName = registryName.ToUpperInvariant();
 
             switch (registryName)
             {
@@ -414,13 +425,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 case "MW (Memptr Word)":
                     return regs.MW;
                 default:
-                    throw new Exception("Bad registry name: " + i_registryName);
+                    throw new CommandParseException("Bad registry name: " + registryName);
             }
         }
 
         public static int getRegistryArrayIndex(string registry)
         {
-            switch (registry.ToUpper())
+            switch (registry.ToUpperInvariant())
             {
                 case "AF":
                 case "F":
@@ -453,22 +464,27 @@ namespace ZXMAK2.Hardware.Adlers.Views
             return -1;
         }
 
-        public static void EmitCondition(ILGenerator i_ILGenerator, string i_condition)
+        public static void EmitCondition(ILGenerator ilGenerator, string condition)
         {
-            switch (i_condition)
+            switch (condition)
             {
                 case "==":
-                    i_ILGenerator.Emit(OpCodes.Ceq);
+                    ilGenerator.Emit(OpCodes.Ceq);
                     break;
                 case "!=":
-                    //ToDo: i_ILGenerator.Emit(OpCodes.Ceq);
+                    ilGenerator.Emit(OpCodes.Ceq);
+                    ilGenerator.Emit(OpCodes.Ldc_I4, 0);
+                    ilGenerator.Emit(OpCodes.Ceq);
                     break;
                 case ">":
-                    i_ILGenerator.Emit(OpCodes.Cgt);
+                    ilGenerator.Emit(OpCodes.Cgt);
                     break;
                 case "<":
-                    i_ILGenerator.Emit(OpCodes.Clt);
+                    ilGenerator.Emit(OpCodes.Clt);
                     break;
+                default:
+                    throw new CommandParseException(
+                        string.Format("Unknown condition: {0}", condition));
             }
         }
     }

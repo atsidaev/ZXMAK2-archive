@@ -15,7 +15,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         public BreakpointAdlers(BreakpointInfo info)
         {
-            Label = info.breakpointString;
+            Label = info.BreakpointString;
             Check = checkInfo;
             Address = null;
             Info = info;
@@ -53,14 +53,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             //ushort leftValue = 0;
 
-            switch (Info.accessType)
+            switch (Info.AccessType)
             {
                 // e.g.: PC == #9C40
                 case BreakPointConditionType.registryVsValue: //only value pair, e.g: BC, HL, DE, ...ToDo:
-                    return Info.checkBreakpoint();
+                    return Info.CheckBreakpoint();
                 // e.g.: (PC) == #AFC9 - instruction breakpoint; must be here because the registry change must be taking into account, not memory change
                 case BreakPointConditionType.registryMemoryReferenceVsValue:
-                    return Info.checkBreakpoint();
+                    return Info.CheckBreakpoint();
                 default:
                     return false;
             }
@@ -84,20 +84,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             ushort leftValue = 0;
 
-            switch (Info.accessType)
+            switch (Info.AccessType)
             {
                 // e.g.: (#9C40) != #2222
                 case BreakPointConditionType.memoryVsValue:
-                    return Info.checkBreakpoint();
+                    return Info.CheckBreakpoint();
                 default:
                     break;
             }
 
             //condition
-            if (Info.conditionEquals) // is equal
-                return leftValue == Info.rightValue;
+            if (Info.IsConditionEquals) // is equal
+                return leftValue == Info.RightValue;
             else
-                return leftValue != Info.rightValue;
+                return leftValue != Info.RightValue;
         }
     }
 }
