@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace ZXMAK2.Hardware.Adlers.Views
+namespace ZXMAK2.Hardware.Adlers
 {
     public class DictionarySafe<TKey, TValue> : IDictionary<TKey, TValue>
     {
