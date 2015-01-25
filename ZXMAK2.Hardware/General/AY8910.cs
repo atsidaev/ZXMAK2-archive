@@ -356,6 +356,7 @@ namespace ZXMAK2.Hardware.General
         // ym (для громкости канала используется 2*i+1) для огибающей - все 32 шага
         private static ushort[] s_volumeTable = new ushort[32]
 		{
+            //ZXMAK1
             0x0000, 0x0000, 0x00F8, 0x01C2, 0x029E, 0x033A, 0x03F2, 0x04D7,
             0x0610, 0x077F, 0x090A, 0x0A42, 0x0C3B, 0x0EC2, 0x1137, 0x13A7,
             0x1750, 0x1BF9, 0x20DF, 0x2596, 0x2C9D, 0x3579, 0x3E55, 0x4768,
@@ -465,18 +466,18 @@ namespace ZXMAK2.Hardware.General
                         for (int i = 0; i < m_tactsPerSample; i++)
                         {
                             // noise counter...
-                            if (++m_counterNoise >= nf)
+                            if (++m_counterNoise >= nf*2)
                             {
                                 m_counterNoise = 0;
-                                if (((m_noiseVal + 1) & 2) != 0)
-                                {
-                                    m_outNoiseABC ^= 7;
-                                }
-                                if ((m_noiseVal & 1) != 0)
-                                {
-                                    m_noiseVal ^= 0x24000;
-                                }
-                                m_noiseVal >>= 1;
+
+                                m_noiseVal &= 0x1FFFF;
+                                m_noiseVal = (((m_noiseVal >> 16) ^ (m_noiseVal >> 13)) & 1) ^ ((m_noiseVal << 1) + 1);
+                                m_outNoiseABC = (byte)((m_noiseVal >> 16) & 1);
+                                m_outNoiseABC |= (byte)((m_outNoiseABC << 1) | (m_outNoiseABC << 2));
+
+                                //var output = (m_noiseVal + 1) & 2;
+                                //m_outNoiseABC ^= (byte)((output << 1) | output | (output >> 1));
+                                //m_noiseVal = (m_noiseVal >> 1) ^ ((m_noiseVal & 1) << 14) ^ ((m_noiseVal & 1) << 16);
                             }
 
                             // signals counters...
