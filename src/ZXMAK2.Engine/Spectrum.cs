@@ -34,6 +34,7 @@ namespace ZXMAK2.Engine
 
         public Spectrum()
         {
+            BusManager.FrameReady += () => _frameEmpty = false;
         }
 
         public void Dispose()
@@ -89,13 +90,17 @@ namespace ZXMAK2.Engine
             OnUpdateState();
         }
 
+        private bool _frameEmpty;
+
         public void ExecuteFrame()
         {
             var frameTact = _bus.GetFrameTact();
             var cpu = _bus.Cpu;
             var t = cpu.Tact - frameTact + _bus.FrameTactCount;
 
-            while (t > cpu.Tact/* && IsRunning*/)
+            _frameEmpty = true;
+
+            while (_frameEmpty) //t > cpu.Tact/* && IsRunning*/)
             {
                 // Alex: performance critical block, do not modify!
                 _bus.ExecCycle();

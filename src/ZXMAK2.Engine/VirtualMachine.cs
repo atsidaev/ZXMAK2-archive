@@ -231,18 +231,47 @@ namespace ZXMAK2.Engine
                     videoData,
                     Spectrum.BusManager.IconDescriptorArray,
                     DebugFrameStartTact,
-                    m_instantTime),
+                    m_instantUpdateTime,
+                    m_instantRenderTime),
                 isRequested);
         }
+
+        private long _renderTime;
 
         private void Bus_OnFrameReady()
         {
             if (m_host == null)
             {
+                _renderTime = 0;
                 return;
+            }
+            var startTime = Stopwatch.GetTimestamp();
+            // frame sync
+            // need to call before executeFrame
+            // because first action will be PushFrame
+            switch (SyncSource)
+            {
+                case SyncSource.Time:
+                    m_syncTime.WaitFrame();
+                    break;
+                case SyncSource.Sound:
+                    var sound = m_host.Sound;
+                    if (sound != null)
+                    {
+                        sound.WaitFrame();
+                    }
+                    break;
+                case SyncSource.Video:
+                    var video = m_host.Video;
+                    if (video != null)
+                    {
+                        video.WaitFrame();
+                    }
+                    break;
             }
             OnUpdateVideo(false);
             OnUpdateSound();
+            _renderTime = Stopwatch.GetTimestamp() - startTime;
         }
 
         /// <summary>
@@ -292,8 +321,6 @@ namespace ZXMAK2.Engine
 
                 var bus = Spectrum.BusManager;
                 var host = m_host;
-                var sound = host != null ? host.Sound : null;
-                var video = host != null ? host.Video : null;
                 using (var input = new InputAggregator(
                     host,
                     bus.FindDevices<IKeyboardDevice>().ToArray(),
@@ -312,31 +339,11 @@ namespace ZXMAK2.Engine
                     while (Spectrum.IsRunning)
                     {
                         input.Scan();
-
-                        // frame sync
-                        // need to call before executeFrame
-                        // because first action will be PushFrame
-                        switch (SyncSource)
-                        {
-                            case SyncSource.Time:
-                                m_syncTime.WaitFrame();
-                                break;
-                            case SyncSource.Sound:
-                                if (sound != null)
-                                {
-                                    sound.WaitFrame();
-                                }
-                                break;
-                            case SyncSource.Video:
-                                if (video != null)
-                                {
-                                    video.WaitFrame();
-                                }
-                                break;
-                        }
                         var startTime = Stopwatch.GetTimestamp();
                         Spectrum.ExecuteFrame();
-                        m_instantTime = Stopwatch.GetTimestamp() - startTime;
+                        var stopTime = Stopwatch.GetTimestamp();
+                        m_instantUpdateTime = stopTime - startTime - _renderTime;
+                        m_instantRenderTime = _renderTime;
                     }
 
                     m_soundBuffers = null;
@@ -349,7 +356,8 @@ namespace ZXMAK2.Engine
             }
         }
 
-        private double m_instantTime;
+        private double m_instantUpdateTime;
+        private double m_instantRenderTime;
 
         #endregion
 

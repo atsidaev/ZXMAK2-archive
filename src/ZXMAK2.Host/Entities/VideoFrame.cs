@@ -11,19 +11,22 @@ namespace ZXMAK2.Host.Entities
         public IIconDescriptor[] Icons { get; private set; }
 
         public int StartTact { get; private set; }
-        public double InstantTime { get; private set; }
+        public double InstantUpdateTime { get; private set; }
+        public double InstantRenderTime { get; private set; }
 
 
         public VideoFrame(
             IVideoData data, 
             IIconDescriptor[] icons, 
             int startTact,
-            double instantTime)
+            double instantUpdateTime,
+            double instantRenderTime)
         {
             VideoData = data;
             Icons = icons;
             StartTact = startTact;
-            InstantTime = instantTime;
+            InstantUpdateTime = instantUpdateTime;
+            InstantRenderTime = instantRenderTime;
         }
     }
 }
