@@ -5,18 +5,17 @@ namespace ZXMAK2.Host.WinForms.Tools
 {
     public class FrameResampler
     {
-        private readonly int _targetRate;
-        private int _sourceRate;
+        private readonly double _targetRate;
+        private double _sourceRate;
         private double _ratio;
-        private double _time;
         
 
-        public FrameResampler(int targetRate)
+        public FrameResampler(double targetRate)
         {
             _targetRate = targetRate;
         }
 
-        public int SourceRate
+        public double SourceRate
         {
             get { return _sourceRate; }
             set 
@@ -30,24 +29,30 @@ namespace ZXMAK2.Host.WinForms.Tools
             }
         }
 
+        public double Time { get; private set; }
+
         /// <summary>
         /// Switch to the next source frame, returns true when target frame should be updated
         /// </summary>
         public bool Next()
         {
-            _time += _ratio;
-            var isSkipped = _time < 1D;
-            if (_time >= 1D)
+            var time = Time + _ratio;
+            var isSkipped = time < 1D;
+            if (time >= 1D)
             {
-                _time -= Math.Floor(_time);
+                time -= Math.Floor(time);
+                if (time >= 1D)
+                {
+                    time = 1D;
+                }
             }
+            Time = time;
             return !isSkipped;
         }
 
         private void Update()
         {
-            _time = 0;
-            _ratio = (double)_targetRate / (double)_sourceRate;
+            _ratio = _targetRate / _sourceRate;
         }
     }
 }

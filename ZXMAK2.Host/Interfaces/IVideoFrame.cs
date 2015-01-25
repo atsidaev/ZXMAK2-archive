@@ -8,6 +8,7 @@ namespace ZXMAK2.Host.Interfaces
         IIconDescriptor[] Icons { get; }
         
         int StartTact { get; }
-        double InstantTime { get; }
+        double InstantUpdateTime { get; }
+        double InstantRenderTime { get; }
     }
 }

@@ -17,6 +17,7 @@ using D3dFont = Microsoft.DirectX.Direct3D.Font;
 using D3dSprite = Microsoft.DirectX.Direct3D.Sprite;
 using D3dTexture = Microsoft.DirectX.Direct3D.Texture;
 using D3dTextureLoader = Microsoft.DirectX.Direct3D.TextureLoader;
+using System.Runtime.InteropServices;
 
 
 namespace ZXMAK2.Host.WinForms.Controls
@@ -38,22 +39,24 @@ namespace ZXMAK2.Host.WinForms.Controls
         private readonly Dictionary<IIconDescriptor, IconTextureWrapper> _iconWrapperDict = new Dictionary<IIconDescriptor, IconTextureWrapper>();
         private readonly FrameResampler _frameResampler = new FrameResampler(50);
 
-        private D3dSprite _sprite = null;
-        private D3dTexture _texture = null;
-        private D3dTexture _textureMaskTv = null;
-        private D3dSprite _iconSprite = null;
-        private D3dFont _font = null;
+        private D3dSprite _sprite;
+        private D3dTexture _texture0;
+        private D3dTexture _textureMaskTv;
+        private D3dSprite _iconSprite;
+        private D3dFont _font;
         private Size _surfaceSize = new Size(0, 0);
         private Size _textureSize = new Size(0, 0);
         private Size _textureMaskTvSize = new Size(0, 0);
 
         private VideoFilterDelegate _videoFilter;
-        private readonly FpsMonitor _fpsUpdate = new FpsMonitor();
-        private readonly FpsMonitor _fpsRender = new FpsMonitor();
         private readonly double[] _renderGraph = new double[GraphLength];
         private readonly double[] _loadGraph = new double[GraphLength];
+        private readonly double[] _latencyGraph = new double[GraphLength];
+        private readonly double[] _updateGraph = new double[GraphLength];
         //private readonly double[] m_copyGraph = new double[GraphLength];
         //private int m_copyGraphIndex;
+        private int _updateGraphIndex;
+        private int _latencyGraphIndex;
         private int _renderGraphIndex;
         private int _loadGraphIndex;
         private int _graphDelayCounter;
@@ -66,6 +69,9 @@ namespace ZXMAK2.Host.WinForms.Controls
         private bool _isDebugInfo;
         private bool _isCancelWait;
 
+        private long _lastUpdateStamp;
+        private long _lastRenderStamp;
+        private int _lastLatencyIndex;
 
         #endregion Fields
 
@@ -93,8 +99,11 @@ namespace ZXMAK2.Host.WinForms.Controls
                 }
                 _isDebugInfo = value;
                 _graphDelayCounter = 0;
+                _lastRenderStamp = Stopwatch.GetTimestamp();
+                _lastUpdateStamp = Stopwatch.GetTimestamp();
                 ClearGraph(_renderGraph, ref _renderGraphIndex);
                 ClearGraph(_loadGraph, ref _loadGraphIndex);
+                ClearGraph(_updateGraph, ref _updateGraphIndex);
             }
         }
 
@@ -148,7 +157,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                     return;
                 }
                 _isRunning = value;
-                _fpsUpdate.Reset();
+                _lastUpdateStamp = Stopwatch.GetTimestamp();
+                _lastRenderStamp = Stopwatch.GetTimestamp();
                 _graphDelayCounter = 0;
                 //ClearGraph(m_renderGraph, ref m_renderGraphIndex);
                 //ClearGraph(m_loadGraph, ref m_loadGraphIndex);
@@ -197,9 +207,9 @@ namespace ZXMAK2.Host.WinForms.Controls
                     return;
                 }
                 var frameRate = D3D.DisplayMode.RefreshRate;
-                if (frameRate <= 0)
+                if (frameRate <= 50)
                 {
-                    frameRate = 75;
+                    frameRate = 50;
                 }
                 _frameResampler.SourceRate = frameRate;
                 while (!_isCancelWait)
@@ -209,7 +219,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                     {
                         break;
                     }
-                    //RequestPresentAsync();
+                    RequestPresentAsync();
                 }
             }
             catch (Exception ex)
@@ -234,8 +244,9 @@ namespace ZXMAK2.Host.WinForms.Controls
         private void WaitVBlank(int refreshRate)
         {
             // check if VBlank has already occurred 
+            var frequency = Stopwatch.Frequency;
             var timeStamp = Stopwatch.GetTimestamp();
-            var time50 = Stopwatch.Frequency / refreshRate;
+            var time50 = frequency / refreshRate;
             var delta = timeStamp - _lastBlankStamp;
             if (delta >= time50)
             {
@@ -258,7 +269,11 @@ namespace ZXMAK2.Host.WinForms.Controls
                 var delay = ((vtimeFrame - vtime) * 1000) / vfrequency;
                 if (delay > 5 && delay < 40)
                 {
+                    delay = delay - 1;
+                    timeStamp = Stopwatch.GetTimestamp();
                     Thread.Sleep(delay - 1);
+                    var realTime = (Stopwatch.GetTimestamp() - timeStamp) * 1000D / frequency;
+                    PushGraphValue(_latencyGraph, ref _latencyGraphIndex, realTime-delta);
                 }
             }
             while (!_isCancelWait && !D3D.RasterStatus.InVBlank)
@@ -267,16 +282,20 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
             _lastBlankStamp = Stopwatch.GetTimestamp();
         }
-        
+
         public void PushFrame(IVideoFrame frame, bool isRequested)
         {
             if (!isRequested)
             {
-                _fpsUpdate.Frame();
                 if (DebugInfo)
                 {
-                    PushGraphValue(_loadGraph, ref _loadGraphIndex, frame.InstantTime);
+                    var updateStamp = Stopwatch.GetTimestamp();
+                    var updateTime = updateStamp - _lastUpdateStamp;
+                    _lastUpdateStamp = updateStamp;
+                    PushGraphValue(_updateGraph, ref _updateGraphIndex, updateTime);
+                    PushGraphValue(_loadGraph, ref _loadGraphIndex, frame.InstantUpdateTime);
                 }
+                RequestPresentAsync();
             }
             _debugFrameStart = frame.StartTact;
             FrameSize = new Size(
@@ -288,7 +307,10 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
             UpdateIcons(frame.Icons);
             UpdateSurface(frame.VideoData);
-            RequestPresentAsync();
+            if (isRequested)
+            {
+                RequestPresentAsync();
+            }
         }
 
         #endregion IHostVideo
@@ -313,10 +335,10 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         protected override void OnDestroyDevice()
         {
-            if (_texture != null)
+            if (_texture0 != null)
             {
-                _texture.Dispose();
-                _texture = null;
+                _texture0.Dispose();
+                _texture0 = null;
             }
             if (_textureMaskTv != null)
             {
@@ -406,9 +428,9 @@ namespace ZXMAK2.Host.WinForms.Controls
                     {
                         InitVideoTextures(videoData.Size);
                     }
-                    if (_texture != null)
+                    if (_texture0 != null)
                     {
-                        using (GraphicsStream gs = _texture.LockRectangle(0, LockFlags.None))
+                        using (GraphicsStream gs = _texture0.LockRectangle(0, LockFlags.None))
                         {
                             fixed (int* srcPtr = videoData.Buffer)
                             {
@@ -418,7 +440,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                                 //PushGraphValue(m_copyGraph, ref m_copyGraphIndex, copyTime);
                             }
                         }
-                        _texture.UnlockRectangle(0);
+                        _texture0.UnlockRectangle(0);
                     }
                 }
                 catch (Exception ex)
@@ -438,17 +460,17 @@ namespace ZXMAK2.Host.WinForms.Controls
                 }
                 //base.ResizeContext(surfaceSize);
                 int potSize = GetPotSize(surfaceSize);
-                if (_texture != null)
+                if (_texture0 != null)
                 {
-                    _texture.Dispose();
-                    _texture = null;
+                    _texture0.Dispose();
+                    _texture0 = null;
                 }
                 if (_textureMaskTv != null)
                 {
                     _textureMaskTv.Dispose();
                     _textureMaskTv = null;
                 }
-                _texture = new D3dTexture(D3D, potSize, potSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+                _texture0 = new D3dTexture(D3D, potSize, potSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                 _textureSize = new Size(potSize, potSize);
                 _surfaceSize = surfaceSize;
 
@@ -507,132 +529,230 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             lock (SyncRoot)
             {
-                if (_texture != null)
+                if (_texture0 == null)
                 {
-                    _fpsRender.Frame();
-                    if (DebugInfo)
-                    {
-                        PushGraphValue(_renderGraph, ref _renderGraphIndex, _fpsRender.InstantTime);
-                    }
+                    return;
+                }
+                if (DebugInfo)
+                {
+                    var renderStamp = Stopwatch.GetTimestamp();
+                    var renderTime = renderStamp - _lastRenderStamp;
+                    _lastRenderStamp = renderStamp;
+                    PushGraphValue(_renderGraph, ref _renderGraphIndex, renderTime);
+                }
+                var wndSize = GetDeviceSize();
+                var dstRect = GetDestinationRect(wndSize, GetSurfaceScaledSize());
 
-                    var wndSize = GetDeviceSize();
-                    var dstRect = GetDestinationRect(wndSize, GetSurfaceScaledSize());
-                    var srcRect = new Rectangle(
-                        0,
-                        0,
-                        _surfaceSize.Width,
-                        _surfaceSize.Height);
-
-                    _sprite.Begin(SpriteFlags.None);
-                    D3D.SamplerState[0].MinFilter = Smoothing ? TextureFilter.Anisotropic : TextureFilter.None;
-                    D3D.SamplerState[0].MagFilter = Smoothing ? TextureFilter.Linear : TextureFilter.None;
-                    _sprite.Draw2D(
-                       _texture,
-                       srcRect,
-                       dstRect.Size,
-                       dstRect.Location,
-                       -1);
-                    _sprite.End();
-                    
-                    if (MimicTv)
-                    {
-                        var srcRectTv = new Rectangle(
-                            0,
-                            0,
-                            _surfaceSize.Width,
-                            _surfaceSize.Height*MimicTvRatio);
-                        
-                        _sprite.Begin(SpriteFlags.AlphaBlend);
-                        _sprite.Draw2D(
-                            _textureMaskTv,
-                            srcRectTv,
-                            dstRect.Size,
-                            dstRect.Location,
-                            -1);        
-                        _sprite.End();
-                    }
-
-                    if (DebugInfo)
-                    {
-                        var textValue = string.Format(
-                            "Render FPS: {0:F3}\nUpdate FPS: {1:F3}\nDevice FPS: {2}\nBack: [{3}, {4}]\nClient: [{5}, {6}]\nSurface: [{7}, {8}]\nFrameStart: {9}T",
-                            _fpsRender.Value,
-                            IsRunning ? _fpsUpdate.Value : (double?)null,
-                            D3D.DisplayMode.RefreshRate,
-                            wndSize.Width,
-                            wndSize.Height,
-                            ClientSize.Width,
-                            ClientSize.Height,
-                            _surfaceSize.Width,
-                            _surfaceSize.Height,
-                            _debugFrameStart);
-                        var textRect = _font.MeasureString(
-                            null,
-                            textValue,
-                            DrawTextFormat.NoClip,
-                            Color.Yellow);
-                        textRect = new Rectangle(
-                            textRect.Left,
-                            textRect.Top,
-                            Math.Max(textRect.Width + 10, GraphLength),
-                            textRect.Height);
-                        FillRect(textRect, Color.FromArgb(192, Color.Green));
-                        _font.DrawText(
-                            null,
-                            textValue,
-                            textRect,
-                            DrawTextFormat.NoClip,
-                            Color.Yellow);
-                        if (IsRunning)
-                        {
-                            // Draw graphs
-                            var graphRender = GetGraph(_renderGraph, ref _renderGraphIndex);
-                            var graphLoad = GetGraph(_loadGraph, ref _loadGraphIndex);
-                            //var graphCopy = GetGraph(m_copyGraph, ref m_copyGraphIndex);
-                            var limitDisplay = (double)Stopwatch.Frequency / D3D.DisplayMode.RefreshRate;
-                            var limit50 = (double)Stopwatch.Frequency / 50F;
-                            var maxTime = Math.Max(graphRender.Max(), graphLoad.Max());
-                            maxTime = Math.Max(maxTime, limit50);
-                            maxTime = Math.Max(maxTime, limitDisplay);
-                            var graphRect = new Rectangle(
-                                textRect.Left,
-                                textRect.Top + textRect.Height,
-                                GraphLength,
-                                (int)(wndSize.Height - textRect.Top - textRect.Height));
-                            FillRect(graphRect, Color.FromArgb(192, Color.Black));
-                            RenderGraph(graphRender, maxTime, graphRect, Color.FromArgb(196, Color.Lime));
-                            RenderGraph(graphLoad, maxTime, graphRect, Color.FromArgb(196, Color.Red));
-                            //RenderGraph(graphCopy, maxTime, graphRect, Color.FromArgb(196, Color.Yellow));
-                            RenderLimit(limitDisplay, maxTime, graphRect, Color.FromArgb(196, Color.Yellow));
-                            RenderLimit(limit50, maxTime, graphRect, Color.FromArgb(196, Color.Magenta));
-                        }
-                    }
-
-                    if (DisplayIcon)
-                    {
-                        var devIconSize = new SizeF(32, 32);
-                        var iconNumber = 1;
-                        foreach (var itw in _iconWrapperDict.Values)
-                        {
-                            if (!itw.Visible || itw.Texture == null)
-                            {
-                                continue;
-                            }
-                            var iconRect = new Rectangle(new Point(0, 0), itw.Size);
-                            var devIconPos = new PointF(D3D.PresentationParameters.BackBufferWidth - devIconSize.Width * iconNumber, 0);
-                            _iconSprite.Begin(SpriteFlags.AlphaBlend);
-                            _iconSprite.Draw2D(
-                               itw.Texture,
-                               iconRect,
-                               devIconSize,
-                               devIconPos,
-                               Color.FromArgb(255, 255, 255, 255));
-                            _iconSprite.End();
-                            iconNumber++;
-                        }
-                    }
+                RenderFrame(dstRect, _surfaceSize);
+                if (MimicTv)
+                {
+                    RenderMaskTv(dstRect, _surfaceSize);
+                }
+                if (DebugInfo)
+                {
+                    RenderDebugInfo(wndSize);
+                }
+                if (DisplayIcon)
+                {
+                    RenderIcons();
                 }
             }
+        }
+
+        private void RenderFrame(RectangleF dstRect, Size size)
+        {
+            var srcRect = new Rectangle(
+                0,
+                0,
+                size.Width,
+                size.Height);
+
+            _sprite.Begin(SpriteFlags.None);
+            D3D.SamplerState[0].MinFilter = Smoothing ? TextureFilter.Anisotropic : TextureFilter.None;
+            D3D.SamplerState[0].MagFilter = Smoothing ? TextureFilter.Linear : TextureFilter.None;
+            _sprite.Draw2D(
+               _texture0,
+               srcRect,
+               dstRect.Size,
+               dstRect.Location,
+               -1);
+            _sprite.End();
+        }
+
+        private void RenderMaskTv(RectangleF dstRect, Size size)
+        {
+            var srcRectTv = new Rectangle(
+                0,
+                0,
+                size.Width,
+                size.Height * MimicTvRatio);
+
+            _sprite.Begin(SpriteFlags.AlphaBlend);
+            //D3D.SamplerState[0].MinFilter = Smoothing ? TextureFilter.Anisotropic : TextureFilter.None;
+            //D3D.SamplerState[0].MagFilter = Smoothing ? TextureFilter.Linear : TextureFilter.None;
+            _sprite.Draw2D(
+                _textureMaskTv,
+                srcRectTv,
+                dstRect.Size,
+                dstRect.Location,
+                -1);
+            _sprite.End();
+        }
+
+        private void RenderIcons()
+        {
+            var devIconSize = new SizeF(32, 32);
+            var iconNumber = 1;
+            foreach (var itw in _iconWrapperDict.Values)
+            {
+                if (!itw.Visible || itw.Texture == null)
+                {
+                    continue;
+                }
+                var iconRect = new Rectangle(new Point(0, 0), itw.Size);
+                var devIconPos = new PointF(D3D.PresentationParameters.BackBufferWidth - devIconSize.Width * iconNumber, 0);
+                _iconSprite.Begin(SpriteFlags.AlphaBlend);
+                _iconSprite.Draw2D(
+                   itw.Texture,
+                   iconRect,
+                   devIconSize,
+                   devIconPos,
+                   -1);
+                _iconSprite.End();
+                iconNumber++;
+            }
+        }
+
+        private void RenderDebugInfo(SizeF wndSize)
+        {
+            var isLatencyAvailable = _lastLatencyIndex != _latencyGraphIndex;
+            _lastLatencyIndex = _latencyGraphIndex;
+            var graphRender = GetGraph(_renderGraph, ref _renderGraphIndex);
+            var graphLoad = GetGraph(_loadGraph, ref _loadGraphIndex);
+            var graphLatency = isLatencyAvailable ? GetGraph(_latencyGraph, ref _latencyGraphIndex) : default(double[]);
+            var graphUpdate = GetGraph(_updateGraph, ref _updateGraphIndex);
+            //var graphCopy = GetGraph(m_copyGraph, ref m_copyGraphIndex);
+            var frequency = (double)Stopwatch.Frequency;
+            var limitDisplay = frequency / D3D.DisplayMode.RefreshRate;
+            var limit50 = frequency / 50D;
+            var limit1ms = frequency / 1000D;
+            var maxRender = graphRender.Max();
+            var maxLoad = graphLoad.Max();
+            var minT = graphRender.Min() * 1000D / frequency;
+            var avgT = graphRender.Average() * 1000D / frequency;
+            var maxT = maxRender * 1000D / frequency;
+            var minL = isLatencyAvailable ? graphLatency.Min() * 1000D / frequency : 0D;
+            var avgL = isLatencyAvailable ? graphLatency.Average() * 1000D / frequency : 0D;
+            var maxL = isLatencyAvailable ? graphLatency.Max() * 1000D / frequency : 0D;
+            var avgE = graphLoad.Average() * 1000D / frequency;
+            var avgU = graphUpdate.Average() * 1000D / frequency;
+            var maxScale = Math.Max(maxRender, maxLoad);
+            maxScale = Math.Max(maxScale, limit50);
+            maxScale = Math.Max(maxScale, limitDisplay);
+            var fpsRender = 1000D / avgT;
+            var fpsUpdate = 1000D / avgU;
+            var textValue = string.Format(
+                "Render FPS: {0:F3}\nUpdate FPS: {1:F3}\nDevice FPS: {2}\nBack: [{3}, {4}]\nClient: [{5}, {6}]\nSurface: [{7}, {8}]\nFrameStart: {9}T",
+                fpsRender,
+                IsRunning ? fpsUpdate : (double?)null,
+                D3D.DisplayMode.RefreshRate,
+                wndSize.Width,
+                wndSize.Height,
+                ClientSize.Width,
+                ClientSize.Height,
+                _surfaceSize.Width,
+                _surfaceSize.Height,
+                _debugFrameStart);
+            var textRect = _font.MeasureString(
+                null,
+                textValue,
+                DrawTextFormat.NoClip,
+                Color.Yellow);
+            textRect = new Rectangle(
+                textRect.Left,
+                textRect.Top,
+                Math.Max(textRect.Width + 10, GraphLength),
+                textRect.Height);
+            FillRect(textRect, Color.FromArgb(192, Color.Green));
+            _font.DrawText(
+                null,
+                textValue,
+                textRect,
+                DrawTextFormat.NoClip,
+                Color.Yellow);
+            if (IsRunning)
+            {
+                // Draw graphs
+                var graphRect = new Rectangle(
+                    textRect.Left,
+                    textRect.Top + textRect.Height,
+                    GraphLength,
+                    (int)(wndSize.Height - textRect.Top - textRect.Height));
+                FillRect(graphRect, Color.FromArgb(192, Color.Black));
+                RenderGraph(graphRender, maxScale, graphRect, Color.FromArgb(196, Color.Lime));
+                RenderGraph(graphLoad, maxScale, graphRect, Color.FromArgb(196, Color.Red));
+                //RenderGraph(graphCopy, maxTime, graphRect, Color.FromArgb(196, Color.Yellow));
+                RenderLimit(limitDisplay, maxScale, graphRect, Color.FromArgb(196, Color.Yellow));
+                RenderLimit(limit50, maxScale, graphRect, Color.FromArgb(196, Color.Magenta));
+                DrawGraphGrid(maxScale, limit1ms, graphRect, _renderGraphIndex, Color.FromArgb(64, Color.White));
+
+                var msgTime = string.Format(
+                    "MinT: {0:F3} [ms]\nAvgT: {1:F3} [ms]\nMaxT: {2:F3} [ms]\nAvgE: {3:F3} [ms]",
+                    minT,
+                    avgT,
+                    maxT,
+                    avgE);
+                if (isLatencyAvailable)
+                {
+                    msgTime = string.Format(
+                        "{0}\nMinL: {1:F3} [ms]\nAvgL: {2:F3} [ms]\nMaxL: {3:F3} [ms]",
+                        msgTime,
+                        minL,
+                        avgL,
+                        maxL);
+                }
+                _font.DrawText(
+                    null,
+                    msgTime,
+                    graphRect,
+                    DrawTextFormat.NoClip,
+                    Color.FromArgb(156, Color.Yellow));
+            }
+        }
+
+        private void DrawGraphGrid(double maxValue, double step, Rectangle rect, int index, Color color)
+        {
+            var alphaBlendEnabled = D3D.RenderState.AlphaBlendEnable;
+            D3D.RenderState.AlphaBlendEnable = true;
+            D3D.RenderState.SourceBlend = Blend.SourceAlpha;
+            D3D.RenderState.DestinationBlend = Blend.InvSourceAlpha;
+            D3D.RenderState.BlendOperation = BlendOperation.Add;
+            var colorInt = color.ToArgb();
+            var list = new List<Point>();
+            if ((maxValue / step) > 40D)
+            {
+                step *= 10D;
+                colorInt = Color.FromArgb(color.A, Color.Red).ToArgb();
+            }
+            for (var t = 0D; t < maxValue; t += step)
+            {
+                var value = (int)((1D - (t / maxValue)) * rect.Height);
+                list.Add(new Point(rect.Left, rect.Top + value));
+                list.Add(new Point(rect.Left + rect.Width, rect.Top + value));
+            }
+            for (var t = 0; t < GraphLength; t += 25)
+            {
+                var ts = GraphLength - (t + index) % GraphLength;
+                list.Add(new Point(rect.Left + ts, rect.Top));
+                list.Add(new Point(rect.Left + ts, rect.Top + rect.Height));
+            }
+
+            var vertices = list
+                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, colorInt))
+                .ToArray();
+            D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
+            D3D.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
+            D3D.RenderState.AlphaBlendEnable = alphaBlendEnabled;
         }
 
         private void RenderLimit(double limit, double maxValue, Rectangle rect, Color color)
