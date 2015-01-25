@@ -478,15 +478,19 @@ namespace ZXMAK2.Host.WinForms.Controls
                 var maskTvPotSize = GetPotSize(maskTvSize);
                 _textureMaskTv = new D3dTexture(D3D, maskTvPotSize, maskTvPotSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                 _textureMaskTvSize = new Size(maskTvPotSize, maskTvPotSize);
-                using (GraphicsStream gs = _textureMaskTv.LockRectangle(0, LockFlags.None))
+                using (var gs = _textureMaskTv.LockRectangle(0, LockFlags.None))
                 {
-                    for (var x = 0; x < maskTvSize.Width; x++)
+                    var pixelColor = 0;
+                    var gapColor = MimicTvAlpha << 24;
+                    for (var y = 0; y < maskTvSize.Height; y++)
                     {
-                        for (var y = 0; y < maskTvSize.Height; y++)
+                        var ptr = (int*)gs.InternalData;
+                        var offset = y * maskTvPotSize;
+                        ptr += offset;
+                        var color = (y % MimicTvRatio) != (MimicTvRatio - 1) ? pixelColor : gapColor;
+                        for (var x = 0; x < maskTvSize.Width; x++)
                         {
-                            var ptr = (int*)gs.InternalData;
-                            var offset = y * maskTvPotSize + x;
-                            *(ptr + offset) = (y % MimicTvRatio) != (MimicTvRatio - 1) ? 0 : MimicTvAlpha << 24;
+                            *(ptr + x) = color;
                         }
                     }
                 }
@@ -568,8 +572,9 @@ namespace ZXMAK2.Host.WinForms.Controls
                 size.Height);
 
             _sprite.Begin(SpriteFlags.None);
-            D3D.SamplerState[0].MinFilter = Smoothing ? TextureFilter.Anisotropic : TextureFilter.None;
-            D3D.SamplerState[0].MagFilter = Smoothing ? TextureFilter.Linear : TextureFilter.None;
+            D3D.SamplerState[0].MinFilter = Smoothing ? TextureFilter.Anisotropic : TextureFilter.Point;
+            D3D.SamplerState[0].MagFilter = Smoothing ? TextureFilter.Linear : TextureFilter.Point;
+            D3D.SamplerState[0].MipFilter = Smoothing ? TextureFilter.Linear : TextureFilter.Point;
             _sprite.Draw2D(
                _texture0,
                srcRect,
@@ -588,8 +593,9 @@ namespace ZXMAK2.Host.WinForms.Controls
                 size.Height * MimicTvRatio);
 
             _sprite.Begin(SpriteFlags.AlphaBlend);
-            //D3D.SamplerState[0].MinFilter = Smoothing ? TextureFilter.Anisotropic : TextureFilter.None;
-            //D3D.SamplerState[0].MagFilter = Smoothing ? TextureFilter.Linear : TextureFilter.None;
+            D3D.SamplerState[0].MinFilter = TextureFilter.Anisotropic;
+            D3D.SamplerState[0].MagFilter = TextureFilter.Linear;
+            D3D.SamplerState[0].MipFilter = TextureFilter.Linear;
             _sprite.Draw2D(
                 _textureMaskTv,
                 srcRectTv,
