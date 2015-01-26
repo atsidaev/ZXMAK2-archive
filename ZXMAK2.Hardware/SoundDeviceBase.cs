@@ -138,7 +138,6 @@ namespace ZXMAK2.Hardware
 
         private int m_volume = 100;
         private uint[] m_audioBuffer = new uint[882];    // beeper frame sound samples
-        private bool m_useFilter = false;
         private int m_frequency;
 
 
@@ -150,9 +149,10 @@ namespace ZXMAK2.Hardware
             set
             {
                 m_frequency = value;
-                TimeStep = Math.Ceiling(50D / (double)value);
+                TimeStep = 50D / (double)value;
                 SetTimings(value, 44100);
                 m_sndQueue.Clear();
+                m_sndQueueNext.Clear();
             }
         }
 
@@ -226,6 +226,7 @@ namespace ZXMAK2.Hardware
 
             //[vv]   unsigned endtick = (timestamp * mult_const) >> MULT_C;
             ulong endtick = ((uint)timestamp * (ulong)m_sample_rate * TICK_F) / m_clock_rate;
+
             flush((uint)(m_base_tick + endtick));
             m_mix_l = l; m_mix_r = r;
         }
@@ -262,34 +263,12 @@ namespace ZXMAK2.Hardware
 
                 m_tick = endtick;
             }
-            else /* myfix */ //if (m_dstpos < m_audioBuffer.Length)
+            else if (m_dstpos < m_audioBuffer.Length) /* myfix */
             {
                 scale = filter_sum_full_u - filter_diff[(m_tick & (TICK_F - 1)) + TICK_F];
 
-                uint sample_value;
-                if (m_useFilter)
-                {
-                    /*lame noise reduction by Alone Coder*/
-                    int templeft = (int)(m_mix_l * scale + m_s2_l);
-                    /*olduseleft = useleft;
-                    if (firstsmp)useleft=oldfrmleft,firstsmp--;
-                    else*/
-                    m_useleft = (int)(((long)templeft + (long)m_oldleft) / 2);
-                    m_oldleft = templeft;
-                    int tempright = (int)(m_mix_r * scale + m_s2_r);
-                    /*olduseright = useright;
-                    if (firstsmp)useright=oldfrmright,firstsmp--;
-                        else*/
-                    m_useright = (int)(((long)tempright + (long)m_oldright) / 2);
-                    m_oldright = tempright;
-                    sample_value = (uint)(m_useleft >> 16) | (uint)(m_useright & 0xFFFF0000);
-                    /**/
-                }
-                else
-                {
-                    sample_value = ((m_mix_l * scale + m_s2_l) >> 16) |
-                        ((m_mix_r * scale + m_s2_r) & 0xFFFF0000);
-                }
+                uint sample_value = ((m_mix_l * scale + m_s2_l) >> 16) |
+                    ((m_mix_r * scale + m_s2_r) & 0xFFFF0000);
 
                 //#if SND_EXTERNAL_BUFFER
                 m_audioBuffer[m_dstpos] = sample_value;
@@ -309,32 +288,10 @@ namespace ZXMAK2.Hardware
                     uint val_r = m_mix_r * filter_sum_half_u;
                     do
                     {
-                        //if (m_dstpos >= m_audioBuffer.Length) /* myfix */
-                        //    break;
-                        uint sample_value2;
-                        if (m_useFilter)
-                        {
-                            /*lame noise reduction by Alone Coder*/
-                            int templeft = (int)(m_s2_l + val_l);
-                            /*olduseleft = useleft;
-                            if (firstsmp)useleft=oldfrmleft,firstsmp--;
-                               else*/
-                            m_useleft = (int)(((long)templeft + (long)m_oldleft) / 2);
-                            m_oldleft = templeft;
-                            int tempright = (int)(m_s2_r + val_r);
-                            /*olduseright = useright;
-                            if (firstsmp)useright=oldfrmright,firstsmp--;
-                               else*/
-                            m_useright = (int)(((long)tempright + (long)m_oldright) / 2);
-                            m_oldright = tempright;
-                            sample_value2 = (uint)(m_useleft >> 16) | (uint)(m_useright & 0xFFFF0000);
-                            /**/
-                        }
-                        else
-                        {
-                            sample_value2 = ((m_s2_l + val_l) >> 16) +
-                                           ((m_s2_r + val_r) & 0xFFFF0000); // save s2+val
-                        }
+                        if (m_dstpos >= m_audioBuffer.Length) /* myfix */
+                            break;
+                        uint sample_value2 = ((m_s2_l + val_l) >> 16) +
+                            ((m_s2_r + val_r) & 0xFFFF0000); // save s2+val
 
                         //#if SND_EXTERNAL_BUFFER
                         m_audioBuffer[m_dstpos] = sample_value2;
@@ -365,8 +322,6 @@ namespace ZXMAK2.Hardware
         private uint m_tick, m_base_tick;
         private uint m_s1_l, m_s1_r;
         private uint m_s2_l, m_s2_r;
-        private int m_oldleft, m_useleft;
-        private int m_oldright, m_useright;
 
         private ulong m_passed_clk_ticks, m_passed_snd_ticks;
         private uint m_mult_const;

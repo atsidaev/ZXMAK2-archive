@@ -6,20 +6,19 @@ using System.Xml;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
-using ZXMAK2.Engine.Cpu;
 
 
 namespace ZXMAK2.Hardware.General
 {
-    public class AY8910 : BusDeviceBase, ISoundRenderer, IAyDevice
+    public class AY8910 : SoundDeviceBase, IAyDevice
     {
         public AY8910()
         {
             Category = BusDeviceCategory.Music;
             Name = "AY8910";
             Description = "Standard AY8910 Programmable Sound Generator";
-            
-            initTiming(44100, 70000);
+
+            ChipFrequency = 3548160;//1774400*2;
             Volume = 50;
         }
 
@@ -28,10 +27,10 @@ namespace ZXMAK2.Hardware.General
 
         public override void BusInit(IBusManager bmgr)
         {
-            m_cpu = bmgr.CPU;
+            base.BusInit(bmgr);
             var ula = bmgr.FindDevice<IUlaDevice>();
             var memory = bmgr.FindDevice<IMemoryDevice>();
-            initTiming(m_sampleRate, ula.FrameTactCount);
+            Frequency = ChipFrequency / 16;
 
             if (memory is ZXMAK2.Hardware.Spectrum.MemorySpectrum128 ||
                 memory is ZXMAK2.Hardware.Spectrum.MemoryPlus3)
@@ -46,70 +45,43 @@ namespace ZXMAK2.Hardware.General
                 bmgr.SubscribeRdIo(0xC0FF, 0xC0FD, readPortData);    // #FFFD (rd data/reg#)
                 bmgr.SubscribeWrIo(0xC0FF, 0x80FD, writePortData);   // #BFFD (data)
             }
-
-
             bmgr.SubscribeReset(busReset);
-
-            bmgr.SubscribeBeginFrame(BeginFrame);
-            bmgr.SubscribeEndFrame(EndFrame);
-        }
-
-        public override void BusConnect()
-        {
-        }
-
-        public override void BusDisconnect()
-        {
-        }
-
-        protected override void OnConfigLoad(XmlNode itemNode)
-        {
-            base.OnConfigLoad(itemNode);
-            Volume = Utils.GetXmlAttributeAsInt32(itemNode, "volume", Volume);
-        }
-
-        protected override void OnConfigSave(XmlNode itemNode)
-        {
-            base.OnConfigSave(itemNode);
-            Utils.SetXmlAttribute(itemNode, "volume", Volume);
         }
 
         #endregion
 
-        #region ISoundRenderer
+        #region SoundDeviceBase
 
-        public uint[] AudioBuffer
+        protected override void OnBeginFrame()
         {
-            get { return m_audioBuffer; }
+            base.OnBeginFrame();
         }
 
-        public int Volume
+        protected override void OnEndFrame()
         {
-            get { return m_volume; }
-            set
-            {
-                if (value < 0)
-                    value = 0;
-                if (value > 100)
-                    value = 100;
-                m_volume = value;
-                OnConfigChanged();
+            m_lastTime += TimeStep;
+            m_lastTime -= Math.Floor(m_lastTime);
+            UpdateAudioBuffer(1D);
+            base.OnEndFrame();
+        }
 
-                int VolumeAY = (32767/*9000*/ * m_volume) / 100;
-                ushort[] vol_table = s_volumeTable;
-                for (int i = 0; i < 32; i++)
-                {
-                    m_volTableA[i] = (uint)((vol_table[i] * VolumeAY / 65535 * m_mixerPreset[2 * 0] / 100) +
-                               ((vol_table[i] * VolumeAY / 65535 * m_mixerPreset[2 * 0 + 1] / 100) << 16));
-                    m_volTableB[i] = (uint)((vol_table[i] * VolumeAY / 65535 * m_mixerPreset[2 * 1] / 100) +
-                               ((vol_table[i] * VolumeAY / 65535 * m_mixerPreset[2 * 1 + 1] / 100) << 16));
-                    m_volTableC[i] = (uint)((vol_table[i] * VolumeAY / 65535 * m_mixerPreset[2 * 2] / 100) +
-                               ((vol_table[i] * VolumeAY / 65535 * m_mixerPreset[2 * 2 + 1] / 100) << 16));
-                }
+        protected override void OnVolumeChanged(int oldVolume, int newVolume)
+        {
+            var volume = (32767/*9000*/ * newVolume) / 100;
+            var vol_table = s_volumeTable;
+            for (int i = 0; i < 32; i++)
+            {
+                m_volTableA[i] = (uint)((vol_table[i] * volume / 65535 * m_mixerPreset[2 * 0] / 100) +
+                           ((vol_table[i] * volume / 65535 * m_mixerPreset[2 * 0 + 1] / 100) << 16));
+                m_volTableB[i] = (uint)((vol_table[i] * volume / 65535 * m_mixerPreset[2 * 1] / 100) +
+                           ((vol_table[i] * volume / 65535 * m_mixerPreset[2 * 1 + 1] / 100) << 16));
+                m_volTableC[i] = (uint)((vol_table[i] * volume / 65535 * m_mixerPreset[2 * 2] / 100) +
+                           ((vol_table[i] * volume / 65535 * m_mixerPreset[2 * 2 + 1] / 100) << 16));
             }
         }
 
-        #endregion
+        #endregion SoundDeviceBase
+
 
         #region IAY8910Device
 
@@ -225,6 +197,14 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
+        private int m_chipFrequency;
+        
+        public int ChipFrequency 
+        {
+            get { return m_chipFrequency; }
+            set { m_chipFrequency = Math.Max(496, value); }
+        }
+
         public event AyUpdatePortHandler UpdateIRA;
         public event AyUpdatePortHandler UpdateIRB;
 
@@ -245,7 +225,7 @@ namespace ZXMAK2.Hardware.General
             //if (!iorqge)
             //    return;
             //iorqge = false;
-            UpdateAudioBuffer((int)(m_cpu.Tact % m_frameTactCount));
+            UpdateAudioBuffer(GetFrameTime());
             DATA_REG = value;
         }
 
@@ -257,22 +237,11 @@ namespace ZXMAK2.Hardware.General
             value = DATA_REG;
         }
 
-        protected virtual void BeginFrame()
-        {
-            m_audioBufferPos = 0;
-            UpdateAudioBuffer(0);
-        }
-
-        protected virtual void EndFrame()
-        {
-            UpdateAudioBuffer(m_frameTactCount);
-        }
-
         private void busReset()
         {
             m_noiseVal = 0x0FFFF;
-            m_outNoiseABC = 0;
-            m_outABC = 0;
+            m_stateNoise = 0;
+            m_stateGen = 0;
             m_counterNoise = 0;
             m_counterA = 0;
             m_counterB = 0;
@@ -283,12 +252,9 @@ namespace ZXMAK2.Hardware.General
                 ADDR_REG = (byte)i;
                 DATA_REG = 0;
             }
-            UpdateAudioBuffer((m_audioBufferPos * m_frameTactCount) / m_audioBuffer.Length);
         }
 
         #endregion
-
-        private CpuUnit m_cpu;
 
         #region registers
 
@@ -310,27 +276,21 @@ namespace ZXMAK2.Hardware.General
 
         #endregion
 
-        private int m_frameTactCount;
-        private int m_sampleRate;
-        private int m_tactsPerSample;
-        private uint[] m_audioBuffer;
-        private int m_audioBufferPos;
-        private int m_volume;
+        private double m_lastTime;
 
         #region private data
 
-        private byte m_bendStatus = 0;
-        private int m_bendVolumeIndex = 0;
-        private uint m_counterBend = 0;
+        private byte m_bendStatus;
+        private int m_bendVolumeIndex;
+        private uint m_counterBend;
 
         // signal gen...
-        private byte m_outABC = 0;
-        private byte m_outNoiseABC = 0;
-        private byte m_mixLineABC = 0;       //  0 or 1 per channel - mixed channel 
-        private ushort m_counterA = 0;
-        private ushort m_counterB = 0;
-        private ushort m_counterC = 0;
-        private byte m_counterNoise = 0;
+        private byte m_stateGen;      // ABC generators state
+        private byte m_stateNoise;    // ABC noise state
+        private ushort m_counterA;
+        private ushort m_counterB;
+        private ushort m_counterC;
+        private byte m_counterNoise;
         private uint m_noiseVal = 0x0FFFF;
 
         #endregion
@@ -369,17 +329,6 @@ namespace ZXMAK2.Hardware.General
             //0x5502, 0x6620, 0x7730, 0x8844, 0xA1D2, 0xC102, 0xE0A2, 0xFFFF
 		};
 
-        private void initTiming(int sampleRate, int frameTactCount)
-        {
-            m_sampleRate = sampleRate;
-            m_frameTactCount = frameTactCount;
-
-            m_tactsPerSample = (int)Math.Round(((double)m_frameTactCount * 50D) / (16D * (double)m_sampleRate),
-                MidpointRounding.AwayFromZero);
-            m_audioBuffer = new uint[m_sampleRate / 50];
-            m_audioBufferPos = 0;
-        }
-
         protected void OnUpdateIRA(byte outState)
         {
             m_iraState.DirOut = (m_controlChannels & 0x40) != 0;
@@ -404,105 +353,81 @@ namespace ZXMAK2.Hardware.General
                 UpdateIRB(this, m_irbState);
         }
 
-        private unsafe void UpdateAudioBuffer(int frameTact)
+        private unsafe void UpdateAudioBuffer(double frameTime)
         {
-            if (frameTact > m_frameTactCount)
-                frameTact = m_frameTactCount;
-            int frameLen = m_audioBuffer.Length;
-            int toEndPtr = (frameLen * frameTact) / m_frameTactCount;
-
-            byte MixResultA = 0;      // result volume index for channel
-            byte MixResultB = 0;
-            byte MixResultC = 0;
             lock (this)
             {
-                if (toEndPtr > frameLen) toEndPtr = frameLen;  //882
-                // mixer
-                fixed (uint* pAudioBuffer = m_audioBuffer)
-                    for (; m_audioBufferPos < toEndPtr; m_audioBufferPos++)
+                for (var t = m_lastTime; t < frameTime; t += TimeStep)
+                {
+                    var outGen = m_stateGen | (m_controlChannels & 7);
+                    var outNoise = m_stateNoise | ((m_controlChannels & 0x38) >> 3);
+                    var outMix = outGen & outNoise;
+
+                    var mixA = 0;      // result volume index for channel
+                    if ((outMix & 0x01) != 0)
                     {
-                        m_outNoiseABC |= (byte)((m_controlChannels & 0x38) >> 3);
-                        m_mixLineABC = (byte)((m_outABC | ((m_controlChannels & 0x07)) ) & m_outNoiseABC);
-
-                        if ((m_mixLineABC & 0x01) != 0)
-                        {
-                            MixResultA = (byte)((m_volumeA & 0x1F) << 1);
-                            if ((MixResultA & 0x20) != 0)
-                                MixResultA = (byte)m_bendVolumeIndex;
-                            else
-                                MixResultA++;
-                        }
-                        else
-                            MixResultA = 0;
-
-                        if ((m_mixLineABC & 0x02) != 0)
-                        {
-                            MixResultB = (byte)((m_volumeB & 0x1F) << 1);
-                            if ((MixResultB & 0x20) != 0)
-                                MixResultB = (byte)m_bendVolumeIndex;
-                            else
-                                MixResultB++;
-                        }
-                        else
-                            MixResultB = 0;
-
-                        if ((m_mixLineABC & 0x04) != 0)
-                        {
-                            MixResultC = (byte)((m_volumeC & 0x1F) << 1);
-                            if ((MixResultC & 0x20) != 0)
-                                MixResultC = (byte)m_bendVolumeIndex;
-                            else
-                                MixResultC++;
-                        }
-                        else
-                            MixResultC = 0;
-
-                        pAudioBuffer[m_audioBufferPos] = m_volTableC[MixResultC] + m_volTableB[MixResultB] + m_volTableA[MixResultA];
-                        // end of mixer
-
-
-                        var nf = m_freqNoise & 0x1F;
-                        // ...counters...
-                        for (int i = 0; i < m_tactsPerSample; i++)
-                        {
-                            // noise counter...
-                            if (++m_counterNoise >= nf*2)
-                            {
-                                m_counterNoise = 0;
-
-                                m_noiseVal &= 0x1FFFF;
-                                m_noiseVal = (((m_noiseVal >> 16) ^ (m_noiseVal >> 13)) & 1) ^ ((m_noiseVal << 1) + 1);
-                                m_outNoiseABC = (byte)((m_noiseVal >> 16) & 1);
-                                m_outNoiseABC |= (byte)((m_outNoiseABC << 1) | (m_outNoiseABC << 2));
-
-                                //var output = (m_noiseVal + 1) & 2;
-                                //m_outNoiseABC ^= (byte)((output << 1) | output | (output >> 1));
-                                //m_noiseVal = (m_noiseVal >> 1) ^ ((m_noiseVal & 1) << 14) ^ ((m_noiseVal & 1) << 16);
-                            }
-
-                            // signals counters...
-                            if (++m_counterA >= m_freqA)
-                            {
-                                m_counterA = 0;
-                                m_outABC ^= 1;
-                            }
-                            if (++m_counterB >= m_freqB)
-                            {
-                                m_counterB = 0;
-                                m_outABC ^= 2;
-                            }
-                            if (++m_counterC >= m_freqC)
-                            {
-                                m_counterC = 0;
-                                m_outABC ^= 4;
-                            }
-                            if (++m_counterBend >= m_freqBend)
-                            {
-                                m_counterBend = 0;
-                                ChangeEnvelope();
-                            }
-                        }
+                        mixA = (m_volumeA & 0x1F) << 1;
+                        mixA = (mixA & 0x20) == 0 ? mixA + 1 : m_bendVolumeIndex;
                     }
+
+                    var mixB = 0;
+                    if ((outMix & 0x02) != 0)
+                    {
+                        mixB = (m_volumeB & 0x1F) << 1;
+                        mixB = (mixB & 0x20) == 0 ? mixB + 1 : m_bendVolumeIndex;
+                    }
+
+                    var mixC = 0;
+                    if ((outMix & 0x04) != 0)
+                    {
+                        mixC = (m_volumeC & 0x1F) << 1;
+                        mixC = (mixC & 0x20) == 0 ? mixC + 1 : m_bendVolumeIndex;
+                    }
+                    
+                    var sample = m_volTableC[mixC] + m_volTableB[mixB] + m_volTableA[mixA];
+                    UpdateDac(t, (ushort)(sample & 0xFFFF), (ushort)(sample >> 16));
+                    m_lastTime = t;
+
+                    // end of mixer
+
+                    // noise counter...
+                    var nfq = m_freqNoise & 0x1F;
+                    if (++m_counterNoise >= nfq)
+                    {
+                        m_counterNoise = 0;
+
+                        m_noiseVal &= 0x1FFFF;
+                        m_noiseVal = (((m_noiseVal >> 16) ^ (m_noiseVal >> 13)) & 1) ^ ((m_noiseVal << 1) + 1);
+                        m_stateNoise = (byte)((m_noiseVal >> 16) & 1);
+                        m_stateNoise |= (byte)((m_stateNoise << 1) | (m_stateNoise << 2));
+
+                        //var output = (m_noiseVal + 1) & 2;
+                        //m_outNoiseABC ^= (byte)((output << 1) | output | (output >> 1));
+                        //m_noiseVal = (m_noiseVal >> 1) ^ ((m_noiseVal & 1) << 14) ^ ((m_noiseVal & 1) << 16);
+                    } 
+
+                    // signals counters...
+                    if (++m_counterA >= m_freqA)
+                    {
+                        m_counterA = 0;
+                        m_stateGen ^= 1;
+                    }
+                    if (++m_counterB >= m_freqB)
+                    {
+                        m_counterB = 0;
+                        m_stateGen ^= 2;
+                    }
+                    if (++m_counterC >= m_freqC)
+                    {
+                        m_counterC = 0;
+                        m_stateGen ^= 4;
+                    }
+                    if (++m_counterBend >= m_freqBend)
+                    {
+                        m_counterBend = 0;
+                        ChangeEnvelope();
+                    }
+                }
             }
         }
 
