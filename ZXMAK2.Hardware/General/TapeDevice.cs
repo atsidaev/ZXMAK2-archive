@@ -231,17 +231,17 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        protected override void BeginFrame()
+        protected override void OnBeginFrame()
         {
-            base.BeginFrame();
+            base.OnBeginFrame();
             m_iconTape.Visible = false;
         }
 
-        protected override void EndFrame()
+        protected override void OnEndFrame()
         {
             //ushort val = tape_bit(m_cpu.Tact) ? m_dacValue1 : m_dacValue0;
             //UpdateDAC(val, val);
-            base.EndFrame();
+            base.OnEndFrame();
             detectorFrame();
         }
 
