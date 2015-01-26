@@ -30,6 +30,7 @@ namespace ZXMAK2.Hardware
 			m_cpu = bmgr.CPU;
             var ula = bmgr.FindDevice<IUlaDevice>();
 			FrameTactCount = ula.FrameTactCount;
+            SetTimings(FrameTactCount, 44100);
 
 			bmgr.SubscribeBeginFrame(BeginFrame);
 			bmgr.SubscribeEndFrame(EndFrame);
@@ -92,26 +93,43 @@ namespace ZXMAK2.Hardware
 
 		#region Bus Handlers
 
-		protected virtual void BeginFrame()
-		{
-			//int frameTact = (int)((m_cpu.Tact + 1) % FrameTactCount);
-			//LogAgent.Debug("BeginFrame @ {0}T", frameTact);
-			m_sndout_len = 0;
-			m_lastDacTact = 0;
-			while (m_sndQueue.Count > 0)
-			{
-				m_sndout[m_sndout_len] = m_sndQueue.Dequeue();
-				m_sndout_len++;
-			}
-		}
+        private bool m_isFrameOpen;
 
-		protected virtual void EndFrame()
-		{
-			//int frameTact = (int)((m_cpu.Tact + 1) % FrameTactCount);
-			//LogAgent.Debug("EndFrame @ {0}T", frameTact);
-			render(m_sndout, m_sndout_len, m_frameTactCount);
-			//m_wavWriter.Write(m_audioBuffer, 0, m_audioBuffer.Length);
-		}
+        private void BeginFrame()
+        {
+            if (m_isFrameOpen)
+            {
+                return;
+            }
+            m_isFrameOpen = true;
+            OnBeginFrame();
+        }
+
+        private void EndFrame()
+        {
+            if (!m_isFrameOpen)
+            {
+                return;
+            }
+            OnEndFrame();
+            m_isFrameOpen = false;
+        }
+
+        protected virtual void OnBeginFrame()
+        {
+            m_sndQueue.Clear();
+            while (m_sndQueueNext.Count > 0)
+            {
+                m_sndQueue.Enqueue(m_sndQueueNext.Dequeue());
+            }
+            m_lastDacTact = 0;
+        }
+
+        protected virtual void OnEndFrame()
+        {
+            Render(m_sndQueue, FrameTactCount);
+            //m_wavWriter.Write(m_audioBuffer, 0, m_audioBuffer.Length);
+        }
 
 		#endregion
 
@@ -119,55 +137,49 @@ namespace ZXMAK2.Hardware
 		private CpuUnit m_cpu;
 
 		private int m_volume = 100;
-		private int m_frameTactCount = 0;
 		private uint[] m_audioBuffer = new uint[882];    // beeper frame sound samples
 		private bool m_useFilter = false;
 
-		protected int FrameTactCount
-		{
-			get { return m_frameTactCount; }
-			set { m_frameTactCount = value; setTimings(value, 44100); }
-		}
 
-		protected void UpdateDac(ushort leftChannel, ushort rightChannel)
+		protected int FrameTactCount { get; private set; }
+
+		protected void UpdateDac(ushort left, ushort right)
 		{
 			int frameTact = (int)(m_cpu.Tact % FrameTactCount);
-			UpdateDac(frameTact, leftChannel, rightChannel); 
+			UpdateDacInt(frameTact, left, right); 
 		}
 
-		protected void UpdateDac(int frameTact, ushort leftChannel, ushort rightChannel)
+		private void UpdateDacInt(int frameTact, ushort left, ushort right)
 		{
-			if (frameTact < m_lastDacTact)
-			{
-				SNDOUT sndout = new SNDOUT();
-				sndout.timestamp = frameTact;
-				sndout.left = leftChannel;
-				sndout.right = rightChannel;
-				m_sndQueue.Enqueue(sndout);
-			}
-			else
-			{
-				m_sndout[m_sndout_len].timestamp = frameTact;
-				m_sndout[m_sndout_len].left = leftChannel;
-				m_sndout[m_sndout_len].right = rightChannel;
-				m_sndout_len++;
-			}
-			m_lastDacTact = frameTact;
+            var sndout = new SndOut();
+            sndout.Timestamp = frameTact;
+            sndout.Left = left;
+            sndout.Right = right;
+            if (frameTact >= m_lastDacTact)
+            {
+                m_sndQueue.Enqueue(sndout);
+            }
+            else
+            {
+                m_sndQueueNext.Enqueue(sndout);
+            }
+            m_lastDacTact = frameTact;
 		}
 
 		protected abstract void OnVolumeChanged(int oldVolume, int newVolume);
 
-		private void render(SNDOUT[] src, int len, int clk_ticks)
+		private void Render(Queue<SndOut> queue, int clkTicks)
 		{
 			try
 			{
 				start_frame();
-				for (int index = 0; index < len; index++)
-				{
-					// if (src[index].timestamp > clk_ticks) continue; // wrong input data leads to crash
-					update(src[index].timestamp, src[index].left, src[index].right);
-				}
-				end_frame(clk_ticks);
+                while (queue.Count > 0)
+                {
+                    var src = queue.Dequeue();
+                    // if (src.timestamp > clk_ticks) continue; // wrong input data leads to crash
+                    update(src.Timestamp, src.Left, src.Right);
+                }
+				end_frame(clkTicks);
 			}
 			catch (Exception ex)
 			{
@@ -332,16 +344,16 @@ namespace ZXMAK2.Hardware
 
 		private ulong m_passed_clk_ticks, m_passed_snd_ticks;
 		private uint m_mult_const;
-		private SNDOUT[] m_sndout;
-		private int m_sndout_len;
-		private Queue<SNDOUT> m_sndQueue = new Queue<SNDOUT>();
-		private int m_lastDacTact;
+		private Queue<SndOut> m_sndQueue = new Queue<SndOut>();
+        private Queue<SndOut> m_sndQueueNext = new Queue<SndOut>();
+        private int m_lastDacTact;
 
-		private void setTimings(int frameTactCount, int sampleRate)
+		private void SetTimings(int frameTactCount, int sampleRate)
 		{
 			m_clock_rate = (uint)frameTactCount * 50;
 			m_sample_rate = (uint)sampleRate;
-			m_sndout = new SNDOUT[frameTactCount];
+            m_sndQueue.Clear();
+            m_sndQueueNext.Clear();
 
 			m_tick = 0; m_dstpos = m_dst_start = 0;
 			m_passed_snd_ticks = m_passed_clk_ticks = 0;
@@ -349,11 +361,11 @@ namespace ZXMAK2.Hardware
 			m_mult_const = (uint)(((ulong)m_sample_rate << (int)(MULT_C + TICK_FF)) / m_clock_rate);
 		}
 
-		private struct SNDOUT
+		private class SndOut
 		{
-			public int timestamp; // in 'system clock' ticks
-			public uint left;
-			public uint right;
+			public int Timestamp; // in 'system clock' ticks
+			public uint Left;
+			public uint Right;
 		}
 
 		#region filter
