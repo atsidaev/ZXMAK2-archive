@@ -56,7 +56,7 @@ namespace ZXMAK2.Hardware.General
             Description = "Common Tape Device (port #FE, mask #01)";
 
             Blocks = new List<ITapeBlock>();
-            Volume = 20;
+            Volume = 30;
             CreateViewHolder();
         }
 
@@ -127,8 +127,8 @@ namespace ZXMAK2.Hardware.General
 
         protected override void OnVolumeChanged(int oldVolume, int newVolume)
         {
-            m_dacValue0 = 0;
-            m_dacValue1 = (ushort)((0x1FFF * newVolume) / 100);
+            m_dacValue0 = ushort.MinValue;
+            m_dacValue1 = (ushort)((ushort.MaxValue * newVolume) / 100);
         }
 
         #region Bus Handlers

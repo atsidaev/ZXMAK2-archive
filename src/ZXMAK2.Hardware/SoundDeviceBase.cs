@@ -17,7 +17,6 @@ namespace ZXMAK2.Hardware
         public SoundDeviceBase()
         {
             Category = BusDeviceCategory.Sound;
-
             Volume = 100;
         }
 
@@ -94,6 +93,7 @@ namespace ZXMAK2.Hardware
         #region Bus Handlers
 
         private bool m_isFrameOpen;
+        private long m_startStamp;
 
         private void BeginFrame()
         {
@@ -102,6 +102,8 @@ namespace ZXMAK2.Hardware
                 return;
             }
             m_isFrameOpen = true;
+            m_startStamp = m_cpu.Tact - (m_cpu.Tact % FrameTactCount);
+            m_lastDacTact = -1;
             OnBeginFrame();
         }
 
@@ -122,7 +124,6 @@ namespace ZXMAK2.Hardware
             {
                 m_sndQueue.Enqueue(m_sndQueueNext.Dequeue());
             }
-            m_lastDacTact = 0;
         }
 
         protected virtual void OnEndFrame()
@@ -130,6 +131,8 @@ namespace ZXMAK2.Hardware
             Render(m_sndQueue, FrameTactCount);
             //m_wavWriter.Write(m_audioBuffer, 0, m_audioBuffer.Length);
         }
+
+        protected abstract void OnVolumeChanged(int oldVolume, int newVolume);
 
         #endregion
 
@@ -139,7 +142,7 @@ namespace ZXMAK2.Hardware
         private int m_volume = 100;
         private uint[] m_audioBuffer = new uint[882];    // beeper frame sound samples
         private int m_frequency;
-
+        private int m_lastDacTact;
 
         protected int FrameTactCount { get; private set; }
 
@@ -148,26 +151,45 @@ namespace ZXMAK2.Hardware
             get { return m_frequency; }
             set
             {
+                //value /=  50 * (int)TICK_F*2;
+                //value *= (int)TICK_F*2 * 50;
+                //value /= 44100;
+                //value *= 44100;
                 m_frequency = value;
-                TimeStep = 50D / (double)value;
                 SetTimings(value, 44100);
                 m_sndQueue.Clear();
                 m_sndQueueNext.Clear();
             }
         }
 
-        protected double TimeStep { get; private set; }
-
+        /// <summary>
+        /// Returns frame time 0D...1D, the result may be more than 1D (overframe)
+        /// </summary>
         protected double GetFrameTime()
         {
-            var frameTact = m_cpu.Tact % FrameTactCount;
+            var frameTact = m_cpu.Tact - m_startStamp;
             return (double)frameTact / (double)FrameTactCount;
+        }
+
+        protected void UpdateDac(double frameTime, short left, short right)
+        {
+            var frameLength = FrameTactCount;
+            var timestamp = (int)Math.Ceiling(frameTime * frameLength);
+            var l = (ushort)(left - short.MinValue);
+            var r = (ushort)(right - short.MinValue);
+            UpdateDacInt(timestamp, l, r);
         }
 
         protected void UpdateDac(double frameTime, ushort left, ushort right)
         {
-            var timestamp = (int)Math.Ceiling(frameTime * Frequency / 50D);
+            var frameLength = FrameTactCount;
+            var timestamp = (int)Math.Ceiling(frameTime * frameLength);
             UpdateDacInt(timestamp, left, right);
+        }
+
+        protected void UpdateDac(short left, short right)
+        {
+            UpdateDac(GetFrameTime(), left, right);
         }
 
         protected void UpdateDac(ushort left, ushort right)
@@ -175,37 +197,50 @@ namespace ZXMAK2.Hardware
             UpdateDac(GetFrameTime(), left, right);
         }
 
+
         private void UpdateDacInt(int timestamp, ushort left, ushort right)
         {
-            var sndout = new SndOut();
-            sndout.Timestamp = timestamp;
-            sndout.Left = left;
-            sndout.Right = right;
-            if (timestamp >= m_lastDacTact)
+            if (timestamp <= m_lastDacTact)
             {
+                Logger.Warn(
+                    "Incorrect call to UpdateDac: timestamp={0}, previous timestamp={1}", 
+                    timestamp, 
+                    m_lastDacTact);
+                return;
+            }
+            var frameLength = FrameTactCount;
+            if (timestamp < frameLength) // normal
+            {
+                var sndout = new SndOut();
+                sndout.Timestamp = timestamp;
+                sndout.Left = left;
+                sndout.Right = right;
                 m_sndQueue.Enqueue(sndout);
+                m_lastDacTact = sndout.Timestamp;
             }
-            else
+            else // overframe
             {
+                var sndout = new SndOut();
+                sndout.Timestamp = timestamp - frameLength;
+                sndout.Left = left;
+                sndout.Right = right;
                 m_sndQueueNext.Enqueue(sndout);
+                m_lastDacTact = sndout.Timestamp;
             }
-            m_lastDacTact = timestamp;
         }
-
-        protected abstract void OnVolumeChanged(int oldVolume, int newVolume);
 
         private void Render(Queue<SndOut> queue, int clkTicks)
         {
             try
             {
-                start_frame();
+                StartFrame();
                 while (queue.Count > 0)
                 {
                     var src = queue.Dequeue();
                     // if (src.timestamp > clk_ticks) continue; // wrong input data leads to crash
-                    update(src.Timestamp, src.Left, src.Right);
+                    Update(src.Timestamp, (uint)src.Left, (uint)src.Right);
                 }
-                end_frame(clkTicks);
+                EndFrame(clkTicks);
             }
             catch (Exception ex)
             {
@@ -213,32 +248,34 @@ namespace ZXMAK2.Hardware
             }
         }
 
-        private void start_frame()
+        private void StartFrame()
         {
             m_dst_start = m_dstpos = 0;
             m_base_tick = m_tick;
         }
 
-        private void update(int timestamp, uint l, uint r)
+        private void Update(int timestamp, uint left, uint right)
         {
-            if ((l ^ m_mix_l) == 0 && (r ^ m_mix_r) == 0)
+            if ((left ^ m_mix_l) == 0 && (right ^ m_mix_r) == 0)
+            {
                 return;
+            }
 
             //[vv]   unsigned endtick = (timestamp * mult_const) >> MULT_C;
             ulong endtick = ((uint)timestamp * (ulong)m_sample_rate * TICK_F) / m_clock_rate;
 
-            flush((uint)(m_base_tick + endtick));
-            m_mix_l = l; m_mix_r = r;
+            FlushFrame((uint)(m_base_tick + endtick));
+            m_mix_l = left; m_mix_r = right;
         }
 
-        private int end_frame(int clk_ticks)
+        private int EndFrame(int clk_ticks)
         {
             // adjusting 'clk_ticks' with whole history will fix accumulation of rounding errors
             //uint64_t endtick = ((passed_clk_ticks + clk_ticks) * mult_const) >> MULT_C;
             ulong endtick = ((m_passed_clk_ticks + (uint)clk_ticks) * (ulong)m_sample_rate * TICK_F) / m_clock_rate;
-            flush((uint)(endtick - m_passed_snd_ticks));
+            FlushFrame((uint)(endtick - m_passed_snd_ticks));
 
-            int ready_samples = m_dstpos - m_dst_start;
+            var ready_samples = m_dstpos - m_dst_start;
 
             m_tick -= (uint)(ready_samples << (int)TICK_FF);
             m_passed_snd_ticks += (uint)(ready_samples << (int)TICK_FF);
@@ -247,7 +284,7 @@ namespace ZXMAK2.Hardware
             return ready_samples;
         }
 
-        private void flush(uint endtick)
+        private void FlushFrame(uint endtick)
         {
             uint scale;
             if (((endtick ^ m_tick) & ~(TICK_F - 1)) == 0)
@@ -271,7 +308,7 @@ namespace ZXMAK2.Hardware
                     ((m_mix_r * scale + m_s2_r) & 0xFFFF0000);
 
                 //#if SND_EXTERNAL_BUFFER
-                m_audioBuffer[m_dstpos] = sample_value;
+                m_audioBuffer[m_dstpos] = GetSigned(sample_value);
                 m_dstpos++;
                 //#endif
 
@@ -289,12 +326,14 @@ namespace ZXMAK2.Hardware
                     do
                     {
                         if (m_dstpos >= m_audioBuffer.Length) /* myfix */
+                        {
                             break;
+                        }
                         uint sample_value2 = ((m_s2_l + val_l) >> 16) +
                             ((m_s2_r + val_r) & 0xFFFF0000); // save s2+val
 
                         //#if SND_EXTERNAL_BUFFER
-                        m_audioBuffer[m_dstpos] = sample_value2;
+                        m_audioBuffer[m_dstpos] = GetSigned(sample_value2);
                         m_dstpos++;
                         //#endif
                         m_tick += TICK_F;
@@ -315,6 +354,13 @@ namespace ZXMAK2.Hardware
             }
         }
 
+        private static uint GetSigned(uint sample)
+        {
+            var left = (ushort)sample + short.MinValue;
+            var right = (ushort)(sample>>16) + short.MinValue;
+            return (uint)((ushort)left | ((ushort)right << 16));
+        }
+
         private uint m_mix_l, m_mix_r;
         private int m_dstpos, m_dst_start;
         private uint m_clock_rate, m_sample_rate;
@@ -327,7 +373,7 @@ namespace ZXMAK2.Hardware
         private uint m_mult_const;
         private Queue<SndOut> m_sndQueue = new Queue<SndOut>();
         private Queue<SndOut> m_sndQueueNext = new Queue<SndOut>();
-        private int m_lastDacTact;
+
 
         private void SetTimings(int frequency, int sampleRate)
         {
@@ -350,7 +396,7 @@ namespace ZXMAK2.Hardware
         }
 
         
-        #region filter
+        #region Filter
 
         static SoundDeviceBase()
         {
@@ -371,11 +417,11 @@ namespace ZXMAK2.Hardware
 
 
         private const uint TICK_FF = 6;			// oversampling ratio: 2^6 = 64
-        private const uint TICK_F = 1 << 6;
+        private const uint TICK_F = 1 << (int)TICK_FF;
         private const uint MULT_C = 12;			// fixed point precision for 'system tick -> sound tick'
 
         private static double[] filter_coeff = new double[]// [TICK_F*2]
-		{
+        {
             // filter designed with Matlab's DSP toolbox
             0.000797243121022152, 0.000815206499600866, 0.000844792477531490, 0.000886460636664257,
             0.000940630171246217, 0.001007677515787512, 0.001087934129054332, 0.001181684445143001,
@@ -411,7 +457,7 @@ namespace ZXMAK2.Hardware
             0.000886460636664257, 0.000844792477531490, 0.000815206499600866, 0.000797243121022152
         };
         
-        #endregion
+        #endregion Filter
     }
 
     //public class WavSampleWriter : IDisposable

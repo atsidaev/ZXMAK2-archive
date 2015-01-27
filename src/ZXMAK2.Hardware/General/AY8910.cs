@@ -12,45 +12,67 @@ namespace ZXMAK2.Hardware.General
 {
     public class AY8910 : SoundDeviceBase, IAyDevice
     {
+        private const int MAX_ENV_VOLTBL = 0x1F;
+
+        #region Fields
+
+        private int m_chipFrequency;
+        private double m_renderStep;
+        private double m_lastTime;
+
+        #endregion Fields
+
+
         public AY8910()
         {
             Category = BusDeviceCategory.Music;
             Name = "AY8910";
             Description = "Standard AY8910 Programmable Sound Generator";
 
-            ChipFrequency = 3548160;//1774400*2;
-            Volume = 50;
+            ChipFrequency = 3548160;
         }
 
-        
-        #region IBusDevice
+
+        #region Properties
+
+        public int ChipFrequency
+        {
+            get { return m_chipFrequency; }
+            set 
+            { 
+                m_chipFrequency = Math.Max(496, value);
+                m_renderStep = 50D * 16D / m_chipFrequency;
+            }
+        }
+
+
+        #endregion Properties
+
+
+        #region SoundDeviceBase
 
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            var ula = bmgr.FindDevice<IUlaDevice>();
             var memory = bmgr.FindDevice<IMemoryDevice>();
-            Frequency = ChipFrequency / 16;
+            m_lastTime = 0D;
+            //Frequency = ChipFrequency;
 
             if (memory is ZXMAK2.Hardware.Spectrum.MemorySpectrum128 ||
                 memory is ZXMAK2.Hardware.Spectrum.MemoryPlus3)
             {
-                bmgr.SubscribeWrIo(0xC002, 0xC000, writePortAddr);   // #FFFD (reg#)
-                bmgr.SubscribeRdIo(0xC002, 0xC000, readPortData);    // #FFFD (rd data/reg#)
-                bmgr.SubscribeWrIo(0xC002, 0x8000, writePortData);   // #BFFD (data)
+                bmgr.SubscribeWrIo(0xC002, 0xC000, WritePortAddr);   // #FFFD (reg#)
+                bmgr.SubscribeRdIo(0xC002, 0xC000, ReadPortData);    // #FFFD (rd data/reg#)
+                bmgr.SubscribeWrIo(0xC002, 0x8000, WritePortData);   // #BFFD (data)
             }
             else
             {
-                bmgr.SubscribeWrIo(0xC0FF, 0xC0FD, writePortAddr);   // #FFFD (reg#)
-                bmgr.SubscribeRdIo(0xC0FF, 0xC0FD, readPortData);    // #FFFD (rd data/reg#)
-                bmgr.SubscribeWrIo(0xC0FF, 0x80FD, writePortData);   // #BFFD (data)
+                bmgr.SubscribeWrIo(0xC0FF, 0xC0FD, WritePortAddr);   // #FFFD (reg#)
+                bmgr.SubscribeRdIo(0xC0FF, 0xC0FD, ReadPortData);    // #FFFD (rd data/reg#)
+                bmgr.SubscribeWrIo(0xC0FF, 0x80FD, WritePortData);   // #BFFD (data)
             }
-            bmgr.SubscribeReset(busReset);
+            bmgr.SubscribeReset(Bus_OnReset);
         }
-
-        #endregion
-
-        #region SoundDeviceBase
 
         protected override void OnBeginFrame()
         {
@@ -59,9 +81,15 @@ namespace ZXMAK2.Hardware.General
 
         protected override void OnEndFrame()
         {
-            m_lastTime += TimeStep;
-            m_lastTime -= Math.Floor(m_lastTime);
             UpdateAudioBuffer(1D);
+            if (m_lastTime >= 1D)
+            {
+                m_lastTime -= Math.Floor(m_lastTime);
+            }
+            else
+            {
+                Logger.Warn("EndFrame: m_lastTime={0:F9}", m_lastTime);
+            }
             base.OnEndFrame();
         }
 
@@ -80,10 +108,52 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
+        private void WritePortAddr(ushort addr, byte value, ref bool iorqge)
+        {
+            //if (!iorqge)
+            //    return;
+            //iorqge = false;
+            ADDR_REG = value;
+        }
+
+        private void WritePortData(ushort addr, byte value, ref bool iorqge)
+        {
+            //if (!iorqge)
+            //    return;
+            //iorqge = false;
+            UpdateAudioBuffer(GetFrameTime());
+            DATA_REG = value;
+        }
+
+        private void ReadPortData(ushort addr, ref byte value, ref bool iorqge)
+        {
+            if (!iorqge)
+                return;
+            iorqge = false;
+            value = DATA_REG;
+        }
+
+        private void Bus_OnReset()
+        {
+            m_noiseVal = 0x0FFFF;
+            m_stateNoise = 0;
+            m_stateGen = 0;
+            m_counterNoise = 0;
+            m_counterA = 0;
+            m_counterB = 0;
+            m_counterC = 0;
+            m_counterBend = 0;
+            for (int i = 0; i < 16; i++)
+            {
+                ADDR_REG = (byte)i;
+                DATA_REG = 0;
+            }
+        }
+
         #endregion SoundDeviceBase
 
 
-        #region IAY8910Device
+        #region AY8910
 
         public byte ADDR_REG
         {
@@ -197,137 +267,8 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        private int m_chipFrequency;
-        
-        public int ChipFrequency 
-        {
-            get { return m_chipFrequency; }
-            set { m_chipFrequency = Math.Max(496, value); }
-        }
-
         public event AyUpdatePortHandler UpdateIRA;
         public event AyUpdatePortHandler UpdateIRB;
-
-        #endregion
-
-        #region Bus Handlers
-
-        private void writePortAddr(ushort addr, byte value, ref bool iorqge)
-        {
-            //if (!iorqge)
-            //    return;
-            //iorqge = false;
-            ADDR_REG = value;
-        }
-
-        private void writePortData(ushort addr, byte value, ref bool iorqge)
-        {
-            //if (!iorqge)
-            //    return;
-            //iorqge = false;
-            UpdateAudioBuffer(GetFrameTime());
-            DATA_REG = value;
-        }
-
-        private void readPortData(ushort addr, ref byte value, ref bool iorqge)
-        {
-            if (!iorqge)
-                return;
-            iorqge = false;
-            value = DATA_REG;
-        }
-
-        private void busReset()
-        {
-            m_noiseVal = 0x0FFFF;
-            m_stateNoise = 0;
-            m_stateGen = 0;
-            m_counterNoise = 0;
-            m_counterA = 0;
-            m_counterB = 0;
-            m_counterC = 0;
-            m_counterBend = 0;
-            for (int i = 0; i < 16; i++)
-            {
-                ADDR_REG = (byte)i;
-                DATA_REG = 0;
-            }
-        }
-
-        #endregion
-
-        #region registers
-
-        private ushort m_freqA;
-        private ushort m_freqB;
-        private ushort m_freqC;
-        private byte m_freqNoise;        //6
-        private byte m_controlChannels;  //7
-        private byte m_volumeA;          //8
-        private byte m_volumeB;          //9
-        private byte m_volumeC;          //10
-        private ushort m_freqBend;       //11
-        private byte m_controlBend;      //13
-        private AyPortState m_iraState = new AyPortState(0xFF);
-        private AyPortState m_irbState = new AyPortState(0xFF);
-
-        private byte m_curReg = 0;
-
-
-        #endregion
-
-        private double m_lastTime;
-
-        #region private data
-
-        private byte m_bendStatus;
-        private int m_bendVolumeIndex;
-        private uint m_counterBend;
-
-        // signal gen...
-        private byte m_stateGen;      // ABC generators state
-        private byte m_stateNoise;    // ABC noise state
-        private ushort m_counterA;
-        private ushort m_counterB;
-        private ushort m_counterC;
-        private byte m_counterNoise;
-        private uint m_noiseVal = 0x0FFFF;
-
-        #endregion
-
-        private static byte[] s_regMask = new byte[] 
-		{ 
-			0xFF, 0x0F, 0xFF, 0x0F, 0xFF, 0x0F, 0x1F, 0xFF, 
-            0x1F, 0x1F, 0x1F, 0xFF, 0xFF, 0x0F, 0xFF, 0xFF, 
-		};
-
-
-        private uint[] m_mixerPreset = new uint[] { 90, 15, 60, 60, 15, 90 };      // ABC   values in 0...100
-
-
-        private uint[] m_volTableA = new uint[32];
-        private uint[] m_volTableB = new uint[32];
-        private uint[] m_volTableC = new uint[32];
-
-
-        private const int MAX_ENV_VOLTBL = 0x1F;
-
-
-        // ym (для громкости канала используется 2*i+1) для огибающей - все 32 шага
-        private static ushort[] s_volumeTable = new ushort[32]
-		{
-            //ZXMAK1
-            0x0000, 0x0000, 0x00F8, 0x01C2, 0x029E, 0x033A, 0x03F2, 0x04D7,
-            0x0610, 0x077F, 0x090A, 0x0A42, 0x0C3B, 0x0EC2, 0x1137, 0x13A7,
-            0x1750, 0x1BF9, 0x20DF, 0x2596, 0x2C9D, 0x3579, 0x3E55, 0x4768,
-            0x54FF, 0x6624, 0x773B, 0x883F, 0xA1DA, 0xC0FC, 0xE094, 0xFFFF
-            
-            //us037-3
-            //0x0000, 0x0000, 0x00EF, 0x01D0, 0x0290, 0x032A, 0x03EE, 0x04D2, 
-            //0x0611, 0x0782, 0x0912, 0x0A36, 0x0C31, 0x0EB6, 0x1130, 0x13A0,
-            //0x1751, 0x1BF5, 0x20E2, 0x2594, 0x2CA1, 0x357F, 0x3E45, 0x475E,
-            //0x5502, 0x6620, 0x7730, 0x8844, 0xA1D2, 0xC102, 0xE0A2, 0xFFFF
-		};
 
         protected void OnUpdateIRA(byte outState)
         {
@@ -353,11 +294,88 @@ namespace ZXMAK2.Hardware.General
                 UpdateIRB(this, m_irbState);
         }
 
-        private unsafe void UpdateAudioBuffer(double frameTime)
+        #endregion
+
+
+        #region Registers
+
+        private ushort m_freqA;
+        private ushort m_freqB;
+        private ushort m_freqC;
+        private byte m_freqNoise;        //6
+        private byte m_controlChannels;  //7
+        private byte m_volumeA;          //8
+        private byte m_volumeB;          //9
+        private byte m_volumeC;          //10
+        private ushort m_freqBend;       //11
+        private byte m_controlBend;      //13
+        private AyPortState m_iraState = new AyPortState(0xFF);
+        private AyPortState m_irbState = new AyPortState(0xFF);
+        private byte m_curReg = 0;
+
+        // state
+        private byte m_bendStatus;
+        private int m_bendVolumeIndex;
+        private uint m_counterBend;
+
+        // signal gen...
+        private int m_stateGen;      // ABC generators state
+        private int m_stateNoise;    // ABC noise state
+        private ushort m_counterA;
+        private ushort m_counterB;
+        private ushort m_counterC;
+        private byte m_counterNoise;
+        private uint m_noiseVal = 0x0FFFF;
+
+        #endregion Registers
+
+
+        #region Tables
+
+        private static byte[] s_regMask = new byte[] 
+		{ 
+			0xFF, 0x0F, 0xFF, 0x0F, 0xFF, 0x0F, 0x1F, 0xFF, 
+            0x1F, 0x1F, 0x1F, 0xFF, 0xFF, 0x0F, 0xFF, 0xFF, 
+		};
+
+
+        // ABC values in range 0...100
+        private uint[] m_mixerPreset = new uint[]
+        { 
+            90, 15, 60, 60, 15, 90, 
+        };
+
+
+        private uint[] m_volTableA = new uint[32];
+        private uint[] m_volTableB = new uint[32];
+        private uint[] m_volTableC = new uint[32];
+
+        // ym (для громкости канала используется 2*i+1) для огибающей - все 32 шага
+        private static ushort[] s_volumeTable = new ushort[32]
+		{
+            //ZXMAK1
+            0x0000, 0x0000, 0x00F8, 0x01C2, 0x029E, 0x033A, 0x03F2, 0x04D7,
+            0x0610, 0x077F, 0x090A, 0x0A42, 0x0C3B, 0x0EC2, 0x1137, 0x13A7,
+            0x1750, 0x1BF9, 0x20DF, 0x2596, 0x2C9D, 0x3579, 0x3E55, 0x4768,
+            0x54FF, 0x6624, 0x773B, 0x883F, 0xA1DA, 0xC0FC, 0xE094, 0xFFFF
+            
+            //us037-3
+            //0x0000, 0x0000, 0x00EF, 0x01D0, 0x0290, 0x032A, 0x03EE, 0x04D2, 
+            //0x0611, 0x0782, 0x0912, 0x0A36, 0x0C31, 0x0EB6, 0x1130, 0x13A0,
+            //0x1751, 0x1BF5, 0x20E2, 0x2594, 0x2CA1, 0x357F, 0x3E45, 0x475E,
+            //0x5502, 0x6620, 0x7730, 0x8844, 0xA1D2, 0xC102, 0xE0A2, 0xFFFF
+		};
+
+        #endregion Tables
+
+
+        #region Renderer
+
+        private void UpdateAudioBuffer(double endTime)
         {
             lock (this)
             {
-                for (var t = m_lastTime; t < frameTime; t += TimeStep)
+                for (; m_lastTime < endTime; m_lastTime += m_renderStep)
                 {
                     var outGen = m_stateGen | (m_controlChannels & 7);
                     var outNoise = m_stateNoise | ((m_controlChannels & 0x38) >> 3);
@@ -383,10 +401,9 @@ namespace ZXMAK2.Hardware.General
                         mixC = (m_volumeC & 0x1F) << 1;
                         mixC = (mixC & 0x20) == 0 ? mixC + 1 : m_bendVolumeIndex;
                     }
-                    
+
                     var sample = m_volTableC[mixC] + m_volTableB[mixB] + m_volTableA[mixA];
-                    UpdateDac(t, (ushort)(sample & 0xFFFF), (ushort)(sample >> 16));
-                    m_lastTime = t;
+                    UpdateDac(m_lastTime, (ushort)sample, (ushort)(sample >> 16));
 
                     // end of mixer
 
@@ -396,15 +413,15 @@ namespace ZXMAK2.Hardware.General
                     {
                         m_counterNoise = 0;
 
-                        m_noiseVal &= 0x1FFFF;
-                        m_noiseVal = (((m_noiseVal >> 16) ^ (m_noiseVal >> 13)) & 1) ^ ((m_noiseVal << 1) + 1);
-                        m_stateNoise = (byte)((m_noiseVal >> 16) & 1);
-                        m_stateNoise |= (byte)((m_stateNoise << 1) | (m_stateNoise << 2));
+                        //m_noiseVal &= 0x1FFFF;
+                        //m_noiseVal = (((m_noiseVal >> 16) ^ (m_noiseVal >> 13)) & 1) ^ ((m_noiseVal << 1) + 1);
+                        //m_stateNoise ^= (byte)((m_noiseVal >> 16) & 1);
+                        //m_stateNoise |= (byte)((m_stateNoise << 1) | (m_stateNoise << 2));
 
-                        //var output = (m_noiseVal + 1) & 2;
-                        //m_outNoiseABC ^= (byte)((output << 1) | output | (output >> 1));
-                        //m_noiseVal = (m_noiseVal >> 1) ^ ((m_noiseVal & 1) << 14) ^ ((m_noiseVal & 1) << 16);
-                    } 
+                        var output = (m_noiseVal + 1) & 2;
+                        m_stateNoise ^= (byte)((output << 1) | output | (output >> 1));
+                        m_noiseVal = (m_noiseVal >> 1) ^ ((m_noiseVal & 1) << 14) ^ ((m_noiseVal & 1) << 16);
+                    }
 
                     // signals counters...
                     if (++m_counterA >= m_freqA)
@@ -425,15 +442,13 @@ namespace ZXMAK2.Hardware.General
                     if (++m_counterBend >= m_freqBend)
                     {
                         m_counterBend = 0;
-                        ChangeEnvelope();
+                        UpdateEnvelope();
                     }
                 }
             }
         }
 
-        #region envelope
-
-        private void ChangeEnvelope()
+        private void UpdateEnvelope()
         {
             if (m_bendStatus == 0) return;
             // Коррекция амплитуды огибающей:
@@ -443,22 +458,22 @@ namespace ZXMAK2.Hardware.General
                 {
                     switch (m_controlBend & 0x0F)
                     {
-                        case 0: env_DD(); break; // not used
-                        case 1: env_DD(); break; // not used
-                        case 2: env_DD(); break; // not used
-                        case 3: env_DD(); break; // not used
-                        case 4: env_DD(); break;
-                        case 5: env_DD(); break;
-                        case 6: env_DD(); break;
-                        case 7: env_DD(); break;
-                        case 8: env_UD(); break; // not used
-                        case 9: env_DD(); break; // not used
-                        case 10: env_UD(); break;
-                        case 11: env_UU(); break;// not used
-                        case 12: env_DU(); break;
-                        case 13: env_UU(); break;
-                        case 14: env_UD(); break;
-                        case 15: env_DD(); break;
+                        case 0: EnvelopeDownDown(); break; // not used
+                        case 1: EnvelopeDownDown(); break; // not used
+                        case 2: EnvelopeDownDown(); break; // not used
+                        case 3: EnvelopeDownDown(); break; // not used
+                        case 4: EnvelopeDownDown(); break;
+                        case 5: EnvelopeDownDown(); break;
+                        case 6: EnvelopeDownDown(); break;
+                        case 7: EnvelopeDownDown(); break;
+                        case 8: EnvelopeUpDown(); break; // not used
+                        case 9: EnvelopeDownDown(); break; // not used
+                        case 10: EnvelopeUpDown(); break;
+                        case 11: EnvelopeUpUp(); break;// not used
+                        case 12: EnvelopeDownUp(); break;
+                        case 13: EnvelopeUpUp(); break;
+                        case 14: EnvelopeUpDown(); break;
+                        case 15: EnvelopeDownDown(); break;
                     }
                 }
             }
@@ -468,48 +483,52 @@ namespace ZXMAK2.Hardware.General
                 {
                     switch (m_controlBend & 0x0F)
                     {
-                        case 0: env_DD(); break;
-                        case 1: env_DD(); break;//env_UU(); break;
-                        case 2: env_DD(); break;
-                        case 3: env_DD(); break;
-                        case 4: env_DD(); break;  // not used
-                        case 5: env_DD(); break;  // not used
-                        case 6: env_DD(); break;  // not used
-                        case 7: env_DD(); break;  // not used
-                        case 8: env_UD(); break;
-                        case 9: env_DD(); break;
-                        case 10: env_DU(); break;
-                        case 11: env_UU(); break;
-                        case 12: env_DU(); break; // not used
-                        case 13: env_UU(); break; // not used
-                        case 14: env_DU(); break;
-                        case 15: env_DD(); break; // not used
+                        case 0: EnvelopeDownDown(); break;
+                        case 1: EnvelopeDownDown(); break;//env_UU(); break;
+                        case 2: EnvelopeDownDown(); break;
+                        case 3: EnvelopeDownDown(); break;
+                        case 4: EnvelopeDownDown(); break;  // not used
+                        case 5: EnvelopeDownDown(); break;  // not used
+                        case 6: EnvelopeDownDown(); break;  // not used
+                        case 7: EnvelopeDownDown(); break;  // not used
+                        case 8: EnvelopeUpDown(); break;
+                        case 9: EnvelopeDownDown(); break;
+                        case 10: EnvelopeDownUp(); break;
+                        case 11: EnvelopeUpUp(); break;
+                        case 12: EnvelopeDownUp(); break; // not used
+                        case 13: EnvelopeUpUp(); break; // not used
+                        case 14: EnvelopeDownUp(); break;
+                        case 15: EnvelopeDownDown(); break; // not used
                     }
                 }
             }
         }
-        private void env_DU()
+
+        private void EnvelopeDownUp()
         {
             m_bendStatus = 1;
             m_bendVolumeIndex = 0;
         }
-        private void env_UU()
+        
+        private void EnvelopeUpUp()
         {
             m_bendStatus = 0;
             m_bendVolumeIndex = MAX_ENV_VOLTBL;
         }
-        private void env_UD()
+        
+        private void EnvelopeUpDown()
         {
             m_bendStatus = 2;
             m_bendVolumeIndex = MAX_ENV_VOLTBL;
         }
-        private void env_DD()
+        
+        private void EnvelopeDownDown()
         {
             m_bendStatus = 0;
             m_bendVolumeIndex = 0;
         }
 
-        #endregion
+        #endregion Renderer
     }
 
     public class AyPortState
