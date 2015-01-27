@@ -256,36 +256,31 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         private void Mix(byte[] dst, uint[][] bufferArray)
         {
-            fixed (byte* bptr = dst)
+            fixed (byte* pbdst = dst)
             {
-                var uiptr = (uint*)bptr;
-                for (var i = 0; i < dst.Length / 4; i++)    // clean buffer
+                var pdst = (short*)pbdst;
+                for (var i = 0; i < dst.Length / 4; i++)
                 {
-                    uint value1 = 0;
-                    uint value2 = 0;
+                    var index = i * 2;
+                    var left = 0;
+                    var right = 0;
+                    foreach (var src in bufferArray)
+                    {
+                        fixed (uint* puisrc = src)
+                        {
+                            var psrc = (short*)puisrc;
+                            left += psrc[index];
+                            right += psrc[index + 1];
+                        }
+                    }
                     if (bufferArray.Length > 0)
                     {
-                        for (int j = 0; j < bufferArray.Length; j++)
-                        {
-                            value1 += bufferArray[j][i] >> 16;
-                            value2 += bufferArray[j][i] & 0xFFFF;
-                        }
-                        value1 /= (uint)bufferArray.Length;
-                        value2 /= (uint)bufferArray.Length;
+                        left /= bufferArray.Length;
+                        right /= bufferArray.Length;
                     }
-                    uiptr[i] = (value1 << 16) | value2;
+                    pdst[index] = (short)left;
+                    pdst[index + 1] = (short)right;
                 }
-
-                //for (int i = 0; i < dst.Length / 4; i++)    // clean buffer
-                //    uiptr[i] = 0;
-                //foreach (uint[] buffer in bufferArray)       // mix sound sources
-                //    fixed (uint* uibuffer = buffer)
-                //        for (int i = 0; i < dst.Length/4; i++)
-                //        {
-                //            uint s1 = uiptr[i];
-                //            uint s2 = uibuffer[i];
-                //            uiptr[i] = ((((s1 >> 16) + (s2 >> 16)) / 2) << 16) | (((s1 & 0xFFFF) + (s2 & 0xFFFF)) / 2);
-                //        }
             }
         }
     }
