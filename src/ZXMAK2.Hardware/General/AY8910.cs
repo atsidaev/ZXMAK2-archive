@@ -93,6 +93,18 @@ namespace ZXMAK2.Hardware.General
             base.OnEndFrame();
         }
 
+        protected override void OnConfigLoad(XmlNode node)
+        {
+            base.OnConfigLoad(node);
+            ChipFrequency = Utils.GetXmlAttributeAsInt32(node, "frequency", ChipFrequency);
+        }
+
+        protected override void OnConfigSave(XmlNode node)
+        {
+            base.OnConfigSave(node);
+            Utils.SetXmlAttribute(node, "frequency", ChipFrequency);
+        }
+
         protected override void OnVolumeChanged(int oldVolume, int newVolume)
         {
             var volume = (32767/*9000*/ * newVolume) / 100;
