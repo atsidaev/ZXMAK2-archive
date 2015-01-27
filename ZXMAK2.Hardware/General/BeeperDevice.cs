@@ -11,8 +11,6 @@ namespace ZXMAK2.Hardware.General
             Category = BusDeviceCategory.Sound;
             Name = "BEEPER";
             Description = "Standard Beeper";
-            
-            Volume = 30;
         }
 
         

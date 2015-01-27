@@ -59,7 +59,7 @@ namespace ZXMAK2.Hardware.Profi
 
         protected override void OnVolumeChanged(int oldVolume, int newVolume)
         {
-            m_mult = (0xFFFF * newVolume) / (100 * 0xFF);
+            m_mult = (ushort.MaxValue * newVolume) / (100 * 0xFF);
         }
     }
 }
