@@ -45,7 +45,11 @@
             </Code>
         </Task>
     </UsingTask>
-    
+
+    <PropertyGroup>
+        <CompileDependsOn>CommonAssemblyVersion;$(CompileDependsOn);</CompileDependsOn>
+    </PropertyGroup>
+
     <Target Name="CommonAssemblyVersion" Condition="'$(AssemblyVersion)' != ''">
 
         <!-- Find AssemblyInfo.cs or AssemblyInfo.vb in the "Compile" Items. Remove it from "Compile" Items because we will use a modified version instead. -->
