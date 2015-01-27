@@ -46,16 +46,16 @@ namespace ZXMAK2.Hardware
             //m_wavWriter.Dispose();
         }
 
-        protected override void OnConfigLoad(XmlNode itemNode)
+        protected override void OnConfigLoad(XmlNode node)
         {
-            base.OnConfigLoad(itemNode);
-            Volume = Utils.GetXmlAttributeAsInt32(itemNode, "volume", Volume);
+            base.OnConfigLoad(node);
+            Volume = Utils.GetXmlAttributeAsInt32(node, "volume", Volume);
         }
 
-        protected override void OnConfigSave(XmlNode itemNode)
+        protected override void OnConfigSave(XmlNode node)
         {
-            base.OnConfigSave(itemNode);
-            Utils.SetXmlAttribute(itemNode, "volume", Volume);
+            base.OnConfigSave(node);
+            Utils.SetXmlAttribute(node, "volume", Volume);
         }
 
         #endregion
