@@ -46,6 +46,12 @@ namespace ZXMAK2.Hardware.General
 
         private IViewHolder m_viewHolder;
 
+        private int m_mask;
+        private int m_port;
+        private int m_bit;
+        private int m_bitMask;
+
+
         #endregion Fields
 
         
@@ -53,12 +59,65 @@ namespace ZXMAK2.Hardware.General
         {
             Category = BusDeviceCategory.Tape;
             Name = "TAPE PLAYER";
-            Description = "Common Tape Device (port #FE, mask #01)";
 
             Blocks = new List<ITapeBlock>();
             Volume = 5;
             CreateViewHolder();
+
+            Mask = 0x01;
+            Port = 0xFE;
+            Bit = 6;
         }
+
+
+        #region Properties
+
+        public int Mask
+        {
+            get { return m_mask; }
+            set
+            {
+                m_mask = value;
+                UpdateDescription();
+                OnConfigChanged();
+            }
+        }
+
+        public int Port
+        {
+            get { return m_port; }
+            set
+            {
+                m_port = value;
+                UpdateDescription();
+                OnConfigChanged();
+            }
+        }
+
+        public int Bit
+        {
+            get { return m_bit; }
+            set
+            {
+                value = value < 0 ? 0 : value;
+                value = value > 7 ? 7 : value;
+                m_bit = value;
+                m_bitMask = 1 << m_bit;
+                UpdateDescription();
+                OnConfigChanged();
+            }
+        }
+
+        private void UpdateDescription()
+        {
+            Description = string.Format(
+                "Common Tape Device (port #{0:X4}, mask #{1:X4}, bit D{2})",
+                Port,
+                Mask,
+                Bit);
+        }
+
+        #endregion Properties
 
 
         #region IBusDevice
@@ -69,7 +128,7 @@ namespace ZXMAK2.Hardware.General
             m_cpu = bmgr.CPU;
             m_memory = bmgr.FindDevice<IMemoryDevice>();
 
-            bmgr.SubscribeRdIo(0x0001, 0x0000, readPortFE);
+            bmgr.SubscribeRdIo(Mask, Port & Mask, readPortFE);
 
             bmgr.SubscribePreCycle(busPreCycle);
 
@@ -93,21 +152,28 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        protected override void OnConfigLoad(XmlNode itemNode)
+        protected override void OnConfigLoad(XmlNode node)
         {
-            base.OnConfigLoad(itemNode);
-            UseTraps = Utils.GetXmlAttributeAsBool(itemNode, "useTraps", UseTraps);
-            UseAutoPlay = Utils.GetXmlAttributeAsBool(itemNode, "useAutoPlay", UseAutoPlay);
+            base.OnConfigLoad(node);
+            UseTraps = Utils.GetXmlAttributeAsBool(node, "useTraps", UseTraps);
+            UseAutoPlay = Utils.GetXmlAttributeAsBool(node, "useAutoPlay", UseAutoPlay);
+            Mask = Utils.GetXmlAttributeAsInt32(node, "mask", Mask);
+            Port = Utils.GetXmlAttributeAsInt32(node, "port", Port);
+            Bit = Utils.GetXmlAttributeAsInt32(node, "bit", Bit);
         }
 
-        protected override void OnConfigSave(XmlNode itemNode)
+        protected override void OnConfigSave(XmlNode node)
         {
-            base.OnConfigSave(itemNode);
-            Utils.SetXmlAttribute(itemNode, "useTraps", UseTraps);
-            Utils.SetXmlAttribute(itemNode, "useAutoPlay", UseAutoPlay);
+            base.OnConfigSave(node);
+            Utils.SetXmlAttribute(node, "useTraps", UseTraps);
+            Utils.SetXmlAttribute(node, "useAutoPlay", UseAutoPlay);
+            Utils.SetXmlAttribute(node, "mask", Mask);
+            Utils.SetXmlAttribute(node, "port", Port);
+            Utils.SetXmlAttribute(node, "bit", Bit);
         }
 
         #endregion
+
 
         #region ITapeDevice
 
@@ -136,13 +202,19 @@ namespace ZXMAK2.Hardware.General
         private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
         {
             if (!iorqge || m_memory.DOSEN)
+            {
                 return;
+            }
             //iorqge = false;
 
             if (tape_bit(m_cpu.Tact))
-                value |= 0x40;
+            {
+                value |= (byte)m_bitMask;
+            }
             else
-                value &= 0xBF;
+            {
+                value &= (byte)~m_bitMask;
+            }
             detectorRead();
         }
 
