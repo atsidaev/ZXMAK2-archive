@@ -14,7 +14,7 @@ namespace ZXMAK2.Hardware
 {
     public abstract class SoundDeviceBase : BusDeviceBase, ISoundRenderer
     {
-        public SoundDeviceBase()
+        protected SoundDeviceBase()
         {
             Category = BusDeviceCategory.Sound;
             Volume = 100;
@@ -25,11 +25,10 @@ namespace ZXMAK2.Hardware
 
         public override void BusInit(IBusManager bmgr)
         {
-            m_sndQueue.Clear();
             m_cpu = bmgr.CPU;
             var ula = bmgr.FindDevice<IUlaDevice>();
-            FrameTactCount = ula.FrameTactCount;
-            Frequency = FrameTactCount * 50;
+            FrameTactCount = ula != null ? ula.FrameTactCount : 71680;
+            ApplyTimings(FrameTactCount * 50, 44100);
 
             bmgr.SubscribeBeginFrame(BeginFrame);
             bmgr.SubscribeEndFrame(EndFrame);
@@ -38,7 +37,7 @@ namespace ZXMAK2.Hardware
         //private WavSampleWriter m_wavWriter;
         public override void BusConnect()
         {
-            //m_wavWriter = new WavSampleWriter(this.GetType().Name+".wav", 44100, 16, 2); 
+            //m_wavWriter = new WavSampleWriter(this.GetType().Name+".wav", m_sampleRate, 16, 2); 
         }
 
         public override void BusDisconnect()
@@ -65,11 +64,7 @@ namespace ZXMAK2.Hardware
 
         public uint[] AudioBuffer
         {
-            get
-            {
-                //LogAgent.Debug("GetBuffer");
-                return m_audioBuffer;
-            }
+            get { return m_audioBuffer ?? new uint[882]; }
         }
 
         public int Volume
@@ -77,14 +72,12 @@ namespace ZXMAK2.Hardware
             get { return m_volume; }
             set
             {
-                if (value < 0)
-                    value = 0;
-                if (value > 100)
-                    value = 100;
-                int oldVolume = m_volume;
+                value = value < 0 ? 0 : value;
+                value = value > 100 ? 100 : value;
+                var oldVolume = m_volume;
                 m_volume = value;
-                OnConfigChanged();
                 OnVolumeChanged(oldVolume, m_volume);
+                OnConfigChanged();
             }
         }
 
@@ -139,28 +132,11 @@ namespace ZXMAK2.Hardware
 
         private CpuUnit m_cpu;
 
-        private int m_volume = 100;
-        private uint[] m_audioBuffer = new uint[882];    // beeper frame sound samples
-        private int m_frequency;
+        private int m_volume;
+        private uint[] m_audioBuffer;   // render buffer (short|(short<<16)
         private int m_lastDacTact;
 
         protected int FrameTactCount { get; private set; }
-
-        protected int Frequency
-        {
-            get { return m_frequency; }
-            set
-            {
-                //value /=  50 * (int)TICK_F*2;
-                //value *= (int)TICK_F*2 * 50;
-                //value /= 44100;
-                //value *= 44100;
-                m_frequency = value;
-                SetTimings(value, 44100);
-                m_sndQueue.Clear();
-                m_sndQueueNext.Clear();
-            }
-        }
 
         /// <summary>
         /// Returns frame time 0D...1D, the result may be more than 1D (overframe)
@@ -174,7 +150,7 @@ namespace ZXMAK2.Hardware
         protected void UpdateDac(double frameTime, short left, short right)
         {
             var frameLength = FrameTactCount;
-            var timestamp = (int)Math.Ceiling(frameTime * frameLength);
+            var timestamp = (int)Math.Floor(frameTime * frameLength);
             var l = (ushort)(left - short.MinValue);
             var r = (ushort)(right - short.MinValue);
             UpdateDacInt(timestamp, l, r);
@@ -208,25 +184,24 @@ namespace ZXMAK2.Hardware
                     m_lastDacTact);
                 return;
             }
+            var sndout = new SndOut();
+            sndout.Left = left;
+            sndout.Right = right;
+
             var frameLength = FrameTactCount;
-            if (timestamp < frameLength) // normal
+            if (timestamp < frameLength)
             {
-                var sndout = new SndOut();
+                // inframe
                 sndout.Timestamp = timestamp;
-                sndout.Left = left;
-                sndout.Right = right;
                 m_sndQueue.Enqueue(sndout);
-                m_lastDacTact = sndout.Timestamp;
             }
-            else // overframe
+            else
             {
-                var sndout = new SndOut();
+                // overframe
                 sndout.Timestamp = timestamp - frameLength;
-                sndout.Left = left;
-                sndout.Right = right;
                 m_sndQueueNext.Enqueue(sndout);
-                m_lastDacTact = sndout.Timestamp;
             }
+            m_lastDacTact = sndout.Timestamp;
         }
 
         private void Render(Queue<SndOut> queue, int clkTicks)
@@ -250,7 +225,7 @@ namespace ZXMAK2.Hardware
 
         private void StartFrame()
         {
-            m_dst_start = m_dstpos = 0;
+            m_dstStart = m_dstPos = 0;
             m_base_tick = m_tick;
         }
 
@@ -262,7 +237,7 @@ namespace ZXMAK2.Hardware
             }
 
             //[vv]   unsigned endtick = (timestamp * mult_const) >> MULT_C;
-            ulong endtick = ((uint)timestamp * (ulong)m_sample_rate * TICK_F) / m_clock_rate;
+            ulong endtick = ((uint)timestamp * (ulong)m_sampleRate * TICK_F) / m_clockRate;
 
             FlushFrame((uint)(m_base_tick + endtick));
             m_mix_l = left; m_mix_r = right;
@@ -272,10 +247,10 @@ namespace ZXMAK2.Hardware
         {
             // adjusting 'clk_ticks' with whole history will fix accumulation of rounding errors
             //uint64_t endtick = ((passed_clk_ticks + clk_ticks) * mult_const) >> MULT_C;
-            ulong endtick = ((m_passed_clk_ticks + (uint)clk_ticks) * (ulong)m_sample_rate * TICK_F) / m_clock_rate;
+            ulong endtick = ((m_passed_clk_ticks + (uint)clk_ticks) * (ulong)m_sampleRate * TICK_F) / m_clockRate;
             FlushFrame((uint)(endtick - m_passed_snd_ticks));
 
-            var ready_samples = m_dstpos - m_dst_start;
+            var ready_samples = m_dstPos - m_dstStart;
 
             m_tick -= (uint)(ready_samples << (int)TICK_FF);
             m_passed_snd_ticks += (uint)(ready_samples << (int)TICK_FF);
@@ -300,7 +275,7 @@ namespace ZXMAK2.Hardware
 
                 m_tick = endtick;
             }
-            else if (m_dstpos < m_audioBuffer.Length) /* myfix */
+            else if (m_dstPos < m_audioBuffer.Length) /* myfix */
             {
                 scale = filter_sum_full_u - filter_diff[(m_tick & (TICK_F - 1)) + TICK_F];
 
@@ -308,8 +283,8 @@ namespace ZXMAK2.Hardware
                     ((m_mix_r * scale + m_s2_r) & 0xFFFF0000);
 
                 //#if SND_EXTERNAL_BUFFER
-                m_audioBuffer[m_dstpos] = GetSigned(sample_value);
-                m_dstpos++;
+                m_audioBuffer[m_dstPos] = GetSigned(sample_value);
+                m_dstPos++;
                 //#endif
 
                 scale = filter_sum_half_u - filter_diff[m_tick & (TICK_F - 1)];
@@ -325,7 +300,7 @@ namespace ZXMAK2.Hardware
                     uint val_r = m_mix_r * filter_sum_half_u;
                     do
                     {
-                        if (m_dstpos >= m_audioBuffer.Length) /* myfix */
+                        if (m_dstPos >= m_audioBuffer.Length) /* myfix */
                         {
                             break;
                         }
@@ -333,8 +308,8 @@ namespace ZXMAK2.Hardware
                             ((m_s2_r + val_r) & 0xFFFF0000); // save s2+val
 
                         //#if SND_EXTERNAL_BUFFER
-                        m_audioBuffer[m_dstpos] = GetSigned(sample_value2);
-                        m_dstpos++;
+                        m_audioBuffer[m_dstPos] = GetSigned(sample_value2);
+                        m_dstPos++;
                         //#endif
                         m_tick += TICK_F;
                         m_s2_l = val_l; m_s2_r = val_r; // s2=s1, s1=0;
@@ -361,9 +336,9 @@ namespace ZXMAK2.Hardware
             return (uint)((ushort)left | ((ushort)right << 16));
         }
 
+        private int m_dstPos, m_dstStart;
+        private uint m_clockRate, m_sampleRate;
         private uint m_mix_l, m_mix_r;
-        private int m_dstpos, m_dst_start;
-        private uint m_clock_rate, m_sample_rate;
 
         private uint m_tick, m_base_tick;
         private uint m_s1_l, m_s1_r;
@@ -375,17 +350,31 @@ namespace ZXMAK2.Hardware
         private Queue<SndOut> m_sndQueueNext = new Queue<SndOut>();
 
 
-        private void SetTimings(int frequency, int sampleRate)
+        private void ApplyTimings(int frequency, int sampleRate)
         {
-            m_clock_rate = (uint)frequency;
-            m_sample_rate = (uint)sampleRate;
+            if (frequency < 1 || sampleRate < 1)
+            {
+                Logger.Error("ApplyTimings: frequency={0}, sampleRate={1}", frequency, sampleRate);
+                frequency = frequency < 1 ? 71680*50 : frequency;
+                sampleRate = sampleRate < 1 ? 44100 : frequency;
+            }
+            if ((sampleRate % 50) != 0)
+            {
+                Logger.Error("ApplyTimings: sampleRate={1} (not a multiple of 50)", frequency, sampleRate);
+                sampleRate = sampleRate - (sampleRate % 50) + 50;
+            }
+            m_clockRate = (uint)frequency;
+            m_sampleRate = (uint)sampleRate;
+            var bufferLength = (int)Math.Ceiling(m_sampleRate / 50D);
+            m_audioBuffer = new uint[bufferLength];   // 44100 => 882
             m_sndQueue.Clear();
             m_sndQueueNext.Clear();
 
-            m_tick = 0; m_dstpos = m_dst_start = 0;
+            m_tick = 0; 
+            m_dstPos = m_dstStart = 0;
             m_passed_snd_ticks = m_passed_clk_ticks = 0;
 
-            m_mult_const = (uint)(((ulong)m_sample_rate << (int)(MULT_C + TICK_FF)) / m_clock_rate);
+            m_mult_const = (uint)(((ulong)m_sampleRate << (int)(MULT_C + TICK_FF)) / m_clockRate);
         }
 
         private class SndOut
