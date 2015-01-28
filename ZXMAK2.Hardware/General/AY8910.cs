@@ -12,11 +12,15 @@ namespace ZXMAK2.Hardware.General
 {
     public class AY8910 : SoundDeviceBase, IAyDevice
     {
-        private const int MAX_ENV_VOLTBL = 0x1F;
+        private const int MaxEnvelopeVolumeIndex = 0x1F;
 
         #region Fields
 
         private int m_chipFrequency;
+        private int m_maskAddrReg;
+        private int m_portAddrReg;
+        private int m_maskDataReg;
+        private int m_portDataReg;
         private double m_renderStep;
         private double m_lastTime;
 
@@ -29,7 +33,11 @@ namespace ZXMAK2.Hardware.General
             Name = "AY8910";
             Description = "Standard AY8910 Programmable Sound Generator";
 
-            ChipFrequency = 3548160;
+            ChipFrequency = 1773400;    // default ZX Spectrum 128
+            MaskAddrReg = 0xC0FF;       // for compatibility (Quorum for example)
+            MaskDataReg = 0xC0FF;       // for compatibility (Quorum for example)
+            PortAddrReg = 0xFFFD;
+            PortDataReg = 0xBFFD;
         }
 
 
@@ -41,7 +49,48 @@ namespace ZXMAK2.Hardware.General
             set 
             { 
                 m_chipFrequency = Math.Max(496, value);
-                m_renderStep = 50D * 16D / m_chipFrequency;
+                m_renderStep = 50D * 8D / m_chipFrequency;
+                OnConfigChanged();
+            }
+        }
+
+        public int MaskAddrReg
+        {
+            get { return m_maskAddrReg; }
+            set
+            {
+                m_maskAddrReg = value;
+                OnConfigChanged();
+            }
+        }
+
+        public int PortAddrReg
+        {
+            get { return m_portAddrReg; }
+            set
+            {
+                m_portAddrReg = value;
+                OnConfigChanged();
+            }
+        }
+
+        public int MaskDataReg
+        {
+            get { return m_maskDataReg; }
+            set
+            {
+                m_maskDataReg = value;
+                OnConfigChanged();
+            }
+        }
+
+        public int PortDataReg
+        {
+            get { return m_portDataReg; }
+            set
+            {
+                m_portDataReg = value;
+                OnConfigChanged();
             }
         }
 
@@ -54,29 +103,11 @@ namespace ZXMAK2.Hardware.General
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            var memory = bmgr.FindDevice<IMemoryDevice>();
             m_lastTime = 0D;
-            //Frequency = ChipFrequency;
-
-            if (memory is ZXMAK2.Hardware.Spectrum.MemorySpectrum128 ||
-                memory is ZXMAK2.Hardware.Spectrum.MemoryPlus3)
-            {
-                bmgr.SubscribeWrIo(0xC002, 0xC000, WritePortAddr);   // #FFFD (reg#)
-                bmgr.SubscribeRdIo(0xC002, 0xC000, ReadPortData);    // #FFFD (rd data/reg#)
-                bmgr.SubscribeWrIo(0xC002, 0x8000, WritePortData);   // #BFFD (data)
-            }
-            else
-            {
-                bmgr.SubscribeWrIo(0xC0FF, 0xC0FD, WritePortAddr);   // #FFFD (reg#)
-                bmgr.SubscribeRdIo(0xC0FF, 0xC0FD, ReadPortData);    // #FFFD (rd data/reg#)
-                bmgr.SubscribeWrIo(0xC0FF, 0x80FD, WritePortData);   // #BFFD (data)
-            }
+            bmgr.SubscribeWrIo(MaskAddrReg, PortAddrReg & MaskAddrReg, WritePortAddr);   // #FFFD (reg#)
+            bmgr.SubscribeRdIo(MaskAddrReg, PortAddrReg & MaskAddrReg, ReadPortData);    // #FFFD (rd data/reg#)
+            bmgr.SubscribeWrIo(MaskDataReg, PortDataReg & MaskDataReg, WritePortData);   // #BFFD (data)
             bmgr.SubscribeReset(Bus_OnReset);
-        }
-
-        protected override void OnBeginFrame()
-        {
-            base.OnBeginFrame();
         }
 
         protected override void OnEndFrame()
@@ -97,12 +128,20 @@ namespace ZXMAK2.Hardware.General
         {
             base.OnConfigLoad(node);
             ChipFrequency = Utils.GetXmlAttributeAsInt32(node, "frequency", ChipFrequency);
+            MaskAddrReg = Utils.GetXmlAttributeAsInt32(node, "maskAddrReg", MaskAddrReg);
+            MaskDataReg = Utils.GetXmlAttributeAsInt32(node, "maskDataReg", MaskDataReg);
+            PortAddrReg = Utils.GetXmlAttributeAsInt32(node, "portAddrReg", PortAddrReg);
+            PortDataReg = Utils.GetXmlAttributeAsInt32(node, "portDataReg", PortDataReg);
         }
 
         protected override void OnConfigSave(XmlNode node)
         {
             base.OnConfigSave(node);
             Utils.SetXmlAttribute(node, "frequency", ChipFrequency);
+            Utils.SetXmlAttribute(node, "maskAddrReg", MaskAddrReg);
+            Utils.SetXmlAttribute(node, "maskDataReg", MaskDataReg);
+            Utils.SetXmlAttribute(node, "portAddrReg", PortAddrReg);
+            Utils.SetXmlAttribute(node, "portDataReg", PortDataReg);
         }
 
         protected override void OnVolumeChanged(int oldVolume, int newVolume)
@@ -265,7 +304,7 @@ namespace ZXMAK2.Hardware.General
                             }
                             else
                             {
-                                m_bendVolumeIndex = MAX_ENV_VOLTBL;
+                                m_bendVolumeIndex = MaxEnvelopeVolumeIndex;
                                 m_bendStatus = 2;       // down
                             }
                         break;
@@ -466,7 +505,7 @@ namespace ZXMAK2.Hardware.General
             // Коррекция амплитуды огибающей:
             if (m_bendStatus == 1) // AmplUp
             {
-                if (++m_bendVolumeIndex > MAX_ENV_VOLTBL) // DUoverflow
+                if (++m_bendVolumeIndex > MaxEnvelopeVolumeIndex) // DUoverflow
                 {
                     switch (m_controlBend & 0x0F)
                     {
@@ -525,13 +564,13 @@ namespace ZXMAK2.Hardware.General
         private void EnvelopeUpUp()
         {
             m_bendStatus = 0;
-            m_bendVolumeIndex = MAX_ENV_VOLTBL;
+            m_bendVolumeIndex = MaxEnvelopeVolumeIndex;
         }
         
         private void EnvelopeUpDown()
         {
             m_bendStatus = 2;
-            m_bendVolumeIndex = MAX_ENV_VOLTBL;
+            m_bendVolumeIndex = MaxEnvelopeVolumeIndex;
         }
         
         private void EnvelopeDownDown()

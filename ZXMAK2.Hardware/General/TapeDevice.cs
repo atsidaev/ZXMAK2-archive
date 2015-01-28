@@ -56,7 +56,7 @@ namespace ZXMAK2.Hardware.General
             Description = "Common Tape Device (port #FE, mask #01)";
 
             Blocks = new List<ITapeBlock>();
-            Volume = 30;
+            Volume = 5;
             CreateViewHolder();
         }
 
@@ -153,7 +153,7 @@ namespace ZXMAK2.Hardware.General
             //bmgr.SubscribeRDMEM_M1(0xFFFF, 0x056B, tapeTrap);
             //bmgr.SubscribeRDMEM_M1(0xFFFF, 0x059E, tapeTrap);
 
-            ushort val = tape_bit(m_cpu.Tact) ? m_dacValue1 : m_dacValue0;
+            var val = tape_bit(m_cpu.Tact) ? m_dacValue1 : m_dacValue0;
             UpdateDac(val, val);
 
             ushort addr = m_cpu.regs.PC;

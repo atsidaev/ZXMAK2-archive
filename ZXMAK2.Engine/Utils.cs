@@ -41,19 +41,37 @@ namespace ZXMAK2.Engine
 
         public static Int32 GetXmlAttributeAsInt32(XmlNode itemNode, string name, int defValue)
         {
-            int result = defValue;
-            if (itemNode.Attributes[name] != null)
-                if (Int32.TryParse(itemNode.Attributes[name].InnerText, out result))
-                    return result;
+            var text = GetXmlAttributeAsString(itemNode, name, null);
+            if (text != null)
+            {
+                var result = TryParseSpectrumInt32(text);
+                if (result.HasValue)
+                {
+                    return result.Value;
+                }
+                throw new FormatException(
+                    string.Format("Invalid attribute value: {0}=\"{1}\"", 
+                        name, 
+                        text));
+            }
             return defValue;
         }
 
-        public static UInt32 GetXmlAttributeAsUInt32(XmlNode itemNode, string name, uint defValue)
+        public static uint GetXmlAttributeAsUInt32(XmlNode itemNode, string name, uint defValue)
         {
-            uint result = defValue;
-            if (itemNode.Attributes[name] != null)
-                if (UInt32.TryParse(itemNode.Attributes[name].InnerText, out result))
-                    return result;
+            var text = GetXmlAttributeAsString(itemNode, name, null);
+            if (text != null)
+            {
+                var result = TryParseSpectrumUInt32(text);
+                if (result.HasValue)
+                {
+                    return result.Value;
+                }
+                throw new FormatException(
+                    string.Format("Invalid attribute value: {0}=\"{1}\"",
+                        name,
+                        text));
+            }
             return defValue;
         }
 
@@ -66,7 +84,7 @@ namespace ZXMAK2.Engine
             return defValue;
         }
 
-        public static String GetXmlAttributeAsString(XmlNode itemNode, string name, string defValue)
+        public static string GetXmlAttributeAsString(XmlNode itemNode, string name, string defValue)
         {
             if (itemNode.Attributes[name] != null)
                 return itemNode.Attributes[name].InnerText;
@@ -74,6 +92,137 @@ namespace ZXMAK2.Engine
         }
 
         #endregion
+
+        private static int? TryParseSpectrumInt32(string value)
+        {
+            value = value.Trim().ToLowerInvariant();
+            if (value.StartsWith("#"))
+            {
+                return TryParseInt32(value.Substring(1), 16);
+            }
+            else if (value.StartsWith("0x"))
+            {
+                return TryParseInt32(value.Substring(2), 16);
+            }
+            else if (value.StartsWith("%"))
+            {
+                return TryParseInt32(value.Substring(1), 2);
+            }
+            return TryParseInt32(value, 10);
+        }
+
+        private static uint? TryParseSpectrumUInt32(string value)
+        {
+            value = value.Trim().ToLowerInvariant();
+            if (value.StartsWith("#"))
+            {
+                return TryParseUInt32(value.Substring(1), 16);
+            }
+            else if (value.StartsWith("0x"))
+            {
+                return TryParseUInt32(value.Substring(2), 16);
+            }
+            else if (value.StartsWith("%"))
+            {
+                return TryParseUInt32(value.Substring(1), 2);
+            }
+            return TryParseUInt32(value, 10);
+        }
+
+        private const string Alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        public static int? TryParseInt32(string text, int radix)
+        {
+            if (radix < 2 || radix > Alphabet.Length)
+            {
+                throw new ArgumentOutOfRangeException("radix");
+            }
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+            text = text.Trim().ToUpperInvariant();
+
+            var pos = 0;
+            var result = 0L;
+            var sign = 1L;
+            if (text.StartsWith("-"))
+            {
+                sign = -1L;
+                text = text.Substring(1);
+            }
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+
+            // Use lookup table to parse string
+            while (pos < text.Length && !Char.IsWhiteSpace(text[pos]))
+            {
+                var digit = text.Substring(pos, 1);
+                var i = Alphabet.IndexOf(digit);
+                if (i < 0 || i >= radix)
+                {
+                    return null;
+                }
+                result *= radix;
+                result += i;
+                pos++;
+                if ((sign > 0 && result > (long)int.MaxValue) ||
+                    (sign < 0 && result > -(long)int.MinValue))
+                {
+                    return null;
+                }
+            }
+            // Return true if any characters processed
+            if (pos < 1)
+            {
+                return null;
+            }
+            return (int)(result * sign);
+        }
+
+        public static uint? TryParseUInt32(string text, int radix)
+        {
+            if (radix < 2 || radix > Alphabet.Length)
+            {
+                throw new ArgumentOutOfRangeException("radix");
+            }
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+            text = text.Trim().ToUpperInvariant();
+
+            var pos = 0;
+            var result = 0L;
+
+            // Use lookup table to parse string
+            while (pos < text.Length && !Char.IsWhiteSpace(text[pos]))
+            {
+                var digit = text.Substring(pos, 1);
+                var i = Alphabet.IndexOf(digit);
+                if (i < 0 || i >= radix)
+                {
+                    return null;
+                }
+                result *= radix;
+                result += i;
+                pos++;
+                if (result > (long)uint.MaxValue)
+                {
+                    return null;
+                }
+            }
+            // Return true if any characters processed
+            if (pos < 1)
+            {
+                return null;
+            }
+            return (uint)result;
+        }
+
+
 
         public static int ParseSpectrumInt(string strValue)
         {
