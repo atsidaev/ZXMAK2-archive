@@ -1474,11 +1474,22 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (_breakpointsExt.Count < 255)
             {
                 var bp = new BreakpointAdlers(info);
-                _breakpointsExt.Add((byte)_breakpointsExt.Count, bp);
+                _breakpointsExt.Add(GetNewBreakpointPosition(), bp);
                 m_spectrum.AddBreakpoint(bp);
             }
             else
                 throw new Exception("Maximum breakpoints count(255) exceeded...");
+        }
+        private byte GetNewBreakpointPosition()
+        {
+            if( _breakpointsExt.Count == 0 )
+                return 0;
+
+            for (byte positionCounter = 0; positionCounter < _breakpointsExt.Count; positionCounter++)
+                if (!_breakpointsExt.ContainsKey(positionCounter))
+                    return positionCounter;
+
+            return Convert.ToByte(_breakpointsExt.Count);
         }
 
         #region Read and Write Mem check methods
