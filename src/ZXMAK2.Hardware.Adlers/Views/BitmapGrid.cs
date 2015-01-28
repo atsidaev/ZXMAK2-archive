@@ -14,7 +14,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private Size _originalSize;
 
-        private bool _isInitialised = false;
+        //private bool _isInitialised = false;
         //private bool _needRepaint = true;
 
         private IDebuggable _spectrum = null;
@@ -35,7 +35,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             X_BIT_COUNT = i_gridWidth;
             Y_BIT_COUNT = i_gridHeight;
 
-            _isInitialised = true;
+            //_isInitialised = true;
         }
 
         public int getGridBit(int XBit, int YBit)
