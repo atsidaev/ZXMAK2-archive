@@ -302,9 +302,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
         private void bitmapGridSpriteView_MouseUp(object sender, MouseEventArgs e)
         {
-            int  clickedPixel = bitmapGridSpriteView.getClickedPixel(e);
-            int  bitToToggleAddress = Convert.ToUInt16(numericUpDownActualAddress.Value) + (clickedPixel/8);
-            byte memValue = _spectrum.ReadMemory(Convert.ToUInt16(bitToToggleAddress));
+            int clickedPixel = bitmapGridSpriteView.getClickedPixel(e);
+            int temp = (int)numericUpDownActualAddress.Value + clickedPixel / 8;
+            if (temp > 0xFFFF)
+                temp -= 0xFFFF;
+            UInt16 bitToToggleAddress = Convert.ToUInt16(temp);
+            if (bitToToggleAddress < 0x4000)
+                return; //cannot change ROM
+            byte memValue = _spectrum.ReadMemory(bitToToggleAddress);
 
             memValue = (byte)GraphicsTools.ToggleBit(memValue, clickedPixel % 8);
             _spectrum.WriteMemory(Convert.ToUInt16(bitToToggleAddress), memValue);

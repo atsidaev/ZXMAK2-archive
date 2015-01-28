@@ -14,7 +14,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private Size _originalSize;
 
-        //private bool _isInitialised = false;
+        private bool _isInitialised = false;
         //private bool _needRepaint = true;
 
         private IDebuggable _spectrum = null;
@@ -25,7 +25,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         public void Init()
         {
-            //_isInitialised = true;
             _originalSize = this.Size;
         }
         public void Init(IDebuggable i_spectrum, byte i_gridWidth, byte i_gridHeight)
@@ -35,6 +34,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             _spectrum = i_spectrum;
             X_BIT_COUNT = i_gridWidth;
             Y_BIT_COUNT = i_gridHeight;
+
+            _isInitialised = true;
         }
 
         public int getGridBit(int XBit, int YBit)
@@ -73,7 +74,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             using (Graphics g = ( e == null ? this.CreateGraphics() : e.Graphics))
             {
-                g.Clear(Color.Black);
+                //g.Clear(Color.Black);
 
                 int bitWidth = _originalSize.Width / X_BIT_COUNT;
                 int bitHeight = _originalSize.Height / Y_BIT_COUNT;
@@ -88,11 +89,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 for (int counterY = 0; counterY < Y_BIT_COUNT; counterY++)
                     for (int counter = 0; counter < X_BIT_COUNT; counter++)
                     {
-                        Color bitIsSet = _gridBits[arrBitmapCounter/8][arrBitmapCounter%8] ? Color.White : Color.DarkGray;
+                        Color bitColor = _gridBits[arrBitmapCounter / 8][arrBitmapCounter % 8] ? Color.White : Color.DarkGray;
                         arrBitmapCounter++;
 
                         rect.Location = new Point(startX + (counter * bitWidth), startY + (counterY * bitHeight));
-                        using (Brush brush = new SolidBrush(bitIsSet))
+                        using (Brush brush = new SolidBrush(bitColor))
                         {
                             g.FillRectangle(brush, rect);
                         }
@@ -109,10 +110,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-
-            /*if (!_isInitialised || !_needRepaint || _gridBits == null)
-                return;*/
-
             this.Draw(e);
         }
 
@@ -123,7 +120,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             _gridBits[pixelClicked / 8][pixelClicked % 8] = setValue;
 
-            //set zx memory
             //_needRepaint = true;
             this.Draw(null);
 
