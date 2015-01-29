@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace ZXMAK2.Engine
 {
-    public class SyncTime : IDisposable
+    public sealed class SyncTime : IDisposable
     {
         private readonly ManualResetEvent _waitEvent = new ManualResetEvent(true);
         private long _lastTimeStamp;

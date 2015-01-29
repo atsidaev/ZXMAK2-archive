@@ -7,7 +7,7 @@ using ZXMAK2.Engine.Entities;
 
 ﻿﻿namespace ZXMAK2.Engine
   {
-      public class RzxHandler : IRzxState
+      public sealed class RzxHandler : IRzxState
       {
           private CpuUnit m_cpu;
           private BusManager m_busMgr;

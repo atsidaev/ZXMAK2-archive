@@ -6,7 +6,7 @@ using ZXMAK2.Presentation.Interfaces;
 
 namespace ZXMAK2.Host.WinForms.Mdx
 {
-    public class MdxHost : IHost
+    public sealed class MdxHost : IHost
     {
         private DirectKeyboard m_keyboard;
         private DirectMouse m_mouse;

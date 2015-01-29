@@ -147,12 +147,9 @@ namespace ZXMAK2.Engine.Cpu.Processor
             {
                 case 0: rde = regs.BC; break;
                 case 1: rde = regs.DE; break;
-                case 2:
-                    if (FX == CpuModeIndex.Ix) rde = regs.IX;
-                    else rde = regs.IY;
-                    break;
+                case 2: rde = FX == CpuModeIndex.Ix ? regs.IX : regs.IY; break;
                 case 3: rde = regs.SP; break;
-                default: throw new Exception();
+                default: throw new ArgumentOutOfRangeException("(cmd & 0x30) >> 4");
             }
             if (FX == CpuModeIndex.Ix)
             {

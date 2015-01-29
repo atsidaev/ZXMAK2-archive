@@ -1,8 +1,9 @@
-﻿
+﻿using System;
+
 
 namespace ZXMAK2.Dependency
 {
-    public interface IResolver
+    public interface IResolver : IDisposable
     {
         T Resolve<T>(params Argument[] args);
         T Resolve<T>(string name, params Argument[] args);

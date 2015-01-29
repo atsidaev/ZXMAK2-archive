@@ -468,13 +468,7 @@ namespace ZXMAK2.Host.WinForms.Views
             {
                 try
                 {
-                    var control = CreateConfigScreenControl(m_workBus, device);
-                    if (control == null)
-                    {
-                        var generic = new CtlSettingsGenericDevice();
-                        generic.Init(m_workBus, m_host, device);
-                        control = generic;
-                    }
+                    var control = ResolveScreenControl(m_workBus, m_host, device);
                     insertListViewItem(lstNavigation.Items.Count, control, device);
                 }
                 catch (Exception ex)
@@ -489,6 +483,42 @@ namespace ZXMAK2.Host.WinForms.Views
 
             lstNavigation.SelectedItems.Clear();
             lstNavigation.Items[0].Selected = true;
+        }
+
+        private UserControl ResolveScreenControl(BusManager workBus, IHost host, BusDeviceBase device)
+        {
+            var control = CreateConfigScreenControl(workBus, device);
+            try
+            {
+                if (control != null)
+                {
+                    return control;
+                }
+                return CreateGenericScreenControl(workBus, host, device);
+            }
+            catch
+            {
+                if (control != null)
+                {
+                    control.Dispose();
+                }
+                throw;
+            }
+        }
+
+        private static UserControl CreateGenericScreenControl(BusManager workBus, IHost host, BusDeviceBase device)
+        {
+            var control = new CtlSettingsGenericDevice();
+            try
+            {
+                control.Init(workBus, host, device);
+                return control;
+            }
+            catch
+            {
+                control.Dispose();
+                throw;
+            }
         }
 
         private void lstNavigation_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)

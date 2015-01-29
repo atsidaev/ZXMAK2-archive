@@ -13,18 +13,18 @@ using ZXMAK2.Host.WinForms.Tools;
 
 namespace ZXMAK2.Host.WinForms.Mdx
 {
-	public unsafe class DirectSound : IHostSound, IDisposable
+	public sealed unsafe class DirectSound : IHostSound, IDisposable
 	{
-		private Device _device = null;
-		private SecondaryBuffer _soundBuffer = null;
-		private Notify _notify = null;
+		private readonly Device _device;
+		private readonly SecondaryBuffer _soundBuffer;
+		private readonly Notify _notify;
 
 		private byte _zeroValue;
 		private int _bufferSize;
 		private int _bufferCount;
 
 		private Thread _waveFillThread = null;
-		private AutoResetEvent _fillEvent = new AutoResetEvent(true);
+		private readonly AutoResetEvent _fillEvent = new AutoResetEvent(true);
 		private bool _isFinished;
 
 
@@ -58,12 +58,14 @@ namespace ZXMAK2.Host.WinForms.Mdx
 			wf.AverageBytesPerSecond = wf.SamplesPerSecond * wf.BlockAlign;
 
 			// Create a buffer
-			var bufferDesc = new BufferDescription(wf);
-			bufferDesc.BufferBytes = _bufferSize * _bufferCount;
-			bufferDesc.ControlPositionNotify = true;
-			bufferDesc.GlobalFocus = true;
+            using (var bufferDesc = new BufferDescription(wf))
+            {
+                bufferDesc.BufferBytes = _bufferSize * _bufferCount;
+                bufferDesc.ControlPositionNotify = true;
+                bufferDesc.GlobalFocus = true;
 
-			_soundBuffer = new SecondaryBuffer(bufferDesc, _device);
+                _soundBuffer = new SecondaryBuffer(bufferDesc, _device);
+            }
 
 			_notify = new Notify(_soundBuffer);
 			var posNotify = new BufferPositionNotify[_bufferCount];
@@ -82,37 +84,54 @@ namespace ZXMAK2.Host.WinForms.Mdx
 			_waveFillThread.Start();
 		}
 
-		public void Dispose()
-		{
-			if (_waveFillThread != null)
-			{
-				try
-				{
-					_isFinished = true;
-					if (_soundBuffer != null)
-						if (_soundBuffer.Status.Playing)
-							_soundBuffer.Stop();
-					_fillEvent.Set();
+        public void Dispose()
+        {
+            if (_waveFillThread == null)
+            {
+                return;
+            }
+            try
+            {
+                _isFinished = true;
+                if (_soundBuffer != null && _soundBuffer.Status.Playing)
+                {
+                    _soundBuffer.Stop();
+                }
+                _fillEvent.Set();
+                _cancelEvent.Set();
 
-					_waveFillThread.Join();
+                _waveFillThread.Join();
 
-					if (_soundBuffer != null)
-						_soundBuffer.Dispose();
-					if (_notify != null)
-						_notify.Dispose();
-
-					if (_device != null)
-						_device.Dispose();
-				}
-				finally
-				{
-					_waveFillThread = null;
-					_soundBuffer = null;
-					_notify = null;
-					_device = null;
-				}
-			}
-		}
+                if (_soundBuffer != null)
+                {
+                    _soundBuffer.Dispose();
+                }
+                if (_notify != null)
+                {
+                    _notify.Dispose();
+                }
+                if (_device != null)
+                {
+                    _device.Dispose();
+                }
+                if (_fillEvent != null)
+                {
+                    _fillEvent.Dispose();
+                }
+                if (_frameEvent != null)
+                {
+                    _frameEvent.Dispose();
+                }
+                if (_cancelEvent != null)
+                {
+                    _cancelEvent.Dispose();
+                }
+            }
+            finally
+            {
+                _waveFillThread = null;
+            }
+        }
 
 		private void WaveFillThreadProc()
 		{
@@ -143,7 +162,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
 			}
 		}
 
-        protected void OnBufferFill(byte* buffer, int length)
+        private void OnBufferFill(byte* buffer, int length)
         {
             byte[] buf = null;
             lock (_playQueue)
@@ -175,7 +194,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
             lock (_fillQueue)
             {
                 _fillQueue.Enqueue(buf);
-                m_frameEvent.Set();
+                _frameEvent.Set();
             }
         }
 
@@ -218,27 +237,27 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         #region IHostSound
 
-        private readonly AutoResetEvent m_frameEvent = new AutoResetEvent(false);
-        private readonly AutoResetEvent m_cancelEvent = new AutoResetEvent(false);
-        private readonly Queue<byte[]> m_frames = new Queue<byte[]>();
+        private readonly AutoResetEvent _frameEvent = new AutoResetEvent(false);
+        private readonly AutoResetEvent _cancelEvent = new AutoResetEvent(false);
+        private readonly Queue<byte[]> _frames = new Queue<byte[]>();
 
         public void WaitFrame()
         {
             lock (_fillQueue)
             {
-                m_frameEvent.Reset();
-                m_cancelEvent.Reset();
+                _frameEvent.Reset();
+                _cancelEvent.Reset();
                 if (_fillQueue.Count > 0)
                 {
                     return;
                 }
             }
-            WaitHandle.WaitAny(new[] { m_frameEvent, m_cancelEvent });
+            WaitHandle.WaitAny(new[] { _frameEvent, _cancelEvent });
         }
 
         public void CancelWait()
         {
-            m_cancelEvent.Set();
+            _cancelEvent.Set();
         }
 
         public void PushFrame(uint[][] frameBuffers)

@@ -16,7 +16,7 @@ using ZXMAK2.Engine.Entities;
 
 namespace ZXMAK2.Engine
 {
-    public class Spectrum : IMachineState, IDisposable
+    public sealed class Spectrum : IMachineState, IDisposable
     {
         #region Fields
 

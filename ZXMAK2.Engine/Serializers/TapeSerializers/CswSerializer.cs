@@ -159,24 +159,27 @@ namespace ZXMAK2.Serializers.TapeSerializers
             }
             else if (type != 1)
             {
-                throw new Exception("Unknown compression type!");
+                throw new NotSupportedException(
+                    string.Format(
+                        "Unknown compression type: 0x{0:X2}!", 
+                        type));
             }
             var list = new List<int>();
             while ((type == 1 && stream.Position < stream.Length) ||
                 (type == 2 && list.Count < dataSize))
             {
-                byte[] buf = new byte[4];
+                var buf = new byte[4];
                 var read = stream.Read(buf, 0, 1);
                 if (read != 1)
                 {
-                    throw new Exception("Unexpected end of stream");
+                    throw new EndOfStreamException("Unexpected end of stream");
                 }
                 if (buf[0] == 0)
                 {
                     read = stream.Read(buf, 0, 4);
                     if (read != 4)
                     {
-                        throw new Exception("Unexpected end of stream");
+                        throw new EndOfStreamException("Unexpected end of stream");
                     }
                 }
                 var rle =

@@ -114,8 +114,7 @@ namespace ZXMAK2.Engine.Cpu
                     case CpuRegId.L: return L;
                     case CpuRegId.A: return A;
                     case CpuRegId.F: return F;
-                    default:
-                        throw new Exception("RegistersZ80 indexer wrong!");
+                    default: throw new ArgumentOutOfRangeException("index");
                 }
             }
             set
@@ -130,34 +129,33 @@ namespace ZXMAK2.Engine.Cpu
                     case CpuRegId.L: L = value; break;
                     case CpuRegId.A: A = value; break;
                     case CpuRegId.F: F = value; break;
-                    default:
-                        throw new Exception("RegistersZ80 indexer wrong!");
+                    default: throw new ArgumentOutOfRangeException("index");
                 }
             }
         }
 
-        internal void SetPair(int RR, ushort value)
+        internal void SetPair(int rr, ushort value)
         {
-            switch (RR)
+            switch (rr)
             {
                 case CpuRegId.Bc: BC = value; return;
                 case CpuRegId.De: DE = value; return;
                 case CpuRegId.Hl: HL = value; return;
                 case CpuRegId.Sp: SP = value; return;
+                default: throw new ArgumentOutOfRangeException("rr");
             }
-            throw new Exception("RegistersZ80 SetPair index wrong!");
         }
 
-        internal ushort GetPair(int RR)
+        internal ushort GetPair(int rr)
         {
-            switch (RR)
+            switch (rr)
             {
                 case CpuRegId.Bc: return BC;
                 case CpuRegId.De: return DE;
                 case CpuRegId.Hl: return HL;
                 case CpuRegId.Sp: return SP;
+                default: throw new ArgumentOutOfRangeException("rr");
             }
-            throw new Exception("RegistersZ80 GetPair index wrong!");
         }
 
         #endregion

@@ -49,14 +49,14 @@ namespace ZXMAK2.Serializers
                 return;
             }
 
-            string fileName = image.FileName;
-            if (fileName != string.Empty)
+            var fileName = image.FileName;
+            if (!string.IsNullOrEmpty(fileName))
             {
                 var serializer = GetSerializer(Path.GetExtension(fileName));
                 if (serializer == null || !serializer.CanSerialize)
                     fileName = string.Empty;
             }
-            if (fileName == string.Empty)
+            if (string.IsNullOrEmpty(fileName))
             {
                 string folderName = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 folderName = Path.Combine(folderName, "Images");
@@ -92,7 +92,7 @@ namespace ZXMAK2.Serializers
                 //      _fileName = string.Empty;
                 //}
 
-                if (fileName == string.Empty)
+                if (string.IsNullOrEmpty(fileName))
                 {
                     Locator.Resolve<IUserMessage>()
                         .Warning("Can't save disk image!\nNo space on HDD!");

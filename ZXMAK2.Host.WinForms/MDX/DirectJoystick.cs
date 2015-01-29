@@ -11,7 +11,7 @@ using ZxmakKey = ZXMAK2.Host.Entities.Key;
 
 namespace ZXMAK2.Host.WinForms.Mdx
 {
-    public class DirectJoystick : IHostJoystick, IDisposable
+    public sealed class DirectJoystick : IHostJoystick, IDisposable
     {
         #region Fields
 
@@ -64,8 +64,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public void Dispose()
         {
-            m_form.Activated -= WndActivated;
-            m_form.Deactivate -= WndDeactivate;
+            if (m_form != null)
+            {
+                m_form.Activated -= WndActivated;
+                m_form.Deactivate -= WndDeactivate;
+            }
             foreach (var guid in m_devices.Keys)
             {
                 ReleaseHostDevice(guid);
@@ -104,18 +107,15 @@ namespace ZXMAK2.Host.WinForms.Mdx
                         joystick.SetCooperativeLevel(m_hwnd, CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
                         joystick.SetDataFormat(DeviceDataFormat.Joystick);
                         joystick.Acquire();
+                        m_devices.Add(hostId, joystick);
                     }
                     catch (Exception ex)
                     {
                         Logger.Error(ex);
                         joystick.Dispose();
-                        joystick = null;
+                        continue;
                     }
-                    if (joystick != null)
-                    {
-                        m_devices.Add(hostId, joystick);
-                        ActivateDevice(hostId);
-                    }
+                    ActivateDevice(hostId);
                 }
             }
             catch (Exception ex)
