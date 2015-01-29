@@ -139,7 +139,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
                         {
                             if (m_diskImage.GetLogicalSectorSizeCode(c, h, il[s]) != (SectorSizeCode & 3))
                             {
-                                throw new Exception(
+                                throw new NotSupportedException(
                                     string.Format(
                                         "Cannot save because disk contains data which is not supported by {0}",
                                         FormatName));

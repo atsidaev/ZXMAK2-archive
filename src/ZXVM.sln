@@ -38,6 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".targets", ".targets", "{BE
 	ProjectSection(SolutionItems) = preProject
 		.targets\Common.targets = .targets\Common.targets
 		.targets\CommonAssemblyVersion.targets = .targets\CommonAssemblyVersion.targets
+		.targets\ZXMAK2.ruleset = .targets\ZXMAK2.ruleset
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{78823EFE-2130-4FF8-AA13-48B8105DE454}"

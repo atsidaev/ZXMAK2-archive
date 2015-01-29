@@ -2,9 +2,14 @@
 
 namespace ZXMAK2.Dependency
 {
-    public class Locator
+    public static class Locator
     {
         private readonly static IResolver _instance = new ResolverUnity();
+
+        public static void Shutdown()
+        {
+            _instance.Dispose();
+        }
 
         public static T Resolve<T>()
         {

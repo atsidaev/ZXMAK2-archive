@@ -25,8 +25,8 @@ namespace ZXMAK2.Logging.Appenders
                     return;
                 }
                 _isOwner = false;
-                WinApi.SetConsoleCtrlHandler(_pinnedCallback, false);
-                WinApi.FreeConsole();
+                NativeMethods.SetConsoleCtrlHandler(_pinnedCallback, false);
+                NativeMethods.FreeConsole();
                 _isShown = false;
                 if (_callbackHandle.IsAllocated)
                 {
@@ -45,7 +45,7 @@ namespace ZXMAK2.Logging.Appenders
                 {
                     return;
                 }
-                WinApi.ShowWindow(_handle, SW_SHOWNOACTIVATE);
+                NativeMethods.ShowWindow(_handle, SW_SHOWNOACTIVATE);
                 _isShown = true;
             }
         }
@@ -58,7 +58,7 @@ namespace ZXMAK2.Logging.Appenders
                 {
                     return;
                 }
-                WinApi.ShowWindow(_handle, SW_HIDE);
+                NativeMethods.ShowWindow(_handle, SW_HIDE);
                 _isShown = false;
             }
         }
@@ -73,16 +73,16 @@ namespace ZXMAK2.Logging.Appenders
                 return;
             }
             _isInitialized = true;
-            _handle = WinApi.GetConsoleWindow();
+            _handle = NativeMethods.GetConsoleWindow();
             if (_handle != IntPtr.Zero)
             {
                 return;
             }
-            if (!WinApi.AllocConsole())
+            if (!NativeMethods.AllocConsole())
             {
                 return;
             }
-            _handle = WinApi.GetConsoleWindow();
+            _handle = NativeMethods.GetConsoleWindow();
             if (_handle == IntPtr.Zero)
             {
                 return;
@@ -109,13 +109,13 @@ namespace ZXMAK2.Logging.Appenders
 
         private void ApplyCloseBehavior()
         {
-            var hMenu = WinApi.GetSystemMenu(_handle, false);
-            WinApi.DeleteMenu(hMenu, SC_CLOSE, MF_BYCOMMAND);
+            var hMenu = NativeMethods.GetSystemMenu(_handle, false);
+            NativeMethods.DeleteMenu(hMenu, SC_CLOSE, MF_BYCOMMAND);
 
             var callbackHandler = new HandlerRoutine(ConsoleHandlerCallback);
             _callbackHandle = GCHandle.Alloc(callbackHandler);
             _pinnedCallback = Marshal.GetFunctionPointerForDelegate(callbackHandler);
-            WinApi.SetConsoleCtrlHandler(_pinnedCallback, true);
+            NativeMethods.SetConsoleCtrlHandler(_pinnedCallback, true);
         }
 
         private bool ConsoleHandlerCallback(int dwCtrlType)
@@ -148,7 +148,7 @@ namespace ZXMAK2.Logging.Appenders
 
         private delegate bool HandlerRoutine(int dwCtrlType);
 
-        private static class WinApi
+        private static class NativeMethods
         {
             [DllImport("kernel32.dll", SetLastError = true)]
             public static extern bool AllocConsole();

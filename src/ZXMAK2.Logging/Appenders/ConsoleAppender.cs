@@ -5,7 +5,7 @@ using log4net.Core;
 
 namespace ZXMAK2.Logging.Appenders
 {
-    public class ConsoleAppender : ManagedColoredConsoleAppender
+    public class ConsoleAppender : ManagedColoredConsoleAppender, IDisposable
     {
         private readonly ConsoleWindow _consoleWindow = new ConsoleWindow();
         
@@ -16,6 +16,11 @@ namespace ZXMAK2.Logging.Appenders
         public ConsoleAppender()
         {
             AutoLevel = Level.Debug;
+        }
+
+        public void Dispose()
+        {
+            _consoleWindow.Dispose();
         }
 
 

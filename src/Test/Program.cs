@@ -150,12 +150,20 @@ namespace Test
             var config = new XmlDocument();
             config.LoadXml(Resources.machines_test);
             var machine = new Spectrum();
-            machine.BusManager.LoadConfigXml(config.DocumentElement);
-            //var sxml = new XmlDocument();
-            //var node = sxml.AppendChild(sxml.CreateElement("Bus"));
-            //machine.BusManager.SaveConfigXml(node);
-            //sxml.Save("AAAA.xml");
-            return machine;
+            try
+            {
+                machine.BusManager.LoadConfigXml(config.DocumentElement);
+                //var sxml = new XmlDocument();
+                //var node = sxml.AppendChild(sxml.CreateElement("Bus"));
+                //machine.BusManager.SaveConfigXml(node);
+                //sxml.Save("AAAA.xml");
+                return machine;
+            }
+            catch
+            {
+                machine.Dispose();
+                throw;
+            }
         }
 
 		#region ULA PATTERNS

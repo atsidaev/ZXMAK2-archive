@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace ZXMAK2.Logging.Appenders
 {
-    public class AsyncAppender : ForwardingAppender
+    public sealed class AsyncAppender : ForwardingAppender, IDisposable
     {
         private readonly ConcurrentQueue<LoggingEvent> _queue = new ConcurrentQueue<LoggingEvent>();
         private readonly AutoResetEvent _flushEvent = new AutoResetEvent(false);
@@ -23,6 +23,13 @@ namespace ZXMAK2.Logging.Appenders
         {
             Fix = FixFlags.Message | FixFlags.ThreadName | FixFlags.Exception;
         }
+
+        public void Dispose()
+        {
+            Stop();
+            _flushEvent.Dispose();
+        }
+
 
 
         public int GrowSize { get; set; }

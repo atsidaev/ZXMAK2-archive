@@ -32,6 +32,7 @@ namespace ZXMAK2
         {
             var launcher = Locator.Resolve<ILauncher>();
             launcher.Run(args);
+            Locator.Shutdown();
         }
     }
 }

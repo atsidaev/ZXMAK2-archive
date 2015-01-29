@@ -6,6 +6,7 @@ using System.Text;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
+using System.IO.Compression;
 
 
 namespace ZXMAK2.Serializers.SnapshotSerializers
@@ -22,19 +23,33 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
         public override bool CanDeserialize { get { return true; } }
         public override bool CanSerialize { get { return false; } }
 
-        public override void Deserialize(System.IO.Stream stream)
+        public override void Deserialize(Stream stream)
         {
-            var data = new byte[stream.Length];
-            stream.Read(data, 0, data.Length);
-            var reader = new RzxBlockReader(_spec, new MemoryStream(data));
+            var reader = CreateRzxSource(stream);
             _spec.BusManager.RzxHandler.Play(reader);
             var ula = _spec.BusManager.FindDevice<IUlaDevice>();
             ula.ForceRedrawFrame();
             _spec.RaiseUpdateState();
         }
+
+        private IRzxFrameSource CreateRzxSource(Stream stream)
+        {
+            var data = new byte[stream.Length];
+            stream.Read(data, 0, data.Length);
+            var dataStream = new MemoryStream(data);
+            try
+            {
+                return new RzxBlockReader(_spec, dataStream);
+            }
+            catch
+            {
+                dataStream.Dispose();
+                throw;
+            }
+        }
     }
 
-    public class RzxBlockReader : IRzxFrameSource
+    public sealed class RzxBlockReader : IRzxFrameSource
     {
         #region Constants
 
@@ -54,27 +69,41 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
         {
             m_spectrum = spectrum;
             m_stream = stream;
+            CheckEof();
             open();
+        }
+
+        public void Dispose()
+        {
         }
 
         private void open()
         {
-            byte[] header = new byte[0x0A];
+            if (IsEndOfFile)
+            {
+                return;
+            }
+            var header = new byte[0x0A];
             m_stream.Read(header, 0, header.Length);
             if (Encoding.ASCII.GetString(header, 0, 4) != RZX_SIGNATURE)
+            {
                 throw new InvalidDataException("Invalid RZX file");
+            }
             m_majorRevision = header[4];
             m_minorRevision = header[5];
             m_flags = BitConverter.ToUInt32(header, 6);
         }
 
         public bool IsSigned { get { return (m_flags & 1) != 0; } }
-        public bool IsEOF { get { return m_stream.Position >= m_stream.Length; } }
+        public bool IsEndOfFile { get; private set; }
 
         public RzxBlock ReadBlock()
         {
-            if (IsEOF)
+            CheckEof();
+            if (IsEndOfFile)
+            {
                 return null;
+            }
             int blockId = m_stream.ReadByte();
             if (blockId < 0 || blockId > 255)
                 RaiseUnexpectedEndException();
@@ -88,6 +117,21 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             if (m_stream.Read(blockData, 0, blockData.Length) != blockData.Length)
                 RaiseUnexpectedEndException();
             return RzxBlock.Create(blockId, blockData);
+        }
+
+        private void CheckEof()
+        {
+            if (m_stream == null)
+            {
+                return;
+            }
+            IsEndOfFile = m_stream.Position >= m_stream.Length;
+            if (IsEndOfFile)
+            {
+                var stream = m_stream;
+                m_stream = null;
+                stream.Dispose();
+            }
         }
 
         private void RaiseUnexpectedEndException()
@@ -151,14 +195,24 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         protected static Stream GetDataStream(byte[] rawData, int offset, int length, bool compressed)
         {
-            MemoryStream stream = new MemoryStream();
-            stream.Write(rawData, offset, length);
-            stream.Seek(0, SeekOrigin.Begin);
-            if (!compressed)
-                return stream;
-            stream.ReadByte();
-            stream.ReadByte();
-            return new System.IO.Compression.DeflateStream(stream, System.IO.Compression.CompressionMode.Decompress, false);
+            var stream = new MemoryStream();
+            try
+            {
+                stream.Write(rawData, offset, length);
+                stream.Seek(0, SeekOrigin.Begin);
+                if (!compressed)
+                {
+                    return stream;
+                }
+                stream.ReadByte();
+                stream.ReadByte();
+                return new DeflateStream(stream, CompressionMode.Decompress, false);
+            }
+            catch
+            {
+                stream.Dispose();
+                throw;
+            }
         }
 
         protected static byte[] GetBytesAsciiZ(byte[] array, int offset, int length)
@@ -255,7 +309,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
         {
             if (IsEncrypted)
             {
-                throw new Exception("Encrypted RZX frames are not supported");
+                throw new NotSupportedException("Encrypted RZX frames are not supported");
             }
             List<RzxFrame> rzxData = new List<RzxFrame>();
             using (Stream dataStream = GetDataStream(RawData, 13, RawData.Length - 13, IsCompressed))

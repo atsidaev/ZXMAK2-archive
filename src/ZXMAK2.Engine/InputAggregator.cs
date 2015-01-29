@@ -6,7 +6,7 @@ using ZXMAK2.Engine.Interfaces;
 
 namespace ZXMAK2.Engine
 {
-    public class InputAggregator : IDisposable
+    public sealed class InputAggregator : IDisposable
     {
         private readonly IHostKeyboard m_hostKeyboard;
         private readonly IHostMouse m_hostMouse;

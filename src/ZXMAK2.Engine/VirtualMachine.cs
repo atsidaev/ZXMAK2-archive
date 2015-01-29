@@ -16,7 +16,7 @@ using ZXMAK2.Engine.Entities;
 
 namespace ZXMAK2.Engine
 {
-    public class VirtualMachine : IVirtualMachine, IDebuggable
+    public sealed class VirtualMachine : IVirtualMachine, IDebuggable
     {
         #region Fields
 

@@ -9,7 +9,7 @@ using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Host.WinForms.Mdx
 {
-    public class DirectMouse : IHostMouse, IDisposable
+    public sealed class DirectMouse : IHostMouse, IDisposable
     {
         private Form m_form;
         private bool m_active = false;

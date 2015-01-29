@@ -310,7 +310,11 @@ namespace ZXMAK2.Hardware.Profi
                 if (m_ulaVideoOffset[item] < 0 ||
                     m_ulaVideoOffset[item] >= (1024 * 768 - 4))
                 {
-                    throw new IndexOutOfRangeException();
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "m_ulaVideoOffset[{0}] = {1} (top/bottom border)",
+                            item,
+                            m_ulaVideoOffset[item]));
                 }
                 m_ulaAction[item] = UlaAction.Profi32_0;
                 return;
@@ -324,7 +328,11 @@ namespace ZXMAK2.Hardware.Profi
                 if (m_ulaVideoOffset[item] < 0 || 
                     m_ulaVideoOffset[item] >= (1024 * 768 - 4))
                 {
-                    throw new IndexOutOfRangeException();
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "m_ulaVideoOffset[{0}] = {1} (left/right border)",
+                            item,
+                            m_ulaVideoOffset[item]));
                 }
                 m_ulaAction[item] = UlaAction.Profi32_0;
                 return;
@@ -342,7 +350,11 @@ namespace ZXMAK2.Hardware.Profi
             if (m_ulaVideoOffset[item] < 0 || 
                 m_ulaVideoOffset[item] >= (1024 * 768 - 4))
             {
-                throw new IndexOutOfRangeException();
+                throw new InvalidOperationException(
+                    string.Format(
+                        "m_ulaVideoOffset[{0}] = {1}",
+                        item,
+                        m_ulaVideoOffset[item]));
             }
 
             line -= Params.c_ulaBorderTop;

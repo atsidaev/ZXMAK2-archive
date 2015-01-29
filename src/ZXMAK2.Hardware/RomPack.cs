@@ -53,11 +53,9 @@ namespace ZXMAK2.Hardware
                 var romsFileName = Path.Combine(romsFolderName, fileName);
                 if (File.Exists(romsFileName))
                 {
-                    using (FileStream fs = new FileStream(romsFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var fs = new FileStream(romsFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
-                        byte[] fileData = new byte[fs.Length];
-                        fs.Read(fileData, 0, fileData.Length);
-                        return new MemoryStream(fileData);
+                        return CreateStream(fs, fs.Length);
                     }
                 }
             }
@@ -72,14 +70,24 @@ namespace ZXMAK2.Hardware
                        entry.CanDecompress &&
                        string.Compare(entry.Name, fileName, true) == 0)
                     {
-                        byte[] fileData = new byte[entry.Size];
-                        using (Stream s = zip.GetInputStream(entry))
-                            s.Read(fileData, 0, fileData.Length);
-                        return new MemoryStream(fileData);
+                        using (var s = zip.GetInputStream(entry))
+                        {
+                            return CreateStream(s, entry.Size);
+                        }
                     }
                 }
             }
-            throw new FileNotFoundException(string.Format("ROM file not found: {0}", fileName));
+            throw new FileNotFoundException(
+                string.Format(
+                    "ROM file not found: {0}", 
+                    fileName));
+        }
+
+        private static Stream CreateStream(Stream stream, long length)
+        {
+            var fileData = new byte[length];
+            stream.Read(fileData, 0, fileData.Length);
+            return new MemoryStream(fileData);
         }
 
         public static Stream GetUlaRomStream(string romName)
@@ -119,7 +127,7 @@ namespace ZXMAK2.Hardware
             try
             {
                 var mapping = new XmlDocument();
-                using (Stream stream = RomPack.GetImageStream("~mapping.xml"))
+                using (var stream = RomPack.GetImageStream("~mapping.xml"))
                 {
                     mapping.Load(stream);
                 }

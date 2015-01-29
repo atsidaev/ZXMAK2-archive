@@ -256,7 +256,7 @@ namespace ZXMAK2.Hardware.Circuits.Fdd
                     break;
 
                 default:
-                    throw new Exception("Wd1793.Write: Invalid register");
+                    throw new ArgumentOutOfRangeException("reg");
             }
             process(tact);
         }
@@ -900,7 +900,7 @@ namespace ZXMAK2.Hardware.Circuits.Fdd
                         break;
 
                     default:
-                        throw new Exception("WD1793.process - WD1793 in wrong state");
+                        throw new InvalidOperationException("WD1793.process - WD1793 in wrong state");
                 }
             }
         }

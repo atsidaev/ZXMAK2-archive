@@ -6,9 +6,10 @@ using Microsoft.Practices.Unity.Configuration;
 
 namespace ZXMAK2.Dependency
 {
-    public class ResolverUnity : IResolver
+    public sealed class ResolverUnity : IResolver
     {
         private readonly IUnityContainer _container;
+        private bool _isDisposed;
 
 
         public ResolverUnity()
@@ -23,6 +24,18 @@ namespace ZXMAK2.Dependency
             _container = new UnityContainer();
             _container.LoadConfiguration(containerName);
             _container.RegisterInstance<IResolver>(this);
+        }
+
+        public void Dispose()
+        {
+            if (_isDisposed)
+            {
+                // we registered in contaner, 
+                // so we need to prevent reentrancy
+                return;
+            }
+            _isDisposed = true;
+            _container.Dispose();
         }
 
         public T Resolve<T>(params Argument[] args)

@@ -17,7 +17,7 @@ using ZXMAK2.Engine.Entities;
 
 namespace ZXMAK2.Engine
 {
-    public class BusManager : IBus, IBusManager
+    public sealed class BusManager : IBus, IBusManager
     {
         private bool m_connected = false;
         private bool m_sandBox = false;
@@ -549,7 +549,7 @@ namespace ZXMAK2.Engine
             }
         }
 
-        protected virtual void OnBusConnected()
+        private void OnBusConnected()
         {
             var handler = BusConnected;
             if (handler != null)
@@ -558,7 +558,7 @@ namespace ZXMAK2.Engine
             }
         }
 
-        protected virtual void OnBusDisconnect()
+        private void OnBusDisconnect()
         {
             var handler = BusDisconnect;
             if (handler != null)
@@ -567,7 +567,7 @@ namespace ZXMAK2.Engine
             }
         }
 
-        protected virtual void Device_OnConfigChanged(object sender, EventArgs e)
+        private void Device_OnConfigChanged(object sender, EventArgs e)
         {
             var handler = ConfigChanged;
             if (handler != null)

@@ -108,24 +108,26 @@ namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
             var pathTxt = new[] { txtPathA, txtPathB, txtPathC, txtPathD };
             var wpChk = new[] { chkProtectA, chkProtectB, chkProtectC, chkProtectD };
 
-            var loadDialog = new OpenFileDialog();
-            loadDialog.InitialDirectory = ".";
-            loadDialog.SupportMultiDottedExtensions = true;
-            loadDialog.Title = "Open...";
-            loadDialog.Filter = m_device.LoadManager.GetOpenExtFilter();
-            loadDialog.DefaultExt = ""; //m_betaDisk.BetaDisk.FDD[drive].Serializer.GetDefaultExtension();
-            loadDialog.FileName = "";
-            loadDialog.ShowReadOnly = true;
-            loadDialog.ReadOnlyChecked = true;
-            loadDialog.CheckFileExists = true;
-            loadDialog.FileOk += new CancelEventHandler(loadDialog_FileOk);
-            if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            using (var loadDialog = new OpenFileDialog())
             {
-                return;
+                loadDialog.InitialDirectory = ".";
+                loadDialog.SupportMultiDottedExtensions = true;
+                loadDialog.Title = "Open...";
+                loadDialog.Filter = m_device.LoadManager.GetOpenExtFilter();
+                loadDialog.DefaultExt = ""; //m_betaDisk.BetaDisk.FDD[drive].Serializer.GetDefaultExtension();
+                loadDialog.FileName = "";
+                loadDialog.ShowReadOnly = true;
+                loadDialog.ReadOnlyChecked = true;
+                loadDialog.CheckFileExists = true;
+                loadDialog.FileOk += new CancelEventHandler(loadDialog_FileOk);
+                if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                {
+                    return;
+                }
+                pathTxt[drive].Text = loadDialog.FileName;
+                pathTxt[drive].SelectionStart = pathTxt[drive].Text.Length;
+                wpChk[drive].Checked = loadDialog.ReadOnlyChecked;
             }
-            pathTxt[drive].Text = loadDialog.FileName;
-            pathTxt[drive].SelectionStart = pathTxt[drive].Text.Length;
-            wpChk[drive].Checked = loadDialog.ReadOnlyChecked;
         }
 
         private void loadDialog_FileOk(object sender, CancelEventArgs e)

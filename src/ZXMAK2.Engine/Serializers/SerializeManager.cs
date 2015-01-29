@@ -139,8 +139,8 @@ namespace ZXMAK2.Serializers
 					}
 					if (selEntry != null)
 					{
-						string result = openZipEntry(fileName, zip, selEntry, string.Empty);
-						if (result != string.Empty)
+						var result = openZipEntry(fileName, zip, selEntry, string.Empty);
+						if (!string.IsNullOrEmpty(result))
 						{
 							return result;
 						}
@@ -199,8 +199,8 @@ namespace ZXMAK2.Serializers
 					}
 					if (selEntry != null)
 					{
-						string result = openZipEntry(fileName, zip, selEntry, fileName);
-						if (result != string.Empty)
+						var result = openZipEntry(fileName, zip, selEntry, fileName);
+						if (!string.IsNullOrEmpty(result))
 						{
 							return result;
 						}
