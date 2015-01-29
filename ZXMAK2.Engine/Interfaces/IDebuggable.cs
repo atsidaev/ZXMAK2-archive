@@ -23,10 +23,6 @@ namespace ZXMAK2.Engine.Interfaces
         Breakpoint[] GetBreakpointList();
         void ClearBreakpoints();
 
-        //tracing
-        void TraceStart();
-        void TraceStop();
-
         event EventHandler UpdateState;
         event EventHandler Breakpoint;
         bool IsRunning { get; }

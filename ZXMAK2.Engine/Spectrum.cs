@@ -12,7 +12,6 @@ using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
-using System.IO;
 
 
 namespace ZXMAK2.Engine
@@ -23,9 +22,6 @@ namespace ZXMAK2.Engine
 
         private readonly BusManager _bus = new BusManager();
         private readonly List<Breakpoint> _breakpoints = new List<Breakpoint>();
-        private bool   _isTracing = false;
-        private List<string> _traceOut = new List<string>();
-        private readonly object _traceSync = new object();
 
         private long _tactLimitStepOver = 71680 * 5;
         private bool _isRunning = false;
@@ -110,8 +106,7 @@ namespace ZXMAK2.Engine
                 _bus.ExecCycle();
                 if (_breakpoints.Count == 0 || cpu.HALTED)
                 {
-                    if( !_isTracing )
-                        continue;
+                    continue;
                 }
                 // Alex: end of performance critical block
 
@@ -125,7 +120,6 @@ namespace ZXMAK2.Engine
                     OnBreakpoint();
                     return;
                 }
-                LogTrace();
             }
             var delta = (int)(cpu.Tact - t);
             if (delta >= 0)
@@ -212,47 +206,6 @@ namespace ZXMAK2.Engine
         public void DebugClearBreakpoints()
         {
             _breakpoints.Clear();
-        }
-
-        //Tracing
-        private void WriteLogTrace()
-        {
-            File.WriteAllLines(@"d:\trace.log", _traceOut.ToArray<string>());
-            _traceOut.Clear();
-        }
-        public void DebugTraceStart()
-        {
-            lock (_traceSync)
-            {
-                if (_isTracing)
-                    return;
-                _isTracing = true;
-                _traceOut.Clear();
-            }
-        }
-        public void DebugTraceStop()
-        {
-            lock (_traceSync)
-            {
-                if (!_isTracing)
-                    return;
-                _isTracing = false;
-
-                WriteLogTrace();
-            }
-        }
-        private void LogTrace()
-        {
-            lock (_traceSync)
-            {
-                if (CPU.regs.PC < 0x4000 || !_isTracing) //no need to trace ROM
-                    return;
-
-                int len;
-                DasmTool dasmTool = new DasmTool(DebugReadMemory);
-                _traceOut.Add(String.Format("#{0:X2}",CPU.regs.PC) + "   " + dasmTool.GetMnemonic(CPU.regs.PC, out len));
-                //_traceNextAddr = (ushort)((CPU.regs.PC + len) & 0xFFFF);
-            }
         }
 
         #endregion Debugger
