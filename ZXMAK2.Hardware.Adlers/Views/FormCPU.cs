@@ -1000,6 +1000,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                         return;
                     }
+                    else if (commandType == DebuggerManager.CommandType.traceLog)
+                    {
+                        if (parsedCommand.Count < 2)
+                            throw new Exception("Incorrect trace command syntax! Missing On or Off.");
+
+                        if (parsedCommand[1].ToUpper() == "ON")
+                            m_spectrum.TraceStart();
+                        else
+                            m_spectrum.TraceStop();
+                    }
                     else
                     {
                         // memory/registry manipulation(LD instruction)

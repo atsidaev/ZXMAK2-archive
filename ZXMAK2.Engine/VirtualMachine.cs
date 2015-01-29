@@ -540,6 +540,22 @@ namespace ZXMAK2.Engine
             }
         }
 
+        //Tracing
+        public void TraceStart()
+        {
+            lock (m_sync)
+            {
+                Spectrum.DebugTraceStart();
+            }
+        }
+        public void TraceStop()
+        {
+            lock (m_sync)
+            {
+                Spectrum.DebugTraceStop();
+            }
+        }
+
         public event EventHandler UpdateState;
         public event EventHandler Breakpoint;
 

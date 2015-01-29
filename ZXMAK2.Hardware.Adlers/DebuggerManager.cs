@@ -91,7 +91,8 @@ namespace ZXMAK2.Hardware.Adlers
             loadBreakpointsListFromFile, 
             saveBreakpointsListToFile, 
             showAssembler, 
-            showGraphicsEditor, 
+            showGraphicsEditor,
+            traceLog,
             Unidentified
         };
 
@@ -119,6 +120,7 @@ namespace ZXMAK2.Hardware.Adlers
         public static string DbgSaveBreakpointsListFromFile = "savebrs"; // save actual breakpoints list into file
         public static string DbgOpenAssembler = "asm"; // opens Assembler Form
         public static string DbgOpenGraphicsEditor = "ge"; // opens Graphics editor
+        public static string DbgTraceLog = "trace"; // opens Graphics editor
 
         private static readonly char[] DebugDelimitersOther = new char[] { '(', '=', ')', '!' };
 
@@ -267,6 +269,11 @@ namespace ZXMAK2.Hardware.Adlers
             if (command[0].ToUpper() == DbgOpenGraphicsEditor.ToString().ToUpper())
             {
                 return CommandType.showGraphicsEditor;
+            }
+
+            if (command[0].ToUpper() == DbgTraceLog.ToString().ToUpper())
+            {
+                return CommandType.traceLog;
             }
 
             return CommandType.Unidentified;
