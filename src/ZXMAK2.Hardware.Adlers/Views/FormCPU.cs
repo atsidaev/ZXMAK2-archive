@@ -26,6 +26,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private IDebuggable m_spectrum;
         private DasmTool m_dasmTool;
         private TimingTool m_timingTool;
+        private bool m_isTracing;
+        private CpuRegs m_cpuRegs;
 
         private bool showStack = true; // show stack or breakpoint list on the form(panel listState)
 
@@ -41,6 +43,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             Init(debugTarget);
             bmgr.SubscribeWrMem(0, 0, CheckWriteMem);
             bmgr.SubscribeRdMem(0, 0, CheckReadMem);
+            bmgr.SubscribePreCycle(Bus_OnBeforeCpuCycle);
+            m_cpuRegs = bmgr.CPU.regs;
         }
 
         private void Init(IDebuggable debugTarget)
@@ -915,6 +919,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
         }
 
+        private void Bus_OnBeforeCpuCycle(int frameTact)
+        {
+            if (!m_isTracing || m_cpuRegs.PC < 0x4000) //no need to trace ROM
+            {
+                return;
+            }
+            var len = 0;
+            var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
+            Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
+        }
+
         private void dbgCmdLine_KeyUp(object sender, KeyEventArgs e)
         {
             //Debug command entered ?
@@ -1005,10 +1020,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         if (parsedCommand.Count < 2)
                             throw new Exception("Incorrect trace command syntax! Missing On or Off.");
 
-                        if (parsedCommand[1].ToUpper() == "ON")
-                            m_spectrum.TraceStart();
+                        if (parsedCommand[1].ToUpperInvariant() == "ON")
+                            m_isTracing = true;
                         else
-                            m_spectrum.TraceStop();
+                            m_isTracing = true;
                     }
                     else
                     {
