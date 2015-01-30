@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 
 namespace ZXMAK2.Hardware.Adlers
 {
@@ -21,7 +19,7 @@ namespace ZXMAK2.Hardware.Adlers
             var result = 0;
 
             // Use lookup table to parse string
-            while (pos < text.Length && !Char.IsWhiteSpace(text[pos]))
+            while (pos < text.Length && !char.IsWhiteSpace(text[pos]))
             {
                 var digit = text.Substring(pos, 1);
                 var i = Alphabet.IndexOf(digit);
