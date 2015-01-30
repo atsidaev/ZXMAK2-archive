@@ -164,7 +164,7 @@ namespace ZXMAK2.Hardware.General
             //if (!iorqge)
             //    return;
             //iorqge = false;
-            ADDR_REG = value;
+            RegAddr = value;
         }
 
         private void WritePortData(ushort addr, byte value, ref bool iorqge)
@@ -173,7 +173,7 @@ namespace ZXMAK2.Hardware.General
             //    return;
             //iorqge = false;
             UpdateAudioBuffer(GetFrameTime());
-            DATA_REG = value;
+            RegData = value;
         }
 
         private void ReadPortData(ushort addr, ref byte value, ref bool iorqge)
@@ -181,7 +181,7 @@ namespace ZXMAK2.Hardware.General
             if (!iorqge)
                 return;
             iorqge = false;
-            value = DATA_REG;
+            value = RegData;
         }
 
         private void Bus_OnReset()
@@ -196,8 +196,8 @@ namespace ZXMAK2.Hardware.General
             m_counterBend = 0;
             for (int i = 0; i < 16; i++)
             {
-                ADDR_REG = (byte)i;
-                DATA_REG = 0;
+                RegAddr = (byte)i;
+                RegData = 0;
             }
         }
 
@@ -206,115 +206,115 @@ namespace ZXMAK2.Hardware.General
 
         #region AY8910
 
-        public byte ADDR_REG
+        public byte RegAddr { get; set; }
+
+        public byte RegData
         {
-            get { return m_curReg; }
-            set { m_curReg = value; }
+            get { return GetRegister(RegAddr); }
+            set { SetRegister(RegAddr, value); }
         }
 
-        public byte DATA_REG
+        private byte GetRegister(byte index)
         {
-            get
+            switch (index)
             {
-                switch (m_curReg)
-                {
-                    case 0: return (byte)(m_freqA & 0xFF);
-                    case 1: return (byte)(m_freqA >> 8);
-                    case 2: return (byte)(m_freqB & 0xFF);
-                    case 3: return (byte)(m_freqB >> 8);
-                    case 4: return (byte)(m_freqC & 0xFF);
-                    case 5: return (byte)(m_freqC >> 8);
-                    case 6: return m_freqNoise;
-                    case 7: return m_controlChannels;
-                    case 8: return m_volumeA;
-                    case 9: return m_volumeB;
-                    case 10: return m_volumeC;
-                    case 11: return (byte)(m_freqBend & 0xFF);
-                    case 12: return (byte)(m_freqBend >> 8);
-                    case 13: return m_controlBend;
-                    case 14: // ay mouse
-                        OnUpdateIRA(m_iraState.OutState);
-                        return m_iraState.InState;
-                    case 15:
-                        OnUpdateIRB(m_irbState.OutState);
-                        return m_irbState.InState;
-                }
-                return 0;
+                case 0: return (byte)(m_freqA & 0xFF);
+                case 1: return (byte)(m_freqA >> 8);
+                case 2: return (byte)(m_freqB & 0xFF);
+                case 3: return (byte)(m_freqB >> 8);
+                case 4: return (byte)(m_freqC & 0xFF);
+                case 5: return (byte)(m_freqC >> 8);
+                case 6: return m_freqNoise;
+                case 7: return m_controlChannels;
+                case 8: return m_volumeA;
+                case 9: return m_volumeB;
+                case 10: return m_volumeC;
+                case 11: return (byte)(m_freqBend & 0xFF);
+                case 12: return (byte)(m_freqBend >> 8);
+                case 13: return m_controlBend;
+                case 14: // ay mouse
+                    OnUpdateIRA(m_iraState.OutState);
+                    return m_iraState.InState;
+                case 15:
+                    OnUpdateIRB(m_irbState.OutState);
+                    return m_irbState.InState;
             }
-            set
+            return 0;
+        }
+
+        private void SetRegister(byte index, byte value)
+        {
+            if ((index > 7) && (index < 11))
             {
-                if ((m_curReg > 7) && (m_curReg < 11))
-                {
-                    if ((value & 0x10) != 0) value &= 0x10;
-                    else value &= 0x0F;
-                }
-                value &= s_regMask[m_curReg & 0x0F];
-                switch (m_curReg)
-                {
-                    case 0:
-                        m_freqA = (ushort)((m_freqA & 0xFF00) | value);
-                        break;
-                    case 1:
-                        m_freqA = (ushort)((m_freqA & 0x00FF) | (value << 8));
-                        break;
-                    case 2:
-                        m_freqB = (ushort)((m_freqB & 0xFF00) | value);
-                        break;
-                    case 3:
-                        m_freqB = (ushort)((m_freqB & 0x00FF) | (value << 8));
-                        break;
-                    case 4:
-                        m_freqC = (ushort)((m_freqC & 0xFF00) | value);
-                        break;
-                    case 5:
-                        m_freqC = (ushort)((m_freqC & 0x00FF) | (value << 8));
-                        break;
-                    case 6:
-                        m_freqNoise = value;
-                        break;
-                    case 7:
-                        m_controlChannels = value;
-                        break;
-                    case 8:
-                        m_volumeA = value;
-                        break;
-                    case 9:
-                        m_volumeB = value;
-                        break;
-                    case 10:
-                        m_volumeC = value;
-                        break;
-                    case 11:
-                        m_freqBend = (ushort)((m_freqBend & 0xFF00) | value);
-                        break;
-                    case 12:
-                        m_freqBend = (ushort)((m_freqBend & 0x00FF) | (value << 8));
-                        break;
-                    case 13:
-                        // ATT:
-                        // 0 - begin down
-                        // 1 - begin up
-                        m_counterBend = 0;
-                        m_controlBend = value;
-                        if (m_freqBend != 0)
-                            if ((value & 0x04) != 0)
-                            {
-                                m_bendVolumeIndex = 0;
-                                m_bendStatus = 1;       // up
-                            }
-                            else
-                            {
-                                m_bendVolumeIndex = MaxEnvelopeVolumeIndex;
-                                m_bendStatus = 2;       // down
-                            }
-                        break;
-                    case 14:
-                        OnUpdateIRA(value);
-                        break;
-                    case 15:
-                        OnUpdateIRB(value);
-                        break;
-                }
+                if ((value & 0x10) != 0) value &= 0x10;
+                else value &= 0x0F;
+            }
+            value &= s_regMask[index & 0x0F];
+            switch (index)
+            {
+                case 0:
+                    m_freqA = (ushort)((m_freqA & 0xFF00) | value);
+                    break;
+                case 1:
+                    m_freqA = (ushort)((m_freqA & 0x00FF) | (value << 8));
+                    break;
+                case 2:
+                    m_freqB = (ushort)((m_freqB & 0xFF00) | value);
+                    break;
+                case 3:
+                    m_freqB = (ushort)((m_freqB & 0x00FF) | (value << 8));
+                    break;
+                case 4:
+                    m_freqC = (ushort)((m_freqC & 0xFF00) | value);
+                    break;
+                case 5:
+                    m_freqC = (ushort)((m_freqC & 0x00FF) | (value << 8));
+                    break;
+                case 6:
+                    m_freqNoise = value;
+                    break;
+                case 7:
+                    m_controlChannels = value;
+                    break;
+                case 8:
+                    m_volumeA = value;
+                    break;
+                case 9:
+                    m_volumeB = value;
+                    break;
+                case 10:
+                    m_volumeC = value;
+                    break;
+                case 11:
+                    m_freqBend = (ushort)((m_freqBend & 0xFF00) | value);
+                    break;
+                case 12:
+                    m_freqBend = (ushort)((m_freqBend & 0x00FF) | (value << 8));
+                    break;
+                case 13:
+                    // ATT:
+                    // 0 - begin down
+                    // 1 - begin up
+                    m_counterBend = 0;
+                    m_controlBend = value;
+                    if (m_freqBend != 0)
+                        if ((value & 0x04) != 0)
+                        {
+                            m_bendVolumeIndex = 0;
+                            m_bendStatus = 1;       // up
+                        }
+                        else
+                        {
+                            m_bendVolumeIndex = MaxEnvelopeVolumeIndex;
+                            m_bendStatus = 2;       // down
+                        }
+                    break;
+                case 14:
+                    OnUpdateIRA(value);
+                    break;
+                case 15:
+                    OnUpdateIRB(value);
+                    break;
             }
         }
 
@@ -362,7 +362,6 @@ namespace ZXMAK2.Hardware.General
         private byte m_controlBend;      //13
         private AyPortState m_iraState = new AyPortState(0xFF);
         private AyPortState m_irbState = new AyPortState(0xFF);
-        private byte m_curReg = 0;
 
         // state
         private byte m_bendStatus;

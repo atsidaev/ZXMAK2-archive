@@ -10,7 +10,7 @@ namespace ZXMAK2.Engine.Interfaces
     #endregion
     public interface IAyDevice
     {
-        byte ADDR_REG { get; set; }
-        byte DATA_REG { get; set; }
+        byte RegAddr { get; set; }
+        byte RegData { get; set; }
     }
 }

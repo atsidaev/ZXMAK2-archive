@@ -246,10 +246,10 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             {
                 for (int i = 0; i < 16; i++)
                 {
-                    aydev.ADDR_REG = (byte)i;
-                    aydev.DATA_REG = data[i + offset];
+                    aydev.RegAddr = (byte)i;
+                    aydev.RegData = data[i + offset];
                 }
-                aydev.ADDR_REG = chCurrentRegister;
+                aydev.RegAddr = chCurrentRegister;
             }
         }
 
@@ -494,16 +494,16 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                 StreamHelper.Write(stream, size);
 
                 byte chFlags = 0;
-                byte chCurrentRegister = aydev.ADDR_REG;
+                byte chCurrentRegister = aydev.RegAddr;
 
                 StreamHelper.Write(stream, chFlags);
                 StreamHelper.Write(stream, chCurrentRegister);
                 for (int i = 0; i < 16; i++)
                 {
-                    aydev.ADDR_REG = (byte)i;
-                    StreamHelper.Write(stream, aydev.DATA_REG);
+                    aydev.RegAddr = (byte)i;
+                    StreamHelper.Write(stream, aydev.RegData);
                 }
-                aydev.ADDR_REG = chCurrentRegister;
+                aydev.RegAddr = chCurrentRegister;
             }
         }
 
