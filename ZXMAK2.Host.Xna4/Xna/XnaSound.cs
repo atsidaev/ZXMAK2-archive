@@ -8,14 +8,15 @@ using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Host.Xna4.Xna
 {
-    public unsafe class XnaSound : IHostSound
+    public unsafe class XnaSound : IHostSound, IDisposable
     {
         private readonly DynamicSoundEffectInstance m_soundEffect;
         private readonly AutoResetEvent m_frameEvent = new AutoResetEvent(false);
-        private readonly AutoResetEvent m_cancelEvent = new AutoResetEvent(false);
+        private readonly ManualResetEvent m_waitEvent = new ManualResetEvent(true);
         private readonly int m_bufferLength;
         private readonly Queue<byte[]> m_playQueue = new Queue<byte[]>();
         private readonly Queue<byte[]> m_fillQueue = new Queue<byte[]>();
+        private bool m_isCancel;
 
 
         public XnaSound(int sampleRate, int channelCount)
@@ -41,6 +42,12 @@ namespace ZXMAK2.Host.Xna4.Xna
             m_soundEffect.BufferNeeded += SoundEffect_OnBufferNeeded;
         }
 
+        public void Dispose()
+        {
+            CancelWait();
+            m_waitEvent.Dispose();
+        }
+
         public void Start()
         {
             m_soundEffect.Play();
@@ -56,19 +63,35 @@ namespace ZXMAK2.Host.Xna4.Xna
 
         public void WaitFrame()
         {
-            lock (m_soundEffect)
+            m_waitEvent.Reset();
+            try
             {
-                if (m_fillQueue.Count > 0)
+                if (m_isCancel)
                 {
                     return;
                 }
+                lock (m_soundEffect)
+                {
+                    if (m_fillQueue.Count > 0)
+                    {
+                        return;
+                    }
+                }
+                m_frameEvent.WaitOne(100);
             }
-            WaitHandle.WaitAny(new[] { m_frameEvent, m_cancelEvent });
+            finally
+            {
+                m_waitEvent.Set();
+            }
         }
 
         public void CancelWait()
         {
-            m_cancelEvent.Set();
+            m_isCancel = true;
+            Thread.MemoryBarrier();
+            m_waitEvent.WaitOne();
+            m_isCancel = false;
+            Thread.MemoryBarrier();
         }
 
         public void PushFrame(uint[][] frameBuffers)
