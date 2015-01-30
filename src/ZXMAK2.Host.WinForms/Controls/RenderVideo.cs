@@ -18,6 +18,7 @@ using D3dFont = Microsoft.DirectX.Direct3D.Font;
 using D3dSprite = Microsoft.DirectX.Direct3D.Sprite;
 using D3dTexture = Microsoft.DirectX.Direct3D.Texture;
 using D3dTextureLoader = Microsoft.DirectX.Direct3D.TextureLoader;
+using System.Windows.Forms;
 
 
 namespace ZXMAK2.Host.WinForms.Controls
@@ -269,6 +270,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             var vtimeFrame = D3D.DisplayMode.Height;
             var vfrequency = vtimeFrame * refreshRate;
             var vtime = D3D.RasterStatus.ScanLine;
+            var deadline = timeFrame + timeFrame / vtimeFrame;
             if (vtime < vtimeFrame)
             {
                 var delay = ((vtimeFrame - vtime) * 1000) / vfrequency;
@@ -287,6 +289,12 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
             while (!_isCancelWait && !D3D.RasterStatus.InVBlank)
             {
+                if (Stopwatch.GetTimestamp() - _lastBlankStamp >= deadline)
+                {
+                    // our processor time was stolen by another process so we loss vblank
+                    _lastBlankStamp += deadline;
+                    return;
+                }                
                 Thread.SpinWait(1);
             }
             _lastBlankStamp = Stopwatch.GetTimestamp();
@@ -396,12 +404,15 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
+        private bool m_presentRequested;
+
         private void RequestPresentAsync()
         {
             if (!Created)
             {
                 return;
             }
+            m_presentRequested = true;
             Invalidate();
             //if (InvokeRequired)
             //{
@@ -535,7 +546,13 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 return;
             }
+            m_presentRequested = false;
             OnRenderSceneInt();
+        }
+
+        protected override bool CanRender()
+        {
+            return !IsRunning || m_presentRequested;
         }
 
         private void OnRenderSceneInt()
