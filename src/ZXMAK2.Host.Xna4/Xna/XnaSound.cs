@@ -146,24 +146,30 @@ namespace ZXMAK2.Host.Xna4.Xna
 
         private void Mix(byte[] dst, uint[][] bufferArray)
         {
-            fixed (byte* bptr = dst)
+            fixed (byte* pbdst = dst)
             {
-                var uiptr = (uint*)bptr;
-                for (var i = 0; i < dst.Length / 4; i++)    // clean buffer
+                var pdst = (short*)pbdst;
+                for (var i = 0; i < dst.Length / 4; i++)
                 {
-                    uint value1 = 0;
-                    uint value2 = 0;
+                    var index = i * 2;
+                    var left = 0;
+                    var right = 0;
+                    foreach (var src in bufferArray)
+                    {
+                        fixed (uint* puisrc = src)
+                        {
+                            var psrc = (short*)puisrc;
+                            left += psrc[index];
+                            right += psrc[index + 1];
+                        }
+                    }
                     if (bufferArray.Length > 0)
                     {
-                        for (int j = 0; j < bufferArray.Length; j++)
-                        {
-                            value1 += bufferArray[j][i] >> 16;
-                            value2 += bufferArray[j][i] & 0xFFFF;
-                        }
-                        value1 /= (uint)bufferArray.Length;
-                        value2 /= (uint)bufferArray.Length;
+                        left /= bufferArray.Length;
+                        right /= bufferArray.Length;
                     }
-                    uiptr[i] = (value1 << 16) | value2;
+                    pdst[index] = (short)left;
+                    pdst[index + 1] = (short)right;
                 }
             }
         }
