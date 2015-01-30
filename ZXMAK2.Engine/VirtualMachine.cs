@@ -21,6 +21,7 @@ namespace ZXMAK2.Engine
         #region Fields
 
         private readonly object m_sync = new object();
+        private readonly AutoResetEvent m_startedEvent = new AutoResetEvent(false);
         private readonly SyncTime m_syncTime = new SyncTime();
         private Thread m_thread = null;
         private IVideoData m_blankData = new VideoData(320, 240, 1F);
@@ -66,6 +67,7 @@ namespace ZXMAK2.Engine
             DoStop();
             Spectrum.BusManager.Disconnect();
             m_syncTime.Dispose();
+            m_startedEvent.Dispose();
         }
 
         #endregion .ctor
@@ -317,6 +319,7 @@ namespace ZXMAK2.Engine
         {
             try
             {
+                m_startedEvent.Set();
                 Spectrum.IsRunning = true;
 
                 var bus = Spectrum.BusManager;
@@ -431,16 +434,14 @@ namespace ZXMAK2.Engine
                     m_thread.Priority = ThreadPriority.AboveNormal;
                 }
                 m_thread.Start();
-                while (!IsRunning)
-                {
-                    Thread.Sleep(1);
-                }
             }
-            OnUpdateVideo();
+            m_startedEvent.WaitOne();
+            //OnUpdateVideo();
         }
 
         public void DoStop()
         {
+            var thread = default(Thread);
             lock (m_sync)
             {
                 if (!IsRunning || m_thread == null)
@@ -460,8 +461,11 @@ namespace ZXMAK2.Engine
                     video.CancelWait();
                 }
                 m_syncTime.Cancel();
-                var thread = m_thread;
+                thread = m_thread;
                 m_thread = null;
+            }
+            if (thread != null)
+            {
                 thread.Join();
             }
             OnUpdateVideo();
