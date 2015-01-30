@@ -137,8 +137,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 				{
 					for (int i = 0; i < 16; i++)
 					{
-						aydev.ADDR_REG = (byte)i;
-						aydev.DATA_REG = hdr1[Z80HDR1_AYSTATE + i];
+						aydev.RegAddr = (byte)i;
+						aydev.RegData = hdr1[Z80HDR1_AYSTATE + i];
 					}
 				}
 			}
@@ -375,13 +375,13 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             var aydev = _spec.BusManager.FindDevice<IAyDevice>();
 			if (aydev != null)
 			{
-				byte ayaddr = aydev.ADDR_REG;
+				byte ayaddr = aydev.RegAddr;
 				for (int i = 0; i < 16; i++)
 				{
-					aydev.ADDR_REG = (byte)i;
-					hdr1[Z80HDR1_AYSTATE + i] = aydev.DATA_REG;
+					aydev.RegAddr = (byte)i;
+					hdr1[Z80HDR1_AYSTATE + i] = aydev.RegData;
 				}
-				aydev.ADDR_REG = ayaddr;
+				aydev.RegAddr = ayaddr;
 			}
 			else
 			{
