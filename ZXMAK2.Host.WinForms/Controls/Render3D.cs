@@ -184,10 +184,19 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
         }
 
+        protected virtual bool CanRender()
+        {
+            return true;
+        }
+
         protected void RenderScene()
         {
             try
             {
+                if (!CanRender())
+                {
+                    return;
+                }
                 lock (SyncRoot)
                 {
                     if (D3D == null ||
