@@ -3,7 +3,7 @@
 
 namespace ZXMAK2.Hardware.Adlers
 {
-    public class CommandParseException : Exception
+    public class CommandParseException : ApplicationException
     {
         public CommandParseException(string message)
             : base(message)
