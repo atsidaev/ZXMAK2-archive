@@ -460,7 +460,7 @@ namespace ZXMAK2.Engine
                 {
                     video.CancelWait();
                 }
-                m_syncTime.Cancel();
+                m_syncTime.CancelWait();
                 thread = m_thread;
                 m_thread = null;
             }

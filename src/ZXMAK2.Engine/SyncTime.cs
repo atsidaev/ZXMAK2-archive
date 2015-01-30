@@ -19,7 +19,7 @@ namespace ZXMAK2.Engine
 
         public void Dispose()
         {
-            Cancel();
+            CancelWait();
             _waitEvent.Dispose();
         }
 
@@ -70,7 +70,7 @@ namespace ZXMAK2.Engine
             }
         }
 
-        public void Cancel()
+        public void CancelWait()
         {
             _isCancel = true;
             Thread.MemoryBarrier();
