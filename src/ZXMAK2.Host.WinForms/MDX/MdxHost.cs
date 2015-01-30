@@ -12,13 +12,13 @@ namespace ZXMAK2.Host.WinForms.Mdx
         private DirectMouse m_mouse;
         private DirectJoystick m_joystick;
         private DirectSound m_sound;
-        
+
 
         public MdxHost(Form form, IHostVideo hostVideo)
         {
             HostUi = form as ICommandManager;
             Video = hostVideo;
-            SafeExecute(() => m_sound = new DirectSound(form, 44100, 16, 2, 882 * 2 * 2, 4));
+            SafeExecute(() => m_sound = new DirectSound(form, 44100, 4));
             SafeExecute(() => m_keyboard = new DirectKeyboard(form));
             SafeExecute(() => m_mouse = new DirectMouse(form));
             SafeExecute(() => m_joystick = new DirectJoystick(form));
@@ -48,7 +48,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
         public IHostJoystick Joystick { get { return m_joystick; } }
 
 
-        public bool IsInputCaptured 
+        public bool IsInputCaptured
         {
             get { return m_mouse != null && m_mouse.IsCaptured; }
         }
