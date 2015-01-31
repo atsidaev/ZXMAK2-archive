@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using ZXMAK2.Hardware.General;
+using ZXMAK2.Engine.Entities;
+using ZXMAK2.Engine.Interfaces;
 
 
 namespace ZXMAK2.Hardware.Evo
@@ -11,11 +13,11 @@ namespace ZXMAK2.Hardware.Evo
         {
             Name = "AY8910-CHRV";
             Description = "AY8910 with #FE value on IRB input (required for PentEvo)";
-            UpdateIRB += OnUpdateIrb;
+            IrbHandler += PsgDevice_OnIrbHandler;
         }
 
 
-        private void OnUpdateIrb(AY8910 sender, AyPortState state)
+        private void PsgDevice_OnIrbHandler(IAyDevice sender, PsgPortState state)
         {
             if (!state.DirOut)
             {

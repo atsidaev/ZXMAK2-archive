@@ -132,15 +132,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                 }
 
 				// Load AY-3-8910 registers
-                var aydev = _spec.BusManager.FindDevice<IAyDevice>();
-				if (aydev != null)
-				{
-					for (int i = 0; i < 16; i++)
-					{
-						aydev.RegAddr = (byte)i;
-						aydev.RegData = hdr1[Z80HDR1_AYSTATE + i];
-					}
-				}
+                LoadAyState(hdr1);
 			}
 
 			bool dataCompressed = (hdr[Z80HDR_FLAGS] & 0x20) != 0;
@@ -302,6 +294,19 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			}
 		}
 
+        private void LoadAyState(byte[] hdr1)
+        {
+            var aydev = _spec.BusManager.FindDevice<IAyDevice>();
+            if (aydev == null)
+            {
+                return;
+            }
+            for (var i = 0; i < 16; i++)
+            {
+                aydev.SetReg(i, hdr1[Z80HDR1_AYSTATE + i]);
+            }
+        }
+
 		private void saveToStream(Stream stream)
 		{
             var memory = _spec.BusManager.FindDevice<IMemoryDevice>();
@@ -375,13 +380,10 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             var aydev = _spec.BusManager.FindDevice<IAyDevice>();
 			if (aydev != null)
 			{
-				byte ayaddr = aydev.RegAddr;
-				for (int i = 0; i < 16; i++)
+				for (var i = 0; i < 16; i++)
 				{
-					aydev.RegAddr = (byte)i;
-					hdr1[Z80HDR1_AYSTATE + i] = aydev.RegData;
+					hdr1[Z80HDR1_AYSTATE + i] = aydev.GetReg(i);
 				}
-				aydev.RegAddr = ayaddr;
 			}
 			else
 			{
