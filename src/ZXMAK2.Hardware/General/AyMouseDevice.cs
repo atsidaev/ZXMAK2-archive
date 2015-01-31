@@ -20,7 +20,7 @@ namespace ZXMAK2.Hardware.General
 
         public override void BusInit(IBusManager bmgr)
         {
-            m_psgDevice = bmgr.FindDevice<IAyDevice>();
+            m_psgDevice = bmgr.FindDevice<IPsgDevice>();
         }
 
         public override void BusConnect()
@@ -51,12 +51,12 @@ namespace ZXMAK2.Hardware.General
 
         #endregion
 
-        private IAyDevice m_psgDevice;
+        private IPsgDevice m_psgDevice;
 		private IMouseState m_mouseState = null;
         private int _lastAyMouseX = 0;
         private int _lastAyMouseY = 0;
 
-        private void PsgDevice_OnUpdateIra(IAyDevice sender, PsgPortState state)
+        private void PsgDevice_OnUpdateIra(IPsgDevice sender, PsgPortState state)
         {
             //
             // Emulation AY-Mouse (V.M.G. schema)

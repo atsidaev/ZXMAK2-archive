@@ -60,7 +60,7 @@
     <Compile Include="Entities\SyncSource.cs" />
     <Compile Include="FpsMonitor.cs" />
     <Compile Include="InputAggregator.cs" />
-    <Compile Include="Interfaces\IAyDevice.cs" />
+    <Compile Include="Interfaces\IPsgDevice.cs" />
     <Compile Include="Interfaces\IBetaDiskDevice.cs" />
     <Compile Include="Interfaces\IBus.cs" />
     <Compile Include="Interfaces\IBusManager.cs" />
