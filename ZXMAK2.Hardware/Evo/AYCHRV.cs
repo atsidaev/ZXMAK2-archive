@@ -17,7 +17,7 @@ namespace ZXMAK2.Hardware.Evo
         }
 
 
-        private void PsgDevice_OnIrbHandler(IAyDevice sender, PsgPortState state)
+        private void PsgDevice_OnIrbHandler(IPsgDevice sender, PsgPortState state)
         {
             if (!state.DirOut)
             {

@@ -296,7 +296,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         private void LoadAyState(byte[] hdr1)
         {
-            var aydev = _spec.BusManager.FindDevice<IAyDevice>();
+            var aydev = _spec.BusManager.FindDevice<IPsgDevice>();
             if (aydev == null)
             {
                 return;
@@ -377,7 +377,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			hdr1[Z80HDR1_7FFD] = 0x0E;       // ?? dont know what is it, but other emuls doing that (128K only)
 
 			// Save AY registers
-            var aydev = _spec.BusManager.FindDevice<IAyDevice>();
+            var aydev = _spec.BusManager.FindDevice<IPsgDevice>();
 			if (aydev != null)
 			{
 				for (var i = 0; i < 16; i++)

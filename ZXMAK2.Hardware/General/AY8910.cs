@@ -12,7 +12,7 @@ using ZXMAK2.Dependency;
 
 namespace ZXMAK2.Hardware.General
 {
-    public class AY8910 : SoundDeviceBase, IAyDevice
+    public class AY8910 : SoundDeviceBase, IPsgDevice
     {
         #region Fields
 
@@ -113,8 +113,8 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        public event Action<IAyDevice, PsgPortState> IraHandler;
-        public event Action<IAyDevice, PsgPortState> IrbHandler;
+        public event Action<IPsgDevice, PsgPortState> IraHandler;
+        public event Action<IPsgDevice, PsgPortState> IrbHandler;
 
         #endregion Public
 

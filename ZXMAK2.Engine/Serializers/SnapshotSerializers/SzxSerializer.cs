@@ -241,7 +241,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             byte chFlags = data[offset]; offset += 1;
             byte chCurrentRegister = data[offset]; offset += 1;
 
-            var aydev = _spec.BusManager.FindDevice<IAyDevice>();
+            var aydev = _spec.BusManager.FindDevice<IPsgDevice>();
             if (aydev == null)
             {
                 return;
@@ -486,7 +486,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
         private void save_AY(Stream stream)
         {
-            var aydev = _spec.BusManager.FindDevice<IAyDevice>();
+            var aydev = _spec.BusManager.FindDevice<IPsgDevice>();
             if (aydev == null)
             {
                 return;
