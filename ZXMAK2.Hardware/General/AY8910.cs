@@ -209,10 +209,12 @@ namespace ZXMAK2.Hardware.General
             if (indexF == PsgRegId.IRA)
             {
                 value = OnReadIra();
+                return;
             }
             else if (indexF == PsgRegId.IRB)
             {
                 value = OnReadIrb();
+                return;
             }
             value = m_chip.GetReg(m_chip.RegAddr);
         }
