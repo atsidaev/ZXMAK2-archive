@@ -242,15 +242,15 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             byte chCurrentRegister = data[offset]; offset += 1;
 
             var aydev = _spec.BusManager.FindDevice<IAyDevice>();
-            if (aydev != null)
+            if (aydev == null)
             {
-                for (int i = 0; i < 16; i++)
-                {
-                    aydev.RegAddr = (byte)i;
-                    aydev.RegData = data[i + offset];
-                }
-                aydev.RegAddr = chCurrentRegister;
+                return;
             }
+            for (var i = 0; i < 16; i++)
+            {
+                aydev.SetReg(i, data[i + offset]);
+            }
+            aydev.RegAddr = chCurrentRegister;
         }
 
         #endregion
@@ -487,23 +487,19 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
         private void save_AY(Stream stream)
         {
             var aydev = _spec.BusManager.FindDevice<IAyDevice>();
-            if (aydev != null)
+            if (aydev == null)
             {
-                StreamHelper.Write(stream, Encoding.ASCII.GetBytes("AY\0\0"));
-                int size = 18;
-                StreamHelper.Write(stream, size);
-
-                byte chFlags = 0;
-                byte chCurrentRegister = aydev.RegAddr;
-
-                StreamHelper.Write(stream, chFlags);
-                StreamHelper.Write(stream, chCurrentRegister);
-                for (int i = 0; i < 16; i++)
-                {
-                    aydev.RegAddr = (byte)i;
-                    StreamHelper.Write(stream, aydev.RegData);
-                }
-                aydev.RegAddr = chCurrentRegister;
+                return;
+            }
+            StreamHelper.Write(stream, Encoding.ASCII.GetBytes("AY\0\0"));
+            var size = 18;
+            StreamHelper.Write(stream, (int)size);
+            var chFlags = 0;
+            StreamHelper.Write(stream, (byte)chFlags);
+            StreamHelper.Write(stream, (byte)aydev.RegAddr);
+            for (var i = 0; i < 16; i++)
+            {
+                StreamHelper.Write(stream, aydev.GetReg(i));
             }
         }
 

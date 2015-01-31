@@ -54,6 +54,7 @@
     <Compile Include="Entities\BusDeviceCategory.cs" />
     <Compile Include="Entities\BusDeviceDescriptor.cs" />
     <Compile Include="Entities\ModelId.cs" />
+    <Compile Include="Entities\PsgPortState.cs" />
     <Compile Include="Entities\RomId.cs" />
     <Compile Include="Entities\RzxFrame.cs" />
     <Compile Include="Entities\SyncSource.cs" />

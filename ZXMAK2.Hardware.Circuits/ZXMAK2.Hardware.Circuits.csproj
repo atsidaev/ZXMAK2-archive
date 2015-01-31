@@ -56,6 +56,12 @@
     <Compile Include="SecureDigital\SdCommand.cs" />
     <Compile Include="SecureDigital\SdState.cs" />
     <Compile Include="SecureDigital\SdStatus.cs" />
+    <Compile Include="Sound\IPsgChip.cs" />
+    <Compile Include="Sound\PsgChip.cs" />
+    <Compile Include="Sound\PanType.cs" />
+    <Compile Include="Sound\PsgRegId.cs" />
+    <Compile Include="Sound\AmpType.cs" />
+    <Compile Include="Sound\SoundTables.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Fdd\Wd1793.cs" />
   </ItemGroup>

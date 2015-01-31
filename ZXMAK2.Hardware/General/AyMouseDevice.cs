@@ -1,6 +1,7 @@
 ﻿using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
+using ZXMAK2.Hardware.Circuits.Sound;
 
 
 namespace ZXMAK2.Hardware.General
@@ -19,19 +20,23 @@ namespace ZXMAK2.Hardware.General
 
         public override void BusInit(IBusManager bmgr)
         {
-            m_ay8910 = bmgr.FindDevice<AY8910>();
+            m_psgDevice = bmgr.FindDevice<IAyDevice>();
         }
 
         public override void BusConnect()
         {
-            if (m_ay8910 != null)
-                m_ay8910.UpdateIRA += ay_UpdateIRA;	// AY mouse handler
+            if (m_psgDevice != null)
+            {
+                m_psgDevice.IraHandler += PsgDevice_OnUpdateIra;
+            }
         }
 
         public override void BusDisconnect()
         {
-            if (m_ay8910 != null)
-                m_ay8910.UpdateIRA -= ay_UpdateIRA;	// AY mouse handler
+            if (m_psgDevice != null)
+            {
+                m_psgDevice.IraHandler -= PsgDevice_OnUpdateIra;
+            }
         }
 
         #endregion
@@ -46,12 +51,12 @@ namespace ZXMAK2.Hardware.General
 
         #endregion
 
-        private AY8910 m_ay8910;
+        private IAyDevice m_psgDevice;
 		private IMouseState m_mouseState = null;
         private int _lastAyMouseX = 0;
         private int _lastAyMouseY = 0;
 
-        private void ay_UpdateIRA(AY8910 sender, AyPortState state)
+        private void PsgDevice_OnUpdateIra(IAyDevice sender, PsgPortState state)
         {
             //
             // Emulation AY-Mouse (V.M.G. schema)
