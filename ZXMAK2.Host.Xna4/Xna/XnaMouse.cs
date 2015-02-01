@@ -6,7 +6,7 @@ using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Host.Xna4.Xna
 {
-    public class XnaMouse : IHostMouse, IMouseState
+    public sealed class XnaMouse : IHostMouse, IMouseState
     {
         public void Update(MouseState state)
         {
@@ -18,7 +18,11 @@ namespace ZXMAK2.Host.Xna4.Xna
             X = state.X;
             Y = state.Y;
         }
-        
+
+        public void Dispose()
+        {
+        }
+
         
         #region IHostMouse
 

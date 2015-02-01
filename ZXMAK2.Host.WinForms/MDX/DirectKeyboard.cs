@@ -14,7 +14,7 @@ using MdxKey = Microsoft.DirectX.DirectInput.Key;
 
 namespace ZXMAK2.Host.WinForms.Mdx
 {
-    public sealed class DirectKeyboard : IHostKeyboard, IKeyboardState, IDisposable
+    public sealed class DirectKeyboard : IHostKeyboard, IKeyboardState
     {
         private readonly Form m_form;
         private Device m_device = null;
@@ -24,15 +24,19 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
 
 
-        public DirectKeyboard(Form mainForm)
+        public DirectKeyboard(Form form)
         {
-            m_form = mainForm;
+            if (form == null)
+            {
+                throw new ArgumentNullException("form");
+            }
+            m_form = form;
             if (m_device == null)
             {
                 m_device = new Device(SystemGuid.Keyboard);
-                m_device.SetCooperativeLevel(mainForm, CooperativeLevelFlags.NonExclusive | CooperativeLevelFlags.Foreground);
-                mainForm.Activated += WndActivated;
-                mainForm.Deactivate += WndDeactivate;
+                m_device.SetCooperativeLevel(form, CooperativeLevelFlags.NonExclusive | CooperativeLevelFlags.Foreground);
+                form.Activated += WndActivated;
+                form.Deactivate += WndDeactivate;
                 WndActivated(null, null);
             }
             m_mapper.LoadMapFromString(
@@ -41,14 +45,26 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public void Dispose()
         {
-            m_form.Activated -= WndActivated;
-            m_form.Deactivate -= WndDeactivate;
-            if (m_device != null)
+            if (m_device == null)
             {
+                return;
+            }
+            var device = m_device;
+            m_device = null;
+            try
+            {
+                m_form.Activated -= WndActivated;
+                m_form.Deactivate -= WndDeactivate;
                 m_isActive = false;
-                m_device.Unacquire();
-                m_device.Dispose();
-                m_device = null;
+                device.Unacquire();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                device.Dispose();
             }
         }
 

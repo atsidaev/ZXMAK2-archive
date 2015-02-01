@@ -12,7 +12,7 @@ using XnaKey = Microsoft.Xna.Framework.Input.Keys;
 
 namespace ZXMAK2.Host.Xna4.Xna
 {
-    public class XnaKeyboard : IHostKeyboard, IKeyboardState
+    public sealed class XnaKeyboard : IHostKeyboard, IKeyboardState
     {
         private KeyboardStateMapper<XnaKey> m_mapper = new KeyboardStateMapper<XnaKey>();
         private readonly Dictionary<ZxmakKey, bool> m_state = new Dictionary<ZxmakKey, bool>();
@@ -22,6 +22,10 @@ namespace ZXMAK2.Host.Xna4.Xna
         {
             m_mapper.LoadMapFromString(
                 global::ZXMAK2.Host.Xna4.Properties.Resources.Keyboard_Xna);
+        }
+
+        public void Dispose()
+        {
         }
 
         public void Update(KeyboardState state)

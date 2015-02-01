@@ -14,14 +14,22 @@ namespace ZXMAK2.Host.Xna4.Xna
         private readonly AutoResetEvent m_frameEvent = new AutoResetEvent(false);
         private readonly ManualResetEvent m_waitEvent = new ManualResetEvent(true);
         private readonly int m_bufferLength;
+        private readonly int m_sampleRate;
         private readonly Queue<byte[]> m_playQueue = new Queue<byte[]>();
         private readonly Queue<byte[]> m_fillQueue = new Queue<byte[]>();
         private bool m_isCancel;
+        private bool m_isDisposed;
 
 
-        public XnaSound(int sampleRate, int channelCount)
+        public XnaSound(int sampleRate, int bufferCount)
         {
             const int frameRate = 50;
+            const int channelCount = 2;
+            if ((sampleRate % frameRate) != 0)
+            {
+                throw new ArgumentOutOfRangeException("sampleRate", "Sample rate must be a multiple of 50!");
+            }
+            m_sampleRate = sampleRate;
             m_bufferLength = (sampleRate / frameRate) * channelCount * 2;
 
             m_soundEffect = new DynamicSoundEffectInstance(
@@ -30,36 +38,38 @@ namespace ZXMAK2.Host.Xna4.Xna
             
             var needSize = m_soundEffect.GetSampleSizeInBytes(
                 TimeSpan.FromMilliseconds(20));
-            var bufferCount = needSize * 2 / m_bufferLength;
-            if (bufferCount < 2)
+            var bufferCountReal = needSize * bufferCount / m_bufferLength;
+            if (bufferCountReal < bufferCount)
             {
-                bufferCount = 2;
+                bufferCountReal = bufferCount;
             }
-            for (var i = 0; i < bufferCount; i++)
+            for (var i = 0; i < bufferCountReal; i++)
             {
                 m_fillQueue.Enqueue(new byte[m_bufferLength]);
             }
             m_soundEffect.BufferNeeded += SoundEffect_OnBufferNeeded;
+            m_soundEffect.Play();
         }
 
         public void Dispose()
         {
+            if (m_isDisposed)
+            {
+                return;
+            }
+            m_isDisposed = true;
+            m_soundEffect.Stop();
             CancelWait();
             m_waitEvent.Dispose();
         }
 
-        public void Start()
-        {
-            m_soundEffect.Play();
-        }
-
-        public void Stop()
-        {
-            m_soundEffect.Stop();
-        }
-
         
         #region IHostSound
+
+        public int SampleRate
+        {
+            get { return m_sampleRate; }
+        }
 
         public void WaitFrame()
         {

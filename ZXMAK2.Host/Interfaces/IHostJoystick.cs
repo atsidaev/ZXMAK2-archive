@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ZXMAK2.Host.Interfaces
 {
-    public interface IHostJoystick
+    public interface IHostJoystick : IDisposable
     {
         void CaptureHostDevice(string hostId);
         void ReleaseHostDevice(string hostId);

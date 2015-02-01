@@ -62,6 +62,7 @@ namespace ZXMAK2.Engine
         
         public ModelId ModelId { get; set; }
         public string Name { get; set; }
+        public int SampleRate { get; set; }
 
         
         public BusManager()
@@ -78,6 +79,7 @@ namespace ZXMAK2.Engine
             m_cpu.WRNOMREQ = WRNOMREQ;
             //m_cpu.OnCycle = OnCpuCycle;
             m_cpu.RESET = RESET;
+            SampleRate = 44100;
         }
 
 
@@ -466,6 +468,10 @@ namespace ZXMAK2.Engine
             for (int i = 0; i < m_deviceList.Count; i++)
             {
                 m_deviceList[i].BusOrder = i;
+            }
+            foreach (var soundRenderer in m_deviceList.OfType<ISoundRenderer>())
+            {
+                soundRenderer.SampleRate = SampleRate;
             }
             if (LoadManager != null)
             {
