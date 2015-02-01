@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Xna.Framework.Input;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2.Host.Xna4.Xna
@@ -12,11 +13,13 @@ namespace ZXMAK2.Host.Xna4.Xna
         {
             Video = hostVideo;
             
+            var viewResolver = Locator.Resolve<IResolver>("View");
+            if (viewResolver != null)
+            {
+                Sound = viewResolver.TryResolve<IHostSound>();
+            }
             Keyboard = new XnaKeyboard();
             Mouse = new XnaMouse();
-            var sound = new XnaSound(44100, 2);
-            sound.Start();
-            Sound = sound;
         }
 
         public void Update(KeyboardState kbdState, MouseState mouseState)
@@ -42,12 +45,37 @@ namespace ZXMAK2.Host.Xna4.Xna
         
         public void Dispose()
         {
-            if (Sound != null)
+            var sound = Sound;
+            Sound = null;
+            if (sound != null)
             {
-                var sound = (XnaSound)Sound;
-                Sound = null;
-                sound.Stop();
+                sound.Dispose();
             }
+            var keyboard = Keyboard;
+            Keyboard = null;
+            if (keyboard != null)
+            {
+                keyboard.Dispose();
+            }
+            var mouse = Mouse;
+            Mouse = null;
+            if (mouse != null)
+            {
+                mouse.Dispose();
+            }
+            var joystick = Joystick;
+            Joystick = null;
+            if (joystick != null)
+            {
+                joystick.Dispose();
+            }
+            // temporary not supported (reentrance)
+            //var video = Video;
+            //Video = null;
+            //if (video != null)
+            //{
+            //    video.Dispose();
+            //}
         }
     }
 }

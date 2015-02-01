@@ -13,11 +13,12 @@ using ZXMAK2.Host.WinForms.Tools;
 
 namespace ZXMAK2.Host.WinForms.Mdx
 {
-    public sealed unsafe class DirectSound : IHostSound, IDisposable
+    public sealed unsafe class DirectSound : IHostSound
     {
         private readonly Device _device;
         private readonly SecondaryBuffer _soundBuffer;
         private readonly Notify _notify;
+        private readonly int _sampleRate;
 
         private byte _zeroValue;
         private int _bufferSize;
@@ -29,15 +30,20 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
 
         public DirectSound(
-            Control mainForm,
-            int samplesPerSecond,
+            Form form,
+            int sampleRate,
             int bufferCount)
         {
+            if ((sampleRate % 50) != 0)
+            {
+                throw new ArgumentOutOfRangeException("sampleRate", "Sample rate must be a multiple of 50!");
+            }
+            _sampleRate = sampleRate;
             _fillQueue = new Queue<byte[]>(bufferCount);
             _playQueue = new Queue<byte[]>(bufferCount);
             var channels = (short)2;
             var bitsPerSample = (short)16;
-            var bufferSize = samplesPerSecond * (bitsPerSample / 8) * channels / 50;
+            var bufferSize = sampleRate * (bitsPerSample / 8) * channels / 50;
             for (int i = 0; i < bufferCount; i++)
             {
                 _fillQueue.Enqueue(new byte[bufferSize]);
@@ -47,11 +53,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
             _zeroValue = bitsPerSample == 8 ? (byte)128 : (byte)0;
 
             _device = new Device();
-            _device.SetCooperativeLevel(mainForm, CooperativeLevel.Priority);
+            _device.SetCooperativeLevel(form, CooperativeLevel.Priority);
 
             var wf = new WaveFormat();
             wf.FormatTag = WaveFormatTag.Pcm;
-            wf.SamplesPerSecond = samplesPerSecond;
+            wf.SamplesPerSecond = sampleRate;
             wf.BitsPerSample = bitsPerSample;
             wf.Channels = channels;
             wf.BlockAlign = (short)(wf.Channels * (wf.BitsPerSample / 8));
@@ -240,6 +246,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
         private readonly AutoResetEvent _frameEvent = new AutoResetEvent(false);
         private readonly AutoResetEvent _cancelEvent = new AutoResetEvent(false);
         private readonly Queue<byte[]> _frames = new Queue<byte[]>();
+
+        public int SampleRate
+        {
+            get { return _sampleRate; }
+        }
 
         public void WaitFrame()
         {

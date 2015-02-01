@@ -9,6 +9,7 @@ namespace ZXMAK2.Engine.Interfaces
     #endregion
     public interface ISoundRenderer
     {
+        int SampleRate { get; set; }
         uint[] AudioBuffer { get; }
 		int Volume { get; set; }
     }

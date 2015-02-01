@@ -2,42 +2,62 @@
 using System.Windows.Forms;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Presentation.Interfaces;
+using ZXMAK2.Dependency;
 
 
 namespace ZXMAK2.Host.WinForms.Mdx
 {
     public sealed class MdxHost : IHost
     {
-        private DirectKeyboard m_keyboard;
+        private IHostSound m_sound;
+        private IHostKeyboard m_keyboard;
         private DirectMouse m_mouse;
         private DirectJoystick m_joystick;
-        private DirectSound m_sound;
 
 
         public MdxHost(Form form, IHostVideo hostVideo)
         {
             HostUi = form as ICommandManager;
             Video = hostVideo;
-            SafeExecute(() => m_sound = new DirectSound(form, 44100, 4));
-            SafeExecute(() => m_keyboard = new DirectKeyboard(form));
+            var viewResolver = Locator.TryResolve<IResolver>("View");
+            if (viewResolver != null)
+            {
+                m_sound = viewResolver.TryResolve<IHostSound>(new Argument("form", form)); //new DirectSound(form, 44100, 4)
+                m_keyboard = viewResolver.TryResolve<IHostKeyboard>(new Argument("form", form));
+            }
             SafeExecute(() => m_mouse = new DirectMouse(form));
             SafeExecute(() => m_joystick = new DirectJoystick(form));
         }
 
         public void Dispose()
         {
-            if (m_sound != null)
-                m_sound.Dispose();
+            var sound = m_sound;
             m_sound = null;
-            if (m_keyboard != null)
-                m_keyboard.Dispose();
+            if (sound != null)
+            {
+                sound.Dispose();
+            }
+            var keyboard = m_keyboard;
             m_keyboard = null;
-            if (m_mouse != null)
-                m_mouse.Dispose();
+            if (keyboard != null)
+            {
+                keyboard.Dispose();
+                keyboard = null;
+            }
+            var mouse = m_mouse;
             m_mouse = null;
-            if (m_joystick != null)
-                m_joystick.Dispose();
+            if (mouse != null)
+            {
+                mouse.Dispose();
+                mouse = null;
+            }
+            var joystick = m_joystick;
             m_joystick = null;
+            if (joystick != null)
+            {
+                joystick.Dispose();
+                joystick = null;
+            }
         }
 
         public ICommandManager HostUi { get; private set; }

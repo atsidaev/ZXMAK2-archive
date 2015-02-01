@@ -18,6 +18,8 @@ namespace ZXMAK2.Hardware
         {
             Category = BusDeviceCategory.Sound;
             Volume = 100;
+            FrameTactCount = 3500000 / 50;
+            SampleRate = 44100;
         }
 
 
@@ -28,7 +30,7 @@ namespace ZXMAK2.Hardware
             m_cpu = bmgr.CPU;
             var ula = bmgr.FindDevice<IUlaDevice>();
             FrameTactCount = ula != null ? ula.FrameTactCount : 71680;
-            ApplyTimings(FrameTactCount * 50, 44100);
+            ApplyTimings(FrameTactCount * 50, SampleRate);
 
             bmgr.SubscribeBeginFrame(BeginFrame);
             bmgr.SubscribeEndFrame(EndFrame);
@@ -61,6 +63,8 @@ namespace ZXMAK2.Hardware
 
 
         #region ISoundRenderer
+
+        public int SampleRate { get; set; }
 
         public uint[] AudioBuffer
         {
