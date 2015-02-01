@@ -19,15 +19,12 @@ namespace ZXMAK2.Hardware.Pentagon
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            m_memory = bmgr.FindDevice<IMemoryDevice>();
-
             //bmgr.SubscribeWrIo(0x0004, 0x00FB & 0x0004, WritePort);
             bmgr.SubscribeWrIo(0x00FF, 0x00FB, WritePort);
         }
 
         #endregion
 
-        private IMemoryDevice m_memory;
         private int m_mult = 0;
 
 
