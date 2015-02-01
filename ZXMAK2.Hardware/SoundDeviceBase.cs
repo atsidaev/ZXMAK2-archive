@@ -1,6 +1,8 @@
-﻿// Sound resampler used in this class based on Unreal Speccy code created by SMT
-// Reference version: us0.37.6
-//
+﻿//#define WRITE_RAW_WAV
+/*
+ * Resampler algorithm is based on the source code 
+ * of unreal speccy v0.37.6 by SMT
+ */
 using System;
 using System.Xml;
 using System.Collections.Generic;
@@ -38,15 +40,28 @@ namespace ZXMAK2.Hardware
             OnVolumeChanged(m_volume, m_volume);
         }
 
-        //private WavSampleWriter m_wavWriter;
+#if WRITE_RAW_WAV
+        private WavSampleWriter m_wavWriter;
+#endif
+        
         public override void BusConnect()
         {
-            //m_wavWriter = new WavSampleWriter(this.GetType().Name+".wav", m_sampleRate, 16, 2); 
+#if WRITE_RAW_WAV
+            if (GetType().Name == "AY8910")
+            {
+                m_wavWriter = new WavSampleWriter(this.GetType().Name + ".wav", SampleRate, 16, 2);
+            }
+#endif
         }
 
         public override void BusDisconnect()
         {
-            //m_wavWriter.Dispose();
+#if WRITE_RAW_WAV
+            if (m_wavWriter != null)
+            {
+                m_wavWriter.Dispose();
+            }
+#endif
         }
 
         protected override void OnConfigLoad(XmlNode node)
@@ -128,7 +143,12 @@ namespace ZXMAK2.Hardware
         protected virtual void OnEndFrame()
         {
             Render(m_sndQueue, FrameTactCount);
-            //m_wavWriter.Write(m_audioBuffer, 0, m_audioBuffer.Length);
+#if WRITE_RAW_WAV
+            if (m_wavWriter != null)
+            {
+                m_wavWriter.Write(m_audioBuffer, 0, m_audioBuffer.Length);
+            }
+#endif
         }
 
         protected abstract void OnVolumeChanged(int oldVolume, int newVolume);
@@ -455,164 +475,166 @@ namespace ZXMAK2.Hardware
         #endregion Filter
     }
 
-    //public class WavSampleWriter : IDisposable
-    //{
-    //    private string m_fileName;
-    //    private int m_sampleRate;
-    //    private int m_sampleBits;
-    //    private int m_channelCount;
-    //    private System.IO.FileStream m_fileStream;
-    //    private RIFF_HDR m_riffHdr = new RIFF_HDR();
-    //    private RIFF_CHUNK_FMT m_riffChunkFmt = new RIFF_CHUNK_FMT();
-    //    private RIFF_CHUNK_FACT m_riffChunkFact = new RIFF_CHUNK_FACT();
+#if WRITE_RAW_WAV
+    public class WavSampleWriter : IDisposable
+    {
+        private string m_fileName;
+        private int m_sampleRate;
+        private int m_sampleBits;
+        private int m_channelCount;
+        private System.IO.FileStream m_fileStream;
+        private RIFF_HDR m_riffHdr = new RIFF_HDR();
+        private RIFF_CHUNK_FMT m_riffChunkFmt = new RIFF_CHUNK_FMT();
+        private RIFF_CHUNK_FACT m_riffChunkFact = new RIFF_CHUNK_FACT();
 
-    //    public WavSampleWriter(string fileName, int sampleRate, int sampleBits, int channelCount)
-    //    {
-    //        m_fileName = fileName;
-    //        m_sampleRate = sampleRate;
-    //        m_sampleBits = sampleBits;
-    //        m_channelCount = channelCount;
-    //        m_fileStream = new System.IO.FileStream(
-    //            fileName, 
-    //            System.IO.FileMode.Create, 
-    //            System.IO.FileAccess.Write, 
-    //            System.IO.FileShare.Read);
+        public WavSampleWriter(string fileName, int sampleRate, int sampleBits, int channelCount)
+        {
+            m_fileName = fileName;
+            m_sampleRate = sampleRate;
+            m_sampleBits = sampleBits;
+            m_channelCount = channelCount;
+            m_fileStream = new System.IO.FileStream(
+                fileName,
+                System.IO.FileMode.Create,
+                System.IO.FileAccess.Write,
+                System.IO.FileShare.Read);
 
-    //        m_riffChunkFact.value = 0;
+            m_riffChunkFact.value = 0;
 
-    //        m_riffChunkFmt.wFormatTag = 0x0001;
-    //        m_riffChunkFmt.wChannels = (ushort)channelCount;
-    //        m_riffChunkFmt.dwSamplesPerSec = (uint)sampleRate;
-    //        m_riffChunkFmt.wBitsPerSample = (ushort)sampleBits;
-    //        m_riffChunkFmt.wBlockAlign = (ushort)(m_riffChunkFmt.wChannels * m_riffChunkFmt.wBitsPerSample / 8);  //0x0004;
-    //        m_riffChunkFmt.dwAvgBytesPerSec = m_riffChunkFmt.dwSamplesPerSec * m_riffChunkFmt.wBlockAlign;
+            m_riffChunkFmt.wFormatTag = 0x0001;
+            m_riffChunkFmt.wChannels = (ushort)channelCount;
+            m_riffChunkFmt.dwSamplesPerSec = (uint)sampleRate;
+            m_riffChunkFmt.wBitsPerSample = (ushort)sampleBits;
+            m_riffChunkFmt.wBlockAlign = (ushort)(m_riffChunkFmt.wChannels * m_riffChunkFmt.wBitsPerSample / 8);  //0x0004;
+            m_riffChunkFmt.dwAvgBytesPerSec = m_riffChunkFmt.dwSamplesPerSec * m_riffChunkFmt.wBlockAlign;
 
-    //        m_riffHdr.RiffSize = 4 +						// wave_id	
-    //            RIFF_CHUNK_FMT.Size +						// FMT
-    //            RIFF_CHUNK_FACT.Size;						// FACT
+            m_riffHdr.RiffSize = 4 +						// wave_id	
+                RIFF_CHUNK_FMT.Size +						// FMT
+                RIFF_CHUNK_FACT.Size;						// FACT
 
-    //        m_fileStream.Seek(0, System.IO.SeekOrigin.Begin);
-    //        m_riffHdr.Write(m_fileStream);
-    //        m_riffChunkFmt.Write(m_fileStream);
-    //        m_riffChunkFact.Write(m_fileStream);
-    //        RIFF_CHUNK_DATA riffData = new RIFF_CHUNK_DATA(m_riffChunkFact.value);
-    //        riffData.Write(m_fileStream);
-    //    }
+            m_fileStream.Seek(0, System.IO.SeekOrigin.Begin);
+            m_riffHdr.Write(m_fileStream);
+            m_riffChunkFmt.Write(m_fileStream);
+            m_riffChunkFact.Write(m_fileStream);
+            RIFF_CHUNK_DATA riffData = new RIFF_CHUNK_DATA(m_riffChunkFact.value);
+            riffData.Write(m_fileStream);
+        }
 
-    //    public void Write(uint[] buffer, int offset, int length)
-    //    {
-    //        m_fileStream.Seek(0, System.IO.SeekOrigin.End);
-    //        for (int i = 0; i < length; i++)
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(m_fileStream, buffer[i+offset]);
+        public void Write(uint[] buffer, int offset, int length)
+        {
+            m_fileStream.Seek(0, System.IO.SeekOrigin.End);
+            for (int i = 0; i < length; i++)
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(m_fileStream, buffer[i + offset]);
 
-    //        m_riffHdr.RiffSize = (uint)m_fileStream.Length-8;
-    //        m_riffChunkFact.value += (uint)length;
+            m_riffHdr.RiffSize = (uint)m_fileStream.Length - 8;
+            m_riffChunkFact.value += (uint)length;
 
-    //        m_fileStream.Seek(0, System.IO.SeekOrigin.Begin);
-    //        m_riffHdr.Write(m_fileStream);
-    //        m_riffChunkFmt.Write(m_fileStream);
-    //        m_riffChunkFact.Write(m_fileStream);
-    //        RIFF_CHUNK_DATA riffData = new RIFF_CHUNK_DATA(m_riffChunkFact.value * m_riffChunkFmt.wBlockAlign);
-    //        riffData.Write(m_fileStream);
-    //    }
-
-
-    //    public void  Dispose()
-    //    {
-    //        m_fileStream.Close();
-    //    }
+            m_fileStream.Seek(0, System.IO.SeekOrigin.Begin);
+            m_riffHdr.Write(m_fileStream);
+            m_riffChunkFmt.Write(m_fileStream);
+            m_riffChunkFact.Write(m_fileStream);
+            RIFF_CHUNK_DATA riffData = new RIFF_CHUNK_DATA(m_riffChunkFact.value * m_riffChunkFmt.wBlockAlign);
+            riffData.Write(m_fileStream);
+        }
 
 
-    //    private class RIFF_HDR      // size = 3*4 (align 4)
-    //    {
-    //        public UInt32 riff_id = BitConverter.ToUInt32(System.Text.Encoding.ASCII.GetBytes("RIFF"), 0);
-    //        public UInt32 RiffSize;  // data after riff_hdr length
-    //        public UInt32 wave_id = BitConverter.ToUInt32(System.Text.Encoding.ASCII.GetBytes("WAVE"), 0);
+        public void Dispose()
+        {
+            m_fileStream.Close();
+        }
 
-    //        public void Write(System.IO.FileStream stream)
-    //        {
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, riff_id);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, RiffSize);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wave_id);
-    //        }
 
-    //        public const uint Size = 3*4;
-    //    }
-    //    private class RIFF_CHUNK_FMT    // size = 2*4 + 0x12
-    //    {
-    //        public UInt32 id;	// identifier, e.g. "fmt " or "data"
-    //        public UInt32 len;	// remaining chunk length after header
+        private class RIFF_HDR      // size = 3*4 (align 4)
+        {
+            public UInt32 riff_id = BitConverter.ToUInt32(System.Text.Encoding.ASCII.GetBytes("RIFF"), 0);
+            public UInt32 RiffSize;  // data after riff_hdr length
+            public UInt32 wave_id = BitConverter.ToUInt32(System.Text.Encoding.ASCII.GetBytes("WAVE"), 0);
 
-    //        public UInt16 wFormatTag;         // Format category
-    //        public UInt16 wChannels;          // Number of channels
-    //        public UInt32 dwSamplesPerSec;   // Sampling rate
-    //        public UInt32 dwAvgBytesPerSec;  // For buffer estimation
-    //        public UInt16 wBlockAlign;        // Data block size
-    //        public UInt16 wBitsPerSample;     // Sample size
-    //        public UInt16 __zero = 0x0000;
+            public void Write(System.IO.FileStream stream)
+            {
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, riff_id);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, RiffSize);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wave_id);
+            }
 
-    //        public RIFF_CHUNK_FMT()
-    //        {
-    //            id = BitConverter.ToUInt32(System.Text.Encoding.ASCII.GetBytes("fmt "), 0);
-    //            len = 0x12;
-    //        }
+            public const uint Size = 3 * 4;
+        }
+        private class RIFF_CHUNK_FMT    // size = 2*4 + 0x12
+        {
+            public UInt32 id;	// identifier, e.g. "fmt " or "data"
+            public UInt32 len;	// remaining chunk length after header
 
-    //        public void Write(System.IO.FileStream stream)
-    //        {
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
+            public UInt16 wFormatTag;         // Format category
+            public UInt16 wChannels;          // Number of channels
+            public UInt32 dwSamplesPerSec;   // Sampling rate
+            public UInt32 dwAvgBytesPerSec;  // For buffer estimation
+            public UInt16 wBlockAlign;        // Data block size
+            public UInt16 wBitsPerSample;     // Sample size
+            public UInt16 __zero = 0x0000;
 
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wFormatTag);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wChannels);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, dwSamplesPerSec);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, dwAvgBytesPerSec);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wBlockAlign);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wBitsPerSample);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, __zero);
-    //        }
+            public RIFF_CHUNK_FMT()
+            {
+                id = BitConverter.ToUInt32(System.Text.Encoding.ASCII.GetBytes("fmt "), 0);
+                len = 0x12;
+            }
 
-    //        public const uint Size = 2*4 + 0x12;
-    //    }
-    //    private class RIFF_CHUNK_FACT    // size = 2*4 + 4
-    //    {
-    //        public UInt32 id;	// identifier, e.g. "fmt " or "data"
-    //        public UInt32 len;	// remaining chunk length after header
+            public void Write(System.IO.FileStream stream)
+            {
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
 
-    //        public UInt32 value;
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wFormatTag);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wChannels);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, dwSamplesPerSec);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, dwAvgBytesPerSec);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wBlockAlign);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, wBitsPerSample);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, __zero);
+            }
 
-    //        public RIFF_CHUNK_FACT()
-    //        {
-    //            id = BitConverter.ToUInt32(System.Text.Encoding.ASCII.GetBytes("fact"), 0);
-    //            len = 4;
-    //        }
+            public const uint Size = 2 * 4 + 0x12;
+        }
+        private class RIFF_CHUNK_FACT    // size = 2*4 + 4
+        {
+            public UInt32 id;	// identifier, e.g. "fmt " or "data"
+            public UInt32 len;	// remaining chunk length after header
 
-    //        public void Write(System.IO.FileStream stream)
-    //        {
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, value);
-    //        }
+            public UInt32 value;
 
-    //        public const uint Size = 2 * 4 + 4;
-    //    }
-    //    private class RIFF_CHUNK_DATA    // size = 2*4 + ...
-    //    {
-    //        public UInt32 id;	// identifier, e.g. "fmt " or "data"
-    //        public UInt32 len;	// remaining chunk length after header
+            public RIFF_CHUNK_FACT()
+            {
+                id = BitConverter.ToUInt32(System.Text.Encoding.ASCII.GetBytes("fact"), 0);
+                len = 4;
+            }
 
-    //        public RIFF_CHUNK_DATA(uint length)
-    //        {
-    //            id = BitConverter.ToUInt32(System.Text.Encoding.ASCII.GetBytes("data"), 0);
-    //            len = length;
-    //        }
+            public void Write(System.IO.FileStream stream)
+            {
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, value);
+            }
 
-    //        public void Write(System.IO.FileStream stream)
-    //        {
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
-    //            ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
-    //        }
+            public const uint Size = 2 * 4 + 4;
+        }
+        private class RIFF_CHUNK_DATA    // size = 2*4 + ...
+        {
+            public UInt32 id;	// identifier, e.g. "fmt " or "data"
+            public UInt32 len;	// remaining chunk length after header
 
-    //        public const uint Size = 2*4;
-    //    }
-    //}
+            public RIFF_CHUNK_DATA(uint length)
+            {
+                id = BitConverter.ToUInt32(System.Text.Encoding.ASCII.GetBytes("data"), 0);
+                len = length;
+            }
+
+            public void Write(System.IO.FileStream stream)
+            {
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, id);
+                ZXMAK2.Serializers.SnapshotSerializers.StreamHelper.Write(stream, len);
+            }
+
+            public const uint Size = 2 * 4;
+        }
+    }
+#endif
 }
