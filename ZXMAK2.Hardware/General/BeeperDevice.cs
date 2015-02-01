@@ -104,8 +104,8 @@ namespace ZXMAK2.Hardware.General
 
 		protected override void OnVolumeChanged(int oldVolume, int newVolume)
 		{
-			m_dacValue0 = 0;
-			m_dacValue1 = (ushort)((0x7FFF * newVolume) / 100);
+            m_dacValue0 = ushort.MinValue;
+            m_dacValue1 = (ushort)((ushort.MaxValue * newVolume) / 100);
 		}
 
         protected override void OnConfigLoad(XmlNode node)
