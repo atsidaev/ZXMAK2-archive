@@ -16,8 +16,10 @@ namespace ZXMAK2.Hardware
     {
         protected SoundDeviceBase()
         {
+            m_mix_l = 0x8000;
+            m_mix_r = 0x8000;
+            m_volume = 100;
             Category = BusDeviceCategory.Sound;
-            Volume = 100;
             FrameTactCount = 3500000 / 50;
             SampleRate = 44100;
         }
@@ -30,10 +32,10 @@ namespace ZXMAK2.Hardware
             m_cpu = bmgr.CPU;
             var ula = bmgr.FindDevice<IUlaDevice>();
             FrameTactCount = ula != null ? ula.FrameTactCount : 71680;
-            ApplyTimings(FrameTactCount * 50, SampleRate);
-
             bmgr.SubscribeBeginFrame(BeginFrame);
             bmgr.SubscribeEndFrame(EndFrame);
+            ApplyTimings(FrameTactCount * 50, SampleRate);
+            OnVolumeChanged(m_volume, m_volume);
         }
 
         //private WavSampleWriter m_wavWriter;
