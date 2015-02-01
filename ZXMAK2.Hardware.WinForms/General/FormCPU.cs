@@ -489,18 +489,19 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         private void menuLoadBlock_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog loadDialog = new OpenFileDialog())
+            using (var loadDialog = new OpenFileDialog())
             {
-                loadDialog.InitialDirectory = ".";
                 loadDialog.SupportMultiDottedExtensions = true;
                 loadDialog.Title = "Load Block...";
                 loadDialog.Filter = "All files (*.*)|*.*";
-                loadDialog.DefaultExt = "";
-                loadDialog.FileName = "";
+                loadDialog.DefaultExt = string.Empty;
+                loadDialog.FileName = null;
                 loadDialog.ShowReadOnly = false;
                 loadDialog.CheckFileExists = true;
-                if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                if (loadDialog.ShowDialog() != DialogResult.OK)
+                {
                     return;
+                }
 
                 FileInfo fileInfo = new FileInfo(loadDialog.FileName);
                 s_len = (int)fileInfo.Length;
@@ -528,17 +529,18 @@ namespace ZXMAK2.Hardware.WinForms.General
             if (!service.QueryValue("Save Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
                 return;
 
-            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            using (var saveDialog = new SaveFileDialog())
             {
-                saveDialog.InitialDirectory = ".";
                 saveDialog.SupportMultiDottedExtensions = true;
                 saveDialog.Title = "Save Block...";
                 saveDialog.Filter = "Binary Files (*.bin)|*.bin|All files (*.*)|*.*";
                 saveDialog.DefaultExt = "";
                 saveDialog.FileName = "";
                 saveDialog.OverwritePrompt = true;
-                if (saveDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                if (saveDialog.ShowDialog() != DialogResult.OK)
+                {
                     return;
+                }
 
                 byte[] data = new byte[s_len];
                 m_spectrum.ReadMemory((ushort)s_addr, data, 0, s_len);
