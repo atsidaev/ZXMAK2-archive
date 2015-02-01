@@ -19,14 +19,11 @@ namespace ZXMAK2.Hardware.Scorpion
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            m_memory = bmgr.FindDevice<IMemoryDevice>();
-
             bmgr.SubscribeWrIo(0x00FF, 0x00DD, WritePort);
         }
 
         #endregion
 
-        private IMemoryDevice m_memory;
         private int m_mult = 0;
 
 
