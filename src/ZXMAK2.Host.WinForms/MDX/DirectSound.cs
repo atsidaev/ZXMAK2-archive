@@ -20,7 +20,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
         private readonly Notify _notify;
         private readonly int _sampleRate;
 
-        private byte _zeroValue;
+        private uint _zeroValue;
         private int _bufferSize;
         private int _bufferCount;
 
@@ -50,7 +50,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
             }
             _bufferSize = bufferSize;
             _bufferCount = bufferCount;
-            _zeroValue = bitsPerSample == 8 ? (byte)128 : (byte)0;
+            _zeroValue = 0;
 
             _device = new Device();
             _device.SetCooperativeLevel(form, CooperativeLevel.Priority);
@@ -183,7 +183,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 for (var i = 0; i < length / 4; i++)
                 {
-                    dst[i] = lastSample;
+                    dst[i] = _lastSample == uint.MaxValue ? _zeroValue : _lastSample;
                 }
                 return;
             }
@@ -195,7 +195,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 //{
                 //    dst[i] = src[i];
                 //}
-                lastSample = dst[length / 4 - 1];
+                _lastSample = dst[length / 4 - 1];
             }
             lock (_fillQueue)
             {
@@ -206,7 +206,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         private readonly Queue<byte[]> _fillQueue;
         private readonly Queue<byte[]> _playQueue;
-        private uint lastSample;
+        private uint _lastSample = uint.MaxValue;
 
 
         private byte[] LockBuffer()
