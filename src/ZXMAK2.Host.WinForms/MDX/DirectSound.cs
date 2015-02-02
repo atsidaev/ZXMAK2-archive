@@ -15,18 +15,28 @@ namespace ZXMAK2.Host.WinForms.Mdx
 {
     public sealed unsafe class DirectSound : IHostSound
     {
+        #region Fields
+
         private readonly Device _device;
         private readonly SecondaryBuffer _soundBuffer;
         private readonly Notify _notify;
         private readonly int _sampleRate;
+        private readonly Queue<byte[]> _fillQueue;
+        private readonly Queue<byte[]> _playQueue;
+        private readonly AutoResetEvent _fillEvent = new AutoResetEvent(true);
+        private readonly AutoResetEvent _frameEvent = new AutoResetEvent(false);
+        private readonly AutoResetEvent _cancelEvent = new AutoResetEvent(false);
 
         private uint _zeroValue;
         private int _bufferSize;
         private int _bufferCount;
 
         private Thread _waveFillThread = null;
-        private readonly AutoResetEvent _fillEvent = new AutoResetEvent(true);
         private bool _isFinished;
+
+        private uint? _lastSample;
+
+        #endregion Fields
 
 
         public DirectSound(
@@ -178,24 +188,22 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     buf = _playQueue.Dequeue();
                 }
             }
-            uint* dst = (uint*)buffer;
+            var sampleCount = length / 4;
+            var pdst = (uint*)buffer;
             if (buf == null)
             {
-                for (var i = 0; i < length / 4; i++)
+                var sample = _lastSample.HasValue ? _lastSample.Value : _zeroValue;
+                for (var i = 0; i < sampleCount; i++)
                 {
-                    dst[i] = _lastSample == uint.MaxValue ? _zeroValue : _lastSample;
+                    pdst[i] = sample;
                 }
                 return;
             }
             fixed (byte* srcb = buf)
             {
-                uint* src = (uint*)srcb;
-                NativeMethods.CopyMemory(dst, src, length);
-                //for (var i = 0; i < length / 4; i++)
-                //{
-                //    dst[i] = src[i];
-                //}
-                _lastSample = dst[length / 4 - 1];
+                var psrc = (uint*)srcb;
+                NativeMethods.CopyMemory(pdst, psrc, length);
+                _lastSample = pdst[sampleCount - 1];
             }
             lock (_fillQueue)
             {
@@ -203,11 +211,6 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 _frameEvent.Set();
             }
         }
-
-        private readonly Queue<byte[]> _fillQueue;
-        private readonly Queue<byte[]> _playQueue;
-        private uint _lastSample = uint.MaxValue;
-
 
         private byte[] LockBuffer()
         {
@@ -229,23 +232,16 @@ namespace ZXMAK2.Host.WinForms.Mdx
             }
         }
 
-        public int QueueLoadState
+        public int GetQueueLoadState()
         {
-            get
+            lock (_playQueue)
             {
-                lock (_playQueue)
-                {
-                    return (int)(_playQueue.Count * 100.0 / _fillQueue.Count);
-                }
+                return (int)(_playQueue.Count * 100.0 / _fillQueue.Count);
             }
         }
 
 
         #region IHostSound
-
-        private readonly AutoResetEvent _frameEvent = new AutoResetEvent(false);
-        private readonly AutoResetEvent _cancelEvent = new AutoResetEvent(false);
-        private readonly Queue<byte[]> _frames = new Queue<byte[]>();
 
         public int SampleRate
         {
@@ -284,7 +280,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         #endregion IHostSound
 
-        private void Mix(byte[] dst, uint[][] bufferArray)
+        private static void Mix(byte[] dst, uint[][] bufferArray)
         {
             fixed (byte* pbdst = dst)
             {
