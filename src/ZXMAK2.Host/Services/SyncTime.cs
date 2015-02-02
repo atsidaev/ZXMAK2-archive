@@ -3,7 +3,7 @@ using System.Threading;
 using System.Diagnostics;
 
 
-namespace ZXMAK2.Engine
+namespace ZXMAK2.Host.Services
 {
     public sealed class SyncTime : IDisposable
     {
