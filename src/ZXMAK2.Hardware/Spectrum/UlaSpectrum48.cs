@@ -258,6 +258,7 @@ namespace ZXMAK2.Hardware.Spectrum
         protected override SpectrumRendererParams CreateSpectrumRendererParams()
         {
             var timing = base.CreateSpectrumRendererParams();
+            timing.c_ulaIntLength += 1;
             timing.c_ulaFirstPaperTact += 1;
             timing.c_ulaBorder4Tstage = (timing.c_ulaBorder4Tstage + 1) & 3;
             return timing;
