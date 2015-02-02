@@ -13,7 +13,7 @@ namespace ZXMAK2.Host.Xna4.Xna
     {
         #region Fields
 
-        private SyncTime m_timeSync;
+        private TimeSync m_timeSync;
         private IHostVideo m_video;
         private IHostSound m_sound;
 
@@ -25,7 +25,7 @@ namespace ZXMAK2.Host.Xna4.Xna
         public XnaHost(IHostVideo hostVideo)
         {
             m_video = hostVideo;
-            m_timeSync = new SyncTime();
+            m_timeSync = new TimeSync();
             
             var viewResolver = Locator.Resolve<IResolver>("View");
             if (viewResolver != null)
