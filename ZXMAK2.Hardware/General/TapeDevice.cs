@@ -128,7 +128,8 @@ namespace ZXMAK2.Hardware.General
             m_cpu = bmgr.CPU;
             m_memory = bmgr.FindDevice<IMemoryDevice>();
 
-            bmgr.SubscribeRdIo(Mask, Port & Mask, readPortFE);
+            bmgr.SubscribeRdIo(Mask, Port & Mask, ReadPortFe);
+            bmgr.SubscribeWrIo(Mask, Port & Mask, WritePortFe);
 
             bmgr.SubscribePreCycle(busPreCycle);
 
@@ -199,7 +200,23 @@ namespace ZXMAK2.Hardware.General
 
         #region Bus Handlers
 
-        private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
+        private void WritePortFe(ushort addr, byte value, ref bool iorqge)
+        {
+            if (!iorqge || m_memory.DOSEN)
+            {
+                return;
+            }
+            //iorqge = false;
+            if (!m_isPlay)
+            {
+                // http://www.worldofspectrum.org/faq/reference/48kreference.htm
+                // issue 2: Ear
+                // issue 3: Ear | Mic
+                m_state = (value & 0x10) != 0;
+            }
+        }
+
+        private void ReadPortFe(ushort addr, ref byte value, ref bool iorqge)
         {
             if (!iorqge || m_memory.DOSEN)
             {
@@ -207,7 +224,11 @@ namespace ZXMAK2.Hardware.General
             }
             //iorqge = false;
 
-            if (tape_bit(m_cpu.Tact))
+            if (m_isPlay)
+            {
+                tape_bit(m_cpu.Tact);
+            }
+            if (m_state)
             {
                 value |= (byte)m_bitMask;
             }
