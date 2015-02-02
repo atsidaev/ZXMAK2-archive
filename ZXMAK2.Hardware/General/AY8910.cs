@@ -149,6 +149,8 @@ namespace ZXMAK2.Hardware.General
         {
             base.OnConfigLoad(node);
             m_chip.ChipFrequency = Utils.GetXmlAttributeAsInt32(node, "frequency", m_chip.ChipFrequency);
+            m_chip.AmpType = Utils.GetXmlAttributeAsEnum<AmpType>(node, "ampType", m_chip.AmpType);
+            m_chip.PanType = Utils.GetXmlAttributeAsEnum<PanType>(node, "panType", m_chip.PanType);
             MaskAddrReg = Utils.GetXmlAttributeAsInt32(node, "maskAddrReg", MaskAddrReg);
             MaskDataReg = Utils.GetXmlAttributeAsInt32(node, "maskDataReg", MaskDataReg);
             PortAddrReg = Utils.GetXmlAttributeAsInt32(node, "portAddrReg", PortAddrReg);
@@ -159,6 +161,8 @@ namespace ZXMAK2.Hardware.General
         {
             base.OnConfigSave(node);
             Utils.SetXmlAttribute(node, "frequency", m_chip.ChipFrequency);
+            Utils.SetXmlAttributeAsEnum(node, "ampType", m_chip.AmpType);
+            Utils.SetXmlAttributeAsEnum(node, "panType", m_chip.PanType);
             Utils.SetXmlAttribute(node, "maskAddrReg", MaskAddrReg);
             Utils.SetXmlAttribute(node, "maskDataReg", MaskDataReg);
             Utils.SetXmlAttribute(node, "portAddrReg", PortAddrReg);
