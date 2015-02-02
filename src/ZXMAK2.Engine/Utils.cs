@@ -13,81 +13,108 @@ namespace ZXMAK2.Engine
 
         public static void SetXmlAttribute(XmlNode node, string name, Int32 value)
         {
-            XmlAttribute attr = node.OwnerDocument.CreateAttribute(name);
-            attr.Value = value.ToString(CultureInfo.InvariantCulture);
-            node.Attributes.Append(attr);
+            var strValue = string.Format(CultureInfo.InvariantCulture, "{0}", value);
+            SetXmlAttribute(node, name, strValue);
         }
 
         public static void SetXmlAttribute(XmlNode node, string name, UInt32 value)
         {
-            XmlAttribute attr = node.OwnerDocument.CreateAttribute(name);
-            attr.Value = value.ToString(CultureInfo.InvariantCulture);
-            node.Attributes.Append(attr);
+            var strValue = string.Format(CultureInfo.InvariantCulture, "{0}", value);
+            SetXmlAttribute(node, name, strValue);
         }
 
         public static void SetXmlAttribute(XmlNode node, string name, string value)
         {
-            XmlAttribute attr = node.OwnerDocument.CreateAttribute(name);
+            var attr = node.OwnerDocument.CreateAttribute(name);
             attr.Value = value;
             node.Attributes.Append(attr);
         }
 
         public static void SetXmlAttribute(XmlNode node, string name, bool value)
         {
-            XmlAttribute attr = node.OwnerDocument.CreateAttribute(name);
-            attr.Value = value.ToString();
-            node.Attributes.Append(attr);
+            var strValue = string.Format(CultureInfo.InvariantCulture, "{0}", value);
+            SetXmlAttribute(node, name, strValue);
         }
 
-        public static Int32 GetXmlAttributeAsInt32(XmlNode itemNode, string name, int defValue)
+        public static void SetXmlAttributeAsEnum<TEnum>(XmlNode node, string name, TEnum value)
+            where TEnum : struct
         {
-            var text = GetXmlAttributeAsString(itemNode, name, null);
-            if (text != null)
+            var strValue = string.Format(CultureInfo.InvariantCulture, "{0}", value);
+            SetXmlAttribute(node, name, strValue);
+        }
+
+        public static Int32 GetXmlAttributeAsInt32(XmlNode node, string name, int defValue)
+        {
+            var strValue = GetXmlAttributeAsString(node, name, null);
+            if (strValue == null)
             {
-                var result = TryParseSpectrumInt32(text);
-                if (result.HasValue)
-                {
-                    return result.Value;
-                }
-                throw new FormatException(
-                    string.Format("Invalid attribute value: {0}=\"{1}\"", 
-                        name, 
-                        text));
+                return defValue;
             }
+            var value = TryParseSpectrumInt32(strValue);
+            if (value.HasValue)
+            {
+                return value.Value;
+            }            
+            Logger.Warn("Unknown int value: {0}", strValue);
             return defValue;
         }
 
-        public static uint GetXmlAttributeAsUInt32(XmlNode itemNode, string name, uint defValue)
+        public static uint GetXmlAttributeAsUInt32(XmlNode node, string name, uint defValue)
         {
-            var text = GetXmlAttributeAsString(itemNode, name, null);
-            if (text != null)
+            var strValue = GetXmlAttributeAsString(node, name, null);
+            if (strValue == null)
             {
-                var result = TryParseSpectrumUInt32(text);
-                if (result.HasValue)
-                {
-                    return result.Value;
-                }
-                throw new FormatException(
-                    string.Format("Invalid attribute value: {0}=\"{1}\"",
-                        name,
-                        text));
+                return defValue;
             }
+            var value = TryParseSpectrumUInt32(strValue);
+            if (value.HasValue)
+            {
+                return value.Value;
+            }            
+            Logger.Warn("Unknown uint value: {0}", strValue);
             return defValue;
         }
 
-        public static bool GetXmlAttributeAsBool(XmlNode itemNode, string name, bool defValue)
+        public static bool GetXmlAttributeAsBool(XmlNode node, string name, bool defValue)
         {
-            bool result = defValue;
-            if (itemNode.Attributes[name] != null)
-                if (bool.TryParse(itemNode.Attributes[name].InnerText, out result))
-                    return result;
+            var strValue = GetXmlAttributeAsString(node, name, null);
+            if (strValue == null)
+            {
+                return defValue;
+            }
+            bool value;
+            if (bool.TryParse(strValue, out value))
+            {
+                return value;
+            }
+            Logger.Warn("Unknown bool value: {0}", strValue);
             return defValue;
         }
 
         public static string GetXmlAttributeAsString(XmlNode itemNode, string name, string defValue)
         {
-            if (itemNode.Attributes[name] != null)
-                return itemNode.Attributes[name].InnerText;
+            var attr = itemNode.Attributes[name];
+            if (attr == null)
+            {
+                return defValue;
+            }
+            return attr.InnerText;
+        }
+
+        public static TEnum GetXmlAttributeAsEnum<TEnum>(XmlNode node, string name, TEnum defValue)
+            where TEnum : struct
+        {
+            var strValue = GetXmlAttributeAsString(node, name, null);
+            if (strValue == null)
+            {
+                return defValue;
+            }
+            TEnum value;
+            if (Enum.TryParse<TEnum>(strValue, true, out value))
+            {
+                return value;
+            }
+            Logger.Warn("Unknown enum {0} value: {1}", typeof(TEnum).FullName, strValue);
             return defValue;
         }
 
