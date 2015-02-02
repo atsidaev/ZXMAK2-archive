@@ -269,17 +269,6 @@ namespace ZXMAK2.Host.WinForms.Views
         {
             base.OnShown(e);
             m_allowSaveSize = true;
-
-            if (renderVideo.IsReadScanlineSupported)
-            {
-                menuViewFrameSyncVideo.ToolTipText = null;
-                menuViewFrameSyncVideo.Enabled = true;
-            }
-            else
-            {
-                menuViewFrameSyncVideo.ToolTipText = "ReadScanLine capability is not supported by your videocard!";
-                menuViewFrameSyncVideo.Enabled = false;
-            }
             NativeMethods.TimeBeginPeriod(1);
         }
 
@@ -745,6 +734,11 @@ namespace ZXMAK2.Host.WinForms.Views
 
         #region Menu Handlers
 
+        private static bool CanExecute(ICommand command, object arg)
+        {
+            return command != null && command.CanExecute(arg);
+        }
+
         private void menuView_DropDownOpening(object sender, EventArgs e)
         {
             OnRequestFrame();
@@ -757,6 +751,9 @@ namespace ZXMAK2.Host.WinForms.Views
             menuViewSizeX3.Checked = !m_fullScreen && renderVideo.Size == new Size(videoSize.Width * 3, videoSize.Height * 3);
             menuViewSizeX4.Enabled = m_fullScreen || renderVideo.Size != new Size(videoSize.Width * 4, videoSize.Height * 4);
             menuViewSizeX4.Checked = !m_fullScreen && renderVideo.Size == new Size(videoSize.Width * 4, videoSize.Height * 4);
+            menuViewFrameSyncTime.Enabled = CanExecute(CommandViewSyncSource, SyncSource.Time);
+            menuViewFrameSyncSound.Enabled = CanExecute(CommandViewSyncSource, SyncSource.Sound);
+            menuViewFrameSyncVideo.Enabled = CanExecute(CommandViewSyncSource, SyncSource.Video);
         }
 
         private void menuViewCustomize_Click(object sender, EventArgs e)

@@ -251,6 +251,12 @@ namespace ZXMAK2.Host.WinForms.Mdx
             get { return _sampleRate; }
         }
 
+        public bool IsSyncSupported 
+        {
+            get { return true; }
+        }
+
+
         public void WaitFrame()
         {
             _frameEvent.Reset();

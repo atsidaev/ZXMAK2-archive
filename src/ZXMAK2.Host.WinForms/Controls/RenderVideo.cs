@@ -143,7 +143,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         public bool DisplayIcon { get; set; }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool IsReadScanlineSupported { get; private set; }
+        public bool IsSyncSupported { get; private set; }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Size FrameSize { get; private set; }
@@ -204,7 +204,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             _waitEvent.Reset();
             try
             {
-                if (_isCancelWait || !IsReadScanlineSupported)
+                if (_isCancelWait || !IsSyncSupported)
                 {
                     return;
                 }
@@ -344,7 +344,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private void OnCreateDeviceInt()
         {
-            IsReadScanlineSupported = D3D.DeviceCaps.DriverCaps.ReadScanLine;
+            IsSyncSupported = D3D.DeviceCaps.DriverCaps.ReadScanLine;
             _sprite = new D3dSprite(D3D);
             _iconSprite = new D3dSprite(D3D);
         }
