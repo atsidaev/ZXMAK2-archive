@@ -13,7 +13,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
     {
         #region Fields
 
-        private SyncTime m_timeSync;
+        private TimeSync m_timeSync;
         private IHostVideo m_video;
         private IHostSound m_sound;
         private IHostKeyboard m_keyboard;
@@ -28,7 +28,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
         public MdxHost(Form form, IHostVideo hostVideo)
         {
             m_video = hostVideo;
-            m_timeSync = new SyncTime();
+            m_timeSync = new TimeSync();
             var viewResolver = Locator.TryResolve<IResolver>("View");
             if (viewResolver != null)
             {
