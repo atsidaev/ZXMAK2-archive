@@ -94,14 +94,14 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 case SyncSource.None:
                     return true;
                 case SyncSource.Time:
-                    var time = m_timeSync;
-                    return time != null;
+                    var timeSync = m_timeSync;
+                    return timeSync != null && timeSync.IsSyncSupported;
                 case SyncSource.Sound:
                     var sound = m_sound;
-                    return sound != null;
+                    return sound != null && sound.IsSyncSupported;
                 case SyncSource.Video:
                     var video = m_video;
-                    return video != null;
+                    return video != null && video.IsSyncSupported;
                 default:
                     return false;
             }

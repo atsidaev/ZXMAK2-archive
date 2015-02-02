@@ -23,6 +23,11 @@ namespace ZXMAK2.Host.Services
             _waitEvent.Dispose();
         }
 
+        public bool IsSyncSupported
+        {
+            get { return true; }
+        }
+
         public void WaitFrame()
         {
             _waitEvent.Reset();

@@ -71,6 +71,11 @@ namespace ZXMAK2.Host.Xna4.Xna
             get { return m_sampleRate; }
         }
 
+        public bool IsSyncSupported
+        {
+            get { return true; }
+        }
+
         public void WaitFrame()
         {
             m_waitEvent.Reset();
