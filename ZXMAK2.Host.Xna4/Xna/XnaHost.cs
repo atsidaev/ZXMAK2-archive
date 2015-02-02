@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Xna.Framework.Input;
-using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Dependency;
-using ZXMAK2.Engine;
-using ZXMAK2.Engine.Entities;
+using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Entities;
+using ZXMAK2.Host.Services;
 
 
 namespace ZXMAK2.Host.Xna4.Xna
