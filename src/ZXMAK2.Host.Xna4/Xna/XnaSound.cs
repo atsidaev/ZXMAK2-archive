@@ -104,14 +104,18 @@ namespace ZXMAK2.Host.Xna4.Xna
             Thread.MemoryBarrier();
         }
 
-        public void PushFrame(uint[][] frameBuffers)
+        public void PushFrame(ISoundFrame soundFrame)
         {
+            if (soundFrame == null)
+            {
+                return;
+            }
             var buffer = LockBuffer();
             if (buffer == null)
             {
                 return;
             }
-            Mix(buffer, frameBuffers);
+            Mix(buffer, soundFrame.Buffers);
             UnlockBuffer(buffer);
         }
 
