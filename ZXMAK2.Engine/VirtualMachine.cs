@@ -22,7 +22,6 @@ namespace ZXMAK2.Engine
 
         private readonly object m_sync = new object();
         private readonly AutoResetEvent m_startedEvent = new AutoResetEvent(false);
-        private readonly SyncTime m_syncTime = new SyncTime();
         private Thread m_thread = null;
         private IVideoData m_blankData = new VideoData(320, 240, 1F);
 
@@ -43,8 +42,6 @@ namespace ZXMAK2.Engine
             get { return Spectrum.FrameStartTact; } 
         }
 
-        public SyncSource SyncSource { get; set; }
-
         #endregion Fields
 
 
@@ -53,25 +50,19 @@ namespace ZXMAK2.Engine
         public unsafe VirtualMachine(IHost host, ICommandManager commandManager)
         {
             m_host = host;
-            SyncSource = SyncSource.Sound;
             Spectrum = new Spectrum();
             Spectrum.UpdateState += OnUpdateState;
             Spectrum.Breakpoint += OnBreakpoint;
             Spectrum.BusManager.FrameReady += Bus_OnFrameReady;
             Spectrum.BusManager.CommandManager = commandManager;
             Spectrum.BusManager.ConfigChanged += BusManager_OnConfigChanged;
-            var hostSound = host.Sound;
-            if (hostSound != null)
-            {
-                Spectrum.BusManager.SampleRate = hostSound.SampleRate;
-            }
+            Spectrum.BusManager.SampleRate = host.GetSampleRate();
         }
 
         public void Dispose()
         {
             DoStop();
             Spectrum.BusManager.Disconnect();
-            m_syncTime.Dispose();
             m_startedEvent.Dispose();
         }
 
@@ -207,40 +198,39 @@ namespace ZXMAK2.Engine
         private uint[][] m_soundBuffers;
         private IUlaDevice m_ula;
 
-        private void OnUpdateSound()
-        {
-            var host = m_host;
-            var sound = host != null ? host.Sound : null;
-            if (sound == null || m_soundBuffers == null)
-            {
-                return;
-            }
-            sound.PushFrame(m_soundBuffers);
-        }
-
         public void RequestFrame()
         {
-            OnUpdateVideo();
+            PushFrame();
         }
 
-        private void OnUpdateVideo(bool isRequested = true)
+        private void PushFrame(bool isRequested = true)
         {
             var host = m_host;
-            var video = host != null ? host.Video : null;
-            if (video == null)
+            if (host == null)
             {
                 return;
             }
             var ula = m_ula ?? Spectrum.BusManager.FindDevice<IUlaDevice>();
             var videoData = ula != null && ula.VideoData != null ? ula.VideoData : m_blankData;
-            m_host.Video.PushFrame(
-                new VideoFrame(
-                    videoData,
-                    Spectrum.BusManager.IconDescriptorArray,
-                    DebugFrameStartTact,
-                    m_instantUpdateTime,
-                    m_instantRenderTime),
-                isRequested);
+            var videoFrame = new VideoFrame(
+                videoData,
+                Spectrum.BusManager.IconDescriptorArray,
+                DebugFrameStartTact,
+                m_instantUpdateTime,
+                m_instantRenderTime);
+            if (isRequested)
+            {
+                m_host.PushFrame(videoFrame, null, isRequested);
+            }
+            var soundFrame = default(ISoundFrame);
+            var soundData = m_soundBuffers;
+            if (soundData != null)
+            {
+                soundFrame = new SoundFrame(
+                    Spectrum.BusManager.SampleRate,
+                    soundData);
+            }
+            m_host.PushFrame(videoFrame, soundFrame, isRequested);
         }
 
         private long _renderTime;
@@ -253,31 +243,7 @@ namespace ZXMAK2.Engine
                 return;
             }
             var startTime = Stopwatch.GetTimestamp();
-            // frame sync
-            // need to call before executeFrame
-            // because first action will be PushFrame
-            switch (SyncSource)
-            {
-                case SyncSource.Time:
-                    m_syncTime.WaitFrame();
-                    break;
-                case SyncSource.Sound:
-                    var sound = m_host.Sound;
-                    if (sound != null)
-                    {
-                        sound.WaitFrame();
-                    }
-                    break;
-                case SyncSource.Video:
-                    var video = m_host.Video;
-                    if (video != null)
-                    {
-                        video.WaitFrame();
-                    }
-                    break;
-            }
-            OnUpdateVideo(false);
-            OnUpdateSound();
+            PushFrame(false);
             _renderTime = Stopwatch.GetTimestamp() - startTime;
         }
 
@@ -297,7 +263,7 @@ namespace ZXMAK2.Engine
             {
                 ula.Flush();
             }
-            OnUpdateVideo();
+            PushFrame();
         }
 
         private void OnBreakpoint(object sender, EventArgs e)
@@ -386,7 +352,7 @@ namespace ZXMAK2.Engine
                     DoRun();
                 }
             }
-            OnUpdateVideo();
+            PushFrame();
         }
 
         public void DoNmi()
@@ -402,7 +368,7 @@ namespace ZXMAK2.Engine
                     DoRun();
                 }
             }
-            OnUpdateVideo();
+            PushFrame();
         }
 
         public void DoStepInto()
@@ -411,7 +377,7 @@ namespace ZXMAK2.Engine
             {
                 Spectrum.DebugStepInto();
             }
-            OnUpdateVideo();
+            PushFrame();
         }
 
         public void DoStepOver()
@@ -420,7 +386,7 @@ namespace ZXMAK2.Engine
             {
                 Spectrum.DebugStepOver();
             }
-            OnUpdateVideo();
+            PushFrame();
         }
 
         public void DoRun()
@@ -455,17 +421,10 @@ namespace ZXMAK2.Engine
                 }
                 Spectrum.IsRunning = false;
                 var host = m_host;
-                var sound = host != null ? host.Sound : null;
-                if (sound != null)
+                if (host != null)
                 {
-                    sound.CancelWait();
+                    host.CancelPush();
                 }
-                var video = host != null ? host.Video : null;
-                if (video != null)
-                {
-                    video.CancelWait();
-                }
-                m_syncTime.CancelWait();
                 thread = m_thread;
                 m_thread = null;
             }
@@ -473,7 +432,7 @@ namespace ZXMAK2.Engine
             {
                 thread.Join();
             }
-            OnUpdateVideo();
+            PushFrame();
         }
 
         public byte ReadMemory(ushort addr)
@@ -514,7 +473,7 @@ namespace ZXMAK2.Engine
                     memory.WRMEM_DBG(ptr, data[offset + i]);
                 }
             }
-            OnUpdateVideo();
+            PushFrame();
         }
 
         public void AddBreakpoint(Breakpoint bp)

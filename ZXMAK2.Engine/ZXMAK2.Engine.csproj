@@ -57,7 +57,6 @@
     <Compile Include="Entities\PsgPortState.cs" />
     <Compile Include="Entities\RomId.cs" />
     <Compile Include="Entities\RzxFrame.cs" />
-    <Compile Include="Entities\SyncSource.cs" />
     <Compile Include="FpsMonitor.cs" />
     <Compile Include="InputAggregator.cs" />
     <Compile Include="Interfaces\IPsgDevice.cs" />
@@ -115,7 +114,6 @@
     <Compile Include="Serializers\TapeSerializers\TzxSerializer.cs" />
     <Compile Include="Serializers\TapeSerializers\WavSerializer.cs" />
     <Compile Include="Spectrum.cs" />
-    <Compile Include="SyncTime.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VirtualMachine.cs" />
   </ItemGroup>

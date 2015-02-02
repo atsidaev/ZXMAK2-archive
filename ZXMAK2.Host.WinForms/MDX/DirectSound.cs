@@ -268,14 +268,18 @@ namespace ZXMAK2.Host.WinForms.Mdx
             _cancelEvent.Set();
         }
 
-        public void PushFrame(uint[][] frameBuffers)
+        public void PushFrame(ISoundFrame soundFrame)
         {
+            if (soundFrame == null)
+            {
+                return;
+            }
             var buffer = LockBuffer();
             if (buffer == null)
             {
                 return;
             }
-            Mix(buffer, frameBuffers);
+            Mix(buffer, soundFrame.Buffers);
             UnlockBuffer(buffer);
         }
 

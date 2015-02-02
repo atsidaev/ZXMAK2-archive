@@ -24,7 +24,7 @@ namespace ZXMAK2.Host.Presentation
         private readonly IMainView m_view;
         private readonly string m_startupImage;
         private VirtualMachine m_vm;
-        private SyncSource m_syncSource;
+        private SyncSource m_syncSource;    // temp storage for maxSpeed
         
         
         public MainPresenter(
@@ -96,8 +96,11 @@ namespace ZXMAK2.Host.Presentation
             m_vm = new VirtualMachine(m_view.Host, m_view.CommandManager);
             m_vm.Init();
             m_vm.UpdateState += VirtualMachine_OnUpdateState;
-            m_syncSource = m_vm.SyncSource;
-
+            var host = m_view != null ? m_view.Host : null;
+            if (host != null)
+            {
+                m_syncSource = host.SyncSource;
+            }
             m_view.Title = string.Empty;
             var fileName = Path.Combine(
                 Utils.GetAppDataFolder(),
@@ -149,7 +152,7 @@ namespace ZXMAK2.Host.Presentation
             CommandViewFullScreen = new CommandDelegate(CommandViewFullScreen_OnExecute);
             CommandViewSyncSource = new CommandDelegate(CommandViewSyncSource_OnExecute, CommandViewSyncSource_OnCanExecute);
             CommandVmPause = new CommandDelegate(CommandVmPause_OnExecute);
-            CommandVmMaxSpeed = new CommandDelegate(CommandVmMaxSpeed_OnExecute);
+            CommandVmMaxSpeed = new CommandDelegate(CommandVmMaxSpeed_OnExecute, CommandVmMaxSpeed_OnCanExecute);
             CommandVmWarmReset = new CommandDelegate(CommandVmWarmReset_OnExecute);
             CommandVmNmi = new CommandDelegate(CommandVmNmi_OnExecute);
             CommandVmSettings = new CommandDelegate(CommandVmSettings_OnExecute, CommandVmSettings_OnCanExecute);
@@ -262,7 +265,10 @@ namespace ZXMAK2.Host.Presentation
 
         private bool CommandViewSyncSource_OnCanExecute(object objState)
         {
-            return objState is SyncSource;
+            return objState is SyncSource && 
+                m_view != null &&
+                m_view.Host != null &&
+                m_view.Host.CheckSyncSourceSupported((SyncSource)objState);
         }
 
         private void CommandViewSyncSource_OnExecute(object objState)
@@ -272,7 +278,7 @@ namespace ZXMAK2.Host.Presentation
                 return;
             }
             m_syncSource = (SyncSource)objState;
-            m_vm.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None : m_syncSource;
+            m_view.Host.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None : m_syncSource;
         }
 
         private void CommandVmPause_OnExecute()
@@ -291,17 +297,24 @@ namespace ZXMAK2.Host.Presentation
             }
         }
 
-        private void CommandVmMaxSpeed_OnExecute(Object objState)
+        private bool CommandVmMaxSpeed_OnCanExecute(object objState)
         {
-            var state = objState as bool?;
-            var value = CommandVmMaxSpeed.Checked;
-            value = state.HasValue ? state.Value : !value;
-            CommandVmMaxSpeed.Checked = value;
-            if (m_vm == null)
+            return (objState is bool? || objState==null) &&
+                m_view != null &&
+                m_view.Host != null;
+        }
+
+        private void CommandVmMaxSpeed_OnExecute(object objState)
+        {
+            if (!CommandVmMaxSpeed_OnCanExecute(objState))
             {
                 return;
             }
-            m_vm.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None : m_syncSource;
+            var state = (bool?)objState;
+            var value = CommandVmMaxSpeed.Checked;
+            value = state.HasValue ? state.Value : !value;
+            CommandVmMaxSpeed.Checked = value;
+            m_view.Host.SyncSource = CommandVmMaxSpeed.Checked ? SyncSource.None : m_syncSource;
             //applyRenderSetting();  ???
         }
 
