@@ -20,20 +20,18 @@ namespace ZXMAK2.Host.WinForms.Mdx
         private readonly Device _device;
         private readonly SecondaryBuffer _soundBuffer;
         private readonly Notify _notify;
-        private readonly int _sampleRate;
-        private readonly Queue<byte[]> _fillQueue;
-        private readonly Queue<byte[]> _playQueue;
+        private readonly Queue<byte[]> _fillQueue = new Queue<byte[]>();
+        private readonly Queue<byte[]> _playQueue = new Queue<byte[]>();
         private readonly AutoResetEvent _fillEvent = new AutoResetEvent(true);
         private readonly AutoResetEvent _frameEvent = new AutoResetEvent(false);
         private readonly AutoResetEvent _cancelEvent = new AutoResetEvent(false);
-
-        private uint _zeroValue;
-        private int _bufferSize;
-        private int _bufferCount;
+        private readonly int _sampleRate;
+        private readonly int _bufferSize;
+        private readonly int _bufferCount;
+        private readonly uint _zeroValue;
 
         private Thread _waveFillThread = null;
         private bool _isFinished;
-
         private uint? _lastSample;
 
         #endregion Fields
@@ -49,8 +47,6 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 throw new ArgumentOutOfRangeException("sampleRate", "Sample rate must be a multiple of 50!");
             }
             _sampleRate = sampleRate;
-            _fillQueue = new Queue<byte[]>(bufferCount);
-            _playQueue = new Queue<byte[]>(bufferCount);
             var channels = (short)2;
             var bitsPerSample = (short)16;
             var bufferSize = sampleRate * (bitsPerSample / 8) * channels / 50;
@@ -95,7 +91,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
             _waveFillThread = new Thread(new ThreadStart(WaveFillThreadProc));
             _waveFillThread.IsBackground = true;
-            _waveFillThread.Name = "DirectSound.WaveFillThreadProc";
+            _waveFillThread.Name = "WavePlay";
             _waveFillThread.Priority = ThreadPriority.Highest;
             _waveFillThread.Start();
         }
