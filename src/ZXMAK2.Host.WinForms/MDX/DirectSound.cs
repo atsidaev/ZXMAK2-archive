@@ -3,6 +3,7 @@
 /// Date: 26.03.2008
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectSound;
@@ -20,8 +21,8 @@ namespace ZXMAK2.Host.WinForms.Mdx
         private readonly Device _device;
         private readonly SecondaryBuffer _soundBuffer;
         private readonly Notify _notify;
-        private readonly Queue<byte[]> _fillQueue = new Queue<byte[]>();
-        private readonly Queue<byte[]> _playQueue = new Queue<byte[]>();
+        private readonly ConcurrentQueue<uint[]> _fillQueue = new ConcurrentQueue<uint[]>();
+        private readonly ConcurrentQueue<uint[]> _playQueue = new ConcurrentQueue<uint[]>();
         private readonly AutoResetEvent _fillEvent = new AutoResetEvent(true);
         private readonly AutoResetEvent _frameEvent = new AutoResetEvent(false);
         private readonly AutoResetEvent _cancelEvent = new AutoResetEvent(false);
@@ -30,7 +31,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
         private readonly int _bufferCount;
         private readonly uint _zeroValue;
 
-        private Thread _waveFillThread = null;
+        private Thread _wavePlayThread;
         private bool _isFinished;
         private uint? _lastSample;
 
@@ -47,12 +48,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 throw new ArgumentOutOfRangeException("sampleRate", "Sample rate must be a multiple of 50!");
             }
             _sampleRate = sampleRate;
-            var channels = (short)2;
-            var bitsPerSample = (short)16;
-            var bufferSize = sampleRate * (bitsPerSample / 8) * channels / 50;
+            var bufferSize = sampleRate / 50;
             for (int i = 0; i < bufferCount; i++)
             {
-                _fillQueue.Enqueue(new byte[bufferSize]);
+                _fillQueue.Enqueue(new uint[bufferSize]);
             }
             _bufferSize = bufferSize;
             _bufferCount = bufferCount;
@@ -61,9 +60,13 @@ namespace ZXMAK2.Host.WinForms.Mdx
             _device = new Device();
             _device.SetCooperativeLevel(form, CooperativeLevel.Priority);
 
+            // we always use 16 bit stereo (uint per sample)
+            const short channels = 2;
+            const short bitsPerSample = 16;
+            const int sampleSize = 4; // channels * (bitsPerSample / 8);
             var wf = new WaveFormat();
             wf.FormatTag = WaveFormatTag.Pcm;
-            wf.SamplesPerSecond = sampleRate;
+            wf.SamplesPerSecond = _sampleRate;
             wf.BitsPerSample = bitsPerSample;
             wf.Channels = channels;
             wf.BlockAlign = (short)(wf.Channels * (wf.BitsPerSample / 8));
@@ -72,10 +75,9 @@ namespace ZXMAK2.Host.WinForms.Mdx
             // Create a buffer
             using (var bufferDesc = new BufferDescription(wf))
             {
-                bufferDesc.BufferBytes = _bufferSize * _bufferCount;
+                bufferDesc.BufferBytes = _bufferSize * sampleSize * _bufferCount;
                 bufferDesc.ControlPositionNotify = true;
                 bufferDesc.GlobalFocus = true;
-
                 _soundBuffer = new SecondaryBuffer(bufferDesc, _device);
             }
 
@@ -84,38 +86,38 @@ namespace ZXMAK2.Host.WinForms.Mdx
             for (int i = 0; i < posNotify.Length; i++)
             {
                 posNotify[i] = new BufferPositionNotify();
-                posNotify[i].Offset = i * _bufferSize;
+                posNotify[i].Offset = i * _bufferSize * sampleSize;
                 posNotify[i].EventNotifyHandle = _fillEvent.SafeWaitHandle.DangerousGetHandle();
             }
             _notify.SetNotificationPositions(posNotify);
 
-            _waveFillThread = new Thread(new ThreadStart(WaveFillThreadProc));
-            _waveFillThread.IsBackground = true;
-            _waveFillThread.Name = "WavePlay";
-            _waveFillThread.Priority = ThreadPriority.Highest;
-            _waveFillThread.Start();
+            _wavePlayThread = new Thread(WavePlayThreadProc);
+            _wavePlayThread.IsBackground = true;
+            _wavePlayThread.Name = "WavePlay";
+            _wavePlayThread.Priority = ThreadPriority.Highest;
+            _wavePlayThread.Start();
         }
 
         public void Dispose()
         {
-            if (_waveFillThread == null)
+            if (_wavePlayThread == null)
             {
                 return;
             }
             try
             {
                 _isFinished = true;
-                if (_soundBuffer != null && _soundBuffer.Status.Playing)
-                {
-                    _soundBuffer.Stop();
-                }
+                Thread.MemoryBarrier();
                 _fillEvent.Set();
                 _cancelEvent.Set();
-
-                _waveFillThread.Join();
+                _wavePlayThread.Join();
 
                 if (_soundBuffer != null)
                 {
+                    if (_soundBuffer.Status.Playing)
+                    {
+                        _soundBuffer.Stop();
+                    }
                     _soundBuffer.Dispose();
                 }
                 if (_notify != null)
@@ -141,100 +143,105 @@ namespace ZXMAK2.Host.WinForms.Mdx
             }
             finally
             {
-                _waveFillThread = null;
+                _wavePlayThread = null;
             }
         }
 
-        private void WaveFillThreadProc()
+
+        #region WavePlay
+
+        private void WavePlayThreadProc()
         {
-            var lastWrittenBuffer = -1;
-            var sampleData = new byte[_bufferSize];
-            fixed (byte* lpSampleData = sampleData)
+            try
             {
+                _soundBuffer.Play(0, BufferPlayFlags.Looping);
                 try
                 {
-                    _soundBuffer.Play(0, BufferPlayFlags.Looping);
-                    while (!_isFinished)
+                    var playingBuffer = new uint[_bufferSize];
+                    fixed (uint* lpBuffer = playingBuffer)
                     {
-                        _fillEvent.WaitOne();
-                        var stIndex = (lastWrittenBuffer + 1) % _bufferCount;
-                        var playingIndex = (_soundBuffer.PlayPosition / _bufferSize);
-                        for (var i = stIndex; i != playingIndex; i = ++i % _bufferCount)
+                        for (var i = 0; i < playingBuffer.Length; i++)
                         {
-                            OnBufferFill(lpSampleData, sampleData.Length);
-                            _soundBuffer.Write(_bufferSize * i, sampleData, LockFlag.None);
-                            lastWrittenBuffer = i;
+                            lpBuffer[i] = _zeroValue;
                         }
+                        const int sampleSize = 4;
+                        var rawBufferLength = _bufferSize * sampleSize;
+                        var lastWrittenBuffer = -1;
+                        do
+                        {
+                            _fillEvent.WaitOne();
+                            var nextIndex = (lastWrittenBuffer + 1) % _bufferCount;
+                            var playPos = _soundBuffer.PlayPosition % (_bufferCount * rawBufferLength);
+                            var playingIndex = playPos / rawBufferLength;
+                            for (var i = nextIndex; i != playingIndex && !_isFinished; i = ++i % _bufferCount)
+                            {
+                                OnBufferRequest(lpBuffer, playingBuffer.Length);
+                                var writePos = i * rawBufferLength;
+                                _soundBuffer.Write(writePos, playingBuffer, LockFlag.None);
+                                lastWrittenBuffer = i;
+                            }
+                        } while (!_isFinished);
                     }
                 }
-                catch (Exception ex)
+                finally
                 {
-                    Logger.Error(ex);
+                    _soundBuffer.Stop();
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
         }
 
-        private void OnBufferFill(byte* buffer, int length)
+        private void OnBufferRequest(uint* pBuffer, int sampleCount)
         {
-            byte[] buf = null;
-            lock (_playQueue)
-            {
-                if (_playQueue.Count > 0)
-                {
-                    buf = _playQueue.Dequeue();
-                }
-            }
-            var sampleCount = length / 4;
-            var pdst = (uint*)buffer;
-            if (buf == null)
+            uint[] source;
+            if (!_playQueue.TryDequeue(out source))
             {
                 var sample = _lastSample.HasValue ? _lastSample.Value : _zeroValue;
                 for (var i = 0; i < sampleCount; i++)
                 {
-                    pdst[i] = sample;
+                    pBuffer[i] = sample;
                 }
                 return;
             }
-            fixed (byte* srcb = buf)
+            try
             {
-                var psrc = (uint*)srcb;
-                NativeMethods.CopyMemory(pdst, psrc, length);
-                _lastSample = pdst[sampleCount - 1];
+                fixed (uint* psrc = source)
+                {
+                    NativeMethods.CopyMemory(pBuffer, psrc, sampleCount * 4);
+                    _lastSample = pBuffer[sampleCount - 1];
+                }
             }
-            lock (_fillQueue)
+            finally
             {
-                _fillQueue.Enqueue(buf);
+                _fillQueue.Enqueue(source);
                 _frameEvent.Set();
             }
         }
 
-        private byte[] LockBuffer()
+        private uint[] LockBuffer()
         {
-            lock (_fillQueue)
+            uint[] buffer;
+            if (_fillQueue.TryDequeue(out buffer))
             {
-                if (_fillQueue.Count > 0)
-                {
-                    return _fillQueue.Dequeue();
-                }
-                return null;
+                return buffer;
             }
+            return null;
         }
 
-        private void UnlockBuffer(byte[] sndbuf)
+        private void UnlockBuffer(uint[] buffer)
         {
-            lock (_playQueue)
-            {
-                _playQueue.Enqueue(sndbuf);
-            }
+            _playQueue.Enqueue(buffer);
         }
 
-        public int GetQueueLoadState()
+        public double GetLoadLevel()
         {
-            lock (_playQueue)
-            {
-                return (int)(_playQueue.Count * 100.0 / _fillQueue.Count);
-            }
+            return _playQueue.Count / (double)_bufferCount;
         }
+
+        #endregion WavePlay
 
 
         #region IHostSound
@@ -246,16 +253,14 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public void WaitFrame()
         {
-            lock (_fillQueue)
+            _frameEvent.Reset();
+            _cancelEvent.Reset();
+            Thread.MemoryBarrier();
+            if (_playQueue.Count == 0)
             {
-                _frameEvent.Reset();
-                _cancelEvent.Reset();
-                if (_fillQueue.Count > 0)
-                {
-                    return;
-                }
+                return;
             }
-            WaitHandle.WaitAny(new[] { _frameEvent, _cancelEvent });
+            WaitHandle.WaitAny(new[] { _frameEvent, _cancelEvent }, 40);
         }
 
         public void CancelWait()
@@ -276,17 +281,18 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         #endregion IHostSound
 
-        private static void Mix(byte[] dst, uint[][] bufferArray)
+        
+        private static void Mix(uint[] dst, uint[][] sources)
         {
-            fixed (byte* pbdst = dst)
+            fixed (uint* puidst = dst)
             {
-                var pdst = (short*)pbdst;
-                for (var i = 0; i < dst.Length / 4; i++)
+                var pdst = (short*)puidst;
+                for (var i = 0; i < dst.Length; i++)
                 {
                     var index = i * 2;
                     var left = 0;
                     var right = 0;
-                    foreach (var src in bufferArray)
+                    foreach (var src in sources)
                     {
                         fixed (uint* puisrc = src)
                         {
@@ -295,10 +301,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
                             right += psrc[index + 1];
                         }
                     }
-                    if (bufferArray.Length > 0)
+                    if (sources.Length > 0)
                     {
-                        left /= bufferArray.Length;
-                        right /= bufferArray.Length;
+                        left /= sources.Length;
+                        right /= sources.Length;
                     }
                     pdst[index] = (short)left;
                     pdst[index + 1] = (short)right;
