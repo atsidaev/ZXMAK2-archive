@@ -1,6 +1,6 @@
 ﻿
 
-namespace ZXMAK2.Engine.Entities
+namespace ZXMAK2.Host.Entities
 {
     public enum SyncSource
     {
