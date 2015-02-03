@@ -118,10 +118,21 @@ namespace ZXMAK2.Host.WinForms.Mdx
             ISoundFrame soundFrame,
             bool isRequested)
         {
-            // frame sync
             var timeSync = m_timeSync;
             var sound = m_sound;
             var video = m_video;
+            
+            if (isRequested)
+            {
+                // request from UI, so we don't need sound and sync
+                if (video != null && videoFrame != null)
+                {
+                    video.PushFrame(videoFrame, isRequested);
+                }
+                return;
+            }
+
+            // sync frame...
             switch (SyncSource)
             {
                 case SyncSource.Time:
@@ -143,11 +154,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     }
                     break;
             }
-            if (video != null)
+            if (video != null && videoFrame != null)
             {
                 video.PushFrame(videoFrame, isRequested);
             }
-            if (sound != null)
+            if (sound != null && soundFrame != null)
             {
                 sound.PushFrame(soundFrame);
             }
