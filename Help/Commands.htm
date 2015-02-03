@@ -34,6 +34,7 @@ Examples:
 <li><b>br bc==#ffff</b> - break when register BC is equal to #FFFF(65535)</li>
 <li><b>br (pc) == #F3</b> - break when instruction 'DI'(opcode #F3) is to be executed</li>
 <li><b>br a==%101010</b> - break when register A(accumulator) will hold value %101010(42 decimal)</li>
+<li><b>br pc == 40000 && DE==#FFFF</b> - multiconditional breakpoint, breaks when value in PC=40000 <b>AND</b> DE=#FFFF</li>
 <li><b>br memread #4000</b> - break when memory at address #4000 is to be read</li>
 </ul>
 <ul>
