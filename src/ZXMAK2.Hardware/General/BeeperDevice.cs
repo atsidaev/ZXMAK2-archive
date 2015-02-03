@@ -33,6 +33,7 @@ namespace ZXMAK2.Hardware.General
             Category = BusDeviceCategory.Sound;
             Name = "BEEPER";
             Description = "Standard Beeper";
+            Volume = 40;    // default 100% is too loud and jamming AY
 
             Mask = 0x01;
             Port = 0xFE;
