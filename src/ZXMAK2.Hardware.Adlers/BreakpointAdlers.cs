@@ -57,10 +57,17 @@ namespace ZXMAK2.Hardware.Adlers
             {
                 // e.g.: PC == #9C40
                 case BreakPointConditionType.registryVsValue: //only value pair, e.g: BC, HL, DE, ...ToDo:
-                    return Info.CheckBreakpoint();
                 // e.g.: (PC) == #AFC9 - instruction breakpoint; must be here because the registry change must be taking into account, not memory change
                 case BreakPointConditionType.registryMemoryReferenceVsValue:
-                    return Info.CheckBreakpoint();
+                    if (Info.CheckBreakpoint())
+                    {
+                        if (Info.IsMulticonditional)
+                            return Info.CheckSecondCondition();
+                        else
+                            return true;
+                    }
+                    else
+                        return false;
                 default:
                     return false;
             }
@@ -88,7 +95,15 @@ namespace ZXMAK2.Hardware.Adlers
             {
                 // e.g.: (#9C40) != #2222
                 case BreakPointConditionType.memoryVsValue:
-                    return Info.CheckBreakpoint();
+                    if (Info.CheckBreakpoint())
+                    {
+                        if( Info.IsMulticonditional )
+                            return Info.CheckSecondCondition();
+                        else
+                            return true;
+                    }
+                    else
+                        return false;
                 default:
                     break;
             }

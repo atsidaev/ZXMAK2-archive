@@ -27,6 +27,9 @@ namespace ZXMAK2.Hardware.Adlers
     {
         public BreakPointConditionType AccessType { get; set; }
 
+        //is multiconditional breakpoint, e.g.: pc == #38 && A == #45
+        public bool IsMulticonditional {get; set;}
+
         //condition in string, e.g.: "pc", "(#9C40)"
         public string LeftCondition { get; set; }
         public string RightCondition { get; set; }
@@ -51,23 +54,20 @@ namespace ZXMAK2.Hardware.Adlers
         public bool Is8Bit { get; set; }
 
         public Func<bool> CheckBreakpoint { get; set; }
+        public Func<bool> CheckSecondCondition { get; set; }
 
-        public void SetBreakpointCheckMethod(Func<bool> checkBreakpoint)
+        public void SetBreakpointCheckMethod(Func<bool> i_checkBreakpoint)
         {
-            /*switch (i_brkAccessType)
-            {
-                case BreakPointConditionType.registryVsValue:
-                    checkBreakpoint = (checkBreakpointDelegate<bool>)i_emittedCode.CreateDelegate(typeof(checkBreakpointDelegate<bool>), z80Registers);
-                    break;
-                case BreakPointConditionType.memoryVsValue:
-                    checkBreakpoint = (checkBreakpointDelegate<bool>)i_emittedCode.CreateDelegate(typeof(checkBreakpointDelegate<bool>), (VirtualMachine)i_spectrum);
-                    break;
-            }*/
-            CheckBreakpoint = checkBreakpoint;
+            CheckBreakpoint = i_checkBreakpoint;
+        }
+        public void SetCheckSecondCondition(Func<bool> i_checkSecondCondition)
+        {
+            CheckSecondCondition = i_checkSecondCondition;
         }
 
         public BreakpointInfo()
         {
+            IsMulticonditional = false;
             IsConditionEquals = false;
             LeftCondition = string.Empty;
             RightCondition = string.Empty;

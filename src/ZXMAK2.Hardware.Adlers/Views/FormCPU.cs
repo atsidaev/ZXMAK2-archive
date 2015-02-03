@@ -223,17 +223,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         if (item.Value.Info.AccessType == BreakPointConditionType.memoryRead)
                         {
                             //desc of memory read breakpoint type
-                            brDesc += String.Format("mem read {0}", item.Value.Info.LeftValue);
+                            brDesc += String.Format("mem read #{0:X2}", item.Value.Info.LeftValue);
                         }
                         else
                         {
-                            brDesc += item.Value.Info.LeftCondition.ToString();
-                            brDesc += item.Value.Info.ConditionTypeSign.ToString();
-                            brDesc += item.Value.Info.RightCondition.ToString();
+                            brDesc += item.Value.Info.BreakpointString;
                         }
 
                         listState.Items.Add(brDesc);
-
                     }
                 }
             }
@@ -1226,111 +1223,106 @@ namespace ZXMAK2.Hardware.Adlers.Views
         //conditional breakpoints
         private DictionarySafe<byte, BreakpointAdlers> _breakpointsExt = null;
 
-        public void AddExtBreakpoint(List<string> newBreakpointDesc)
+        public bool CheckIsBrkMulticonditional(List<string> newBreakpointDesc)
         {
-            if (_breakpointsExt == null)
-                _breakpointsExt = new DictionarySafe<byte, BreakpointAdlers>();
+            if (newBreakpointDesc.Count != 8) //multicondional breakpoint; example: br pc == <number> && a == 5
+                return false;
 
-            BreakpointInfo breakpointInfo = new BreakpointInfo();
+            return newBreakpointDesc[4] == "&&";
+        }
+
+        public void FillBreakpointConditionData(List<string> i_newBreakpointDesc, int i_brkIndex, ref BreakpointInfo o_breakpointInfo)
+        {
+            //i_brkIndex = 1 => first condition in entered breakpoint from command line
+            //i_brkIndex = 4 => second condition
 
             //1.LEFT condition
             bool leftIsMemoryReference = false;
-            //bool bits16 = false;
-
-            string left = newBreakpointDesc[1];
-            if (DebuggerManager.isMemoryReference(left))
+            string leftExpr = i_newBreakpointDesc[i_brkIndex];
+            if (DebuggerManager.isMemoryReference(leftExpr))
             {
-                breakpointInfo.LeftCondition = left.ToUpper();
+                o_breakpointInfo.LeftCondition = leftExpr.ToUpper();
 
                 // it can be memory reference by registry value, e.g.: (PC), (DE), ...
-                if (DebuggerManager.isRegistryMemoryReference(left))
-                    breakpointInfo.LeftRegistryArrayIndex = DebuggerManager.getRegistryArrayIndex(DebuggerManager.getRegistryFromReference(left));
+                if (DebuggerManager.isRegistryMemoryReference(leftExpr))
+                    o_breakpointInfo.LeftRegistryArrayIndex = DebuggerManager.getRegistryArrayIndex(DebuggerManager.getRegistryFromReference(leftExpr));
                 else
-                    breakpointInfo.LeftValue = DebuggerManager.getReferencedMemoryPointer(left);
+                    o_breakpointInfo.LeftValue = DebuggerManager.getReferencedMemoryPointer(leftExpr);
 
                 leftIsMemoryReference = true;
             }
             else
             {
-                //memory read breakpoint ?
-                if (left == "memread")
-                {
-                    if (newBreakpointDesc.Count == 3) //e.g.: "br memread #4000"
-                    {
-                        breakpointInfo.IsOn = true;
-                        breakpointInfo.AccessType = BreakPointConditionType.memoryRead;
-                        breakpointInfo.LeftValue = DebuggerManager.convertNumberWithPrefix(newBreakpointDesc[2]); // last chance
-                        InsertNewBreakpoint(breakpointInfo);
-                        return;
-                    }
-                }
-
                 //must be a registry
-                if (!DebuggerManager.isRegistry(left))
-                    throw new Exception("incorrect breakpoint(left condition)");
+                if (!DebuggerManager.isRegistry(leftExpr))
+                    throw new CommandParseException("Incorrect breakpoint(left expression)!");
 
-                breakpointInfo.LeftCondition = left.ToUpper();
-                breakpointInfo.LeftRegistryArrayIndex = DebuggerManager.getRegistryArrayIndex(breakpointInfo.LeftCondition);
-                if (left.Length == 1) //8 bit registry
-                    breakpointInfo.Is8Bit = true;
+                o_breakpointInfo.LeftCondition = leftExpr.ToUpper();
+                o_breakpointInfo.LeftRegistryArrayIndex = DebuggerManager.getRegistryArrayIndex(o_breakpointInfo.LeftCondition);
+                if (leftExpr.Length == 1) //8 bit registry
+                    o_breakpointInfo.Is8Bit = true;
                 else
-                    breakpointInfo.Is8Bit = false;
+                    o_breakpointInfo.Is8Bit = false;
             }
 
             //2.CONDITION type
-            breakpointInfo.ConditionTypeSign = newBreakpointDesc[2]; // ==, !=, <, >, ...
-            if (breakpointInfo.ConditionTypeSign == "==")
-                breakpointInfo.IsConditionEquals = true;
+            o_breakpointInfo.ConditionTypeSign = i_newBreakpointDesc[i_brkIndex+1]; // ==, !=, <, >, ...
+            if (o_breakpointInfo.ConditionTypeSign == "==")
+                o_breakpointInfo.IsConditionEquals = true;
 
             //3.RIGHT condition
             byte rightType = 0xFF; // 0 - memory reference, 1 - registry value, 2 - common value
 
-            string right = newBreakpointDesc[3];
-            if (DebuggerManager.isMemoryReference(right))
+            string rightExpr = i_newBreakpointDesc[i_brkIndex+2];
+            if (DebuggerManager.isMemoryReference(rightExpr))
             {
-                breakpointInfo.RightCondition = right.ToUpper(); // because of breakpoint panel
-                breakpointInfo.RightValue = m_spectrum.ReadMemory(DebuggerManager.getReferencedMemoryPointer(right));
+                o_breakpointInfo.RightCondition = rightExpr.ToUpper(); // because of breakpoint panel
+                o_breakpointInfo.RightValue = m_spectrum.ReadMemory(DebuggerManager.getReferencedMemoryPointer(rightExpr));
 
                 rightType = 0;
             }
             else
             {
-                if (DebuggerManager.isRegistry(right))
+                if (DebuggerManager.isRegistry(rightExpr))
                 {
-                    breakpointInfo.RightCondition = right;
+                    o_breakpointInfo.RightCondition = rightExpr;
 
                     rightType = 1;
                 }
                 else
                 {
                     //it has to be a common value, e.g.: #4000, %111010101, ...
-                    breakpointInfo.RightCondition = right.ToUpper(); // because of breakpoint panel
-                    breakpointInfo.RightValue = DebuggerManager.convertNumberWithPrefix(right); // last chance
+                    o_breakpointInfo.RightCondition = rightExpr.ToUpper(); // because of breakpoint panel
+                    o_breakpointInfo.RightValue = DebuggerManager.convertNumberWithPrefix(rightExpr); // last chance
 
                     rightType = 2;
                 }
             }
 
             if (rightType == 0xFF)
-                throw new Exception("incorrect right condition");
+                throw new CommandParseException("Incorrect right expression!");
 
             //4. finish
             if (leftIsMemoryReference)
             {
-                if (DebuggerManager.isRegistryMemoryReference(breakpointInfo.LeftCondition)) // left condition is e.g.: (PC), (HL), (DE), ...
+                if (DebuggerManager.isRegistryMemoryReference(o_breakpointInfo.LeftCondition)) // left condition is e.g.: (PC), (HL), (DE), ...
                 {
                     if (rightType == 2) // right is number
-                        breakpointInfo.AccessType = BreakPointConditionType.registryMemoryReferenceVsValue;
+                        o_breakpointInfo.AccessType = BreakPointConditionType.registryMemoryReferenceVsValue;
                 }
             }
             else
             {
                 if (rightType == 2)
-                    breakpointInfo.AccessType = BreakPointConditionType.registryVsValue;
+                    o_breakpointInfo.AccessType = BreakPointConditionType.registryVsValue;
             }
+        } //end FillBreakpointData()
 
-            //let emit CIL code to check the breakpoint
-            if (breakpointInfo.AccessType == BreakPointConditionType.registryVsValue)
+        public Func<bool> EmitILCondition(BreakpointInfo i_breakpointInfo)
+        {
+            Func<bool> o_ILOut = null;
+
+            if (i_breakpointInfo.AccessType == BreakPointConditionType.registryVsValue)
             {
                 //e.g. PC == #0038
                 Type[] args = { typeof(CpuRegs) };
@@ -1344,19 +1336,18 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                 //Arg0 - registry value
                 il.Emit(OpCodes.Ldarg_0); // load m_spectrum.CPU.regs on stack
-                FieldInfo testInfo1 = typeof(CpuRegs).GetField(breakpointInfo.LeftCondition, BindingFlags.Public | BindingFlags.Instance);
+                FieldInfo testInfo1 = typeof(CpuRegs).GetField(i_breakpointInfo.LeftCondition, BindingFlags.Public | BindingFlags.Instance);
                 il.Emit(OpCodes.Ldfld, testInfo1);
-               
-                //Arg1 - number
-                il.Emit(OpCodes.Ldc_I4, (int)breakpointInfo.RightValue);
 
-                DebuggerManager.EmitCondition(il, breakpointInfo.ConditionTypeSign);
+                //Arg1 - number
+                il.Emit(OpCodes.Ldc_I4, (int)i_breakpointInfo.RightValue);
+
+                DebuggerManager.EmitCondition(il, i_breakpointInfo.ConditionTypeSign);
                 il.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
 
-                var checkBreakpoint = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), m_spectrum.CPU.regs);
-                breakpointInfo.SetBreakpointCheckMethod(checkBreakpoint);
+                o_ILOut = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), m_spectrum.CPU.regs);
             }
-            else if (breakpointInfo.AccessType == BreakPointConditionType.memoryVsValue)
+            else if (i_breakpointInfo.AccessType == BreakPointConditionType.memoryVsValue)
             {
                 //e.g. (16384) == #FF00
                 //ToDo: Because it is not possible to dynamically emit code for interface method(IDebuggable.ReadMemory)
@@ -1365,7 +1356,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 middleMan.wrapInterface(m_spectrum);
 
                 MethodInfo ReadMemoryMethod;
-                if( breakpointInfo.RightValue > 0xFF )
+                if (i_breakpointInfo.RightValue > 0xFF)
                     ReadMemoryMethod = typeof(InterfaceWrapper).GetMethod("invokeReadMemory16Bit",
                                                                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
                                                                          , null
@@ -1378,7 +1369,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                                                          , new Type[] { typeof(ushort) }
                                                                          , null);
 
-                DynamicMethod dynamicMethod = new DynamicMethod( "ReadMemory"
+                DynamicMethod dynamicMethod = new DynamicMethod("ReadMemory"
                                                                , typeof(bool)
                                                                , new Type[] { typeof(InterfaceWrapper) }
                                                                , typeof(InterfaceWrapper).Module
@@ -1388,19 +1379,18 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                 //Arg0 - memory reference(static), e.g. (16384)
                 IL.Emit(OpCodes.Ldarg_0); // load InterfaceWrapper on stack
-                IL.Emit(OpCodes.Ldc_I4, breakpointInfo.LeftValue); // method parameter(for ReadMemoryMethod)
+                IL.Emit(OpCodes.Ldc_I4, i_breakpointInfo.LeftValue); // method parameter(for ReadMemoryMethod)
                 IL.Emit(OpCodes.Call, ReadMemoryMethod);
 
                 //Arg1
-                IL.Emit(OpCodes.Ldc_I4, breakpointInfo.RightValue); // <- compare to 8 or 16bit
+                IL.Emit(OpCodes.Ldc_I4, i_breakpointInfo.RightValue); // <- compare to 8 or 16bit
 
-                DebuggerManager.EmitCondition(IL, breakpointInfo.ConditionTypeSign);
+                DebuggerManager.EmitCondition(IL, i_breakpointInfo.ConditionTypeSign);
                 IL.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
 
-                var checkBreakpoint = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), middleMan);
-                breakpointInfo.SetBreakpointCheckMethod(checkBreakpoint);
+                o_ILOut = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), middleMan);
             }
-            else if (breakpointInfo.AccessType == BreakPointConditionType.registryMemoryReferenceVsValue)
+            else if (i_breakpointInfo.AccessType == BreakPointConditionType.registryMemoryReferenceVsValue)
             {
                 // e.g.: (PC) == #D155 - instruction breakpoint
                 //ToDo: Because it is not possible to dynamically emit code for interface method(IDebuggable.ReadMemory)
@@ -1411,7 +1401,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                 MethodInfo ReadMemoryMethod;
                 //Type[] args = { typeof(REGS) };
-                if (breakpointInfo.RightValue > 0xFF)
+                if (i_breakpointInfo.RightValue > 0xFF)
                     ReadMemoryMethod = typeof(InterfaceWrapper).GetMethod("invokeReadMemory16BitViaRegistryValue",
                                                                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
                                                                          , null
@@ -1431,29 +1421,70 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 //Arg0, e.g. (PC)
                 IL.Emit(OpCodes.Ldarg_0); // load InterfaceWrapper on stack
 
-                string registry = DebuggerManager.getRegistryFromReference(breakpointInfo.LeftCondition);
+                string registry = DebuggerManager.getRegistryFromReference(i_breakpointInfo.LeftCondition);
                 IL.Emit(OpCodes.Ldstr, registry);
                 IL.Emit(OpCodes.Call, ReadMemoryMethod);
 
                 //Arg1, number(right condition)
-                IL.Emit(OpCodes.Ldc_I4, breakpointInfo.RightValue); // <- compare to 8 or 16bit
+                IL.Emit(OpCodes.Ldc_I4, i_breakpointInfo.RightValue); // <- compare to 8 or 16bit
 
-                DebuggerManager.EmitCondition(IL, breakpointInfo.ConditionTypeSign);
+                DebuggerManager.EmitCondition(IL, i_breakpointInfo.ConditionTypeSign);
                 IL.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
 
-                var checkBreakpoint = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), middleMan);
+                o_ILOut = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), middleMan);
+            }
+
+            return o_ILOut;
+        }
+
+        public void AddExtBreakpoint(List<string> newBreakpointDesc)
+        {
+            if (_breakpointsExt == null)
+                _breakpointsExt = new DictionarySafe<byte, BreakpointAdlers>();
+
+            BreakpointInfo breakpointInfo = new BreakpointInfo();
+            breakpointInfo.IsMulticonditional = CheckIsBrkMulticonditional(newBreakpointDesc);
+
+            //0. memory read breakpoint ?
+            if (newBreakpointDesc[1].ToUpper() == "MEMREAD")
+            {
+                if (newBreakpointDesc.Count == 3) //e.g.: "br memread #4000"
+                {
+                    breakpointInfo.IsOn = true;
+                    breakpointInfo.AccessType = BreakPointConditionType.memoryRead;
+                    breakpointInfo.LeftValue = DebuggerManager.convertNumberWithPrefix(newBreakpointDesc[2]); // last chance
+                    InsertNewBreakpoint(breakpointInfo);
+                }
+                else
+                    throw new CommandParseException("Incorrect memory check breakpoint syntax...");
+
+                return;
+            }
+
+            //fill first condition
+            FillBreakpointConditionData(newBreakpointDesc, 1, ref breakpointInfo);
+
+            //let emit CIL code to check the breakpoint
+            Func<bool> checkBreakpoint = EmitILCondition(breakpointInfo);
+            if (checkBreakpoint != null)
                 breakpointInfo.SetBreakpointCheckMethod(checkBreakpoint);
+
+            //multiconditional breakpoint ?
+            if (breakpointInfo.IsMulticonditional)
+            {
+                //second condition
+                FillBreakpointConditionData(newBreakpointDesc, 5, ref breakpointInfo);
+                checkBreakpoint = EmitILCondition(breakpointInfo);
+                breakpointInfo.SetCheckSecondCondition(checkBreakpoint);
             }
 
             breakpointInfo.IsOn = true; // activate the breakpoint
 
             //save breakpoint command line string
             breakpointInfo.BreakpointString = String.Empty;
-            for (byte counter = 0; counter < newBreakpointDesc.Count; counter++)
+            for (byte counter = 1; counter < newBreakpointDesc.Count; counter++)
             {
                 breakpointInfo.BreakpointString += newBreakpointDesc[counter];
-                if (counter + 1 < newBreakpointDesc.Count)
-                    breakpointInfo.BreakpointString += " ";
             }
 
             InsertNewBreakpoint(breakpointInfo);
@@ -1503,7 +1534,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 m_spectrum.AddBreakpoint(bp);
             }
             else
-                throw new Exception("Maximum breakpoints count(255) exceeded...");
+                throw new CommandParseException("Maximum breakpoints count(255) exceeded...");
         }
         private byte GetNewBreakpointPosition()
         {
