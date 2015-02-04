@@ -66,6 +66,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
         }
 
+        public static string GetAppRootDir()
+        {
+            return Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        }
+
         private void FormCPU_FormClosed(object sender, FormClosedEventArgs e)
         {
             m_spectrum.UpdateState -= spectrum_OnUpdateState;
@@ -924,11 +929,15 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
             var len = 0;
             var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
-            Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
+            byte byteOnAddr = m_spectrum.ReadMemory(m_cpuRegs.PC);
+
+            if (byteOnAddr == 0xC9/*RET*/ || byteOnAddr == 0xC3/*JP*/ || byteOnAddr == 0xCD/*CALL*/)
+                Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
         }
 
         private void dbgCmdLine_KeyUp(object sender, KeyEventArgs e)
         {
+            //ToDo: process always lands here after changing TopAdress(menuItemDasmGotoADDR_Click()) in dasm panel(pressing enter)....must be resolved.
             //Debug command entered ?
             if (e.KeyCode == Keys.Enter)
             {
@@ -1017,10 +1026,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         if (parsedCommand.Count < 2)
                             throw new Exception("Incorrect trace command syntax! Missing On or Off.");
 
-                        if (parsedCommand[1].ToUpperInvariant() == "ON")
+                        if (parsedCommand[1].ToUpper() == "ON")
+                        {
                             m_isTracing = true;
+                            //Logger.Start();
+                        }
                         else
-                            m_isTracing = true;
+                        {
+                            m_isTracing = false;
+                            //Logger.Finish();
+                        }
                     }
                     else
                     {
@@ -1100,26 +1115,46 @@ namespace ZXMAK2.Hardware.Adlers.Views
                             }
                             else
                             {
-                                // e.g.: ld (#9C40), #21 #33 3344 .. .. .. -> x
+                                bool isWritingCharacters = false;
                                 for (int counter = 2; parsedCommand.Count > counter; counter++)
                                 {
-                                    rightNum = DebuggerManager.convertNumberWithPrefix(parsedCommand[counter]);
-
-                                    if (rightNum <= Byte.MaxValue)
+                                    string currExpr = parsedCommand[counter];
+                                    if (currExpr[0] == '"')
+                                        isWritingCharacters = true;
+                                    if (isWritingCharacters)
                                     {
-                                        m_spectrum.WriteMemory(leftNum, Convert.ToByte(rightNum));
-                                        leftNum++;
+                                        // e.g.: ld (<memAddr>), "something to write to mem"
+                                        byte[] arrToWriteToMem = DebuggerManager.convertASCIIStringToBytes(currExpr);
+                                        m_spectrum.WriteMemory(leftNum, arrToWriteToMem, 0, arrToWriteToMem.Length);
+                                        leftNum += (ushort)arrToWriteToMem.Length;
+                                        if (currExpr.EndsWith("\""))
+                                            isWritingCharacters = false;
+                                        else
+                                        {
+                                            m_spectrum.WriteMemory(leftNum, 0x20 /*space*/);
+                                            leftNum++;
+                                        }
                                     }
                                     else
                                     {
-                                        //2 bytes will be written; ToDo: check on adress if it is not > 65535
-                                        byte hiBits = Convert.ToByte(rightNum / 256);
-                                        byte loBits = Convert.ToByte(rightNum % 256);
+                                        // e.g.: ld (#9C40), #21 #33 3344 .. .. .. -> x
+                                        rightNum = DebuggerManager.convertNumberWithPrefix(currExpr);
+                                        if (rightNum <= Byte.MaxValue)
+                                        {
+                                            m_spectrum.WriteMemory(leftNum, Convert.ToByte(rightNum));
+                                            leftNum++;
+                                        }
+                                        else
+                                        {
+                                            //2 bytes will be written; ToDo: check on adress if it is not > 65535
+                                            byte hiBits = Convert.ToByte(rightNum / 256);
+                                            byte loBits = Convert.ToByte(rightNum % 256);
 
-                                        m_spectrum.WriteMemory(leftNum, hiBits);
-                                        leftNum++;
-                                        m_spectrum.WriteMemory(leftNum, loBits);
-                                        leftNum++;
+                                            m_spectrum.WriteMemory(leftNum, hiBits);
+                                            leftNum++;
+                                            m_spectrum.WriteMemory(leftNum, loBits);
+                                            leftNum++;
+                                        }
                                     }
                                 }
                             }
@@ -1602,29 +1637,22 @@ namespace ZXMAK2.Hardware.Adlers.Views
             return;
         }
 
-        //// clears all conditional breakpoints
-        //public override void ClearExtBreakpoints()
-        //{
-        //    lock (_breakpointsExt)
-        //        _breakpointsExt.Clear();
-        //}
-
         public void LoadBreakpointsListFromFile(string fileName)
         {
             System.IO.StreamReader file = null;
             try
             {
-                if (!File.Exists(fileName))
+                if (!File.Exists(Path.Combine(GetAppRootDir(), fileName)))
                     throw new Exception("file " + fileName + " does not exists...");
 
                 string dbgCommandFromFile = String.Empty;
-                file = new System.IO.StreamReader(fileName);
+                file = new System.IO.StreamReader(Path.Combine(GetAppRootDir(), fileName));
                 while ((dbgCommandFromFile = file.ReadLine()) != null)
                 {
                     if (dbgCommandFromFile.Trim() == String.Empty || dbgCommandFromFile[0] == ';')
                         continue;
 
-                    List<string> parsedCommand = DebuggerManager.ParseCommand(dbgCommandFromFile);
+                    List<string> parsedCommand = DebuggerManager.ParseCommand("br " + dbgCommandFromFile);
                     if (parsedCommand == null)
                         throw new Exception("unknown debugger command");
 
@@ -1647,7 +1675,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             System.IO.StreamWriter file = null;
             try
             {
-                file = new System.IO.StreamWriter(fileName);
+                file = new System.IO.StreamWriter(Path.Combine(GetAppRootDir(), fileName));
 
                 foreach (KeyValuePair<byte, BreakpointAdlers> breakpoint in localBreakpointsList)
                 {

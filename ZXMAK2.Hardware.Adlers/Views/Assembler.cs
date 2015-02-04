@@ -37,8 +37,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private byte tabSpace = 16; //how many characters on tab
 
-        private string m_kernelDir;
-
         private IDebuggable m_spectrum;
 
         private bool compileFromFile = false; //if loaded from file then --binfile compile parameter will be used
@@ -62,8 +60,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             this.KeyPreview = true;
             this.BringToFront();
-
-            m_kernelDir = Directory.GetCurrentDirectory();
         }
 
         public static void Show(ref IDebuggable spectrum)
@@ -219,12 +215,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
             bool startAdressManual = checkMemory.Checked;
             bool startAdressInCode = this.IsStartAdressInCode();
 
-            Directory.SetCurrentDirectory(m_kernelDir);
+            Directory.SetCurrentDirectory(FormCpu.GetAppRootDir());
 
             if (!File.Exists(@"Pasmo2.dll"))
             {
                 Locator.Resolve<IUserMessage>().Error(
-                    "Pasmo2.dll not found in " + m_kernelDir + "!\nThis file is needed for compilation\n" +
+                    "Pasmo2.dll not found in " + FormCpu.GetAppRootDir() + "!\nThis file is needed for compilation\n" +
                     "into Z80 code." +
                     "\n\n" +
                     "Now going to try to get it from internet.\nPlease click OK."

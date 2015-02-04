@@ -42,5 +42,6 @@ Examples:
 <li><b>ld hl, (#9c40)</b> - fill HL register with value on adress #9C40(40000 decimal)</li>
 <li><b>ld hl, de</b> - fill HL register with value in register DE</li>
 <li><b>ld (#9c40), 5</b> - same as POKE 40000, 5</b>
-<li><b>ld (50000), 201 #C9AF #C350</b> - fills memory(starting at adress 50000 decimal) with bytes 201 #C9 #AF #C3 #50
+<li><b>ld (50000), 201 #C9AF #C350</b> - fills memory(starting at adress 50000) with bytes 201 #C9 #AF #C3 #50
+<li><b>ld (50000), "Hello there"</b> - fills memory(starting at adress 50000) with string "Hello there"
 </ul>

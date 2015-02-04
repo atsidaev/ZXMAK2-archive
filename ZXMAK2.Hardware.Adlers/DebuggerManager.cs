@@ -281,6 +281,23 @@ namespace ZXMAK2.Hardware.Adlers
 
         ////////////////////////////////////////////////////////////////////
         //
+        // Method: convertASCIIStringToBytes()
+        //
+        public static byte[] convertASCIIStringToBytes(string input) //Prefix: % - binary, # - hexadecimal
+        {
+            List<byte> arrOut = new List<byte>();
+            foreach (char c in input)
+            {
+                if (c == '"')
+                    continue;
+                arrOut.Add((byte)c);
+            }
+
+            return arrOut.ToArray();
+        }
+
+        ////////////////////////////////////////////////////////////////////
+        //
         // Method: convertNumberWithPrefix()
         //
         public static UInt16 convertNumberWithPrefix(string input) //Prefix: % - binary, # - hexadecimal
