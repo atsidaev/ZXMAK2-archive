@@ -256,21 +256,30 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (e.X < 0 || e.Y < 0)
                 return;
 
+            string numberFormat = this.hexNumbersToolStripMenuItem.Checked ? "#{0:X2}" : "{0}";
+
             int Xcoor = (e.X + 1) / 2;
             int Ycoor = (e.Y + 1) / 2;
 
             if( !isSpriteViewType() )
             {
                 ushort screenAdress = GraphicsTools.getScreenAdress(Xcoor, Ycoor);
+                textBoxScreenAddress.Text = String.Format(numberFormat, screenAdress);
 
-                textBoxScreenAddress.Text = screenAdress.ToString();
+                if (this.hexNumbersToolStripMenuItem.Checked)
+                {
+                    textBoxXCoorYCoor.Text = String.Format("#{0:X2}; #{1:X2}", Xcoor, Ycoor);
+                    textBoxBytesAtAdress.Text = String.Format("#{0:X2}", _spectrum.ReadMemory(screenAdress));
+                }
+                else
+                {
+                    textBoxXCoorYCoor.Text = String.Format("{0}; {1}", Xcoor, Ycoor);
+                    textBoxBytesAtAdress.Text = String.Format("{0}", _spectrum.ReadMemory(screenAdress));
+                }
 
-                textBoxXCoorYCoor.Text = String.Format("{0}; {1}", Xcoor, Ycoor);
-
-                textBoxBytesAtAdress.Text = String.Format("#{0:X2}", _spectrum.ReadMemory(screenAdress));
                 for (ushort memValue = (ushort)(screenAdress + 1); memValue < screenAdress + 5; memValue++)
                 {
-                    textBoxBytesAtAdress.Text += "; " + String.Format("#{0:X2}", _spectrum.ReadMemory(memValue));
+                    textBoxBytesAtAdress.Text += "; " + String.Format(numberFormat, _spectrum.ReadMemory(memValue));
                 }
             }
             else if (comboDisplayType.SelectedIndex == 1) //only Sprite View for now...ToDo other view types, e.g. Jetpac type
