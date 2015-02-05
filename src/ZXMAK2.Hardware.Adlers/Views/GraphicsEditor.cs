@@ -141,12 +141,62 @@ namespace ZXMAK2.Hardware.Adlers.Views
             return resizedImage;
         }
 
+        private Image getTileViewImage()
+        {
+            byte spriteWidth = Convert.ToByte(comboSpriteWidth.SelectedItem);
+            //byte spriteHeight;
+            ushort screenPointer = (ushort)numericUpDownActualAddress.Value;
+
+            if (_spectrum == null || m_instance == null)
+                return null;
+
+            Bitmap bmpSpriteView = new Bitmap(spriteWidth, ZX_SCREEN_HEIGHT);
+
+            for (int YPointerShift = 0; YPointerShift < ZX_SCREEN_HEIGHT; YPointerShift += 8)
+            {
+                for (int XPointerShift = 0; XPointerShift < spriteWidth; XPointerShift += 8)
+                {
+                    //draw one tile
+                    for (int line = 0; line < 8; line++)
+                    {
+                        BitArray spriteBits = GraphicsTools.getAttributePixels(_spectrum.ReadMemory(screenPointer++), m_instance.checkBoxMirror.Checked);
+                        if (spriteBits == null)
+                            return null;
+
+                        // Cycle: fill 8 pixels for 1 attribute
+                        for (int pixelBit = 7; pixelBit > -1; pixelBit--)
+                        {
+                            if (spriteBits[pixelBit])
+                                bmpSpriteView.SetPixel(pixelBit + XPointerShift, line + YPointerShift, Color.Black);
+                            else
+                                bmpSpriteView.SetPixel(pixelBit + XPointerShift, line + YPointerShift, Color.White);
+                        }
+                    }
+                }
+            }
+
+            byte spriteZoomFactor = Convert.ToByte(numericUpDownZoomFactor.Value);
+            Image resizedImage = bmpSpriteView.GetThumbnailImage(spriteWidth * spriteZoomFactor, (spriteWidth * spriteZoomFactor * bmpSpriteView.Height) /
+                bmpSpriteView.Width, null, IntPtr.Zero);
+            return resizedImage;
+        }
+
         /// <summary>
         /// Sprite View type
         /// </summary>
         public void setZXSpriteView()
         {
             pictureZXDisplay.Image = getSpriteViewImage();
+            pictureZXDisplay.SizeMode = PictureBoxSizeMode.AutoSize;
+        }
+
+        /// <summary>
+        /// Tile view; 8 lines per sprite
+        /// Used in ISChess(Cyrus Chess) for instance
+        /// </summary>
+        public void setTileView()
+        {
+            pictureZXDisplay.Image = getTileViewImage();
             pictureZXDisplay.SizeMode = PictureBoxSizeMode.AutoSize;
         }
 
@@ -198,6 +248,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     groupBoxSpriteDetails.Enabled = true;
                     bitmapGridSpriteView.setBitmapBits(_spectrum, Convert.ToUInt16(numericUpDownActualAddress.Value));
                     bitmapGridSpriteView.Draw(null);
+                    break;
+                case 3: //Tile view
+                    groupBoxSpriteDetails.Enabled = true;
+                    setTileView();
                     break;
                 case 4: //JetPac style
                     groupBoxSpriteDetails.Enabled = false;

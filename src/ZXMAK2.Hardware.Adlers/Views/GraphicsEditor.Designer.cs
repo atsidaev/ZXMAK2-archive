@@ -199,10 +199,10 @@
             this.comboDisplayType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboDisplayType.FormattingEnabled = true;
             this.comboDisplayType.Items.AddRange(new object[] {
-            "Screen View",
-            "Sprite View",
+            "Screen view",
+            "Sprite view",
             "Linear",
-            "Robocop style",
+            "Tile view",
             "JetPac style"});
             this.comboDisplayType.Location = new System.Drawing.Point(6, 39);
             this.comboDisplayType.Name = "comboDisplayType";

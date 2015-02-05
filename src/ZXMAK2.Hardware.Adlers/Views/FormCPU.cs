@@ -370,7 +370,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 case Keys.F:
                     if( e.Control )
                     {
-                        menuItemFindBytes_Click(null, null);
+                        menuItemFindBytes_Click(new object(), null);
+                    }
+                    break;
+                case Keys.N:
+                    if (e.Control)
+                    {
+                        menuItemFindBytesNext_Click(null, null);
                     }
                     break;
             }
@@ -691,7 +697,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             List<UInt16> bytesToFindInput = new List<UInt16>();
             var service = Locator.Resolve<IUserQuery>();
 
-            if (!service.QueryText("Find bytes in memory", "Bytes(comma delimited):", ref _strBytesToFindSave)) return;
+            if (sender != null) //null => Find next
+            {
+                if (!service.QueryText("Find bytes in memory", "Bytes(comma delimited):", ref _strBytesToFindSave))
+                    return;
+            }
             if (_strBytesToFindSave.Trim() == String.Empty || _strBytesToFindSave.Trim().Length == 0)
                 return;
 
@@ -785,6 +795,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     }
                 }
             }
+        }
+
+        private void menuItemFindBytesNext_Click(object sender, EventArgs e)
+        {
+            menuItemFindBytes_Click(null, null);
         }
 
         private void dasmPanel_MouseClick(object sender, MouseEventArgs e)
