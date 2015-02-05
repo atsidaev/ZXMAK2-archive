@@ -63,7 +63,10 @@ namespace ZXMAK2.Host.WinForms.Services
             private InputBox(string Caption, string Text)
             {
                 this.label = new System.Windows.Forms.Label();
+
                 this.textValue = new System.Windows.Forms.TextBox();
+                this.textValue.KeyUp += new KeyEventHandler(textValue_KeyUp);
+
                 this.buttonOK = new System.Windows.Forms.Button();
                 this.buttonCancel = new System.Windows.Forms.Button();
                 this.SuspendLayout();
@@ -108,7 +111,7 @@ namespace ZXMAK2.Host.WinForms.Services
                 // 
                 // Form
                 // 
-                this.AcceptButton = this.buttonOK;
+                //this.AcceptButton = this.buttonOK; //Adler: this will leave Enter key press event on stack => fire event(KeyUp, KeyPressed) in caller`s form which is unexpected
                 this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
                 this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
                 this.CancelButton = this.buttonCancel;
@@ -127,6 +130,15 @@ namespace ZXMAK2.Host.WinForms.Services
                 this.Text = Caption;
                 this.ResumeLayout(false);
                 this.PerformLayout();
+                this.TopMost = true;
+            }
+            private void textValue_KeyUp(object sender, KeyEventArgs e)
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    e.Handled = true;
+                    this.buttonOK.PerformClick();
+                }
             }
 
             public static bool Query(

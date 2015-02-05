@@ -15,7 +15,7 @@ namespace ZXMAK2.Hardware.Adlers
     //
     public enum BreakPointConditionType 
     { 
-        memoryVsValue, 
+        memoryVsValue,
         valueVsRegister, 
         registryVsValue, 
         registryMemoryReferenceVsValue, 
@@ -283,7 +283,7 @@ namespace ZXMAK2.Hardware.Adlers
         //
         // Method: convertASCIIStringToBytes()
         //
-        public static byte[] convertASCIIStringToBytes(string input) //Prefix: % - binary, # - hexadecimal
+        public static byte[] convertASCIIStringToBytes(string input)
         {
             List<byte> arrOut = new List<byte>();
             foreach (char c in input)
