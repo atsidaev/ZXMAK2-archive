@@ -17,6 +17,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private bool _isInitialised = false;
 
+        private MouseSelectionArea _mouseSelectionArea;
+
         public GraphicsEditor(ref IDebuggable spectrum)
         {
             _spectrum = spectrum;
@@ -29,6 +31,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             bitmapGridSpriteView.Init(_spectrum, Convert.ToByte(comboSpriteWidth.SelectedItem), 24);
 
             _isInitialised = true;
+
+            _mouseSelectionArea = null;
         }
 
         public static GraphicsEditor getInstance()
@@ -271,6 +275,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
 
         #region GUI methods
+        private void pictureZXDisplay_Paint(object sender, PaintEventArgs e)
+        {
+            if (comboDisplayType.SelectedIndex == 0 && _mouseSelectionArea != null)  //for ScreenView only
+            {
+                //paint mouse selection area if exists
+                if (!_mouseSelectionArea.Paint(e))
+                {
+                    pictureZXDisplay.Invalidate();
+                }
+            }
+        }
         private void numericUpDownActualAddress_ValueChanged(object sender, System.EventArgs e)
         {
             setZXImage();
@@ -353,6 +368,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     textBoxSpriteBytes.Text += "; " + String.Format("#{0:X2}", _spectrum.ReadMemory(memValue));
                 }
             }
+
+            if (comboDisplayType.SelectedIndex == 0 && _mouseSelectionArea != null)  //for ScreenView only - update selection area if is cropping
+            {
+                _mouseSelectionArea.MouseMove(ref pictureZXDisplay, e);
+            }
         }
         private void checkBoxMirror_CheckedChanged(object sender, EventArgs e)
         {
@@ -378,6 +398,26 @@ namespace ZXMAK2.Hardware.Adlers.Views
             _spectrum.WriteMemory(Convert.ToUInt16(bitToToggleAddress), memValue);
 
             setZXImage(); //refresh
+        }
+        private void pictureZXDisplay_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (comboDisplayType.SelectedIndex == 0)  //for ScreenView only
+            {
+                if (_mouseSelectionArea == null)
+                    _mouseSelectionArea = new MouseSelectionArea();
+
+                _mouseSelectionArea.MouseDown(pictureZXDisplay, e);
+            }
+        }
+        private void pictureZXDisplay_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (comboDisplayType.SelectedIndex == 0)  //for ScreenView only
+            {
+                if (_mouseSelectionArea == null)
+                    return;
+
+                _mouseSelectionArea.MouseUp(ref pictureZXDisplay, e);
+            }
         }
         #endregion
     }

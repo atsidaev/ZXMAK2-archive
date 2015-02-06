@@ -25,6 +25,8 @@ namespace ZXMAK2.Hardware.Adlers
 
         public bool checkInfo(IMachineState state)
         {
+            if (!Info.IsOn)
+                return false;
             var needWriteMemoryCheck = IsNeedWriteMemoryCheck;
             IsNeedWriteMemoryCheck = false; // reset flag for next cycle
             if (IsForceStop)
@@ -37,8 +39,6 @@ namespace ZXMAK2.Hardware.Adlers
                 return true;
             }
             
-            /*Stopwatch watch = new Stopwatch();
-            watch.Start();*/
             lock (lockingObj)
             {
                 if (debuggerStop)
@@ -47,11 +47,6 @@ namespace ZXMAK2.Hardware.Adlers
                     return true;
                 }
             }
-
-            if (!Info.IsOn)
-                return false;
-
-            //ushort leftValue = 0;
 
             switch (Info.AccessType)
             {
@@ -75,8 +70,9 @@ namespace ZXMAK2.Hardware.Adlers
 
         private bool checkInfoMemory(IMachineState state)
         {
-            /*Stopwatch watch = new Stopwatch();
-            watch.Start();*/
+            if (!Info.IsOn)
+                return false;
+
             lock (lockingObj)
             {
                 if (debuggerStop)
@@ -85,9 +81,6 @@ namespace ZXMAK2.Hardware.Adlers
                     return true;
                 }
             }
-
-            if (!Info.IsOn)
-                return false;
 
             ushort leftValue = 0;
 

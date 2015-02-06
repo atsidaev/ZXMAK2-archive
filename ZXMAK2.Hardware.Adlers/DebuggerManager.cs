@@ -17,8 +17,9 @@ namespace ZXMAK2.Hardware.Adlers
     { 
         memoryVsValue,
         valueVsRegister, 
-        registryVsValue, 
-        registryMemoryReferenceVsValue, 
+        registryVsValue,
+        flagsVsValue, //e.g. Z == 1, C == 0
+        registryMemoryReferenceVsValue,
         memoryRead 
     };
 
