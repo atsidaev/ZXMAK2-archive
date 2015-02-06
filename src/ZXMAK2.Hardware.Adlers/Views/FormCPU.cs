@@ -35,6 +35,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private List<string> cmdLineHistory = new List<string>();
         private int cmdLineHistoryPos = 0;
 
+        //find bytes in memory
         static string _strBytesToFindSave = "#AFC3, 201";
 
         public FormCpu(IDebuggable debugTarget, IBusManager bmgr)
@@ -392,6 +393,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
             if (!service.QueryValue("Disassembly Address", "New Address:", "#{0:X4}", ref ToAddr, 0, 0xFFFF)) return;
             dasmPanel.TopAddress = (ushort)ToAddr;
+            dasmPanel.Focus();
         }
 
         private void menuItemDasmGotoPC_Click(object sender, EventArgs e)
@@ -598,6 +600,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             var service = Locator.Resolve<IUserQuery>();
             if (!service.QueryValue("Data Panel Address", "New Address:", "#{0:X4}", ref adr, 0, 0xFFFF)) return;
             dataPanel.TopAddress = (ushort)adr;
+            dataPanel.Focus();
         }
 
         private void menuItemDataRefresh_Click(object sender, EventArgs e)
@@ -1372,6 +1375,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             Func<bool> o_ILOut = null;
 
+            //ToDo: Flags vs. value
             if (i_breakpointInfo.AccessType == BreakPointConditionType.registryVsValue)
             {
                 //e.g. PC == #0038

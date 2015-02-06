@@ -268,7 +268,10 @@
             this.pictureZXDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureZXDisplay.TabIndex = 28;
             this.pictureZXDisplay.TabStop = false;
+            this.pictureZXDisplay.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureZXDisplay_Paint);
+            this.pictureZXDisplay.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureZXDisplay_MouseDown);
             this.pictureZXDisplay.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureZXDisplay_MouseMove);
+            this.pictureZXDisplay.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureZXDisplay_MouseUp);
             // 
             // buttonRefresh
             // 
