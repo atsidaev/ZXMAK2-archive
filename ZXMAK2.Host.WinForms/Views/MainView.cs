@@ -661,7 +661,7 @@ namespace ZXMAK2.Host.WinForms.Views
 
         private void ApplyRenderSetting()
         {
-            renderVideo.Smoothing = m_setting.RenderSmooth;
+            renderVideo.AntiAlias = m_setting.RenderSmooth;
             renderVideo.MimicTv = m_setting.RenderMimicTv;
             renderVideo.VideoFilter = m_setting.RenderVideoFilter;
             renderVideo.ScaleMode = m_setting.RenderScaleMode;

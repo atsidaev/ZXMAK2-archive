@@ -6,6 +6,7 @@ using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.DirectX.Direct3D;
+using System.Threading;
 
 
 
@@ -15,9 +16,9 @@ namespace ZXMAK2.Host.WinForms.Controls
     {
         #region Fields
 
-        private readonly PresentParameters m_presentParams = new PresentParameters();
-        protected readonly object SyncRoot = new object();
-        protected Device D3D;
+        private readonly PresentParameters _presentParams = new PresentParameters();
+        protected readonly object _syncRoot = new object();
+        protected Device _device;
 
         #endregion Fields
 
@@ -39,9 +40,9 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         public void InitWnd()
         {
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
-                if (D3D != null)
+                if (_device != null)
                 {
                     return;
                 }
@@ -51,9 +52,9 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         public void FreeWnd()
         {
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
-                if (D3D == null)
+                if (_device == null)
                 {
                     return;
                 }
@@ -70,12 +71,12 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             try
             {
-                lock (SyncRoot)
+                lock (_syncRoot)
                 {
-                    D3D = CreateDirect3D();
-                    D3D.DeviceResizing += new System.ComponentModel.CancelEventHandler(Device_OnDeviceResizing);
-                    D3D.DeviceReset += new EventHandler(Device_OnDeviceReset);
-                    OnCreateDevice();
+                    _device = CreateDirect3D();
+                    _device.DeviceResizing += new System.ComponentModel.CancelEventHandler(Device_OnDeviceResizing);
+                    _device.DeviceReset += new EventHandler(Device_OnDeviceReset);
+                    OnLoadResources();
                     RenderScene();
                 }
             }
@@ -89,15 +90,14 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             try
             {
-                lock (SyncRoot)
+                lock (_syncRoot)
                 {
-                    if (D3D == null)
+                    if (_device == null)
                     {
                         return;
                     }
-                    OnDestroyDevice();
-                    D3D.Dispose();
-                    D3D = null;
+                    OnUnloadResources();
+                    Dispose(ref _device);
                 }
             }
             catch (Exception ex)
@@ -110,14 +110,16 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             try
             {
-                lock (SyncRoot)
+                lock (_syncRoot)
                 {
-                    if (D3D == null)
+                    if (_device == null)
                     {
                         return;
                     }
+                    OnUnloadResources();
                     ConfigureDeviceParams(false);
-                    D3D.Reset(m_presentParams);
+                    _device.Reset(_presentParams);
+                    OnLoadResources();
                 }
             }
             catch (Exception ex)
@@ -151,7 +153,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             try
             {
-                if (D3D != null)
+                if (_device != null)
                 {
                     RenderScene();
                 }
@@ -172,11 +174,11 @@ namespace ZXMAK2.Host.WinForms.Controls
             ResetDevice();
         }
 
-        protected virtual void OnCreateDevice()
+        protected virtual void OnLoadResources()
         {
         }
 
-        protected virtual void OnDestroyDevice()
+        protected virtual void OnUnloadResources()
         {
         }
 
@@ -193,42 +195,31 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             try
             {
-                if (!CanRender())
+                lock (_syncRoot)
                 {
-                    return;
-                }
-                lock (SyncRoot)
-                {
-                    if (D3D == null ||
+                    if (_device == null ||
                         !Visible ||
                         ClientSize.Width <= 0 ||
                         ClientSize.Height <= 0)
                     {
                         return;
                     }
-                    int resultCodeInt;
-                    D3D.CheckCooperativeLevel(out resultCodeInt);
-                    var resultCode = (ResultCode)resultCodeInt;
-                    switch (resultCode)
+                    var hr = TestCooperativeLevel();
+                    if (hr == ResultCode.Success)
                     {
-                        case ResultCode.DeviceNotReset:
-                            //LogAgent.Debug("DeviceNotReset");
-                            ResetDevice();
-                            break;
-                        case ResultCode.DeviceLost:
-                            //LogAgent.Debug("DeviceLost");
-                            // e.g. aquired by other app
-                            break;
-                        case ResultCode.Success:
-                            D3D.Clear(ClearFlags.Target, Color.Black, 1, 0);
-                            D3D.BeginScene();
-                            OnRenderScene();
-                            D3D.EndScene();
-                            D3D.Present();
-                            break;
-                        default:
-                            Logger.Info("CheckCooperativeLevel = {0}", resultCode);
-                            break;
+                        OnRenderScene();
+                    }
+                    else if (hr == ResultCode.DeviceNotReset)
+                    {
+                        ResetDevice();
+                    }
+                    else if (hr == ResultCode.DeviceLost)
+                    {
+                        Thread.Sleep(10);
+                    }
+                    else
+                    {
+                        Logger.Warn("TestCooperativeLevel() = {0}", hr);
                     }
                 }
             }
@@ -269,16 +260,16 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private void ConfigureDeviceParams(bool vBlankSync)
         {
-            m_presentParams.Windowed = true;
-            m_presentParams.PresentationInterval =
+            _presentParams.Windowed = true;
+            _presentParams.PresentationInterval =
                 vBlankSync ? PresentInterval.One : PresentInterval.Immediate;
-            m_presentParams.SwapEffect =
+            _presentParams.SwapEffect =
                 vBlankSync ? SwapEffect.Flip : SwapEffect.Discard;
-            m_presentParams.BackBufferCount = 1;
-            m_presentParams.BackBufferFormat = Format.A8R8G8B8;
-            m_presentParams.BackBufferWidth = ClientSize.Width > 0 ? ClientSize.Width : 1;
-            m_presentParams.BackBufferHeight = ClientSize.Height > 0 ? ClientSize.Height : 1;
-            m_presentParams.EnableAutoDepthStencil = false;
+            _presentParams.BackBufferCount = 1;
+            _presentParams.BackBufferFormat = Format.A8R8G8B8;
+            _presentParams.BackBufferWidth = ClientSize.Width > 0 ? ClientSize.Width : 1;
+            _presentParams.BackBufferHeight = ClientSize.Height > 0 ? ClientSize.Height : 1;
+            _presentParams.EnableAutoDepthStencil = false;
         }
 
         private Device CreateDirect3D()
@@ -296,7 +287,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                 DeviceType.Hardware,
                 this.Handle,
                 flags,
-                m_presentParams);
+                _presentParams);
         }
 
         #endregion Direct3D Initialization
@@ -317,5 +308,32 @@ namespace ZXMAK2.Host.WinForms.Controls
         }
 
         #endregion WndProc
+
+
+        #region Helpers
+
+        protected ResultCode TestCooperativeLevel()
+        {
+            if (_device == null)
+            {
+                return ResultCode.NotAvailable;
+            }
+            int hr;
+            _device.CheckCooperativeLevel(out hr);
+            return (ResultCode)hr;
+        }
+
+        protected static void Dispose<T>(ref T disposable)
+            where T : IDisposable
+        {
+            var value = disposable;
+            disposable = default(T);
+            if (value != null)
+            {
+                value.Dispose();
+            }
+        }
+
+        #endregion Helpers
     }
 }
