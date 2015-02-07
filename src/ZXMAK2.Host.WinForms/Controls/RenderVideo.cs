@@ -36,17 +36,18 @@ namespace ZXMAK2.Host.WinForms.Controls
         #region Fields
 
         private readonly ManualResetEvent _waitEvent = new ManualResetEvent(true);
-        private readonly Dictionary<IIconDescriptor, IconTextureWrapper> _iconWrapperDict = new Dictionary<IIconDescriptor, IconTextureWrapper>();
+        private readonly Dictionary<IIconDescriptor, IconTextureWrapper> _iconTextures = new Dictionary<IIconDescriptor, IconTextureWrapper>();
         private readonly FrameResampler _frameResampler = new FrameResampler(50);
 
         private D3dSprite _sprite;
+        private D3dSprite _spriteTv;
+        private D3dSprite _spriteIcon;
         private D3dTexture _texture0;
         private D3dTexture _textureMaskTv;
-        private D3dSprite _iconSprite;
         private D3dFont _font;
-        private Size _surfaceSize = new Size(0, 0);
-        private Size _textureSize = new Size(0, 0);
-        private Size _textureMaskTvSize = new Size(0, 0);
+        private Size _surfaceSize;
+        private Size _maskTvSize;
+        private int _texturePitch;
 
         private VideoFilterDelegate _videoFilter;
         private readonly double[] _renderGraph = new double[GraphLength];
@@ -84,7 +85,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         public bool MimicTv { get; set; }
         
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool Smoothing { get; set; }
+        public bool AntiAlias { get; set; }
         
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScaleMode ScaleMode { get; set; }
@@ -208,7 +209,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                 {
                     return;
                 }
-                var frameRate = D3D.DisplayMode.RefreshRate;
+                var frameRate = _device.DisplayMode.RefreshRate;
                 if (frameRate <= 50)
                 {
                     frameRate = 50;
@@ -266,10 +267,9 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
 
             // wait VBlank
-            var vtimeFrame = D3D.DisplayMode.Height;
+            var vtimeFrame = _device.DisplayMode.Height;
             var vfrequency = vtimeFrame * refreshRate;
-            var vtime = D3D.RasterStatus.ScanLine;
-            var deadline = timeFrame + timeFrame / vtimeFrame;
+            var vtime = _device.RasterStatus.ScanLine;
             if (vtime < vtimeFrame)
             {
                 var delay = ((vtimeFrame - vtime) * 1000) / vfrequency;
@@ -286,7 +286,8 @@ namespace ZXMAK2.Host.WinForms.Controls
 #endif
                 }
             }
-            while (!_isCancelWait && !D3D.RasterStatus.InVBlank)
+            var deadline = timeFrame + timeFrame / vtimeFrame;
+            while (!_isCancelWait && !_device.RasterStatus.InVBlank)
             {
                 if (Stopwatch.GetTimestamp() - _lastBlankStamp >= deadline)
                 {
@@ -321,7 +322,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 return;
             }
-            UpdateIcons(frame.Icons);
+            UpdateIconList(frame.Icons);
             UpdateSurface(frame.VideoData);
             if (isRequested)
             {
@@ -334,54 +335,48 @@ namespace ZXMAK2.Host.WinForms.Controls
         
         #region Private
 
-        protected override void OnCreateDevice()
+        protected override void OnLoadResources()
         {
-            base.OnCreateDevice();
+            base.OnLoadResources();
             _isInitialized = false;
-            OnCreateDeviceInt();
+            IsSyncSupported = _device.DeviceCaps.DriverCaps.ReadScanLine;
+            _sprite = new D3dSprite(_device);
+            _spriteTv = new D3dSprite(_device);
+            _spriteIcon = new D3dSprite(_device);
+
+            var gdiFont = new System.Drawing.Font(
+                "Microsoft Sans Serif",
+                10f/*8.25f*/,
+                System.Drawing.FontStyle.Bold,
+                GraphicsUnit.Pixel);
+            _font = new D3dFont(_device, gdiFont);
+
+            foreach (var iconTexture in _iconTextures.Values)
+            {
+                iconTexture.Load(_device);
+            }
+            _device.SetRenderState(RenderStates.AlphaBlendEnable, true);
+            _device.SetRenderState(RenderStates.SourceBlend, (int)Blend.SourceAlpha);
+            _device.SetRenderState(RenderStates.DestinationBlend, (int)Blend.InvSourceAlpha);
+            //_device.SetRenderState(RenderStates.BlendOperation, (int)BlendOperation.Add);
+
             _isInitialized = true;
         }
 
-        private void OnCreateDeviceInt()
+        protected override void OnUnloadResources()
         {
-            IsSyncSupported = D3D.DeviceCaps.DriverCaps.ReadScanLine;
-            _sprite = new D3dSprite(D3D);
-            _iconSprite = new D3dSprite(D3D);
-        }
-
-        protected override void OnDestroyDevice()
-        {
-            if (_texture0 != null)
+            Dispose(ref _texture0);
+            Dispose(ref _textureMaskTv);
+            Dispose(ref _sprite);
+            Dispose(ref _spriteTv);
+            Dispose(ref _spriteIcon);
+            Dispose(ref _font);
+            foreach (var iconTexture in _iconTextures.Values)
             {
-                _texture0.Dispose();
-                _texture0 = null;
+                iconTexture.Dispose();
             }
-            if (_textureMaskTv != null)
-            {
-                _textureMaskTv.Dispose();
-                _textureMaskTv = null;
-            }
-            foreach (var textureWrapper in _iconWrapperDict.Values)
-            {
-                textureWrapper.Dispose();
-            }
-            _iconWrapperDict.Clear();
-            if (_sprite != null)
-            {
-                _sprite.Dispose();
-                _sprite = null;
-            }
-            if (_iconSprite != null)
-            {
-                _iconSprite.Dispose();
-                _iconSprite = null;
-            }
-            if (_font != null)
-            {
-                _font.Dispose();
-                _font = null;
-            }
-            base.OnDestroyDevice();
+            _iconTextures.Clear();
+            base.OnUnloadResources();
         }
 
         protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
@@ -403,7 +398,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
-        private bool m_presentRequested;
+        private bool _presentRequested;
 
         private void RequestPresentAsync()
         {
@@ -411,45 +406,30 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 return;
             }
-            m_presentRequested = true;
+            _presentRequested = true;
             Invalidate();
-            //if (InvokeRequired)
-            //{
-            //    BeginInvoke(new Action(RequestPresentAsync));
-            //    return;
-            //}
-            //try
-            //{
-            //    if (D3D == null)
-            //    {
-            //        return;
-            //    }
-            //    RenderScene();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Logger.Error(ex);
-            //}
         }
 
         private unsafe void UpdateSurface(IVideoData videoData)
         {
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
-                if (D3D == null)
+                if (_device == null)
                 {
                     return;
                 }
                 try
                 {
                     m_surfaceHeightScale = videoData.Ratio;
-                    if (_surfaceSize != videoData.Size)
+                    if (_surfaceSize != videoData.Size || _texture0==null)
                     {
-                        InitVideoTextures(videoData.Size);
+                        Dispose(ref _texture0);
+                        Dispose(ref _textureMaskTv);
+                        CreateTextures(videoData.Size);
                     }
                     if (_texture0 != null)
                     {
-                        using (GraphicsStream gs = _texture0.LockRectangle(0, LockFlags.None))
+                        using (var gs = _texture0.LockRectangle(0, LockFlags.None))
                         {
                             fixed (int* srcPtr = videoData.Buffer)
                             {
@@ -469,74 +449,33 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
-        private unsafe void InitVideoTextures(Size surfaceSize)
+        private unsafe void CreateTextures(Size surfaceSize)
         {
-            lock (SyncRoot)
-            {
-                if (D3D == null)
-                {
-                    return;
-                }
-                //base.ResizeContext(surfaceSize);
-                int potSize = GetPotSize(surfaceSize);
-                if (_texture0 != null)
-                {
-                    _texture0.Dispose();
-                    _texture0 = null;
-                }
-                if (_textureMaskTv != null)
-                {
-                    _textureMaskTv.Dispose();
-                    _textureMaskTv = null;
-                }
-                _texture0 = new D3dTexture(D3D, potSize, potSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-                _textureSize = new Size(potSize, potSize);
-                _surfaceSize = surfaceSize;
+            var potSize = GetPotSize(surfaceSize);
+            _texture0 = new D3dTexture(_device, potSize, potSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+            _texturePitch = potSize;
+            _surfaceSize = surfaceSize;
 
-                var maskTvSize = new Size(surfaceSize.Width, surfaceSize.Height * MimicTvRatio);
-                var maskTvPotSize = GetPotSize(maskTvSize);
-                _textureMaskTv = new D3dTexture(D3D, maskTvPotSize, maskTvPotSize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-                _textureMaskTvSize = new Size(maskTvPotSize, maskTvPotSize);
-                using (var gs = _textureMaskTv.LockRectangle(0, LockFlags.None))
+            var maskTvSize = new Size(surfaceSize.Width, surfaceSize.Height * MimicTvRatio);
+            var maskTvPitch = GetPotSize(maskTvSize);
+            _textureMaskTv = new D3dTexture(_device, maskTvPitch, maskTvPitch, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+            _maskTvSize = new Size(maskTvPitch, maskTvPitch);
+            using (var gs = _textureMaskTv.LockRectangle(0, LockFlags.None))
+            {
+                var pixelColor = 0;
+                var gapColor = MimicTvAlpha << 24;
+                var pdst = (int*)gs.InternalData.ToPointer();
+                for (var y = 0; y < maskTvSize.Height; y++)
                 {
-                    var pixelColor = 0;
-                    var gapColor = MimicTvAlpha << 24;
-                    for (var y = 0; y < maskTvSize.Height; y++)
+                    pdst += maskTvPitch;
+                    var color = (y % MimicTvRatio) != (MimicTvRatio - 1) ? pixelColor : gapColor;
+                    for (var x = 0; x < maskTvSize.Width; x++)
                     {
-                        var ptr = (int*)gs.InternalData;
-                        var offset = y * maskTvPotSize;
-                        ptr += offset;
-                        var color = (y % MimicTvRatio) != (MimicTvRatio - 1) ? pixelColor : gapColor;
-                        for (var x = 0; x < maskTvSize.Width; x++)
-                        {
-                            *(ptr + x) = color;
-                        }
+                        pdst[x] = color;
                     }
                 }
-                _textureMaskTv.UnlockRectangle(0);
-
-
-                InitIconTextures();
             }
-        }
-
-        private void InitIconTextures()
-        {
-            foreach (var textureWrapper in _iconWrapperDict.Values)
-            {
-                textureWrapper.Load(D3D);
-            }
-            if (_font != null)
-            {
-                _font.Dispose();
-                _font = null;
-            }
-            var gdiFont = new System.Drawing.Font(
-                "Microsoft Sans Serif",
-                10f/*8.25f*/,
-                System.Drawing.FontStyle.Bold,
-                GraphicsUnit.Pixel);
-            _font = new Microsoft.DirectX.Direct3D.Font(D3D, gdiFont);
+            _textureMaskTv.UnlockRectangle(0);
         }
 
         protected override void OnRenderScene()
@@ -545,111 +484,134 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 return;
             }
-            m_presentRequested = false;
-            OnRenderSceneInt();
-        }
-
-        protected override bool CanRender()
-        {
-            return !IsRunning || m_presentRequested;
-        }
-
-        private void OnRenderSceneInt()
-        {
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
-                if (_texture0 == null)
+                if (IsRunning && !_presentRequested)
                 {
                     return;
                 }
-                if (DebugInfo)
+                _presentRequested = false;
+                
+                _device.Clear(ClearFlags.Target, Color.Black, 1, 0);
+                _device.BeginScene();
+                try
                 {
-                    var renderStamp = Stopwatch.GetTimestamp();
-                    var renderTime = renderStamp - _lastRenderStamp;
-                    _lastRenderStamp = renderStamp;
-                    PushGraphValue(_renderGraph, ref _renderGraphIndex, renderTime);
+                    if (_texture0 != null)
+                    {
+                        if (DebugInfo)
+                        {
+                            var renderStamp = Stopwatch.GetTimestamp();
+                            var renderTime = renderStamp - _lastRenderStamp;
+                            _lastRenderStamp = renderStamp;
+                            PushGraphValue(_renderGraph, ref _renderGraphIndex, renderTime);
+                        }
+                        var wndSize = GetDeviceSize();
+                        var dstRect = GetDestinationRect(wndSize, GetSurfaceScaledSize());
+                        RenderFrame(dstRect, _surfaceSize);
+                        if (MimicTv)
+                        {
+                            RenderMaskTv(dstRect, _surfaceSize);
+                        }
+                        if (DebugInfo)
+                        {
+                            RenderDebugInfo(wndSize);
+                        }
+                        if (DisplayIcon)
+                        {
+                            RenderIcons();
+                        }
+                    }
                 }
-                var wndSize = GetDeviceSize();
-                var dstRect = GetDestinationRect(wndSize, GetSurfaceScaledSize());
-
-                RenderFrame(dstRect, _surfaceSize);
-                if (MimicTv)
+                finally
                 {
-                    RenderMaskTv(dstRect, _surfaceSize);
+                    _device.EndScene();
                 }
-                if (DebugInfo)
+                try
                 {
-                    RenderDebugInfo(wndSize);
+                    _device.Present();
                 }
-                if (DisplayIcon)
+                catch (DeviceLostException ex)
                 {
-                    RenderIcons();
+                    Logger.Debug(ex);
                 }
             }
         }
 
         private void RenderFrame(RectangleF dstRect, Size size)
         {
-            var srcRect = new Rectangle(
-                0,
-                0,
-                size.Width,
-                size.Height);
-
+            var srcRect = new Rectangle(0, 0, size.Width, size.Height);
+            
             _sprite.Begin(SpriteFlags.None);
-            D3D.SamplerState[0].MinFilter = Smoothing ? TextureFilter.Anisotropic : TextureFilter.Point;
-            D3D.SamplerState[0].MagFilter = Smoothing ? TextureFilter.Linear : TextureFilter.Point;
-            D3D.SamplerState[0].MipFilter = Smoothing ? TextureFilter.Linear : TextureFilter.Point;
-            _sprite.Draw2D(
-               _texture0,
-               srcRect,
-               dstRect.Size,
-               dstRect.Location,
-               -1);
-            _sprite.End();
+            try
+            {
+                if (!AntiAlias)
+                {
+                    _device.SetSamplerState(0, SamplerStageStates.MinFilter, (int)TextureFilter.Point);
+                    _device.SetSamplerState(0, SamplerStageStates.MagFilter, (int)TextureFilter.Point);
+                    _device.SetSamplerState(0, SamplerStageStates.MipFilter, (int)TextureFilter.Point);
+                }
+                _sprite.Draw2D(
+                   _texture0,
+                   srcRect,
+                   dstRect.Size,
+                   dstRect.Location,
+                   -1);
+            }
+            finally
+            {
+                _sprite.End();
+            }
         }
 
         private void RenderMaskTv(RectangleF dstRect, Size size)
         {
-            var srcRectTv = new Rectangle(
-                0,
-                0,
-                size.Width,
-                size.Height * MimicTvRatio);
+            var srcRect = new Rectangle(0, 0, size.Width, size.Height * MimicTvRatio);
 
-            _sprite.Begin(SpriteFlags.AlphaBlend);
-            D3D.SamplerState[0].MinFilter = TextureFilter.Anisotropic;
-            D3D.SamplerState[0].MagFilter = TextureFilter.Linear;
-            D3D.SamplerState[0].MipFilter = TextureFilter.Linear;
-            _sprite.Draw2D(
-                _textureMaskTv,
-                srcRectTv,
-                dstRect.Size,
-                dstRect.Location,
-                -1);
-            _sprite.End();
+            _spriteTv.Begin(SpriteFlags.AlphaBlend);
+            try
+            {
+                //_device.SamplerState[0].MinFilter = TextureFilter.Anisotropic;
+                //_device.SamplerState[0].MagFilter = TextureFilter.Linear;
+                //_device.SamplerState[0].MipFilter = TextureFilter.Linear;
+                _spriteTv.Draw2D(
+                    _textureMaskTv,
+                    srcRect,
+                    dstRect.Size,
+                    dstRect.Location,
+                    -1);
+            }
+            finally
+            {
+                _spriteTv.End();
+            }
         }
 
         private void RenderIcons()
         {
-            var devIconSize = new SizeF(32, 32);
+            var iconSize = new SizeF(32, 32);
             var iconNumber = 1;
-            foreach (var itw in _iconWrapperDict.Values)
+            foreach (var iconTexture in _iconTextures.Values)
             {
-                if (!itw.Visible || itw.Texture == null)
+                if (!iconTexture.Visible || iconTexture.Texture == null)
                 {
                     continue;
                 }
-                var iconRect = new Rectangle(new Point(0, 0), itw.Size);
-                var devIconPos = new PointF(D3D.PresentationParameters.BackBufferWidth - devIconSize.Width * iconNumber, 0);
-                _iconSprite.Begin(SpriteFlags.AlphaBlend);
-                _iconSprite.Draw2D(
-                   itw.Texture,
-                   iconRect,
-                   devIconSize,
-                   devIconPos,
-                   -1);
-                _iconSprite.End();
+                var iconRect = new Rectangle(new Point(0, 0), iconTexture.Size);
+                var iconPos = new PointF(_device.PresentationParameters.BackBufferWidth - iconSize.Width * iconNumber, 0);
+                _spriteIcon.Begin(SpriteFlags.AlphaBlend);
+                try
+                {
+                    _spriteIcon.Draw2D(
+                       iconTexture.Texture,
+                       iconRect,
+                       iconSize,
+                       iconPos,
+                       -1);
+                }
+                finally
+                {
+                    _spriteIcon.End();
+                }
                 iconNumber++;
             }
         }
@@ -666,7 +628,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 #endif
             var graphUpdate = GetGraph(_updateGraph, ref _updateGraphIndex);
             var frequency = (double)Stopwatch.Frequency;
-            var limitDisplay = frequency / D3D.DisplayMode.RefreshRate;
+            var limitDisplay = frequency / _device.DisplayMode.RefreshRate;
             var limit50 = frequency / 50D;
             var limit1ms = frequency / 1000D;
             var maxRender = graphRender.Max();
@@ -690,7 +652,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                 "Render FPS: {0:F3}\nUpdate FPS: {1:F3}\nDevice FPS: {2}\nBack: [{3}, {4}]\nClient: [{5}, {6}]\nSurface: [{7}, {8}]\nFrameStart: {9}T",
                 fpsRender,
                 IsRunning ? fpsUpdate : (double?)null,
-                D3D.DisplayMode.RefreshRate,
+                _device.DisplayMode.RefreshRate,
                 wndSize.Width,
                 wndSize.Height,
                 ClientSize.Width,
@@ -759,17 +721,18 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private void DrawGraphGrid(double maxValue, double step, Rectangle rect, int index, Color color)
         {
-            var alphaBlendEnabled = D3D.RenderState.AlphaBlendEnable;
-            D3D.RenderState.AlphaBlendEnable = true;
-            D3D.RenderState.SourceBlend = Blend.SourceAlpha;
-            D3D.RenderState.DestinationBlend = Blend.InvSourceAlpha;
-            D3D.RenderState.BlendOperation = BlendOperation.Add;
-            var colorInt = color.ToArgb();
+            var icolor = color.ToArgb();
             var list = new List<Point>();
-            if ((maxValue / step) > 40D)
+            var lineCount = maxValue / step;
+            if (lineCount > 40*40D)
+            {
+                step = maxValue / 20D;
+                icolor = Color.FromArgb(color.A, Color.Violet).ToArgb();
+            }
+            else if (lineCount > 40D)
             {
                 step *= 10D;
-                colorInt = Color.FromArgb(color.A, Color.Red).ToArgb();
+                icolor = Color.FromArgb(color.A, Color.Red).ToArgb();
             }
             for (var t = 0D; t < maxValue; t += step)
             {
@@ -785,11 +748,10 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
 
             var vertices = list
-                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, colorInt))
+                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, icolor))
                 .ToArray();
-            D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
-            D3D.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
-            D3D.RenderState.AlphaBlendEnable = alphaBlendEnabled;
+            _device.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
+            _device.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
         }
 
         private void RenderLimit(double limit, double maxValue, Rectangle rect, Color color)
@@ -798,12 +760,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 return;
             }
-            var alphaBlendEnabled = D3D.RenderState.AlphaBlendEnable;
-            D3D.RenderState.AlphaBlendEnable = true;
-            D3D.RenderState.SourceBlend = Blend.SourceAlpha;
-            D3D.RenderState.DestinationBlend = Blend.InvSourceAlpha;
-            D3D.RenderState.BlendOperation = BlendOperation.Add;
-            var colorInt = color.ToArgb();
+            var icolor = color.ToArgb();
             var list = new List<Point>();
             var value = 1D - (limit / maxValue);
             if (value < 0D)
@@ -814,11 +771,10 @@ namespace ZXMAK2.Host.WinForms.Controls
             list.Add(new Point(rect.Left, rect.Top + hValue));
             list.Add(new Point(rect.Left+rect.Width, rect.Top + hValue));
             var vertices = list
-                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, colorInt))
+                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, icolor))
                 .ToArray();
-            D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
-            D3D.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
-            D3D.RenderState.AlphaBlendEnable = alphaBlendEnabled;
+            _device.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
+            _device.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
         }
 
         private void RenderGraph(double[] graph, double maxValue, Rectangle rect, Color color)
@@ -827,12 +783,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 return;
             }
-            var alphaBlendEnabled = D3D.RenderState.AlphaBlendEnable;
-            D3D.RenderState.AlphaBlendEnable = true;
-            D3D.RenderState.SourceBlend = Blend.SourceAlpha;
-            D3D.RenderState.DestinationBlend = Blend.InvSourceAlpha;
-            D3D.RenderState.BlendOperation = BlendOperation.Add;
-            var colorInt = color.ToArgb();
+            var icolor = color.ToArgb();
             var list = new List<Point>();
             for (var x = 0; x < graph.Length && x < rect.Width; x++)
             {
@@ -846,32 +797,24 @@ namespace ZXMAK2.Host.WinForms.Controls
                 list.Add(new Point(rect.Left + x, rect.Top + hValue));
             }
             var vertices = list
-                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, colorInt))
+                .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, icolor))
                 .ToArray();
-            D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
-            D3D.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length/2, vertices);
-            D3D.RenderState.AlphaBlendEnable = alphaBlendEnabled;
+            _device.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
+            _device.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length/2, vertices);
         }
 
         private void FillRect(Rectangle rect, Color color)
         {
-            var alphaBlendEnabled = D3D.RenderState.AlphaBlendEnable;
-            //D3D.RenderState.ScissorTestEnable = false;
-            D3D.RenderState.AlphaBlendEnable = true;
-            D3D.RenderState.SourceBlend = Blend.SourceAlpha;
-            D3D.RenderState.DestinationBlend = Blend.InvSourceAlpha;
-            D3D.RenderState.BlendOperation = BlendOperation.Add;
-            var colorInt = color.ToArgb();
+            var icolor = color.ToArgb();
             var rectv = new[]
             {
-                new CustomVertex.TransformedColored(rect.Left, rect.Top+rect.Height+0.5F, 0, 1f, colorInt),
-                new CustomVertex.TransformedColored(rect.Left, rect.Top, 0, 1f, colorInt),
-                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top+rect.Height+0.5F, 0, 1f, colorInt),
-                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top, 0, 1f, colorInt),
+                new CustomVertex.TransformedColored(rect.Left, rect.Top+rect.Height+0.5F, 0, 1f, icolor),
+                new CustomVertex.TransformedColored(rect.Left, rect.Top, 0, 1f, icolor),
+                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top+rect.Height+0.5F, 0, 1f, icolor),
+                new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top, 0, 1f, icolor),
             };
-            D3D.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
-            D3D.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, rectv);
-            D3D.RenderState.AlphaBlendEnable = alphaBlendEnabled;
+            _device.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
+            _device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, rectv);
         }
 
         private RectangleF GetDestinationRect(SizeF wndSize, SizeF size)
@@ -931,7 +874,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private SizeF GetDeviceSize()
         {
-            var param = D3D.PresentationParameters;
+            var param = _device.PresentationParameters;
             return new SizeF(
                 param.BackBufferWidth, 
                 param.BackBufferHeight);
@@ -1005,26 +948,31 @@ namespace ZXMAK2.Host.WinForms.Controls
             return result;
         }
 
-        private void UpdateIcons(IIconDescriptor[] iconDescArray)
+        private void UpdateIconList(IIconDescriptor[] iconDescArray)
         {
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
                 foreach (var id in iconDescArray)
                 {
-                    if (!_iconWrapperDict.ContainsKey(id))
+                    var iconTexture = default(IconTextureWrapper);
+                    if (!_iconTextures.ContainsKey(id))
                     {
-                        _iconWrapperDict.Add(id, new IconTextureWrapper(id));
+                        iconTexture = new IconTextureWrapper(id);
+                        _iconTextures.Add(id, iconTexture);
                     }
-                    var itw = _iconWrapperDict[id];
-                    itw.Visible = id.Visible;
-                    if (itw.Texture == null && D3D != null)
+                    else
                     {
-                        itw.Load(D3D);
+                        iconTexture = _iconTextures[id];
+                    }
+                    iconTexture.Visible = id.Visible;
+                    if (iconTexture.Texture == null && _device != null)
+                    {
+                        iconTexture.Load(_device);
                     }
                 }
                 var iconDescList = new List<IIconDescriptor>(iconDescArray);
                 var deleteList = new List<IIconDescriptor>();
-                foreach (var id in _iconWrapperDict.Keys)
+                foreach (var id in _iconTextures.Keys)
                 {
                     if (!iconDescList.Contains(id))
                     {
@@ -1033,8 +981,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                 }
                 foreach (var id in deleteList)
                 {
-                    _iconWrapperDict[id].Dispose();
-                    _iconWrapperDict.Remove(id);
+                    _iconTextures[id].Dispose();
+                    _iconTextures.Remove(id);
                 }
             }
         }
@@ -1049,7 +997,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             for (var y = 0; y < _surfaceSize.Height; y++)
             {
                 var srcLine = pSrcBuffer + _surfaceSize.Width * y;
-                var dstLine = pDstBuffer + _textureSize.Width * y;
+                var dstLine = pDstBuffer + _texturePitch * y;
                 NativeMethods.CopyMemory(dstLine, srcLine, _surfaceSize.Width * 4);
             }
         }
@@ -1068,7 +1016,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                     var surfaceOffset = _surfaceSize.Width * y;
                     var pSrcArray1 = pSrcBuffer + surfaceOffset;
                     var pSrcArray2 = pSrcBuffer2 + surfaceOffset;
-                    var pDstArray = pDstBuffer + _textureSize.Width * y;
+                    var pDstArray = pDstBuffer + _texturePitch * y;
                     for (var i = 0; i < _surfaceSize.Width; i++)
                     {
                         var src1 = pSrcArray1[i];
