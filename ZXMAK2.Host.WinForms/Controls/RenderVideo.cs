@@ -17,7 +17,6 @@ using D3dFont = Microsoft.DirectX.Direct3D.Font;
 using D3dSprite = Microsoft.DirectX.Direct3D.Sprite;
 using D3dTexture = Microsoft.DirectX.Direct3D.Texture;
 using D3dTextureLoader = Microsoft.DirectX.Direct3D.TextureLoader;
-using System.Windows.Forms;
 
 
 namespace ZXMAK2.Host.WinForms.Controls
@@ -184,6 +183,13 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 CancelWait();
                 _waitEvent.Dispose();
+                
+                var list = _iconTextures.Values;
+                _iconTextures.Clear();
+                foreach (var icon in list)
+                {
+                    icon.Dispose();
+                }
             }
             base.Dispose(disposing);
         }
@@ -318,12 +324,12 @@ namespace ZXMAK2.Host.WinForms.Controls
             FrameSize = new Size(
                 frame.VideoData.Size.Width,
                 (int)(frame.VideoData.Size.Height * frame.VideoData.Ratio + 0.5F));
-            if (!_isInitialized)
+            if (!_isInitialized || _device == null)
             {
                 return;
             }
-            UpdateIconList(frame.Icons);
             UpdateSurface(frame.VideoData);
+            UpdateIconList(frame.Icons);
             if (isRequested)
             {
                 RequestPresentAsync();
@@ -351,10 +357,6 @@ namespace ZXMAK2.Host.WinForms.Controls
                 GraphicsUnit.Pixel);
             _font = new D3dFont(_device, gdiFont);
 
-            foreach (var iconTexture in _iconTextures.Values)
-            {
-                iconTexture.Load(_device);
-            }
             _device.SetRenderState(RenderStates.AlphaBlendEnable, true);
             _device.SetRenderState(RenderStates.SourceBlend, (int)Blend.SourceAlpha);
             _device.SetRenderState(RenderStates.DestinationBlend, (int)Blend.InvSourceAlpha);
@@ -373,9 +375,8 @@ namespace ZXMAK2.Host.WinForms.Controls
             Dispose(ref _font);
             foreach (var iconTexture in _iconTextures.Values)
             {
-                iconTexture.Dispose();
+                iconTexture.UnloadResources();
             }
-            _iconTextures.Clear();
             base.OnUnloadResources();
         }
 
@@ -414,10 +415,6 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             lock (_syncRoot)
             {
-                if (_device == null)
-                {
-                    return;
-                }
                 try
                 {
                     m_surfaceHeightScale = videoData.Ratio;
@@ -540,7 +537,6 @@ namespace ZXMAK2.Host.WinForms.Controls
         private void RenderFrame(RectangleF dstRect, Size size)
         {
             var srcRect = new Rectangle(0, 0, size.Width, size.Height);
-            
             _sprite.Begin(SpriteFlags.None);
             try
             {
@@ -566,13 +562,9 @@ namespace ZXMAK2.Host.WinForms.Controls
         private void RenderMaskTv(RectangleF dstRect, Size size)
         {
             var srcRect = new Rectangle(0, 0, size.Width, size.Height * MimicTvRatio);
-
             _spriteTv.Begin(SpriteFlags.AlphaBlend);
             try
             {
-                //_device.SamplerState[0].MinFilter = TextureFilter.Anisotropic;
-                //_device.SamplerState[0].MagFilter = TextureFilter.Linear;
-                //_device.SamplerState[0].MipFilter = TextureFilter.Linear;
                 _spriteTv.Draw2D(
                     _textureMaskTv,
                     srcRect,
@@ -618,6 +610,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private void RenderDebugInfo(SizeF wndSize)
         {
+            var frameRate = _device.DisplayMode.RefreshRate;
             var graphRender = GetGraph(_renderGraph, ref _renderGraphIndex);
             var graphLoad = GetGraph(_loadGraph, ref _loadGraphIndex);
 #if SHOW_LATENCY
@@ -628,7 +621,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 #endif
             var graphUpdate = GetGraph(_updateGraph, ref _updateGraphIndex);
             var frequency = (double)Stopwatch.Frequency;
-            var limitDisplay = frequency / _device.DisplayMode.RefreshRate;
+            var limitDisplay = frequency / frameRate;
             var limit50 = frequency / 50D;
             var limit1ms = frequency / 1000D;
             var maxRender = graphRender.Max();
@@ -652,7 +645,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                 "Render FPS: {0:F3}\nUpdate FPS: {1:F3}\nDevice FPS: {2}\nBack: [{3}, {4}]\nClient: [{5}, {6}]\nSurface: [{7}, {8}]\nFrameStart: {9}T",
                 fpsRender,
                 IsRunning ? fpsUpdate : (double?)null,
-                _device.DisplayMode.RefreshRate,
+                frameRate,
                 wndSize.Width,
                 wndSize.Height,
                 ClientSize.Width,
@@ -948,11 +941,12 @@ namespace ZXMAK2.Host.WinForms.Controls
             return result;
         }
 
-        private void UpdateIconList(IIconDescriptor[] iconDescArray)
+        private void UpdateIconList(IIconDescriptor[] icons)
         {
             lock (_syncRoot)
             {
-                foreach (var id in iconDescArray)
+                var nonUsed = _iconTextures.Keys.ToList();
+                foreach (var id in icons)
                 {
                     var iconTexture = default(IconTextureWrapper);
                     if (!_iconTextures.ContainsKey(id))
@@ -965,21 +959,13 @@ namespace ZXMAK2.Host.WinForms.Controls
                         iconTexture = _iconTextures[id];
                     }
                     iconTexture.Visible = id.Visible;
-                    if (iconTexture.Texture == null && _device != null)
+                    nonUsed.Remove(id);
+                    if (_device != null)
                     {
-                        iconTexture.Load(_device);
+                        iconTexture.LoadResources(_device);
                     }
                 }
-                var iconDescList = new List<IIconDescriptor>(iconDescArray);
-                var deleteList = new List<IIconDescriptor>();
-                foreach (var id in _iconTextures.Keys)
-                {
-                    if (!iconDescList.Contains(id))
-                    {
-                        deleteList.Add(id);
-                    }
-                }
-                foreach (var id in deleteList)
+                foreach (var id in nonUsed)
                 {
                     _iconTextures[id].Dispose();
                     _iconTextures.Remove(id);
@@ -1051,9 +1037,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
             public void Dispose()
             {
-                if (Texture != null)
-                    Texture.Dispose();
-                Texture = null;
+                UnloadResources();
             }
 
             public Size Size 
@@ -1061,14 +1045,26 @@ namespace ZXMAK2.Host.WinForms.Controls
                 get { return m_iconDesc.Size; } 
             }
 
-            public void Load(Device D3D)
+            public void LoadResources(Device device)
             {
-                if (Texture != null)
-                    Texture.Dispose();
+                if (device == null || Texture != null)
+                {
+                    return;
+                }
+                using (var stream = m_iconDesc.GetImageStream())
+                {
+                    Texture = D3dTextureLoader.FromStream(device, stream);
+                }
+            }
+
+            public void UnloadResources()
+            {
+                var texture = Texture;
                 Texture = null;
-                Texture = D3dTextureLoader.FromStream(
-                    D3D,
-                    m_iconDesc.GetImageStream());
+                if (texture != null)
+                {
+                    texture.Dispose();
+                }
             }
         }
         
