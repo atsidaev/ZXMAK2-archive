@@ -57,7 +57,7 @@
     <Compile Include="Entities\PsgPortState.cs" />
     <Compile Include="Entities\RomId.cs" />
     <Compile Include="Entities\RzxFrame.cs" />
-    <Compile Include="FpsMonitor.cs" />
+    <Compile Include="GraphMonitor.cs" />
     <Compile Include="InputAggregator.cs" />
     <Compile Include="Interfaces\IPsgDevice.cs" />
     <Compile Include="Interfaces\IBetaDiskDevice.cs" />
