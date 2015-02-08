@@ -13,9 +13,14 @@ namespace ZXMAK2.Host.Xna4.Xna
     {
         #region Fields
 
+        private SyncSource m_syncSource;
         private TimeSync m_timeSync;
         private IHostVideo m_video;
         private IHostSound m_sound;
+
+        private IHostKeyboard m_keyboard;
+        private IHostMouse m_mouse;
+        private IHostJoystick m_joystick;
 
         #endregion Fields
 
@@ -25,56 +30,27 @@ namespace ZXMAK2.Host.Xna4.Xna
         public XnaHost(IHostVideo hostVideo)
         {
             m_video = hostVideo;
+
             m_timeSync = new TimeSync();
-            
             var viewResolver = Locator.Resolve<IResolver>("View");
             if (viewResolver != null)
             {
                 m_sound = viewResolver.TryResolve<IHostSound>();
             }
-            Keyboard = new XnaKeyboard();
-            Mouse = new XnaMouse();
+            m_keyboard = new XnaKeyboard();
+            m_mouse = new XnaMouse();
+            UpdateSyncSource();
         }
 
         public void Dispose()
         {
-            var time = m_timeSync;
-            m_timeSync = null;
-            if (time != null)
-            {
-                time.Dispose();
-            }
-            var sound = m_sound;
-            m_sound = null;
-            if (sound != null)
-            {
-                sound.Dispose();
-            }
-            var keyboard = Keyboard;
-            Keyboard = null;
-            if (keyboard != null)
-            {
-                keyboard.Dispose();
-            }
-            var mouse = Mouse;
-            Mouse = null;
-            if (mouse != null)
-            {
-                mouse.Dispose();
-            }
-            var joystick = Joystick;
-            Joystick = null;
-            if (joystick != null)
-            {
-                joystick.Dispose();
-            }
+            Dispose(ref m_timeSync);
+            Dispose(ref m_sound);
+            Dispose(ref m_keyboard);
+            Dispose(ref m_mouse);
+            Dispose(ref m_joystick);
             // temporary not supported (reentrance)
-            //var video = Video;
-            //Video = null;
-            //if (video != null)
-            //{
-            //    video.Dispose();
-            //}
+            //Dispose(ref Video);
         }
 
         #endregion .ctor
@@ -82,10 +58,27 @@ namespace ZXMAK2.Host.Xna4.Xna
 
         #region IHost
 
-        public IHostKeyboard Keyboard { get; private set; }
-        public IHostMouse Mouse { get; private set; }
-        public IHostJoystick Joystick { get; private set; }
-        public SyncSource SyncSource { get; set; }
+        public IHostKeyboard Keyboard { get { return m_keyboard; } }
+        public IHostMouse Mouse { get { return m_mouse; } }
+        public IHostJoystick Joystick { get { return m_joystick; } }
+
+        public SyncSource SyncSource
+        {
+            get { return m_syncSource; }
+            set
+            {
+                m_syncSource = value;
+                UpdateSyncSource();
+            }
+        }
+
+        private void UpdateSyncSource()
+        {
+            var video = m_video;
+            var sound = m_sound;
+            sound.IsSynchronized = m_syncSource == SyncSource.Sound;
+            video.IsSynchronized = m_syncSource == SyncSource.Video;
+        }
 
 
         public bool CheckSyncSourceSupported(SyncSource value)
@@ -122,32 +115,24 @@ namespace ZXMAK2.Host.Xna4.Xna
             var timeSync = m_timeSync;
             var sound = m_sound;
             var video = m_video;
-            switch (SyncSource)
+            if (videoFrame.IsRefresh)
             {
-                case SyncSource.Time:
-                    if (timeSync != null)
-                    {
-                        timeSync.WaitFrame();
-                    }
-                    break;
-                case SyncSource.Sound:
-                    if (sound != null)
-                    {
-                        sound.WaitFrame();
-                    }
-                    break;
-                case SyncSource.Video:
-                    if (video != null)
-                    {
-                        video.WaitFrame();
-                    }
-                    break;
+                // request from UI, so we don't need sound and sync
+                if (video != null && videoFrame != null)
+                {
+                    video.PushFrame(videoFrame);
+                }
+                return;
             }
-            if (video != null)
+            if (SyncSource == SyncSource.Time && timeSync != null)
+            {
+                timeSync.WaitFrame();
+            }
+            if (video != null && videoFrame != null)
             {
                 video.PushFrame(videoFrame);
             }
-            if (sound != null && !videoFrame.IsRefresh)
+            if (sound != null && soundFrame != null)
             {
                 sound.PushFrame(soundFrame);
             }
@@ -192,5 +177,21 @@ namespace ZXMAK2.Host.Xna4.Xna
         }
 
         #endregion Public
+
+
+        #region Private
+
+        private static void Dispose<T>(ref T disposable)
+            where T : IDisposable
+        {
+            var value = disposable;
+            disposable = default(T);
+            if (value != null)
+            {
+                value.Dispose();
+            }
+        }
+
+        #endregion Private
     }
 }
