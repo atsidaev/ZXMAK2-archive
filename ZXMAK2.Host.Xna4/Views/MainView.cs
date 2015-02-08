@@ -27,8 +27,8 @@ namespace ZXMAK2.Host.Xna4.Views
         private Texture2D[] m_texture = new Texture2D[2];
         private SpriteBatch m_sprite;
         private SpriteFont m_font;
-        private readonly FpsMonitor m_fpsRender = new FpsMonitor();
-        private readonly FpsMonitor m_fpsUpdate = new FpsMonitor();
+        private readonly GraphMonitor m_graphRender = new GraphMonitor(150);
+        private readonly GraphMonitor m_graphUpdate = new GraphMonitor(150);
         private int m_textureIndex;
 
         private string m_title;
@@ -133,13 +133,13 @@ namespace ZXMAK2.Host.Xna4.Views
             {
                 throw new ArgumentNullException("frame");
             }
+            if (!frame.IsRefresh)
+            {
+                m_graphUpdate.PushPeriod();
+            }
             if (IsSynchronized && !frame.IsRefresh)
             {
                 WaitFrame();
-            }
-            if (!frame.IsRefresh)
-            {
-                m_fpsUpdate.Frame();
             }
             m_debugFrameStart = frame.StartTact;
             m_videoData = frame.VideoData;
@@ -333,7 +333,7 @@ namespace ZXMAK2.Host.Xna4.Views
         protected override void Draw(GameTime gameTime)
         {
             m_frameEvent.Set();
-            m_fpsRender.Frame();
+            m_graphRender.PushPeriod();
             base.Draw(gameTime);
 
             m_deviceManager.GraphicsDevice.Clear(Color.Black);
@@ -365,8 +365,17 @@ namespace ZXMAK2.Host.Xna4.Views
                     Color.White);
                 
                 m_writePos = 0F;
-                WriteLine("Render FPS: {0:F3}", m_fpsRender.Value);
-                WriteLine("Update FPS: {0:F3}", m_fpsUpdate.Value);
+                
+                var fpsRenderMin = GetFps(m_graphRender.Get().Max());
+                var fpsRenderAvg = GetFps(m_graphRender.Get().Average());
+                var fpsRenderMax = GetFps(m_graphRender.Get().Min());
+                WriteLine("Render FPS: {0:F3} < {1:F3} < {2:F3}", fpsRenderMin, fpsRenderAvg, fpsRenderMax);
+
+                var fpsUpdateMin = GetFps(m_graphUpdate.Get().Max());
+                var fpsUpdateAvg = GetFps(m_graphUpdate.Get().Average());
+                var fpsUpdateMax = GetFps(m_graphUpdate.Get().Min());
+                WriteLine("Update FPS: {0:F3} < {1:F3} < {2:F3}", fpsUpdateMin, fpsUpdateAvg, fpsUpdateMax);
+
                 WriteLine(
                     "Back: [{0}, {1}, {2}]", 
                     m_deviceManager.GraphicsDevice.PresentationParameters.BackBufferWidth,
@@ -379,6 +388,15 @@ namespace ZXMAK2.Host.Xna4.Views
                 WriteLine("FrameStart: {0}T", m_debugFrameStart);
             }
             m_sprite.End();
+        }
+
+        private double? GetFps(double period)
+        {
+            if (period > 0D)
+            {
+                return GraphMonitor.Frequency / period;
+            }
+            return null;
         }
 
         #endregion XNA
