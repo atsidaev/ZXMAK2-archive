@@ -217,10 +217,12 @@ namespace ZXMAK2.Engine
                 Spectrum.BusManager.IconDescriptorArray,
                 DebugFrameStartTact,
                 m_instantUpdateTime,
-                m_instantRenderTime);
+                m_instantRenderTime,
+                isRequested);
             if (isRequested)
             {
-                m_host.PushFrame(videoFrame, null, isRequested);
+                m_host.PushFrame(videoFrame, null);
+                return;
             }
             var soundFrame = default(ISoundFrame);
             var soundData = m_soundBuffers;
@@ -230,7 +232,7 @@ namespace ZXMAK2.Engine
                     Spectrum.BusManager.SampleRate,
                     soundData);
             }
-            m_host.PushFrame(videoFrame, soundFrame, isRequested);
+            m_host.PushFrame(videoFrame, soundFrame);
         }
 
         private long _renderTime;

@@ -306,9 +306,9 @@ namespace ZXMAK2.Host.WinForms.Controls
             _lastBlankStamp = Stopwatch.GetTimestamp();
         }
 
-        public void PushFrame(IVideoFrame frame, bool isRequested)
+        public void PushFrame(IVideoFrame frame)
         {
-            if (!isRequested)
+            if (!frame.IsRefresh)
             {
                 if (DebugInfo)
                 {
@@ -330,7 +330,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
             UpdateSurface(frame.VideoData);
             UpdateIconList(frame.Icons);
-            if (isRequested)
+            if (frame.IsRefresh)
             {
                 RequestPresentAsync();
             }
