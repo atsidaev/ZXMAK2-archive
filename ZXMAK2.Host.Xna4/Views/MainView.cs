@@ -125,9 +125,9 @@ namespace ZXMAK2.Host.Xna4.Views
             m_cancelEvent.Set();
         }
 
-        public void PushFrame(IVideoFrame frame, bool isRequested)
+        public void PushFrame(IVideoFrame frame)
         {
-            if (!isRequested)
+            if (!frame.IsRefresh)
             {
                 m_fpsUpdate.Frame();
             }

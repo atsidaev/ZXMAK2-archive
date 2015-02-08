@@ -10,5 +10,6 @@ namespace ZXMAK2.Host.Interfaces
         int StartTact { get; }
         double InstantUpdateTime { get; }
         double InstantRenderTime { get; }
+        bool IsRefresh { get; }
     }
 }

@@ -116,8 +116,7 @@ namespace ZXMAK2.Host.Xna4.Xna
 
         public void PushFrame(
             IVideoFrame videoFrame,
-            ISoundFrame soundFrame,
-            bool isRequested)
+            ISoundFrame soundFrame)
         {
             // frame sync
             var timeSync = m_timeSync;
@@ -146,9 +145,9 @@ namespace ZXMAK2.Host.Xna4.Xna
             }
             if (video != null)
             {
-                video.PushFrame(videoFrame, isRequested);
+                video.PushFrame(videoFrame);
             }
-            if (sound != null)
+            if (sound != null && !videoFrame.IsRefresh)
             {
                 sound.PushFrame(soundFrame);
             }

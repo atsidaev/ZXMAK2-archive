@@ -115,19 +115,18 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public void PushFrame(
             IVideoFrame videoFrame,
-            ISoundFrame soundFrame,
-            bool isRequested)
+            ISoundFrame soundFrame)
         {
             var timeSync = m_timeSync;
             var sound = m_sound;
             var video = m_video;
             
-            if (isRequested)
+            if (videoFrame.IsRefresh)
             {
                 // request from UI, so we don't need sound and sync
                 if (video != null && videoFrame != null)
                 {
-                    video.PushFrame(videoFrame, isRequested);
+                    video.PushFrame(videoFrame);
                 }
                 return;
             }
@@ -156,7 +155,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
             }
             if (video != null && videoFrame != null)
             {
-                video.PushFrame(videoFrame, isRequested);
+                video.PushFrame(videoFrame);
             }
             if (sound != null && soundFrame != null)
             {

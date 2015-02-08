@@ -13,10 +13,7 @@ namespace ZXMAK2.Host.Interfaces
 
         bool CheckSyncSourceSupported(SyncSource value);
         int GetSampleRate();
-        void PushFrame(
-            IVideoFrame videoFrame, 
-            ISoundFrame soundFrame,
-            bool isRequested);
+        void PushFrame(IVideoFrame videoFrame, ISoundFrame soundFrame);
         void CancelPush();
     }
 }

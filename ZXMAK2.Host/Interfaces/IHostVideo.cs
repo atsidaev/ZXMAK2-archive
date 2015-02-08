@@ -9,6 +9,6 @@ namespace ZXMAK2.Host.Interfaces
         
         void WaitFrame();
         void CancelWait();
-        void PushFrame(IVideoFrame frame, bool isRequested);
+        void PushFrame(IVideoFrame frame);
     }
 }
