@@ -17,6 +17,7 @@ using D3dFont = Microsoft.DirectX.Direct3D.Font;
 using D3dSprite = Microsoft.DirectX.Direct3D.Sprite;
 using D3dTexture = Microsoft.DirectX.Direct3D.Texture;
 using D3dTextureLoader = Microsoft.DirectX.Direct3D.TextureLoader;
+using ZXMAK2.Engine;
 
 
 namespace ZXMAK2.Host.WinForms.Controls
@@ -49,20 +50,13 @@ namespace ZXMAK2.Host.WinForms.Controls
         private int _texturePitch;
 
         private VideoFilterDelegate _videoFilter;
-        private readonly double[] _renderGraph = new double[GraphLength];
-        private readonly double[] _loadGraph = new double[GraphLength];
-        private readonly double[] _updateGraph = new double[GraphLength];
+        private readonly GraphMonitor _renderGraph = new GraphMonitor(GraphLength);
+        private readonly GraphMonitor _loadGraph = new GraphMonitor(GraphLength);
+        private readonly GraphMonitor _updateGraph = new GraphMonitor(GraphLength);
 #if SHOW_LATENCY
-        private readonly double[] _latencyGraph = new double[GraphLength];
-        private int _latencyGraphIndex;
-        //private readonly double[] m_copyGraph = new double[GraphLength];
-        //private int m_copyGraphIndex;
-        private int _lastLatencyIndex;
+        private readonly GraphMonitor _latencyGraph = new GraphMonitor(GraphLength);
+        //private readonly GraphMonitor _copyGraph = new GraphMonitor(GraphLength);
 #endif
-        private int _updateGraphIndex;
-        private int _renderGraphIndex;
-        private int _loadGraphIndex;
-        private int _graphDelayCounter;
         private int[] _lastBuffer = new int[0];    // noflick
         private long _lastBlankStamp;              // WaitVBlank
         private int _debugFrameStart = 0;
@@ -71,9 +65,6 @@ namespace ZXMAK2.Host.WinForms.Controls
         private bool _isRunning;
         private bool _isDebugInfo;
         private bool _isCancelWait;
-
-        private long _lastUpdateStamp;
-        private long _lastRenderStamp;
 
         #endregion Fields
 
@@ -100,12 +91,9 @@ namespace ZXMAK2.Host.WinForms.Controls
                     return;
                 }
                 _isDebugInfo = value;
-                _graphDelayCounter = 0;
-                _lastRenderStamp = Stopwatch.GetTimestamp();
-                _lastUpdateStamp = Stopwatch.GetTimestamp();
-                ClearGraph(_renderGraph, ref _renderGraphIndex);
-                ClearGraph(_loadGraph, ref _loadGraphIndex);
-                ClearGraph(_updateGraph, ref _updateGraphIndex);
+                _renderGraph.Clear();
+                _loadGraph.Clear();
+                _updateGraph.Clear();
             }
         }
 
@@ -159,11 +147,10 @@ namespace ZXMAK2.Host.WinForms.Controls
                     return;
                 }
                 _isRunning = value;
-                _lastUpdateStamp = Stopwatch.GetTimestamp();
-                _lastRenderStamp = Stopwatch.GetTimestamp();
-                _graphDelayCounter = 0;
-                //ClearGraph(m_renderGraph, ref m_renderGraphIndex);
-                //ClearGraph(m_loadGraph, ref m_loadGraphIndex);
+                _updateGraph.ResetPeriod();
+                _renderGraph.ResetPeriod();
+                //_renderGraph.Clear();
+                //_loadGraph.Clear();
             }
         }
 
@@ -269,7 +256,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                     _lastBlankStamp = timeStamp;
                 }
 #if SHOW_LATENCY
-                PushGraphValue(_latencyGraph, ref _latencyGraphIndex, double.NaN);
+                _latencyGraph.PushValue(double.NaN);
 #endif
                 return;
             }
@@ -290,7 +277,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                     Thread.Sleep(delay);
 #if SHOW_LATENCY
                     var realTime = (Stopwatch.GetTimestamp() - timeStamp) * 1000D / frequency;
-                    PushGraphValue(_latencyGraph, ref _latencyGraphIndex, realTime-delta);
+                    _latencyGraph.PushValue(realTime - delta);
 #endif
                 }
             }
@@ -322,11 +309,8 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 if (DebugInfo)
                 {
-                    var updateStamp = Stopwatch.GetTimestamp();
-                    var updateTime = updateStamp - _lastUpdateStamp;
-                    _lastUpdateStamp = updateStamp;
-                    PushGraphValue(_updateGraph, ref _updateGraphIndex, updateTime);
-                    PushGraphValue(_loadGraph, ref _loadGraphIndex, frame.InstantUpdateTime);
+                    _updateGraph.PushPeriod();
+                    _loadGraph.PushValue(frame.InstantUpdateTime);
                 }
                 RequestPresentAsync();
             }
@@ -507,10 +491,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                     {
                         if (DebugInfo)
                         {
-                            var renderStamp = Stopwatch.GetTimestamp();
-                            var renderTime = renderStamp - _lastRenderStamp;
-                            _lastRenderStamp = renderStamp;
-                            PushGraphValue(_renderGraph, ref _renderGraphIndex, renderTime);
+                            _renderGraph.PushPeriod();
                         }
                         var wndSize = GetDeviceSize();
                         var dstRect = GetDestinationRect(wndSize, GetSurfaceScaledSize());
@@ -621,15 +602,13 @@ namespace ZXMAK2.Host.WinForms.Controls
         private void RenderDebugInfo(SizeF wndSize)
         {
             var frameRate = _device.DisplayMode.RefreshRate;
-            var graphRender = GetGraph(_renderGraph, ref _renderGraphIndex);
-            var graphLoad = GetGraph(_loadGraph, ref _loadGraphIndex);
+            var graphRender = _renderGraph.Get();
+            var graphLoad = _loadGraph.Get();
 #if SHOW_LATENCY
-            var isLatencyAvailable = _lastLatencyIndex != _latencyGraphIndex;
-            _lastLatencyIndex = _latencyGraphIndex;
-            var graphLatency = isLatencyAvailable ? GetGraph(_latencyGraph, ref _latencyGraphIndex) : default(double[]);
-            //var graphCopy = GetGraph(m_copyGraph, ref m_copyGraphIndex);
+            var graphLatency = _latencyGraph.Get();
+            //var graphCopy = _copyGraph.Get();
 #endif
-            var graphUpdate = GetGraph(_updateGraph, ref _updateGraphIndex);
+            var graphUpdate = _updateGraph.Get();
             var frequency = (double)Stopwatch.Frequency;
             var limitDisplay = frequency / frameRate;
             var limit50 = frequency / 50D;
@@ -640,9 +619,9 @@ namespace ZXMAK2.Host.WinForms.Controls
             var avgT = graphRender.Average() * 1000D / frequency;
             var maxT = maxRender * 1000D / frequency;
 #if SHOW_LATENCY
-            var minL = isLatencyAvailable ? graphLatency.Min() * 1000D / frequency : 0D;
-            var avgL = isLatencyAvailable ? graphLatency.Average() * 1000D / frequency : 0D;
-            var maxL = isLatencyAvailable ? graphLatency.Max() * 1000D / frequency : 0D;
+            var minL = _latencyGraph.IsDataAvailable ? graphLatency.Min() * 1000D / frequency : 0D;
+            var avgL = _latencyGraph.IsDataAvailable ? graphLatency.Average() * 1000D / frequency : 0D;
+            var maxL = _latencyGraph.IsDataAvailable ? graphLatency.Max() * 1000D / frequency : 0D;
 #endif
             var avgE = graphLoad.Average() * 1000D / frequency;
             var avgU = graphUpdate.Average() * 1000D / frequency;
@@ -694,7 +673,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                 //RenderGraph(graphCopy, maxTime, graphRect, Color.FromArgb(196, Color.Yellow));
                 RenderLimit(limitDisplay, maxScale, graphRect, Color.FromArgb(196, Color.Yellow));
                 RenderLimit(limit50, maxScale, graphRect, Color.FromArgb(196, Color.Magenta));
-                DrawGraphGrid(maxScale, limit1ms, graphRect, _renderGraphIndex, Color.FromArgb(64, Color.White));
+                DrawGraphGrid(maxScale, limit1ms, graphRect, _renderGraph.GetIndex(), Color.FromArgb(64, Color.White));
 
                 var msgTime = string.Format(
                     "MinT: {0:F3} [ms]\nAvgT: {1:F3} [ms]\nMaxT: {2:F3} [ms]\nAvgE: {3:F3} [ms]",
@@ -703,7 +682,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                     maxT,
                     avgE);
 #if SHOW_LATENCY
-                if (isLatencyAvailable)
+                if (_latencyGraph.IsDataAvailable)
                 {
                     msgTime = string.Format(
                         "{0}\nMinL: {1:F3} [ms]\nAvgL: {2:F3} [ms]\nMaxL: {3:F3} [ms]",
@@ -889,41 +868,6 @@ namespace ZXMAK2.Host.WinForms.Controls
             return new SizeF(
                 surfSize.Width,
                 surfSize.Height * m_surfaceHeightScale);
-        }
-
-        private void PushGraphValue(double[] graph, ref int index, double value)
-        {
-            if (_graphDelayCounter < 2)
-            {
-                // eliminate value of first 2 frames (startup delays)
-                if (graph == _renderGraph)
-                {
-                    _graphDelayCounter++;
-                }
-                return;
-            }
-            graph[index] = value;
-            index = (index + 1) % graph.Length;
-        }
-
-        private void ClearGraph(double[] graph, ref int index)
-        {
-            for (var i = 0; i < graph.Length; i++)
-            {
-                graph[i] = 0;
-            }
-            index = 0;
-        }
-
-        private static double[] GetGraph(double[] graph, ref int index)
-        {
-            var array = new double[graph.Length];
-            var fixedIndex = index;
-            for (var i = 0; i < graph.Length; i++)
-            {
-                array[i] = graph[(fixedIndex + i) % graph.Length];
-            }
-            return array;
         }
 
         private static int GetPotSize(Size surfaceSize)

@@ -25,11 +25,19 @@ namespace ZXMAK2.Engine
             get { return Stopwatch.Frequency; }
         }
 
-        public void Push(double value)
+        public bool IsDataAvailable { get; private set; }
+
+        public int GetIndex()
+        {
+            return _index;
+        }
+
+        public void PushValue(double value)
         {
             var index = _index;
             _index = (index + 1) % _sampleCount;
             _graph[index] = value;
+            IsDataAvailable = true;
         }
 
         public void PushPeriod()
@@ -38,12 +46,17 @@ namespace ZXMAK2.Engine
             if (_lastStamp.HasValue)
             {
                 var delta = stamp - _lastStamp;
-                Push((double)delta);
+                PushValue((double)delta);
             }
             _lastStamp = stamp;
         }
 
-        public IEnumerable<double> Get()
+        public void ResetPeriod()
+        {
+            _lastStamp = null;
+        }
+
+        public double[] Get()
         {
             var array = new double[_sampleCount];
             var fixedIndex = _index;
@@ -56,6 +69,7 @@ namespace ZXMAK2.Engine
 
         public void Clear()
         {
+            IsDataAvailable = false;
             _lastStamp = null;
             _index = 0;
             Array.Clear(_graph, 0, _graph.Length);
