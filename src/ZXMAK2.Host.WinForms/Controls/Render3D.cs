@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.DirectX.Direct3D;
 using System.Threading;
+using System.Diagnostics;
 
 
 
@@ -19,6 +20,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         private readonly PresentParameters _presentParams = new PresentParameters();
         protected readonly object _syncRoot = new object();
         protected Device _device;
+        private Thread _threadRender;
 
         #endregion Fields
 
@@ -40,26 +42,12 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         public void InitWnd()
         {
-            lock (_syncRoot)
-            {
-                if (_device != null)
-                {
-                    return;
-                }
-                InitDevice();
-            }
+            InitDevice();
         }
 
         public void FreeWnd()
         {
-            lock (_syncRoot)
-            {
-                if (_device == null)
-                {
-                    return;
-                }
-                FreeDevice();
-            }
+            FreeDevice();
         }
 
         #endregion Public
@@ -73,11 +61,20 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 lock (_syncRoot)
                 {
+                    if (_device != null)
+                    {
+                        return;
+                    }
                     _device = CreateDirect3D();
                     _device.DeviceResizing += new System.ComponentModel.CancelEventHandler(Device_OnDeviceResizing);
                     _device.DeviceReset += new EventHandler(Device_OnDeviceReset);
                     OnLoadResources();
                     RenderScene();
+                    _renderEvent.Reset();
+                    _threadRender = new Thread(RenderProc);
+                    _threadRender.Name = "Render";
+                    _threadRender.Priority = ThreadPriority.AboveNormal;
+                    _threadRender.Start();
                 }
             }
             catch (Exception ex)
@@ -90,6 +87,17 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             try
             {
+                var thread = default(Thread);
+                lock (_syncRoot)
+                {
+                    thread = _threadRender;
+                    _threadRender = null;
+                }
+                if (thread != null)
+                {
+                    _renderEvent.Set();
+                    thread.Join();
+                }
                 lock (_syncRoot)
                 {
                     if (_device == null)
@@ -106,6 +114,8 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
+        private long? _resetStartStamp; 
+
         private void ResetDevice()
         {
             try
@@ -120,12 +130,36 @@ namespace ZXMAK2.Host.WinForms.Controls
                     ConfigureDeviceParams(false);
                     _device.Reset(_presentParams);
                     OnLoadResources();
+                    _resetStartStamp = null;
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
+        }
+
+        private readonly AutoResetEvent _renderEvent = new AutoResetEvent(false);
+
+        private void RenderProc()
+        {
+            while (_threadRender != null)
+            {
+                try
+                {
+                    _renderEvent.WaitOne();
+                    RenderScene();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            }
+        }
+
+        protected void RenderAsync()
+        {
+            _renderEvent.Set();
         }
 
         private void Device_OnDeviceReset(object sender, EventArgs e)
@@ -211,7 +245,21 @@ namespace ZXMAK2.Host.WinForms.Controls
                     }
                     else if (hr == ResultCode.DeviceNotReset)
                     {
-                        ResetDevice();
+                        //Logger.Debug("DeviceReset: TODO - sync with UI");
+
+                        if (!_resetStartStamp.HasValue)
+                        {
+                            _resetStartStamp = Stopwatch.GetTimestamp();
+                            BeginInvoke(new Action(ResetDevice));
+                        }
+                        else
+                        {
+                            var delta = Stopwatch.GetTimestamp() - _resetStartStamp;
+                            if (delta * 1000 / Stopwatch.Frequency > 300)
+                            {
+                                _resetStartStamp = null;
+                            }
+                        }
                     }
                     else if (hr == ResultCode.DeviceLost)
                     {
