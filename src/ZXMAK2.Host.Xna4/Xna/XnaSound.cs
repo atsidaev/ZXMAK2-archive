@@ -76,7 +76,9 @@ namespace ZXMAK2.Host.Xna4.Xna
             get { return true; }
         }
 
-        public void WaitFrame()
+        public bool IsSynchronized { get; set; }
+
+        private void WaitFrame()
         {
             m_waitEvent.Reset();
             try
@@ -113,7 +115,11 @@ namespace ZXMAK2.Host.Xna4.Xna
         {
             if (soundFrame == null)
             {
-                return;
+                throw new ArgumentNullException("soundFrame");
+            }
+            if (IsSynchronized)
+            {
+                WaitFrame();
             }
             var buffer = LockBuffer();
             if (buffer == null)

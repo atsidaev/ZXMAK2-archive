@@ -13,6 +13,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
     {
         #region Fields
 
+        private SyncSource m_syncSource;
         private TimeSync m_timeSync;
         private IHostVideo m_video;
         private IHostSound m_sound;
@@ -32,48 +33,21 @@ namespace ZXMAK2.Host.WinForms.Mdx
             var viewResolver = Locator.TryResolve<IResolver>("View");
             if (viewResolver != null)
             {
-                m_sound = viewResolver.TryResolve<IHostSound>(new Argument("form", form)); //new DirectSound(form, 44100, 4)
+                m_sound = viewResolver.TryResolve<IHostSound>(new Argument("form", form));
                 m_keyboard = viewResolver.TryResolve<IHostKeyboard>(new Argument("form", form));
             }
             SafeExecute(() => m_mouse = new DirectMouse(form));
             SafeExecute(() => m_joystick = new DirectJoystick(form));
+            UpdateSyncSource();
         }
 
         public void Dispose()
         {
-            var time = m_timeSync;
-            m_timeSync = null;
-            if (time != null)
-            {
-                time.Dispose();
-            }
-            var sound = m_sound;
-            m_sound = null;
-            if (sound != null)
-            {
-                sound.Dispose();
-            }
-            var keyboard = m_keyboard;
-            m_keyboard = null;
-            if (keyboard != null)
-            {
-                keyboard.Dispose();
-                keyboard = null;
-            }
-            var mouse = m_mouse;
-            m_mouse = null;
-            if (mouse != null)
-            {
-                mouse.Dispose();
-                mouse = null;
-            }
-            var joystick = m_joystick;
-            m_joystick = null;
-            if (joystick != null)
-            {
-                joystick.Dispose();
-                joystick = null;
-            }
+            Dispose(ref m_timeSync);
+            Dispose(ref m_sound);
+            Dispose(ref m_keyboard);
+            Dispose(ref m_mouse);
+            Dispose(ref m_joystick);
         }
 
         #endregion .ctor
@@ -84,7 +58,24 @@ namespace ZXMAK2.Host.WinForms.Mdx
         public IHostKeyboard Keyboard { get { return m_keyboard; } }
         public IHostMouse Mouse { get { return m_mouse; } }
         public IHostJoystick Joystick { get { return m_joystick; } }
-        public SyncSource SyncSource { get; set; }
+
+        public SyncSource SyncSource 
+        {
+            get { return m_syncSource; }
+            set
+            {
+                m_syncSource = value;
+                UpdateSyncSource();
+            }
+        }
+
+        private void UpdateSyncSource()
+        {
+            var video = m_video;
+            var sound = m_sound;
+            sound.IsSynchronized = m_syncSource == SyncSource.Sound;
+            video.IsSynchronized = m_syncSource == SyncSource.Video;
+        }
 
 
         public bool CheckSyncSourceSupported(SyncSource value)
@@ -120,7 +111,6 @@ namespace ZXMAK2.Host.WinForms.Mdx
             var timeSync = m_timeSync;
             var sound = m_sound;
             var video = m_video;
-            
             if (videoFrame.IsRefresh)
             {
                 // request from UI, so we don't need sound and sync
@@ -130,28 +120,9 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 }
                 return;
             }
-
-            // sync frame...
-            switch (SyncSource)
+            if (SyncSource == SyncSource.Time && timeSync != null)
             {
-                case SyncSource.Time:
-                    if (timeSync != null)
-                    {
-                        timeSync.WaitFrame();
-                    }
-                    break;
-                case SyncSource.Sound:
-                    if (sound != null)
-                    {
-                        sound.WaitFrame();
-                    }
-                    break;
-                case SyncSource.Video:
-                    if (video != null)
-                    {
-                        video.WaitFrame();
-                    }
-                    break;
+                timeSync.WaitFrame();
             }
             if (video != null && videoFrame != null)
             {
@@ -223,6 +194,14 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 Logger.Error(ex);
             }
+        }
+
+        private static void Dispose<T>(ref T disposable)
+            where T : IDisposable
+        {
+            var value = disposable;
+            disposable = default(T);
+            value.Dispose();
         }
 
         #endregion Private

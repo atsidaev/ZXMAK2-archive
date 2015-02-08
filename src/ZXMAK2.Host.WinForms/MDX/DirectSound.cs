@@ -256,8 +256,9 @@ namespace ZXMAK2.Host.WinForms.Mdx
             get { return true; }
         }
 
+        public bool IsSynchronized { get; set; }
 
-        public void WaitFrame()
+        private void WaitFrame()
         {
             _frameEvent.Reset();
             _cancelEvent.Reset();
@@ -278,7 +279,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             if (soundFrame == null)
             {
-                return;
+                throw new ArgumentNullException("soundFrame");
+            }
+            if (IsSynchronized)
+            {
+                WaitFrame();
             }
             var buffer = LockBuffer();
             if (buffer == null)

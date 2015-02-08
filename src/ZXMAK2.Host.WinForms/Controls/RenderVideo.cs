@@ -197,7 +197,9 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         #region IHostVideo
 
-        public void WaitFrame()
+        public bool IsSynchronized { get; set; }
+
+        private void WaitFrame()
         {
             if (!_isInitialized)
             {
@@ -308,6 +310,14 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         public void PushFrame(IVideoFrame frame)
         {
+            if (frame == null)
+            {
+                throw new ArgumentNullException("frame");
+            }
+            if (IsSynchronized && !frame.IsRefresh)
+            {
+                WaitFrame();
+            }
             if (!frame.IsRefresh)
             {
                 if (DebugInfo)

@@ -113,6 +113,8 @@ namespace ZXMAK2.Host.Xna4.Views
         {
             get { return true; }
         }
+
+        public bool IsSynchronized { get; set; }
         
         public void WaitFrame()
         {
@@ -127,6 +129,14 @@ namespace ZXMAK2.Host.Xna4.Views
 
         public void PushFrame(IVideoFrame frame)
         {
+            if (frame == null)
+            {
+                throw new ArgumentNullException("frame");
+            }
+            if (IsSynchronized && !frame.IsRefresh)
+            {
+                WaitFrame();
+            }
             if (!frame.IsRefresh)
             {
                 m_fpsUpdate.Frame();
