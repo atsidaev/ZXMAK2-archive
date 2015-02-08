@@ -217,7 +217,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                     {
                         break;
                     }
-                    RequestPresentAsync();
+                    RenderAsync();
+                    //RequestPresentAsync();
                 }
             }
             catch (Exception ex)
@@ -312,7 +313,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                     _graphUpdate.PushPeriod();
                     _graphLoad.PushValue(frame.InstantUpdateTime);
                 }
-                RequestPresentAsync();
+                //RequestPresentAsync();
+                RenderAsync();
             }
             _debugFrameStart = frame.StartTact;
             FrameSize = new Size(
@@ -326,7 +328,8 @@ namespace ZXMAK2.Host.WinForms.Controls
             UpdateIconList(frame.Icons);
             if (frame.IsRefresh)
             {
-                RequestPresentAsync();
+                //RequestPresentAsync();
+                RenderAsync();
             }
         }
 
@@ -393,17 +396,17 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
-        private bool _presentRequested;
+        //private bool _presentRequested;
 
-        private void RequestPresentAsync()
-        {
-            if (!Created)
-            {
-                return;
-            }
-            _presentRequested = true;
-            Invalidate();
-        }
+        //private void RequestPresentAsync()
+        //{
+        //    if (!Created)
+        //    {
+        //        return;
+        //    }
+        //    _presentRequested = true;
+        //    Invalidate();
+        //}
 
         private unsafe void UpdateSurface(IVideoData videoData)
         {
@@ -477,11 +480,11 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
             lock (_syncRoot)
             {
-                if (IsRunning && !_presentRequested)
-                {
-                    return;
-                }
-                _presentRequested = false;
+                //if (IsRunning && !_presentRequested)
+                //{
+                //    return;
+                //}
+                //_presentRequested = false;
                 
                 _device.Clear(ClearFlags.Target, Color.Black, 1, 0);
                 _device.BeginScene();
