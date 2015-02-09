@@ -87,6 +87,14 @@ namespace ZXMAK2
             try
             {
                 var msg = fmt != null ? string.Format(fmt, args) : null;
+                if (exception != null)
+                {
+                    msg = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}: {1}",
+                        exception.GetType(),
+                        msg);
+                }
                 _logger.Debug(msg, exception);
             }
             catch (Exception ex)
@@ -100,6 +108,14 @@ namespace ZXMAK2
             try
             {
                 var msg = fmt != null ? string.Format(fmt, args) : null;
+                if (exception != null)
+                {
+                    msg = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}: {1}",
+                        exception.GetType(),
+                        msg);
+                }
                 _logger.Info(msg, exception);
             }
             catch (Exception ex)
@@ -113,6 +129,14 @@ namespace ZXMAK2
             try
             {
                 var msg = fmt != null ? string.Format(fmt, args) : null;
+                if (exception != null)
+                {
+                    msg = string.Format( 
+                        CultureInfo.InvariantCulture,
+                        "{0}: {1}", 
+                        exception.GetType(), 
+                        msg);
+                }
                 _logger.Warn(msg, exception);
             }
             catch (Exception ex)
@@ -126,6 +150,14 @@ namespace ZXMAK2
             try
             {
                 var msg = fmt != null ? string.Format(fmt, args) : null;
+                if (exception != null)
+                {
+                    msg = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}: {1}",
+                        exception.GetType(),
+                        msg);
+                }
                 _logger.Error(msg, exception);
             }
             catch (Exception ex)
@@ -139,6 +171,14 @@ namespace ZXMAK2
             try
             {
                 var msg = fmt != null ? string.Format(fmt, args) : null;
+                if (exception != null)
+                {
+                    msg = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}: {1}",
+                        exception.GetType(),
+                        msg);
+                }
                 _logger.Fatal(msg, exception);
             }
             catch (Exception ex)
