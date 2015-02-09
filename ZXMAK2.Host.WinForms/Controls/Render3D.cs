@@ -61,24 +61,16 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             try
             {
-                lock (_syncRoot)
+                if (_threadRender != null)
                 {
-                    if (_device != null)
-                    {
-                        return;
-                    }
-                    _hWnd = Handle;
-                    _device = CreateDirect3D();
-                    _device.DeviceResizing += Device_OnDeviceResizing;
-                    _device.DeviceReset += Device_OnDeviceReset;
-                    OnLoadResources();
-                    RenderScene();
-                    _renderEvent.Reset();
-                    _threadRender = new Thread(RenderProc);
-                    _threadRender.Name = "Render";
-                    _threadRender.Priority = ThreadPriority.AboveNormal;
-                    _threadRender.Start();
+                    return;
                 }
+                _hWnd = Handle;
+                _renderEvent.Reset();
+                _threadRender = new Thread(RenderProc);
+                _threadRender.Name = "Render";
+                _threadRender.Priority = ThreadPriority.Highest;
+                _threadRender.Start();
             }
             catch (Exception ex)
             {
@@ -101,40 +93,6 @@ namespace ZXMAK2.Host.WinForms.Controls
                     _renderEvent.Set();
                     thread.Join();
                 }
-                lock (_syncRoot)
-                {
-                    if (_device == null)
-                    {
-                        return;
-                    }
-                    OnUnloadResources();
-                    Dispose(ref _device);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
-        private long? _resetStartStamp; 
-
-        private void ResetDevice()
-        {
-            try
-            {
-                lock (_syncRoot)
-                {
-                    if (_device == null)
-                    {
-                        return;
-                    }
-                    OnUnloadResources();
-                    ConfigureDeviceParams(false);
-                    _device.Reset(_presentParams);
-                    OnLoadResources();
-                    _resetStartStamp = null;
-                }
             }
             catch (Exception ex)
             {
@@ -146,16 +104,43 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private void RenderProc()
         {
-            while (_threadRender != null)
+            _device = CreateDirect3D();
+            try
             {
+                _device.DeviceResizing += Device_OnDeviceResizing;
+                _device.DeviceReset += Device_OnDeviceReset;
                 try
                 {
-                    _renderEvent.WaitOne();
-                    RenderScene();
+                    OnLoadResources();
+                    while (_threadRender != null)
+                    {
+                        try
+                        {
+                            _renderEvent.WaitOne();
+                            lock (_syncRoot)
+                            {
+                                RenderScene();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                        }
+                    }
                 }
-                catch (Exception ex)
+                finally
                 {
-                    Logger.Error(ex);
+                    lock (_syncRoot)
+                    {
+                        OnUnloadResources();
+                    }
+                }
+            }
+            finally
+            {
+                lock (_syncRoot)
+                {
+                    Dispose(ref _device);
                 }
             }
         }
@@ -192,7 +177,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 if (_device != null)
                 {
-                    RenderScene();
+                    RenderAsync();
                 }
                 else
                 {
@@ -207,8 +192,8 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         protected override void OnResize(EventArgs e)
         {
+            RenderAsync();
             base.OnResize(e);
-            ResetDevice();
         }
 
         protected virtual void OnLoadResources()
@@ -223,57 +208,60 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
         }
 
-        protected virtual bool CanRender()
+        private void ResetDevice()
         {
-            return true;
+            OnUnloadResources();
+            ConfigureDeviceParams(false);
+            try
+            {
+                _device.Reset(_presentParams);
+                OnLoadResources();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
-        protected void RenderScene()
+        private void RenderScene()
         {
             try
             {
-                lock (_syncRoot)
+                var wndSize = NativeMethods.GetWindowRect(_hWnd).Size;
+                if (wndSize.Width != _presentParams.BackBufferWidth ||
+                    wndSize.Height != _presentParams.BackBufferHeight)
                 {
-                    var wndSize = NativeMethods.GetWindowRect(_hWnd).Size;
-                    var wndVisible = NativeMethods.IsWindowVisible(_hWnd);
-                    if (_device == null ||
-                        !wndVisible ||
-                        wndSize.Width <= 0 ||
-                        wndSize.Height <= 0)
+                    if (wndSize.Width < 1 || wndSize.Height < 1)
                     {
                         return;
                     }
-                    var hr = TestCooperativeLevel();
-                    if (hr == ResultCode.Success)
-                    {
-                        OnRenderScene();
-                    }
-                    else if (hr == ResultCode.DeviceNotReset)
-                    {
-                        //Logger.Debug("DeviceReset: TODO - sync with UI");
-
-                        if (!_resetStartStamp.HasValue)
-                        {
-                            _resetStartStamp = Stopwatch.GetTimestamp();
-                            BeginInvoke(new Action(ResetDevice));
-                        }
-                        else
-                        {
-                            var delta = Stopwatch.GetTimestamp() - _resetStartStamp;
-                            if (delta * 1000 / Stopwatch.Frequency > 300)
-                            {
-                                _resetStartStamp = null;
-                            }
-                        }
-                    }
-                    else if (hr == ResultCode.DeviceLost)
-                    {
-                        Thread.Sleep(10);
-                    }
-                    else
-                    {
-                        Logger.Warn("TestCooperativeLevel() = {0}", hr);
-                    }
+                    ResetDevice();
+                    return;
+                }
+                var wndVisible = NativeMethods.IsWindowVisible(_hWnd);
+                if (_device == null ||
+                    !wndVisible ||
+                    wndSize.Width <= 0 ||
+                    wndSize.Height <= 0)
+                {
+                    return;
+                }
+                var hr = TestCooperativeLevel();
+                if (hr == ResultCode.Success)
+                {
+                    OnRenderScene();
+                }
+                else if (hr == ResultCode.DeviceNotReset)
+                {
+                    ResetDevice();
+                }
+                else if (hr == ResultCode.DeviceLost)
+                {
+                    OnUnloadResources();
+                }
+                else
+                {
+                    Logger.Warn("TestCooperativeLevel() = {0}", hr);
                 }
             }
             catch (Exception ex)
@@ -303,16 +291,18 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private int GetAdapterId()
         {
-            var screen = Screen.FromControl(this);
-            var adapterInfo = Manager.Adapters
-                .OfType<AdapterInformation>()
-                .FirstOrDefault(ai => ai.Information.DeviceName == screen.DeviceName);
-            adapterInfo = adapterInfo ?? Manager.Adapters.Default;
-            return adapterInfo.Adapter;
+            return 0;
+            //var screen = Screen.FromControl(this);
+            //var adapterInfo = Manager.Adapters
+            //    .OfType<AdapterInformation>()
+            //    .FirstOrDefault(ai => ai.Information.DeviceName == screen.DeviceName);
+            //adapterInfo = adapterInfo ?? Manager.Adapters.Default;
+            //return adapterInfo.Adapter;
         }
 
         private void ConfigureDeviceParams(bool vBlankSync)
         {
+            var wndSize = NativeMethods.GetWindowRect(_hWnd).Size;
             _presentParams.Windowed = true;
             _presentParams.PresentationInterval =
                 vBlankSync ? PresentInterval.One : PresentInterval.Immediate;
@@ -320,8 +310,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                 vBlankSync ? SwapEffect.Flip : SwapEffect.Discard;
             _presentParams.BackBufferCount = 1;
             _presentParams.BackBufferFormat = Format.A8R8G8B8;
-            _presentParams.BackBufferWidth = ClientSize.Width > 0 ? ClientSize.Width : 1;
-            _presentParams.BackBufferHeight = ClientSize.Height > 0 ? ClientSize.Height : 1;
+            _presentParams.BackBufferWidth = wndSize.Width > 0 ? ClientSize.Width : 1;
+            _presentParams.BackBufferHeight = wndSize.Height > 0 ? ClientSize.Height : 1;
             _presentParams.EnableAutoDepthStencil = false;
         }
 
@@ -338,7 +328,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             return new Device(
                 adapterId,
                 DeviceType.Hardware,
-                this.Handle,
+                _hWnd,
                 flags,
                 _presentParams);
         }
