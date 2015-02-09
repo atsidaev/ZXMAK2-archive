@@ -17,6 +17,33 @@ namespace ZXMAK2.Host.WinForms.Mdx
         private MouseStateWrapper m_state = new MouseStateWrapper();
 
 
+        #region .ctor
+
+        public DirectMouse(Form form)
+        {
+            m_form = form;
+            if (m_device == null)
+            {
+                m_device = new Device(SystemGuid.Mouse);
+                form.Deactivate += WndDeactivate;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (m_device != null)
+            {
+                m_active = false;
+                m_device.Unacquire();
+            }
+            Dispose(ref m_device);
+        }
+
+        #endregion .ctor
+
+
+        #region IHostMouse
+
         public IMouseState MouseState
         {
             get { return m_state; }
@@ -27,90 +54,88 @@ namespace ZXMAK2.Host.WinForms.Mdx
             get { return m_active; }
         }
 
-
-        public DirectMouse(Form mainForm)
+        public void Scan()
         {
-            m_form = mainForm;
+            if (!m_active || m_device==null)
+            {
+                return;
+            }
+            try
+            {
+                m_state.Update(m_device.CurrentMouseState);
+            }
+            catch (NotAcquiredException)
+            {
+                Uncapture();
+                return;
+            }
+        }
+
+        public void Capture()
+        {
+            if (m_device == null || m_active)
+            {
+                return;
+            }
+            try
+            {
+                m_device.SetCooperativeLevel(
+                    m_form,
+                    CooperativeLevelFlags.Exclusive |
+                        CooperativeLevelFlags.Foreground);
+                m_device.Acquire();
+                m_active = true;
+            }
+            catch
+            {
+                Uncapture();
+            }
+        }
+
+        public void Uncapture()
+        {
             if (m_device == null)
             {
-                m_device = new Device(SystemGuid.Mouse);
-                mainForm.Deactivate += WndDeactivate;
+                return;
+            }
+            try
+            {
+                if (m_active)
+                {
+                    m_device.Unacquire();
+                }
+                m_device.SetCooperativeLevel(
+                    m_form,
+                    CooperativeLevelFlags.NonExclusive |
+                        CooperativeLevelFlags.Foreground);
+                m_active = false;
+            }
+            catch
+            {
             }
         }
 
-        public void Dispose()
-        {
-            if (m_device != null)
-            {
-                m_active = false;
-                m_device.Unacquire();
-                m_device.Dispose();
-                m_device = null;
-            }
-        }
+
+        #endregion IHostMouse
+
+
+        #region Private
 
         private void WndDeactivate(object sender, EventArgs e)
         {
-            StopCapture();
+            Uncapture();
         }
 
-        public void StartCapture()
+        private static void Dispose<T>(ref T disposable)
+            where T : IDisposable
         {
-            if (m_device != null && !m_active)
-            {
-                try
-                {
-                    m_device.SetCooperativeLevel(
-                        m_form,
-                        CooperativeLevelFlags.Exclusive |
-                            CooperativeLevelFlags.Foreground);
-                    m_device.Acquire();
-                    m_active = true;
-                }
-                catch
-                {
-                    StopCapture();
-                }
-            }
+            var value = disposable;
+            disposable = default(T);
+            value.Dispose();
         }
 
-        public void StopCapture()
-        {
-            if (m_device != null)
-            {
-                try
-                {
-                    if (m_active)
-                    {
-                        m_device.Unacquire();
-                    }
-                    m_device.SetCooperativeLevel(
-                        m_form,
-                        CooperativeLevelFlags.NonExclusive |
-                            CooperativeLevelFlags.Foreground);
-                    m_active = false;
-                }
-                catch
-                {
-                }
-            }
-        }
+        #endregion Private
 
-        public void Scan()
-        {
-            if (m_active)
-            {
-                try
-                {
-                    m_state.Update(m_device.CurrentMouseState);
-                }
-                catch (NotAcquiredException)
-                {
-                    StopCapture();
-                    return;
-                }
-            }
-        }
 
         private class MouseStateWrapper : IMouseState
         {

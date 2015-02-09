@@ -166,7 +166,6 @@
     <Compile Include="Mdx\DirectKeyboard.cs" />
     <Compile Include="Mdx\DirectMouse.cs" />
     <Compile Include="Mdx\DirectSound.cs" />
-    <Compile Include="Mdx\MdxHost.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
