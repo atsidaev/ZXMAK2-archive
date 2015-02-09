@@ -30,11 +30,11 @@ namespace ZXMAK2.Host.Services
             IHostMouse hostMouse,
             IHostJoystick hostJoystick)
         {
-            //m_video = hostVideo;
-            //m_sound = hostSound;
-            //m_keyboard = hostKeyboard;
-            //m_mouse = hostMouse;
-            //m_joystick = hostJoystick;
+            m_video = hostVideo;
+            m_sound = hostSound;
+            m_keyboard = hostKeyboard;
+            m_mouse = hostMouse;
+            m_joystick = hostJoystick;
             m_timeSync = new TimeSync();
             UpdateSyncSource();
         }
@@ -172,12 +172,12 @@ namespace ZXMAK2.Host.Services
 
         private void UpdateSyncSource()
         {
-            var video = m_video;
             var sound = m_sound;
             if (sound != null)
             {
                 sound.IsSynchronized = m_syncSource == SyncSource.Sound;
             }
+            var video = m_video;
             if (video != null)
             {
                 video.IsSynchronized = m_syncSource == SyncSource.Video;
