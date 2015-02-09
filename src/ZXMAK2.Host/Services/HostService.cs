@@ -30,11 +30,11 @@ namespace ZXMAK2.Host.Services
             IHostMouse hostMouse,
             IHostJoystick hostJoystick)
         {
-            m_video = hostVideo;
-            m_sound = hostSound;
-            m_keyboard = hostKeyboard;
-            m_mouse = hostMouse;
-            m_joystick = hostJoystick;
+            //m_video = hostVideo;
+            //m_sound = hostSound;
+            //m_keyboard = hostKeyboard;
+            //m_mouse = hostMouse;
+            //m_joystick = hostJoystick;
             m_timeSync = new TimeSync();
             UpdateSyncSource();
         }
@@ -174,8 +174,14 @@ namespace ZXMAK2.Host.Services
         {
             var video = m_video;
             var sound = m_sound;
-            sound.IsSynchronized = m_syncSource == SyncSource.Sound;
-            video.IsSynchronized = m_syncSource == SyncSource.Video;
+            if (sound != null)
+            {
+                sound.IsSynchronized = m_syncSource == SyncSource.Sound;
+            }
+            if (video != null)
+            {
+                video.IsSynchronized = m_syncSource == SyncSource.Video;
+            }
         }
 
         private static void Dispose<T>(ref T disposable)
