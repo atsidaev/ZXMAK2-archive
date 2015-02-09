@@ -34,7 +34,7 @@ namespace ZXMAK2.Host.Xna4.Views
         private int m_textureIndex;
 
         private string m_title;
-        private IHost m_host;
+        private IHostService m_host;
         private int[] m_translateBuffer;
         private int m_debugFrameStart;
         private IVideoData m_videoData;
@@ -80,7 +80,7 @@ namespace ZXMAK2.Host.Xna4.Views
             set { m_deviceManager.IsFullScreen = value; }
         }
 
-        public IHost Host
+        public IHostService Host
         {
             get { return m_host; }
         }
@@ -246,7 +246,7 @@ namespace ZXMAK2.Host.Xna4.Views
             LoadConfig();
         }
 
-        private IHost CreateHost()
+        private IHostService CreateHost()
         {
             var viewResolver = Locator.TryResolve<IResolver>("View");
             if (viewResolver == null)

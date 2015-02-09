@@ -11,7 +11,7 @@ namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
     public partial class CtlSettingsMemory : ConfigScreenControl
     {
         private BusManager m_bmgr;
-        private IHost m_host;
+        private IHostService m_host;
         private IMemoryDevice m_device;
 
         public CtlSettingsMemory()
@@ -37,7 +37,7 @@ namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
             cbxRomSet.Sorted = true;
         }
 
-        public void Init(BusManager bmgr, IHost host, IMemoryDevice device)
+        public void Init(BusManager bmgr, IHostService host, IMemoryDevice device)
         {
             m_bmgr = bmgr;
             m_host = host;

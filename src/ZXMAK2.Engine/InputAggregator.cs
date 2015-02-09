@@ -18,7 +18,7 @@ namespace ZXMAK2.Engine
 
 
         public InputAggregator(
-            IHost host,
+            IHostService host,
             IKeyboardDevice[] keyboards,
             IMouseDevice[] mouses,
             IJoystickDevice[] joysticks)

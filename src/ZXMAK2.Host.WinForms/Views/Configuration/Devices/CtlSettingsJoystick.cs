@@ -9,7 +9,7 @@ namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
     public partial class CtlSettingsJoystick : ConfigScreenControl
     {
         private BusManager m_bmgr;
-        private IHost m_host;
+        private IHostService m_host;
         private IJoystickDevice m_device;
 
         public CtlSettingsJoystick()
@@ -17,7 +17,7 @@ namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
             InitializeComponent();
         }
 
-        public void Init(BusManager bmgr, IHost host, IJoystickDevice device)
+        public void Init(BusManager bmgr, IHostService host, IJoystickDevice device)
         {
             m_bmgr = bmgr;
             m_host = host;

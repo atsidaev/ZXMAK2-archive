@@ -8,7 +8,7 @@ namespace ZXMAK2.Host.Presentation.Interfaces
 {
     public interface IMachineSettingsView : IDisposable
     {
-        void Init(IHost host, IVirtualMachine vm);
+        void Init(IHostService host, IVirtualMachine vm);
         DlgResult ShowDialog(object owner);
     }
 }
