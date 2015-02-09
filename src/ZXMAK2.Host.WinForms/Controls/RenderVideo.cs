@@ -61,7 +61,6 @@ namespace ZXMAK2.Host.WinForms.Controls
         private long _lastBlankStamp;              // WaitVBlank
         private int _debugFrameStart = 0;
         private float m_surfaceHeightScale = 1F;
-        private bool _isInitialized;
         private bool _isRunning;
         private bool _isDebugInfo;
         private bool _isCancelWait;
@@ -188,7 +187,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private void WaitFrame()
         {
-            if (!_isInitialized)
+            if (_device == null)
             {
                 return;
             }
@@ -320,12 +319,15 @@ namespace ZXMAK2.Host.WinForms.Controls
             FrameSize = new Size(
                 frame.VideoData.Size.Width,
                 (int)(frame.VideoData.Size.Height * frame.VideoData.Ratio + 0.5F));
-            if (!_isInitialized || _device == null)
+            lock (_syncRoot)
             {
-                return;
+                if (_device == null)
+                {
+                    return;
+                }
+                UpdateSurface(frame.VideoData);
+                UpdateIconList(frame.Icons);
             }
-            UpdateSurface(frame.VideoData);
-            UpdateIconList(frame.Icons);
             if (frame.IsRefresh)
             {
                 //RequestPresentAsync();
@@ -341,7 +343,6 @@ namespace ZXMAK2.Host.WinForms.Controls
         protected override void OnLoadResources()
         {
             base.OnLoadResources();
-            _isInitialized = false;
             IsSyncSupported = _device.DeviceCaps.DriverCaps.ReadScanLine;
             _sprite = new D3dSprite(_device);
             _spriteTv = new D3dSprite(_device);
@@ -358,8 +359,6 @@ namespace ZXMAK2.Host.WinForms.Controls
             _device.SetRenderState(RenderStates.SourceBlend, (int)Blend.SourceAlpha);
             _device.SetRenderState(RenderStates.DestinationBlend, (int)Blend.InvSourceAlpha);
             //_device.SetRenderState(RenderStates.BlendOperation, (int)BlendOperation.Add);
-
-            _isInitialized = true;
         }
 
         protected override void OnUnloadResources()
@@ -377,69 +376,35 @@ namespace ZXMAK2.Host.WinForms.Controls
             base.OnUnloadResources();
         }
 
-        protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+        private unsafe void UpdateSurface(IVideoData videoData)
         {
             try
             {
-                if (_isInitialized)
+                m_surfaceHeightScale = videoData.Ratio;
+                if (_surfaceSize != videoData.Size || _texture0 == null)
                 {
-                    base.OnPaint(e);
+                    Dispose(ref _texture0);
+                    Dispose(ref _textureMaskTv);
+                    CreateTextures(videoData.Size);
                 }
-                else
+                if (_texture0 != null)
                 {
-                    RenderError(e, "Direct3DX initialization failed!\nProbably DirectX 9 (June 2010) is not installed");
+                    using (var gs = _texture0.LockRectangle(0, LockFlags.None))
+                    {
+                        fixed (int* srcPtr = videoData.Buffer)
+                        {
+                            //var startTick = Stopwatch.GetTimestamp();
+                            _videoFilter((int*)gs.InternalData, srcPtr);
+                            //var copyTime = Stopwatch.GetTimestamp() - startTick;
+                            //PushGraphValue(m_copyGraph, ref m_copyGraphIndex, copyTime);
+                        }
+                    }
+                    _texture0.UnlockRectangle(0);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
-            }
-        }
-
-        //private bool _presentRequested;
-
-        //private void RequestPresentAsync()
-        //{
-        //    if (!Created)
-        //    {
-        //        return;
-        //    }
-        //    _presentRequested = true;
-        //    Invalidate();
-        //}
-
-        private unsafe void UpdateSurface(IVideoData videoData)
-        {
-            lock (_syncRoot)
-            {
-                try
-                {
-                    m_surfaceHeightScale = videoData.Ratio;
-                    if (_surfaceSize != videoData.Size || _texture0==null)
-                    {
-                        Dispose(ref _texture0);
-                        Dispose(ref _textureMaskTv);
-                        CreateTextures(videoData.Size);
-                    }
-                    if (_texture0 != null)
-                    {
-                        using (var gs = _texture0.LockRectangle(0, LockFlags.None))
-                        {
-                            fixed (int* srcPtr = videoData.Buffer)
-                            {
-                                //var startTick = Stopwatch.GetTimestamp();
-                                _videoFilter((int*)gs.InternalData, srcPtr);
-                                //var copyTime = Stopwatch.GetTimestamp() - startTick;
-                                //PushGraphValue(m_copyGraph, ref m_copyGraphIndex, copyTime);
-                            }
-                        }
-                        _texture0.UnlockRectangle(0);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
             }
         }
 
@@ -474,57 +439,46 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         protected override void OnRenderScene()
         {
-            if (!_isInitialized)
+            _device.Clear(ClearFlags.Target, Color.Black, 1, 0);
+            _device.BeginScene();
+            try
             {
-                return;
-            }
-            lock (_syncRoot)
-            {
-                //if (IsRunning && !_presentRequested)
-                //{
-                //    return;
-                //}
-                //_presentRequested = false;
-                
-                _device.Clear(ClearFlags.Target, Color.Black, 1, 0);
-                _device.BeginScene();
-                try
+                if (_texture0 != null)
                 {
-                    if (_texture0 != null)
+                    if (DebugInfo)
                     {
-                        if (DebugInfo)
-                        {
-                            _graphRender.PushPeriod();
-                        }
-                        var wndSize = GetDeviceSize();
-                        var dstRect = GetDestinationRect(wndSize, GetSurfaceScaledSize());
-                        RenderFrame(dstRect, _surfaceSize);
-                        if (MimicTv)
-                        {
-                            RenderMaskTv(dstRect, _surfaceSize);
-                        }
-                        if (DebugInfo)
-                        {
-                            RenderDebugInfo(wndSize);
-                        }
-                        if (DisplayIcon)
-                        {
-                            RenderIcons();
-                        }
+                        _graphRender.PushPeriod();
+                    }
+                    var wndSize = GetDeviceSize();
+                    var dstRect = GetDestinationRect(wndSize, GetSurfaceScaledSize());
+                    RenderFrame(dstRect, _surfaceSize);
+                    if (MimicTv)
+                    {
+                        RenderMaskTv(dstRect, _surfaceSize);
+                    }
+                    if (DebugInfo)
+                    {
+                        RenderDebugInfo(wndSize);
+                    }
+                    if (DisplayIcon)
+                    {
+                        RenderIcons();
                     }
                 }
-                finally
-                {
-                    _device.EndScene();
-                }
-                try
-                {
-                    _device.Present();
-                }
-                catch (DeviceLostException ex)
-                {
-                    Logger.Debug(ex);
-                }
+            }
+            finally
+            {
+                _device.EndScene();
+            }
+            try
+            {
+                _device.Present();
+            }
+            catch (Exception ex)
+            {
+                // DeviceLostException
+                // GraphicsException [-2005530510]
+                Logger.Debug(ex);
             }
         }
 
@@ -900,33 +854,30 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private void UpdateIconList(IIconDescriptor[] icons)
         {
-            lock (_syncRoot)
+            var nonUsed = _iconTextures.Keys.ToList();
+            foreach (var id in icons)
             {
-                var nonUsed = _iconTextures.Keys.ToList();
-                foreach (var id in icons)
+                var iconTexture = default(IconTextureWrapper);
+                if (!_iconTextures.ContainsKey(id))
                 {
-                    var iconTexture = default(IconTextureWrapper);
-                    if (!_iconTextures.ContainsKey(id))
-                    {
-                        iconTexture = new IconTextureWrapper(id);
-                        _iconTextures.Add(id, iconTexture);
-                    }
-                    else
-                    {
-                        iconTexture = _iconTextures[id];
-                    }
-                    iconTexture.Visible = id.Visible;
-                    nonUsed.Remove(id);
-                    if (_device != null)
-                    {
-                        iconTexture.LoadResources(_device);
-                    }
+                    iconTexture = new IconTextureWrapper(id);
+                    _iconTextures.Add(id, iconTexture);
                 }
-                foreach (var id in nonUsed)
+                else
                 {
-                    _iconTextures[id].Dispose();
-                    _iconTextures.Remove(id);
+                    iconTexture = _iconTextures[id];
                 }
+                iconTexture.Visible = id.Visible;
+                nonUsed.Remove(id);
+                if (_device != null)
+                {
+                    iconTexture.LoadResources(_device);
+                }
+            }
+            foreach (var id in nonUsed)
+            {
+                _iconTextures[id].Dispose();
+                _iconTextures.Remove(id);
             }
         }
 
