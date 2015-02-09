@@ -19,6 +19,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         #region Fields
 
         private readonly PresentParameters _presentParams = new PresentParameters();
+        private readonly AutoResetEvent _renderEvent = new AutoResetEvent(false);
         protected readonly object _syncRoot = new object();
         protected Device _device;
         private Thread _threadRender;
@@ -93,14 +94,13 @@ namespace ZXMAK2.Host.WinForms.Controls
                     _renderEvent.Set();
                     thread.Join();
                 }
+                _renderEvent.Dispose();
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
         }
-
-        private readonly AutoResetEvent _renderEvent = new AutoResetEvent(false);
 
         private void RenderProc()
         {
