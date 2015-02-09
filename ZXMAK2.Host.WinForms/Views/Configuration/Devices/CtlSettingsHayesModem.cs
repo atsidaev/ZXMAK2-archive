@@ -15,7 +15,7 @@ namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
             InitializeComponent();
         }
 
-        public void Init(BusManager bmgr, IHost host, HayesModem modem)
+        public void Init(BusManager bmgr, IHostService host, HayesModem modem)
         {
             m_bmgr = bmgr;
             m_modem = modem;

@@ -6,7 +6,7 @@ using ZXMAK2.Host.Entities;
 
 namespace ZXMAK2.Host.Services
 {
-    public class HostService : IHost
+    public class HostService : IHostService
     {
         #region Fields
 

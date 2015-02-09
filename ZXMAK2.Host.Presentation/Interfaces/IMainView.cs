@@ -9,7 +9,7 @@ namespace ZXMAK2.Host.Presentation.Interfaces
     {
         string Title { get; set; }
         bool IsFullScreen { get; set; }
-        IHost Host { get; }
+        IHostService Host { get; }
         ICommandManager CommandManager { get; }
 
         event EventHandler ViewOpened;

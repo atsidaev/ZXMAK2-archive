@@ -31,7 +31,7 @@ namespace ZXMAK2.Engine
         private string m_configFileName = string.Empty;
 
 
-        private IHost m_host;
+        private IHostService m_host;
 
         public Spectrum Spectrum { get; private set; }
         public IBus Bus { get { return Spectrum.BusManager; } }
@@ -47,7 +47,7 @@ namespace ZXMAK2.Engine
 
         #region .ctor
 
-        public unsafe VirtualMachine(IHost host, ICommandManager commandManager)
+        public unsafe VirtualMachine(IHostService host, ICommandManager commandManager)
         {
             m_host = host;
             Spectrum = new Spectrum();

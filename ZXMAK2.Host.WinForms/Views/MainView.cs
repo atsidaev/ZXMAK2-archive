@@ -24,7 +24,7 @@ namespace ZXMAK2.Host.WinForms.Views
         private readonly IResolver m_resolver;
         private readonly SettingService m_setting;
 
-        private IHost m_host;
+        private IHostService m_host;
 
         private bool m_fullScreen;
         private Point m_location;
@@ -82,7 +82,7 @@ namespace ZXMAK2.Host.WinForms.Views
             }
         }
 
-        public IHost Host
+        public IHostService Host
         {
             get { return m_host; }
         }
@@ -249,7 +249,7 @@ namespace ZXMAK2.Host.WinForms.Views
             }
         }
 
-        private IHost CreateHost()
+        private IHostService CreateHost()
         {
             var viewResolver = Locator.TryResolve<IResolver>("View");
             if (viewResolver == null)

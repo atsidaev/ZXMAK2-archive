@@ -11,9 +11,9 @@ namespace ZXMAK2.Host.Presentation.ViewModels
     {
         #region Properties
 
-        private IHost _host;
+        private IHostService _host;
         
-        public IHost Host
+        public IHostService Host
         {
             get { return _host; }
             set { PropertyChangeRef("Host", ref _host, value); }

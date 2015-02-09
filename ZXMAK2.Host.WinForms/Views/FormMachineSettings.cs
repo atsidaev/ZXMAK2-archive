@@ -278,7 +278,7 @@ namespace ZXMAK2.Host.WinForms.Views
         #region private
 
         private readonly MachinesConfig m_machines = new MachinesConfig();
-        private IHost m_host;
+        private IHostService m_host;
         private IVirtualMachine m_vm;
         private BusManager m_workBus;
         private List<ConfigScreenControl> m_ctlList = new List<ConfigScreenControl>();
@@ -385,7 +385,7 @@ namespace ZXMAK2.Host.WinForms.Views
                                 typeof(ConfigScreenControl).IsAssignableFrom(type) &&
                                 typeof(UserControl).IsAssignableFrom(type))
                             {
-                                var mi = type.GetMethod("Init", new Type[] { typeof(BusManager), typeof(IHost), objTarget.GetType() });
+                                var mi = type.GetMethod("Init", new Type[] { typeof(BusManager), typeof(IHostService), objTarget.GetType() });
                                 if (mi == null)
                                     continue;
                                 var obj = (UserControl)Activator.CreateInstance(type);
@@ -407,7 +407,7 @@ namespace ZXMAK2.Host.WinForms.Views
             return null;
         }
 
-        public void Init(IHost host, IVirtualMachine vm)
+        public void Init(IHostService host, IVirtualMachine vm)
         {
             m_host = host;
             m_vm = vm;
@@ -485,7 +485,7 @@ namespace ZXMAK2.Host.WinForms.Views
             lstNavigation.Items[0].Selected = true;
         }
 
-        private UserControl ResolveScreenControl(BusManager workBus, IHost host, BusDeviceBase device)
+        private UserControl ResolveScreenControl(BusManager workBus, IHostService host, BusDeviceBase device)
         {
             var control = CreateConfigScreenControl(workBus, device);
             try
@@ -506,7 +506,7 @@ namespace ZXMAK2.Host.WinForms.Views
             }
         }
 
-        private static UserControl CreateGenericScreenControl(BusManager workBus, IHost host, BusDeviceBase device)
+        private static UserControl CreateGenericScreenControl(BusManager workBus, IHostService host, BusDeviceBase device)
         {
             var control = new CtlSettingsGenericDevice();
             try

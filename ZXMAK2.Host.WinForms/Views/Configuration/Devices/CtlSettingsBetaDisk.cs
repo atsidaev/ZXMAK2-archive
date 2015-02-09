@@ -21,7 +21,7 @@ namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
             InitializeComponent();
         }
 
-        public void Init(BusManager bmgr, IHost host, IBetaDiskDevice device)
+        public void Init(BusManager bmgr, IHostService host, IBetaDiskDevice device)
         {
             m_bmgr = bmgr;
             m_device = device;
