@@ -56,7 +56,7 @@ namespace ZXMAK2.Engine
             Spectrum.BusManager.FrameReady += Bus_OnFrameReady;
             Spectrum.BusManager.CommandManager = commandManager;
             Spectrum.BusManager.ConfigChanged += BusManager_OnConfigChanged;
-            Spectrum.BusManager.SampleRate = host.GetSampleRate();
+            Spectrum.BusManager.SampleRate = host.SampleRate;
         }
 
         public void Dispose()

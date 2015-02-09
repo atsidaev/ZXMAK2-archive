@@ -13,6 +13,7 @@ using ZXMAK2.Host.WinForms.Controls;
 using ZXMAK2.Host.WinForms.Tools;
 using ZXMAK2.Host.WinForms.Services;
 using ZXMAK2.Host.Entities;
+using ZXMAK2.Host.Services;
 using ZXMAK2.Resources;
 
 
@@ -23,7 +24,7 @@ namespace ZXMAK2.Host.WinForms.Views
         private readonly IResolver m_resolver;
         private readonly SettingService m_setting;
 
-        private MdxHost m_host;
+        private IHost m_host;
 
         private bool m_fullScreen;
         private Point m_location;
@@ -238,7 +239,7 @@ namespace ZXMAK2.Host.WinForms.Views
             try
             {
                 renderVideo.InitWnd();
-                m_host = new MdxHost(this, renderVideo);
+                m_host = CreateHost();
                 OnViewOpened();
                 LoadConfig();
             }
@@ -246,6 +247,21 @@ namespace ZXMAK2.Host.WinForms.Views
             {
                 Logger.Error(ex);
             }
+        }
+
+        private IHost CreateHost()
+        {
+            var viewResolver = Locator.TryResolve<IResolver>("View");
+            if (viewResolver == null)
+            {
+                return new HostService(renderVideo, null, null, null, null);
+            }
+            var arg = new Argument("form", this);
+            var sound = viewResolver.TryResolve<IHostSound>(arg);
+            var keyboard = viewResolver.TryResolve<IHostKeyboard>(arg);
+            var mouse = viewResolver.TryResolve<IHostMouse>(arg);
+            var joystick = viewResolver.TryResolve<IHostJoystick>(arg);
+            return new HostService(renderVideo, sound, keyboard, mouse, joystick);
         }
 
         private void LoadConfig()
@@ -318,13 +334,13 @@ namespace ZXMAK2.Host.WinForms.Views
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            if (m_host.IsInputCaptured)
+            if (m_host.IsCaptured)
             {
                 e.SuppressKeyPress = true;
             }
             if (e.Alt && e.Control)
             {
-                m_host.StopInputCapture();
+                m_host.Uncapture();
             }
             // FULLSCREEN
             if (e.Alt && e.KeyCode == Keys.Enter)
@@ -548,7 +564,7 @@ namespace ZXMAK2.Host.WinForms.Views
                     FormBorderStyle = m_style;
                     ClientSize = m_size;
 
-                    m_host.StopInputCapture();
+                    m_host.Uncapture();
                 }
             }
         }
@@ -569,7 +585,7 @@ namespace ZXMAK2.Host.WinForms.Views
             {
                 return;
             }
-            m_host.StartInputCapture();
+            m_host.Capture();
         }
 
         private void renderVideo_Resize(object sender, EventArgs e)

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.Xna.Framework.Input;
-using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
-using ZXMAK2.Host.Services;
 
 
-namespace ZXMAK2.Host.Xna4.Xna
+namespace ZXMAK2.Host.Services
 {
-    public class XnaHost : IHost
+    public class HostService : IHost
     {
         #region Fields
 
@@ -17,7 +14,6 @@ namespace ZXMAK2.Host.Xna4.Xna
         private TimeSync m_timeSync;
         private IHostVideo m_video;
         private IHostSound m_sound;
-
         private IHostKeyboard m_keyboard;
         private IHostMouse m_mouse;
         private IHostJoystick m_joystick;
@@ -27,18 +23,19 @@ namespace ZXMAK2.Host.Xna4.Xna
 
         #region .ctor
 
-        public XnaHost(IHostVideo hostVideo)
+        public HostService(
+            IHostVideo hostVideo,
+            IHostSound hostSound,
+            IHostKeyboard hostKeyboard,
+            IHostMouse hostMouse,
+            IHostJoystick hostJoystick)
         {
             m_video = hostVideo;
-
+            m_sound = hostSound;
+            m_keyboard = hostKeyboard;
+            m_mouse = hostMouse;
+            m_joystick = hostJoystick;
             m_timeSync = new TimeSync();
-            var viewResolver = Locator.Resolve<IResolver>("View");
-            if (viewResolver != null)
-            {
-                m_sound = viewResolver.TryResolve<IHostSound>();
-            }
-            m_keyboard = new XnaKeyboard();
-            m_mouse = new XnaMouse();
             UpdateSyncSource();
         }
 
@@ -49,8 +46,6 @@ namespace ZXMAK2.Host.Xna4.Xna
             Dispose(ref m_keyboard);
             Dispose(ref m_mouse);
             Dispose(ref m_joystick);
-            // temporary not supported (reentrance)
-            //Dispose(ref Video);
         }
 
         #endregion .ctor
@@ -62,7 +57,7 @@ namespace ZXMAK2.Host.Xna4.Xna
         public IHostMouse Mouse { get { return m_mouse; } }
         public IHostJoystick Joystick { get { return m_joystick; } }
 
-        public SyncSource SyncSource
+        public SyncSource SyncSource 
         {
             get { return m_syncSource; }
             set
@@ -72,14 +67,16 @@ namespace ZXMAK2.Host.Xna4.Xna
             }
         }
 
-        private void UpdateSyncSource()
+        public int SampleRate 
         {
-            var video = m_video;
-            var sound = m_sound;
-            sound.IsSynchronized = m_syncSource == SyncSource.Sound;
-            video.IsSynchronized = m_syncSource == SyncSource.Video;
+            get { return m_sound != null ? m_sound.SampleRate : 22050; }
         }
 
+
+        public bool IsCaptured
+        {
+            get { return m_mouse != null && m_mouse.IsCaptured; }
+        }
 
         public bool CheckSyncSourceSupported(SyncSource value)
         {
@@ -88,30 +85,23 @@ namespace ZXMAK2.Host.Xna4.Xna
                 case SyncSource.None:
                     return true;
                 case SyncSource.Time:
-                    var time = m_timeSync;
-                    return time != null;
+                    var timeSync = m_timeSync;
+                    return timeSync != null && timeSync.IsSyncSupported;
                 case SyncSource.Sound:
                     var sound = m_sound;
-                    return sound != null;
+                    return sound != null && sound.IsSyncSupported;
                 case SyncSource.Video:
                     var video = m_video;
-                    return video != null;
+                    return video != null && video.IsSyncSupported;
                 default:
                     return false;
             }
-        }
-
-        public int GetSampleRate()
-        {
-            var sound = m_sound;
-            return sound != null ? sound.SampleRate : 22050;
         }
 
         public void PushFrame(
             IVideoFrame videoFrame,
             ISoundFrame soundFrame)
         {
-            // frame sync
             var timeSync = m_timeSync;
             var sound = m_sound;
             var video = m_video;
@@ -157,29 +147,36 @@ namespace ZXMAK2.Host.Xna4.Xna
             }
         }
 
+        public void Capture()
+        {
+            if (m_mouse == null)
+            {
+                return;
+            }
+            m_mouse.Capture();
+        }
+
+        public void Uncapture()
+        {
+            if (m_mouse == null)
+            {
+                return;
+            }
+            m_mouse.Uncapture();
+        }
+
         #endregion IHost
 
 
-        #region Public
-
-        public void Update(KeyboardState kbdState, MouseState mouseState)
-        {
-            var keyboard = Keyboard as XnaKeyboard;
-            if (keyboard != null)
-            {
-                keyboard.Update(kbdState);
-            }
-            var mouse = Mouse as XnaMouse;
-            if (mouse != null)
-            {
-                mouse.Update(mouseState);
-            }
-        }
-
-        #endregion Public
-
-
         #region Private
+
+        private void UpdateSyncSource()
+        {
+            var video = m_video;
+            var sound = m_sound;
+            sound.IsSynchronized = m_syncSource == SyncSource.Sound;
+            video.IsSynchronized = m_syncSource == SyncSource.Video;
+        }
 
         private static void Dispose<T>(ref T disposable)
             where T : IDisposable

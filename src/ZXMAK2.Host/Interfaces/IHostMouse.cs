@@ -5,7 +5,11 @@ namespace ZXMAK2.Host.Interfaces
 {
     public interface IHostMouse : IDisposable
     {
-        void Scan();
         IMouseState MouseState { get; }
+        bool IsCaptured { get; }
+
+        void Scan();
+        void Capture();
+        void Uncapture();
     }
 }

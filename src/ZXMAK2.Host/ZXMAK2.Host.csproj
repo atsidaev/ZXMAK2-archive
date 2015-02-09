@@ -71,6 +71,7 @@
     <Compile Include="Interfaces\IVideoData.cs" />
     <Compile Include="Interfaces\IVideoFrame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\HostService.cs" />
     <Compile Include="Services\TimeSync.cs" />
     <Compile Include="Services\UserQueryProxy.cs" />
     <Compile Include="Tools\KeyboardMapper.cs" />

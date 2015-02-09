@@ -12,6 +12,8 @@ using ZXMAK2.Host.Xna4.Xna;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.Dependency;
+using ZXMAK2.Host.Services;
 
 
 namespace ZXMAK2.Host.Xna4.Views
@@ -32,7 +34,7 @@ namespace ZXMAK2.Host.Xna4.Views
         private int m_textureIndex;
 
         private string m_title;
-        private XnaHost m_host;
+        private IHost m_host;
         private int[] m_translateBuffer;
         private int m_debugFrameStart;
         private IVideoData m_videoData;
@@ -231,7 +233,7 @@ namespace ZXMAK2.Host.Xna4.Views
             m_deviceManager.ApplyChanges();
             base.Initialize();
 
-            m_host = new XnaHost(this);
+            m_host = CreateHost();
             OnViewOpened();
 
             OnRequestFrame();
@@ -242,6 +244,20 @@ namespace ZXMAK2.Host.Xna4.Views
             m_sprite = new SpriteBatch(m_deviceManager.GraphicsDevice);
             //m_deviceManager.SynchronizeWithVerticalRetrace = false;
             LoadConfig();
+        }
+
+        private IHost CreateHost()
+        {
+            var viewResolver = Locator.TryResolve<IResolver>("View");
+            if (viewResolver == null)
+            {
+                return new HostService(this, null, null, null, null);
+            }
+            var sound = viewResolver.TryResolve<IHostSound>();
+            var keyboard = viewResolver.TryResolve<IHostKeyboard>();
+            var mouse = viewResolver.TryResolve<IHostMouse>();
+            var joystick = viewResolver.TryResolve<IHostJoystick>();
+            return new HostService(this, sound, keyboard, mouse, joystick);
         }
 
         private void LoadConfig()
@@ -290,7 +306,7 @@ namespace ZXMAK2.Host.Xna4.Views
 
             var kbdState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
-            m_host.Update(kbdState, mouseState);
+            UpdateInput(kbdState, mouseState);
             
             var isAlt = kbdState[Keys.LeftAlt] == KeyState.Down ||
                 kbdState[Keys.RightAlt] == KeyState.Down;
@@ -301,6 +317,22 @@ namespace ZXMAK2.Host.Xna4.Views
                 CommandVmWarmReset.CanExecute(null))
             {
                 CommandVmWarmReset.Execute(kbdState[Keys.Insert] == KeyState.Down);
+            }
+        }
+
+        private void UpdateInput(
+            KeyboardState kbdState, 
+            MouseState mouseState)
+        {
+            var keyboard = m_host.Keyboard as XnaKeyboard;
+            if (keyboard != null)
+            {
+                keyboard.Update(kbdState);
+            }
+            var mouse = m_host.Mouse as XnaMouse;
+            if (mouse != null)
+            {
+                mouse.Update(mouseState);
             }
         }
 

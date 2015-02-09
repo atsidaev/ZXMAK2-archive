@@ -8,6 +8,40 @@ namespace ZXMAK2.Host.Xna4.Xna
 {
     public sealed class XnaMouse : IHostMouse, IMouseState
     {
+        public void Dispose()
+        {
+        }
+
+
+        #region IHostMouse
+
+        public IMouseState MouseState
+        {
+            get { return this; }
+        }
+
+        public bool IsCaptured
+        {
+            get { return true; }
+        }
+
+        public void Scan()
+        {
+        }
+
+        public void Capture()
+        {
+        }
+
+        public void Uncapture()
+        {
+        }
+
+        #endregion IHostMouse
+
+
+        #region Public
+
         public void Update(MouseState state)
         {
             var buttons = 0;
@@ -19,23 +53,7 @@ namespace ZXMAK2.Host.Xna4.Xna
             Y = state.Y;
         }
 
-        public void Dispose()
-        {
-        }
-
-        
-        #region IHostMouse
-
-        public void Scan()
-        {
-        }
-
-        public IMouseState MouseState
-        {
-            get { return this; }
-        }
-
-        #endregion IHostMouse
+        #endregion Public
 
 
         #region IMouseState
