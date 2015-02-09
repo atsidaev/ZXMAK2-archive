@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Microsoft.DirectX.Direct3D;
 using System.Threading;
 using System.Diagnostics;
+using ZXMAK2.Host.WinForms.Tools;
 
 
 
@@ -21,6 +22,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         protected readonly object _syncRoot = new object();
         protected Device _device;
         private Thread _threadRender;
+        private IntPtr _hWnd;
 
         #endregion Fields
 
@@ -65,9 +67,10 @@ namespace ZXMAK2.Host.WinForms.Controls
                     {
                         return;
                     }
+                    _hWnd = Handle;
                     _device = CreateDirect3D();
-                    _device.DeviceResizing += new System.ComponentModel.CancelEventHandler(Device_OnDeviceResizing);
-                    _device.DeviceReset += new EventHandler(Device_OnDeviceReset);
+                    _device.DeviceResizing += Device_OnDeviceResizing;
+                    _device.DeviceReset += Device_OnDeviceReset;
                     OnLoadResources();
                     RenderScene();
                     _renderEvent.Reset();
@@ -231,10 +234,12 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 lock (_syncRoot)
                 {
+                    var wndSize = NativeMethods.GetWindowRect(_hWnd).Size;
+                    var wndVisible = NativeMethods.IsWindowVisible(_hWnd);
                     if (_device == null ||
-                        !Visible ||
-                        ClientSize.Width <= 0 ||
-                        ClientSize.Height <= 0)
+                        !wndVisible ||
+                        wndSize.Width <= 0 ||
+                        wndSize.Height <= 0)
                     {
                         return;
                     }
