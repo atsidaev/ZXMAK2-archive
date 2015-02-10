@@ -50,9 +50,11 @@ namespace ZXMAK2.Hardware.Adlers
 
             switch (Info.AccessType)
             {
-                // e.g.: PC == #9C40
-                case BreakPointConditionType.registryVsValue: //only value pair, e.g: BC, HL, DE, ...ToDo:
-                // e.g.: (PC) == #AFC9 - instruction breakpoint; must be here because the registry change must be taking into account, not memory change
+                //e.g.: fZ == 1
+                case BreakPointConditionType.flagVsValue:
+                //e.g.: PC == #9C40
+                case BreakPointConditionType.registryVsValue:
+                //e.g.: (PC) == #AFC9 - instruction breakpoint; must be here because the registry change must be taking into account, not memory change
                 case BreakPointConditionType.registryMemoryReferenceVsValue:
                     if (Info.CheckBreakpoint())
                     {
