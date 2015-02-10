@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Reflection.Emit;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Hardware.Adlers;
-
+using System.Linq;
 
 namespace ZXMAK2.Hardware.Adlers
 {
@@ -18,7 +18,7 @@ namespace ZXMAK2.Hardware.Adlers
         memoryVsValue,
         valueVsRegister, 
         registryVsValue,
-        flagsVsValue, //e.g. Z == 1, C == 0
+        flagVsValue, //e.g. Z == 1, C == 0
         registryMemoryReferenceVsValue,
         memoryRead 
     };
@@ -33,6 +33,7 @@ namespace ZXMAK2.Hardware.Adlers
 
         //condition in string, e.g.: "pc", "(#9C40)"
         public string LeftCondition { get; set; }
+        public bool LeftIsFlag { get; set; }
         public string RightCondition { get; set; }
 
         //value of condition(if relevant), valid for whole values or memory access
@@ -71,6 +72,7 @@ namespace ZXMAK2.Hardware.Adlers
             IsMulticonditional = false;
             IsConditionEquals = false;
             LeftCondition = string.Empty;
+            LeftIsFlag = false;
             RightCondition = string.Empty;
         }
     }
@@ -320,19 +322,25 @@ namespace ZXMAK2.Hardware.Adlers
             return ConvertRadix.ParseUInt16(inputTrimmed, 10);
         }
 
-        public static bool isRegistry(string input)
+        public static bool isRegistry(string i_expr)
         {
             try
             {
-                string registry = input.ToUpper().Trim();
+                if (i_expr == null || i_expr.Length < 1)
+                    return false;
 
-                //not available in .NET Framework 2.0 - so must coding :-)
-                /*if (Regs16Bit.ToArray().Contains<string>(registry))
+                string registry = i_expr.ToUpper().Trim();
+                if (Regs16Bit.ToArray().Contains<string>(registry))
                     return true;
-                if (Regs8Bit.Contains<char>(Convert.ToChar(registry)))
-                    return true;*/
 
-                for (byte counter = 0; counter < Regs16Bit.Length; counter++)
+                //now only low(8bit) registry are allowed, such as A, B, C, L, D, ...
+                if (registry.Length > 1)
+                    return false;
+
+                if (Regs8Bit.Contains<char>(Convert.ToChar(registry)))
+                    return true;
+
+                /*for (byte counter = 0; counter < Regs16Bit.Length; counter++)
                 {
                     if (Regs16Bit[counter] == registry)
                         return true;
@@ -346,7 +354,7 @@ namespace ZXMAK2.Hardware.Adlers
                 {
                     if ( Regs8Bit[counter].ToString() == registry)
                         return true;
-                }
+                }*/
             }
             catch (Exception ex)
             {
@@ -354,6 +362,16 @@ namespace ZXMAK2.Hardware.Adlers
             }
 
             return false;
+        }
+
+        public static bool isFlag(string i_expr)
+        {
+            //flags from command line will start with 'f' prefix, e.g.: fZ, fC, fPV, fS, ...
+            if( i_expr == null || i_expr == String.Empty || i_expr.Length < 2 )
+                return false;
+
+            //F3 and F5 not supported - Z80 does not set/unset them basically
+            return i_expr.Equals("fZ") || i_expr.Equals("fC") || i_expr.Equals("fPV") || i_expr.Equals("fH") || i_expr.Equals("fS") || i_expr.Equals("fN");
         }
 
         public static bool IsHex(char c)

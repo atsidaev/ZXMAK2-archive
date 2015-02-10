@@ -54,6 +54,7 @@
     <Compile Include="CommandParseException.cs" />
     <Compile Include="ConvertRadix.cs" />
     <Compile Include="Core\GraphicsTools.cs" />
+    <Compile Include="Core\ILProcessor.cs" />
     <Compile Include="Core\SelectionArea.cs" />
     <Compile Include="Debugger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

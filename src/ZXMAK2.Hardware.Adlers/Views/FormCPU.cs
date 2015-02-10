@@ -17,6 +17,7 @@ using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Engine.Entities;
+using ZXMAK2.Hardware.Adlers.Core;
 
 
 namespace ZXMAK2.Hardware.Adlers.Views
@@ -32,11 +33,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private bool showStack = true; // show stack or breakpoint list on the form(panel listState)
 
         //debugger command line history
-        private List<string> cmdLineHistory = new List<string>();
-        private int cmdLineHistoryPos = 0;
+        private List<string> m_cmdLineHistory = new List<string>();
+        private int m_cmdLineHistoryPos = 0;
 
         //find bytes in memory
-        static string _strBytesToFindSave = "#AFC3, 201";
+        static string m_strBytesToFindSave = "#AFC3, 201";
 
         public FormCpu(IDebuggable debugTarget, IBusManager bmgr)
         {
@@ -363,8 +364,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 case Keys.F5:              // Stop
                     m_spectrum.DoStop();
                     UpdateCPU(true);
+                    e.Handled = true;
                     break;
-                case Keys.F12:  // toggle stack / breakpoints on the panel
+                case Keys.F12:  // toggle Stack/Breakpoints on the panel
                     showStack = !showStack;
                     UpdateREGS();
                     break;
@@ -379,6 +381,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     {
                         menuItemFindBytesNext_Click(null, null);
                     }
+                    break;
+                case Keys.Escape:
+                    this.Hide();
+                    if (this.Owner != null)
+                        this.Owner.Focus();
                     break;
             }
         }
@@ -702,14 +709,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             if (sender != null) //null => Find next
             {
-                if (!service.QueryText("Find bytes in memory", "Bytes(comma delimited):", ref _strBytesToFindSave))
+                if (!service.QueryText("Find bytes in memory", "Bytes(comma delimited):", ref m_strBytesToFindSave))
                     return;
             }
-            if (_strBytesToFindSave.Trim() == String.Empty || _strBytesToFindSave.Trim().Length == 0)
+            if (m_strBytesToFindSave.Trim() == String.Empty || m_strBytesToFindSave.Trim().Length == 0)
                 return;
 
             bytesToFindInput.Clear();
-            foreach (string byteCandidate in Regex.Split(_strBytesToFindSave, ","))
+            foreach (string byteCandidate in Regex.Split(m_strBytesToFindSave, ","))
             {
                 if (!String.IsNullOrEmpty(byteCandidate) && byteCandidate.Trim() != String.Empty && byteCandidate != ",")
                 {
@@ -979,8 +986,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         string left = parsedCommand[1];
 
                         //left side must be registry or memory reference
-                        if (!DebuggerManager.isRegistry(left) && !DebuggerManager.isMemoryReference(left) && left != "memread")
-                            throw new Exception("bad condition !");
+                        if (   !DebuggerManager.isRegistry(left)
+                            && !DebuggerManager.isFlag(left) 
+                            && !DebuggerManager.isMemoryReference(left) 
+                            && left != "memread"
+                           )
+                            throw new CommandParseException("bad condition !");
 
                         AddExtBreakpoint(parsedCommand); // add breakpoint, send parsed command e.g.: br pc == #0000
 
@@ -1200,8 +1211,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     }
 
                     //command line history
-                    cmdLineHistory.Add(actualCommand);
-                    this.cmdLineHistoryPos++;
+                    m_cmdLineHistory.Add(actualCommand);
+                    this.m_cmdLineHistoryPos++;
 
                     UpdateREGS();
                     UpdateCPU(false);
@@ -1223,32 +1234,32 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     dbgCmdLine.Text = saveCmdLineString;
                 }
             }
-            else if (e.KeyCode == Keys.Up && this.cmdLineHistory.Count != 0) //arrow up - history of command line
+            else if (e.KeyCode == Keys.Up && this.m_cmdLineHistory.Count != 0) //arrow up - history of command line
             {
-                if (this.cmdLineHistoryPos < (this.cmdLineHistory.Count - 1))
+                if (this.m_cmdLineHistoryPos < (this.m_cmdLineHistory.Count - 1))
                 {
-                    this.dbgCmdLine.Text = this.cmdLineHistory[++cmdLineHistoryPos];
+                    this.dbgCmdLine.Text = this.m_cmdLineHistory[++m_cmdLineHistoryPos];
                 }
                 else
                 {
-                    this.cmdLineHistoryPos = 0;
-                    this.dbgCmdLine.Text = this.cmdLineHistory[this.cmdLineHistoryPos];
+                    this.m_cmdLineHistoryPos = 0;
+                    this.dbgCmdLine.Text = this.m_cmdLineHistory[this.m_cmdLineHistoryPos];
                 }
                 dbgCmdLine.Select(this.dbgCmdLine.Text.Length, 0);
                 dbgCmdLine.Focus();
                 e.Handled = true;
                 return;
             }
-            else if (e.KeyCode == Keys.Down && this.cmdLineHistory.Count != 0) //arrow down - history of command line
+            else if (e.KeyCode == Keys.Down && this.m_cmdLineHistory.Count != 0) //arrow down - history of command line
             {
-                if (this.cmdLineHistoryPos != 0)
+                if (this.m_cmdLineHistoryPos != 0)
                 {
-                    this.dbgCmdLine.Text = this.cmdLineHistory[--cmdLineHistoryPos];
+                    this.dbgCmdLine.Text = this.m_cmdLineHistory[--m_cmdLineHistoryPos];
                 }
                 else
                 {
-                    this.cmdLineHistoryPos = this.cmdLineHistory.Count - 1;
-                    this.dbgCmdLine.Text = this.cmdLineHistory[this.cmdLineHistoryPos];
+                    this.m_cmdLineHistoryPos = this.m_cmdLineHistory.Count - 1;
+                    this.dbgCmdLine.Text = this.m_cmdLineHistory[this.m_cmdLineHistoryPos];
                 }
                 dbgCmdLine.Select(this.dbgCmdLine.Text.Length, 0);
                 dbgCmdLine.Focus();
@@ -1286,9 +1297,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         public void FillBreakpointConditionData(List<string> i_newBreakpointDesc, int i_brkIndex, ref BreakpointInfo o_breakpointInfo)
         {
-            //i_brkIndex = 1 => first condition in entered breakpoint from command line
-            //i_brkIndex = 4 => second condition
-
             //1.LEFT condition
             bool leftIsMemoryReference = false;
             string leftExpr = i_newBreakpointDesc[i_brkIndex];
@@ -1306,16 +1314,25 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
             else
             {
-                //must be a registry
-                if (!DebuggerManager.isRegistry(leftExpr))
-                    throw new CommandParseException("Incorrect breakpoint(left expression)!");
-
-                o_breakpointInfo.LeftCondition = leftExpr.ToUpper();
-                o_breakpointInfo.LeftRegistryArrayIndex = DebuggerManager.getRegistryArrayIndex(o_breakpointInfo.LeftCondition);
-                if (leftExpr.Length == 1) //8 bit registry
-                    o_breakpointInfo.Is8Bit = true;
+                //must be a registry or flag
+                if (DebuggerManager.isRegistry(leftExpr))
+                {
+                    o_breakpointInfo.LeftCondition = leftExpr.ToUpper();
+                    o_breakpointInfo.LeftRegistryArrayIndex = DebuggerManager.getRegistryArrayIndex(o_breakpointInfo.LeftCondition);
+                    if (leftExpr.Length == 1) //8 bit registry
+                        o_breakpointInfo.Is8Bit = true;
+                    else
+                        o_breakpointInfo.Is8Bit = false;
+                }
+                else if( DebuggerManager.isFlag(leftExpr) )
+                {
+                    o_breakpointInfo.LeftCondition = leftExpr.ToUpper();
+                    o_breakpointInfo.LeftIsFlag = true;
+                }
                 else
-                    o_breakpointInfo.Is8Bit = false;
+                {
+                    throw new CommandParseException("Incorrect syntax(left expression)!");
+                }
             }
 
             //2.CONDITION type
@@ -1354,6 +1371,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             if (rightType == 0xFF)
                 throw new CommandParseException("Incorrect right expression!");
+            if (o_breakpointInfo.LeftIsFlag && rightType != 2)
+                throw new CommandParseException("Flags allows only true/false right expression...");
 
             //4. finish
             if (leftIsMemoryReference)
@@ -1367,129 +1386,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             else
             {
                 if (rightType == 2)
-                    o_breakpointInfo.AccessType = BreakPointConditionType.registryVsValue;
+                {
+                    o_breakpointInfo.AccessType = o_breakpointInfo.LeftIsFlag ?  BreakPointConditionType.flagVsValue : BreakPointConditionType.registryVsValue;
+                }
             }
         } //end FillBreakpointData()
-
-        public Func<bool> EmitILCondition(BreakpointInfo i_breakpointInfo)
-        {
-            Func<bool> o_ILOut = null;
-
-            //ToDo: Flags vs. value
-            if (i_breakpointInfo.AccessType == BreakPointConditionType.registryVsValue)
-            {
-                //e.g. PC == #0038
-                Type[] args = { typeof(CpuRegs) };
-                DynamicMethod dynamicMethod = new DynamicMethod(
-                    "RegVsValue",
-                    typeof(bool), //return type
-                    args,         //arguments for the method
-                    typeof(CpuRegs).Module); //module as input
-
-                ILGenerator il = dynamicMethod.GetILGenerator();
-
-                //Arg0 - registry value
-                il.Emit(OpCodes.Ldarg_0); // load m_spectrum.CPU.regs on stack
-                FieldInfo testInfo1 = typeof(CpuRegs).GetField(i_breakpointInfo.LeftCondition, BindingFlags.Public | BindingFlags.Instance);
-                il.Emit(OpCodes.Ldfld, testInfo1);
-
-                //Arg1 - number
-                il.Emit(OpCodes.Ldc_I4, (int)i_breakpointInfo.RightValue);
-
-                DebuggerManager.EmitCondition(il, i_breakpointInfo.ConditionTypeSign);
-                il.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
-
-                o_ILOut = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), m_spectrum.CPU.regs);
-            }
-            else if (i_breakpointInfo.AccessType == BreakPointConditionType.memoryVsValue)
-            {
-                //e.g. (16384) == #FF00
-                //ToDo: Because it is not possible to dynamically emit code for interface method(IDebuggable.ReadMemory)
-                //      I temporary wrapped it into custom wrapper.
-                InterfaceWrapper middleMan = new InterfaceWrapper();
-                middleMan.wrapInterface(m_spectrum);
-
-                MethodInfo ReadMemoryMethod;
-                if (i_breakpointInfo.RightValue > 0xFF)
-                    ReadMemoryMethod = typeof(InterfaceWrapper).GetMethod("invokeReadMemory16Bit",
-                                                                           BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-                                                                         , null
-                                                                         , new Type[] { typeof(ushort) }
-                                                                         , null);
-                else
-                    ReadMemoryMethod = typeof(InterfaceWrapper).GetMethod("invokeReadMemory8Bit",
-                                                                           BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-                                                                         , null
-                                                                         , new Type[] { typeof(ushort) }
-                                                                         , null);
-
-                DynamicMethod dynamicMethod = new DynamicMethod("ReadMemory"
-                                                               , typeof(bool)
-                                                               , new Type[] { typeof(InterfaceWrapper) }
-                                                               , typeof(InterfaceWrapper).Module
-                                                               );
-
-                ILGenerator IL = dynamicMethod.GetILGenerator();
-
-                //Arg0 - memory reference(static), e.g. (16384)
-                IL.Emit(OpCodes.Ldarg_0); // load InterfaceWrapper on stack
-                IL.Emit(OpCodes.Ldc_I4, i_breakpointInfo.LeftValue); // method parameter(for ReadMemoryMethod)
-                IL.Emit(OpCodes.Call, ReadMemoryMethod);
-
-                //Arg1
-                IL.Emit(OpCodes.Ldc_I4, i_breakpointInfo.RightValue); // <- compare to 8 or 16bit
-
-                DebuggerManager.EmitCondition(IL, i_breakpointInfo.ConditionTypeSign);
-                IL.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
-
-                o_ILOut = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), middleMan);
-            }
-            else if (i_breakpointInfo.AccessType == BreakPointConditionType.registryMemoryReferenceVsValue)
-            {
-                // e.g.: (PC) == #D155 - instruction breakpoint
-                //ToDo: Because it is not possible to dynamically emit code for interface method(IDebuggable.ReadMemory)
-                //      I temporary wrapped it into custom wrapper.
-                InterfaceWrapper middleMan = new InterfaceWrapper();
-                middleMan.wrapInterface(m_spectrum);
-                middleMan.wrapFields(m_spectrum.CPU.regs);
-
-                MethodInfo ReadMemoryMethod;
-                //Type[] args = { typeof(REGS) };
-                if (i_breakpointInfo.RightValue > 0xFF)
-                    ReadMemoryMethod = typeof(InterfaceWrapper).GetMethod("invokeReadMemory16BitViaRegistryValue",
-                                                                           BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-                                                                         , null
-                                                                         , new Type[] { typeof(string) }
-                                                                         , null);
-                else
-                    ReadMemoryMethod = typeof(InterfaceWrapper).GetMethod("invokeReadMemory8BitViaRegistryValue",
-                                                                           BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-                                                                         , null
-                                                                         , new Type[] { typeof(string) }
-                                                                         , null);
-
-                DynamicMethod dynamicMethod = new DynamicMethod("ReadMemoryViaRegistry", typeof(bool), new Type[] { typeof(InterfaceWrapper) });
-
-                ILGenerator IL = dynamicMethod.GetILGenerator();
-
-                //Arg0, e.g. (PC)
-                IL.Emit(OpCodes.Ldarg_0); // load InterfaceWrapper on stack
-
-                string registry = DebuggerManager.getRegistryFromReference(i_breakpointInfo.LeftCondition);
-                IL.Emit(OpCodes.Ldstr, registry);
-                IL.Emit(OpCodes.Call, ReadMemoryMethod);
-
-                //Arg1, number(right condition)
-                IL.Emit(OpCodes.Ldc_I4, i_breakpointInfo.RightValue); // <- compare to 8 or 16bit
-
-                DebuggerManager.EmitCondition(IL, i_breakpointInfo.ConditionTypeSign);
-                IL.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
-
-                o_ILOut = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), middleMan);
-            }
-
-            return o_ILOut;
-        }
 
         public void AddExtBreakpoint(List<string> newBreakpointDesc)
         {
@@ -1519,7 +1420,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             FillBreakpointConditionData(newBreakpointDesc, 1, ref breakpointInfo);
 
             //let emit CIL code to check the breakpoint
-            Func<bool> checkBreakpoint = EmitILCondition(breakpointInfo);
+            Func<bool> checkBreakpoint = ILProcessor.EmitILCondition(ref m_spectrum, breakpointInfo);
             if (checkBreakpoint != null)
                 breakpointInfo.SetBreakpointCheckMethod(checkBreakpoint);
 
@@ -1528,7 +1429,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             {
                 //second condition
                 FillBreakpointConditionData(newBreakpointDesc, 5, ref breakpointInfo);
-                checkBreakpoint = EmitILCondition(breakpointInfo);
+                checkBreakpoint = ILProcessor.EmitILCondition(ref m_spectrum, breakpointInfo);
                 breakpointInfo.SetCheckSecondCondition(checkBreakpoint);
             }
 
@@ -1708,82 +1609,5 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
 
         #endregion
-    }
-
-    public class InterfaceWrapper
-    {
-        //fields wrapper
-        private CpuRegs a_Z80Registers;
-
-        public void wrapFields(CpuRegs i_regs)
-        {
-            a_Z80Registers = i_regs;
-        }
-
-        public ushort getRegistryValue(string i_registryName)
-        {
-            //FieldInfo testInfo1 = typeof(REGS).GetField(i_registryName, BindingFlags.Public | BindingFlags.Instance);
-            return 0;
-        }
-
-        //method wrapper
-        delegate TReturn delegateWithReturnAndParameterType<TReturn, TParameter0>(TParameter0 p0);
-
-        private delegateWithReturnAndParameterType<byte, ushort>   readMemory8BitDelegate;
-        private delegateWithReturnAndParameterType<ushort, ushort> readMemory16BitDelegate;
-
-        public void wrapInterface(IDebuggable i_debuggable)
-        {
-            readMemory8BitDelegate = delegate(ushort memAdress) { return i_debuggable.ReadMemory(memAdress); };
-            readMemory16BitDelegate = delegate(ushort memAdress) { return (ushort)(  i_debuggable.ReadMemory(memAdress) 
-                                                                                   | i_debuggable.ReadMemory(++memAdress) << 8
-                                                                                  ); 
-                                                                 };
-
-            //ToDo: get registry value using emitted code(=> create delegate similar to above
-            /*Type[] args = { typeof(REGS) };
-            DynamicMethod dynamicMethod = new DynamicMethod(
-                "RegVsValue",
-                typeof(bool), //return type
-                args,         //arguments for the method
-                typeof(REGS).Module); //module as input
-
-            ILGenerator il = dynamicMethod.GetILGenerator();
-
-            //Arg0 - registry value
-            il.Emit(OpCodes.Ldarg_0); // load m_spectrum.CPU.regs on stack
-            FieldInfo testInfo1 = typeof(REGS).GetField(breakpointInfo.leftCondition, BindingFlags.Public | BindingFlags.Instance);
-            il.Emit(OpCodes.Ldfld, testInfo1);
-
-            //Arg1 - number
-            il.Emit(OpCodes.Ldc_I4, (int)breakpointInfo.rightValue);
-
-            DebuggerManager.EmitCondition(il, breakpointInfo.conditionTypeSign);
-            il.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
-
-            var checkBreakpoint = (checkBreakpointDelegate<bool>)dynamicMethod.CreateDelegate(typeof(checkBreakpointDelegate<bool>), a_Z80Registers);*/
-        }
-
-        public byte invokeReadMemory8Bit(ushort memAdress)
-        {
-            return readMemory8BitDelegate(memAdress);
-        }
-        public ushort invokeReadMemory16Bit(ushort memAdress)
-        {
-            return readMemory16BitDelegate(memAdress);
-        }
-
-        public byte invokeReadMemory8BitViaRegistryValue(string registryName)
-        {
-            //ToDo: emit code ?
-            //lock (a_Z80Registers)
-            return readMemory8BitDelegate(DebuggerManager.getRegistryValueByName(a_Z80Registers, registryName));
-        }
-        public ushort invokeReadMemory16BitViaRegistryValue(string registryName)
-        {
-            //ToDo: emit code ?
-            //lock (a_Z80Registers)
-            return readMemory16BitDelegate(DebuggerManager.getRegistryValueByName(a_Z80Registers, registryName));
-        }
     }
 }
