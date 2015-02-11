@@ -8,7 +8,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
 {
     public static class ILProcessor
     {
-        public static Func<bool> EmitILCondition(ref IDebuggable i_spectrum, BreakpointInfo i_breakpointInfo)
+        public static Func<bool> EmitCondition(ref IDebuggable i_spectrum, BreakpointInfo i_breakpointInfo)
         {
             Func<bool> o_ILOut = null;
 
@@ -213,9 +213,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 readMemory8BitDelegate = delegate(ushort memAdress) { return i_debuggable.ReadMemory(memAdress); };
                 readMemory16BitDelegate = delegate(ushort memAdress)
                 {
-                    return (ushort)(i_debuggable.ReadMemory(memAdress)
-                                    | i_debuggable.ReadMemory(++memAdress) << 8
-                                   );
+                    return (ushort)(i_debuggable.ReadMemory(memAdress) | i_debuggable.ReadMemory(++memAdress) << 8 );
                 };
             }
 

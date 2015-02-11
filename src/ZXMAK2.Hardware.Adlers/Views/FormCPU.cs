@@ -5,8 +5,6 @@ using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 
 using ZXMAK2.Dependency;
@@ -408,6 +406,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
             dasmPanel.ActiveAddress = m_spectrum.CPU.regs.PC;
             dasmPanel.UpdateLines();
             Refresh();
+        }
+
+        private void menuItemDumpMemoryAtCurrentAddress_Click(object sender, EventArgs e)
+        {
+            dataPanel.TopAddress = dasmPanel.ActiveAddress;
+        }
+
+        private void menuItemFollowInDisassembly_Click(object sender, EventArgs e)
+        {
+            //Locator.Resolve<IUserMessage>().Info(dataPanel.ActiveAddress.ToString());
+            dasmPanel.TopAddress = dataPanel.ActiveAddress;
         }
 
         private void menuItemDasmClearBP_Click(object sender, EventArgs e)
@@ -815,7 +824,33 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void dasmPanel_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
+                this.menuItemDumpMemory.MenuItems.Clear();
+                this.menuItemDumpMemory.MenuItems.Add(menuItemDumpMemoryAtCurrentAddress);
+
+                ushort[] numbers = dasmPanel.GetNumberFromCpuInstruction_ActiveLine();
+                if(numbers != null )
+                {
+                    //ToDo: numbers[] - question is whether there can be more numbers in one cpu instruction.
+                    MenuItem menuItemNewAdress = new MenuItem();
+
+                    menuItemNewAdress.Index = 0;
+                    menuItemNewAdress.Text = String.Format("#{0:X4}", numbers[0]);
+                    menuItemNewAdress.Click += new EventHandler(menuItemNewAdress_Clicked);
+
+                    this.menuItemDumpMemory.MenuItems.Add(menuItemNewAdress);
+                }
+
                 contextMenuDasm.Show(dasmPanel, e.Location);
+            }
+        }
+        private void menuItemNewAdress_Clicked(object sender, EventArgs e)
+        {
+            if (sender is MenuItem) //must be a MenuItem
+            {
+                string hex = ((MenuItem)sender).Text;
+                dataPanel.TopAddress = ushort.Parse(hex.Substring(1, hex.Length - 1), System.Globalization.NumberStyles.HexNumber);
+            }
         }
 
         private void dasmPanel_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -1420,7 +1455,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             FillBreakpointConditionData(newBreakpointDesc, 1, ref breakpointInfo);
 
             //let emit CIL code to check the breakpoint
-            Func<bool> checkBreakpoint = ILProcessor.EmitILCondition(ref m_spectrum, breakpointInfo);
+            Func<bool> checkBreakpoint = ILProcessor.EmitCondition(ref m_spectrum, breakpointInfo);
             if (checkBreakpoint != null)
                 breakpointInfo.SetBreakpointCheckMethod(checkBreakpoint);
 
@@ -1429,7 +1464,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             {
                 //second condition
                 FillBreakpointConditionData(newBreakpointDesc, 5, ref breakpointInfo);
-                checkBreakpoint = ILProcessor.EmitILCondition(ref m_spectrum, breakpointInfo);
+                checkBreakpoint = ILProcessor.EmitCondition(ref m_spectrum, breakpointInfo);
                 breakpointInfo.SetCheckSecondCondition(checkBreakpoint);
             }
 

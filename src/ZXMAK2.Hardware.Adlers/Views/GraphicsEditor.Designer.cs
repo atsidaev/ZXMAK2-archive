@@ -308,6 +308,7 @@
             // numericIncDecDelta
             // 
             this.numericIncDecDelta.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.numericIncDecDelta.Hexadecimal = true;
             this.numericIncDecDelta.Location = new System.Drawing.Point(84, 103);
             this.numericIncDecDelta.Maximum = new decimal(new int[] {
             999999,

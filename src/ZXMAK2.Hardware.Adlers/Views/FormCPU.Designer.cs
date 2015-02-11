@@ -45,6 +45,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.contextMenuDasm = new System.Windows.Forms.ContextMenu();
             this.menuItemDasmGotoADDR = new System.Windows.Forms.MenuItem();
             this.menuItemDasmGotoPC = new System.Windows.Forms.MenuItem();
+            this.menuItemDumpMemory = new System.Windows.Forms.MenuItem();
+            this.menuItemDumpMemoryAtCurrentAddress = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.menuItemDasmClearBreakpoints = new System.Windows.Forms.MenuItem();
             this.menuItem4 = new System.Windows.Forms.MenuItem();
@@ -56,18 +58,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemDasmRefresh = new System.Windows.Forms.MenuItem();
             this.contextMenuData = new System.Windows.Forms.ContextMenu();
             this.menuItemDataGotoADDR = new System.Windows.Forms.MenuItem();
+            this.menuItemFollowInDisassembly = new System.Windows.Forms.MenuItem();
             this.menuItemDataSetColumnCount = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.menuDataLoadBlock = new System.Windows.Forms.MenuItem();
             this.menuDataSaveBlock = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.menuItemFindBytes = new System.Windows.Forms.MenuItem();
+            this.menuItemFindBytesNext = new System.Windows.Forms.MenuItem();
             this.menuItemSaveAsBytes = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.menuItemDataRefresh = new System.Windows.Forms.MenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.dbgCmdLine = new System.Windows.Forms.TextBox();
-            this.menuItemFindBytesNext = new System.Windows.Forms.MenuItem();
             this.panelStatus.SuspendLayout();
             this.panelState.SuspendLayout();
             this.panelRegs.SuspendLayout();
@@ -276,6 +279,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.contextMenuDasm.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItemDasmGotoADDR,
             this.menuItemDasmGotoPC,
+            this.menuItemDumpMemory,
             this.menuItem2,
             this.menuItemDasmClearBreakpoints,
             this.menuItem4,
@@ -299,53 +303,66 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemDasmGotoPC.Text = "Goto PC";
             this.menuItemDasmGotoPC.Click += new System.EventHandler(this.menuItemDasmGotoPC_Click);
             // 
+            // menuItemDumpMemory
+            // 
+            this.menuItemDumpMemory.Index = 2;
+            this.menuItemDumpMemory.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemDumpMemoryAtCurrentAddress});
+            this.menuItemDumpMemory.Text = "Dump memory at";
+            // 
+            // menuItemDumpMemoryAtCurrentAddress
+            // 
+            this.menuItemDumpMemoryAtCurrentAddress.Index = 0;
+            this.menuItemDumpMemoryAtCurrentAddress.Text = "Current address";
+            this.menuItemDumpMemoryAtCurrentAddress.Click += new System.EventHandler(this.menuItemDumpMemoryAtCurrentAddress_Click);
+            // 
             // menuItem2
             // 
-            this.menuItem2.Index = 2;
+            this.menuItem2.Index = 3;
             this.menuItem2.Text = "-";
             // 
             // menuItemDasmClearBreakpoints
             // 
-            this.menuItemDasmClearBreakpoints.Index = 3;
+            this.menuItemDasmClearBreakpoints.Index = 4;
             this.menuItemDasmClearBreakpoints.Text = "Reset breakpoints";
             this.menuItemDasmClearBreakpoints.Click += new System.EventHandler(this.menuItemDasmClearBP_Click);
             // 
             // menuItem4
             // 
-            this.menuItem4.Index = 4;
+            this.menuItem4.Index = 5;
             this.menuItem4.Text = "-";
             // 
             // menuDasmLoadBlock
             // 
-            this.menuDasmLoadBlock.Index = 5;
+            this.menuDasmLoadBlock.Index = 6;
             this.menuDasmLoadBlock.Text = "Load Block...";
             this.menuDasmLoadBlock.Click += new System.EventHandler(this.menuLoadBlock_Click);
             // 
             // menuDasmSaveBlock
             // 
-            this.menuDasmSaveBlock.Index = 6;
+            this.menuDasmSaveBlock.Index = 7;
             this.menuDasmSaveBlock.Text = "Save Block...";
             this.menuDasmSaveBlock.Click += new System.EventHandler(this.menuSaveBlock_Click);
             // 
             // menuItem8
             // 
-            this.menuItem8.Index = 7;
+            this.menuItem8.Index = 8;
             this.menuItem8.Text = "-";
             // 
             // menuItemSaveDisassembly
             // 
-            this.menuItemSaveDisassembly.Index = 8;
+            this.menuItemSaveDisassembly.Index = 9;
             this.menuItemSaveDisassembly.Text = "Save disassembly";
             this.menuItemSaveDisassembly.Click += new System.EventHandler(this.menuItemSaveDisassembly_Click);
             // 
             // menuItem1
             // 
-            this.menuItem1.Index = 9;
+            this.menuItem1.Index = 10;
             this.menuItem1.Text = "-";
             // 
             // menuItemDasmRefresh
             // 
-            this.menuItemDasmRefresh.Index = 10;
+            this.menuItemDasmRefresh.Index = 11;
             this.menuItemDasmRefresh.Text = "Refresh";
             this.menuItemDasmRefresh.Click += new System.EventHandler(this.menuItemDasmRefresh_Click);
             // 
@@ -353,6 +370,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.contextMenuData.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItemDataGotoADDR,
+            this.menuItemFollowInDisassembly,
             this.menuItemDataSetColumnCount,
             this.menuItem5,
             this.menuDataLoadBlock,
@@ -370,55 +388,68 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemDataGotoADDR.Text = "Goto Address...";
             this.menuItemDataGotoADDR.Click += new System.EventHandler(this.menuItemDataGotoADDR_Click);
             // 
+            // menuItemFollowInDisassembly
+            // 
+            this.menuItemFollowInDisassembly.Index = 1;
+            this.menuItemFollowInDisassembly.Text = "Follow in disassembly";
+            this.menuItemFollowInDisassembly.Click += new System.EventHandler(this.menuItemFollowInDisassembly_Click);
+            // 
             // menuItemDataSetColumnCount
             // 
-            this.menuItemDataSetColumnCount.Index = 1;
+            this.menuItemDataSetColumnCount.Index = 2;
             this.menuItemDataSetColumnCount.Text = "Set column count...";
             this.menuItemDataSetColumnCount.Click += new System.EventHandler(this.menuItemDataSetColumnCount_Click);
             // 
             // menuItem5
             // 
-            this.menuItem5.Index = 2;
+            this.menuItem5.Index = 3;
             this.menuItem5.Text = "-";
             // 
             // menuDataLoadBlock
             // 
-            this.menuDataLoadBlock.Index = 3;
+            this.menuDataLoadBlock.Index = 4;
             this.menuDataLoadBlock.Text = "Load Block...";
             this.menuDataLoadBlock.Click += new System.EventHandler(this.menuLoadBlock_Click);
             // 
             // menuDataSaveBlock
             // 
-            this.menuDataSaveBlock.Index = 4;
+            this.menuDataSaveBlock.Index = 5;
             this.menuDataSaveBlock.Text = "Save Block...";
             this.menuDataSaveBlock.Click += new System.EventHandler(this.menuSaveBlock_Click);
             // 
             // menuItem3
             // 
-            this.menuItem3.Index = 5;
+            this.menuItem3.Index = 6;
             this.menuItem3.Text = "-";
             // 
             // menuItemFindBytes
             // 
-            this.menuItemFindBytes.Index = 6;
+            this.menuItemFindBytes.Index = 7;
             this.menuItemFindBytes.Shortcut = System.Windows.Forms.Shortcut.CtrlF;
             this.menuItemFindBytes.Text = "Find bytes in memory";
             this.menuItemFindBytes.Click += new System.EventHandler(this.menuItemFindBytes_Click);
             // 
+            // menuItemFindBytesNext
+            // 
+            this.menuItemFindBytesNext.Index = 8;
+            this.menuItemFindBytesNext.Shortcut = System.Windows.Forms.Shortcut.CtrlN;
+            this.menuItemFindBytesNext.Text = "Find next";
+            this.menuItemFindBytesNext.Click += new System.EventHandler(this.menuItemFindBytesNext_Click);
+            // 
             // menuItemSaveAsBytes
             // 
-            this.menuItemSaveAsBytes.Index = 8;
+            this.menuItemSaveAsBytes.Index = 9;
             this.menuItemSaveAsBytes.Text = "Save as bytes";
             this.menuItemSaveAsBytes.Click += new System.EventHandler(this.menuItemSaveAsBytes_Click);
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 9;
+            this.menuItem7.Index = 10;
             this.menuItem7.Text = "-";
             // 
             // menuItemDataRefresh
             // 
-            this.menuItemDataRefresh.Index = 10;
+            this.menuItemDataRefresh.Index = 11;
             this.menuItemDataRefresh.Text = "Refresh";
             this.menuItemDataRefresh.Click += new System.EventHandler(this.menuItemDataRefresh_Click);
             // 
@@ -446,13 +477,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.dbgCmdLine.Size = new System.Drawing.Size(444, 17);
             this.dbgCmdLine.TabIndex = 0;
             this.dbgCmdLine.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dbgCmdLine_KeyUp);
-            // 
-            // menuItemFindBytesNext
-            // 
-            this.menuItemFindBytesNext.Index = 7;
-            this.menuItemFindBytesNext.Shortcut = System.Windows.Forms.Shortcut.CtrlN;
-            this.menuItemFindBytesNext.Text = "Find next";
-            this.menuItemFindBytesNext.Click += new System.EventHandler(this.menuItemFindBytesNext_Click);
             // 
             // FormCpu
             // 
@@ -529,5 +553,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuItem7;
         private System.Windows.Forms.MenuItem menuItemFindBytes;
         private System.Windows.Forms.MenuItem menuItemFindBytesNext;
+        private System.Windows.Forms.MenuItem menuItemFollowInDisassembly;
+        private System.Windows.Forms.MenuItem menuItemDumpMemory;
+        private System.Windows.Forms.MenuItem menuItemDumpMemoryAtCurrentAddress;
     }
 }
