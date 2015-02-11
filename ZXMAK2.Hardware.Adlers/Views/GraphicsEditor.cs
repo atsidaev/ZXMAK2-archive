@@ -28,7 +28,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             comboSpriteWidth.SelectedIndex = 0;
             comboSpriteHeight.SelectedIndex = 0;
 
-            bitmapGridSpriteView.Init(_spectrum, Convert.ToByte(comboSpriteWidth.SelectedItem), 24);
+            bitmapGridSpriteView.Init(_spectrum, Convert.ToByte(comboSpriteWidth.SelectedItem), 32);
 
             _isInitialised = true;
 
@@ -380,7 +380,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
         private void hexNumbersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            numericUpDownActualAddress.Hexadecimal = hexNumbersToolStripMenuItem.Checked;
+            numericIncDecDelta.Hexadecimal = numericUpDownActualAddress.Hexadecimal = hexNumbersToolStripMenuItem.Checked;
             labelMemoryAddress.Text = String.Format("Memory address({0}):", hexNumbersToolStripMenuItem.Checked ? "hex" : "dec");
         }
         private void bitmapGridSpriteView_MouseUp(object sender, MouseEventArgs e)
