@@ -1,13 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
-using System.Text;
+using System.Windows.Forms;
+using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Hardware.Adlers.Views;
 
 namespace ZXMAK2.Hardware.Adlers.Core
 {
     public class DebuggerTrace
     {
-        public static byte[] ConditionalJumps = new byte[] { //JR`s
+        #region members
+        public static readonly byte[] ConditionalJumps = new byte[] { 
+                                                             //JR`s
                                                              0x20, //JR NZ,d
                                                              0x28, //JR Z,d
                                                              0x30, //JR NC,d
@@ -31,11 +35,50 @@ namespace ZXMAK2.Hardware.Adlers.Core
                                                              0xF4, //CALL P,nn
                                                              0xFC  //CALL M,nn
                                                            };
-        public static byte[] CommonJumps = new byte[] { 0x18, //JR d
-                                                        0xC9, //RET
-                                                        0xC3, //JP nn
-                                                        0xCD, //CALL nn
-                                                        0xE9, //JP (HL)
-                                                      };
+        public static readonly byte[] CommonJumps = new byte[] { 
+                                                             0x18, //JR d
+                                                             0xC9, //RET
+                                                             0xC3, //JP nn
+                                                             0xCD, //CALL nn
+                                                             0xE9, //JP (HL)
+                                                           };
+        private IDebuggable m_spectrum;
+        
+        private bool[] m_addrsFlags; //false => address is excluded from tracing
+        private byte[] m_currentTraceOpcodes = null;
+        #endregion
+
+        public DebuggerTrace(IDebuggable i_spectrum)
+        {
+            m_spectrum = i_spectrum;
+
+            m_addrsFlags = new bool[65536];
+            ResetAddrsFlags();
+        }
+
+        private void ResetAddrsFlags()
+        {
+            Array.Clear(m_addrsFlags, 0, m_addrsFlags.Length);
+        }
+
+        public void StartTrace(FormCpu i_form)
+        {
+            SetTraceOpcodes(i_form);
+        }
+
+        private void SetTraceOpcodes(FormCpu i_form)
+        {
+            m_currentTraceOpcodes = null;
+
+            if( i_form.checkBoxAllJumps.Checked )
+            {
+                m_currentTraceOpcodes = new byte[CommonJumps.Length + ConditionalJumps.Length];
+                m_currentTraceOpcodes = CommonJumps.Union(ConditionalJumps).ToArray();
+            }
+            else if( i_form.checkBoxConditionalJumps.Checked )
+            {
+                m_currentTraceOpcodes = ConditionalJumps;
+            }
+        }
     }
 }

@@ -148,6 +148,10 @@
       <Name>ZXMAK2.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Resources\ZXMAK2.Resources.csproj">
+      <Project>{1d3fff75-30f8-4e8a-b650-b7fb3da9c776}</Project>
+      <Name>ZXMAK2.Resources</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
