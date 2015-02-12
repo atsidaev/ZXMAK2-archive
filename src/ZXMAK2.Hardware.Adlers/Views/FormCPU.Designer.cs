@@ -38,6 +38,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listF = new System.Windows.Forms.ListBox();
             this.splitter4 = new System.Windows.Forms.Splitter();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.checkBoxTraceArea = new System.Windows.Forms.CheckBox();
             this.buttonSetTraceFileName = new System.Windows.Forms.Button();
             this.textBoxTraceFileName = new System.Windows.Forms.TextBox();
             this.checkBoxTraceFileOut = new System.Windows.Forms.CheckBox();
@@ -51,7 +52,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listViewAdressRanges = new System.Windows.Forms.ListView();
             this.btnStopTrace = new System.Windows.Forms.Button();
             this.btnStartTrace = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.splitter3 = new System.Windows.Forms.Splitter();
             this.splitter1 = new System.Windows.Forms.Splitter();
@@ -232,6 +232,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.checkBoxTraceArea);
             this.tabPage2.Controls.Add(this.buttonSetTraceFileName);
             this.tabPage2.Controls.Add(this.textBoxTraceFileName);
             this.tabPage2.Controls.Add(this.checkBoxTraceFileOut);
@@ -240,7 +241,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.tabPage2.Controls.Add(this.listViewAdressRanges);
             this.tabPage2.Controls.Add(this.btnStopTrace);
             this.tabPage2.Controls.Add(this.btnStartTrace);
-            this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -248,6 +248,18 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Trace";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxTraceArea
+            // 
+            this.checkBoxTraceArea.AutoSize = true;
+            this.checkBoxTraceArea.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxTraceArea.Location = new System.Drawing.Point(6, 129);
+            this.checkBoxTraceArea.Name = "checkBoxTraceArea";
+            this.checkBoxTraceArea.Size = new System.Drawing.Size(103, 18);
+            this.checkBoxTraceArea.TabIndex = 11;
+            this.checkBoxTraceArea.Text = "Trace area:";
+            this.checkBoxTraceArea.UseVisualStyleBackColor = true;
+            this.checkBoxTraceArea.CheckedChanged += new System.EventHandler(this.checkBoxTraceAddresses_CheckedChanged);
             // 
             // buttonSetTraceFileName
             // 
@@ -304,7 +316,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.groupBoxTraceOptions.Location = new System.Drawing.Point(5, 0);
             this.groupBoxTraceOptions.Name = "groupBoxTraceOptions";
             this.groupBoxTraceOptions.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.groupBoxTraceOptions.Size = new System.Drawing.Size(150, 148);
+            this.groupBoxTraceOptions.Size = new System.Drawing.Size(150, 126);
             this.groupBoxTraceOptions.TabIndex = 6;
             this.groupBoxTraceOptions.TabStop = false;
             this.groupBoxTraceOptions.Text = "Trace only:";
@@ -366,10 +378,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // listViewAdressRanges
             // 
             this.listViewAdressRanges.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewAdressRanges.Enabled = false;
             this.listViewAdressRanges.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listViewAdressRanges.FullRowSelect = true;
             this.listViewAdressRanges.GridLines = true;
-            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 168);
+            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 150);
             this.listViewAdressRanges.Name = "listViewAdressRanges";
             this.listViewAdressRanges.Size = new System.Drawing.Size(150, 97);
             this.listViewAdressRanges.TabIndex = 5;
@@ -401,16 +414,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.btnStartTrace.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnStartTrace.UseVisualStyleBackColor = true;
             this.btnStartTrace.Click += new System.EventHandler(this.btnStartTrace_Click);
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(2, 150);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(147, 15);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Trace address range:";
             // 
             // tabPage3
             // 
@@ -802,10 +805,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnStartTrace;
         private System.Windows.Forms.Button btnStopTrace;
-        private System.Windows.Forms.ListView listViewAdressRanges;
         private System.Windows.Forms.GroupBox groupBoxTraceOptions;
         private System.Windows.Forms.CheckBox checkBoxCallToROM;
         private System.Windows.Forms.TextBox textBoxOpcode;
@@ -816,5 +817,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.TextBox textBoxTraceFileName;
         public System.Windows.Forms.CheckBox checkBoxAllJumps;
         public System.Windows.Forms.CheckBox checkBoxConditionalJumps;
+        public System.Windows.Forms.ListView listViewAdressRanges;
+        public System.Windows.Forms.CheckBox checkBoxTraceArea;
     }
 }

@@ -46,6 +46,9 @@ namespace ZXMAK2.Hardware.Adlers.Core
         
         private bool[] m_addrsFlags; //false => address is excluded from tracing
         private byte[] m_currentTraceOpcodes = null;
+
+        private bool m_isTracingJumps = false;
+        private bool m_isTraceAreaDefined = false;
         #endregion
 
         public DebuggerTrace(IDebuggable i_spectrum)
@@ -64,21 +67,67 @@ namespace ZXMAK2.Hardware.Adlers.Core
         public void StartTrace(FormCpu i_form)
         {
             SetTraceOpcodes(i_form);
+            SetTraceArea(i_form);
+        }
+        public void StopTrace(FormCpu i_form)
+        {
+            m_isTracingJumps = false;
         }
 
         private void SetTraceOpcodes(FormCpu i_form)
         {
             m_currentTraceOpcodes = null;
 
-            if( i_form.checkBoxAllJumps.Checked )
+            if (i_form.checkBoxAllJumps.Checked)
             {
                 m_currentTraceOpcodes = new byte[CommonJumps.Length + ConditionalJumps.Length];
                 m_currentTraceOpcodes = CommonJumps.Union(ConditionalJumps).ToArray();
+
+                m_isTracingJumps = true;
             }
-            else if( i_form.checkBoxConditionalJumps.Checked )
+            else if (i_form.checkBoxConditionalJumps.Checked)
             {
                 m_currentTraceOpcodes = ConditionalJumps;
+                m_isTracingJumps = true;
             }
+            else
+                m_isTracingJumps = false;
+        }
+        private void SetTraceArea(FormCpu i_form)
+        {
+            if (i_form.listViewAdressRanges.Items.Count == 0 || i_form.checkBoxTraceArea.Checked == false)
+            {
+                m_isTraceAreaDefined = false;
+                return;
+            }
+            
+            foreach( ListViewItem item in i_form.listViewAdressRanges.Items )
+            {
+                string[] tags = ((string)item.Tag).Split(new char[] { ';' });
+                if (tags.Length != 3)
+                    continue;
+
+                //setting
+                int addrFrom = int.Parse(tags[0], System.Globalization.NumberStyles.HexNumber);
+                int addrTo = int.Parse(tags[1], System.Globalization.NumberStyles.HexNumber);
+                for (; addrFrom <= addrTo; addrFrom++)
+                    m_addrsFlags[addrFrom] = (tags[2] == "Yes");
+            }
+
+            m_isTraceAreaDefined = true;
+        }
+
+        public byte[] GetTraceOpcodes()
+        {
+            return m_currentTraceOpcodes;
+        }
+        public bool IsTracingJumps()
+        {
+            return m_isTracingJumps;
+        }
+        public bool IsTraceAreaDefined()
+        {
+            return m_isTraceAreaDefined;
         }
     }
 }
