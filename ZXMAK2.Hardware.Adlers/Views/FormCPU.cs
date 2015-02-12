@@ -984,15 +984,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void Bus_OnBeforeCpuCycle(int frameTact)
         {
             if (!m_isTracing || m_cpuRegs.PC < 0x4000) //no need to trace ROM
-            {
                 return;
+            
+            //byte byteOnAddr = m_spectrum.ReadMemory(m_cpuRegs.PC);
+            if (Array.Exists(DebuggerTrace.ConditionalJumps, p => p == m_spectrum.ReadMemory(m_cpuRegs.PC)))
+            {
+                //is addr allowed?
+                //if( m_cpuRegs.PC!= 0xCE14 )
+                {
+                    var len = 0;
+                    var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
+                    Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
+                }
             }
-            var len = 0;
-            var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
-            byte byteOnAddr = m_spectrum.ReadMemory(m_cpuRegs.PC);
-
-            if (byteOnAddr == 0xC9/*RET*/ || byteOnAddr == 0xC3/*JP*/ || byteOnAddr == 0xCD/*CALL*/)
-                Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
         }
 
         private void dbgCmdLine_KeyUp(object sender, KeyEventArgs e)
