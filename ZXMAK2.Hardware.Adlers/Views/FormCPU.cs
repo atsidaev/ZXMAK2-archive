@@ -74,9 +74,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
             listViewAdressRanges.View = View.Details;
             listViewAdressRanges.Columns.Add("From", -2, HorizontalAlignment.Right);
             listViewAdressRanges.Columns.Add(" To ", -2, HorizontalAlignment.Right);
-            listViewAdressRanges.Columns.Add("Active", -2, HorizontalAlignment.Center );
+            listViewAdressRanges.Columns.Add("Trace", -2, HorizontalAlignment.Center );
 
             ListViewItem item = new ListViewItem(new[] { "#4000", "#FFFF", "Yes"});
+            listViewAdressRanges.Items.Add(item);
+            item.Tag = "4000;FFFF;Yes";
+            item = new ListViewItem(new[] { "#CE11", "#CE11", "No" });
+            item.Tag = "CE11;CE11;No";
             listViewAdressRanges.Items.Add(item);
         }
 
@@ -1002,11 +1006,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (!m_isTracing || m_cpuRegs.PC < 0x4000) //no need to trace ROM
                 return;
             
-            //byte byteOnAddr = m_spectrum.ReadMemory(m_cpuRegs.PC);
-            if (Array.Exists(DebuggerTrace.ConditionalJumps, p => p == m_spectrum.ReadMemory(m_cpuRegs.PC)))
+            if( m_debuggerTrace.IsTracingJumps() )
             {
-                //is addr allowed?
-                //if( m_cpuRegs.PC!= 0xCE14 )
+                if (Array.Exists(m_debuggerTrace.GetTraceOpcodes(), p => p == m_spectrum.ReadMemory(m_cpuRegs.PC)))
                 {
                     var len = 0;
                     var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
@@ -1678,6 +1680,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void checkBoxTraceFileOut_CheckedChanged(object sender, EventArgs e)
         {
             buttonSetTraceFileName.Enabled = textBoxTraceFileName.Enabled = checkBoxTraceFileOut.Checked;
+        }
+        private void checkBoxTraceAddresses_CheckedChanged(object sender, EventArgs e)
+        {
+            listViewAdressRanges.Enabled = checkBoxTraceArea.Checked;
         }
         private void btnStartTrace_Click(object sender, EventArgs e)
         {
