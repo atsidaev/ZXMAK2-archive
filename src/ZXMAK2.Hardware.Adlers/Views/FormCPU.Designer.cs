@@ -29,13 +29,31 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void InitializeComponent()
         {
             this.panelStatus = new System.Windows.Forms.Panel();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.panelState = new System.Windows.Forms.Panel();
             this.listState = new System.Windows.Forms.ListBox();
-            this.splitter3 = new System.Windows.Forms.Splitter();
             this.panelRegs = new System.Windows.Forms.Panel();
+            this.listREGS = new System.Windows.Forms.ListBox();
             this.listF = new System.Windows.Forms.ListBox();
             this.splitter4 = new System.Windows.Forms.Splitter();
-            this.listREGS = new System.Windows.Forms.ListBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.buttonSetTraceFileName = new System.Windows.Forms.Button();
+            this.textBoxTraceFileName = new System.Windows.Forms.TextBox();
+            this.checkBoxTraceFileOut = new System.Windows.Forms.CheckBox();
+            this.checkBoxShowConsole = new System.Windows.Forms.CheckBox();
+            this.groupBoxTraceOptions = new System.Windows.Forms.GroupBox();
+            this.textBoxOpcode = new System.Windows.Forms.TextBox();
+            this.checkBoxOpcode = new System.Windows.Forms.CheckBox();
+            this.checkBoxCallToROM = new System.Windows.Forms.CheckBox();
+            this.checkBoxConditionalJumps = new System.Windows.Forms.CheckBox();
+            this.checkBoxAllJumps = new System.Windows.Forms.CheckBox();
+            this.listViewAdressRanges = new System.Windows.Forms.ListView();
+            this.btnStopTrace = new System.Windows.Forms.Button();
+            this.btnStartTrace = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.splitter3 = new System.Windows.Forms.Splitter();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panelMem = new System.Windows.Forms.Panel();
             this.dataPanel = new ZXMAK2.Hardware.Adlers.Views.DataPanel();
@@ -72,8 +90,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panel1 = new System.Windows.Forms.Panel();
             this.dbgCmdLine = new System.Windows.Forms.TextBox();
             this.panelStatus.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.panelState.SuspendLayout();
             this.panelRegs.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.groupBoxTraceOptions.SuspendLayout();
             this.panelMem.SuspendLayout();
             this.panelDasm.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -81,23 +103,47 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // panelStatus
             // 
-            this.panelStatus.Controls.Add(this.panelState);
+            this.panelStatus.Controls.Add(this.tabControl1);
             this.panelStatus.Controls.Add(this.splitter3);
-            this.panelStatus.Controls.Add(this.panelRegs);
             this.panelStatus.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panelStatus.Location = new System.Drawing.Point(451, 0);
+            this.panelStatus.Location = new System.Drawing.Point(458, 0);
             this.panelStatus.Name = "panelStatus";
-            this.panelStatus.Size = new System.Drawing.Size(168, 404);
+            this.panelStatus.Size = new System.Drawing.Size(168, 435);
             this.panelStatus.TabIndex = 0;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.tabControl1.Font = new System.Drawing.Font("Courier New", 9F);
+            this.tabControl1.Location = new System.Drawing.Point(0, 3);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(168, 432);
+            this.tabControl1.TabIndex = 2;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.panelState);
+            this.tabPage1.Controls.Add(this.panelRegs);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(160, 404);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "CPU";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // panelState
             // 
             this.panelState.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panelState.Controls.Add(this.listState);
             this.panelState.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelState.Location = new System.Drawing.Point(0, 252);
+            this.panelState.Location = new System.Drawing.Point(3, 252);
             this.panelState.Name = "panelState";
-            this.panelState.Size = new System.Drawing.Size(168, 152);
+            this.panelState.Size = new System.Drawing.Size(154, 149);
             this.panelState.TabIndex = 2;
             // 
             // listState
@@ -109,61 +155,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listState.ItemHeight = 14;
             this.listState.Location = new System.Drawing.Point(0, 0);
             this.listState.Name = "listState";
-            this.listState.Size = new System.Drawing.Size(164, 148);
-            this.listState.TabIndex = 3;
+            this.listState.Size = new System.Drawing.Size(150, 145);
+            this.listState.TabIndex = 1;
             this.listState.DoubleClick += new System.EventHandler(this.listState_DoubleClick);
-            // 
-            // splitter3
-            // 
-            this.splitter3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splitter3.Location = new System.Drawing.Point(0, 249);
-            this.splitter3.Name = "splitter3";
-            this.splitter3.Size = new System.Drawing.Size(168, 3);
-            this.splitter3.TabIndex = 1;
-            this.splitter3.TabStop = false;
             // 
             // panelRegs
             // 
-            this.panelRegs.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panelRegs.Controls.Add(this.listREGS);
             this.panelRegs.Controls.Add(this.listF);
             this.panelRegs.Controls.Add(this.splitter4);
-            this.panelRegs.Controls.Add(this.listREGS);
             this.panelRegs.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelRegs.Location = new System.Drawing.Point(0, 0);
+            this.panelRegs.Location = new System.Drawing.Point(3, 3);
             this.panelRegs.Name = "panelRegs";
-            this.panelRegs.Size = new System.Drawing.Size(168, 249);
+            this.panelRegs.Size = new System.Drawing.Size(154, 249);
             this.panelRegs.TabIndex = 0;
-            // 
-            // listF
-            // 
-            this.listF.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.listF.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listF.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.listF.FormattingEnabled = true;
-            this.listF.IntegralHeight = false;
-            this.listF.ItemHeight = 15;
-            this.listF.Items.AddRange(new object[] {
-            "  S = 0",
-            "  Z = 0",
-            " F5 = 0",
-            "  H = 1",
-            " F3 = 0",
-            "P/V = 0",
-            "  N = 0",
-            "  C = 0"});
-            this.listF.Location = new System.Drawing.Point(88, 0);
-            this.listF.Name = "listF";
-            this.listF.Size = new System.Drawing.Size(76, 245);
-            this.listF.TabIndex = 2;
-            this.listF.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listF_MouseDoubleClick);
-            // 
-            // splitter4
-            // 
-            this.splitter4.Location = new System.Drawing.Point(85, 0);
-            this.splitter4.Name = "splitter4";
-            this.splitter4.Size = new System.Drawing.Size(3, 245);
-            this.splitter4.TabIndex = 1;
-            this.splitter4.TabStop = false;
             // 
             // listREGS
             // 
@@ -188,18 +193,249 @@ namespace ZXMAK2.Hardware.Adlers.Views
             "DE\' = 0000",
             "BC\' = 0000",
             " MW = 0000"});
-            this.listREGS.Location = new System.Drawing.Point(0, 0);
+            this.listREGS.Location = new System.Drawing.Point(3, 0);
             this.listREGS.Name = "listREGS";
-            this.listREGS.Size = new System.Drawing.Size(85, 245);
-            this.listREGS.TabIndex = 1;
+            this.listREGS.Size = new System.Drawing.Size(80, 249);
+            this.listREGS.TabIndex = 0;
             this.listREGS.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listREGS_MouseDoubleClick);
+            // 
+            // listF
+            // 
+            this.listF.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.listF.Dock = System.Windows.Forms.DockStyle.Right;
+            this.listF.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.listF.FormattingEnabled = true;
+            this.listF.IntegralHeight = false;
+            this.listF.ItemHeight = 15;
+            this.listF.Items.AddRange(new object[] {
+            "  S = 0",
+            "  Z = 0",
+            " F5 = 0",
+            "  H = 1",
+            " F3 = 0",
+            "P/V = 0",
+            "  N = 0",
+            "  C = 0"});
+            this.listF.Location = new System.Drawing.Point(82, 0);
+            this.listF.Name = "listF";
+            this.listF.Size = new System.Drawing.Size(72, 249);
+            this.listF.TabIndex = 0;
+            this.listF.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listF_MouseDoubleClick);
+            // 
+            // splitter4
+            // 
+            this.splitter4.Location = new System.Drawing.Point(0, 0);
+            this.splitter4.Name = "splitter4";
+            this.splitter4.Size = new System.Drawing.Size(3, 249);
+            this.splitter4.TabIndex = 1;
+            this.splitter4.TabStop = false;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.buttonSetTraceFileName);
+            this.tabPage2.Controls.Add(this.textBoxTraceFileName);
+            this.tabPage2.Controls.Add(this.checkBoxTraceFileOut);
+            this.tabPage2.Controls.Add(this.checkBoxShowConsole);
+            this.tabPage2.Controls.Add(this.groupBoxTraceOptions);
+            this.tabPage2.Controls.Add(this.listViewAdressRanges);
+            this.tabPage2.Controls.Add(this.btnStopTrace);
+            this.tabPage2.Controls.Add(this.btnStartTrace);
+            this.tabPage2.Controls.Add(this.label1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(160, 404);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Trace";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // buttonSetTraceFileName
+            // 
+            this.buttonSetTraceFileName.Location = new System.Drawing.Point(110, 336);
+            this.buttonSetTraceFileName.Name = "buttonSetTraceFileName";
+            this.buttonSetTraceFileName.Size = new System.Drawing.Size(43, 23);
+            this.buttonSetTraceFileName.TabIndex = 10;
+            this.buttonSetTraceFileName.Text = "Set";
+            this.buttonSetTraceFileName.UseVisualStyleBackColor = true;
+            // 
+            // textBoxTraceFileName
+            // 
+            this.textBoxTraceFileName.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxTraceFileName.Location = new System.Drawing.Point(6, 338);
+            this.textBoxTraceFileName.Name = "textBoxTraceFileName";
+            this.textBoxTraceFileName.Size = new System.Drawing.Size(100, 20);
+            this.textBoxTraceFileName.TabIndex = 9;
+            this.textBoxTraceFileName.Text = "trace.log";
+            // 
+            // checkBoxTraceFileOut
+            // 
+            this.checkBoxTraceFileOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBoxTraceFileOut.AutoSize = true;
+            this.checkBoxTraceFileOut.Checked = true;
+            this.checkBoxTraceFileOut.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxTraceFileOut.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxTraceFileOut.Location = new System.Drawing.Point(5, 319);
+            this.checkBoxTraceFileOut.Name = "checkBoxTraceFileOut";
+            this.checkBoxTraceFileOut.Size = new System.Drawing.Size(124, 18);
+            this.checkBoxTraceFileOut.TabIndex = 8;
+            this.checkBoxTraceFileOut.Text = "Output to file";
+            this.checkBoxTraceFileOut.UseVisualStyleBackColor = true;
+            this.checkBoxTraceFileOut.CheckedChanged += new System.EventHandler(this.checkBoxTraceFileOut_CheckedChanged);
+            // 
+            // checkBoxShowConsole
+            // 
+            this.checkBoxShowConsole.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBoxShowConsole.AutoSize = true;
+            this.checkBoxShowConsole.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxShowConsole.Location = new System.Drawing.Point(5, 300);
+            this.checkBoxShowConsole.Name = "checkBoxShowConsole";
+            this.checkBoxShowConsole.Size = new System.Drawing.Size(124, 18);
+            this.checkBoxShowConsole.TabIndex = 7;
+            this.checkBoxShowConsole.Text = "Console output";
+            this.checkBoxShowConsole.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxTraceOptions
+            // 
+            this.groupBoxTraceOptions.Controls.Add(this.textBoxOpcode);
+            this.groupBoxTraceOptions.Controls.Add(this.checkBoxOpcode);
+            this.groupBoxTraceOptions.Controls.Add(this.checkBoxCallToROM);
+            this.groupBoxTraceOptions.Controls.Add(this.checkBoxConditionalJumps);
+            this.groupBoxTraceOptions.Controls.Add(this.checkBoxAllJumps);
+            this.groupBoxTraceOptions.Location = new System.Drawing.Point(5, 0);
+            this.groupBoxTraceOptions.Name = "groupBoxTraceOptions";
+            this.groupBoxTraceOptions.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.groupBoxTraceOptions.Size = new System.Drawing.Size(150, 148);
+            this.groupBoxTraceOptions.TabIndex = 6;
+            this.groupBoxTraceOptions.TabStop = false;
+            this.groupBoxTraceOptions.Text = "Trace only:";
+            // 
+            // textBoxOpcode
+            // 
+            this.textBoxOpcode.Enabled = false;
+            this.textBoxOpcode.Location = new System.Drawing.Point(22, 99);
+            this.textBoxOpcode.Name = "textBoxOpcode";
+            this.textBoxOpcode.Size = new System.Drawing.Size(122, 21);
+            this.textBoxOpcode.TabIndex = 4;
+            // 
+            // checkBoxOpcode
+            // 
+            this.checkBoxOpcode.AutoSize = true;
+            this.checkBoxOpcode.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxOpcode.Location = new System.Drawing.Point(3, 80);
+            this.checkBoxOpcode.Name = "checkBoxOpcode";
+            this.checkBoxOpcode.Size = new System.Drawing.Size(68, 18);
+            this.checkBoxOpcode.TabIndex = 3;
+            this.checkBoxOpcode.Text = "Opcode";
+            this.checkBoxOpcode.UseVisualStyleBackColor = true;
+            this.checkBoxOpcode.CheckedChanged += new System.EventHandler(this.checkBoxOpcode_CheckedChanged);
+            // 
+            // checkBoxCallToROM
+            // 
+            this.checkBoxCallToROM.AutoSize = true;
+            this.checkBoxCallToROM.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxCallToROM.Location = new System.Drawing.Point(3, 59);
+            this.checkBoxCallToROM.Name = "checkBoxCallToROM";
+            this.checkBoxCallToROM.Size = new System.Drawing.Size(103, 18);
+            this.checkBoxCallToROM.TabIndex = 2;
+            this.checkBoxCallToROM.Text = "Call to ROM";
+            this.checkBoxCallToROM.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxConditionalJumps
+            // 
+            this.checkBoxConditionalJumps.AutoSize = true;
+            this.checkBoxConditionalJumps.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxConditionalJumps.Location = new System.Drawing.Point(3, 39);
+            this.checkBoxConditionalJumps.Name = "checkBoxConditionalJumps";
+            this.checkBoxConditionalJumps.Size = new System.Drawing.Size(145, 18);
+            this.checkBoxConditionalJumps.TabIndex = 1;
+            this.checkBoxConditionalJumps.Text = "Conditional jumps";
+            this.checkBoxConditionalJumps.UseVisualStyleBackColor = true;
+            this.checkBoxConditionalJumps.CheckedChanged += new System.EventHandler(this.checkBoxConditionalJumps_CheckedChanged);
+            // 
+            // checkBoxAllJumps
+            // 
+            this.checkBoxAllJumps.AutoSize = true;
+            this.checkBoxAllJumps.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxAllJumps.Location = new System.Drawing.Point(3, 19);
+            this.checkBoxAllJumps.Name = "checkBoxAllJumps";
+            this.checkBoxAllJumps.Size = new System.Drawing.Size(131, 18);
+            this.checkBoxAllJumps.TabIndex = 0;
+            this.checkBoxAllJumps.Text = "All jumps/calls";
+            this.checkBoxAllJumps.UseVisualStyleBackColor = true;
+            // 
+            // listViewAdressRanges
+            // 
+            this.listViewAdressRanges.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewAdressRanges.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewAdressRanges.FullRowSelect = true;
+            this.listViewAdressRanges.GridLines = true;
+            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 168);
+            this.listViewAdressRanges.Name = "listViewAdressRanges";
+            this.listViewAdressRanges.Size = new System.Drawing.Size(150, 97);
+            this.listViewAdressRanges.TabIndex = 5;
+            this.listViewAdressRanges.UseCompatibleStateImageBehavior = false;
+            // 
+            // btnStopTrace
+            // 
+            this.btnStopTrace.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnStopTrace.Enabled = false;
+            this.btnStopTrace.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnStopTrace.Location = new System.Drawing.Point(57, 378);
+            this.btnStopTrace.Name = "btnStopTrace";
+            this.btnStopTrace.Size = new System.Drawing.Size(70, 23);
+            this.btnStopTrace.TabIndex = 4;
+            this.btnStopTrace.Text = "Finish";
+            this.btnStopTrace.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnStopTrace.UseVisualStyleBackColor = true;
+            this.btnStopTrace.Click += new System.EventHandler(this.btnStopTrace_Click);
+            // 
+            // btnStartTrace
+            // 
+            this.btnStartTrace.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnStartTrace.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnStartTrace.Location = new System.Drawing.Point(5, 378);
+            this.btnStartTrace.Name = "btnStartTrace";
+            this.btnStartTrace.Size = new System.Drawing.Size(44, 23);
+            this.btnStartTrace.TabIndex = 3;
+            this.btnStartTrace.Text = "Go";
+            this.btnStartTrace.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnStartTrace.UseVisualStyleBackColor = true;
+            this.btnStartTrace.Click += new System.EventHandler(this.btnStartTrace_Click);
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(2, 150);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(147, 15);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Trace address range:";
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Location = new System.Drawing.Point(4, 24);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(160, 404);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Misc.";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // splitter3
+            // 
+            this.splitter3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.splitter3.Location = new System.Drawing.Point(0, 0);
+            this.splitter3.Name = "splitter3";
+            this.splitter3.Size = new System.Drawing.Size(168, 3);
+            this.splitter3.TabIndex = 1;
+            this.splitter3.TabStop = false;
             // 
             // splitter1
             // 
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.splitter1.Location = new System.Drawing.Point(448, 0);
+            this.splitter1.Location = new System.Drawing.Point(455, 0);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 404);
+            this.splitter1.Size = new System.Drawing.Size(3, 435);
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
@@ -209,20 +445,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelMem.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panelMem.Controls.Add(this.dataPanel);
-            this.panelMem.Location = new System.Drawing.Point(0, 251);
+            this.panelMem.Location = new System.Drawing.Point(0, 280);
             this.panelMem.Name = "panelMem";
-            this.panelMem.Size = new System.Drawing.Size(448, 125);
+            this.panelMem.Size = new System.Drawing.Size(455, 121);
             this.panelMem.TabIndex = 2;
             // 
             // dataPanel
             // 
             this.dataPanel.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.dataPanel.ColCount = 8;
-            this.dataPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.dataPanel.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.dataPanel.Location = new System.Drawing.Point(0, 0);
             this.dataPanel.Name = "dataPanel";
-            this.dataPanel.Size = new System.Drawing.Size(444, 121);
+            this.dataPanel.Size = new System.Drawing.Size(451, 117);
             this.dataPanel.TabIndex = 0;
             this.dataPanel.Text = "dataPanel1";
             this.dataPanel.TopAddress = ((ushort)(0));
@@ -233,9 +469,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // splitter2
             // 
             this.splitter2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter2.Location = new System.Drawing.Point(0, 401);
+            this.splitter2.Location = new System.Drawing.Point(0, 432);
             this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(448, 3);
+            this.splitter2.Size = new System.Drawing.Size(455, 3);
             this.splitter2.TabIndex = 3;
             this.splitter2.TabStop = false;
             // 
@@ -248,7 +484,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panelDasm.Controls.Add(this.dasmPanel);
             this.panelDasm.Location = new System.Drawing.Point(0, 0);
             this.panelDasm.Name = "panelDasm";
-            this.panelDasm.Size = new System.Drawing.Size(448, 249);
+            this.panelDasm.Size = new System.Drawing.Size(455, 280);
             this.panelDasm.TabIndex = 4;
             // 
             // dasmPanel
@@ -262,7 +498,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.dasmPanel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.dasmPanel.Location = new System.Drawing.Point(0, 0);
             this.dasmPanel.Name = "dasmPanel";
-            this.dasmPanel.Size = new System.Drawing.Size(444, 245);
+            this.dasmPanel.Size = new System.Drawing.Size(451, 276);
             this.dasmPanel.TabIndex = 0;
             this.dasmPanel.Text = "dasmPanel1";
             this.dasmPanel.TopAddress = ((ushort)(0));
@@ -458,9 +694,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel1.Controls.Add(this.dbgCmdLine);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 378);
+            this.panel1.Location = new System.Drawing.Point(0, 409);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(448, 23);
+            this.panel1.Size = new System.Drawing.Size(455, 23);
             this.panel1.TabIndex = 5;
             // 
             // dbgCmdLine
@@ -474,7 +710,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.dbgCmdLine.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.dbgCmdLine.Location = new System.Drawing.Point(0, 0);
             this.dbgCmdLine.Name = "dbgCmdLine";
-            this.dbgCmdLine.Size = new System.Drawing.Size(444, 17);
+            this.dbgCmdLine.Size = new System.Drawing.Size(451, 17);
             this.dbgCmdLine.TabIndex = 0;
             this.dbgCmdLine.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dbgCmdLine_KeyUp);
             // 
@@ -483,7 +719,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Yellow;
-            this.ClientSize = new System.Drawing.Size(619, 404);
+            this.ClientSize = new System.Drawing.Size(626, 435);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panelDasm);
             this.Controls.Add(this.splitter2);
@@ -501,8 +737,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.Shown += new System.EventHandler(this.FormCPU_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormCPU_KeyDown);
             this.panelStatus.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.panelState.ResumeLayout(false);
             this.panelRegs.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
+            this.groupBoxTraceOptions.ResumeLayout(false);
+            this.groupBoxTraceOptions.PerformLayout();
             this.panelMem.ResumeLayout(false);
             this.panelDasm.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
@@ -556,5 +798,23 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuItemFollowInDisassembly;
         private System.Windows.Forms.MenuItem menuItemDumpMemory;
         private System.Windows.Forms.MenuItem menuItemDumpMemoryAtCurrentAddress;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnStartTrace;
+        private System.Windows.Forms.Button btnStopTrace;
+        private System.Windows.Forms.ListView listViewAdressRanges;
+        private System.Windows.Forms.GroupBox groupBoxTraceOptions;
+        private System.Windows.Forms.CheckBox checkBoxCallToROM;
+        private System.Windows.Forms.TextBox textBoxOpcode;
+        private System.Windows.Forms.CheckBox checkBoxOpcode;
+        private System.Windows.Forms.CheckBox checkBoxShowConsole;
+        private System.Windows.Forms.CheckBox checkBoxTraceFileOut;
+        private System.Windows.Forms.Button buttonSetTraceFileName;
+        private System.Windows.Forms.TextBox textBoxTraceFileName;
+        public System.Windows.Forms.CheckBox checkBoxAllJumps;
+        public System.Windows.Forms.CheckBox checkBoxConditionalJumps;
     }
 }

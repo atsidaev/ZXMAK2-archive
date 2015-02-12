@@ -17,7 +17,6 @@ using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Hardware.Adlers.Core;
 
-
 namespace ZXMAK2.Hardware.Adlers.Views
 {
     public partial class FormCpu : FormView, IDebuggerAdlersView
@@ -27,6 +26,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private TimingTool m_timingTool;
         private bool m_isTracing;
         private CpuRegs m_cpuRegs;
+        private DebuggerTrace m_debuggerTrace;
 
         private bool showStack = true; // show stack or breakpoint list on the form(panel listState)
 
@@ -64,6 +64,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 m_spectrum.UpdateState += spectrum_OnUpdateState;
                 m_spectrum.Breakpoint += spectrum_OnBreakpoint;
             }
+
+            //some GUI init
+            this.btnStartTrace.Image = global::ZXMAK2.Resources.ImageResources.Play_16x16;
+            this.btnStopTrace.Image = global::ZXMAK2.Resources.ImageResources.Record_16x16;
+
+            m_debuggerTrace = new DebuggerTrace(m_spectrum);
+
+            listViewAdressRanges.View = View.Details;
+            listViewAdressRanges.Columns.Add("From", -2, HorizontalAlignment.Right);
+            listViewAdressRanges.Columns.Add(" To ", -2, HorizontalAlignment.Right);
+            listViewAdressRanges.Columns.Add("Active", -2, HorizontalAlignment.Center );
+
+            ListViewItem item = new ListViewItem(new[] { "#4000", "#FFFF", "Yes"});
+            listViewAdressRanges.Items.Add(item);
         }
 
         public static string GetAppRootDir()
@@ -75,6 +89,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             m_spectrum.UpdateState -= spectrum_OnUpdateState;
             m_spectrum.Breakpoint -= spectrum_OnBreakpoint;
+
+            //ToDo: save debugger config file(debugger_config.xml)
         }
 
         private void FormCPU_Load(object sender, EventArgs e)
@@ -1647,6 +1663,40 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
         }
 
+        #endregion
+
+        #region Trace GUI methods
+        private void checkBoxOpcode_CheckedChanged(object sender, EventArgs e)
+        {
+            textBoxOpcode.Enabled = checkBoxOpcode.Checked;
+        }
+        private void checkBoxConditionalJumps_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxConditionalJumps.Checked)
+                checkBoxAllJumps.Checked = false;
+        }
+        private void checkBoxTraceFileOut_CheckedChanged(object sender, EventArgs e)
+        {
+            buttonSetTraceFileName.Enabled = textBoxTraceFileName.Enabled = checkBoxTraceFileOut.Checked;
+        }
+        private void btnStartTrace_Click(object sender, EventArgs e)
+        {
+            //Trace start
+            btnStartTrace.Enabled = false;
+            btnStopTrace.Enabled = true;
+
+            m_debuggerTrace.StartTrace(this);
+
+            m_isTracing = true;
+        }
+        private void btnStopTrace_Click(object sender, EventArgs e)
+        {
+            //Trace stop
+            btnStartTrace.Enabled = true;
+            btnStopTrace.Enabled = false;
+
+            m_isTracing = false;
+        }
         #endregion
     }
 }
