@@ -16,6 +16,7 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Hardware.Adlers.Core;
+using ZXMAK2.Engine;
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {
@@ -77,16 +78,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             listViewAdressRanges.Columns.Add("Trace", -2, HorizontalAlignment.Center );
 
             ListViewItem item = new ListViewItem(new[] { "#4000", "#FFFF", "Yes"});
-            listViewAdressRanges.Items.Add(item);
             item.Tag = "4000;FFFF;Yes";
+            listViewAdressRanges.Items.Add(item);
             item = new ListViewItem(new[] { "#CE11", "#CE11", "No" });
             item.Tag = "CE11;CE11;No";
             listViewAdressRanges.Items.Add(item);
-        }
-
-        public static string GetAppRootDir()
-        {
-            return Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         }
 
         private void FormCPU_FormClosed(object sender, FormClosedEventArgs e)
@@ -435,7 +431,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private void menuItemFollowInDisassembly_Click(object sender, EventArgs e)
         {
-            //Locator.Resolve<IUserMessage>().Info(dataPanel.ActiveAddress.ToString());
             dasmPanel.TopAddress = dataPanel.ActiveAddress;
         }
 
@@ -676,7 +671,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             if (dissassembly != String.Empty)
             {
-                File.WriteAllText("dis.asm", dissassembly);
+                File.WriteAllText(Path.Combine(Utils.GetAppFolder(), "dis.asm"), dissassembly);
                 Locator.Resolve<IUserMessage>().Info("File dis.asm saved!");
             }
             else
@@ -840,36 +835,21 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             menuItemFindBytes_Click(null, null);
         }
-
-        private void dasmPanel_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                this.menuItemDumpMemory.MenuItems.Clear();
-                this.menuItemDumpMemory.MenuItems.Add(menuItemDumpMemoryAtCurrentAddress);
-
-                ushort[] numbers = dasmPanel.GetNumberFromCpuInstruction_ActiveLine();
-                if(numbers != null )
-                {
-                    //ToDo: numbers[] - question is whether there can be more numbers in one cpu instruction.
-                    MenuItem menuItemNewAdress = new MenuItem();
-
-                    menuItemNewAdress.Index = 0;
-                    menuItemNewAdress.Text = String.Format("#{0:X4}", numbers[0]);
-                    menuItemNewAdress.Click += new EventHandler(menuItemNewAdress_Clicked);
-
-                    this.menuItemDumpMemory.MenuItems.Add(menuItemNewAdress);
-                }
-
-                contextMenuDasm.Show(dasmPanel, e.Location);
-            }
-        }
         private void menuItemNewAdress_Clicked(object sender, EventArgs e)
         {
             if (sender is MenuItem) //must be a MenuItem
             {
                 string hex = ((MenuItem)sender).Text;
                 dataPanel.TopAddress = ushort.Parse(hex.Substring(1, hex.Length - 1), System.Globalization.NumberStyles.HexNumber);
+            }
+        }
+        private void menuItemNewAdressFollowInDisassembly_Clicked(object sender, EventArgs e)
+        {
+            if (sender is MenuItem) //must be a MenuItem
+            {
+                string hex = ((MenuItem)sender).Text;
+                dasmPanel.AddAddrToDisassemblyHistory(dasmPanel.ActiveAddress);
+                dasmPanel.TopAddress = ushort.Parse(hex.Substring(1, hex.Length - 1), System.Globalization.NumberStyles.HexNumber);
             }
         }
 
@@ -1005,13 +985,21 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             if (!m_isTracing || m_cpuRegs.PC < 0x4000) //no need to trace ROM
                 return;
-            
+
+            if (m_debuggerTrace.IsTraceAreaDefined())
+            {
+                if (!m_debuggerTrace.GetAddressFlags()[m_cpuRegs.PC])
+                    return;
+            }
+
             if( m_debuggerTrace.IsTracingJumps() )
             {
                 if (Array.Exists(m_debuggerTrace.GetTraceOpcodes(), p => p == m_spectrum.ReadMemory(m_cpuRegs.PC)))
                 {
                     var len = 0;
                     var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
+
+                    m_debuggerTrace.IncCounter(m_cpuRegs.PC);
                     Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
                 }
             }
@@ -1339,6 +1327,76 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
         }
 
+        #region ContextMenus
+        //Disassembly context menu
+        private void dasmPanel_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                //Dump memory at ...
+                this.menuItemDumpMemory.MenuItems.Clear();
+                this.menuItemFollowInDisassembler.MenuItems.Clear();
+                this.menuItemDumpMemory.MenuItems.Add(menuItemDumpMemoryAtCurrentAddress);
+
+                ushort[] numbers = dasmPanel.GetNumberFromCpuInstruction_ActiveLine();
+                if (numbers != null)
+                {
+                    //ToDo: numbers[] - question is whether there can be more numbers in one cpu instruction.
+                    MenuItem menuItemNewAdress = new MenuItem();
+
+                    menuItemNewAdress.Index = 0;
+                    menuItemNewAdress.Text = String.Format("#{0:X4}", numbers[0]);
+                    menuItemNewAdress.Click += new EventHandler(menuItemNewAdress_Clicked);
+
+                    this.menuItemDumpMemory.MenuItems.Add(menuItemNewAdress);
+
+                    //Follow in disassembler(if instrucion contain number)
+                    menuItemNewAdress = new MenuItem();
+
+                    menuItemNewAdress.Index = 0;
+                    menuItemNewAdress.Text = String.Format("#{0:X4}", numbers[0]);
+                    menuItemNewAdress.Click += new EventHandler(menuItemNewAdressFollowInDisassembly_Clicked);
+
+                    this.menuItemFollowInDisassembler.MenuItems.Add(menuItemNewAdress);
+                    this.menuItemFollowInDisassembler.Enabled = true;
+                }
+                else
+                    this.menuItemFollowInDisassembler.Enabled = false;
+
+                contextMenuDasm.Show(dasmPanel, e.Location);
+            }
+        }
+
+        //Trace context menu
+        private void listViewAdressRanges_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                contextMenuTraceAddrArea.Show(this.listViewAdressRanges, e.Location);
+            }
+        }
+        //Trace context menu - handlers
+        private void listViewAdressRanges_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            m_debuggerTrace.UpdateNewAddrArea(this);
+
+            if (m_isTracing)
+                m_debuggerTrace.StartTrace(this); //refresh tracing
+        }
+        private void listViewAdressRanges_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (listViewAdressRanges.FocusedItem.Index != -1)
+                    listViewAdressRanges.Items[listViewAdressRanges.FocusedItem.Index].Remove();
+                e.Handled = true;
+
+                if( m_isTracing )
+                    m_debuggerTrace.StartTrace(this); //refresh tracing
+            }
+        }
+        #endregion
+
         #region 2.) Extended breakpoints(conditional on memory change, write, registry change, ...)
 
         //conditional breakpoints
@@ -1619,11 +1677,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             System.IO.StreamReader file = null;
             try
             {
-                if (!File.Exists(Path.Combine(GetAppRootDir(), fileName)))
+                if (!File.Exists(Path.Combine(Utils.GetAppFolder(), fileName)))
                     throw new Exception("file " + fileName + " does not exists...");
 
                 string dbgCommandFromFile = String.Empty;
-                file = new System.IO.StreamReader(Path.Combine(GetAppRootDir(), fileName));
+                file = new System.IO.StreamReader(Path.Combine(Utils.GetAppFolder(), fileName));
                 while ((dbgCommandFromFile = file.ReadLine()) != null)
                 {
                     if (dbgCommandFromFile.Trim() == String.Empty || dbgCommandFromFile[0] == ';')
@@ -1652,7 +1710,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             System.IO.StreamWriter file = null;
             try
             {
-                file = new System.IO.StreamWriter(Path.Combine(GetAppRootDir(), fileName));
+                file = new System.IO.StreamWriter(Path.Combine(Utils.GetAppFolder(), fileName));
 
                 foreach (KeyValuePair<byte, BreakpointAdlers> breakpoint in localBreakpointsList)
                 {
@@ -1670,12 +1728,29 @@ namespace ZXMAK2.Hardware.Adlers.Views
         #region Trace GUI methods
         private void checkBoxOpcode_CheckedChanged(object sender, EventArgs e)
         {
+            checkBoxConditionalCalls.Enabled = checkBoxConditionalJumps.Enabled = checkBoxAllJumps.Enabled = !checkBoxOpcode.Checked;
+
             textBoxOpcode.Enabled = checkBoxOpcode.Checked;
+        }
+        private void checkBoxAllJumps_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBoxConditionalCalls.Enabled = checkBoxConditionalJumps.Enabled = !checkBoxAllJumps.Checked;
+            if (m_isTracing)
+                m_debuggerTrace.StartTrace(this); //refresh trace settings
         }
         private void checkBoxConditionalJumps_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBoxConditionalJumps.Checked)
                 checkBoxAllJumps.Checked = false;
+            if (m_isTracing)
+                m_debuggerTrace.StartTrace(this); //refresh trace settings
+        }
+        private void checkBoxConditionalCalls_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxConditionalCalls.Checked)
+                checkBoxAllJumps.Checked = false;
+            if (m_isTracing)
+                m_debuggerTrace.StartTrace(this); //refresh trace settings
         }
         private void checkBoxTraceFileOut_CheckedChanged(object sender, EventArgs e)
         {
@@ -1684,6 +1759,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void checkBoxTraceAddresses_CheckedChanged(object sender, EventArgs e)
         {
             listViewAdressRanges.Enabled = checkBoxTraceArea.Checked;
+            if (m_isTracing)
+                m_debuggerTrace.StartTrace(this); //refresh trace settings
         }
         private void btnStartTrace_Click(object sender, EventArgs e)
         {
@@ -1701,7 +1778,21 @@ namespace ZXMAK2.Hardware.Adlers.Views
             btnStartTrace.Enabled = true;
             btnStopTrace.Enabled = false;
 
+            m_debuggerTrace.StopTrace();
+
             m_isTracing = false;
+        }
+        private void menuItemAddNewTraceAddrArea_Click(object sender, EventArgs e)
+        {
+            m_debuggerTrace.AddNewAddrArea(this);
+            if (m_isTracing)
+                m_debuggerTrace.StartTrace(this); //refresh tracing
+        }
+        private void menuItemUpdateTraceAddrArea_Click(object sender, EventArgs e)
+        {
+            m_debuggerTrace.UpdateNewAddrArea(this);
+            if (m_isTracing)
+                m_debuggerTrace.StartTrace(this); //refresh tracing
         }
         #endregion
     }
