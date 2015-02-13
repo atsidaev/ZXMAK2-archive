@@ -29,7 +29,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void InitializeComponent()
         {
             this.panelStatus = new System.Windows.Forms.Panel();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabMenus = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.panelState = new System.Windows.Forms.Panel();
             this.listState = new System.Windows.Forms.ListBox();
@@ -44,6 +44,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkBoxTraceFileOut = new System.Windows.Forms.CheckBox();
             this.checkBoxShowConsole = new System.Windows.Forms.CheckBox();
             this.groupBoxTraceOptions = new System.Windows.Forms.GroupBox();
+            this.checkBoxConditionalCalls = new System.Windows.Forms.CheckBox();
             this.textBoxOpcode = new System.Windows.Forms.TextBox();
             this.checkBoxOpcode = new System.Windows.Forms.CheckBox();
             this.checkBoxCallToROM = new System.Windows.Forms.CheckBox();
@@ -56,10 +57,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.splitter3 = new System.Windows.Forms.Splitter();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panelMem = new System.Windows.Forms.Panel();
-            this.dataPanel = new ZXMAK2.Hardware.Adlers.Views.DataPanel();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.panelDasm = new System.Windows.Forms.Panel();
-            this.dasmPanel = new ZXMAK2.Hardware.Adlers.Views.DasmPanel();
             this.contextMenuDasm = new System.Windows.Forms.ContextMenu();
             this.menuItemDasmGotoADDR = new System.Windows.Forms.MenuItem();
             this.menuItemDasmGotoPC = new System.Windows.Forms.MenuItem();
@@ -89,8 +88,15 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemDataRefresh = new System.Windows.Forms.MenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.dbgCmdLine = new System.Windows.Forms.TextBox();
+            this.contextMenuTraceAddrArea = new System.Windows.Forms.ContextMenu();
+            this.menuItemAddNewTraceAddrArea = new System.Windows.Forms.MenuItem();
+            this.menuItemUpdateTraceAddrArea = new System.Windows.Forms.MenuItem();
+            this.menuItem9 = new System.Windows.Forms.MenuItem();
+            this.menuItemFollowInDisassembler = new System.Windows.Forms.MenuItem();
+            this.dasmPanel = new ZXMAK2.Hardware.Adlers.Views.DasmPanel();
+            this.dataPanel = new ZXMAK2.Hardware.Adlers.Views.DataPanel();
             this.panelStatus.SuspendLayout();
-            this.tabControl1.SuspendLayout();
+            this.tabMenus.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panelState.SuspendLayout();
             this.panelRegs.SuspendLayout();
@@ -103,26 +109,26 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // panelStatus
             // 
-            this.panelStatus.Controls.Add(this.tabControl1);
+            this.panelStatus.Controls.Add(this.tabMenus);
             this.panelStatus.Controls.Add(this.splitter3);
             this.panelStatus.Dock = System.Windows.Forms.DockStyle.Right;
             this.panelStatus.Location = new System.Drawing.Point(458, 0);
             this.panelStatus.Name = "panelStatus";
-            this.panelStatus.Size = new System.Drawing.Size(168, 435);
+            this.panelStatus.Size = new System.Drawing.Size(168, 415);
             this.panelStatus.TabIndex = 0;
             // 
-            // tabControl1
+            // tabMenus
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tabControl1.Font = new System.Drawing.Font("Courier New", 9F);
-            this.tabControl1.Location = new System.Drawing.Point(0, 3);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(168, 432);
-            this.tabControl1.TabIndex = 2;
+            this.tabMenus.Controls.Add(this.tabPage1);
+            this.tabMenus.Controls.Add(this.tabPage2);
+            this.tabMenus.Controls.Add(this.tabPage3);
+            this.tabMenus.Dock = System.Windows.Forms.DockStyle.Right;
+            this.tabMenus.Font = new System.Drawing.Font("Courier New", 9F);
+            this.tabMenus.Location = new System.Drawing.Point(0, 3);
+            this.tabMenus.Name = "tabMenus";
+            this.tabMenus.SelectedIndex = 0;
+            this.tabMenus.Size = new System.Drawing.Size(168, 412);
+            this.tabMenus.TabIndex = 2;
             // 
             // tabPage1
             // 
@@ -131,7 +137,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(160, 404);
+            this.tabPage1.Size = new System.Drawing.Size(160, 384);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "CPU";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -143,7 +149,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panelState.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelState.Location = new System.Drawing.Point(3, 252);
             this.panelState.Name = "panelState";
-            this.panelState.Size = new System.Drawing.Size(154, 149);
+            this.panelState.Size = new System.Drawing.Size(154, 129);
             this.panelState.TabIndex = 2;
             // 
             // listState
@@ -155,7 +161,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listState.ItemHeight = 14;
             this.listState.Location = new System.Drawing.Point(0, 0);
             this.listState.Name = "listState";
-            this.listState.Size = new System.Drawing.Size(150, 145);
+            this.listState.Size = new System.Drawing.Size(150, 125);
             this.listState.TabIndex = 1;
             this.listState.DoubleClick += new System.EventHandler(this.listState_DoubleClick);
             // 
@@ -253,7 +259,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.checkBoxTraceArea.AutoSize = true;
             this.checkBoxTraceArea.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxTraceArea.Location = new System.Drawing.Point(6, 129);
+            this.checkBoxTraceArea.Location = new System.Drawing.Point(6, 180);
             this.checkBoxTraceArea.Name = "checkBoxTraceArea";
             this.checkBoxTraceArea.Size = new System.Drawing.Size(103, 18);
             this.checkBoxTraceArea.TabIndex = 11;
@@ -308,6 +314,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // groupBoxTraceOptions
             // 
+            this.groupBoxTraceOptions.Controls.Add(this.checkBoxConditionalCalls);
             this.groupBoxTraceOptions.Controls.Add(this.textBoxOpcode);
             this.groupBoxTraceOptions.Controls.Add(this.checkBoxOpcode);
             this.groupBoxTraceOptions.Controls.Add(this.checkBoxCallToROM);
@@ -316,15 +323,27 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.groupBoxTraceOptions.Location = new System.Drawing.Point(5, 0);
             this.groupBoxTraceOptions.Name = "groupBoxTraceOptions";
             this.groupBoxTraceOptions.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.groupBoxTraceOptions.Size = new System.Drawing.Size(150, 126);
+            this.groupBoxTraceOptions.Size = new System.Drawing.Size(150, 140);
             this.groupBoxTraceOptions.TabIndex = 6;
             this.groupBoxTraceOptions.TabStop = false;
             this.groupBoxTraceOptions.Text = "Trace only:";
             // 
+            // checkBoxConditionalCalls
+            // 
+            this.checkBoxConditionalCalls.AutoSize = true;
+            this.checkBoxConditionalCalls.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxConditionalCalls.Location = new System.Drawing.Point(3, 55);
+            this.checkBoxConditionalCalls.Name = "checkBoxConditionalCalls";
+            this.checkBoxConditionalCalls.Size = new System.Drawing.Size(145, 18);
+            this.checkBoxConditionalCalls.TabIndex = 5;
+            this.checkBoxConditionalCalls.Text = "Conditional calls";
+            this.checkBoxConditionalCalls.UseVisualStyleBackColor = true;
+            this.checkBoxConditionalCalls.CheckedChanged += new System.EventHandler(this.checkBoxConditionalCalls_CheckedChanged);
+            // 
             // textBoxOpcode
             // 
             this.textBoxOpcode.Enabled = false;
-            this.textBoxOpcode.Location = new System.Drawing.Point(22, 99);
+            this.textBoxOpcode.Location = new System.Drawing.Point(22, 109);
             this.textBoxOpcode.Name = "textBoxOpcode";
             this.textBoxOpcode.Size = new System.Drawing.Size(122, 21);
             this.textBoxOpcode.TabIndex = 4;
@@ -333,7 +352,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.checkBoxOpcode.AutoSize = true;
             this.checkBoxOpcode.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxOpcode.Location = new System.Drawing.Point(3, 80);
+            this.checkBoxOpcode.Location = new System.Drawing.Point(3, 91);
             this.checkBoxOpcode.Name = "checkBoxOpcode";
             this.checkBoxOpcode.Size = new System.Drawing.Size(68, 18);
             this.checkBoxOpcode.TabIndex = 3;
@@ -345,7 +364,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.checkBoxCallToROM.AutoSize = true;
             this.checkBoxCallToROM.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxCallToROM.Location = new System.Drawing.Point(3, 59);
+            this.checkBoxCallToROM.Location = new System.Drawing.Point(3, 73);
             this.checkBoxCallToROM.Name = "checkBoxCallToROM";
             this.checkBoxCallToROM.Size = new System.Drawing.Size(103, 18);
             this.checkBoxCallToROM.TabIndex = 2;
@@ -355,8 +374,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // checkBoxConditionalJumps
             // 
             this.checkBoxConditionalJumps.AutoSize = true;
+            this.checkBoxConditionalJumps.Checked = true;
+            this.checkBoxConditionalJumps.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxConditionalJumps.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxConditionalJumps.Location = new System.Drawing.Point(3, 39);
+            this.checkBoxConditionalJumps.Location = new System.Drawing.Point(3, 37);
             this.checkBoxConditionalJumps.Name = "checkBoxConditionalJumps";
             this.checkBoxConditionalJumps.Size = new System.Drawing.Size(145, 18);
             this.checkBoxConditionalJumps.TabIndex = 1;
@@ -374,6 +395,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkBoxAllJumps.TabIndex = 0;
             this.checkBoxAllJumps.Text = "All jumps/calls";
             this.checkBoxAllJumps.UseVisualStyleBackColor = true;
+            this.checkBoxAllJumps.CheckedChanged += new System.EventHandler(this.checkBoxAllJumps_CheckedChanged);
             // 
             // listViewAdressRanges
             // 
@@ -382,11 +404,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listViewAdressRanges.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listViewAdressRanges.FullRowSelect = true;
             this.listViewAdressRanges.GridLines = true;
-            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 150);
+            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 201);
             this.listViewAdressRanges.Name = "listViewAdressRanges";
             this.listViewAdressRanges.Size = new System.Drawing.Size(150, 97);
             this.listViewAdressRanges.TabIndex = 5;
             this.listViewAdressRanges.UseCompatibleStateImageBehavior = false;
+            this.listViewAdressRanges.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewAdressRanges_KeyDown);
+            this.listViewAdressRanges.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listViewAdressRanges_MouseClick);
+            this.listViewAdressRanges.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewAdressRanges_MouseDoubleClick);
             // 
             // btnStopTrace
             // 
@@ -438,7 +463,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Right;
             this.splitter1.Location = new System.Drawing.Point(455, 0);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 435);
+            this.splitter1.Size = new System.Drawing.Size(3, 415);
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
@@ -453,26 +478,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panelMem.Size = new System.Drawing.Size(455, 121);
             this.panelMem.TabIndex = 2;
             // 
-            // dataPanel
-            // 
-            this.dataPanel.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.dataPanel.ColCount = 8;
-            this.dataPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dataPanel.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.dataPanel.Location = new System.Drawing.Point(0, 0);
-            this.dataPanel.Name = "dataPanel";
-            this.dataPanel.Size = new System.Drawing.Size(451, 117);
-            this.dataPanel.TabIndex = 0;
-            this.dataPanel.Text = "dataPanel1";
-            this.dataPanel.TopAddress = ((ushort)(0));
-            this.dataPanel.GetData += new ZXMAK2.Hardware.Adlers.Views.DataPanel.ONGETDATACPU(this.dasmPanel_GetData);
-            this.dataPanel.DataClick += new ZXMAK2.Hardware.Adlers.Views.DataPanel.ONCLICKCPU(this.dataPanel_DataClick);
-            this.dataPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataPanel_MouseClick);
-            // 
             // splitter2
             // 
             this.splitter2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter2.Location = new System.Drawing.Point(0, 432);
+            this.splitter2.Location = new System.Drawing.Point(0, 412);
             this.splitter2.Name = "splitter2";
             this.splitter2.Size = new System.Drawing.Size(455, 3);
             this.splitter2.TabIndex = 3;
@@ -490,35 +499,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panelDasm.Size = new System.Drawing.Size(455, 280);
             this.panelDasm.TabIndex = 4;
             // 
-            // dasmPanel
-            // 
-            this.dasmPanel.ActiveAddress = ((ushort)(0));
-            this.dasmPanel.BackColor = System.Drawing.SystemColors.ControlText;
-            this.dasmPanel.BreakpointColor = System.Drawing.Color.Red;
-            this.dasmPanel.BreakpointForeColor = System.Drawing.Color.Black;
-            this.dasmPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dasmPanel.Font = new System.Drawing.Font("Courier New", 9F);
-            this.dasmPanel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.dasmPanel.Location = new System.Drawing.Point(0, 0);
-            this.dasmPanel.Name = "dasmPanel";
-            this.dasmPanel.Size = new System.Drawing.Size(451, 276);
-            this.dasmPanel.TabIndex = 0;
-            this.dasmPanel.Text = "dasmPanel1";
-            this.dasmPanel.TopAddress = ((ushort)(0));
-            this.dasmPanel.CheckBreakpoint += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckBreakpoint);
-            this.dasmPanel.CheckExecuting += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckExecuting);
-            this.dasmPanel.GetData += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONGETDATACPU(this.dasmPanel_GetData);
-            this.dasmPanel.GetDasm += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONGETDASMCPU(this.dasmPanel_GetDasm);
-            this.dasmPanel.BreakpointClick += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCLICKCPU(this.dasmPanel_SetBreakpoint);
-            this.dasmPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseClick);
-            this.dasmPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseDoubleClick);
-            // 
             // contextMenuDasm
             // 
             this.contextMenuDasm.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItemDasmGotoADDR,
             this.menuItemDasmGotoPC,
             this.menuItemDumpMemory,
+            this.menuItemFollowInDisassembler,
             this.menuItem2,
             this.menuItemDasmClearBreakpoints,
             this.menuItem4,
@@ -557,51 +544,51 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // menuItem2
             // 
-            this.menuItem2.Index = 3;
+            this.menuItem2.Index = 4;
             this.menuItem2.Text = "-";
             // 
             // menuItemDasmClearBreakpoints
             // 
-            this.menuItemDasmClearBreakpoints.Index = 4;
+            this.menuItemDasmClearBreakpoints.Index = 5;
             this.menuItemDasmClearBreakpoints.Text = "Reset breakpoints";
             this.menuItemDasmClearBreakpoints.Click += new System.EventHandler(this.menuItemDasmClearBP_Click);
             // 
             // menuItem4
             // 
-            this.menuItem4.Index = 5;
+            this.menuItem4.Index = 6;
             this.menuItem4.Text = "-";
             // 
             // menuDasmLoadBlock
             // 
-            this.menuDasmLoadBlock.Index = 6;
+            this.menuDasmLoadBlock.Index = 7;
             this.menuDasmLoadBlock.Text = "Load Block...";
             this.menuDasmLoadBlock.Click += new System.EventHandler(this.menuLoadBlock_Click);
             // 
             // menuDasmSaveBlock
             // 
-            this.menuDasmSaveBlock.Index = 7;
+            this.menuDasmSaveBlock.Index = 8;
             this.menuDasmSaveBlock.Text = "Save Block...";
             this.menuDasmSaveBlock.Click += new System.EventHandler(this.menuSaveBlock_Click);
             // 
             // menuItem8
             // 
-            this.menuItem8.Index = 8;
+            this.menuItem8.Index = 9;
             this.menuItem8.Text = "-";
             // 
             // menuItemSaveDisassembly
             // 
-            this.menuItemSaveDisassembly.Index = 9;
+            this.menuItemSaveDisassembly.Index = 10;
             this.menuItemSaveDisassembly.Text = "Save disassembly";
             this.menuItemSaveDisassembly.Click += new System.EventHandler(this.menuItemSaveDisassembly_Click);
             // 
             // menuItem1
             // 
-            this.menuItem1.Index = 10;
+            this.menuItem1.Index = 11;
             this.menuItem1.Text = "-";
             // 
             // menuItemDasmRefresh
             // 
-            this.menuItemDasmRefresh.Index = 11;
+            this.menuItemDasmRefresh.Index = 12;
             this.menuItemDasmRefresh.Text = "Refresh";
             this.menuItemDasmRefresh.Click += new System.EventHandler(this.menuItemDasmRefresh_Click);
             // 
@@ -697,7 +684,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel1.Controls.Add(this.dbgCmdLine);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 409);
+            this.panel1.Location = new System.Drawing.Point(0, 389);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(455, 23);
             this.panel1.TabIndex = 5;
@@ -717,12 +704,80 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.dbgCmdLine.TabIndex = 0;
             this.dbgCmdLine.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dbgCmdLine_KeyUp);
             // 
+            // contextMenuTraceAddrArea
+            // 
+            this.contextMenuTraceAddrArea.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemAddNewTraceAddrArea,
+            this.menuItemUpdateTraceAddrArea,
+            this.menuItem9});
+            // 
+            // menuItemAddNewTraceAddrArea
+            // 
+            this.menuItemAddNewTraceAddrArea.Index = 0;
+            this.menuItemAddNewTraceAddrArea.Text = "Add new area";
+            this.menuItemAddNewTraceAddrArea.Click += new System.EventHandler(this.menuItemAddNewTraceAddrArea_Click);
+            // 
+            // menuItemUpdateTraceAddrArea
+            // 
+            this.menuItemUpdateTraceAddrArea.Index = 1;
+            this.menuItemUpdateTraceAddrArea.Text = "Update current";
+            this.menuItemUpdateTraceAddrArea.Click += new System.EventHandler(this.menuItemUpdateTraceAddrArea_Click);
+            // 
+            // menuItem9
+            // 
+            this.menuItem9.Index = 2;
+            this.menuItem9.Text = "Delete current";
+            // 
+            // menuItemFollowInDisassembler
+            // 
+            this.menuItemFollowInDisassembler.Index = 3;
+            this.menuItemFollowInDisassembler.Text = "Follow in disassembler";
+            // 
+            // dasmPanel
+            // 
+            this.dasmPanel.ActiveAddress = ((ushort)(0));
+            this.dasmPanel.BackColor = System.Drawing.SystemColors.ControlText;
+            this.dasmPanel.BreakpointColor = System.Drawing.Color.Red;
+            this.dasmPanel.BreakpointForeColor = System.Drawing.Color.Black;
+            this.dasmPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dasmPanel.Font = new System.Drawing.Font("Courier New", 9F);
+            this.dasmPanel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.dasmPanel.Location = new System.Drawing.Point(0, 0);
+            this.dasmPanel.Name = "dasmPanel";
+            this.dasmPanel.Size = new System.Drawing.Size(451, 276);
+            this.dasmPanel.TabIndex = 0;
+            this.dasmPanel.Text = "dasmPanel1";
+            this.dasmPanel.TopAddress = ((ushort)(0));
+            this.dasmPanel.CheckBreakpoint += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckBreakpoint);
+            this.dasmPanel.CheckExecuting += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckExecuting);
+            this.dasmPanel.GetData += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONGETDATACPU(this.dasmPanel_GetData);
+            this.dasmPanel.GetDasm += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONGETDASMCPU(this.dasmPanel_GetDasm);
+            this.dasmPanel.BreakpointClick += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCLICKCPU(this.dasmPanel_SetBreakpoint);
+            this.dasmPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseClick);
+            this.dasmPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseDoubleClick);
+            // 
+            // dataPanel
+            // 
+            this.dataPanel.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.dataPanel.ColCount = 8;
+            this.dataPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.dataPanel.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.dataPanel.Location = new System.Drawing.Point(0, 0);
+            this.dataPanel.Name = "dataPanel";
+            this.dataPanel.Size = new System.Drawing.Size(451, 117);
+            this.dataPanel.TabIndex = 0;
+            this.dataPanel.Text = "dataPanel1";
+            this.dataPanel.TopAddress = ((ushort)(0));
+            this.dataPanel.GetData += new ZXMAK2.Hardware.Adlers.Views.DataPanel.ONGETDATACPU(this.dasmPanel_GetData);
+            this.dataPanel.DataClick += new ZXMAK2.Hardware.Adlers.Views.DataPanel.ONCLICKCPU(this.dataPanel_DataClick);
+            this.dataPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataPanel_MouseClick);
+            // 
             // FormCpu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Yellow;
-            this.ClientSize = new System.Drawing.Size(626, 435);
+            this.ClientSize = new System.Drawing.Size(626, 415);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panelDasm);
             this.Controls.Add(this.splitter2);
@@ -740,7 +795,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.Shown += new System.EventHandler(this.FormCPU_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormCPU_KeyDown);
             this.panelStatus.ResumeLayout(false);
-            this.tabControl1.ResumeLayout(false);
+            this.tabMenus.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.panelState.ResumeLayout(false);
             this.panelRegs.ResumeLayout(false);
@@ -801,7 +856,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuItemFollowInDisassembly;
         private System.Windows.Forms.MenuItem menuItemDumpMemory;
         private System.Windows.Forms.MenuItem menuItemDumpMemoryAtCurrentAddress;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabMenus;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
@@ -814,10 +869,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.CheckBox checkBoxShowConsole;
         private System.Windows.Forms.CheckBox checkBoxTraceFileOut;
         private System.Windows.Forms.Button buttonSetTraceFileName;
-        private System.Windows.Forms.TextBox textBoxTraceFileName;
         public System.Windows.Forms.CheckBox checkBoxAllJumps;
         public System.Windows.Forms.CheckBox checkBoxConditionalJumps;
         public System.Windows.Forms.ListView listViewAdressRanges;
         public System.Windows.Forms.CheckBox checkBoxTraceArea;
+        private System.Windows.Forms.ContextMenu contextMenuTraceAddrArea;
+        private System.Windows.Forms.MenuItem menuItemAddNewTraceAddrArea;
+        private System.Windows.Forms.MenuItem menuItemUpdateTraceAddrArea;
+        private System.Windows.Forms.MenuItem menuItem9;
+        public System.Windows.Forms.CheckBox checkBoxConditionalCalls;
+        public System.Windows.Forms.TextBox textBoxTraceFileName;
+        private System.Windows.Forms.MenuItem menuItemFollowInDisassembler;
     }
 }

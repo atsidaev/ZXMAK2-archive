@@ -87,7 +87,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             if (txtAsm.Text.Trim().Length < 2)
             {
-                this.richCompileMessages.Text = "Nothing to compile...";
+                this.richCompileMessages.Text = DateTime.Now.ToLongTimeString() + ": Nothing to compile...\n===================\n" + this.richCompileMessages.Text;
                 return;
             }
 
@@ -126,7 +126,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         fixed (byte* perrFileName = &errFileName[0])
                         {
                             string errStringText = DateTime.Now.ToLongTimeString() + ": Compiling...\n";
-                            this.richCompileMessages.Text = errStringText;
+                            this.richCompileMessages.Text = errStringText + this.richCompileMessages.Text;
 
                             try
                             {
@@ -158,12 +158,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                 else
                                     errStringText += String.Format("Compile error on line {0}!\n    {1}", errFileLine, getString(perrReason));
 
-                                this.richCompileMessages.Text = errStringText;
+                                this.richCompileMessages.Text = errStringText + "\n===================\n" + this.richCompileMessages.Text;
                             }
                             else
                             {
                                 //we got a assembly
-                                this.richCompileMessages.Text += DateTime.Now.ToLongTimeString() + ": Compilation OK ! Now writing memory...";
+                                this.richCompileMessages.Text = DateTime.Now.ToLongTimeString() + ": Compilation OK ! Now writing memory...";
 
                                 //write to memory ?
                                 //if (checkMemory.Checked)
@@ -194,12 +194,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                     }
                                     else
                                     {
-                                        this.richCompileMessages.Text += "\n    Cannot write to ROM(address = " + memAdress.ToString() + "). Bail out.";
+                                        this.richCompileMessages.Text = "\n    Cannot write to ROM(address = " + memAdress.ToString() + "). Bail out." + this.richCompileMessages.Text;
                                         return;
                                     }
                                 }
                                 else
-                                    this.richCompileMessages.Text += "\n    Nothing to write to memory !";
+                                    this.richCompileMessages.Text = "\n    Nothing to write to memory !" + this.richCompileMessages.Text;
                             }   
                         }
                     }
@@ -215,12 +215,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
             bool startAdressManual = checkMemory.Checked;
             bool startAdressInCode = this.IsStartAdressInCode();
 
-            Directory.SetCurrentDirectory(FormCpu.GetAppRootDir());
+            Directory.SetCurrentDirectory(Utils.GetAppFolder());
 
             if (!File.Exists(@"Pasmo2.dll"))
             {
                 Locator.Resolve<IUserMessage>().Error(
-                    "Pasmo2.dll not found in " + FormCpu.GetAppRootDir() + "!\nThis file is needed for compilation\n" +
+                    "Pasmo2.dll not found in " + Utils.GetAppFolder() + "!\nThis file is needed for compilation\n" +
                     "into Z80 code." +
                     "\n\n" +
                     "Now going to try to get it from internet.\nPlease click OK."
@@ -439,6 +439,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             LoadAsm(m_actualLoadedFile);
         }
+
+        //Form close
+        private void Assembler_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.Hide();
+            e.Cancel = true;
+        }
+
+        //Clear compilation log
+        private void buttonClearAssemblerLog_Click(object sender, EventArgs e)
+        {
+            this.richCompileMessages.Clear();
+        }
         #endregion
 
         private bool LoadAsm(string i_fileName)
@@ -476,15 +489,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private bool SaveAsm(string i_fileName)
         {
             if (i_fileName == String.Empty)
-                i_fileName = "noname.asm";
-            File.WriteAllText(i_fileName, this.txtAsm.Text);
-            return true;
-        }
+                i_fileName = "code_save.asm";
+            File.WriteAllText(Path.Combine(Utils.GetAppFolder(),i_fileName), this.txtAsm.Text);
 
-        private void Assembler_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            this.Hide();
-            e.Cancel = true;
+            Locator.Resolve<IUserMessage>().Info("File " + i_fileName + " saved!");
+            return true;
         }
     }
 }

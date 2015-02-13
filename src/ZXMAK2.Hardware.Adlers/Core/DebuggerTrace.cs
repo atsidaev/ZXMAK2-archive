@@ -1,16 +1,30 @@
 ﻿using System;
-using System.Collections;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using ZXMAK2.Dependency;
+using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Hardware.Adlers.Views;
+using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Hardware.Adlers.Core
 {
     public class DebuggerTrace
     {
         #region members
-        public static readonly byte[] ConditionalJumps = new byte[] { 
+        public static readonly byte[] ConditionalCalls = new byte[] {
+                                                             //CALL`s
+                                                             0xC4, //CALL NZ,nn
+                                                             0xCC, //CALL Z,nn
+                                                             0xD4, //CALL NC,nn
+                                                             0xDC, //CALL C,nn
+                                                             0xE4, //CALL PO,nn
+                                                             0xEC, //CALL PE,nn
+                                                             0xF4, //CALL P,nn
+                                                             0xFC  //CALL M,nn*
+                                                             };
+        public static readonly byte[] ConditionalJumps = new byte[] {
                                                              //JR`s
                                                              0x20, //JR NZ,d
                                                              0x28, //JR Z,d
@@ -24,16 +38,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
                                                              0xE2, //JP PO,nn
                                                              0xEA, //JP PE,nn
                                                              0xF2, //JP P,nn
-                                                             0xFA, //JP M,nn
-                                                             //CALL`s
-                                                             0xC4, //CALL NZ,nn
-                                                             0xCC, //CALL Z,nn
-                                                             0xD4, //CALL NC,nn
-                                                             0xDC, //CALL C,nn
-                                                             0xE4, //CALL PO,nn
-                                                             0xEC, //CALL PE,nn
-                                                             0xF4, //CALL P,nn
-                                                             0xFC  //CALL M,nn
+                                                             0xFA //JP M,nn
                                                            };
         public static readonly byte[] CommonJumps = new byte[] { 
                                                              0x18, //JR d
@@ -43,12 +48,16 @@ namespace ZXMAK2.Hardware.Adlers.Core
                                                              0xE9, //JP (HL)
                                                            };
         private IDebuggable m_spectrum;
-        
+
+        private int[] _counters = null;
+
         private bool[] m_addrsFlags; //false => address is excluded from tracing
         private byte[] m_currentTraceOpcodes = null;
 
         private bool m_isTracingJumps = false;
         private bool m_isTraceAreaDefined = false;
+
+        private string _traceLogFilename;
         #endregion
 
         public DebuggerTrace(IDebuggable i_spectrum)
@@ -68,10 +77,35 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             SetTraceOpcodes(i_form);
             SetTraceArea(i_form);
+
+            _counters = new int[65536];
+            _traceLogFilename = i_form.textBoxTraceFileName.Text.Trim();
         }
-        public void StopTrace(FormCpu i_form)
+        public void StopTrace()
         {
             m_isTracingJumps = false;
+            m_isTraceAreaDefined = false;
+
+            //save counters to file
+            int[] countersOut = _counters.Select((s, index) => new { s, index })
+                      .Where(x => x.s > 0)
+                      .Select(x => x.index)
+                      .ToArray();
+            int totalCalls = 0;
+            Array.Sort(countersOut);
+            string traceCountersLog = String.Empty;
+            foreach (int counterItem in countersOut)
+            {
+                traceCountersLog += String.Format("Addr: #{0:X4}   Number of calls/jumps: {1}\n", counterItem, _counters[counterItem]);
+                totalCalls += _counters[counterItem];
+            }
+
+            traceCountersLog += "=================================\n";
+            traceCountersLog += String.Format("Total addresses: {0}   Total calls: {1}", countersOut.Length, totalCalls);
+
+            File.WriteAllText(Path.Combine(Utils.GetAppFolder(),_traceLogFilename), traceCountersLog);
+                
+            _counters = null;
         }
 
         private void SetTraceOpcodes(FormCpu i_form)
@@ -82,12 +116,18 @@ namespace ZXMAK2.Hardware.Adlers.Core
             {
                 m_currentTraceOpcodes = new byte[CommonJumps.Length + ConditionalJumps.Length];
                 m_currentTraceOpcodes = CommonJumps.Union(ConditionalJumps).ToArray();
+                m_currentTraceOpcodes = m_currentTraceOpcodes.Union(ConditionalCalls).ToArray();
 
                 m_isTracingJumps = true;
             }
             else if (i_form.checkBoxConditionalJumps.Checked)
             {
                 m_currentTraceOpcodes = ConditionalJumps;
+                m_isTracingJumps = true;
+            }
+            else if (i_form.checkBoxConditionalCalls.Checked)
+            {
+                m_currentTraceOpcodes = ConditionalCalls;
                 m_isTracingJumps = true;
             }
             else
@@ -100,8 +140,8 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 m_isTraceAreaDefined = false;
                 return;
             }
-            
-            foreach( ListViewItem item in i_form.listViewAdressRanges.Items )
+
+            foreach (ListViewItem item in i_form.listViewAdressRanges.Items)
             {
                 string[] tags = ((string)item.Tag).Split(new char[] { ';' });
                 if (tags.Length != 3)
@@ -121,6 +161,10 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             return m_currentTraceOpcodes;
         }
+        public bool[] GetAddressFlags()
+        {
+            return m_addrsFlags;
+        }
         public bool IsTracingJumps()
         {
             return m_isTracingJumps;
@@ -129,5 +173,46 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             return m_isTraceAreaDefined;
         }
+        public void IncCounter(int i_memPointer)
+        {
+            _counters[i_memPointer]++;
+        }
+
+        #region GUI handlers/methods
+        public void AddNewAddrArea(FormCpu i_form)
+        {
+            int FromAddr = 0;
+            int ToAddr = 0;
+            var service = Locator.Resolve<IUserQuery>();
+            if (service == null)
+            {
+                return;
+            }
+            if (!service.QueryValue("Address area", "From:", "#{0:X4}", ref FromAddr, 0, 0xFFFF)) return;
+            ToAddr = FromAddr;
+            if (!service.QueryValue("Address area", "To:", "#{0:X4}", ref ToAddr, FromAddr, 0xFFFF)) return;
+
+            ListViewItem item = new ListViewItem(new[] { String.Format("#{0:X4}", FromAddr), String.Format("#{0:X4}", ToAddr), "No" });
+            item.Tag = String.Format("{0:X4};{1:X4};No", FromAddr, ToAddr);
+            i_form.listViewAdressRanges.Items.Add(item);
+        }
+        public void UpdateNewAddrArea(FormCpu i_form)
+        {
+            //this will only toggle Yes/No
+            if (i_form.listViewAdressRanges.FocusedItem.Index < 0)
+                return;
+
+            ListViewItem itemToUpdate = i_form.listViewAdressRanges.Items[i_form.listViewAdressRanges.FocusedItem.Index];
+            string strNewTraceStatus;
+            string[] tags = ((string)itemToUpdate.Tag).Split(new char[] { ';' });
+            if (tags.Length != 3)
+                return;
+
+            strNewTraceStatus = (tags[2] == "Yes" ? "No" : "Yes");
+            ListViewItem item = new ListViewItem(new[] { tags[0], tags[1], strNewTraceStatus });
+            item.Tag = tags[0] + ";" + tags[1] + ";" + strNewTraceStatus;
+            i_form.listViewAdressRanges.Items[i_form.listViewAdressRanges.FocusedItem.Index] = item;
+        }
+        #endregion
     }
 }
