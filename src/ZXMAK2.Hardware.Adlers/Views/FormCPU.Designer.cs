@@ -57,13 +57,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.splitter3 = new System.Windows.Forms.Splitter();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panelMem = new System.Windows.Forms.Panel();
+            this.dataPanel = new ZXMAK2.Hardware.Adlers.Views.DataPanel();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.panelDasm = new System.Windows.Forms.Panel();
+            this.dasmPanel = new ZXMAK2.Hardware.Adlers.Views.DasmPanel();
             this.contextMenuDasm = new System.Windows.Forms.ContextMenu();
             this.menuItemDasmGotoADDR = new System.Windows.Forms.MenuItem();
             this.menuItemDasmGotoPC = new System.Windows.Forms.MenuItem();
             this.menuItemDumpMemory = new System.Windows.Forms.MenuItem();
             this.menuItemDumpMemoryAtCurrentAddress = new System.Windows.Forms.MenuItem();
+            this.menuItemFollowInDisassembler = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.menuItemDasmClearBreakpoints = new System.Windows.Forms.MenuItem();
             this.menuItem4 = new System.Windows.Forms.MenuItem();
@@ -92,9 +95,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemAddNewTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItemUpdateTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
-            this.menuItemFollowInDisassembler = new System.Windows.Forms.MenuItem();
-            this.dasmPanel = new ZXMAK2.Hardware.Adlers.Views.DasmPanel();
-            this.dataPanel = new ZXMAK2.Hardware.Adlers.Views.DataPanel();
             this.panelStatus.SuspendLayout();
             this.tabMenus.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -123,7 +123,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.tabMenus.Controls.Add(this.tabPage2);
             this.tabMenus.Controls.Add(this.tabPage3);
             this.tabMenus.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tabMenus.Font = new System.Drawing.Font("Courier New", 9F);
+            this.tabMenus.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.tabMenus.Location = new System.Drawing.Point(0, 3);
             this.tabMenus.Name = "tabMenus";
             this.tabMenus.SelectedIndex = 0;
@@ -134,10 +134,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.tabPage1.Controls.Add(this.panelState);
             this.tabPage1.Controls.Add(this.panelRegs);
-            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(160, 384);
+            this.tabPage1.Size = new System.Drawing.Size(160, 386);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "CPU";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -149,7 +149,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panelState.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelState.Location = new System.Drawing.Point(3, 252);
             this.panelState.Name = "panelState";
-            this.panelState.Size = new System.Drawing.Size(154, 129);
+            this.panelState.Size = new System.Drawing.Size(154, 131);
             this.panelState.TabIndex = 2;
             // 
             // listState
@@ -161,7 +161,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listState.ItemHeight = 14;
             this.listState.Location = new System.Drawing.Point(0, 0);
             this.listState.Name = "listState";
-            this.listState.Size = new System.Drawing.Size(150, 125);
+            this.listState.Size = new System.Drawing.Size(150, 127);
             this.listState.TabIndex = 1;
             this.listState.DoubleClick += new System.EventHandler(this.listState_DoubleClick);
             // 
@@ -180,7 +180,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.listREGS.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.listREGS.Dock = System.Windows.Forms.DockStyle.Left;
-            this.listREGS.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.listREGS.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.listREGS.FormattingEnabled = true;
             this.listREGS.IntegralHeight = false;
             this.listREGS.ItemHeight = 15;
@@ -247,10 +247,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.tabPage2.Controls.Add(this.listViewAdressRanges);
             this.tabPage2.Controls.Add(this.btnStopTrace);
             this.tabPage2.Controls.Add(this.btnStartTrace);
-            this.tabPage2.Location = new System.Drawing.Point(4, 24);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(160, 404);
+            this.tabPage2.Size = new System.Drawing.Size(160, 386);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Trace";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -258,18 +258,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // checkBoxTraceArea
             // 
             this.checkBoxTraceArea.AutoSize = true;
-            this.checkBoxTraceArea.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxTraceArea.Location = new System.Drawing.Point(6, 180);
+            this.checkBoxTraceArea.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.checkBoxTraceArea.Location = new System.Drawing.Point(6, 161);
             this.checkBoxTraceArea.Name = "checkBoxTraceArea";
-            this.checkBoxTraceArea.Size = new System.Drawing.Size(103, 18);
+            this.checkBoxTraceArea.Size = new System.Drawing.Size(122, 16);
             this.checkBoxTraceArea.TabIndex = 11;
-            this.checkBoxTraceArea.Text = "Trace area:";
+            this.checkBoxTraceArea.Text = "Address range:";
             this.checkBoxTraceArea.UseVisualStyleBackColor = true;
             this.checkBoxTraceArea.CheckedChanged += new System.EventHandler(this.checkBoxTraceAddresses_CheckedChanged);
             // 
             // buttonSetTraceFileName
             // 
-            this.buttonSetTraceFileName.Location = new System.Drawing.Point(110, 336);
+            this.buttonSetTraceFileName.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonSetTraceFileName.Location = new System.Drawing.Point(110, 317);
             this.buttonSetTraceFileName.Name = "buttonSetTraceFileName";
             this.buttonSetTraceFileName.Size = new System.Drawing.Size(43, 23);
             this.buttonSetTraceFileName.TabIndex = 10;
@@ -278,10 +279,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // textBoxTraceFileName
             // 
-            this.textBoxTraceFileName.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxTraceFileName.Location = new System.Drawing.Point(6, 338);
+            this.textBoxTraceFileName.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.textBoxTraceFileName.Location = new System.Drawing.Point(6, 319);
             this.textBoxTraceFileName.Name = "textBoxTraceFileName";
-            this.textBoxTraceFileName.Size = new System.Drawing.Size(100, 20);
+            this.textBoxTraceFileName.Size = new System.Drawing.Size(100, 19);
             this.textBoxTraceFileName.TabIndex = 9;
             this.textBoxTraceFileName.Text = "trace.log";
             // 
@@ -291,10 +292,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkBoxTraceFileOut.AutoSize = true;
             this.checkBoxTraceFileOut.Checked = true;
             this.checkBoxTraceFileOut.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxTraceFileOut.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxTraceFileOut.Location = new System.Drawing.Point(5, 319);
+            this.checkBoxTraceFileOut.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.checkBoxTraceFileOut.Location = new System.Drawing.Point(7, 300);
             this.checkBoxTraceFileOut.Name = "checkBoxTraceFileOut";
-            this.checkBoxTraceFileOut.Size = new System.Drawing.Size(124, 18);
+            this.checkBoxTraceFileOut.Size = new System.Drawing.Size(122, 16);
             this.checkBoxTraceFileOut.TabIndex = 8;
             this.checkBoxTraceFileOut.Text = "Output to file";
             this.checkBoxTraceFileOut.UseVisualStyleBackColor = true;
@@ -304,10 +305,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.checkBoxShowConsole.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxShowConsole.AutoSize = true;
-            this.checkBoxShowConsole.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxShowConsole.Location = new System.Drawing.Point(5, 300);
+            this.checkBoxShowConsole.Checked = true;
+            this.checkBoxShowConsole.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxShowConsole.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.checkBoxShowConsole.Location = new System.Drawing.Point(7, 281);
             this.checkBoxShowConsole.Name = "checkBoxShowConsole";
-            this.checkBoxShowConsole.Size = new System.Drawing.Size(124, 18);
+            this.checkBoxShowConsole.Size = new System.Drawing.Size(122, 16);
             this.checkBoxShowConsole.TabIndex = 7;
             this.checkBoxShowConsole.Text = "Console output";
             this.checkBoxShowConsole.UseVisualStyleBackColor = true;
@@ -331,10 +334,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // checkBoxConditionalCalls
             // 
             this.checkBoxConditionalCalls.AutoSize = true;
-            this.checkBoxConditionalCalls.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxConditionalCalls.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxConditionalCalls.Location = new System.Drawing.Point(3, 55);
             this.checkBoxConditionalCalls.Name = "checkBoxConditionalCalls";
-            this.checkBoxConditionalCalls.Size = new System.Drawing.Size(145, 18);
+            this.checkBoxConditionalCalls.Size = new System.Drawing.Size(143, 16);
             this.checkBoxConditionalCalls.TabIndex = 5;
             this.checkBoxConditionalCalls.Text = "Conditional calls";
             this.checkBoxConditionalCalls.UseVisualStyleBackColor = true;
@@ -343,18 +346,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // textBoxOpcode
             // 
             this.textBoxOpcode.Enabled = false;
+            this.textBoxOpcode.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.textBoxOpcode.Location = new System.Drawing.Point(22, 109);
             this.textBoxOpcode.Name = "textBoxOpcode";
-            this.textBoxOpcode.Size = new System.Drawing.Size(122, 21);
+            this.textBoxOpcode.Size = new System.Drawing.Size(122, 19);
             this.textBoxOpcode.TabIndex = 4;
+            this.textBoxOpcode.Leave += new System.EventHandler(this.textBoxOpcode_Leave);
             // 
             // checkBoxOpcode
             // 
             this.checkBoxOpcode.AutoSize = true;
-            this.checkBoxOpcode.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxOpcode.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxOpcode.Location = new System.Drawing.Point(3, 91);
             this.checkBoxOpcode.Name = "checkBoxOpcode";
-            this.checkBoxOpcode.Size = new System.Drawing.Size(68, 18);
+            this.checkBoxOpcode.Size = new System.Drawing.Size(66, 16);
             this.checkBoxOpcode.TabIndex = 3;
             this.checkBoxOpcode.Text = "Opcode";
             this.checkBoxOpcode.UseVisualStyleBackColor = true;
@@ -363,10 +368,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // checkBoxCallToROM
             // 
             this.checkBoxCallToROM.AutoSize = true;
-            this.checkBoxCallToROM.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxCallToROM.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxCallToROM.Location = new System.Drawing.Point(3, 73);
             this.checkBoxCallToROM.Name = "checkBoxCallToROM";
-            this.checkBoxCallToROM.Size = new System.Drawing.Size(103, 18);
+            this.checkBoxCallToROM.Size = new System.Drawing.Size(101, 16);
             this.checkBoxCallToROM.TabIndex = 2;
             this.checkBoxCallToROM.Text = "Call to ROM";
             this.checkBoxCallToROM.UseVisualStyleBackColor = true;
@@ -376,10 +381,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkBoxConditionalJumps.AutoSize = true;
             this.checkBoxConditionalJumps.Checked = true;
             this.checkBoxConditionalJumps.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxConditionalJumps.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxConditionalJumps.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxConditionalJumps.Location = new System.Drawing.Point(3, 37);
             this.checkBoxConditionalJumps.Name = "checkBoxConditionalJumps";
-            this.checkBoxConditionalJumps.Size = new System.Drawing.Size(145, 18);
+            this.checkBoxConditionalJumps.Size = new System.Drawing.Size(143, 16);
             this.checkBoxConditionalJumps.TabIndex = 1;
             this.checkBoxConditionalJumps.Text = "Conditional jumps";
             this.checkBoxConditionalJumps.UseVisualStyleBackColor = true;
@@ -388,10 +393,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // checkBoxAllJumps
             // 
             this.checkBoxAllJumps.AutoSize = true;
-            this.checkBoxAllJumps.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxAllJumps.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxAllJumps.Location = new System.Drawing.Point(3, 19);
             this.checkBoxAllJumps.Name = "checkBoxAllJumps";
-            this.checkBoxAllJumps.Size = new System.Drawing.Size(131, 18);
+            this.checkBoxAllJumps.Size = new System.Drawing.Size(129, 16);
             this.checkBoxAllJumps.TabIndex = 0;
             this.checkBoxAllJumps.Text = "All jumps/calls";
             this.checkBoxAllJumps.UseVisualStyleBackColor = true;
@@ -401,10 +406,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.listViewAdressRanges.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.listViewAdressRanges.Enabled = false;
-            this.listViewAdressRanges.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewAdressRanges.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.listViewAdressRanges.FullRowSelect = true;
             this.listViewAdressRanges.GridLines = true;
-            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 201);
+            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 182);
             this.listViewAdressRanges.Name = "listViewAdressRanges";
             this.listViewAdressRanges.Size = new System.Drawing.Size(150, 97);
             this.listViewAdressRanges.TabIndex = 5;
@@ -417,8 +422,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.btnStopTrace.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnStopTrace.Enabled = false;
+            this.btnStopTrace.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.btnStopTrace.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnStopTrace.Location = new System.Drawing.Point(57, 378);
+            this.btnStopTrace.Location = new System.Drawing.Point(57, 359);
             this.btnStopTrace.Name = "btnStopTrace";
             this.btnStopTrace.Size = new System.Drawing.Size(70, 23);
             this.btnStopTrace.TabIndex = 4;
@@ -430,8 +436,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // btnStartTrace
             // 
             this.btnStartTrace.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnStartTrace.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.btnStartTrace.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnStartTrace.Location = new System.Drawing.Point(5, 378);
+            this.btnStartTrace.Location = new System.Drawing.Point(5, 359);
             this.btnStartTrace.Name = "btnStartTrace";
             this.btnStartTrace.Size = new System.Drawing.Size(44, 23);
             this.btnStartTrace.TabIndex = 3;
@@ -442,9 +449,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // tabPage3
             // 
-            this.tabPage3.Location = new System.Drawing.Point(4, 24);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(160, 404);
+            this.tabPage3.Size = new System.Drawing.Size(160, 386);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Misc.";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -478,6 +485,22 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panelMem.Size = new System.Drawing.Size(455, 121);
             this.panelMem.TabIndex = 2;
             // 
+            // dataPanel
+            // 
+            this.dataPanel.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.dataPanel.ColCount = 8;
+            this.dataPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.dataPanel.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.dataPanel.Location = new System.Drawing.Point(0, 0);
+            this.dataPanel.Name = "dataPanel";
+            this.dataPanel.Size = new System.Drawing.Size(451, 117);
+            this.dataPanel.TabIndex = 0;
+            this.dataPanel.Text = "dataPanel1";
+            this.dataPanel.TopAddress = ((ushort)(0));
+            this.dataPanel.GetData += new ZXMAK2.Hardware.Adlers.Views.DataPanel.ONGETDATACPU(this.dasmPanel_GetData);
+            this.dataPanel.DataClick += new ZXMAK2.Hardware.Adlers.Views.DataPanel.ONCLICKCPU(this.dataPanel_DataClick);
+            this.dataPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataPanel_MouseClick);
+            // 
             // splitter2
             // 
             this.splitter2.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -498,6 +521,29 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panelDasm.Name = "panelDasm";
             this.panelDasm.Size = new System.Drawing.Size(455, 280);
             this.panelDasm.TabIndex = 4;
+            // 
+            // dasmPanel
+            // 
+            this.dasmPanel.ActiveAddress = ((ushort)(0));
+            this.dasmPanel.BackColor = System.Drawing.SystemColors.ControlText;
+            this.dasmPanel.BreakpointColor = System.Drawing.Color.Red;
+            this.dasmPanel.BreakpointForeColor = System.Drawing.Color.Black;
+            this.dasmPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dasmPanel.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.dasmPanel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.dasmPanel.Location = new System.Drawing.Point(0, 0);
+            this.dasmPanel.Name = "dasmPanel";
+            this.dasmPanel.Size = new System.Drawing.Size(451, 276);
+            this.dasmPanel.TabIndex = 0;
+            this.dasmPanel.Text = "dasmPanel1";
+            this.dasmPanel.TopAddress = ((ushort)(0));
+            this.dasmPanel.CheckBreakpoint += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckBreakpoint);
+            this.dasmPanel.CheckExecuting += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckExecuting);
+            this.dasmPanel.GetData += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONGETDATACPU(this.dasmPanel_GetData);
+            this.dasmPanel.GetDasm += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONGETDASMCPU(this.dasmPanel_GetDasm);
+            this.dasmPanel.BreakpointClick += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCLICKCPU(this.dasmPanel_SetBreakpoint);
+            this.dasmPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseClick);
+            this.dasmPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseDoubleClick);
             // 
             // contextMenuDasm
             // 
@@ -541,6 +587,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemDumpMemoryAtCurrentAddress.Index = 0;
             this.menuItemDumpMemoryAtCurrentAddress.Text = "Current address";
             this.menuItemDumpMemoryAtCurrentAddress.Click += new System.EventHandler(this.menuItemDumpMemoryAtCurrentAddress_Click);
+            // 
+            // menuItemFollowInDisassembler
+            // 
+            this.menuItemFollowInDisassembler.Index = 3;
+            this.menuItemFollowInDisassembler.Text = "Follow in disassembler";
             // 
             // menuItem2
             // 
@@ -728,50 +779,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem9.Index = 2;
             this.menuItem9.Text = "Delete current";
             // 
-            // menuItemFollowInDisassembler
-            // 
-            this.menuItemFollowInDisassembler.Index = 3;
-            this.menuItemFollowInDisassembler.Text = "Follow in disassembler";
-            // 
-            // dasmPanel
-            // 
-            this.dasmPanel.ActiveAddress = ((ushort)(0));
-            this.dasmPanel.BackColor = System.Drawing.SystemColors.ControlText;
-            this.dasmPanel.BreakpointColor = System.Drawing.Color.Red;
-            this.dasmPanel.BreakpointForeColor = System.Drawing.Color.Black;
-            this.dasmPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dasmPanel.Font = new System.Drawing.Font("Courier New", 9F);
-            this.dasmPanel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.dasmPanel.Location = new System.Drawing.Point(0, 0);
-            this.dasmPanel.Name = "dasmPanel";
-            this.dasmPanel.Size = new System.Drawing.Size(451, 276);
-            this.dasmPanel.TabIndex = 0;
-            this.dasmPanel.Text = "dasmPanel1";
-            this.dasmPanel.TopAddress = ((ushort)(0));
-            this.dasmPanel.CheckBreakpoint += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckBreakpoint);
-            this.dasmPanel.CheckExecuting += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCHECKCPU(this.dasmPanel_CheckExecuting);
-            this.dasmPanel.GetData += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONGETDATACPU(this.dasmPanel_GetData);
-            this.dasmPanel.GetDasm += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONGETDASMCPU(this.dasmPanel_GetDasm);
-            this.dasmPanel.BreakpointClick += new ZXMAK2.Hardware.Adlers.Views.DasmPanel.ONCLICKCPU(this.dasmPanel_SetBreakpoint);
-            this.dasmPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseClick);
-            this.dasmPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dasmPanel_MouseDoubleClick);
-            // 
-            // dataPanel
-            // 
-            this.dataPanel.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.dataPanel.ColCount = 8;
-            this.dataPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dataPanel.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.dataPanel.Location = new System.Drawing.Point(0, 0);
-            this.dataPanel.Name = "dataPanel";
-            this.dataPanel.Size = new System.Drawing.Size(451, 117);
-            this.dataPanel.TabIndex = 0;
-            this.dataPanel.Text = "dataPanel1";
-            this.dataPanel.TopAddress = ((ushort)(0));
-            this.dataPanel.GetData += new ZXMAK2.Hardware.Adlers.Views.DataPanel.ONGETDATACPU(this.dasmPanel_GetData);
-            this.dataPanel.DataClick += new ZXMAK2.Hardware.Adlers.Views.DataPanel.ONCLICKCPU(this.dataPanel_DataClick);
-            this.dataPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataPanel_MouseClick);
-            // 
             // FormCpu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -864,8 +871,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.Button btnStopTrace;
         private System.Windows.Forms.GroupBox groupBoxTraceOptions;
         private System.Windows.Forms.CheckBox checkBoxCallToROM;
-        private System.Windows.Forms.TextBox textBoxOpcode;
-        private System.Windows.Forms.CheckBox checkBoxOpcode;
         private System.Windows.Forms.CheckBox checkBoxShowConsole;
         private System.Windows.Forms.CheckBox checkBoxTraceFileOut;
         private System.Windows.Forms.Button buttonSetTraceFileName;
@@ -880,5 +885,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         public System.Windows.Forms.CheckBox checkBoxConditionalCalls;
         public System.Windows.Forms.TextBox textBoxTraceFileName;
         private System.Windows.Forms.MenuItem menuItemFollowInDisassembler;
+        public System.Windows.Forms.TextBox textBoxOpcode;
+        public System.Windows.Forms.CheckBox checkBoxOpcode;
     }
 }

@@ -98,7 +98,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             {
                 //FixedBuffer fixedBuf = new FixedBuffer();
 
-                string  asmToCompileOrFileName;
+                string  asmToCompileOrFileName = String.Empty;
                 byte[]  compiledOut = new byte[65536-16384 + 2/*memory start when --binfile is used*/];
                 byte[]  errReason = new byte[1024];
                 int     codeSize = 0;
@@ -115,7 +115,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 }
                 else
                 {
-                    asmToCompileOrFileName = txtAsm.Text;
+                    if( chckbxMemory.Checked )
+                        asmToCompileOrFileName += "org " + textMemAdress.Text + "\n";
+
+                    asmToCompileOrFileName += txtAsm.Text;
                     compileOption = "--bin";
                 }
 
@@ -172,7 +175,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                     //get address where to write the code
                                     ushort memAdress = 0;
                                     ushort memArrayDelta = 2;
-                                    if (compileOption != "--bin") //binary
+                                    if (compileOption != "--bin" || !chckbxMemory.Checked) //binary
                                         memAdress = (ushort)(compiledOut[0] + compiledOut[1] * 256);
                                     else
                                     {
@@ -212,7 +215,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private bool validateCompile()
         {
-            bool startAdressManual = checkMemory.Checked;
+            bool startAdressManual = chckbxMemory.Checked;
             bool startAdressInCode = this.IsStartAdressInCode();
 
             Directory.SetCurrentDirectory(Utils.GetAppFolder());
@@ -240,7 +243,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         "Compilation failed(missing start address)\n\n" +
                         "Either check the check box for memory address(Compile to -> Memory)\n" + 
                         "or define it using 'ORG' instruction in source code !\n\n" +
-                        "Compilation is cancelled.");
+                        "Compilation is canceled.");
                 return false;
             }
             if (startAdressInCode && startAdressManual)
@@ -250,7 +253,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     "Compilation failed(duplicity in start address)\n\n" +
                     "Either UNcheck the check box for memory address(Compile to -> Memory)\n" +
                     "or remove ALL 'ORG' instructions from the source code !\n\n" +
-                    "Compilation is cancelled.");
+                    "Compilation is canceled.");
                 return false;
             }
 
@@ -295,7 +298,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private void checkMemory_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkMemory.Checked)
+            if (chckbxMemory.Checked)
             {
                 textMemAdress.Enabled = true;
             }
@@ -470,7 +473,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 string asmCode = Encoding.UTF8.GetString(data, 0, data.Length);
                 this.txtAsm.Text = asmCode;
                 if (IsStartAdressInCode())
-                    this.checkMemory.Checked = false;
+                    this.chckbxMemory.Checked = false;
 
                 if (this.richCompileMessages.Text.Trim() != String.Empty)
                     this.richCompileMessages.Text += "\n\n";

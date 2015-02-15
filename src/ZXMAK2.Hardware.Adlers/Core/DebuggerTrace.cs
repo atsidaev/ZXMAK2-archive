@@ -57,6 +57,10 @@ namespace ZXMAK2.Hardware.Adlers.Core
         private bool m_isTracingJumps = false;
         private bool m_isTraceAreaDefined = false;
 
+        //Opcode tracing
+        private bool m_isTracingOpcode = false;
+        private byte m_tracedOpcode;
+
         private string _traceLogFilename;
         #endregion
 
@@ -85,12 +89,13 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             m_isTracingJumps = false;
             m_isTraceAreaDefined = false;
+            m_isTracingOpcode = false;
 
             //save counters to file
             int[] countersOut = _counters.Select((s, index) => new { s, index })
-                      .Where(x => x.s > 0)
-                      .Select(x => x.index)
-                      .ToArray();
+                                         .Where(x => x.s > 0)
+                                         .Select(x => x.index)
+                                         .ToArray();
             int totalCalls = 0;
             Array.Sort(countersOut);
             string traceCountersLog = String.Empty;
@@ -112,7 +117,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             m_currentTraceOpcodes = null;
 
-            if (i_form.checkBoxAllJumps.Checked)
+            if (i_form.checkBoxAllJumps.Checked && i_form.checkBoxAllJumps.Enabled)
             {
                 m_currentTraceOpcodes = new byte[CommonJumps.Length + ConditionalJumps.Length];
                 m_currentTraceOpcodes = CommonJumps.Union(ConditionalJumps).ToArray();
@@ -120,18 +125,25 @@ namespace ZXMAK2.Hardware.Adlers.Core
 
                 m_isTracingJumps = true;
             }
-            else if (i_form.checkBoxConditionalJumps.Checked)
+            else if (i_form.checkBoxConditionalJumps.Checked && i_form.checkBoxConditionalJumps.Enabled)
             {
                 m_currentTraceOpcodes = ConditionalJumps;
                 m_isTracingJumps = true;
             }
-            else if (i_form.checkBoxConditionalCalls.Checked)
+            else if (i_form.checkBoxConditionalCalls.Checked && i_form.checkBoxConditionalCalls.Enabled)
             {
                 m_currentTraceOpcodes = ConditionalCalls;
                 m_isTracingJumps = true;
             }
             else
                 m_isTracingJumps = false;
+
+            if (i_form.checkBoxOpcode.Checked)
+            {
+                m_isTracingOpcode = true;
+            }
+            else
+                m_isTracingOpcode = false;
         }
         private void SetTraceArea(FormCpu i_form)
         {
@@ -173,6 +185,18 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             return m_isTraceAreaDefined;
         }
+        public bool IsTracingOpcode()
+        {
+            return m_isTracingOpcode;
+        }
+        public byte GetTracedOpcode()
+        {
+            return m_tracedOpcode;
+        }
+        public void SetTracedOpcode(byte i_opcode)
+        {
+            m_tracedOpcode = i_opcode;
+        }
         public void IncCounter(int i_memPointer)
         {
             _counters[i_memPointer]++;
@@ -209,7 +233,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 return;
 
             strNewTraceStatus = (tags[2] == "Yes" ? "No" : "Yes");
-            ListViewItem item = new ListViewItem(new[] { tags[0], tags[1], strNewTraceStatus });
+            ListViewItem item = new ListViewItem(new[] { "#" + tags[0], "#" + tags[1], strNewTraceStatus });
             item.Tag = tags[0] + ";" + tags[1] + ";" + strNewTraceStatus;
             i_form.listViewAdressRanges.Items[i_form.listViewAdressRanges.FocusedItem.Index] = item;
         }
