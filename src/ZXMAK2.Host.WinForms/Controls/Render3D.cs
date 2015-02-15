@@ -19,7 +19,6 @@ namespace ZXMAK2.Host.WinForms.Controls
         #region Fields
 
         private readonly PresentParameters _presentParams = new PresentParameters();
-        private readonly AutoResetEvent _renderEvent = new AutoResetEvent(false);
         protected readonly object _syncRoot = new object();
         protected Device _device;
         private Thread _threadRender;
@@ -67,10 +66,9 @@ namespace ZXMAK2.Host.WinForms.Controls
                     return;
                 }
                 _hWnd = Handle;
-                _renderEvent.Reset();
                 _threadRender = new Thread(RenderProc);
                 _threadRender.Name = "Render";
-                _threadRender.Priority = ThreadPriority.Highest;
+                _threadRender.Priority = ThreadPriority.AboveNormal;
                 _threadRender.Start();
             }
             catch (Exception ex)
@@ -91,10 +89,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                 }
                 if (thread != null)
                 {
-                    _renderEvent.Set();
                     thread.Join();
                 }
-                _renderEvent.Dispose();
             }
             catch (Exception ex)
             {
@@ -107,7 +103,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             _device = CreateDirect3D();
             try
             {
-                _device.DeviceResizing += Device_OnDeviceResizing;
+                _device.DeviceResizing += (s, e) => e.Cancel = true;
                 _device.DeviceReset += Device_OnDeviceReset;
                 try
                 {
@@ -116,7 +112,6 @@ namespace ZXMAK2.Host.WinForms.Controls
                     {
                         try
                         {
-                            _renderEvent.WaitOne();
                             lock (_syncRoot)
                             {
                                 RenderScene();
@@ -145,11 +140,6 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
-        protected void RenderAsync()
-        {
-            _renderEvent.Set();
-        }
-
         private void Device_OnDeviceReset(object sender, EventArgs e)
         {
             try
@@ -166,20 +156,11 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
         }
 
-        private void Device_OnDeviceResizing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            e.Cancel = true;
-        }
-
         protected override void OnPaint(PaintEventArgs e)
         {
             try
             {
-                if (_device != null)
-                {
-                    RenderAsync();
-                }
-                else
+                if (_threadRender == null)
                 {
                     RenderError(e, "Direct3D initialization failed!\nProbably DirectX 9 (June 2010) is not installed");
                 }
@@ -188,12 +169,6 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 Logger.Error(ex);
             }
-        }
-
-        protected override void OnResize(EventArgs e)
-        {
-            RenderAsync();
-            base.OnResize(e);
         }
 
         protected virtual void OnLoadResources()
@@ -227,23 +202,22 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             try
             {
+                if (_device == null)
+                {
+                    return;
+                }
                 var wndSize = NativeMethods.GetWindowRect(_hWnd).Size;
+                var wndVisible = NativeMethods.IsWindowVisible(_hWnd);
+                if (wndSize == Size.Empty || !wndVisible)
+                {
+                    // minimized/starting
+                    Thread.Sleep(100);
+                    return;
+                }
                 if (wndSize.Width != _presentParams.BackBufferWidth ||
                     wndSize.Height != _presentParams.BackBufferHeight)
                 {
-                    if (wndSize.Width < 1 || wndSize.Height < 1)
-                    {
-                        return;
-                    }
                     ResetDevice();
-                    return;
-                }
-                var wndVisible = NativeMethods.IsWindowVisible(_hWnd);
-                if (_device == null ||
-                    !wndVisible ||
-                    wndSize.Width <= 0 ||
-                    wndSize.Height <= 0)
-                {
                     return;
                 }
                 var hr = TestCooperativeLevel();
@@ -258,6 +232,7 @@ namespace ZXMAK2.Host.WinForms.Controls
                 else if (hr == ResultCode.DeviceLost)
                 {
                     OnUnloadResources();
+                    Thread.Sleep(100);
                 }
                 else
                 {
@@ -302,6 +277,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         private void ConfigureDeviceParams(bool vBlankSync)
         {
+            vBlankSync = true;
             var wndSize = NativeMethods.GetWindowRect(_hWnd).Size;
             _presentParams.Windowed = true;
             _presentParams.PresentationInterval =
@@ -310,8 +286,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                 vBlankSync ? SwapEffect.Flip : SwapEffect.Discard;
             _presentParams.BackBufferCount = 1;
             _presentParams.BackBufferFormat = Format.A8R8G8B8;
-            _presentParams.BackBufferWidth = wndSize.Width > 0 ? ClientSize.Width : 1;
-            _presentParams.BackBufferHeight = wndSize.Height > 0 ? ClientSize.Height : 1;
+            _presentParams.BackBufferWidth = wndSize.Width > 0 ? wndSize.Width : 1;
+            _presentParams.BackBufferHeight = wndSize.Height > 0 ? wndSize.Height : 1;
             _presentParams.EnableAutoDepthStencil = false;
         }
 
@@ -320,7 +296,7 @@ namespace ZXMAK2.Host.WinForms.Controls
             ConfigureDeviceParams(false);
             var adapterId = GetAdapterId();
             var caps = Manager.GetDeviceCaps(adapterId, DeviceType.Hardware);
-            var flags = CreateFlags.MultiThreaded;
+            var flags = CreateFlags.NoWindowChanges;// CreateFlags.MultiThreaded;
             if (caps.DeviceCaps.SupportsHardwareTransformAndLight)
                 flags |= CreateFlags.HardwareVertexProcessing;
             else

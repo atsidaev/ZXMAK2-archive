@@ -62,6 +62,10 @@ namespace ZXMAK2.Engine
         public void Dispose()
         {
             DoStop();
+            if (m_host != null)
+            {
+                m_host.CancelPush();
+            }
             Spectrum.BusManager.Disconnect();
             m_startedEvent.Dispose();
         }
