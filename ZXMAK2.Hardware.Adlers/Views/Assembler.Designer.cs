@@ -41,7 +41,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.textSaveFileName = new System.Windows.Forms.TextBox();
             this.textMemAdress = new System.Windows.Forms.TextBox();
             this.checkFile = new System.Windows.Forms.CheckBox();
-            this.checkMemory = new System.Windows.Forms.CheckBox();
+            this.chckbxMemory = new System.Windows.Forms.CheckBox();
             this.toolMenu = new System.Windows.Forms.ToolStrip();
             this.compileToolStrip = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonRefresh = new System.Windows.Forms.ToolStripButton();
@@ -138,7 +138,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.groupBox1.Controls.Add(this.textSaveFileName);
             this.groupBox1.Controls.Add(this.textMemAdress);
             this.groupBox1.Controls.Add(this.checkFile);
-            this.groupBox1.Controls.Add(this.checkMemory);
+            this.groupBox1.Controls.Add(this.chckbxMemory);
             this.groupBox1.Location = new System.Drawing.Point(543, 35);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(132, 131);
@@ -172,18 +172,18 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkFile.Text = "File";
             this.checkFile.UseVisualStyleBackColor = true;
             // 
-            // checkMemory
+            // chckbxMemory
             // 
-            this.checkMemory.AutoSize = true;
-            this.checkMemory.Checked = true;
-            this.checkMemory.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkMemory.Location = new System.Drawing.Point(7, 22);
-            this.checkMemory.Name = "checkMemory";
-            this.checkMemory.Size = new System.Drawing.Size(63, 17);
-            this.checkMemory.TabIndex = 0;
-            this.checkMemory.Text = "Memory";
-            this.checkMemory.UseVisualStyleBackColor = true;
-            this.checkMemory.CheckedChanged += new System.EventHandler(this.checkMemory_CheckedChanged);
+            this.chckbxMemory.AutoSize = true;
+            this.chckbxMemory.Checked = true;
+            this.chckbxMemory.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chckbxMemory.Location = new System.Drawing.Point(7, 22);
+            this.chckbxMemory.Name = "chckbxMemory";
+            this.chckbxMemory.Size = new System.Drawing.Size(63, 17);
+            this.chckbxMemory.TabIndex = 0;
+            this.chckbxMemory.Text = "Memory";
+            this.chckbxMemory.UseVisualStyleBackColor = true;
+            this.chckbxMemory.CheckedChanged += new System.EventHandler(this.checkMemory_CheckedChanged);
             // 
             // toolMenu
             // 
@@ -400,7 +400,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.RichTextBox richCompileMessages;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox checkFile;
-        private System.Windows.Forms.CheckBox checkMemory;
+        private System.Windows.Forms.CheckBox chckbxMemory;
         private System.Windows.Forms.TextBox textSaveFileName;
         private System.Windows.Forms.TextBox textMemAdress;
         private System.Windows.Forms.ToolStrip toolMenu;

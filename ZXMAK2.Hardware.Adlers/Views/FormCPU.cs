@@ -73,8 +73,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             m_debuggerTrace = new DebuggerTrace(m_spectrum);
 
             listViewAdressRanges.View = View.Details;
-            listViewAdressRanges.Columns.Add("From", -2, HorizontalAlignment.Right);
-            listViewAdressRanges.Columns.Add(" To ", -2, HorizontalAlignment.Right);
+            listViewAdressRanges.Columns.Add("From", -2, HorizontalAlignment.Left);
+            listViewAdressRanges.Columns.Add(" To ", -2, HorizontalAlignment.Left);
             listViewAdressRanges.Columns.Add("Trace", -2, HorizontalAlignment.Center );
 
             ListViewItem item = new ListViewItem(new[] { "#4000", "#FFFF", "Yes"});
@@ -270,6 +270,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (!m_spectrum.IsRunning && updatePC)
             {
                 dasmPanel.ActiveAddress = m_spectrum.CPU.regs.PC;
+                //UpdateREGS();
             }
             else
             {
@@ -848,14 +849,15 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (sender is MenuItem) //must be a MenuItem
             {
                 string hex = ((MenuItem)sender).Text;
-                dasmPanel.AddAddrToDisassemblyHistory(dasmPanel.ActiveAddress);
+                dasmPanel.AddAddrToDisassemblyHistory(dasmPanel.TopAddress);
                 dasmPanel.TopAddress = ushort.Parse(hex.Substring(1, hex.Length - 1), System.Globalization.NumberStyles.HexNumber);
+                dasmPanel.AddAddrToDisassemblyHistory(dasmPanel.TopAddress);
             }
         }
 
         private void dasmPanel_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.X > 30/*fGutterWidth*/)
+            if (e.X > 30/*fGutterWidth*/ && e.Button == MouseButtons.Left)
                 dbgCmdLine.Text += "#" + dasmPanel.ActiveAddress.ToString("X4");
         }
 
@@ -996,11 +998,29 @@ namespace ZXMAK2.Hardware.Adlers.Views
             {
                 if (Array.Exists(m_debuggerTrace.GetTraceOpcodes(), p => p == m_spectrum.ReadMemory(m_cpuRegs.PC)))
                 {
-                    var len = 0;
-                    var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
-
                     m_debuggerTrace.IncCounter(m_cpuRegs.PC);
-                    Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
+                    if (checkBoxShowConsole.Checked)
+                    {
+                        var len = 0;
+                        var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
+                        Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
+                    }
+                }
+            }
+
+            //Opcode
+            if( m_debuggerTrace.IsTracingOpcode() )
+            {
+                if( m_spectrum.ReadMemory(m_cpuRegs.PC) == m_debuggerTrace.GetTracedOpcode() )
+                {
+                    m_debuggerTrace.IncCounter(m_cpuRegs.PC);
+
+                    if (checkBoxShowConsole.Checked)
+                    {
+                        var len = 0;
+                        var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
+                        Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
+                    }
                 }
             }
         }
@@ -1793,6 +1813,22 @@ namespace ZXMAK2.Hardware.Adlers.Views
             m_debuggerTrace.UpdateNewAddrArea(this);
             if (m_isTracing)
                 m_debuggerTrace.StartTrace(this); //refresh tracing
+        }
+        private void textBoxOpcode_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                UInt16 opcode = DebuggerManager.convertNumberWithPrefix(textBoxOpcode.Text);
+                if (opcode > 0xFF) //ToDo: only one byte for traced opcode
+                    m_debuggerTrace.SetTracedOpcode((byte)(opcode%256));
+                else
+                    m_debuggerTrace.SetTracedOpcode((byte)opcode);
+            }
+            catch(CommandParseException)
+            {
+                Locator.Resolve<IUserMessage>().Error("Incorrect opcode number...");
+                textBoxOpcode.Focus();
+            }
         }
         #endregion
     }
