@@ -140,7 +140,12 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 fixed (int* srcPtr = videoData.Buffer)
                 {
-                    _videoFilter((int*)gs.InternalData, srcPtr);
+                    CopyStride(
+                        (int*)gs.InternalData,
+                        srcPtr,
+                        _frameSize.Width,
+                        _frameSize.Height,
+                        _textureStride);
                 }
             }
             _texture0.UnlockRectangle(0);
@@ -155,40 +160,22 @@ namespace ZXMAK2.Host.WinForms.Mdx
         public bool MimicTv { get; set; }
         public ScaleMode ScaleMode { get; set; }
 
-        public VideoFilter VideoFilter
-        {
-            get
-            {
-                unsafe
-                {
-                    return _videoFilter == DrawFrame_None ? VideoFilter.None :
-                        _videoFilter == DrawFrame_NoFlick ? VideoFilter.NoFlick :
-                        VideoFilter.None;
-                }
-            }
-            set
-            {
-                unsafe
-                {
-                    switch (value)
-                    {
-                        case VideoFilter.NoFlick:
-                            _videoFilter = DrawFrame_NoFlick;
-                            break;
-                        case VideoFilter.None:
-                        default:
-                            _videoFilter = DrawFrame_None;
-                            break;
-                    }
-                }
-            }
-        }
-
+        public VideoFilter VideoFilter { get; set; }
 
         public void Update(IVideoData videoData)
         {
             var clone = new VideoData(videoData.Size, videoData.Ratio);
             Array.Copy(videoData.Buffer, clone.Buffer, clone.Buffer.Length);
+            if (VideoFilter == VideoFilter.NoFlick)
+            {
+                unsafe
+                {
+                    fixed (int* srcPtr = clone.Buffer)
+                    {
+                        FilterNoFlick(srcPtr, clone.Size.Width, clone.Size.Height);
+                    }
+                }
+            }
             _videoData = clone;
         }
 
@@ -290,35 +277,41 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         #region Video Filters
 
-        private unsafe void DrawFrame_None(int* pDstBuffer, int* pSrcBuffer)
+        private static unsafe void CopyStride(
+            int* pDstBuffer,
+            int* pSrcBuffer,
+            int width,
+            int height,
+            int dstStride)
         {
-            for (var y = 0; y < _frameSize.Height; y++)
+            var lineSize = width << 2;
+            var srcLine = pSrcBuffer;
+            var dstLine = pDstBuffer;
+            for (var y = 0; y < height; y++)
             {
-                var srcLine = pSrcBuffer + _frameSize.Width * y;
-                var dstLine = pDstBuffer + _textureStride * y;
-                NativeMethods.CopyMemory(
-                    dstLine, 
-                    srcLine, 
-                    _frameSize.Width * 4);
+                NativeMethods.CopyMemory(dstLine, srcLine, lineSize);
+                srcLine += width;
+                dstLine += dstStride;
             }
         }
 
-        private unsafe void DrawFrame_NoFlick(int* pDstBuffer, int* pSrcBuffer)
+        private unsafe void FilterNoFlick(
+            int* pSrcBuffer,
+            int width,
+            int height)
         {
-            var size = _frameSize.Height * _frameSize.Width;
+            var size = height * width;
             if (_lastBuffer.Length < size)
             {
                 _lastBuffer = new int[size];
             }
             fixed (int* pSrcBuffer2 = _lastBuffer)
             {
-                for (var y = 0; y < _frameSize.Height; y++)
+                var pSrcArray1 = pSrcBuffer;
+                var pSrcArray2 = pSrcBuffer2;
+                for (var y = 0; y < height; y++)
                 {
-                    var surfaceOffset = _frameSize.Width * y;
-                    var pSrcArray1 = pSrcBuffer + surfaceOffset;
-                    var pSrcArray2 = pSrcBuffer2 + surfaceOffset;
-                    var pDstArray = pDstBuffer + _textureStride * y;
-                    for (var i = 0; i < _frameSize.Width; i++)
+                    for (var i = 0; i < width; i++)
                     {
                         var src1 = pSrcArray1[i];
                         var src2 = pSrcArray2[i];
@@ -326,8 +319,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
                         var g1 = (((src1 >> 8) & 0xFF) + ((src2 >> 8) & 0xFF)) / 2;
                         var b1 = (((src1 >> 0) & 0xFF) + ((src2 >> 0) & 0xFF)) / 2;
                         pSrcArray2[i] = src1;
-                        pDstArray[i] = -16777216 | (r1 << 16) | (g1 << 8) | b1;
+                        pSrcArray1[i] = -16777216 | (r1 << 16) | (g1 << 8) | b1;
                     }
+                    pSrcArray1 += width;
+                    pSrcArray2 += width;
                 }
             }
         }
