@@ -214,10 +214,17 @@ namespace ZXMAK2.Host.WinForms.Controls
             }
             try
             {
+                _eventFrame.Set();
+                var limit = 1000 / _device.DisplayMode.RefreshRate;
+                var delta = (int)((Stopwatch.GetTimestamp() - _lastFrameTick) * 1000 / Stopwatch.Frequency);
+                delta -= 1;
+                if (delta > 3 && delta < 20)
+                {
+                    Thread.Sleep(delta - 1);
+                }
                 _device.Present();
                 _renderDebug.UpdatePresent();
-                _eventFrame.Set();
-                Thread.Sleep(2);
+                _lastFrameTick = Stopwatch.GetTimestamp();
             }
             catch (Exception ex)
             {
@@ -226,6 +233,8 @@ namespace ZXMAK2.Host.WinForms.Controls
                 Logger.Debug(ex);
             }
         }
+
+        private long _lastFrameTick;
 
         #endregion Private
     }
