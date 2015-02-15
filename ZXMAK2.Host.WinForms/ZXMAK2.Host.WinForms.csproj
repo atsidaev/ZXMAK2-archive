@@ -81,6 +81,10 @@
     <Compile Include="Controls\ToolStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Mdx\RenderDebugObject.cs" />
+    <Compile Include="Mdx\RenderIconsObject.cs" />
+    <Compile Include="Mdx\RenderObject.cs" />
+    <Compile Include="Mdx\RenderVideoObject.cs" />
     <Compile Include="Services\ObjectSelectorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
