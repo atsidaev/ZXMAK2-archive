@@ -1,6 +1,7 @@
 /// Description: Debugger Adlers Window
 /// Author: Adlers
 using System;
+using System.Linq;
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
@@ -17,6 +18,7 @@ using ZXMAK2.Engine.Cpu.Tools;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Hardware.Adlers.Core;
 using ZXMAK2.Engine;
+using System.Xml;
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {
@@ -30,6 +32,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private DebuggerTrace m_debuggerTrace;
 
         private bool showStack = true; // show stack or breakpoint list on the form(panel listState)
+
+        private readonly object m_sync = new object();
 
         //debugger command line history
         private List<string> m_cmdLineHistory = new List<string>();
@@ -75,14 +79,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             listViewAdressRanges.View = View.Details;
             listViewAdressRanges.Columns.Add("From", -2, HorizontalAlignment.Left);
             listViewAdressRanges.Columns.Add(" To ", -2, HorizontalAlignment.Left);
-            listViewAdressRanges.Columns.Add("Trace", -2, HorizontalAlignment.Center );
+            listViewAdressRanges.Columns.Add("Trace", -2, HorizontalAlignment.Left );
 
-            ListViewItem item = new ListViewItem(new[] { "#4000", "#FFFF", "Yes"});
-            item.Tag = "4000;FFFF;Yes";
-            listViewAdressRanges.Items.Add(item);
-            item = new ListViewItem(new[] { "#CE11", "#CE11", "No" });
-            item.Tag = "CE11;CE11;No";
-            listViewAdressRanges.Items.Add(item);
+            LoadConfig();
         }
 
         private void FormCPU_FormClosed(object sender, FormClosedEventArgs e)
@@ -90,7 +89,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
             m_spectrum.UpdateState -= spectrum_OnUpdateState;
             m_spectrum.Breakpoint -= spectrum_OnBreakpoint;
 
-            //ToDo: save debugger config file(debugger_config.xml)
+            SaveConfig();
+        }
+        private void FormCpu_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (this.Owner != null)
+                this.Owner.Focus();
         }
 
         private void FormCPU_Load(object sender, EventArgs e)
@@ -102,8 +106,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             Show();
             UpdateCPU(false);
-            //dasmPanel.Focus();
-            dbgCmdLine.Focus();
+            dasmPanel.Focus();
+            //dbgCmdLine.Focus();
             Select();
         }
 
@@ -985,42 +989,66 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private void Bus_OnBeforeCpuCycle(int frameTact)
         {
-            if (!m_isTracing || m_cpuRegs.PC < 0x4000) //no need to trace ROM
-                return;
-
-            if (m_debuggerTrace.IsTraceAreaDefined())
+            lock(m_sync)
             {
-                if (!m_debuggerTrace.GetAddressFlags()[m_cpuRegs.PC])
+                if (!m_isTracing /*|| m_cpuRegs.PC < 0x4000*/) //no need to trace ROM
                     return;
-            }
 
-            if( m_debuggerTrace.IsTracingJumps() )
-            {
-                if (Array.Exists(m_debuggerTrace.GetTraceOpcodes(), p => p == m_spectrum.ReadMemory(m_cpuRegs.PC)))
+                if (m_debuggerTrace.IsTraceAreaDefined())
                 {
-                    m_debuggerTrace.IncCounter(m_cpuRegs.PC);
-                    if (checkBoxShowConsole.Checked)
+                    if (!m_debuggerTrace.GetAddressFlags()[m_cpuRegs.PC])
+                        return;
+                }
+
+                //Jumps/Calls
+                if (m_debuggerTrace.IsTracingJumps())
+                {
+                    if (Array.Exists(m_debuggerTrace.GetTraceOpcodes(), p => p == m_spectrum.ReadMemory(m_cpuRegs.PC)))
+                    {
+                        m_debuggerTrace.IncCounter(m_cpuRegs.PC);
+                        if (checkBoxShowConsole.Checked)
+                        {
+                            var len = 0;
+                            var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
+                            Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
+                        }
+                        return;
+                    }
+                }
+                //Opcode
+                if (m_debuggerTrace.IsTracingOpcode())
+                {
+                    if (m_spectrum.ReadMemory(m_cpuRegs.PC) == m_debuggerTrace.GetTracedOpcode())
+                    {
+                        m_debuggerTrace.IncCounter(m_cpuRegs.PC);
+                        if (checkBoxShowConsole.Checked)
+                        {
+                            var len = 0;
+                            var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
+                            Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
+                        }
+                        return;
+                    }
+                }
+
+                //if Opcode or Jump/Calls criteria selected => return
+                if (m_debuggerTrace.IsTracingOpcode() || m_debuggerTrace.IsTracingJumps())
+                    return;
+
+                //Trace everything
+                if (!m_debuggerTrace.IsTraceFilterDefined())
+                {
+                    //if (checkBoxShowConsole.Checked)
                     {
                         var len = 0;
                         var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
                         Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
                     }
                 }
-            }
-
-            //Opcode
-            if( m_debuggerTrace.IsTracingOpcode() )
-            {
-                if( m_spectrum.ReadMemory(m_cpuRegs.PC) == m_debuggerTrace.GetTracedOpcode() )
+                else
                 {
+                    //trace filter is defined, but does not contain any Jumps/Calls, Opcode, ... criteria
                     m_debuggerTrace.IncCounter(m_cpuRegs.PC);
-
-                    if (checkBoxShowConsole.Checked)
-                    {
-                        var len = 0;
-                        var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
-                        Logger.Debug("#{0:X4}   {1}", m_cpuRegs.PC, mnemonic);
-                    }
                 }
             }
         }
@@ -1390,12 +1418,18 @@ namespace ZXMAK2.Hardware.Adlers.Views
         //Trace context menu
         private void listViewAdressRanges_MouseClick(object sender, MouseEventArgs e)
         {
+            /*if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                contextMenuTraceAddrArea.Show(this.listViewAdressRanges, e.Location);
+            }*/
+        }
+        private void listViewAdressRanges_MouseDown(object sender, MouseEventArgs e)
+        {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
                 contextMenuTraceAddrArea.Show(this.listViewAdressRanges, e.Location);
             }
         }
-        //Trace context menu - handlers
         private void listViewAdressRanges_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             m_debuggerTrace.UpdateNewAddrArea(this);
@@ -1417,7 +1451,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
         #endregion
 
-        #region 2.) Extended breakpoints(conditional on memory change, write, registry change, ...)
+        #region Conditional breakpoints(memory change, write, registry change, ...)
 
         //conditional breakpoints
         private DictionarySafe<byte, BreakpointAdlers> _breakpointsExt = null;
@@ -1748,8 +1782,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
         #region Trace GUI methods
         private void checkBoxOpcode_CheckedChanged(object sender, EventArgs e)
         {
-            checkBoxConditionalCalls.Enabled = checkBoxConditionalJumps.Enabled = checkBoxAllJumps.Enabled = !checkBoxOpcode.Checked;
-
             textBoxOpcode.Enabled = checkBoxOpcode.Checked;
         }
         private void checkBoxAllJumps_CheckedChanged(object sender, EventArgs e)
@@ -1784,23 +1816,29 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
         private void btnStartTrace_Click(object sender, EventArgs e)
         {
-            //Trace start
-            btnStartTrace.Enabled = false;
-            btnStopTrace.Enabled = true;
+            lock( m_sync )
+            {
+                //Trace start
+                if (!m_debuggerTrace.StartTrace(this))
+                    return;
 
-            m_debuggerTrace.StartTrace(this);
-
-            m_isTracing = true;
+                btnStartTrace.Enabled = false;
+                btnStopTrace.Enabled = true;
+                m_isTracing = true;
+            }
         }
         private void btnStopTrace_Click(object sender, EventArgs e)
         {
-            //Trace stop
-            btnStartTrace.Enabled = true;
-            btnStopTrace.Enabled = false;
+            lock (m_sync)
+            {
+                //Trace stop
+                btnStartTrace.Enabled = true;
+                btnStopTrace.Enabled = false;
 
-            m_debuggerTrace.StopTrace();
+                m_debuggerTrace.StopTrace();
 
-            m_isTracing = false;
+                m_isTracing = false;
+            }
         }
         private void menuItemAddNewTraceAddrArea_Click(object sender, EventArgs e)
         {
@@ -1816,7 +1854,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
         private void textBoxOpcode_Leave(object sender, EventArgs e)
         {
-            try
+            /*try
             {
                 UInt16 opcode = DebuggerManager.convertNumberWithPrefix(textBoxOpcode.Text);
                 if (opcode > 0xFF) //ToDo: only one byte for traced opcode
@@ -1828,7 +1866,137 @@ namespace ZXMAK2.Hardware.Adlers.Views
             {
                 Locator.Resolve<IUserMessage>().Error("Incorrect opcode number...");
                 textBoxOpcode.Focus();
+            }*/
+        }
+        #endregion
+
+        #region Config
+        private string configXmlFileName = "debugger_config.xml";
+        private void SaveConfig()
+        {
+            using (System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(Path.Combine(Utils.GetAppFolder(), configXmlFileName)))
+            {
+                writer.WriteStartElement("Root");
+                //Load on startup
+                writer.WriteElementString("LoadConfigOnStartup", this.checkBoxLoadConfig.Checked ? "1" : "0");
+
+                //Debugger
+                writer.WriteStartElement("Debugger");
+                writer.WriteElementString("Breakpoints", "ToDo");
+                writer.WriteEndElement(); //Debugger
+
+                //Trace
+                writer.WriteStartElement("Trace");
+                writer.WriteElementString("AllJumpsCalls", this.checkBoxAllJumps.Checked ? "1" : "0");
+                writer.WriteElementString("ConditionalJumps", this.checkBoxConditionalJumps.Checked ? "1" : "0");
+                writer.WriteElementString("ConditionalCalls", this.checkBoxConditionalCalls.Checked ? "1" : "0");
+                writer.WriteElementString("CallToRom", this.checkBoxCallToROM.Checked ? "1" : "0");
+                    //Trace->Opcode
+                    writer.WriteStartElement("Opcode");
+                    writer.WriteAttributeString("Checked", this.checkBoxOpcode.Checked ? "1" : "0");
+                    writer.WriteElementString("Value", this.textBoxOpcode.Text);
+                    writer.WriteEndElement();
+                    //Trace->AddressRange
+                    writer.WriteStartElement("AddressRange");
+                    writer.WriteAttributeString("Checked", this.checkBoxTraceArea.Checked ? "1" : "0");
+                    string tagArr = String.Empty;
+                    foreach( ListViewItem item in this.listViewAdressRanges.Items )
+                    {
+                        tagArr += item.Tag + "|";
+                    }
+                    writer.WriteElementString("TagArray", tagArr);
+                    writer.WriteEndElement();
+
+                writer.WriteElementString("ConsoleOutput", this.checkBoxShowConsole.Checked ? "1" : "0");
+                writer.WriteElementString("OutputToFile", this.checkBoxTraceFileOut.Checked ? "1" : "0");
+                writer.WriteElementString("OutputFileName", this.textBoxTraceFileName.Text);
+                writer.WriteEndElement(); //Trace
+
+                writer.WriteEndElement(); //Root
+                writer.Flush();
+
+                writer.Close();
             }
+        }
+
+        private void LoadConfig()
+        {           
+            if (!File.Exists(Path.Combine(Utils.GetAppFolder(), configXmlFileName)))
+                return;
+
+            XmlDocument xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), configXmlFileName));
+
+            XmlNode node;
+
+            //LoadConfigOnStartup
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/LoadConfigOnStartup");
+            if (node != null)
+            {
+                bool loadConfig = (node.InnerText == "1");
+                this.checkBoxLoadConfig.Checked = loadConfig;
+                if (!loadConfig)
+                    return;
+            }
+            else
+                return;
+
+            //Trace
+
+            //Set tooltips
+            /*ToolTip toolTip1 = new ToolTip();
+            toolTip1.AutoPopDelay = 5000;
+            toolTip1.InitialDelay = 300;
+            toolTip1.ReshowDelay = 500;
+            toolTip1.ShowAlways = true;
+            toolTip1.SetToolTip(this.checkBoxAllJumps, "Tracing all jumps(JP, JR, ...)");*/
+
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/AllJumpsCalls");
+            if (node != null)
+                this.checkBoxAllJumps.Checked = (node.InnerText == "1");
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/ConditionalJumps");
+            if (node != null)
+                this.checkBoxConditionalJumps.Checked = (node.InnerText == "1");
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/ConditionalCalls");
+            if (node != null)
+                this.checkBoxConditionalCalls.Checked = (node.InnerText == "1");
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/CallToRom");
+            if (node != null)
+                this.checkBoxCallToROM.Checked = (node.InnerText == "1");
+
+                //Trace->AddressRange
+                node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/AddressRange/TagArray");
+                if( node != null )
+                {
+                    string[] tags = ((string)node.InnerText).Split(new char[] { '|' });
+                    tags = tags.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+                    if (tags != null)
+                    {
+                        foreach (string tag in tags)
+                        {
+                            string[] tagsCurr = tag.Split(new char[] { ';' });
+                            if (tagsCurr.Length != 3)
+                                continue;
+
+                            ListViewItem itemToAdd = new ListViewItem(new[] { String.Format("#{0:X4}", tagsCurr[0]), String.Format("#{0:X4}", tagsCurr[1]), tagsCurr[2] });
+                            itemToAdd.Tag = tag;
+                            this.listViewAdressRanges.Items.Add(itemToAdd);
+                        }
+                    }
+                }
+
+            //ConsoleOutput
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/ConsoleOutput");
+            if( node != null )
+                this.checkBoxShowConsole.Checked = (node.InnerText == "1");
+            //OutputToFile(yes, no)
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/OutputToFile");
+            if (node != null)
+                this.checkBoxTraceFileOut.Checked = (node.InnerText == "1");
+            //OutputFileName
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/OutputFileName");
+            if (node != null)
+                this.textBoxTraceFileName.Text = node.InnerText;
         }
         #endregion
     }

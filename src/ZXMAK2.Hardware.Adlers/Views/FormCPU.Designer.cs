@@ -54,6 +54,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.btnStopTrace = new System.Windows.Forms.Button();
             this.btnStartTrace = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.groupBoxStartup = new System.Windows.Forms.GroupBox();
+            this.checkBoxLoadConfig = new System.Windows.Forms.CheckBox();
             this.splitter3 = new System.Windows.Forms.Splitter();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panelMem = new System.Windows.Forms.Panel();
@@ -102,6 +104,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.panelRegs.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.groupBoxTraceOptions.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            this.groupBoxStartup.SuspendLayout();
             this.panelMem.SuspendLayout();
             this.panelDasm.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -329,7 +333,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.groupBoxTraceOptions.Size = new System.Drawing.Size(150, 140);
             this.groupBoxTraceOptions.TabIndex = 6;
             this.groupBoxTraceOptions.TabStop = false;
-            this.groupBoxTraceOptions.Text = "Trace only:";
+            this.groupBoxTraceOptions.Text = "Trace filter";
             // 
             // checkBoxConditionalCalls
             // 
@@ -368,12 +372,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // checkBoxCallToROM
             // 
             this.checkBoxCallToROM.AutoSize = true;
-            this.checkBoxCallToROM.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.checkBoxCallToROM.Enabled = false;
+            this.checkBoxCallToROM.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.checkBoxCallToROM.Location = new System.Drawing.Point(3, 73);
             this.checkBoxCallToROM.Name = "checkBoxCallToROM";
-            this.checkBoxCallToROM.Size = new System.Drawing.Size(101, 16);
+            this.checkBoxCallToROM.Size = new System.Drawing.Size(143, 16);
             this.checkBoxCallToROM.TabIndex = 2;
-            this.checkBoxCallToROM.Text = "Call to ROM";
+            this.checkBoxCallToROM.Text = "Call to ROM(ToDo)";
             this.checkBoxCallToROM.UseVisualStyleBackColor = true;
             // 
             // checkBoxConditionalJumps
@@ -417,6 +422,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listViewAdressRanges.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewAdressRanges_KeyDown);
             this.listViewAdressRanges.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listViewAdressRanges_MouseClick);
             this.listViewAdressRanges.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewAdressRanges_MouseDoubleClick);
+            this.listViewAdressRanges.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listViewAdressRanges_MouseDown);
             // 
             // btnStopTrace
             // 
@@ -449,12 +455,35 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.groupBoxStartup);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(160, 386);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Misc.";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxStartup
+            // 
+            this.groupBoxStartup.Controls.Add(this.checkBoxLoadConfig);
+            this.groupBoxStartup.Location = new System.Drawing.Point(4, 4);
+            this.groupBoxStartup.Name = "groupBoxStartup";
+            this.groupBoxStartup.Size = new System.Drawing.Size(153, 100);
+            this.groupBoxStartup.TabIndex = 0;
+            this.groupBoxStartup.TabStop = false;
+            this.groupBoxStartup.Text = "Startup";
+            // 
+            // checkBoxLoadConfig
+            // 
+            this.checkBoxLoadConfig.AutoSize = true;
+            this.checkBoxLoadConfig.Checked = true;
+            this.checkBoxLoadConfig.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxLoadConfig.Location = new System.Drawing.Point(7, 19);
+            this.checkBoxLoadConfig.Name = "checkBoxLoadConfig";
+            this.checkBoxLoadConfig.Size = new System.Drawing.Size(101, 16);
+            this.checkBoxLoadConfig.TabIndex = 0;
+            this.checkBoxLoadConfig.Text = "Load config";
+            this.checkBoxLoadConfig.UseVisualStyleBackColor = true;
             // 
             // splitter3
             // 
@@ -797,6 +826,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.ShowInTaskbar = false;
             this.Text = "Z80 CPU";
             this.Activated += new System.EventHandler(this.FormCpu_Activated);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormCpu_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormCPU_FormClosed);
             this.Load += new System.EventHandler(this.FormCPU_Load);
             this.Shown += new System.EventHandler(this.FormCPU_Shown);
@@ -810,6 +840,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.tabPage2.PerformLayout();
             this.groupBoxTraceOptions.ResumeLayout(false);
             this.groupBoxTraceOptions.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.groupBoxStartup.ResumeLayout(false);
+            this.groupBoxStartup.PerformLayout();
             this.panelMem.ResumeLayout(false);
             this.panelDasm.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
@@ -887,5 +920,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuItemFollowInDisassembler;
         public System.Windows.Forms.TextBox textBoxOpcode;
         public System.Windows.Forms.CheckBox checkBoxOpcode;
+        private System.Windows.Forms.GroupBox groupBoxStartup;
+        private System.Windows.Forms.CheckBox checkBoxLoadConfig;
     }
 }
