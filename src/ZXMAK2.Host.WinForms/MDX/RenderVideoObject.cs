@@ -6,6 +6,7 @@ using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.WinForms.Controls;
 using ZXMAK2.Host.WinForms.Tools;
+using System.Collections.Concurrent;
 
 
 namespace ZXMAK2.Host.WinForms.Mdx
@@ -21,8 +22,8 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
 
         private readonly object _syncRoot = new object();
-        private IVideoData _videoData;
-        private VideoFilterDelegate _videoFilter;
+        private readonly ConcurrentQueue<IVideoData> _queue = new ConcurrentQueue<IVideoData>();
+        private IVideoData _lastVideoData;
         private int[] _lastBuffer = new int[0];    // noflick
 
 
@@ -55,11 +56,17 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             lock (_syncRoot)
             {
-                var videoData = _videoData;
+                IVideoData videoData;
+                if (!_queue.TryDequeue(out videoData))
+                {
+                    videoData = _lastVideoData;
+                }
                 if (videoData == null)
                 {
+                    Logger.Debug("Frame skip");
                     return;
                 }
+                _lastVideoData = videoData;
                 if (_sprite == null)
                 {
                     _sprite = new Sprite(device);
@@ -176,7 +183,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     }
                 }
             }
-            _videoData = clone;
+            _queue.Enqueue(clone);
         }
 
         #endregion Public
@@ -328,10 +335,5 @@ namespace ZXMAK2.Host.WinForms.Mdx
         }
 
         #endregion Video Filters
-
-
-        private unsafe delegate void VideoFilterDelegate(
-            int* dstBuffer, 
-            int* srcBuffer);
     }
 }
