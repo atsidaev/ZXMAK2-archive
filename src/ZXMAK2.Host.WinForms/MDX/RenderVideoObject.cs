@@ -61,9 +61,17 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 {
                     videoData = _lastVideoData;
                 }
+                while (_queue.Count > 0)    // cleanup queue
+                {
+                    IVideoData tmp;
+                    if (_queue.TryDequeue(out tmp))
+                    {
+                        videoData = tmp;
+                    }
+                }
                 if (videoData == null)
                 {
-                    Logger.Debug("Frame skip");
+                    //Logger.Debug("Frame skip");
                     return;
                 }
                 _lastVideoData = videoData;
