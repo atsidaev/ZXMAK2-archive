@@ -136,7 +136,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                 if (LoadLibrary(Path.Combine(Utils.GetAppFolder(), "Pasmo2.dll"))==IntPtr.Zero)
                                 {
                                     Locator.Resolve<IUserMessage>()
-                                        .Error("Cannot load Pasmo2.dll");
+                                        .Error("Cannot load Pasmo2.dll...\n\nTrying to download it again.");
+
+                                    File.Delete(Path.Combine(Utils.GetAppFolder(), "Pasmo2.dll"));
+
+                                    TcpHelper client = new TcpHelper();
+                                    client.Show();
+
                                     return;
                                 }
                                 retCode = compile(compileOption, asmToCompileOrFileName, new IntPtr(pcompiledOut),

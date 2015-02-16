@@ -33,7 +33,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 il.Emit(OpCodes.Ldc_I4, (int)i_breakpointInfo.RightValue);
 
                 //3.Compare
-                DebuggerManager.EmitCondition(il, i_breakpointInfo.ConditionTypeSign);
+                EmitComparison(il, i_breakpointInfo.ConditionTypeSign);
                 il.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
 
                 o_ILOut = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), i_spectrum.CPU.regs);
@@ -91,7 +91,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 il.Emit(OpCodes.Ldc_I4, (int)i_breakpointInfo.RightValue);
                 
                 //3. Compare
-                DebuggerManager.EmitCondition(il, i_breakpointInfo.ConditionTypeSign);
+                EmitComparison(il, i_breakpointInfo.ConditionTypeSign);
                 il.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
 
                 o_ILOut = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), i_spectrum.CPU.regs);
@@ -134,7 +134,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 //Arg1
                 IL.Emit(OpCodes.Ldc_I4, i_breakpointInfo.RightValue); // <- compare to 8 or 16bit
 
-                DebuggerManager.EmitCondition(IL, i_breakpointInfo.ConditionTypeSign);
+                EmitComparison(IL, i_breakpointInfo.ConditionTypeSign);
                 IL.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
 
                 o_ILOut = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), middleMan);
@@ -177,13 +177,37 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 //Arg1, number(right condition)
                 IL.Emit(OpCodes.Ldc_I4, i_breakpointInfo.RightValue); // <- compare to 8 or 16bit
 
-                DebuggerManager.EmitCondition(IL, i_breakpointInfo.ConditionTypeSign);
+                EmitComparison(IL, i_breakpointInfo.ConditionTypeSign);
                 IL.Emit(OpCodes.Ret); //Return: 1 => true(breakpoint is reached) otherwise 0 => false
 
                 o_ILOut = (Func<bool>)dynamicMethod.CreateDelegate(typeof(Func<bool>), middleMan);
             }
 
             return o_ILOut;
+        }
+
+        public static void EmitComparison(ILGenerator ilGenerator, string condition)
+        {
+            switch (condition)
+            {
+                case "==":
+                    ilGenerator.Emit(OpCodes.Ceq);
+                    break;
+                case "!=":
+                    ilGenerator.Emit(OpCodes.Ceq);
+                    ilGenerator.Emit(OpCodes.Ldc_I4, 0);
+                    ilGenerator.Emit(OpCodes.Ceq);
+                    break;
+                case ">":
+                    ilGenerator.Emit(OpCodes.Cgt);
+                    break;
+                case "<":
+                    ilGenerator.Emit(OpCodes.Clt);
+                    break;
+                default:
+                    throw new CommandParseException(
+                        string.Format("Unknown condition: {0}", condition));
+            }
         }
 
         public/*must be public!*/ class InterfaceWrapper

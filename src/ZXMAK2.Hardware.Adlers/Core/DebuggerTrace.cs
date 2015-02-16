@@ -305,8 +305,8 @@ namespace ZXMAK2.Hardware.Adlers.Core
             ToAddr = FromAddr;
             if (!service.QueryValue("Address area", "To:", "#{0:X4}", ref ToAddr, FromAddr, 0xFFFF)) return;
 
-            ListViewItem item = new ListViewItem(new[] { String.Format("#{0:X4}", FromAddr), String.Format("#{0:X4}", ToAddr), "No" });
-            item.Tag = String.Format("{0:X4};{1:X4};No", FromAddr, ToAddr);
+            ListViewItem item = new ListViewItem(new[] { String.Format("#{0:X4}", FromAddr), String.Format("#{0:X4}", ToAddr), "Yes" });
+            item.Tag = String.Format("{0:X4};{1:X4};Yes", FromAddr, ToAddr);
             i_form.listViewAdressRanges.Items.Add(item);
 
             i_form.listViewAdressRanges.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.ColumnContent);
