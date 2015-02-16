@@ -506,29 +506,5 @@ namespace ZXMAK2.Hardware.Adlers
                
             return -1;
         }
-
-        public static void EmitCondition(ILGenerator ilGenerator, string condition)
-        {
-            switch (condition)
-            {
-                case "==":
-                    ilGenerator.Emit(OpCodes.Ceq);
-                    break;
-                case "!=":
-                    ilGenerator.Emit(OpCodes.Ceq);
-                    ilGenerator.Emit(OpCodes.Ldc_I4, 0);
-                    ilGenerator.Emit(OpCodes.Ceq);
-                    break;
-                case ">":
-                    ilGenerator.Emit(OpCodes.Cgt);
-                    break;
-                case "<":
-                    ilGenerator.Emit(OpCodes.Clt);
-                    break;
-                default:
-                    throw new CommandParseException(
-                        string.Format("Unknown condition: {0}", condition));
-            }
-        }
     }
 }
