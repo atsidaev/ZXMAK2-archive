@@ -179,6 +179,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public void Update(IVideoData videoData)
         {
+            if (_queue.Count > 1)
+            {
+                return;
+            }
             var clone = new VideoData(videoData.Size, videoData.Ratio);
             Array.Copy(videoData.Buffer, clone.Buffer, clone.Buffer.Length);
             if (VideoFilter == VideoFilter.NoFlick)
