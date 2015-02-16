@@ -215,7 +215,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 potSize, 
                 1, 
                 Usage.None, 
-                Format.A8R8G8B8, 
+                Format.X8R8G8B8, 
                 Pool.Managed);
             _textureStride = potSize;
 
