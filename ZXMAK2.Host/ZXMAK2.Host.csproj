@@ -61,6 +61,7 @@
     <Compile Include="Interfaces\IIconDescriptor.cs" />
     <Compile Include="Interfaces\IJoystickState.cs" />
     <Compile Include="Interfaces\IKeyboardState.cs" />
+    <Compile Include="Interfaces\IMediaRecorder.cs" />
     <Compile Include="Interfaces\IMouseState.cs" />
     <Compile Include="Interfaces\IOpenFileDialog.cs" />
     <Compile Include="Interfaces\ISaveFileDialog.cs" />

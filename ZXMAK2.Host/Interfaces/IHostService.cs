@@ -12,6 +12,8 @@ namespace ZXMAK2.Host.Interfaces
         SyncSource SyncSource { get; set; }
         int SampleRate { get; }
         bool IsCaptured { get; }
+        IMediaRecorder MediaRecorder { get; set; }
+
 
         bool CheckSyncSourceSupported(SyncSource value);
         void PushFrame(IVideoFrame videoFrame, ISoundFrame soundFrame);

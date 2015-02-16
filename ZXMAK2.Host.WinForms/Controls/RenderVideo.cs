@@ -42,9 +42,6 @@ namespace ZXMAK2.Host.WinForms.Controls
         private RenderIconsObject _renderIcons = new RenderIconsObject();
         private RenderDebugObject _renderDebug = new RenderDebugObject();
 
-        private long _lastBlankStamp;              // WaitVBlank
-        private bool _isCancelWait;
-
         #endregion Fields
 
 
@@ -194,7 +191,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         protected override void OnRenderScene()
         {
-            _device.Clear(ClearFlags.Target, Color.Black, 1, 0);
+            _device.Clear(ClearFlags.Target, Color.Black, 1F, 0);
             _device.BeginScene();
             try
             {

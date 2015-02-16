@@ -17,6 +17,7 @@ namespace ZXMAK2.Host.Services
         private IHostKeyboard m_keyboard;
         private IHostMouse m_mouse;
         private IHostJoystick m_joystick;
+        private IMediaRecorder m_mediaRecorder;
 
         #endregion Fields
 
@@ -46,6 +47,7 @@ namespace ZXMAK2.Host.Services
             Dispose(ref m_keyboard);
             Dispose(ref m_mouse);
             Dispose(ref m_joystick);
+            Dispose(ref m_mediaRecorder);
         }
 
         #endregion .ctor
@@ -77,6 +79,13 @@ namespace ZXMAK2.Host.Services
         {
             get { return m_mouse != null && m_mouse.IsCaptured; }
         }
+
+        public IMediaRecorder MediaRecorder 
+        {
+            get { return m_mediaRecorder; }
+            set { m_mediaRecorder = value; }
+        }
+
 
         public bool CheckSyncSourceSupported(SyncSource value)
         {
@@ -125,6 +134,13 @@ namespace ZXMAK2.Host.Services
             if (sound != null && soundFrame != null)
             {
                 sound.PushFrame(soundFrame);
+            }
+            var mediaRecorder = MediaRecorder;
+            if (mediaRecorder != null && 
+                videoFrame != null && 
+                soundFrame != null)
+            {
+                mediaRecorder.PushFrame(videoFrame, soundFrame);
             }
         }
 
