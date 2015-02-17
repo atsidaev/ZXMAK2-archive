@@ -186,7 +186,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                     else
                                     {
                                         //--bin mode
-                                        memAdress = DebuggerManager.convertNumberWithPrefix(textMemAdress.Text);
+                                        memAdress = DebuggerManager.ConvertNumberWithPrefix(textMemAdress.Text);
                                         //memArrayDelta = 0;
                                     }
 
