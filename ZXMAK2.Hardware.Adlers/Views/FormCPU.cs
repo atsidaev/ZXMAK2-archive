@@ -1714,14 +1714,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (_breakpointsExt == null)
                 return;
 
-            foreach (BreakpointAdlers brk in _breakpointsExt.Values)
+            foreach (BreakpointAdlers brk in _breakpointsExt.Values.Where(p => p.Info.IsOn))
             {
-                //here would be nice to use select x from _breakpointsExt where ..., but cannot use Linq(.Net Framework 2.0 is used)
-                if (brk.Info.IsOn &&
-                    (brk.Info.AccessType == BreakPointConditionType.memoryVsValue || brk.Info.AccessType == BreakPointConditionType.registryMemoryReferenceVsValue))
-                {
+                if (brk.Info.AccessType == BreakPointConditionType.memoryVsValue || brk.Info.AccessType == BreakPointConditionType.registryMemoryReferenceVsValue)
                     brk.IsNeedWriteMemoryCheck = true;
-                }
             }
 
             return;
@@ -1731,17 +1727,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (_breakpointsExt == null)
                 return;
 
-            foreach (BreakpointAdlers brk in _breakpointsExt.Values)
+            foreach (BreakpointAdlers brk in _breakpointsExt.Values.Where(p => p.Info.IsOn && p.Info.AccessType == BreakPointConditionType.memoryRead))
             {
-                //here would be nice to use select x from _breakpointsExt where ..., but cannot use Linq(.Net Framework 2.0 is used)
-                if (brk.Info.IsOn && brk.Info.AccessType == BreakPointConditionType.memoryRead)
+                if (brk.Info.LeftValue == addr)
                 {
-                    if (brk.Info.LeftValue == addr)
-                    {
-                        // raise force stop at the end of the currect CPU cycle
-                        // (this flag will be checked from BreakpointAdlers.Check at the end of CPU cycle)
-                        brk.IsForceStop = true;
-                    }
+                    // raise force stop at the end of the currect CPU cycle
+                    // (this flag will be checked from BreakpointAdlers.Check at the end of CPU cycle)
+                    brk.IsForceStop = true;
                 }
             }
 
