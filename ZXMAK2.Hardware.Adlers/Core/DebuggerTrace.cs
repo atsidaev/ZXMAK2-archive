@@ -38,7 +38,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
                                                              0xE2, //JP PO,nn
                                                              0xEA, //JP PE,nn
                                                              0xF2, //JP P,nn
-                                                             0xFA //JP M,nn
+                                                             0xFA  //JP M,nn
                                                            };
         public static readonly byte[] CommonJumps = new byte[] { 
                                                              0x18, //JR d
@@ -47,60 +47,84 @@ namespace ZXMAK2.Hardware.Adlers.Core
                                                              0xCD, //CALL nn
                                                              0xE9, //JP (HL)
                                                            };
-        private IDebuggable m_spectrum;
 
-        private readonly object m_sync = new object();
+        public byte[] AllJumps;
+
+        private IDebuggable _spectrum;
+
+        private readonly object _sync = new object();
 
         private int[] _counters = null;
 
-        private bool[] m_addrsFlags; //false => address is excluded from tracing
-        private byte[] m_currentTraceOpcodes = null;
+        private bool[] _addrsFlags; //false => address is excluded from tracing
+        private byte[] _currentTraceOpcodes = null;
 
         //Trace filter
-        private bool m_isTraceFilterDefined = false;
-        private bool m_isTracingJumps = false;
-        private bool m_isTraceAreaDefined = false;
-
+        private bool _isTraceFilterDefined = false;
+        //Filters
+        private bool _isTracingJumps = false;
+        private bool _isTraceAreaDefined = false;
+        private bool _isDetectingJumpOnAddress = false;
         //Opcode tracing
-        private bool m_isTracingOpcode = false;
-        private byte m_tracedOpcode;
+        private bool _isTracingOpcode = false;
+        private byte _tracedOpcode;
+        //Detecting jump/call to an address
+        private ushort _detectingJumpToAddress;
 
+        //Logging vars
         private string _traceLogFilename;
+        private string _traceInfo;
+
+        //Instruction history
+        private ushort _prevPC;
+        private bool _isPrevInstructionJumpOrCall;
         #endregion
 
         public DebuggerTrace(IDebuggable i_spectrum)
         {
-            m_spectrum = i_spectrum;
+            _spectrum = i_spectrum;
 
-            m_addrsFlags = new bool[65536];
+            //make all jumps array(used for detecting jump to an address option)
+            AllJumps = CommonJumps.Union(ConditionalJumps).ToArray();
+            AllJumps = AllJumps.Union(ConditionalCalls).ToArray();
+
+            _addrsFlags = new bool[65536];
             ResetAddrsFlags();
         }
 
         public bool StartTrace(FormCpu i_form)
         {
-            lock (m_sync)
+            lock (_sync)
             {
                 SetTraceOpcodes(i_form);
                 SetTraceArea(i_form);
+                //Detecting jump to an address
+                _isDetectingJumpOnAddress = i_form.checkBoxDetectJumpOnAddress.Checked;
 
                 if (!ValidateTrace(i_form))
                     return false;
 
-                _counters = new int[65536];
+                _counters = new int[65536]; //create and clear
                 _traceLogFilename = i_form.textBoxTraceFileName.Text.Trim();
+
+                MakeTraceInfo(i_form);
 
                 return true;
             }
         }
         public void StopTrace()
         {
-            lock (m_sync)
+            lock (_sync)
             {
-                m_isTracingJumps = false;
-                m_isTraceAreaDefined = false;
-                m_isTracingOpcode = false;
+                _isTracingJumps = false;
+                _isTraceAreaDefined = false;
+                _isTracingOpcode = false;
 
-                if (!m_isTraceFilterDefined) //without filtering each instruction is written
+                //previous instruction vars(used in detecting jump/call to an address
+                _prevPC = (ushort)0;
+                _isPrevInstructionJumpOrCall = false;
+
+                if (!_isTraceFilterDefined) //without filtering each instruction is written
                     return;
 
                 //save counters to file
@@ -120,6 +144,11 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 string sumLine = String.Format("Total addresses: {0}   Total occurences: {1}", countersOut.Length, totalOccurences);
                 traceCountersLog += new String('=', sumLine.Length) + "\n";
                 traceCountersLog += String.Format("Total addresses: {0}   Total occurences: {1}", countersOut.Length, totalOccurences);
+
+                traceCountersLog += "\n\n\n";
+
+                //log filter info
+                traceCountersLog += _traceInfo;
 
                 File.WriteAllText(Path.Combine(Utils.GetAppFolder(), _traceLogFilename), traceCountersLog);
 
@@ -147,14 +176,32 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 }
             }
 
+            //detecting jump/call to an address
+            if( i_form.checkBoxDetectJumpOnAddress.Checked )
+            {
+                if (i_form.checkBoxDetectJumpOnAddress.Text.Trim() == String.Empty)
+                {
+                    Locator.Resolve<IUserMessage>().Error("Detecting jump to an address, but\naddress not defined...");
+                    i_form.checkBoxDetectJumpOnAddress.Focus();
+                    return false;
+                }
+                if (ParseJumpCallToAnAddressValue(i_form,  false) == false)
+                    return false;
+            }
 
-            //trace area
-            if ((!m_isTraceAreaDefined && !m_isTracingJumps && !m_isTracingOpcode)
+            //trace area - no valid address
+            if (!_addrsFlags.Contains(true) && i_form.checkBoxTraceArea.Checked)
+            {
+                Locator.Resolve<IUserMessage>().Error("No valid trace address detected !\n\nHint: Uncheck adress range or define valid address to trace");
+                return false;
+            }
+            //trace area - final check
+            if ((!_isTraceAreaDefined && !_isTracingJumps && !_isTracingOpcode)
                 &&
-                (!m_addrsFlags.Contains(true) && i_form.checkBoxTraceArea.Checked) //no valid addr to trace
+                (!_addrsFlags.Contains(true) && i_form.checkBoxTraceArea.Checked) //no valid addr to trace
                )
             {
-                m_isTraceFilterDefined = false;
+                _isTraceFilterDefined = false;
 
                 //Trace everything, are you sure ?
                 var service = Locator.Resolve<IUserQuery>();
@@ -169,52 +216,52 @@ namespace ZXMAK2.Hardware.Adlers.Core
                     return false;
             }
             else
-                m_isTraceFilterDefined = true;
+                _isTraceFilterDefined = true;
 
             return true; //ok; if false => do not start tracing
         }
 
         private void SetTraceOpcodes(FormCpu i_form)
         {
-            m_currentTraceOpcodes = null;
+            _currentTraceOpcodes = null;
 
             if (i_form.checkBoxAllJumps.Checked && i_form.checkBoxAllJumps.Enabled)
             {
-                m_currentTraceOpcodes = new byte[CommonJumps.Length + ConditionalJumps.Length];
-                m_currentTraceOpcodes = CommonJumps.Union(ConditionalJumps).ToArray();
-                m_currentTraceOpcodes = m_currentTraceOpcodes.Union(ConditionalCalls).ToArray();
+                _currentTraceOpcodes = new byte[CommonJumps.Length + ConditionalJumps.Length];
+                _currentTraceOpcodes = CommonJumps.Union(ConditionalJumps).ToArray();
+                _currentTraceOpcodes = _currentTraceOpcodes.Union(ConditionalCalls).ToArray();
 
-                m_isTracingJumps = true;
+                _isTracingJumps = true;
             }
             else if (i_form.checkBoxConditionalJumps.Checked && i_form.checkBoxConditionalJumps.Enabled)
             {
-                m_currentTraceOpcodes = ConditionalJumps;
-                m_isTracingJumps = true;
+                _currentTraceOpcodes = ConditionalJumps;
+                _isTracingJumps = true;
             }
             else if (i_form.checkBoxConditionalCalls.Checked && i_form.checkBoxConditionalCalls.Enabled)
             {
-                m_currentTraceOpcodes = ConditionalCalls;
-                m_isTracingJumps = true;
+                _currentTraceOpcodes = ConditionalCalls;
+                _isTracingJumps = true;
             }
             else
-                m_isTracingJumps = false;
+                _isTracingJumps = false;
 
             if (i_form.checkBoxOpcode.Checked)
             {
-                m_isTracingOpcode = true;
+                _isTracingOpcode = true;
             }
             else
-                m_isTracingOpcode = false;
+                _isTracingOpcode = false;
         }
         private void SetTraceArea(FormCpu i_form)
         {
             if (i_form.listViewAdressRanges.Items.Count == 0 || i_form.checkBoxTraceArea.Checked == false)
             {
-                m_isTraceAreaDefined = false;
+                _isTraceAreaDefined = false;
                 return;
             }
 
-            Array.Clear(m_addrsFlags, 0, m_addrsFlags.Length);
+            Array.Clear(_addrsFlags, 0, _addrsFlags.Length);
 
             foreach (ListViewItem item in i_form.listViewAdressRanges.Items)
             {
@@ -226,43 +273,72 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 int addrFrom = int.Parse(tags[0], System.Globalization.NumberStyles.HexNumber);
                 int addrTo = int.Parse(tags[1], System.Globalization.NumberStyles.HexNumber);
                 for (; addrFrom <= addrTo; addrFrom++)
-                    m_addrsFlags[addrFrom] = (tags[2] == "Yes");
+                    _addrsFlags[addrFrom] = (tags[2] == "Yes");
             }
 
-            m_isTraceAreaDefined = true;
+            _isTraceAreaDefined = true;
+        }
+
+        public ushort GetPrevInstructionAddress()
+        {
+            return _prevPC;
+        }
+        public void SavePrevInstruction(ushort i_memPointer)
+        {
+            _prevPC = i_memPointer;
         }
 
         public byte[] GetTraceOpcodes()
         {
-            return m_currentTraceOpcodes;
+            return _currentTraceOpcodes;
         }
         public bool[] GetAddressFlags()
         {
-            return m_addrsFlags;
+            return _addrsFlags;
+        }
+        public byte[] GetAllJumpsArr()
+        {
+            return AllJumps;
         }
         public bool IsTraceFilterDefined()
         {
-            return m_isTraceFilterDefined;
+            return _isTraceFilterDefined;
         }
         public bool IsTracingJumps()
         {
-            return m_isTracingJumps;
+            return _isTracingJumps;
+        }
+        public bool IsDetectingJumpOnAddress()
+        {
+            return _isDetectingJumpOnAddress;
         }
         public bool IsTraceAreaDefined()
         {
-            return m_isTraceAreaDefined;
+            return _isTraceAreaDefined;
         }
         public bool IsTracingOpcode()
         {
-            return m_isTracingOpcode;
+            return _isTracingOpcode;
         }
         public byte GetTracedOpcode()
         {
-            return m_tracedOpcode;
+            return _tracedOpcode;
         }
         public void SetTracedOpcode(byte i_opcode)
         {
-            m_tracedOpcode = i_opcode;
+            _tracedOpcode = i_opcode;
+        }
+        public bool GetIsPrevInstructionJumpOrCall()
+        {
+            return _isPrevInstructionJumpOrCall;
+        }
+        public void SetIsPrevInstructionJumpOrCall(bool i_isPrevInstructionJumpOrCall)
+        {
+            _isPrevInstructionJumpOrCall = i_isPrevInstructionJumpOrCall;
+        }
+        public ushort GetDetectingJumpToAddress()
+        {
+            return _detectingJumpToAddress;
         }
         public void IncCounter(int i_memPointer)
         {
@@ -272,7 +348,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             try
             {
-                UInt16 opcode = DebuggerManager.convertNumberWithPrefix(i_form.textBoxOpcode.Text.Trim());
+                UInt16 opcode = DebuggerManager.ConvertNumberWithPrefix(i_form.textBoxOpcode.Text);
                 if (opcode > 0xFF) //ToDo: only one byte for traced opcode
                     SetTracedOpcode((byte)(opcode % 256));
                 else
@@ -289,6 +365,82 @@ namespace ZXMAK2.Hardware.Adlers.Core
             }
 
             return true;
+        }
+        public bool ParseJumpCallToAnAddressValue(FormCpu i_form, bool i_justParse = false)
+        {
+            try
+            {
+                UInt16 detectedJumpAddress = DebuggerManager.ConvertNumberWithPrefix(i_form.textBoxJumpToAnAddress.Text);
+                if (detectedJumpAddress > 0xFFFF)
+                {
+                    Locator.Resolve<IUserMessage>().Error("Value for jump to an address is too big...\n\nMaximum is 2 bytes(0xFFFF).");
+                    i_form.textBoxJumpToAnAddress.Focus();
+                }
+                else
+                    _detectingJumpToAddress = detectedJumpAddress;
+            }
+            catch (CommandParseException)
+            {
+                if (!i_justParse)
+                {
+                    Locator.Resolve<IUserMessage>().Error("Incorrect number in field for jump to an address..");
+                    i_form.textBoxJumpToAnAddress.Focus();
+                }
+                return false;
+            }
+
+            return true;
+        }
+
+        private void MakeTraceInfo(FormCpu i_form)
+        {
+            _traceInfo = "Trace filter:\n===========================\n";
+            if (i_form.checkBoxAllJumps.Checked)
+                _traceInfo += "- all jumps\n";
+            if (i_form.checkBoxConditionalJumps.Checked)
+                _traceInfo += "- conditional jumps\n";
+            if (i_form.checkBoxConditionalCalls.Checked)
+                _traceInfo += "- conditional calls\n";
+            if (i_form.checkBoxDetectJumpOnAddress.Checked)
+                _traceInfo += String.Format("- detecting jump/call to an address #{0:X4}\n", _detectingJumpToAddress);
+            if (i_form.checkBoxOpcode.Checked)
+                _traceInfo += String.Format("- tracing opcode #{0:X2}\n", _tracedOpcode);
+            if (i_form.checkBoxTraceArea.Checked)
+            {
+                int[] tracedAreas = _addrsFlags.Select((s, index) => new { s, index })
+                                               .Where(x => x.s == true)
+                                               .Select(x => x.index)
+                                               .ToArray();
+                if (tracedAreas.Length > 0)
+                {
+                    if (tracedAreas.Length == _addrsFlags.Length)
+                    {
+                        _traceInfo += "- trace area: whole memory";
+                    }
+                    else
+                    {
+                        _traceInfo += "- trace area in: ";
+                        int prevMemAddr = tracedAreas[0];
+                        int actualStartAddr = tracedAreas[0];
+                        string tracedAreaOut = String.Empty;
+                        for( int memCounter = 1; memCounter < tracedAreas.Length; memCounter++ )
+                        {
+                            if (prevMemAddr != tracedAreas[memCounter] - 1 || memCounter+1 >= tracedAreas.Length)
+                            {
+                                tracedAreaOut += String.Format("#{0:X4}->#{1:X4}", actualStartAddr, tracedAreas[memCounter]);
+                                actualStartAddr = prevMemAddr = tracedAreas[memCounter];
+                                continue;
+                            }
+                            prevMemAddr = tracedAreas[memCounter];
+                        }
+                        _traceInfo += tracedAreaOut;
+                    }
+                    _traceInfo += "\n";
+                }
+                else
+                    _traceInfo += "- trace area: no valid address => nothing will be traced"; //this should not happen
+            }
+                
         }
 
         #region GUI handlers/methods
@@ -334,7 +486,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
 
         private void ResetAddrsFlags()
         {
-            Array.Clear(m_addrsFlags, 0, m_addrsFlags.Length);
+            Array.Clear(_addrsFlags, 0, _addrsFlags.Length);
         }
     }
 }

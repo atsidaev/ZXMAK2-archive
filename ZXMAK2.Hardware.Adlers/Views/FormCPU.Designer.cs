@@ -44,6 +44,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkBoxTraceFileOut = new System.Windows.Forms.CheckBox();
             this.checkBoxShowConsole = new System.Windows.Forms.CheckBox();
             this.groupBoxTraceOptions = new System.Windows.Forms.GroupBox();
+            this.textBoxJumpToAnAddress = new System.Windows.Forms.TextBox();
+            this.checkBoxDetectJumpOnAddress = new System.Windows.Forms.CheckBox();
             this.checkBoxConditionalCalls = new System.Windows.Forms.CheckBox();
             this.textBoxOpcode = new System.Windows.Forms.TextBox();
             this.checkBoxOpcode = new System.Windows.Forms.CheckBox();
@@ -263,7 +265,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.checkBoxTraceArea.AutoSize = true;
             this.checkBoxTraceArea.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxTraceArea.Location = new System.Drawing.Point(6, 161);
+            this.checkBoxTraceArea.Location = new System.Drawing.Point(6, 176);
             this.checkBoxTraceArea.Name = "checkBoxTraceArea";
             this.checkBoxTraceArea.Size = new System.Drawing.Size(122, 16);
             this.checkBoxTraceArea.TabIndex = 11;
@@ -274,7 +276,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // buttonSetTraceFileName
             // 
             this.buttonSetTraceFileName.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.buttonSetTraceFileName.Location = new System.Drawing.Point(110, 317);
+            this.buttonSetTraceFileName.Location = new System.Drawing.Point(110, 332);
             this.buttonSetTraceFileName.Name = "buttonSetTraceFileName";
             this.buttonSetTraceFileName.Size = new System.Drawing.Size(43, 23);
             this.buttonSetTraceFileName.TabIndex = 10;
@@ -284,7 +286,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // textBoxTraceFileName
             // 
             this.textBoxTraceFileName.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.textBoxTraceFileName.Location = new System.Drawing.Point(6, 319);
+            this.textBoxTraceFileName.Location = new System.Drawing.Point(6, 334);
             this.textBoxTraceFileName.Name = "textBoxTraceFileName";
             this.textBoxTraceFileName.Size = new System.Drawing.Size(100, 19);
             this.textBoxTraceFileName.TabIndex = 9;
@@ -297,7 +299,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkBoxTraceFileOut.Checked = true;
             this.checkBoxTraceFileOut.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxTraceFileOut.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxTraceFileOut.Location = new System.Drawing.Point(7, 300);
+            this.checkBoxTraceFileOut.Location = new System.Drawing.Point(7, 315);
             this.checkBoxTraceFileOut.Name = "checkBoxTraceFileOut";
             this.checkBoxTraceFileOut.Size = new System.Drawing.Size(122, 16);
             this.checkBoxTraceFileOut.TabIndex = 8;
@@ -312,7 +314,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkBoxShowConsole.Checked = true;
             this.checkBoxShowConsole.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxShowConsole.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxShowConsole.Location = new System.Drawing.Point(7, 281);
+            this.checkBoxShowConsole.Location = new System.Drawing.Point(7, 296);
             this.checkBoxShowConsole.Name = "checkBoxShowConsole";
             this.checkBoxShowConsole.Size = new System.Drawing.Size(122, 16);
             this.checkBoxShowConsole.TabIndex = 7;
@@ -321,6 +323,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // groupBoxTraceOptions
             // 
+            this.groupBoxTraceOptions.Controls.Add(this.textBoxJumpToAnAddress);
+            this.groupBoxTraceOptions.Controls.Add(this.checkBoxDetectJumpOnAddress);
             this.groupBoxTraceOptions.Controls.Add(this.checkBoxConditionalCalls);
             this.groupBoxTraceOptions.Controls.Add(this.textBoxOpcode);
             this.groupBoxTraceOptions.Controls.Add(this.checkBoxOpcode);
@@ -330,10 +334,31 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.groupBoxTraceOptions.Location = new System.Drawing.Point(5, 0);
             this.groupBoxTraceOptions.Name = "groupBoxTraceOptions";
             this.groupBoxTraceOptions.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.groupBoxTraceOptions.Size = new System.Drawing.Size(150, 140);
+            this.groupBoxTraceOptions.Size = new System.Drawing.Size(150, 170);
             this.groupBoxTraceOptions.TabIndex = 6;
             this.groupBoxTraceOptions.TabStop = false;
             this.groupBoxTraceOptions.Text = "Trace filter";
+            // 
+            // textBoxJumpToAnAddress
+            // 
+            this.textBoxJumpToAnAddress.Enabled = false;
+            this.textBoxJumpToAnAddress.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.textBoxJumpToAnAddress.Location = new System.Drawing.Point(22, 90);
+            this.textBoxJumpToAnAddress.Name = "textBoxJumpToAnAddress";
+            this.textBoxJumpToAnAddress.Size = new System.Drawing.Size(122, 19);
+            this.textBoxJumpToAnAddress.TabIndex = 7;
+            // 
+            // checkBoxDetectJumpOnAddress
+            // 
+            this.checkBoxDetectJumpOnAddress.AutoSize = true;
+            this.checkBoxDetectJumpOnAddress.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.checkBoxDetectJumpOnAddress.Location = new System.Drawing.Point(3, 74);
+            this.checkBoxDetectJumpOnAddress.Name = "checkBoxDetectJumpOnAddress";
+            this.checkBoxDetectJumpOnAddress.Size = new System.Drawing.Size(136, 16);
+            this.checkBoxDetectJumpOnAddress.TabIndex = 6;
+            this.checkBoxDetectJumpOnAddress.Text = "Jump to an addr.";
+            this.checkBoxDetectJumpOnAddress.UseVisualStyleBackColor = true;
+            this.checkBoxDetectJumpOnAddress.CheckedChanged += new System.EventHandler(this.checkBoxDetectJumpOnAddress_CheckedChanged);
             // 
             // checkBoxConditionalCalls
             // 
@@ -351,7 +376,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.textBoxOpcode.Enabled = false;
             this.textBoxOpcode.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.textBoxOpcode.Location = new System.Drawing.Point(22, 109);
+            this.textBoxOpcode.Location = new System.Drawing.Point(22, 146);
             this.textBoxOpcode.Name = "textBoxOpcode";
             this.textBoxOpcode.Size = new System.Drawing.Size(122, 19);
             this.textBoxOpcode.TabIndex = 4;
@@ -361,7 +386,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.checkBoxOpcode.AutoSize = true;
             this.checkBoxOpcode.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxOpcode.Location = new System.Drawing.Point(3, 91);
+            this.checkBoxOpcode.Location = new System.Drawing.Point(3, 129);
             this.checkBoxOpcode.Name = "checkBoxOpcode";
             this.checkBoxOpcode.Size = new System.Drawing.Size(66, 16);
             this.checkBoxOpcode.TabIndex = 3;
@@ -374,7 +399,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkBoxCallToROM.AutoSize = true;
             this.checkBoxCallToROM.Enabled = false;
             this.checkBoxCallToROM.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxCallToROM.Location = new System.Drawing.Point(3, 73);
+            this.checkBoxCallToROM.Location = new System.Drawing.Point(3, 111);
             this.checkBoxCallToROM.Name = "checkBoxCallToROM";
             this.checkBoxCallToROM.Size = new System.Drawing.Size(143, 16);
             this.checkBoxCallToROM.TabIndex = 2;
@@ -414,7 +439,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listViewAdressRanges.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.listViewAdressRanges.FullRowSelect = true;
             this.listViewAdressRanges.GridLines = true;
-            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 182);
+            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 197);
             this.listViewAdressRanges.Name = "listViewAdressRanges";
             this.listViewAdressRanges.Size = new System.Drawing.Size(150, 97);
             this.listViewAdressRanges.TabIndex = 5;
@@ -922,5 +947,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         public System.Windows.Forms.CheckBox checkBoxOpcode;
         private System.Windows.Forms.GroupBox groupBoxStartup;
         private System.Windows.Forms.CheckBox checkBoxLoadConfig;
+        public System.Windows.Forms.CheckBox checkBoxDetectJumpOnAddress;
+        public System.Windows.Forms.TextBox textBoxJumpToAnAddress;
     }
 }

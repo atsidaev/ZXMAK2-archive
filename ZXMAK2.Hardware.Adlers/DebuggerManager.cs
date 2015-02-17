@@ -303,9 +303,14 @@ namespace ZXMAK2.Hardware.Adlers
         //
         // Method: convertNumberWithPrefix()
         //
-        public static UInt16 convertNumberWithPrefix(string input) //Prefix: % - binary, # - hexadecimal
+        public static UInt16 ConvertNumberWithPrefix(string input) //Prefix: % - binary, # - hexadecimal
         {
-            var inputTrimmed = input.Trim();
+            if (input == null || input.Trim() == String.Empty)
+            {
+                throw new CommandParseException("ConvertNumberWithPrefix: Empty or null value to be converted => error");
+            }
+            string inputTrimmed = input.Trim();
+
             // % - binary
             if (inputTrimmed[0] == '%')
             {
@@ -409,7 +414,7 @@ namespace ZXMAK2.Hardware.Adlers
             if (!isMemoryReference(input))
                 throw new CommandParseException("Incorrect memory reference: " + input);
 
-            return convertNumberWithPrefix(input.Substring(1, input.Length - 2));
+            return ConvertNumberWithPrefix(input.Substring(1, input.Length - 2));
         }
 
         public static BreakPointAccessType getBreakpointType( List<string> breakpoint )

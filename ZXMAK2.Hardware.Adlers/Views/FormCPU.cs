@@ -751,7 +751,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 {
                     try
                     {
-                        bytesToFindInput.Add(DebuggerManager.convertNumberWithPrefix(byteCandidate));
+                        bytesToFindInput.Add(DebuggerManager.ConvertNumberWithPrefix(byteCandidate));
                     }
                     catch
                     {
@@ -994,12 +994,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 if (!m_isTracing /*|| m_cpuRegs.PC < 0x4000*/) //no need to trace ROM
                     return;
 
+                //Trace area
                 if (m_debuggerTrace.IsTraceAreaDefined())
                 {
                     if (!m_debuggerTrace.GetAddressFlags()[m_cpuRegs.PC])
                         return;
                 }
-
                 //Jumps/Calls
                 if (m_debuggerTrace.IsTracingJumps())
                 {
@@ -1030,9 +1030,42 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         return;
                     }
                 }
+                //Detecting jump to an address
+                if( m_debuggerTrace.IsDetectingJumpOnAddress() )
+                {
+                    if( m_debuggerTrace.GetIsPrevInstructionJumpOrCall() )
+                    {
+                        if (m_debuggerTrace.GetIsPrevInstructionJumpOrCall() && m_debuggerTrace.GetDetectingJumpToAddress() == m_cpuRegs.PC)
+                        {
+                            m_debuggerTrace.IncCounter(m_debuggerTrace.GetPrevInstructionAddress());
+                            if (checkBoxShowConsole.Checked)
+                            {
+                                var len = 0;
+                                var mnemonic = m_dasmTool.GetMnemonic(m_cpuRegs.PC, out len);
+                                Logger.Debug("#{0:X4}   {1}  ; detected jump to #{2:X4}", m_cpuRegs.PC, mnemonic, m_debuggerTrace.GetPrevInstructionAddress());
+                            }
+                            if (m_debuggerTrace.GetAllJumpsArr().Contains(m_spectrum.ReadMemory(m_cpuRegs.PC)))
+                            {
+                                m_debuggerTrace.SavePrevInstruction(m_cpuRegs.PC);
+                                m_debuggerTrace.SetIsPrevInstructionJumpOrCall(true);
+                            }
+                            else
+                                m_debuggerTrace.SetIsPrevInstructionJumpOrCall(false);
+                            return;
+                        }
+                    }
+
+                    if (m_debuggerTrace.GetAllJumpsArr().Contains(m_spectrum.ReadMemory(m_cpuRegs.PC)))
+                    {
+                        m_debuggerTrace.SavePrevInstruction(m_cpuRegs.PC);
+                        m_debuggerTrace.SetIsPrevInstructionJumpOrCall(true);
+                    }
+                    else
+                        m_debuggerTrace.SetIsPrevInstructionJumpOrCall(false);
+                }
 
                 //if Opcode or Jump/Calls criteria selected => return
-                if (m_debuggerTrace.IsTracingOpcode() || m_debuggerTrace.IsTracingJumps())
+                if (m_debuggerTrace.IsTracingOpcode() || m_debuggerTrace.IsTracingJumps() || m_debuggerTrace.IsDetectingJumpOnAddress())
                     return;
 
                 //Trace everything
@@ -1093,7 +1126,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     else if (commandType == DebuggerManager.CommandType.gotoAdress)
                     {
                         // goto adress to dissasembly
-                        dasmPanel.TopAddress = DebuggerManager.convertNumberWithPrefix(parsedCommand[1]);
+                        dasmPanel.TopAddress = DebuggerManager.ConvertNumberWithPrefix(parsedCommand[1]);
                     }
                     else if (commandType == DebuggerManager.CommandType.removeBreakpoint)
                     {
@@ -1104,12 +1137,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     else if (commandType == DebuggerManager.CommandType.enableBreakpoint)
                     {
                         //enable breakpoint
-                        EnableOrDisableBreakpointStatus(Convert.ToByte(DebuggerManager.convertNumberWithPrefix(parsedCommand[1])), true);
+                        EnableOrDisableBreakpointStatus(Convert.ToByte(DebuggerManager.ConvertNumberWithPrefix(parsedCommand[1])), true);
                     }
                     else if (commandType == DebuggerManager.CommandType.disableBreakpoint)
                     {
                         //disable breakpoint
-                        EnableOrDisableBreakpointStatus(Convert.ToByte(DebuggerManager.convertNumberWithPrefix(parsedCommand[1])), false);
+                        EnableOrDisableBreakpointStatus(Convert.ToByte(DebuggerManager.ConvertNumberWithPrefix(parsedCommand[1])), false);
                     }
                     else if (commandType == DebuggerManager.CommandType.loadBreakpointsListFromFile)
                     {
@@ -1188,7 +1221,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                 isLeftRegistry = true;
                             }
                             else
-                                leftNum = DebuggerManager.convertNumberWithPrefix(left);
+                                leftNum = DebuggerManager.ConvertNumberWithPrefix(left);
                         }
 
                         //Reading values - right side of statement
@@ -1260,7 +1293,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                     else
                                     {
                                         // e.g.: ld (#9C40), #21 #33 3344 .. .. .. -> x
-                                        rightNum = DebuggerManager.convertNumberWithPrefix(currExpr);
+                                        rightNum = DebuggerManager.ConvertNumberWithPrefix(currExpr);
                                         if (rightNum <= Byte.MaxValue)
                                         {
                                             m_spectrum.WriteMemory(leftNum, Convert.ToByte(rightNum));
@@ -1532,7 +1565,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 {
                     //it has to be a common value, e.g.: #4000, %111010101, ...
                     o_breakpointInfo.RightCondition = rightExpr.ToUpper(); // because of breakpoint panel
-                    o_breakpointInfo.RightValue = DebuggerManager.convertNumberWithPrefix(rightExpr); // last chance
+                    o_breakpointInfo.RightValue = DebuggerManager.ConvertNumberWithPrefix(rightExpr); // last chance
 
                     rightType = 2;
                 }
@@ -1576,7 +1609,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 {
                     breakpointInfo.IsOn = true;
                     breakpointInfo.AccessType = BreakPointConditionType.memoryRead;
-                    breakpointInfo.LeftValue = DebuggerManager.convertNumberWithPrefix(newBreakpointDesc[2]); // last chance
+                    breakpointInfo.LeftValue = DebuggerManager.ConvertNumberWithPrefix(newBreakpointDesc[2]); // last chance
                     InsertNewBreakpoint(breakpointInfo);
                 }
                 else
@@ -1612,6 +1645,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
 
             InsertNewBreakpoint(breakpointInfo);
+
+            //when breakpoint is succesfully inserted => switch tab to CPU(show breakpoints)
+            this.tabMenus.SelectedIndex = 0;
         }
         public void RemoveExtBreakpoint(string brkIndex)
         {
@@ -1787,22 +1823,26 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void checkBoxAllJumps_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxConditionalCalls.Enabled = checkBoxConditionalJumps.Enabled = !checkBoxAllJumps.Checked;
-            if (m_isTracing)
-                m_debuggerTrace.StartTrace(this); //refresh trace settings
+            /*if (m_isTracing)
+                m_debuggerTrace.StartTrace(this);*/ //refresh trace settings
         }
         private void checkBoxConditionalJumps_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBoxConditionalJumps.Checked)
                 checkBoxAllJumps.Checked = false;
-            if (m_isTracing)
-                m_debuggerTrace.StartTrace(this); //refresh trace settings
+            /*if (m_isTracing)
+                m_debuggerTrace.StartTrace(this);*/ //refresh trace settings
         }
         private void checkBoxConditionalCalls_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBoxConditionalCalls.Checked)
                 checkBoxAllJumps.Checked = false;
-            if (m_isTracing)
-                m_debuggerTrace.StartTrace(this); //refresh trace settings
+            /*if (m_isTracing)
+                m_debuggerTrace.StartTrace(this);*/ //refresh trace settings
+        }
+        private void checkBoxDetectJumpOnAddress_CheckedChanged(object sender, EventArgs e)
+        {
+            textBoxJumpToAnAddress.Enabled = checkBoxDetectJumpOnAddress.Checked;
         }
         private void checkBoxTraceFileOut_CheckedChanged(object sender, EventArgs e)
         {
@@ -1811,8 +1851,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void checkBoxTraceAddresses_CheckedChanged(object sender, EventArgs e)
         {
             listViewAdressRanges.Enabled = checkBoxTraceArea.Checked;
-            if (m_isTracing)
-                m_debuggerTrace.StartTrace(this); //refresh trace settings
+            /*if (m_isTracing)
+                m_debuggerTrace.StartTrace(this);*/ //refresh trace settings
         }
         private void btnStartTrace_Click(object sender, EventArgs e)
         {
@@ -1891,6 +1931,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 writer.WriteElementString("ConditionalJumps", this.checkBoxConditionalJumps.Checked ? "1" : "0");
                 writer.WriteElementString("ConditionalCalls", this.checkBoxConditionalCalls.Checked ? "1" : "0");
                 writer.WriteElementString("CallToRom", this.checkBoxCallToROM.Checked ? "1" : "0");
+                    //Trace->DetectJumpToAnAdress
+                    writer.WriteStartElement("DetectJumpToAnAdress");
+                    writer.WriteAttributeString("Checked", this.checkBoxDetectJumpOnAddress.Checked ? "1" : "0");
+                    writer.WriteElementString("Value", this.textBoxJumpToAnAddress.Text);
+                    writer.WriteEndElement();
                     //Trace->Opcode
                     writer.WriteStartElement("Opcode");
                     writer.WriteAttributeString("Checked", this.checkBoxOpcode.Checked ? "1" : "0");
@@ -1941,8 +1986,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             else
                 return;
 
-            //Trace
-
             //Set tooltips
             /*ToolTip toolTip1 = new ToolTip();
             toolTip1.AutoPopDelay = 5000;
@@ -1963,6 +2006,22 @@ namespace ZXMAK2.Hardware.Adlers.Views
             node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/CallToRom");
             if (node != null)
                 this.checkBoxCallToROM.Checked = (node.InnerText == "1");
+
+                //Trace->DetectJumpToAnAdress
+                node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/DetectJumpToAnAdress");
+                if (node != null)
+                {
+                    this.checkBoxDetectJumpOnAddress.Checked = (node.Attributes["Checked"].InnerText == "1");
+                    this.textBoxJumpToAnAddress.Text = node.InnerText;
+                }
+
+                //Trace->Opcode
+                node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/Opcode");
+                if (node != null)
+                {
+                    this.checkBoxOpcode.Checked = (node.Attributes["Checked"].InnerText == "1");
+                    this.textBoxOpcode.Text = node.InnerText;
+                }
 
                 //Trace->AddressRange
                 node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/AddressRange/TagArray");
