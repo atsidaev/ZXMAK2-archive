@@ -25,7 +25,7 @@ When in debugger window you can use following commands(type in command line):<br
 <br>
 Number can start with prefix:
 <ul>
-<li>hexadecimal prefix is <b>#</b><br></li>
+<li>hexadecimal prefix is <b>#</b> or <b>x</b><br></li>
 <li>binary prefix is binary <b>%</b></li>
 </ul>
 <br>
@@ -37,6 +37,9 @@ Examples:
 <li><b>br pc == 40000 && DE==#FFFF</b> - multiconditional breakpoint, breaks when value in PC=40000 <b>AND</b> DE=#FFFF</li>
 <li><b>br pc == 40000 && fZ==1</b> - multiconditional breakpoint, breaks when value in PC=40000 <b>AND</b> flag Z is set</li>
 <li><b>br memread #4000</b> - break when memory at address #4000 is to be read</li>
+<li><b>br memread 40000 50000</b> - break when memory in range starting at address 40000 until 50000 is to be read</li>
+<li><b>br memwrite #4000</b> - break when memory at address #4000 is to be written</li>
+<li><b>br memwrite 40000 60000</b> - break when memory in range starting at address 40000 until 60000 is to be written</li>
 </ul>
 <ul>
 <li><b>ld pc, 3</b> - puts 3 into register PC(program counter) - this will cause execution on that adress(jump) directly.</li>

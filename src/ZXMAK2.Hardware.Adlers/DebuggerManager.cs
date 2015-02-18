@@ -20,7 +20,12 @@ namespace ZXMAK2.Hardware.Adlers
         registryVsValue,
         flagVsValue, //e.g. Z == 1, C == 0
         registryMemoryReferenceVsValue,
-        memoryRead 
+
+        //Memory read/write
+        memoryRead,
+        memoryReadInRange,
+        memoryWrite,
+        memoryWriteInRange
     };
 
     //Information about extended breakpoint
@@ -318,8 +323,8 @@ namespace ZXMAK2.Hardware.Adlers
                 return ConvertRadix.ParseUInt16(number, 2);
             }
 
-            // # - hexadecimal
-            if (inputTrimmed[0] == '#')
+            // '#' or 'x' - hexadecimal
+            if (inputTrimmed[0] == '#' || inputTrimmed[0] == 'x')
             {
                 var number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
                 return ConvertRadix.ParseUInt16(number, 16);

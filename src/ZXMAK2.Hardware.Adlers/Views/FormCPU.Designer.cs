@@ -77,6 +77,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuDasmLoadBlock = new System.Windows.Forms.MenuItem();
             this.menuDasmSaveBlock = new System.Windows.Forms.MenuItem();
             this.menuItem8 = new System.Windows.Forms.MenuItem();
+            this.menuItemInsertComment = new System.Windows.Forms.MenuItem();
+            this.menuItemLoadComments = new System.Windows.Forms.MenuItem();
+            this.menuItemSaveComments = new System.Windows.Forms.MenuItem();
+            this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.menuItemSaveDisassembly = new System.Windows.Forms.MenuItem();
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.menuItemDasmRefresh = new System.Windows.Forms.MenuItem();
@@ -99,6 +103,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemAddNewTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItemUpdateTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
+            this.menuItem10 = new System.Windows.Forms.MenuItem();
+            this.menuItemClearCurrentComment = new System.Windows.Forms.MenuItem();
+            this.menuItemClearAllComments = new System.Windows.Forms.MenuItem();
             this.panelStatus.SuspendLayout();
             this.tabMenus.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -612,6 +619,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuDasmLoadBlock,
             this.menuDasmSaveBlock,
             this.menuItem8,
+            this.menuItemInsertComment,
+            this.menuItem10,
+            this.menuItemLoadComments,
+            this.menuItemSaveComments,
+            this.menuItem6,
             this.menuItemSaveDisassembly,
             this.menuItem1,
             this.menuItemDasmRefresh});
@@ -620,6 +632,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // menuItemDasmGotoADDR
             // 
             this.menuItemDasmGotoADDR.Index = 0;
+            this.menuItemDasmGotoADDR.Shortcut = System.Windows.Forms.Shortcut.CtrlG;
             this.menuItemDasmGotoADDR.Text = "Goto address...";
             this.menuItemDasmGotoADDR.Click += new System.EventHandler(this.menuItemDasmGotoADDR_Click);
             // 
@@ -680,20 +693,41 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem8.Index = 9;
             this.menuItem8.Text = "-";
             // 
+            // menuItemInsertComment
+            // 
+            this.menuItemInsertComment.Index = 10;
+            this.menuItemInsertComment.Shortcut = System.Windows.Forms.Shortcut.Ins;
+            this.menuItemInsertComment.Text = "Insert address comment";
+            // 
+            // menuItemLoadComments
+            // 
+            this.menuItemLoadComments.Index = 12;
+            this.menuItemLoadComments.Text = "Load comments";
+            // 
+            // menuItemSaveComments
+            // 
+            this.menuItemSaveComments.Index = 13;
+            this.menuItemSaveComments.Text = "Save comments";
+            // 
+            // menuItem6
+            // 
+            this.menuItem6.Index = 14;
+            this.menuItem6.Text = "-";
+            // 
             // menuItemSaveDisassembly
             // 
-            this.menuItemSaveDisassembly.Index = 10;
+            this.menuItemSaveDisassembly.Index = 15;
             this.menuItemSaveDisassembly.Text = "Save disassembly";
             this.menuItemSaveDisassembly.Click += new System.EventHandler(this.menuItemSaveDisassembly_Click);
             // 
             // menuItem1
             // 
-            this.menuItem1.Index = 11;
+            this.menuItem1.Index = 16;
             this.menuItem1.Text = "-";
             // 
             // menuItemDasmRefresh
             // 
-            this.menuItemDasmRefresh.Index = 12;
+            this.menuItemDasmRefresh.Index = 17;
             this.menuItemDasmRefresh.Text = "Refresh";
             this.menuItemDasmRefresh.Click += new System.EventHandler(this.menuItemDasmRefresh_Click);
             // 
@@ -833,6 +867,24 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem9.Index = 2;
             this.menuItem9.Text = "Delete current";
             // 
+            // menuItem10
+            // 
+            this.menuItem10.Index = 11;
+            this.menuItem10.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemClearCurrentComment,
+            this.menuItemClearAllComments});
+            this.menuItem10.Text = "Clear comment/s";
+            // 
+            // menuItemClearCurrentComment
+            // 
+            this.menuItemClearCurrentComment.Index = 0;
+            this.menuItemClearCurrentComment.Text = "Current";
+            // 
+            // menuItemClearAllComments
+            // 
+            this.menuItemClearAllComments.Index = 1;
+            this.menuItemClearAllComments.Text = "All";
+            // 
             // FormCpu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -949,5 +1001,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.CheckBox checkBoxLoadConfig;
         public System.Windows.Forms.CheckBox checkBoxDetectJumpOnAddress;
         public System.Windows.Forms.TextBox textBoxJumpToAnAddress;
+        private System.Windows.Forms.MenuItem menuItemInsertComment;
+        private System.Windows.Forms.MenuItem menuItemLoadComments;
+        private System.Windows.Forms.MenuItem menuItemSaveComments;
+        private System.Windows.Forms.MenuItem menuItem6;
+        private System.Windows.Forms.MenuItem menuItem10;
+        private System.Windows.Forms.MenuItem menuItemClearCurrentComment;
+        private System.Windows.Forms.MenuItem menuItemClearAllComments;
     }
 }
