@@ -245,10 +245,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
                             brDesc += "(off)";
                         else
                             brDesc += " ";
-                        if (item.Value.Info.AccessType == BreakPointConditionType.memoryRead)
+                        if ( item.Value.Info.AccessType == BreakPointConditionType.memoryRead || item.Value.Info.AccessType == BreakPointConditionType.memoryReadInRange ||
+                             item.Value.Info.AccessType == BreakPointConditionType.memoryWrite || item.Value.Info.AccessType == BreakPointConditionType.memoryWriteInRange
+                           )
                         {
+                            bool fMemWrite = item.Value.Info.AccessType == BreakPointConditionType.memoryWrite || item.Value.Info.AccessType == BreakPointConditionType.memoryWriteInRange;
                             //desc of memory read breakpoint type
-                            brDesc += String.Format("mem read #{0:X2}", item.Value.Info.LeftValue);
+                            if (fMemWrite)
+                                brDesc += String.Format("mem write #{0:X2}", item.Value.Info.LeftValue);
+                            else
+                                brDesc += String.Format("mem read #{0:X2}", item.Value.Info.LeftValue);
+                            //in range ?
+                            if (item.Value.Info.AccessType == BreakPointConditionType.memoryReadInRange || item.Value.Info.AccessType == BreakPointConditionType.memoryWriteInRange)
+                                brDesc += String.Format("-#{0:X2}", item.Value.Info.RightValue);
                         }
                         else
                         {
@@ -376,7 +385,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     }
                     UpdateCPU(true);
                     break;
-                case Keys.F9:              // Run
+                case Keys.F10:             // Run
                     m_spectrum.DoRun();
                     UpdateCPU(false);
                     break;
@@ -389,13 +398,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     showStack = !showStack;
                     UpdateREGS();
                     break;
-                case Keys.F:
+                case Keys.F: //find bytes in memory(memory dump panel)
                     if( e.Control )
                     {
                         menuItemFindBytes_Click(new object(), null);
                     }
                     break;
-                case Keys.N:
+                case Keys.N: //find next bytes
                     if (e.Control)
                     {
                         menuItemFindBytesNext_Click(null, null);
@@ -405,6 +414,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     this.Hide();
                     if (this.Owner != null)
                         this.Owner.Focus();
+                    break;
+                case Keys.G: //Goto address(disassembly)
+                    if (e.Control)
+                    {
+                        menuItemDasmGotoADDR_Click(null, null);
+                    }
                     break;
             }
         }
@@ -1116,6 +1131,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                             && !DebuggerManager.isFlag(left) 
                             && !DebuggerManager.isMemoryReference(left) 
                             && left != "memread"
+                            && left != "memwrite"
                            )
                             throw new CommandParseException("bad condition !");
 
@@ -1602,14 +1618,24 @@ namespace ZXMAK2.Hardware.Adlers.Views
             BreakpointInfo breakpointInfo = new BreakpointInfo();
             breakpointInfo.IsMulticonditional = CheckIsBrkMulticonditional(newBreakpointDesc);
 
-            //0. memory read breakpoint ?
-            if (newBreakpointDesc[1].ToUpper() == "MEMREAD")
+            //0. memory read/write breakpoint ?
+            if (newBreakpointDesc[1].ToUpper() == "MEMREAD" || newBreakpointDesc[1].ToUpper() == "MEMWRITE")
             {
-                if (newBreakpointDesc.Count == 3) //e.g.: "br memread #4000"
+                bool fMemWrite = (newBreakpointDesc[1].ToUpper() == "MEMWRITE");
+
+                if (newBreakpointDesc.Count >= 3) //e.g.: "br memread #4000" or "br memread #4000 #5B00"
                 {
                     breakpointInfo.IsOn = true;
-                    breakpointInfo.AccessType = BreakPointConditionType.memoryRead;
-                    breakpointInfo.LeftValue = DebuggerManager.ConvertNumberWithPrefix(newBreakpointDesc[2]); // last chance
+                    breakpointInfo.LeftValue = DebuggerManager.ConvertNumberWithPrefix(newBreakpointDesc[2]); // set "start" memory checkpoint
+                    if (newBreakpointDesc.Count > 3)
+                    {
+                        //memory range
+                        breakpointInfo.RightValue = DebuggerManager.ConvertNumberWithPrefix(newBreakpointDesc[3]); // set "stop" memory checkpoint
+                        breakpointInfo.AccessType = (fMemWrite ? BreakPointConditionType.memoryWriteInRange : BreakPointConditionType.memoryReadInRange);
+                    }
+                    else
+                        breakpointInfo.AccessType = (fMemWrite ?  BreakPointConditionType.memoryWrite : BreakPointConditionType.memoryRead);
+
                     InsertNewBreakpoint(breakpointInfo);
                 }
                 else
@@ -1718,6 +1744,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
             {
                 if (brk.Info.AccessType == BreakPointConditionType.memoryVsValue || brk.Info.AccessType == BreakPointConditionType.registryMemoryReferenceVsValue)
                     brk.IsNeedWriteMemoryCheck = true;
+
+                if (brk.Info.LeftValue == addr)
+                {
+                    if (brk.Info.AccessType == BreakPointConditionType.memoryWrite)
+                        brk.IsForceStop = true;
+                }
+
+                //memory in range
+                if (brk.Info.AccessType == BreakPointConditionType.memoryWriteInRange && brk.Info.LeftValue <= addr && brk.Info.RightValue >= addr)
+                    brk.IsNeedWriteMemoryCheck = true;
             }
 
             return;
@@ -1727,14 +1763,22 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (_breakpointsExt == null)
                 return;
 
-            foreach (BreakpointAdlers brk in _breakpointsExt.Values.Where(p => p.Info.IsOn && p.Info.AccessType == BreakPointConditionType.memoryRead))
+            foreach (BreakpointAdlers brk in _breakpointsExt.Values.Where(p => p.Info.IsOn && 
+                                                                               ( p.Info.AccessType == BreakPointConditionType.memoryRead 
+                                                                                || 
+                                                                                 p.Info.AccessType == BreakPointConditionType.memoryReadInRange)
+                                                                               )
+                                                                         )
             {
-                if (brk.Info.LeftValue == addr)
-                {
-                    // raise force stop at the end of the currect CPU cycle
-                    // (this flag will be checked from BreakpointAdlers.Check at the end of CPU cycle)
+                if (brk.Info.LeftValue == addr && brk.Info.AccessType == BreakPointConditionType.memoryRead)
                     brk.IsForceStop = true;
-                }
+
+                //memory in range
+                if(brk.Info.AccessType == BreakPointConditionType.memoryReadInRange && brk.Info.LeftValue <= addr && brk.Info.RightValue >= addr )
+                    brk.IsForceStop = true;
+
+                //IsForceStop: raise force stop at the end of the currect CPU cycle
+                //            (this flag will be checked from BreakpointAdlers.Check at the end of CPU cycle)
             }
 
             return;
