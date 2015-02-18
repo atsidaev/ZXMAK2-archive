@@ -78,6 +78,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuDasmSaveBlock = new System.Windows.Forms.MenuItem();
             this.menuItem8 = new System.Windows.Forms.MenuItem();
             this.menuItemInsertComment = new System.Windows.Forms.MenuItem();
+            this.menuItem10 = new System.Windows.Forms.MenuItem();
+            this.menuItemClearCurrentComment = new System.Windows.Forms.MenuItem();
+            this.menuItemClearAllComments = new System.Windows.Forms.MenuItem();
             this.menuItemLoadComments = new System.Windows.Forms.MenuItem();
             this.menuItemSaveComments = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
@@ -103,9 +106,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemAddNewTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItemUpdateTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
-            this.menuItem10 = new System.Windows.Forms.MenuItem();
-            this.menuItemClearCurrentComment = new System.Windows.Forms.MenuItem();
-            this.menuItemClearAllComments = new System.Windows.Forms.MenuItem();
             this.panelStatus.SuspendLayout();
             this.tabMenus.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -668,7 +668,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // menuItemDasmClearBreakpoints
             // 
             this.menuItemDasmClearBreakpoints.Index = 5;
-            this.menuItemDasmClearBreakpoints.Text = "Reset breakpoints";
+            this.menuItemDasmClearBreakpoints.Text = "Reset panel breakpoints";
             this.menuItemDasmClearBreakpoints.Click += new System.EventHandler(this.menuItemDasmClearBP_Click);
             // 
             // menuItem4
@@ -697,17 +697,40 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.menuItemInsertComment.Index = 10;
             this.menuItemInsertComment.Shortcut = System.Windows.Forms.Shortcut.Ins;
-            this.menuItemInsertComment.Text = "Insert address comment";
+            this.menuItemInsertComment.Text = "Insert/Update comment";
+            this.menuItemInsertComment.Click += new System.EventHandler(this.menuItemInsertComment_Click);
+            // 
+            // menuItem10
+            // 
+            this.menuItem10.Index = 11;
+            this.menuItem10.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemClearCurrentComment,
+            this.menuItemClearAllComments});
+            this.menuItem10.Text = "Clear comment/s";
+            // 
+            // menuItemClearCurrentComment
+            // 
+            this.menuItemClearCurrentComment.Index = 0;
+            this.menuItemClearCurrentComment.Text = "Current";
+            this.menuItemClearCurrentComment.Click += new System.EventHandler(this.menuItemClearCurrentComment_Click);
+            // 
+            // menuItemClearAllComments
+            // 
+            this.menuItemClearAllComments.Index = 1;
+            this.menuItemClearAllComments.Text = "All";
+            this.menuItemClearAllComments.Click += new System.EventHandler(this.menuItemClearAllComments_Click);
             // 
             // menuItemLoadComments
             // 
             this.menuItemLoadComments.Index = 12;
             this.menuItemLoadComments.Text = "Load comments";
+            this.menuItemLoadComments.Click += new System.EventHandler(this.menuItemLoadComments_Click);
             // 
             // menuItemSaveComments
             // 
             this.menuItemSaveComments.Index = 13;
             this.menuItemSaveComments.Text = "Save comments";
+            this.menuItemSaveComments.Click += new System.EventHandler(this.menuItemSaveComments_Click);
             // 
             // menuItem6
             // 
@@ -866,24 +889,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.menuItem9.Index = 2;
             this.menuItem9.Text = "Delete current";
-            // 
-            // menuItem10
-            // 
-            this.menuItem10.Index = 11;
-            this.menuItem10.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItemClearCurrentComment,
-            this.menuItemClearAllComments});
-            this.menuItem10.Text = "Clear comment/s";
-            // 
-            // menuItemClearCurrentComment
-            // 
-            this.menuItemClearCurrentComment.Index = 0;
-            this.menuItemClearCurrentComment.Text = "Current";
-            // 
-            // menuItemClearAllComments
-            // 
-            this.menuItemClearAllComments.Index = 1;
-            this.menuItemClearAllComments.Text = "All";
             // 
             // FormCpu
             // 

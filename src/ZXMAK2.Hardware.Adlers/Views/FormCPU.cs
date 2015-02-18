@@ -19,6 +19,7 @@ using ZXMAK2.Engine.Entities;
 using ZXMAK2.Hardware.Adlers.Core;
 using ZXMAK2.Engine;
 using System.Xml;
+using System.Text;
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {
@@ -421,20 +422,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         menuItemDasmGotoADDR_Click(null, null);
                     }
                     break;
+                case Keys.Insert:
+                    menuItemInsertComment_Click(null, null);
+                    e.Handled = true;
+                    break;
             }
-        }
-
-        private void menuItemDasmGotoADDR_Click(object sender, EventArgs e)
-        {
-            int ToAddr = 0;
-            var service = Locator.Resolve<IUserQuery>();
-            if (service == null)
-            {
-                return;
-            }
-            if (!service.QueryValue("Disassembly Address", "New Address:", "#{0:X4}", ref ToAddr, 0, 0xFFFF)) return;
-            dasmPanel.TopAddress = (ushort)ToAddr;
-            dasmPanel.Focus();
         }
 
         private void menuItemDasmGotoPC_Click(object sender, EventArgs e)
@@ -1425,7 +1417,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
 
         #region ContextMenus
-        //Disassembly context menu
+        ////Dasm context: Show
         private void dasmPanel_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -1461,6 +1453,140 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     this.menuItemFollowInDisassembler.Enabled = false;
 
                 contextMenuDasm.Show(dasmPanel, e.Location);
+            }
+        }
+
+        //Dasm context menu: Goto adress
+        private void menuItemDasmGotoADDR_Click(object sender, EventArgs e)
+        {
+            int ToAddr = 0;
+            var service = Locator.Resolve<IUserQuery>();
+            if (service == null)
+            {
+                return;
+            }
+            if (!service.QueryValue("Disassembly Address", "New Address:", "#{0:X4}", ref ToAddr, 0, 0xFFFF)) return;
+            dasmPanel.TopAddress = (ushort)ToAddr;
+            dasmPanel.Focus();
+        }
+
+        //Dasm context menu: Insert code comment
+        private void menuItemInsertComment_Click(object sender, EventArgs e)
+        {
+            string strCommentText = String.Empty;
+            dasmPanel.IsCodeCommentAtAddress(dasmPanel.ActiveAddress, ref strCommentText);
+            string strAddressToComment = String.Format("#{0:X4}", dasmPanel.ActiveAddress);
+            if (!Locator.Resolve<IUserQuery>().QueryText("Comment code address", "Enter comment for address " + strAddressToComment + ":", ref strCommentText))
+                return;
+            dasmPanel.InsertCodeComment(dasmPanel.ActiveAddress, strCommentText);
+        }
+
+        //Dasm context menu: Clear current code comment
+        private void menuItemClearCurrentComment_Click(object sender, EventArgs e)
+        {
+            dasmPanel.ClearCodeComment(dasmPanel.ActiveAddress);
+        }
+
+        //Dasm context menu: Clear all code comment
+        private void menuItemClearAllComments_Click(object sender, EventArgs e)
+        {
+            dasmPanel.ClearCodeComments();
+        }
+
+        //Dasm context menu: Load comments to file(xml)
+        private void menuItemLoadComments_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog loadDialog = new OpenFileDialog();
+            loadDialog.InitialDirectory = ".";
+            loadDialog.SupportMultiDottedExtensions = true;
+            loadDialog.Title = "Load code comments from file...";
+            loadDialog.Filter = "Xml Files (*.xml)|*.xml|All files (*.*)|*.*";
+            loadDialog.DefaultExt = "";
+            loadDialog.FileName = "";
+            loadDialog.ShowReadOnly = false;
+            loadDialog.CheckFileExists = true;
+            if (loadDialog.ShowDialog() != DialogResult.OK)
+                return;
+            if (loadDialog.FileName == null || loadDialog.FileName.Length == 0)
+                return;
+
+            //parsing comments
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(loadDialog.FileName);
+
+            XmlNodeList xmlNodes = xmlDoc.SelectNodes("/Root/Comments/AddressComment");
+            DictionarySafe<ushort, string> loadedCodeComments = new DictionarySafe<ushort, string>();
+            bool fParseFailed = false;
+            foreach(XmlNode node in xmlNodes)
+            {
+                ushort addressAt;
+                if (node.Attributes["AddressAt"] == null || node.InnerText == null)
+                {
+                    fParseFailed = true;
+                    break;
+                }
+                if (!ushort.TryParse(node.Attributes["AddressAt"].InnerText, out addressAt))
+                {
+                    fParseFailed = true;
+                    break;
+                }
+                if (node.InnerText == null)
+                {
+                    fParseFailed = true;
+                    break;
+                }
+                loadedCodeComments.Add(addressAt, node.InnerText);
+            }
+            if( fParseFailed )
+            {
+                Locator.Resolve<IUserMessage>().Error("Error parsing file...\n\nNothing has been done.");
+                return;
+            }
+            else
+            {
+                //register loaded code comments
+                Locator.Resolve<IUserMessage>().Info("Comments succesfully loaded...");
+
+                dasmPanel.SetCodeComments(loadedCodeComments);
+            }
+        }
+
+        //Dasm context menu: Save comments to file(xml)
+        private void menuItemSaveComments_Click(object sender, EventArgs e)
+        {
+            //save dialog
+            SaveFileDialog saveDialog = new SaveFileDialog();
+                saveDialog.InitialDirectory = ".";
+                saveDialog.SupportMultiDottedExtensions = true;
+                saveDialog.Title = "Save code comments to file...";
+                saveDialog.Filter = "Xml Files (*.xml)|*.xml|All files (*.*)|*.*";
+                saveDialog.DefaultExt = "";
+                saveDialog.FileName = "";
+                saveDialog.OverwritePrompt = true;
+                if (saveDialog.ShowDialog() != DialogResult.OK)
+                    return;
+                if (saveDialog.FileName == null || saveDialog.FileName.Length == 0)
+                    return;
+
+            using (XmlWriter writer = XmlWriter.Create(saveDialog.FileName))
+            {
+                writer.WriteStartElement("Root");
+                writer.WriteStartElement("Comments");
+
+                foreach(var item in dasmPanel.GetCodeComments())
+                {
+                    writer.WriteStartElement("AddressComment");
+                    writer.WriteAttributeString("AddressAt", item.Key.ToString());
+                    writer.WriteElementString("Text", item.Value.ToString());
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement(); //Root(CommentsRoot)
+                writer.WriteEndElement(); //Root
+
+                writer.Flush();
+                Locator.Resolve<IUserMessage>().Info("Comments succesfully saved...");
+                writer.Close();
             }
         }
 
@@ -1950,7 +2076,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private string configXmlFileName = "debugger_config.xml";
         private void SaveConfig()
         {
-            using (System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(Path.Combine(Utils.GetAppFolder(), configXmlFileName)))
+            using (XmlWriter writer = XmlWriter.Create(Path.Combine(Utils.GetAppFolder(), configXmlFileName)))
             {
                 writer.WriteStartElement("Root");
                 //Load on startup
