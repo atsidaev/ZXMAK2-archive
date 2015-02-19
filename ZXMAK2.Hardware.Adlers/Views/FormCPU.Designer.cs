@@ -37,7 +37,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listREGS = new System.Windows.Forms.ListBox();
             this.listF = new System.Windows.Forms.ListBox();
             this.splitter4 = new System.Windows.Forms.Splitter();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabPageTrace = new System.Windows.Forms.TabPage();
             this.checkBoxTraceArea = new System.Windows.Forms.CheckBox();
             this.buttonSetTraceFileName = new System.Windows.Forms.Button();
             this.textBoxTraceFileName = new System.Windows.Forms.TextBox();
@@ -56,6 +56,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.btnStopTrace = new System.Windows.Forms.Button();
             this.btnStartTrace = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.groupBoxTrace = new System.Windows.Forms.GroupBox();
+            this.checkBoxTraceAutoOpenLog = new System.Windows.Forms.CheckBox();
             this.groupBoxStartup = new System.Windows.Forms.GroupBox();
             this.checkBoxLoadConfig = new System.Windows.Forms.CheckBox();
             this.splitter3 = new System.Windows.Forms.Splitter();
@@ -77,10 +79,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuDasmLoadBlock = new System.Windows.Forms.MenuItem();
             this.menuDasmSaveBlock = new System.Windows.Forms.MenuItem();
             this.menuItem8 = new System.Windows.Forms.MenuItem();
+            this.menuItemCommentsSymbols = new System.Windows.Forms.MenuItem();
             this.menuItemInsertComment = new System.Windows.Forms.MenuItem();
-            this.menuItem10 = new System.Windows.Forms.MenuItem();
+            this.menuItem12 = new System.Windows.Forms.MenuItem();
             this.menuItemClearCurrentComment = new System.Windows.Forms.MenuItem();
             this.menuItemClearAllComments = new System.Windows.Forms.MenuItem();
+            this.menuItem11 = new System.Windows.Forms.MenuItem();
             this.menuItemLoadComments = new System.Windows.Forms.MenuItem();
             this.menuItemSaveComments = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
@@ -111,9 +115,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.tabPage1.SuspendLayout();
             this.panelState.SuspendLayout();
             this.panelRegs.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.tabPageTrace.SuspendLayout();
             this.groupBoxTraceOptions.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.groupBoxTrace.SuspendLayout();
             this.groupBoxStartup.SuspendLayout();
             this.panelMem.SuspendLayout();
             this.panelDasm.SuspendLayout();
@@ -133,7 +138,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // tabMenus
             // 
             this.tabMenus.Controls.Add(this.tabPage1);
-            this.tabMenus.Controls.Add(this.tabPage2);
+            this.tabMenus.Controls.Add(this.tabPageTrace);
             this.tabMenus.Controls.Add(this.tabPage3);
             this.tabMenus.Dock = System.Windows.Forms.DockStyle.Right;
             this.tabMenus.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
@@ -249,24 +254,24 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.splitter4.TabIndex = 1;
             this.splitter4.TabStop = false;
             // 
-            // tabPage2
+            // tabPageTrace
             // 
-            this.tabPage2.Controls.Add(this.checkBoxTraceArea);
-            this.tabPage2.Controls.Add(this.buttonSetTraceFileName);
-            this.tabPage2.Controls.Add(this.textBoxTraceFileName);
-            this.tabPage2.Controls.Add(this.checkBoxTraceFileOut);
-            this.tabPage2.Controls.Add(this.checkBoxShowConsole);
-            this.tabPage2.Controls.Add(this.groupBoxTraceOptions);
-            this.tabPage2.Controls.Add(this.listViewAdressRanges);
-            this.tabPage2.Controls.Add(this.btnStopTrace);
-            this.tabPage2.Controls.Add(this.btnStartTrace);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(160, 386);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Trace";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tabPageTrace.Controls.Add(this.checkBoxTraceArea);
+            this.tabPageTrace.Controls.Add(this.buttonSetTraceFileName);
+            this.tabPageTrace.Controls.Add(this.textBoxTraceFileName);
+            this.tabPageTrace.Controls.Add(this.checkBoxTraceFileOut);
+            this.tabPageTrace.Controls.Add(this.checkBoxShowConsole);
+            this.tabPageTrace.Controls.Add(this.groupBoxTraceOptions);
+            this.tabPageTrace.Controls.Add(this.listViewAdressRanges);
+            this.tabPageTrace.Controls.Add(this.btnStopTrace);
+            this.tabPageTrace.Controls.Add(this.btnStartTrace);
+            this.tabPageTrace.Location = new System.Drawing.Point(4, 22);
+            this.tabPageTrace.Name = "tabPageTrace";
+            this.tabPageTrace.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageTrace.Size = new System.Drawing.Size(160, 386);
+            this.tabPageTrace.TabIndex = 1;
+            this.tabPageTrace.Text = "Trace";
+            this.tabPageTrace.UseVisualStyleBackColor = true;
             // 
             // checkBoxTraceArea
             // 
@@ -287,8 +292,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.buttonSetTraceFileName.Name = "buttonSetTraceFileName";
             this.buttonSetTraceFileName.Size = new System.Drawing.Size(43, 23);
             this.buttonSetTraceFileName.TabIndex = 10;
-            this.buttonSetTraceFileName.Text = "Set";
+            this.buttonSetTraceFileName.Text = "Open";
             this.buttonSetTraceFileName.UseVisualStyleBackColor = true;
+            this.buttonSetTraceFileName.Click += new System.EventHandler(this.buttonSetTraceFileName_Click);
             // 
             // textBoxTraceFileName
             // 
@@ -487,6 +493,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.groupBoxTrace);
             this.tabPage3.Controls.Add(this.groupBoxStartup);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
@@ -494,6 +501,28 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Misc.";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxTrace
+            // 
+            this.groupBoxTrace.Controls.Add(this.checkBoxTraceAutoOpenLog);
+            this.groupBoxTrace.Location = new System.Drawing.Point(4, 111);
+            this.groupBoxTrace.Name = "groupBoxTrace";
+            this.groupBoxTrace.Size = new System.Drawing.Size(153, 100);
+            this.groupBoxTrace.TabIndex = 1;
+            this.groupBoxTrace.TabStop = false;
+            this.groupBoxTrace.Text = "Trace";
+            // 
+            // checkBoxTraceAutoOpenLog
+            // 
+            this.checkBoxTraceAutoOpenLog.AutoSize = true;
+            this.checkBoxTraceAutoOpenLog.Checked = true;
+            this.checkBoxTraceAutoOpenLog.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxTraceAutoOpenLog.Location = new System.Drawing.Point(7, 19);
+            this.checkBoxTraceAutoOpenLog.Name = "checkBoxTraceAutoOpenLog";
+            this.checkBoxTraceAutoOpenLog.Size = new System.Drawing.Size(115, 16);
+            this.checkBoxTraceAutoOpenLog.TabIndex = 0;
+            this.checkBoxTraceAutoOpenLog.Text = "Auto open log";
+            this.checkBoxTraceAutoOpenLog.UseVisualStyleBackColor = true;
             // 
             // groupBoxStartup
             // 
@@ -619,10 +648,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuDasmLoadBlock,
             this.menuDasmSaveBlock,
             this.menuItem8,
-            this.menuItemInsertComment,
-            this.menuItem10,
-            this.menuItemLoadComments,
-            this.menuItemSaveComments,
+            this.menuItemCommentsSymbols,
             this.menuItem6,
             this.menuItemSaveDisassembly,
             this.menuItem1,
@@ -693,64 +719,80 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem8.Index = 9;
             this.menuItem8.Text = "-";
             // 
+            // menuItemCommentsSymbols
+            // 
+            this.menuItemCommentsSymbols.Index = 10;
+            this.menuItemCommentsSymbols.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemInsertComment,
+            this.menuItem12,
+            this.menuItem11,
+            this.menuItemLoadComments,
+            this.menuItemSaveComments});
+            this.menuItemCommentsSymbols.Text = "Comments/Symbols";
+            // 
             // menuItemInsertComment
             // 
-            this.menuItemInsertComment.Index = 10;
+            this.menuItemInsertComment.Index = 0;
             this.menuItemInsertComment.Shortcut = System.Windows.Forms.Shortcut.Ins;
             this.menuItemInsertComment.Text = "Insert/Update comment";
             this.menuItemInsertComment.Click += new System.EventHandler(this.menuItemInsertComment_Click);
             // 
-            // menuItem10
+            // menuItem12
             // 
-            this.menuItem10.Index = 11;
-            this.menuItem10.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem12.Index = 1;
+            this.menuItem12.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItemClearCurrentComment,
             this.menuItemClearAllComments});
-            this.menuItem10.Text = "Clear comment/s";
+            this.menuItem12.Text = "Clear";
             // 
             // menuItemClearCurrentComment
             // 
             this.menuItemClearCurrentComment.Index = 0;
-            this.menuItemClearCurrentComment.Text = "Current";
+            this.menuItemClearCurrentComment.Text = "Current comment";
             this.menuItemClearCurrentComment.Click += new System.EventHandler(this.menuItemClearCurrentComment_Click);
             // 
             // menuItemClearAllComments
             // 
             this.menuItemClearAllComments.Index = 1;
-            this.menuItemClearAllComments.Text = "All";
+            this.menuItemClearAllComments.Text = "All comments";
             this.menuItemClearAllComments.Click += new System.EventHandler(this.menuItemClearAllComments_Click);
+            // 
+            // menuItem11
+            // 
+            this.menuItem11.Index = 2;
+            this.menuItem11.Text = "-";
             // 
             // menuItemLoadComments
             // 
-            this.menuItemLoadComments.Index = 12;
+            this.menuItemLoadComments.Index = 3;
             this.menuItemLoadComments.Text = "Load comments";
             this.menuItemLoadComments.Click += new System.EventHandler(this.menuItemLoadComments_Click);
             // 
             // menuItemSaveComments
             // 
-            this.menuItemSaveComments.Index = 13;
+            this.menuItemSaveComments.Index = 4;
             this.menuItemSaveComments.Text = "Save comments";
             this.menuItemSaveComments.Click += new System.EventHandler(this.menuItemSaveComments_Click);
             // 
             // menuItem6
             // 
-            this.menuItem6.Index = 14;
+            this.menuItem6.Index = 11;
             this.menuItem6.Text = "-";
             // 
             // menuItemSaveDisassembly
             // 
-            this.menuItemSaveDisassembly.Index = 15;
+            this.menuItemSaveDisassembly.Index = 12;
             this.menuItemSaveDisassembly.Text = "Save disassembly";
             this.menuItemSaveDisassembly.Click += new System.EventHandler(this.menuItemSaveDisassembly_Click);
             // 
             // menuItem1
             // 
-            this.menuItem1.Index = 16;
+            this.menuItem1.Index = 13;
             this.menuItem1.Text = "-";
             // 
             // menuItemDasmRefresh
             // 
-            this.menuItemDasmRefresh.Index = 17;
+            this.menuItemDasmRefresh.Index = 14;
             this.menuItemDasmRefresh.Text = "Refresh";
             this.menuItemDasmRefresh.Click += new System.EventHandler(this.menuItemDasmRefresh_Click);
             // 
@@ -773,7 +815,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // menuItemDataGotoADDR
             // 
             this.menuItemDataGotoADDR.Index = 0;
-            this.menuItemDataGotoADDR.Text = "Goto Address...";
+            this.menuItemDataGotoADDR.Shortcut = System.Windows.Forms.Shortcut.CtrlD;
+            this.menuItemDataGotoADDR.Text = "Dump memory address...";
             this.menuItemDataGotoADDR.Click += new System.EventHandler(this.menuItemDataGotoADDR_Click);
             // 
             // menuItemFollowInDisassembly
@@ -918,11 +961,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.tabPage1.ResumeLayout(false);
             this.panelState.ResumeLayout(false);
             this.panelRegs.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            this.tabPageTrace.ResumeLayout(false);
+            this.tabPageTrace.PerformLayout();
             this.groupBoxTraceOptions.ResumeLayout(false);
             this.groupBoxTraceOptions.PerformLayout();
             this.tabPage3.ResumeLayout(false);
+            this.groupBoxTrace.ResumeLayout(false);
+            this.groupBoxTrace.PerformLayout();
             this.groupBoxStartup.ResumeLayout(false);
             this.groupBoxStartup.PerformLayout();
             this.panelMem.ResumeLayout(false);
@@ -980,7 +1025,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuItemDumpMemoryAtCurrentAddress;
         private System.Windows.Forms.TabControl tabMenus;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPageTrace;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Button btnStartTrace;
         private System.Windows.Forms.Button btnStopTrace;
@@ -1006,12 +1051,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.CheckBox checkBoxLoadConfig;
         public System.Windows.Forms.CheckBox checkBoxDetectJumpOnAddress;
         public System.Windows.Forms.TextBox textBoxJumpToAnAddress;
-        private System.Windows.Forms.MenuItem menuItemInsertComment;
-        private System.Windows.Forms.MenuItem menuItemLoadComments;
-        private System.Windows.Forms.MenuItem menuItemSaveComments;
         private System.Windows.Forms.MenuItem menuItem6;
-        private System.Windows.Forms.MenuItem menuItem10;
+        private System.Windows.Forms.GroupBox groupBoxTrace;
+        private System.Windows.Forms.CheckBox checkBoxTraceAutoOpenLog;
+        private System.Windows.Forms.MenuItem menuItemCommentsSymbols;
+        private System.Windows.Forms.MenuItem menuItemInsertComment;
+        private System.Windows.Forms.MenuItem menuItem12;
         private System.Windows.Forms.MenuItem menuItemClearCurrentComment;
         private System.Windows.Forms.MenuItem menuItemClearAllComments;
+        private System.Windows.Forms.MenuItem menuItemLoadComments;
+        private System.Windows.Forms.MenuItem menuItemSaveComments;
+        private System.Windows.Forms.MenuItem menuItem11;
     }
 }

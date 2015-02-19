@@ -73,7 +73,6 @@
     <Compile Include="Views\DebugPanels.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DictionarySafe.cs" />
     <Compile Include="Views\FormCPU.cs">
       <SubType>Form</SubType>
     </Compile>

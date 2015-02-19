@@ -427,7 +427,14 @@ namespace ZXMAK2.Hardware.Adlers.Core
                         {
                             if (prevMemAddr != tracedAreas[memCounter] - 1 || memCounter+1 >= tracedAreas.Length)
                             {
-                                tracedAreaOut += String.Format("#{0:X4}->#{1:X4}", actualStartAddr, tracedAreas[memCounter]);
+                                if (tracedAreas[memCounter] - 1 != tracedAreas[memCounter - 1])
+                                {
+                                    tracedAreaOut += String.Format("#{0:X4}->#{1:X4}; ", actualStartAddr, tracedAreas[memCounter - 1]);
+                                }
+                                else
+                                {
+                                    tracedAreaOut += String.Format("#{0:X4}->#{1:X4}; ", actualStartAddr, tracedAreas[memCounter]);
+                                }
                                 actualStartAddr = prevMemAddr = tracedAreas[memCounter];
                                 continue;
                             }
