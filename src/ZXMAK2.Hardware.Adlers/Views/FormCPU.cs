@@ -20,6 +20,7 @@ using ZXMAK2.Hardware.Adlers.Core;
 using ZXMAK2.Engine;
 using System.Xml;
 using System.Text;
+using System.Collections.Concurrent;
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {
@@ -347,88 +348,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
         }
 
-
-        private void FormCPU_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.F3:              // reset
-                    if (m_spectrum.IsRunning)
-                        break;
-                    m_spectrum.DoReset();
-                    UpdateCPU(true);
-                    break;
-                case Keys.F7:              // StepInto
-                    if (m_spectrum.IsRunning)
-                        break;
-                    try
-                    {
-                        m_spectrum.DoStepInto();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                        Locator.Resolve<IUserMessage>().ErrorDetails(ex);
-                    }
-                    UpdateCPU(true);
-                    break;
-                case Keys.F8:              // StepOver
-                    if (m_spectrum.IsRunning)
-                        break;
-                    try
-                    {
-                        m_spectrum.DoStepOver();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                        Locator.Resolve<IUserMessage>().ErrorDetails(ex);
-                    }
-                    UpdateCPU(true);
-                    break;
-                case Keys.F10:             // Run
-                    m_spectrum.DoRun();
-                    UpdateCPU(false);
-                    break;
-                case Keys.F5:              // Stop
-                    m_spectrum.DoStop();
-                    UpdateCPU(true);
-                    e.Handled = true;
-                    break;
-                case Keys.F12:  // toggle Stack/Breakpoints on the panel
-                    showStack = !showStack;
-                    UpdateREGS();
-                    break;
-                case Keys.F: //find bytes in memory(memory dump panel)
-                    if( e.Control )
-                    {
-                        menuItemFindBytes_Click(new object(), null);
-                    }
-                    break;
-                case Keys.N: //find next bytes
-                    if (e.Control)
-                    {
-                        menuItemFindBytesNext_Click(null, null);
-                    }
-                    break;
-                case Keys.Escape:
-                    this.Hide();
-                    if (this.Owner != null)
-                        this.Owner.Focus();
-                    break;
-                case Keys.G: //Goto address(disassembly)
-                    if (e.Control)
-                    {
-                        menuItemDasmGotoADDR_Click(null, null);
-                    }
-                    break;
-                case Keys.Insert:
-                    menuItemInsertComment_Click(null, null);
-                    e.Handled = true;
-                    break;
-            }
-        }
-
         private void menuItemDasmGotoPC_Click(object sender, EventArgs e)
         {
             dasmPanel.ActiveAddress = m_spectrum.CPU.regs.PC;
@@ -641,7 +560,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             int adr = dataPanel.TopAddress;
             var service = Locator.Resolve<IUserQuery>();
-            if (!service.QueryValue("Data Panel Address", "New Address:", "#{0:X4}", ref adr, 0, 0xFFFF)) return;
+            if (!service.QueryValue("Dump memory", "Address:", "#{0:X4}", ref adr, 0, 0xFFFF)) return;
             dataPanel.TopAddress = (ushort)adr;
             dataPanel.Focus();
         }
@@ -869,7 +788,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void dasmPanel_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (e.X > 30/*fGutterWidth*/ && e.Button == MouseButtons.Left)
-                dbgCmdLine.Text += "#" + dasmPanel.ActiveAddress.ToString("X4");
+            {
+                //fill command line with current doubleclicked address on disassembly panel
+                dbgCmdLine.Text = dbgCmdLine.Text.Insert(dbgCmdLine.SelectionStart, String.Format("#{0:X4}", dasmPanel.ActiveAddress));
+                dbgCmdLine.Focus();
+            }
         }
 
         private void dataPanel_MouseClick(object sender, MouseEventArgs e)
@@ -1465,7 +1388,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             {
                 return;
             }
-            if (!service.QueryValue("Disassembly Address", "New Address:", "#{0:X4}", ref ToAddr, 0, 0xFFFF)) return;
+            if (!service.QueryValue("Disassembly Address", "Address:", "#{0:X4}", ref ToAddr, 0, 0xFFFF)) return;
             dasmPanel.TopAddress = (ushort)ToAddr;
             dasmPanel.Focus();
         }
@@ -1515,7 +1438,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             xmlDoc.Load(loadDialog.FileName);
 
             XmlNodeList xmlNodes = xmlDoc.SelectNodes("/Root/Comments/AddressComment");
-            DictionarySafe<ushort, string> loadedCodeComments = new DictionarySafe<ushort, string>();
+            ConcurrentDictionary<ushort, string> loadedCodeComments = new ConcurrentDictionary<ushort, string>();
             bool fParseFailed = false;
             foreach(XmlNode node in xmlNodes)
             {
@@ -1535,7 +1458,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     fParseFailed = true;
                     break;
                 }
-                loadedCodeComments.Add(addressAt, node.InnerText);
+                loadedCodeComments.AddOrUpdate(addressAt, node.InnerText, (key, oldValue) => node.InnerText);
             }
             if( fParseFailed )
             {
@@ -1627,9 +1550,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         #endregion
 
         #region Conditional breakpoints(memory change, write, registry change, ...)
-
         //conditional breakpoints
-        private DictionarySafe<byte, BreakpointAdlers> _breakpointsExt = null;
+        private ConcurrentDictionary<byte, BreakpointAdlers> _breakpointsExt = null;
 
         public bool CheckIsBrkMulticonditional(List<string> newBreakpointDesc)
         {
@@ -1739,7 +1661,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         public void AddExtBreakpoint(List<string> newBreakpointDesc)
         {
             if (_breakpointsExt == null)
-                _breakpointsExt = new DictionarySafe<byte, BreakpointAdlers>();
+                _breakpointsExt = new ConcurrentDictionary<byte, BreakpointAdlers>();
 
             BreakpointInfo breakpointInfo = new BreakpointInfo();
             breakpointInfo.IsMulticonditional = CheckIsBrkMulticonditional(newBreakpointDesc);
@@ -1815,22 +1737,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
             else
             {
                 byte index = Convert.ToByte(brkIndex);
-                if (_breakpointsExt.ContainsKey(Convert.ToByte(index)))
-                {
-                    Breakpoint bp = _breakpointsExt[index];
-                    _breakpointsExt.Remove(index);
-                    m_spectrum.RemoveBreakpoint(bp);
-                }
+                BreakpointAdlers bpAdlers;
+                if (_breakpointsExt.TryRemove(index, out bpAdlers))
+                    m_spectrum.RemoveBreakpoint(bpAdlers);
                 else
                     throw new Exception(String.Format("No breakpoint with index {0} !", index));
             }
         }
-        public DictionarySafe<byte, BreakpointAdlers> GetExtBreakpointsList()
+        public ConcurrentDictionary<byte, BreakpointAdlers> GetExtBreakpointsList()
         {
             if (_breakpointsExt != null)
                 return _breakpointsExt;
 
-            _breakpointsExt = new DictionarySafe<byte, BreakpointAdlers>();
+            _breakpointsExt = new ConcurrentDictionary<byte, BreakpointAdlers>();
 
             return _breakpointsExt;
         }
@@ -1842,7 +1761,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (_breakpointsExt.Count < 255)
             {
                 var bp = new BreakpointAdlers(info);
-                _breakpointsExt.Add(GetNewBreakpointPosition(), bp);
+                _breakpointsExt.TryAdd(GetNewBreakpointPosition(), bp);
                 m_spectrum.AddBreakpoint(bp);
             }
             else
@@ -1860,7 +1779,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             return Convert.ToByte(_breakpointsExt.Count);
         }
 
-        #region Read and Write Mem check methods
         public void CheckWriteMem(ushort addr, byte value)
         {
             if (_breakpointsExt == null)
@@ -1909,7 +1827,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             return;
         }
-        #endregion
 
         public void EnableOrDisableBreakpointStatus(byte whichBpToEnableOrDisable, bool setOn) //enables/disables breakpoint, command "on" or "off"
         {
@@ -1955,7 +1872,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         public void SaveBreakpointsListToFile(string fileName)
         {
-            DictionarySafe<byte, BreakpointAdlers> localBreakpointsList = GetExtBreakpointsList();
+            ConcurrentDictionary<byte, BreakpointAdlers> localBreakpointsList = GetExtBreakpointsList();
             if (localBreakpointsList.Count == 0)
                 return;
 
@@ -1975,6 +1892,96 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
         }
 
+        #endregion
+
+        #region GUI shortcuts
+        private void FormCPU_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.F3:              // reset
+                    if (m_spectrum.IsRunning)
+                        break;
+                    m_spectrum.DoReset();
+                    UpdateCPU(true);
+                    break;
+                case Keys.F7:              // StepInto
+                    if (m_spectrum.IsRunning)
+                        break;
+                    try
+                    {
+                        m_spectrum.DoStepInto();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                        Locator.Resolve<IUserMessage>().ErrorDetails(ex);
+                    }
+                    UpdateCPU(true);
+                    break;
+                case Keys.F8:              // StepOver
+                    if (m_spectrum.IsRunning)
+                        break;
+                    try
+                    {
+                        m_spectrum.DoStepOver();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                        Locator.Resolve<IUserMessage>().ErrorDetails(ex);
+                    }
+                    UpdateCPU(true);
+                    break;
+                case Keys.F10:             // Run
+                    m_spectrum.DoRun();
+                    UpdateCPU(false);
+                    break;
+                case Keys.F5:              // Stop
+                    m_spectrum.DoStop();
+                    UpdateCPU(true);
+                    e.Handled = true;
+                    break;
+                case Keys.F12:  // toggle Stack/Breakpoints on the panel
+                    showStack = !showStack;
+                    UpdateREGS();
+                    break;
+                case Keys.F: //find bytes in memory(memory dump panel)
+                    if (e.Control)
+                    {
+                        menuItemFindBytes_Click(new object(), null);
+                    }
+                    break;
+                case Keys.N: //find next bytes
+                    if (e.Control)
+                    {
+                        menuItemFindBytesNext_Click(null, null);
+                    }
+                    break;
+                case Keys.Escape:
+                    this.Hide();
+                    if (this.Owner != null)
+                        this.Owner.Focus();
+                    break;
+                case Keys.G: //Goto address(disassembly)
+                    if (e.Control)
+                    {
+                        menuItemDasmGotoADDR_Click(null, null);
+                    }
+                    break;
+                case Keys.D: //Dump memory at address
+                    if (e.Control)
+                    {
+                        menuItemDataGotoADDR_Click(null, null);
+                    }
+                    break;
+                case Keys.Insert://Insert new comment
+                    this.menuItemInsertComment_Click(null, null);
+                    e.Handled = true;
+                    break;
+
+            }
+        }
         #endregion
 
         #region Trace GUI methods
@@ -2038,6 +2045,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 btnStopTrace.Enabled = false;
 
                 m_debuggerTrace.StopTrace();
+                if (checkBoxTraceAutoOpenLog.Checked)
+                    ShowTraceLogFile();
 
                 m_isTracing = false;
             }
@@ -2112,12 +2121,18 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         tagArr += item.Tag + "|";
                     }
                     writer.WriteElementString("TagArray", tagArr);
-                    writer.WriteEndElement();
+                writer.WriteEndElement(); //Trace(end)
 
                 writer.WriteElementString("ConsoleOutput", this.checkBoxShowConsole.Checked ? "1" : "0");
                 writer.WriteElementString("OutputToFile", this.checkBoxTraceFileOut.Checked ? "1" : "0");
                 writer.WriteElementString("OutputFileName", this.textBoxTraceFileName.Text);
                 writer.WriteEndElement(); //Trace
+
+                //Misc.
+                writer.WriteStartElement("Misc");
+                writer.WriteElementString("AutoOpenTraceLog", this.checkBoxTraceAutoOpenLog.Checked ? "1" : "0");
+                //Misc(end)
+                writer.WriteEndElement();
 
                 writer.WriteEndElement(); //Root
                 writer.Flush();
@@ -2206,6 +2221,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     }
                 }
 
+            //Misc.->Auto open trace log check box
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Misc/AutoOpenTraceLog");
+            if (node != null)
+                this.checkBoxTraceAutoOpenLog.Checked = (node.InnerText == "1");
+
             //ConsoleOutput
             node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/ConsoleOutput");
             if( node != null )
@@ -2220,5 +2240,21 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 this.textBoxTraceFileName.Text = node.InnerText;
         }
         #endregion
+
+        private void buttonSetTraceFileName_Click(object sender, EventArgs e)
+        {
+            ShowTraceLogFile();
+        }
+
+        private void ShowTraceLogFile()
+        {
+            string strFileName = textBoxTraceFileName.Text;
+            if (strFileName.Length == 0)
+                return;
+            string logFileName = Path.Combine(Utils.GetAppFolder(), strFileName);
+            if (!File.Exists(logFileName))
+                return;
+            System.Diagnostics.Process.Start(logFileName);
+        }
     }
 }
