@@ -74,6 +74,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemDumpMemoryAtCurrentAddress = new System.Windows.Forms.MenuItem();
             this.menuItemFollowInDisassembler = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.menuItemInsertBreakpointHere = new System.Windows.Forms.MenuItem();
             this.menuItemDasmClearBreakpoints = new System.Windows.Forms.MenuItem();
             this.menuItem4 = new System.Windows.Forms.MenuItem();
             this.menuDasmLoadBlock = new System.Windows.Forms.MenuItem();
@@ -643,6 +644,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemDumpMemory,
             this.menuItemFollowInDisassembler,
             this.menuItem2,
+            this.menuItemInsertBreakpointHere,
             this.menuItemDasmClearBreakpoints,
             this.menuItem4,
             this.menuDasmLoadBlock,
@@ -691,37 +693,43 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem2.Index = 4;
             this.menuItem2.Text = "-";
             // 
+            // menuItemInsertBreakpointHere
+            // 
+            this.menuItemInsertBreakpointHere.Index = 5;
+            this.menuItemInsertBreakpointHere.Text = "Insert breakpoint here";
+            this.menuItemInsertBreakpointHere.Click += new System.EventHandler(this.menuItemInsertBreakpointHere_Click);
+            // 
             // menuItemDasmClearBreakpoints
             // 
-            this.menuItemDasmClearBreakpoints.Index = 5;
+            this.menuItemDasmClearBreakpoints.Index = 6;
             this.menuItemDasmClearBreakpoints.Text = "Reset panel breakpoints";
             this.menuItemDasmClearBreakpoints.Click += new System.EventHandler(this.menuItemDasmClearBP_Click);
             // 
             // menuItem4
             // 
-            this.menuItem4.Index = 6;
+            this.menuItem4.Index = 7;
             this.menuItem4.Text = "-";
             // 
             // menuDasmLoadBlock
             // 
-            this.menuDasmLoadBlock.Index = 7;
+            this.menuDasmLoadBlock.Index = 8;
             this.menuDasmLoadBlock.Text = "Load Block...";
             this.menuDasmLoadBlock.Click += new System.EventHandler(this.menuLoadBlock_Click);
             // 
             // menuDasmSaveBlock
             // 
-            this.menuDasmSaveBlock.Index = 8;
+            this.menuDasmSaveBlock.Index = 9;
             this.menuDasmSaveBlock.Text = "Save Block...";
             this.menuDasmSaveBlock.Click += new System.EventHandler(this.menuSaveBlock_Click);
             // 
             // menuItem8
             // 
-            this.menuItem8.Index = 9;
+            this.menuItem8.Index = 10;
             this.menuItem8.Text = "-";
             // 
             // menuItemCommentsSymbols
             // 
-            this.menuItemCommentsSymbols.Index = 10;
+            this.menuItemCommentsSymbols.Index = 11;
             this.menuItemCommentsSymbols.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItemInsertComment,
             this.menuItem12,
@@ -776,23 +784,23 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // menuItem6
             // 
-            this.menuItem6.Index = 11;
+            this.menuItem6.Index = 12;
             this.menuItem6.Text = "-";
             // 
             // menuItemSaveDisassembly
             // 
-            this.menuItemSaveDisassembly.Index = 12;
+            this.menuItemSaveDisassembly.Index = 13;
             this.menuItemSaveDisassembly.Text = "Save disassembly";
             this.menuItemSaveDisassembly.Click += new System.EventHandler(this.menuItemSaveDisassembly_Click);
             // 
             // menuItem1
             // 
-            this.menuItem1.Index = 13;
+            this.menuItem1.Index = 14;
             this.menuItem1.Text = "-";
             // 
             // menuItemDasmRefresh
             // 
-            this.menuItemDasmRefresh.Index = 14;
+            this.menuItemDasmRefresh.Index = 15;
             this.menuItemDasmRefresh.Text = "Refresh";
             this.menuItemDasmRefresh.Click += new System.EventHandler(this.menuItemDasmRefresh_Click);
             // 
@@ -1062,5 +1070,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuItemLoadComments;
         private System.Windows.Forms.MenuItem menuItemSaveComments;
         private System.Windows.Forms.MenuItem menuItem11;
+        private System.Windows.Forms.MenuItem menuItemInsertBreakpointHere;
     }
 }
