@@ -33,13 +33,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private CpuRegs m_cpuRegs;
         private DebuggerTrace m_debuggerTrace;
 
-        private bool showStack = true; // show stack or breakpoint list on the form(panel listState)
+        private bool m_showStack = true; // show stack or breakpoint list on the form(panel listState)
 
         private readonly object m_sync = new object();
 
         //debugger command line history
         private List<string> m_cmdLineHistory = new List<string>();
         private int m_cmdLineHistoryPos = 0;
+        private string savedCmdLineString = String.Empty;
 
         //find bytes in memory
         static string m_strBytesToFindSave = "#AFC3, 201";
@@ -206,7 +207,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             listState.Items.Add(" XFX=" + m_spectrum.CPU.XFX.ToString());*/
 
             listState.Items.Clear();
-            if (showStack) // toggle by F12 key
+            if (m_showStack) // toggle by F12 key
             {
                 // show stack on listState panel
                 int localStack = m_spectrum.CPU.regs.SP;
@@ -677,7 +678,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 {
                     try
                     {
-                        bytesToFindInput.Add(DebuggerManager.ConvertNumberWithPrefix(byteCandidate));
+                        bytesToFindInput.Add(ConvertRadix.ConvertNumberWithPrefix(byteCandidate));
                     }
                     catch
                     {
@@ -803,7 +804,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private void listState_DoubleClick(object sender, EventArgs e)
         {
-            if (!showStack) // if we are in breakpoint mode only
+            if (!m_showStack) // if we are in breakpoint mode only
             {
                 int selectedIndex = listState.SelectedIndex;
                 if (selectedIndex < 0 || GetExtBreakpointsList().Count == 0) return;
@@ -1019,6 +1020,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void dbgCmdLine_KeyUp(object sender, KeyEventArgs e)
         {
             //ToDo: process always lands here after changing TopAdress(menuItemDasmGotoADDR_Click()) in dasm panel(pressing enter)....must be resolved.
+            //In waiting mode(when error occurred then the error message will be displayed until keypres)
+            if (savedCmdLineString != String.Empty)
+            {
+                //display debugger command line content before error occurred
+                dbgCmdLine.BackColor = Color.White;
+                dbgCmdLine.ForeColor = Color.Black;
+                dbgCmdLine.Text = savedCmdLineString;
+                savedCmdLineString = String.Empty;
+                return;
+            }
+
             //Debug command entered ?
             if (e.KeyCode == Keys.Enter)
             {
@@ -1043,8 +1055,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                         //left side must be registry or memory reference
                         if (   !DebuggerManager.isRegistry(left)
-                            && !DebuggerManager.isFlag(left) 
-                            && !DebuggerManager.isMemoryReference(left) 
+                            && !DebuggerManager.isFlag(left)
+                            && !DebuggerManager.isMemoryReference(left)
                             && left != "memread"
                             && left != "memwrite"
                            )
@@ -1052,12 +1064,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                         AddExtBreakpoint(parsedCommand); // add breakpoint, send parsed command e.g.: br pc == #0000
 
-                        showStack = false; // show breakpoint list on listState panel
+                        m_showStack = false; // show breakpoint list on listState panel
                     }
                     else if (commandType == DebuggerManager.CommandType.gotoAdress)
                     {
                         // goto adress to dissasembly
-                        dasmPanel.TopAddress = DebuggerManager.ConvertNumberWithPrefix(parsedCommand[1]);
+                        dasmPanel.TopAddress = ConvertRadix.ConvertNumberWithPrefix(parsedCommand[1]);
                     }
                     else if (commandType == DebuggerManager.CommandType.removeBreakpoint)
                     {
@@ -1068,19 +1080,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     else if (commandType == DebuggerManager.CommandType.enableBreakpoint)
                     {
                         //enable breakpoint
-                        EnableOrDisableBreakpointStatus(Convert.ToByte(DebuggerManager.ConvertNumberWithPrefix(parsedCommand[1])), true);
+                        EnableOrDisableBreakpointStatus(Convert.ToByte(ConvertRadix.ConvertNumberWithPrefix(parsedCommand[1])), true);
                     }
                     else if (commandType == DebuggerManager.CommandType.disableBreakpoint)
                     {
                         //disable breakpoint
-                        EnableOrDisableBreakpointStatus(Convert.ToByte(DebuggerManager.ConvertNumberWithPrefix(parsedCommand[1])), false);
+                        EnableOrDisableBreakpointStatus(Convert.ToByte(ConvertRadix.ConvertNumberWithPrefix(parsedCommand[1])), false);
                     }
                     else if (commandType == DebuggerManager.CommandType.loadBreakpointsListFromFile)
                     {
                         //load breakpoints list into debugger
                         LoadBreakpointsListFromFile(parsedCommand[1]);
 
-                        showStack = false;
+                        m_showStack = false;
                     }
                     else if (commandType == DebuggerManager.CommandType.saveBreakpointsListToFile)
                     {
@@ -1148,18 +1160,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
                             // is it register ?
                             if (DebuggerManager.isRegistry(left))
                             {
-                                leftNum = DebuggerManager.getRegistryValueByName(m_spectrum.CPU.regs, left);
+                                //leftNum = DebuggerManager.getRegistryValueByName(m_spectrum.CPU.regs, left);
                                 isLeftRegistry = true;
                             }
                             else
-                                leftNum = DebuggerManager.ConvertNumberWithPrefix(left);
+                                leftNum = ConvertRadix.ConvertNumberWithPrefix(left);
                         }
 
                         //Reading values - right side of statement
                         if (DebuggerManager.isMemoryReference(right))
                         {
                             rightNum = DebuggerManager.getReferencedMemoryPointer(right);
-
                             isRightMemoryReference = true;
                         }
                         else
@@ -1169,6 +1180,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
                             {
                                 rightNum = DebuggerManager.getRegistryValueByName(m_spectrum.CPU.regs, right);
                                 isRightRegistry = true;
+                            }
+                            else
+                            {
+                                //must be a value
+                                rightNum = ConvertRadix.ConvertNumberWithPrefix(right);
+                                isRightRegistry = false;
                             }
                         }
 
@@ -1224,7 +1241,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                     else
                                     {
                                         // e.g.: ld (#9C40), #21 #33 3344 .. .. .. -> x
-                                        rightNum = DebuggerManager.ConvertNumberWithPrefix(currExpr);
+                                        rightNum = ConvertRadix.ConvertNumberWithPrefix(currExpr);
                                         if (rightNum <= Byte.MaxValue)
                                         {
                                             m_spectrum.WriteMemory(leftNum, Convert.ToByte(rightNum));
@@ -1280,15 +1297,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 catch (Exception exc)
                 {
                     //Logger.Error(exc);
-                    string saveCmdLineString = dbgCmdLine.Text;
+                    savedCmdLineString = dbgCmdLine.Text;
                     dbgCmdLine.BackColor = Color.Red;
                     dbgCmdLine.ForeColor = Color.Black;
                     dbgCmdLine.Text = exc.Message;
                     dbgCmdLine.Refresh();
-                    System.Threading.Thread.Sleep(140);
-                    dbgCmdLine.BackColor = Color.White;
-                    dbgCmdLine.ForeColor = Color.Black;
-                    dbgCmdLine.Text = saveCmdLineString;
+                    //System.Threading.Thread.Sleep(140);
                 }
             }
             else if (e.KeyCode == Keys.Up && this.m_cmdLineHistory.Count != 0) //arrow up - history of command line
@@ -1393,6 +1407,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
             dasmPanel.Focus();
         }
 
+        //Dasm context menu: Insert breakpoint(extended) here
+        private void menuItemInsertBreakpointHere_Click(object sender, EventArgs e)
+        {
+            List<string> newBreakpoint 
+                = new List<string>(String.Format("br pc == #{0:X4}", dasmPanel.ActiveAddress).Split(new char[] { ' ' }).ToArray());
+            this.AddExtBreakpoint(newBreakpoint);
+            m_showStack = false;
+            this.UpdateREGS();
+        }
+
         //Dasm context menu: Insert code comment
         private void menuItemInsertComment_Click(object sender, EventArgs e)
         {
@@ -1416,7 +1440,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             dasmPanel.ClearCodeComments();
         }
 
-        //Dasm context menu: Load comments to file(xml)
+        //Dasm context menu: Load comments from file(xml)
         private void menuItemLoadComments_Click(object sender, EventArgs e)
         {
             OpenFileDialog loadDialog = new OpenFileDialog();
@@ -1629,7 +1653,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 {
                     //it has to be a common value, e.g.: #4000, %111010101, ...
                     o_breakpointInfo.RightCondition = rightExpr.ToUpper(); // because of breakpoint panel
-                    o_breakpointInfo.RightValue = DebuggerManager.ConvertNumberWithPrefix(rightExpr); // last chance
+                    o_breakpointInfo.RightValue = ConvertRadix.ConvertNumberWithPrefix(rightExpr); // last chance
 
                     rightType = 2;
                 }
@@ -1674,11 +1698,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 if (newBreakpointDesc.Count >= 3) //e.g.: "br memread #4000" or "br memread #4000 #5B00"
                 {
                     breakpointInfo.IsOn = true;
-                    breakpointInfo.LeftValue = DebuggerManager.ConvertNumberWithPrefix(newBreakpointDesc[2]); // set "start" memory checkpoint
+                    breakpointInfo.LeftValue = ConvertRadix.ConvertNumberWithPrefix(newBreakpointDesc[2]); // set "start" memory checkpoint
                     if (newBreakpointDesc.Count > 3)
                     {
                         //memory range
-                        breakpointInfo.RightValue = DebuggerManager.ConvertNumberWithPrefix(newBreakpointDesc[3]); // set "stop" memory checkpoint
+                        breakpointInfo.RightValue = ConvertRadix.ConvertNumberWithPrefix(newBreakpointDesc[3]); // set "stop" memory checkpoint
                         breakpointInfo.AccessType = (fMemWrite ? BreakPointConditionType.memoryWriteInRange : BreakPointConditionType.memoryReadInRange);
                     }
                     else
@@ -1755,6 +1779,23 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
         private void InsertNewBreakpoint(BreakpointInfo info)
         {
+            //prevent duplicity in breakpoints so that the same breakpoint could not be inserted more than once
+            {
+                BreakpointAdlers[] breakpointCandidates = _breakpointsExt.Values.Where(p => p.Info.AccessType == info.AccessType).ToArray();
+                if( breakpointCandidates.Length != 0 )
+                {
+                    foreach(BreakpointAdlers item in breakpointCandidates)
+                    {
+                        if (item.Info.LeftCondition == info.LeftCondition
+                          && item.Info.ConditionTypeSign == info.ConditionTypeSign
+                          && item.Info.RightCondition == info.RightCondition
+                          && item.Info.CheckSecondCondition == item.Info.CheckSecondCondition //only one conditional breakpoints, ToDo:
+                          )
+                            return;
+                    }
+                }
+            }
+
             // ADD breakpoint into list
             // Here will be the breakpoint key assigned by searching keys starting with key 0
             // Maximum 255 breakpoints is allowed
@@ -1943,7 +1984,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     e.Handled = true;
                     break;
                 case Keys.F12:  // toggle Stack/Breakpoints on the panel
-                    showStack = !showStack;
+                    m_showStack = !m_showStack;
                     UpdateREGS();
                     break;
                 case Keys.F: //find bytes in memory(memory dump panel)

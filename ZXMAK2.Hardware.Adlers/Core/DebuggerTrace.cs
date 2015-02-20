@@ -137,15 +137,15 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 string traceCountersLog = String.Empty;
                 foreach (int counterItem in countersOut)
                 {
-                    traceCountersLog += String.Format("Addr: #{0:X4}   Trace occurences: {1}\n", counterItem, _counters[counterItem]);
+                    traceCountersLog += String.Format("Addr: #{0:X4}   Trace occurences: {1}\r\n", counterItem, _counters[counterItem]);
                     totalOccurences += _counters[counterItem];
                 }
 
                 string sumLine = String.Format("Total addresses: {0}   Total occurences: {1}", countersOut.Length, totalOccurences);
-                traceCountersLog += new String('=', sumLine.Length) + "\n";
+                traceCountersLog += new String('=', sumLine.Length) + "\r\n";
                 traceCountersLog += String.Format("Total addresses: {0}   Total occurences: {1}", countersOut.Length, totalOccurences);
 
-                traceCountersLog += "\n\n\n";
+                traceCountersLog += "\r\n\r\n\n";
 
                 //log filter info
                 traceCountersLog += _traceInfo;
@@ -348,7 +348,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             try
             {
-                UInt16 opcode = DebuggerManager.ConvertNumberWithPrefix(i_form.textBoxOpcode.Text);
+                UInt16 opcode = ConvertRadix.ConvertNumberWithPrefix(i_form.textBoxOpcode.Text);
                 if (opcode > 0xFF) //ToDo: only one byte for traced opcode
                     SetTracedOpcode((byte)(opcode % 256));
                 else
@@ -370,7 +370,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             try
             {
-                UInt16 detectedJumpAddress = DebuggerManager.ConvertNumberWithPrefix(i_form.textBoxJumpToAnAddress.Text);
+                UInt16 detectedJumpAddress = ConvertRadix.ConvertNumberWithPrefix(i_form.textBoxJumpToAnAddress.Text);
                 if (detectedJumpAddress > 0xFFFF)
                 {
                     Locator.Resolve<IUserMessage>().Error("Value for jump to an address is too big...\n\nMaximum is 2 bytes(0xFFFF).");
@@ -394,17 +394,17 @@ namespace ZXMAK2.Hardware.Adlers.Core
 
         private void MakeTraceInfo(FormCpu i_form)
         {
-            _traceInfo = "Trace filter:\n===========================\n";
+            _traceInfo = "Trace filter:\r\n===========================\r\n";
             if (i_form.checkBoxAllJumps.Checked)
-                _traceInfo += "- all jumps\n";
+                _traceInfo += "- all jumps\r\n";
             if (i_form.checkBoxConditionalJumps.Checked)
-                _traceInfo += "- conditional jumps\n";
+                _traceInfo += "- conditional jumps\r\n";
             if (i_form.checkBoxConditionalCalls.Checked)
-                _traceInfo += "- conditional calls\n";
+                _traceInfo += "- conditional calls\r\n";
             if (i_form.checkBoxDetectJumpOnAddress.Checked)
-                _traceInfo += String.Format("- detecting jump/call to an address #{0:X4}\n", _detectingJumpToAddress);
+                _traceInfo += String.Format("- detecting jump/call to an address #{0:X4}\r\n", _detectingJumpToAddress);
             if (i_form.checkBoxOpcode.Checked)
-                _traceInfo += String.Format("- tracing opcode #{0:X2}\n", _tracedOpcode);
+                _traceInfo += String.Format("- tracing opcode #{0:X2}\r\n", _tracedOpcode);
             if (i_form.checkBoxTraceArea.Checked)
             {
                 int[] tracedAreas = _addrsFlags.Select((s, index) => new { s, index })
@@ -442,7 +442,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
                         }
                         _traceInfo += tracedAreaOut;
                     }
-                    _traceInfo += "\n";
+                    _traceInfo += "\r\n";
                 }
                 else
                     _traceInfo += "- trace area: no valid address => nothing will be traced"; //this should not happen

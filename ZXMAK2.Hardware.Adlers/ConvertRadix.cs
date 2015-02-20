@@ -49,5 +49,33 @@ namespace ZXMAK2.Hardware.Adlers
             }
             return (ushort)result;
         }
+
+        ////////////////////////////////////////////////////////////////////
+        //
+        // Method: convertNumberWithPrefix()
+        //
+        public static UInt16 ConvertNumberWithPrefix(string input) //Prefix: % - binary, # - hexadecimal
+        {
+            if (input == null || input.Trim() == String.Empty)
+            {
+                throw new CommandParseException("ConvertNumberWithPrefix: Empty or null value to be converted => error");
+            }
+            string inputTrimmed = input.Trim();
+
+            // % - binary
+            if (inputTrimmed[0] == '%')
+            {
+                var number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
+                return ConvertRadix.ParseUInt16(number, 2);
+            }
+
+            // '#' or 'x' - hexadecimal
+            if (inputTrimmed[0] == '#' || inputTrimmed[0] == 'x')
+            {
+                var number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
+                return ConvertRadix.ParseUInt16(number, 16);
+            }
+            return ConvertRadix.ParseUInt16(inputTrimmed, 10);
+        }
     }
 }
