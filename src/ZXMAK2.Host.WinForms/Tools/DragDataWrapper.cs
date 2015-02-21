@@ -79,8 +79,8 @@ namespace ZXMAK2.Host.WinForms.Tools
 
         private static class DataFormatEx
         {
-            public static string FileDrop = DataFormats.FileDrop;
-            public static string Uri = "UniformResourceLocator";
+            public static readonly string FileDrop = DataFormats.FileDrop;
+            public static readonly string Uri = "UniformResourceLocator";
         }
 
         #endregion Private

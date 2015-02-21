@@ -14,10 +14,10 @@ namespace ZXMAK2.Hardware.ZXBYTE
     {
         #region Fields
 
+        private readonly byte[] m_dd66 = new byte[512];
+        private readonly byte[] m_dd71 = new byte[2048];
         private int m_sovmest = 1; // COBMECT="OFF"
         private int m_rd1f = 0;
-        private byte[] m_dd66 = new byte[512];
-        private byte[] m_dd71 = new byte[2048];
 
         private ICommand CommandSwitcher { get; set; }
 
