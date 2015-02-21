@@ -12,6 +12,7 @@ namespace ZXMAK2.Hardware.General
         #region Fields
 
         private readonly ushort[] m_dac = new ushort[4];
+        private IMemoryDevice m_memory;
         private int m_portState;
 
         private int m_bitEarMask;
@@ -20,6 +21,7 @@ namespace ZXMAK2.Hardware.General
         private int m_shiftMic;
         private int m_fixMic;
 
+        private bool m_noDos;
         private int m_mask;
         private int m_port;
         private int m_bitEar;
@@ -35,6 +37,7 @@ namespace ZXMAK2.Hardware.General
             Description = "Standard Beeper";
             Volume = 40;    // default 100% is too loud and jamming AY
 
+            NoDos = true;
             Mask = 0x01;
             Port = 0xFE;
             BitMic = -1;
@@ -42,6 +45,16 @@ namespace ZXMAK2.Hardware.General
         }
 
         #region Properties
+
+        public bool NoDos
+        {
+            get { return m_noDos; }
+            set
+            {
+                m_noDos = value;
+                OnConfigChanged();
+            }
+        }
 
         public int Mask
         {
@@ -96,7 +109,7 @@ namespace ZXMAK2.Hardware.General
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-
+            m_memory = m_noDos ? bmgr.FindDevice<IMemoryDevice>() : null;
             bmgr.SubscribeWrIo(Mask, Port & Mask, WritePortFE);
         }
 
@@ -110,6 +123,10 @@ namespace ZXMAK2.Hardware.General
             //	return;
             //iorqge = false;
             //PortFE = value;
+            if (m_memory != null && m_memory.DOSEN)
+            {
+                return;
+            }
             var maskedValue = value & (m_bitEarMask | m_bitMicMask);
             if (maskedValue == m_portState)
             {
@@ -154,6 +171,7 @@ namespace ZXMAK2.Hardware.General
         protected override void OnConfigLoad(XmlNode node)
         {
             base.OnConfigLoad(node);
+            NoDos = Utils.GetXmlAttributeAsBool(node, "noDos", NoDos);
             Mask = Utils.GetXmlAttributeAsInt32(node, "mask", Mask);
             Port = Utils.GetXmlAttributeAsInt32(node, "port", Port);
             BitEar = Utils.GetXmlAttributeAsInt32(node, "bitEar", BitEar);
@@ -163,6 +181,7 @@ namespace ZXMAK2.Hardware.General
         protected override void OnConfigSave(XmlNode node)
         {
             base.OnConfigSave(node);
+            Utils.SetXmlAttribute(node, "noDos", NoDos);
             Utils.SetXmlAttribute(node, "mask", Mask);
             Utils.SetXmlAttribute(node, "port", Port);
             Utils.SetXmlAttribute(node, "bitEar", BitEar);

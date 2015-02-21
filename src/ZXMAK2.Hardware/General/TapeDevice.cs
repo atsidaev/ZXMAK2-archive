@@ -16,6 +16,7 @@ using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Presentation;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Resources;
+using System.Text;
 
 
 namespace ZXMAK2.Hardware.General
@@ -24,9 +25,9 @@ namespace ZXMAK2.Hardware.General
     {
         #region Fields
 
+        private readonly IconDescriptor m_iconTape = new IconDescriptor("TAPE", ImageResources.TapeRd_128x128);
         private CpuUnit m_cpu;
         private IMemoryDevice m_memory;
-        private IconDescriptor m_iconTape = new IconDescriptor("TAPE", ImageResources.TapeRd_128x128);
         private bool m_trapsAllowed = true;
         private bool m_autoPlay = true;
         private readonly int m_frequency = 3500000;
@@ -46,6 +47,7 @@ namespace ZXMAK2.Hardware.General
 
         private IViewHolder m_viewHolder;
 
+        private bool m_noDos;
         private int m_mask;
         private int m_port;
         private int m_bit;
@@ -64,6 +66,7 @@ namespace ZXMAK2.Hardware.General
             Volume = 5;
             CreateViewHolder();
 
+            NoDos = true;
             Mask = 0x01;
             Port = 0xFE;
             Bit = 6;
@@ -71,6 +74,17 @@ namespace ZXMAK2.Hardware.General
 
 
         #region Properties
+
+        public bool NoDos
+        {
+            get { return m_noDos; }
+            set
+            {
+                m_noDos = value;
+                UpdateDescription();
+                OnConfigChanged();
+            }
+        }
 
         public int Mask
         {
@@ -110,11 +124,22 @@ namespace ZXMAK2.Hardware.General
 
         private void UpdateDescription()
         {
-            Description = string.Format(
-                "Common Tape Device (port #{0:X4}, mask #{1:X4}, bit D{2})",
-                Port,
-                Mask,
-                Bit);
+            var builder = new StringBuilder();
+            builder.Append("Common Tape Device");
+            builder.Append(Environment.NewLine);
+            builder.Append(Environment.NewLine);
+            if (NoDos)
+            {
+                builder.Append(string.Format("NoDos: {0}", NoDos));
+                builder.Append(Environment.NewLine);
+            }
+            builder.Append(string.Format("Port:  #{0:X4}", Port));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("Mask:  #{0:X4}", Mask));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("Bit:   D{0}", Bit));
+            builder.Append(Environment.NewLine);
+            Description = builder.ToString();
         }
 
         #endregion Properties
@@ -202,7 +227,7 @@ namespace ZXMAK2.Hardware.General
 
         private void WritePortFe(ushort addr, byte value, ref bool iorqge)
         {
-            if (!iorqge || m_memory.DOSEN)
+            if (!iorqge || (m_noDos && m_memory.DOSEN))
             {
                 return;
             }
@@ -218,7 +243,7 @@ namespace ZXMAK2.Hardware.General
 
         private void ReadPortFe(ushort addr, ref byte value, ref bool iorqge)
         {
-            if (!iorqge || m_memory.DOSEN)
+            if (!iorqge || (m_noDos && m_memory.DOSEN))
             {
                 return;
             }
