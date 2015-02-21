@@ -16,11 +16,10 @@ namespace ZXMAK2.Hardware.Atm
     {
         #region Fields
 
+        private readonly AtaPort m_ata = new AtaPort();
+        private readonly IconDescriptor m_iconHdd = new IconDescriptor("HDD", ImageResources.HddRd_128x128);
         private bool m_sandbox = false;
         private CpuUnit m_cpu;
-        private IconDescriptor m_iconHdd = new IconDescriptor("HDD", ImageResources.HddRd_128x128);
-        private IMemoryDevice m_memory = null;
-        private AtaPort m_ata = new AtaPort();
         private string m_ideFileName;
         private byte m_ide_wr_hi;
         private byte m_ide_rd_hi;
@@ -42,7 +41,6 @@ namespace ZXMAK2.Hardware.Atm
         {
             m_sandbox = bmgr.IsSandbox;
             m_cpu = bmgr.CPU;
-            m_memory = bmgr.FindDevice<IMemoryDevice>();
 
             m_ideFileName = bmgr.GetSatelliteFileName("vmide");
 

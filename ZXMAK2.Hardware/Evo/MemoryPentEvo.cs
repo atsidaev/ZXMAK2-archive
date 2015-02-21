@@ -12,14 +12,15 @@ namespace ZXMAK2.Hardware.Evo
     {
         #region Fields
 
+        private readonly int[] m_ru2 = new int[8]; // ATM 7.10 / ATM3(4Mb) memory map
+
         protected CpuUnit m_cpu;
         protected byte[][] m_romPages;
-        private bool m_lock = false;
         private UlaAtm450 m_ulaAtm;
+        private bool m_lock;
 
         private int m_aFF77;
         private int m_pFF77;
-        private int[] m_ru2 = new int[8]; // ATM 7.10 / ATM3(4Mb) memory map
 
         private byte m_pXXBF;   // port EVO EVO
         private byte m_pEFF7;   // port EVO MOD

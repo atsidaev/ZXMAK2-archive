@@ -651,7 +651,7 @@ namespace ZXMAK2.Hardware.Circuits.Fdd
                             break;
                         }
                         fdd[drive].ModifyFlag |= ModifyFlag.SectorLevel;
-                        rwptr = (int)(fdd[drive].t.HeaderList[foundid].idOffset + 6 + 11 + 11);
+                        rwptr = fdd[drive].t.HeaderList[foundid].idOffset + 6 + 11 + 11;
                         LedWr = true;
                         for (rwlen = 0; rwlen < 12; rwlen++)
                             fdd[drive].t.RawWrite(rwptr++, 0x00, false);
@@ -772,7 +772,7 @@ namespace ZXMAK2.Hardware.Circuits.Fdd
                             fdd[drive].t.RawWrite(rwptr++, (byte)(_crc >> 8), marker); // second byte of CRC16
                             rwlen--;
                         }
-                        if ((int)rwlen > 0)
+                        if (rwlen > 0)
                         {
                             if (!wd93_nodelay) next += fdd[drive].t.ts_byte;
                             state2 = WDSTATE.S_WR_TRACK_DATA;

@@ -9,7 +9,7 @@ namespace ZXMAK2.Hardware.Circuits
     /// </summary>
     public class NvramChip
     {
-        private byte[] m_nvram = new byte[2048];	// 24c16 = 2048 bytes; 24c32 - 4096 bytes
+        private readonly byte[] m_nvram = new byte[2048];	// 24c16 = 2048 bytes; 24c32 - 4096 bytes
 
         private int m_address;
         private byte m_datain, m_dataout, m_bitsin, m_bitsout;

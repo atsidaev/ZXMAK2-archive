@@ -401,8 +401,8 @@ namespace Test
 
 	public class FakeKeyboardState : IKeyboardState
 	{
-		private bool m_pressSimulation = false;
-		private Key m_key;
+		private readonly bool m_pressSimulation;
+		private readonly Key m_key;
 
 		public FakeKeyboardState()
 		{

@@ -17,11 +17,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         private const string KeyboardNumpadId = "keyboard";
 
+        private readonly Dictionary<string, IJoystickState> m_states = new Dictionary<string, IJoystickState>();
+        private readonly Dictionary<string, Device> m_devices = new Dictionary<string, Device>();
+        private readonly Dictionary<string, bool> m_acquired = new Dictionary<string, bool>();
         private Form m_form;
         private IntPtr m_hwnd;
-        private Dictionary<string, Device> m_devices = new Dictionary<string, Device>();
-        private Dictionary<string, IJoystickState> m_states = new Dictionary<string, IJoystickState>();
-        private Dictionary<string, bool> m_acquired = new Dictionary<string, bool>();
         private IJoystickState m_numpadState;
 
         #endregion Fields
@@ -328,7 +328,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             #region Static
 
-            private static StateWrapper s_empty = new StateWrapper(false, false, false, false, false);
+            private static readonly StateWrapper s_empty = new StateWrapper(false, false, false, false, false);
 
             public static StateWrapper Empty
             {

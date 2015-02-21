@@ -9,10 +9,10 @@ namespace ZXMAK2.Hardware.Profi
     {
         #region Fields
 
+        private readonly RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
         private bool m_isSandBox;
         private IMemoryDevice m_memory;
-        private RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
-        private string m_fileName = null;
+        private string m_fileName;
 
         #endregion Fields
 

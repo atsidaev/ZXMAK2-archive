@@ -10,7 +10,7 @@ namespace ZXMAK2.Hardware.Atm
         private int m_extBorderIndex = 0;
         private int m_borderAttr = 0;
         private AtmVideoMode m_mode = AtmVideoMode.Std256x192;
-        private byte[] m_trashPage = new byte[0x4000];
+        private readonly byte[] m_trashPage = new byte[0x4000];
 
         protected Atm320Renderer Atm320Renderer = new Atm320Renderer();
         protected Atm640Renderer Atm640Renderer = new Atm640Renderer();

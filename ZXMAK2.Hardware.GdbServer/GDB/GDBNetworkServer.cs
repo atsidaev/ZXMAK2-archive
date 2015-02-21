@@ -28,25 +28,25 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
 {
     public class GDBNetworkServer : IDisposable
     {
-        ASCIIEncoding encoder = new ASCIIEncoding();
+        private readonly ASCIIEncoding _encoder = new ASCIIEncoding();
 
-        IDebuggable emulator;
-        GDBJtagDevice jtagDevice;
+        private readonly IDebuggable _emulator;
+        private readonly GDBJtagDevice _jtagDevice;
 
-        TcpListener listener;
-        Thread socketListener;
-        List<TcpClient> clients = new List<TcpClient>();
+        private readonly TcpListener _listener;
+        private readonly Thread _socketListener;
+        private readonly List<TcpClient> _clients = new List<TcpClient>();
 
         public GDBNetworkServer(IDebuggable emulator, GDBJtagDevice jtagDevice)
         {
-            this.emulator = emulator;
-            this.jtagDevice = jtagDevice;
+            _emulator = emulator;
+            _jtagDevice = jtagDevice;
 
-            listener = new TcpListener(IPAddress.Any, jtagDevice.Port);
-            listener.Start();
+            _listener = new TcpListener(IPAddress.Any, jtagDevice.Port);
+            _listener.Start();
 
-            socketListener = new Thread(ListeningThread);
-            socketListener.Start();
+            _socketListener = new Thread(ListeningThread);
+            _socketListener.Start();
         }
 
         public void Breakpoint(Breakpoint breakpoint)
@@ -54,15 +54,15 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             // emulator.IsRunning= false;
 
             // We do not need old breakpoints because GDB will set them again
-            emulator.ClearBreakpoints();
-            jtagDevice.ClearBreakpoints();
+            _emulator.ClearBreakpoints();
+            _jtagDevice.ClearBreakpoints();
 
             SendGlobal(GDBSession.FormatResponse(GDBSession.StandartAnswers.Breakpoint));
         }
 
         private void SendGlobal(string message)
         {
-            foreach (var client in clients.Where(c => c.Connected))
+            foreach (var client in _clients.Where(c => c.Connected))
             {
                 var stream = client.GetStream();
                 if (stream != null)
@@ -76,10 +76,10 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             {
                 while (true)
                 {
-                    TcpClient client = listener.AcceptTcpClient();
+                    TcpClient client = _listener.AcceptTcpClient();
 
-                    clients.Add(client);
-                    clients.RemoveAll(c => !c.Connected);
+                    _clients.Add(client);
+                    _clients.RemoveAll(c => !c.Connected);
 
                     Thread clientThread = new Thread(GDBClientConnected);
                     clientThread.Start(client);
@@ -96,7 +96,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
         {
             TcpClient tcpClient = (TcpClient)client;
             NetworkStream clientStream = tcpClient.GetStream();
-            GDBSession session = new GDBSession(emulator, jtagDevice);
+            GDBSession session = new GDBSession(_emulator, _jtagDevice);
 
             byte[] message = new byte[0x1000];
             int bytesRead;
@@ -104,7 +104,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             // log = new StreamWriter("c:\\temp\\log.txt");
             // log.AutoFlush = true;
 
-            emulator.DoStop();
+            _emulator.DoStop();
 
             while (true)
             {
@@ -146,7 +146,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
                 if (bytesRead > 0)
                 {
                     GDBPacket packet = new GDBPacket(message, bytesRead);
-                    if (jtagDevice.Log)
+                    if (_jtagDevice.Log)
                     {
                         Logger.Info("--> {0}", packet);
                     }
@@ -165,28 +165,28 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             tcpClient.Close();
         }
 
-        void SendResponse(Stream stream, string response)
+        private void SendResponse(Stream stream, string response)
         {
-            if (jtagDevice.Log)
+            if (_jtagDevice.Log)
             {
                 Logger.Info("<-- {0}", response);
             }
 
-            byte[] bytes = encoder.GetBytes(response);
+            byte[] bytes = _encoder.GetBytes(response);
             stream.Write(bytes, 0, bytes.Length);
         }
 
         public void Dispose()
         {
-            if (socketListener != null)
+            if (_socketListener != null)
             {
-                listener.Stop();
+                _listener.Stop();
 
-                foreach (var client in clients)
+                foreach (var client in _clients)
                     if (client.Connected)
                         client.Close();
 
-                socketListener.Abort();
+                _socketListener.Abort();
             }
         }
     }

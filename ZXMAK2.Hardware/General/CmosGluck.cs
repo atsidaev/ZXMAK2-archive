@@ -7,6 +7,15 @@ namespace ZXMAK2.Hardware.General
 {
     public class CmosGluck : BusDeviceBase
     {
+        #region Fields
+
+        private readonly RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
+        private bool m_isSandBox;
+        private string m_fileName;
+
+        #endregion Fields
+
+
         public CmosGluck()
         {
             Category = BusDeviceCategory.Other;
@@ -44,11 +53,6 @@ namespace ZXMAK2.Hardware.General
         }
 
         #endregion
-
-
-        private bool m_isSandBox;
-        private RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
-        private string m_fileName = null;
 
 
         #region Bus Handlers

@@ -8,6 +8,14 @@ namespace ZXMAK2.Hardware.Atm
 {
     public class KeyboardAtm : BusDeviceBase, IKeyboardDevice
     {
+        #region Fields
+
+        private IKeyboardState m_keyboardState;
+        private long m_intState; // Each 5 bits represents: #7FFE, #BFFE, #DFFE, #EFFE, #F7FE, #FBFE, #FDFE, #FEFE.
+
+        #endregion Fields
+
+
         public KeyboardAtm()
         {
             Category = BusDeviceCategory.Keyboard;
@@ -20,7 +28,6 @@ namespace ZXMAK2.Hardware.Atm
 
         public override void BusInit(IBusManager bmgr)
         {
-            m_memory = bmgr.FindDevice<IMemoryDevice>();
             bmgr.SubscribeRdIo(0x0005, 0xFE & 0x0005, BusReadKeyboard);
         }
 
@@ -34,15 +41,17 @@ namespace ZXMAK2.Hardware.Atm
 
         #endregion IBusDevice
 
+
         #region IKeyboardDevice
 
         public IKeyboardState KeyboardState
         {
             get { return m_keyboardState; }
-            set { m_keyboardState = value; m_intState = scanState(m_keyboardState); }
+            set { m_keyboardState = value; m_intState = ScanState(m_keyboardState); }
         }
 
         #endregion
+
 
         #region Bus Handlers
 
@@ -57,58 +66,42 @@ namespace ZXMAK2.Hardware.Atm
 
         #endregion
 
-        private IMemoryDevice m_memory;
-        private IKeyboardState m_keyboardState = null;
-
-        #region Comment
-        /// <summary>
-        /// Spectrum keyboard state. 
-        /// Each 5 bits represents: #7FFE, #BFFE, #DFFE, #EFFE, #F7FE, #FBFE, #FDFE, #FEFE.
-        /// </summary>
-        #endregion
-        private long m_intState = 0;
-
-        #region Comment
-        /// <summary>
-        /// Scans keyboard state for specified port
-        /// </summary>
-        /// <param name="ADDR">Port address</param>
-        #endregion
-        protected int ScanKbdPort(ushort port)
-        {
-            byte val = 0x1F;
-            int msk = 0x0100;
-            for (int i = 0; i < 8; i++, msk <<= 1)
-                if ((port & msk) == 0)
-                    val &= (byte)(((m_intState >> (i * 5)) ^ 0x1F) & 0x1F);
-            return val;
-        }
 
         #region Scan
 
-        private static long scanState(IKeyboardState state)
+        protected int ScanKbdPort(ushort port)
+        {
+            byte val = 0x1F;
+            var mask = 0x0100;
+            for (var i = 0; i < 8; i++, mask <<= 1)
+            {
+                if ((port & mask) == 0)
+                {
+                    val &= (byte)(((m_intState >> (i * 5)) ^ 0x1F) & 0x1F);
+                }
+            }
+            return val;
+        }
+
+        private static long ScanState(IKeyboardState state)
         {
             if (state == null || ((state[Key.LeftAlt] || state[Key.RightAlt]) && state[Key.Return]))
                 return 0;
 
             long value = 0;
-            value = (value << 5) | scan_7FFE(state);
-            value = (value << 5) | scan_BFFE(state);
-            value = (value << 5) | scan_DFFE(state);
-            value = (value << 5) | scan_EFFE(state);
-            value = (value << 5) | scan_F7FE(state);
-            value = (value << 5) | scan_FBFE(state);
-            value = (value << 5) | scan_FDFE(state);
-            value = (value << 5) | scan_FEFE(state);
+            value = (value << 5) | Scan7ffe(state);
+            value = (value << 5) | ScanBffe(state);
+            value = (value << 5) | ScanDffe(state);
+            value = (value << 5) | ScanEffe(state);
+            value = (value << 5) | ScanF7fe(state);
+            value = (value << 5) | ScanFbfe(state);
+            value = (value << 5) | ScanFdfe(state);
+            value = (value << 5) | ScanFefe(state);
             return value;
         }
 
-        #region Comment
-        /// <summary>
-        /// #7FFE: BNM[symbol][space]    +'
-        /// </summary>
-        #endregion
-        private static byte scan_7FFE(IKeyboardState state)
+        // #7FFE: BNM[symbol][space]    +'
+        private static byte Scan7ffe(IKeyboardState state)
         {
             byte res = 0;
             if (state[Key.Space]) res |= 1;
@@ -134,12 +127,8 @@ namespace ZXMAK2.Hardware.Atm
             return res;
         }
 
-        #region Comment
-        /// <summary>
-        /// #BFFE: HJKL[enter]
-        /// </summary>
-        #endregion
-        private static byte scan_BFFE(IKeyboardState state)
+        // #BFFE: HJKL[enter]
+        private static byte ScanBffe(IKeyboardState state)
         {
             byte res = 0;
             if (state[Key.Return]) res |= 1;
@@ -163,12 +152,8 @@ namespace ZXMAK2.Hardware.Atm
             return res;
         }
 
-        #region Comment
-        /// <summary>
-        /// #DFFE: YUIOP    +",'
-        /// </summary>
-        #endregion
-        private static byte scan_DFFE(IKeyboardState state)
+        // #DFFE: YUIOP    +",'
+        private static byte ScanDffe(IKeyboardState state)
         {
             byte res = 0;
             if (state[Key.P]) res |= 1;
@@ -189,12 +174,8 @@ namespace ZXMAK2.Hardware.Atm
             return res;
         }
 
-        #region Comment
-        /// <summary>
-        /// #EFFE: 67890    +down,up,right, bksp
-        /// </summary>
-        #endregion
-        private static byte scan_EFFE(IKeyboardState state)
+        // #EFFE: 67890    +down,up,right, bksp
+        private static byte ScanEffe(IKeyboardState state)
         {
             byte res = 0;
             if (state[Key.D0]) res |= 1;
@@ -218,12 +199,8 @@ namespace ZXMAK2.Hardware.Atm
             return res;
         }
 
-        #region Comment
-        /// <summary>
-        /// #F7FE: 54321    +left
-        /// </summary>
-        #endregion
-        private static byte scan_F7FE(IKeyboardState state)
+        // #F7FE: 54321    +left
+        private static byte ScanF7fe(IKeyboardState state)
         {
             byte res = 0;
             if (state[Key.D1]) res |= 1;
@@ -237,12 +214,8 @@ namespace ZXMAK2.Hardware.Atm
             return res;
         }
 
-        #region Comment
-        /// <summary>
-        /// #FBFE: QWERT    +period,comma
-        /// </summary>
-        #endregion
-        private static byte scan_FBFE(IKeyboardState state)
+        // #FBFE: QWERT    +period,comma
+        private static byte ScanFbfe(IKeyboardState state)
         {
             byte res = 0;
             if (state[Key.Q]) res |= 1;
@@ -259,12 +232,8 @@ namespace ZXMAK2.Hardware.Atm
             return res;
         }
 
-        #region Comment
-        /// <summary>
-        /// #FDFE: GFDSA
-        /// </summary>
-        #endregion
-        private static byte scan_FDFE(IKeyboardState state)
+        // #FDFE: GFDSA
+        private static byte ScanFdfe(IKeyboardState state)
         {
             byte res = 0;
             if (state[Key.A]) res |= 1;
@@ -275,12 +244,8 @@ namespace ZXMAK2.Hardware.Atm
             return res;
         }
 
-        #region Comment
-        /// <summary>
-        /// #FEFE: VCXZ<caps>     +left,right,up,down,bksp
-        /// </summary>
-        #endregion
-        private static byte scan_FEFE(IKeyboardState state)
+        // #FEFE: VCXZ<caps>     +left,right,up,down,bksp
+        private static byte ScanFefe(IKeyboardState state)
         {
             byte res = 0;
             if (state[Key.LeftShift]) res |= 1;

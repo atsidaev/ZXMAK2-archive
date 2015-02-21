@@ -33,7 +33,7 @@ namespace ZXMAK2.Hardware
         private uint m_clockRate, m_sampleRate;
         private uint m_tick, m_baseTick;
         private ulong m_passedClkTicks, m_passedSndTicks;
-        private uint m_multConst;
+        //private uint m_multConst;
         private uint m_mix_l, m_mix_r;
         private uint m_s1_l, m_s1_r;
         private uint m_s2_l, m_s2_r;
@@ -247,7 +247,7 @@ namespace ZXMAK2.Hardware
             m_dstPos = m_dstStart = 0;
             m_passedSndTicks = m_passedClkTicks = 0;
 
-            m_multConst = (uint)(((ulong)m_sampleRate << (int)(MULT_C + TICK_FF)) / m_clockRate);
+            //m_multConst = (uint)(((ulong)m_sampleRate << (int)(MULT_C + TICK_FF)) / m_clockRate);
         }
 
         private void UpdateDacInt(int timestamp, ushort left, ushort right)
@@ -444,8 +444,9 @@ namespace ZXMAK2.Hardware
         private const uint TICK_F = 1 << (int)TICK_FF;
         private const uint MULT_C = 12;			// fixed point precision for 'system tick -> sound tick'
 
-        private static uint[] s_filterDiff;
-        private static double[] s_filterCoeff = new double[]// [TICK_F*2]
+        private static readonly uint[] s_filterDiff;
+        
+        private static readonly double[] s_filterCoeff = new double[]// [TICK_F*2]
         {
             // filter designed with Matlab's DSP toolbox
             0.000797243121022152, 0.000815206499600866, 0.000844792477531490, 0.000886460636664257,

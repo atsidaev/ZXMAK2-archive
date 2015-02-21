@@ -9,10 +9,10 @@ namespace ZXMAK2.Hardware.Circuits
     /// </summary>
     public class RtcChip
     {
+        private readonly byte[] m_ram = new byte[0x80];
         private RtcChipType m_chipType;
         private byte m_addrMask;
         private byte m_addr;
-        private byte[] m_ram = new byte[0x80];
         private DateTime m_dateTime;
         private bool m_uf;
         private bool m_af;

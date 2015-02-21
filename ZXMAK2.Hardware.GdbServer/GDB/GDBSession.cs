@@ -34,23 +34,24 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             public const string Interrupt = "T02";
         }
 
-        IDebuggable emulator;
-        GDBJtagDevice jtagDevice;
+        private IDebuggable _emulator;
+        private GDBJtagDevice _jtagDevice;
 
         public GDBSession(IDebuggable emulator, GDBJtagDevice server)
         {
-            this.emulator = emulator;
-            this.jtagDevice = server;
+            _emulator = emulator;
+            _jtagDevice = server;
         }
 
         #region Register stuff
+        
         public enum RegisterSize { Byte, Word };
 
         // GDB regs order:
         // "a", "f", "bc", "de", "hl", "ix", "iy", "sp", "i", "r",
         // "ax", "fx", "bcx", "dex", "hlx", "pc"
 
-        static RegisterSize[] registerSize = new RegisterSize[] {
+        private static readonly RegisterSize[] s_registerSize = new RegisterSize[] {
 			RegisterSize.Byte, RegisterSize.Byte,
 			RegisterSize.Word, RegisterSize.Word,
 			RegisterSize.Word, RegisterSize.Word,
@@ -61,7 +62,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
 			RegisterSize.Word, RegisterSize.Word
 		};
 
-        Action<CpuRegs, ushort>[] regSetters = new Action<CpuRegs, ushort>[] {
+        private static readonly Action<CpuRegs, ushort>[] s_regSetters = new Action<CpuRegs, ushort>[] {
 			(r, v) => r.A = (byte)v,
 			(r, v) => r.F = (byte)v,
 			(r, v) => r.BC = v,
@@ -80,7 +81,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
 			(r, v) => r.PC = v
 		};
 
-        Func<CpuRegs, int>[] regGetters = new Func<CpuRegs, int>[] {
+        private static readonly Func<CpuRegs, int>[] s_regGetters = new Func<CpuRegs, int>[] {
 			r => r.A,
 			r => r.F,
 			r => r.BC,
@@ -99,16 +100,17 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
 			r => r.PC
 		};
 
-        static public int RegistersCount { get { return registerSize.Length; } }
+        public static int RegistersCount { get { return s_registerSize.Length; } }
+        
         public static RegisterSize GetRegisterSize(int i)
         {
-            return registerSize[i];
+            return s_registerSize[i];
         }
 
         public string GetRegisterAsHex(int reg)
         {
-            int result = regGetters[reg](emulator.CPU.regs);
-            if (registerSize[reg] == RegisterSize.Byte)
+            int result = s_regGetters[reg](_emulator.CPU.regs);
+            if (s_registerSize[reg] == RegisterSize.Byte)
                 return ((byte)(result)).ToLowEndianHexString();
             else
                 return ((ushort)(result)).ToLowEndianHexString();
@@ -122,14 +124,14 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             else
                 val = Convert.ToUInt16(hexValue, 16);
 
-            regSetters[reg](emulator.CPU.regs, (ushort)val);
+            s_regSetters[reg](_emulator.CPU.regs, (ushort)val);
 
             return true;
         }
 
         #endregion
 
-        static public string FormatResponse(string response)
+        public static string FormatResponse(string response)
         {
             return "+$" + response + "#" + GDBPacket.CalculateCRC(response);
         }
@@ -142,7 +144,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             // ctrl+c is SIGINT
             if (packet.GetBytes()[0] == 0x03)
             {
-                emulator.DoStop();
+                _emulator.DoStop();
                 result = StandartAnswers.Interrupt;
                 isSignal = true;
             }
@@ -180,7 +182,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
                     case 'v': // some requests, mainly vCont
                         result = ExecutionRequest(packet); break;
                     case 's': //stepi
-                        emulator.CPU.ExecCycle();
+                        _emulator.CPU.ExecCycle();
                         result = "T05";
                         break;
                     case 'z': // remove bp
@@ -195,11 +197,11 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
                         result = StandartAnswers.OK; // we do not have threads, so ignoring this command is OK
                         break;
                     case 'c': // continue
-                        emulator.DoRun();
+                        _emulator.DoRun();
                         result = null;
                         break;
                     case 'D': // Detach from client
-                        emulator.DoRun();
+                        _emulator.DoRun();
                         result = StandartAnswers.OK;
                         break;
                 }
@@ -221,7 +223,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             return string.Format("E{0:D2}", (int)errno);
         }
 
-        string GeneralQueryResponse(GDBPacket packet)
+        private string GeneralQueryResponse(GDBPacket packet)
         {
             string command = packet.GetCommandParameters()[0];
             if (command.StartsWith("Supported"))
@@ -237,12 +239,12 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             return StandartAnswers.OK;
         }
 
-        string GetTargetHaltedReason(GDBPacket packet)
+        private string GetTargetHaltedReason(GDBPacket packet)
         {
             return StandartAnswers.HaltedReason;
         }
 
-        string ReadRegisters(GDBPacket packet)
+        private string ReadRegisters(GDBPacket packet)
         {
             var values = Enumerable.Range(0, RegistersCount - 1)
                 .Select(i => GetRegisterAsHex(i))
@@ -250,7 +252,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             return String.Join("", values);
         }
 
-        string WriteRegisters(GDBPacket packet)
+        private string WriteRegisters(GDBPacket packet)
         {
             var regsData = packet.GetCommandParameters()[0];
             for (int i = 0, pos = 0; i < RegistersCount; i++)
@@ -262,12 +264,12 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             return StandartAnswers.OK;
         }
 
-        string GetRegister(GDBPacket packet)
+        private string GetRegister(GDBPacket packet)
         {
             return GetRegisterAsHex(Convert.ToInt32(packet.GetCommandParameters()[0], 16));
         }
 
-        string SetRegister(GDBPacket packet)
+        private string SetRegister(GDBPacket packet)
         {
             var parameters = packet.GetCommandParameters()[0].Split(new char[] { '=' });
             if (SetRegister(Convert.ToInt32(parameters[0], 16), parameters[1]))
@@ -294,7 +296,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             var result = string.Empty;
             for (var i = 0; i < length; i++)
             {
-                var hex = emulator.CPU.RDMEM((ushort)(addr + i))
+                var hex = _emulator.CPU.RDMEM((ushort)(addr + i))
                     .ToLowEndianHexString();
                 result += hex;
             }
@@ -320,12 +322,12 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             {
                 var hex = parameters[2].Substring(i * 2, 2);
                 var value = Convert.ToByte(hex, 16);
-                emulator.CPU.WRMEM((ushort)(addr + i), value);
+                _emulator.CPU.WRMEM((ushort)(addr + i), value);
             }
             return StandartAnswers.OK;
         }
 
-        string ExecutionRequest(GDBPacket packet)
+        private string ExecutionRequest(GDBPacket packet)
         {
             string command = packet.GetCommandParameters()[0];
             if (command.StartsWith("Cont?"))
@@ -337,30 +339,30 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             return StandartAnswers.Empty;
         }
 
-        string SetBreakpoint(GDBPacket packet)
+        private string SetBreakpoint(GDBPacket packet)
         {
             string[] parameters = packet.GetCommandParameters();
             Breakpoint.BreakpointType type = Breakpoint.GetBreakpointType(int.Parse(parameters[0]));
             ushort addr = Convert.ToUInt16(parameters[1], 16);
 
             if (type == Breakpoint.BreakpointType.Execution)
-                emulator.AddBreakpoint(new ZXMAK2.Engine.Entities.Breakpoint(addr));
+                _emulator.AddBreakpoint(new ZXMAK2.Engine.Entities.Breakpoint(addr));
             else
-                jtagDevice.AddBreakpoint(type, addr);
+                _jtagDevice.AddBreakpoint(type, addr);
 
             return StandartAnswers.OK;
         }
 
-        string RemoveBreakpoint(GDBPacket packet)
+        private string RemoveBreakpoint(GDBPacket packet)
         {
             string[] parameters = packet.GetCommandParameters();
             Breakpoint.BreakpointType type = Breakpoint.GetBreakpointType(int.Parse(parameters[0]));
             ushort addr = Convert.ToUInt16(parameters[1], 16);
 
             if (type == Breakpoint.BreakpointType.Execution)
-                emulator.RemoveBreakpoint(new ZXMAK2.Engine.Entities.Breakpoint(addr));
+                _emulator.RemoveBreakpoint(new ZXMAK2.Engine.Entities.Breakpoint(addr));
             else
-                jtagDevice.RemoveBreakpoint(addr);
+                _jtagDevice.RemoveBreakpoint(addr);
 
             return StandartAnswers.OK;
         }
