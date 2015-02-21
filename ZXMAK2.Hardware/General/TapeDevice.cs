@@ -3,6 +3,7 @@
 /// Date: 16.04.2007
 using System;
 using System.Xml;
+using System.Text;
 using System.Collections.Generic;
 
 using ZXMAK2.Dependency;
@@ -16,7 +17,6 @@ using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Presentation;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Resources;
-using System.Text;
 
 
 namespace ZXMAK2.Hardware.General
@@ -128,11 +128,8 @@ namespace ZXMAK2.Hardware.General
             builder.Append("Common Tape Device");
             builder.Append(Environment.NewLine);
             builder.Append(Environment.NewLine);
-            if (NoDos)
-            {
-                builder.Append(string.Format("NoDos: {0}", NoDos));
-                builder.Append(Environment.NewLine);
-            }
+            builder.Append(string.Format("NoDos: {0}", NoDos));
+            builder.Append(Environment.NewLine);
             builder.Append(string.Format("Port:  #{0:X4}", Port));
             builder.Append(Environment.NewLine);
             builder.Append(string.Format("Mask:  #{0:X4}", Mask));
@@ -183,6 +180,7 @@ namespace ZXMAK2.Hardware.General
             base.OnConfigLoad(node);
             UseTraps = Utils.GetXmlAttributeAsBool(node, "useTraps", UseTraps);
             UseAutoPlay = Utils.GetXmlAttributeAsBool(node, "useAutoPlay", UseAutoPlay);
+            NoDos = Utils.GetXmlAttributeAsBool(node, "noDos", NoDos);
             Mask = Utils.GetXmlAttributeAsInt32(node, "mask", Mask);
             Port = Utils.GetXmlAttributeAsInt32(node, "port", Port);
             Bit = Utils.GetXmlAttributeAsInt32(node, "bit", Bit);
@@ -193,6 +191,7 @@ namespace ZXMAK2.Hardware.General
             base.OnConfigSave(node);
             Utils.SetXmlAttribute(node, "useTraps", UseTraps);
             Utils.SetXmlAttribute(node, "useAutoPlay", UseAutoPlay);
+            Utils.SetXmlAttribute(node, "noDos", NoDos);
             Utils.SetXmlAttribute(node, "mask", Mask);
             Utils.SetXmlAttribute(node, "port", Port);
             Utils.SetXmlAttribute(node, "bit", Bit);
