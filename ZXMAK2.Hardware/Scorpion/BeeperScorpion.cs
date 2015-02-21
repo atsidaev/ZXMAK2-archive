@@ -7,6 +7,13 @@ namespace ZXMAK2.Hardware.Scorpion
 {
     public class BeeperScorpion : BeeperDevice
     {
+        #region Fields
+
+        private IMemoryDevice m_memory;
+
+        #endregion Fields
+
+
         public BeeperScorpion()
         {
             Name = "BEEPER SCORPION";
@@ -24,6 +31,7 @@ namespace ZXMAK2.Hardware.Scorpion
 
         #endregion
 
+        
         #region BeeperDevice
 
         protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
@@ -35,7 +43,5 @@ namespace ZXMAK2.Hardware.Scorpion
         }
 
         #endregion
-
-        private IMemoryDevice m_memory;
     }
 }

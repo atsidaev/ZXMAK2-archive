@@ -98,7 +98,6 @@
     <Compile Include="Profi\UlaProfi3XX.cs" />
     <Compile Include="Profi\UlaProfi5XX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Quorum\BeeperQuorum.cs" />
     <Compile Include="Quorum\FddControllerQuorum.cs" />
     <Compile Include="Quorum\KeyboardQuorum.cs" />
     <Compile Include="Quorum\MemoryQuorum256.cs" />

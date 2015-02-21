@@ -7,6 +7,15 @@ namespace ZXMAK2.Hardware.ZXBYTE
 {
     public class UlaByte_Late : UlaDeviceBase
     {
+        #region Fields
+
+        private readonly byte[] m_dd10 = new byte[0x200];
+        private readonly byte[] m_dd11 = new byte[0x200];
+        private int[] m_contention;
+
+        #endregion Fields
+
+
         public UlaByte_Late()
         {
             Name = "BYTE [late model]";
@@ -226,10 +235,6 @@ namespace ZXMAK2.Hardware.ZXBYTE
             }
             return contention.ToArray();
         }
-
-        private int[] m_contention;
-        private byte[] m_dd10 = new byte[0x200];
-        private byte[] m_dd11 = new byte[0x200];
 
         private void InitStaticTables()
         {

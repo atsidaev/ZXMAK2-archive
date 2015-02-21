@@ -6,6 +6,13 @@ namespace ZXMAK2.Hardware.ZXBYTE
 {
     public class BeeperByte : BeeperDevice
     {
+        #region Fields
+
+        private IMemoryDevice m_memory;
+
+        #endregion Fields
+
+
         public BeeperByte()
         {
             Name = "BEEPER BYTE";
@@ -23,6 +30,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
 
         #endregion
 
+        
         #region BeeperDevice
 
         protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
@@ -34,7 +42,5 @@ namespace ZXMAK2.Hardware.ZXBYTE
         }
 
         #endregion
-
-        private IMemoryDevice m_memory;
     }
 }
