@@ -7,8 +7,8 @@ namespace ZXMAK2.Presentation.Entities
 {
     public class CommandDelegate : ICommand
     {
-        private Action<object> m_action;
-        private Func<object, bool> m_canExecute;
+        private readonly Action<object> m_action;
+        private readonly Func<object, bool> m_canExecute;
         private string m_text;
         private bool m_checked;
 

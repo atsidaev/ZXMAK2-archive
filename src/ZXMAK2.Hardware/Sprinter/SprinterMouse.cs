@@ -18,7 +18,7 @@ namespace ZXMAK2.Hardware.Sprinter
         private int m_mouseBtn;
         private bool m_swapbtns;
 
-        private Queue<byte> m_msbuf = new Queue<byte>();
+        private readonly Queue<byte> m_msbuf = new Queue<byte>();
 
         #endregion Fields
 

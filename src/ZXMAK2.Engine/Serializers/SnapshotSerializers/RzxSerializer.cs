@@ -58,7 +58,7 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
         #endregion
 
 
-        private Spectrum m_spectrum;
+        private readonly Spectrum m_spectrum;
         private Stream m_stream;
         private UInt32 m_flags;
         private int m_majorRevision;
@@ -70,14 +70,14 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
             m_spectrum = spectrum;
             m_stream = stream;
             CheckEof();
-            open();
+            Open();
         }
 
         public void Dispose()
         {
         }
 
-        private void open()
+        private void Open()
         {
             if (IsEndOfFile)
             {
@@ -176,8 +176,8 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
     public class RzxBlock
     {
-        private int m_id;
-        private byte[] m_rawData;
+        private readonly int m_id;
+        private readonly byte[] m_rawData;
 
         public virtual int Id { get { return m_id; } }
         public virtual byte[] RawData { get { return m_rawData; } }

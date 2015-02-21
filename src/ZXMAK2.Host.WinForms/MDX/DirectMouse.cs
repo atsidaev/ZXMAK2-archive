@@ -11,10 +11,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
 {
     public sealed class DirectMouse : IHostMouse, IDisposable
     {
+        private readonly MouseStateWrapper m_state = new MouseStateWrapper();
         private Form m_form;
-        private bool m_active = false;
-        private Device m_device = null;
-        private MouseStateWrapper m_state = new MouseStateWrapper();
+        private Device m_device;
+        private bool m_active;
 
 
         #region .ctor

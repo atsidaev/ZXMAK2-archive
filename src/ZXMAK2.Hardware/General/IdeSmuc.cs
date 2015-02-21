@@ -20,13 +20,13 @@ namespace ZXMAK2.Hardware.General
     {
         #region Fields
 
+        private readonly IconDescriptor m_iconHdd = new IconDescriptor("HDD", ImageResources.HddRd_128x128);
+        private readonly AtaPort m_ata = new AtaPort();
+        private readonly RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
+        private readonly NvramChip m_nvram = new NvramChip();
         private bool m_sandbox = false;
         private CpuUnit m_cpu;
-        private IconDescriptor m_iconHdd = new IconDescriptor("HDD", ImageResources.HddRd_128x128);
-        private IMemoryDevice m_memory = null;
-        private AtaPort m_ata = new AtaPort();
-        private RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
-        private NvramChip m_nvram = new NvramChip();
+        private IMemoryDevice m_memory;
         private string m_rtcFileName;
         private string m_nvramFileName;
         private string m_ideFileName;

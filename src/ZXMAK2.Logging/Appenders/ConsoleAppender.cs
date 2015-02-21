@@ -58,7 +58,7 @@ namespace ZXMAK2.Logging.Appenders
             }
             foreach (var logEvent in loggingEvents)
             {
-                Append(loggingEvents);
+                Append(logEvent);
             }
         }
     }

@@ -142,7 +142,7 @@ namespace ZXMAK2.Host.Presentation.Tools
 
     public class ContentDispositionEx
     {
-        private StringDictionary m_params = new StringDictionary();
+        private readonly StringDictionary m_params = new StringDictionary();
         private string m_dispType;
 
         public ContentDispositionEx(string rawValue)

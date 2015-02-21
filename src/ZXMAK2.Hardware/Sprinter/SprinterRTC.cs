@@ -7,6 +7,15 @@ namespace ZXMAK2.Hardware.Sprinter
 {
     public class SprinterRTC : BusDeviceBase
     {
+        #region Fields
+
+        private readonly RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
+        private bool m_isSandBox;
+        private string m_fileName;
+
+        #endregion Fields
+
+
         public SprinterRTC()
         {
             Category = BusDeviceCategory.Other;
@@ -45,10 +54,6 @@ namespace ZXMAK2.Hardware.Sprinter
         }
 
         #endregion
-
-        private bool m_isSandBox;
-        private RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
-        private string m_fileName = null;
 
 
         #region Bus
