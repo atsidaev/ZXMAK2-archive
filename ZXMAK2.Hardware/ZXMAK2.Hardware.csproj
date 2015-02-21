@@ -103,7 +103,6 @@
     <Compile Include="Quorum\MemoryQuorum256.cs" />
     <Compile Include="Quorum\UlaQuorum.cs" />
     <Compile Include="RomPack.cs" />
-    <Compile Include="Scorpion\BeeperScorpion.cs" />
     <Compile Include="Scorpion\CovoxScorpion.cs" />
     <Compile Include="Scorpion\MemoryScorpion256.cs" />
     <Compile Include="Scorpion\MemoryScorpionProfRom256.cs" />
@@ -132,7 +131,6 @@
     <Compile Include="Sprinter\SprinterRTC.cs" />
     <Compile Include="Sprinter\SprinterULA.cs" />
     <Compile Include="UlaDeviceBase.cs" />
-    <Compile Include="ZXBYTE\BeeperByte.cs" />
     <Compile Include="ZXBYTE\MemoryByte.cs" />
     <Compile Include="ZXBYTE\MemoryByte128.cs" />
     <Compile Include="ZXBYTE\UlaByte.cs" />
