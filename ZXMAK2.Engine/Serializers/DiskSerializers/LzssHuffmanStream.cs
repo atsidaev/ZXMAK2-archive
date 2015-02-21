@@ -4,9 +4,10 @@ using System.IO;
 
 namespace ZXMAK2.Serializers.DiskSerializers
 {
-    public class LzssHuffmanStream : Stream
+    public sealed class LzssHuffmanStream : Stream
     {
-        #region constants
+        #region Constants
+
         private const string _invalidCallString = "Not supported operation";
 
         #region LZSS Parameters
@@ -26,27 +27,30 @@ namespace ZXMAK2.Serializers.DiskSerializers
         private const int MAX_FREQ = 0x8000;			/* update when cumulative frequency reaches to this value */
 
         #endregion
-        #endregion
+        
+        #endregion Constants
 
-        #region private data
-        private Stream _input;
+
+        #region Fields
+        
+        private readonly Stream _input;
 
         // LZSS stuff?...
-        private byte[] text_buf = new byte[N + F - 1];
+        private readonly byte[] text_buf = new byte[N + F - 1];
         //private short match_position, match_length;
-        private short[] lson = new short[N + 1];
-        private short[] rson = new short[N + 257];
-        private short[] dad = new short[N + 1];
+        //private readonly short[] lson = new short[N + 1];
+        //private readonly short[] rson = new short[N + 257];
+        //private readonly short[] dad = new short[N + 1];
 
         // Huffman coding stuff?...
-        private ushort[] freq = new ushort[T + 1];    /* cumulative freq table */
+        private readonly ushort[] freq = new ushort[T + 1];    /* cumulative freq table */
         /*
          * pointing parent nodes.
          * area [T..(T + N_CHAR - 1)] are pointers for leaves
          */
-        private short[] prnt = new short[T + N_CHAR];
+        private readonly short[] prnt = new short[T + N_CHAR];
         /* pointing children nodes (son[], son[] + 1)*/
-        short[] son = new short[T];
+        private readonly short[] son = new short[T];
 
 
         // next four variables were local in original main()
@@ -54,12 +58,12 @@ namespace ZXMAK2.Serializers.DiskSerializers
         public ushort _r;
         public ushort _bufcnt, _bufndx, _bufpos;	// string buffer
 
-        #endregion
+        #endregion Fields
 
         public LzssHuffmanStream(Stream stream)
         {
             _input = stream;
-            init_Decode();
+            InitDecode();
         }
 
         #region Stream
@@ -106,31 +110,32 @@ namespace ZXMAK2.Serializers.DiskSerializers
         #endregion
 
 
-        #region private methods
+        #region Private
 
-        private void init_Decode()
+        private void InitDecode()
         {
-            int i;
             _bitCounter = 0;
             //_ibufcnt = _ibufndx = 0; // input buffer is empty
             _bufcnt = 0;
             StartHuff();
-            for (i = 0; i < N - F; i++)
+            for (var i = 0; i < N - F; i++)
+            {
                 text_buf[i] = 0x20;	// ' '
+            }
             _r = N - F;
         }
 
         private void StartHuff()
         {
-            int i, j;
-
-            for (i = 0; i < N_CHAR; i++)
+            var i = 0;
+            for (; i < N_CHAR; i++)
             {
                 freq[i] = 1;
                 son[i] = (short)(i + T);
                 prnt[i + T] = (short)i;
             }
-            i = 0; j = N_CHAR;
+            i = 0; 
+            var j = N_CHAR;
             while (j <= R)
             {
                 freq[j] = (ushort)(freq[i] + freq[i + 1]);
@@ -226,8 +231,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
             if ((bit = (short)GetByte(stream)) < 0)
                 return -1;
             i = (ushort)bit;
-            c = (ushort)(d_code[i] << 6);
-            j = d_len[i];
+            c = (ushort)(s_dCode[i] << 6);
+            j = s_dLen[i];
 
             /* input lower 6 bits directly */
             j -= 2;
@@ -365,14 +370,43 @@ namespace ZXMAK2.Serializers.DiskSerializers
             }
         }
 
-        #region tables
+        #endregion Private
+
+
+        #region Helpers
+
+        // Borland C++ style movmem()
+        // void movmem(void *src, void *dest, unsigned length)
+        private static void movmem(Array src, int srcIndex, Array dest, int destIndex, int length)
+        {
+            if (srcIndex > destIndex)
+            {
+                while (length-- > 0)
+                {
+                    dest.SetValue(src.GetValue(srcIndex++), destIndex++);
+                }
+            }
+            else if (srcIndex < destIndex)
+            {
+                srcIndex += length;
+                destIndex += length;
+                while (length-- > 0)
+                {
+                    dest.SetValue(src.GetValue(--srcIndex), --destIndex);
+                }
+            }
+        }
+
+        #endregion Helpers
+
+
+        #region Tables
+
         /*
 		 * Tables for encoding/decoding upper 6 bits of
 		 * sliding dictionary pointer
 		 */
-
-        /// <summary>decoder table</summary>
-        private static byte[] d_code = new byte[256] 
+        private static readonly byte[] s_dCode = new byte[256] 
 		{
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -408,7 +442,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
 			0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
 		};
 
-        private static byte[] d_len = new byte[256] 
+        private static readonly byte[] s_dLen = new byte[256] 
 		{
 			0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03,
 			0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03,
@@ -443,26 +477,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
 			0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
 			0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
 		};
-        #endregion
 
-        // Borland C++ style movmem()
-        // void movmem(void *src, void *dest, unsigned length)
-        private static void movmem(Array src, int srcIndex, Array dest, int destIndex, int length)
-        {
-            if (srcIndex > destIndex)
-            {
-                while (length-- > 0)
-                    dest.SetValue(src.GetValue(srcIndex++), destIndex++);
-            }
-            else if (srcIndex < destIndex)
-            {
-                srcIndex += length;
-                destIndex += length;
-                while (length-- > 0)
-                    dest.SetValue(src.GetValue(--srcIndex), --destIndex);
-            }
-        }
-        #endregion
-
+        #endregion Tables
     }
 }

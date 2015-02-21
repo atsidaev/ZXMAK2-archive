@@ -31,21 +31,21 @@ namespace ZXMAK2.Engine
         private BusReadIoProc[] m_mapReadPort;
         private BusWriteProc[] m_mapWriteMemory;
         private BusWriteIoProc[] m_mapWritePort;
-        private BusNoMreqProc[] m_mapReadNoMreq;
-        private BusNoMreqProc[] m_mapWriteNoMreq;
-        private BusCycleProc m_preCycle;
-        private BusSignalProc m_reset;
+        private Action<ushort>[] m_mapReadNoMreq;
+        private Action<ushort>[] m_mapWriteNoMreq;
+        private Action<int> m_preCycle;
+        private Action m_reset;
         private BusRqProc m_nmiRq;
-        private BusSignalProc m_nmiAck;
-        private BusSignalProc m_intAck;
-        private BusFrameEventHandler m_beginFrame;
-        private BusFrameEventHandler m_endFrame;
+        private Action m_nmiAck;
+        private Action m_intAck;
+        private Action m_beginFrame;
+        private Action m_endFrame;
         private IIconDescriptor[] m_iconDescList = new IIconDescriptor[0];
         private IconDescriptor m_iconPause = new IconDescriptor(
             "PAUSE",
             ImageResources.Pause_32x32);
 
-        public event BusFrameEventHandler FrameReady;
+        public event Action FrameReady;
         public event EventHandler BusConnected;
         public event EventHandler BusDisconnect;
         public event EventHandler ConfigChanged;
@@ -150,26 +150,26 @@ namespace ZXMAK2.Engine
                     m_mapWritePort[addr] += proc;
         }
 
-        void IBusManager.SubscribeRdNoMreq(int addrMask, int maskedValue, BusNoMreqProc proc)
+        void IBusManager.SubscribeRdNoMreq(int addrMask, int maskedValue, Action<ushort> proc)
         {
             for (int addr = 0; addr < 0x10000; addr++)
                 if ((addr & addrMask) == maskedValue)
                     m_mapReadNoMreq[addr] += proc;
         }
 
-        void IBusManager.SubscribeWrNoMreq(int addrMask, int maskedValue, BusNoMreqProc proc)
+        void IBusManager.SubscribeWrNoMreq(int addrMask, int maskedValue, Action<ushort> proc)
         {
             for (int addr = 0; addr < 0x10000; addr++)
                 if ((addr & addrMask) == maskedValue)
                     m_mapWriteNoMreq[addr] += proc;
         }
 
-        void IBusManager.SubscribePreCycle(BusCycleProc proc)
+        void IBusManager.SubscribePreCycle(Action<int> proc)
         {
             m_preCycle += proc;
         }
 
-        void IBusManager.SubscribeReset(BusSignalProc proc)
+        void IBusManager.SubscribeReset(Action proc)
         {
             m_reset += proc;
         }
@@ -179,22 +179,22 @@ namespace ZXMAK2.Engine
             m_nmiRq += proc;
         }
 
-        void IBusManager.SubscribeNmiAck(BusSignalProc proc)
+        void IBusManager.SubscribeNmiAck(Action proc)
         {
             m_nmiAck += proc;
         }
 
-        void IBusManager.SubscribeIntAck(BusSignalProc proc)
+        void IBusManager.SubscribeIntAck(Action proc)
         {
             m_intAck += proc;
         }
 
-        void IBusManager.SubscribeBeginFrame(BusFrameEventHandler handler)
+        void IBusManager.SubscribeBeginFrame(Action handler)
         {
             m_beginFrame += handler;
         }
 
-        void IBusManager.SubscribeEndFrame(BusFrameEventHandler handler)
+        void IBusManager.SubscribeEndFrame(Action handler)
         {
             m_endFrame += handler;
         }
@@ -332,14 +332,14 @@ namespace ZXMAK2.Engine
 
         private void RDNOMREQ(ushort addr)
         {
-            BusNoMreqProc proc = m_mapReadNoMreq[addr];
+            var proc = m_mapReadNoMreq[addr];
             if (proc != null)
                 proc(addr);
         }
 
         private void WRNOMREQ(ushort addr)
         {
-            BusNoMreqProc proc = m_mapWriteNoMreq[addr];
+            var proc = m_mapWriteNoMreq[addr];
             if (proc != null)
                 proc(addr);
         }
@@ -455,8 +455,8 @@ namespace ZXMAK2.Engine
             m_mapReadPort = new BusReadIoProc[0x10000];
             m_mapWriteMemory = new BusWriteProc[0x10000];
             m_mapWritePort = new BusWriteIoProc[0x10000];
-            m_mapReadNoMreq = new BusNoMreqProc[0x10000];
-            m_mapWriteNoMreq = new BusNoMreqProc[0x10000];
+            m_mapReadNoMreq = new Action<ushort>[0x10000];
+            m_mapWriteNoMreq = new Action<ushort>[0x10000];
             m_preCycle = null;
             m_reset = null;
             m_nmiRq = null;

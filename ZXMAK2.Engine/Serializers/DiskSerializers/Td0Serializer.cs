@@ -16,7 +16,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
 {
     public class Td0Serializer : FormatSerializer
     {
-        private DiskImage _diskImage;
+        private readonly DiskImage _diskImage;
 
         public Td0Serializer(DiskImage diskImage)
         {
@@ -176,7 +176,7 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
         private class TD0_MAIN_HEADER			// 12 bytes
         {
-            private byte[] _buffer = new byte[12];
+            private readonly byte[] _buffer = new byte[12];
 
             public TD0_MAIN_HEADER()
             {
@@ -262,8 +262,8 @@ namespace ZXMAK2.Serializers.DiskSerializers
 
         private class TD0_TRACK					// 4 bytes+sectors
         {
-            private byte[] _rawData = new byte[4];
-            private List<Sector> _sectorList = new List<Sector>();
+            private readonly byte[] _rawData = new byte[4];
+            private readonly List<Sector> _sectorList = new List<Sector>();
 
             public int SectorCount
             {

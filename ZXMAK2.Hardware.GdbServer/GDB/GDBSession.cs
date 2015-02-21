@@ -319,7 +319,7 @@ namespace ZXMAK2.Hardware.GdbServer.Gdb
             for (var i = 0; i < length; i++)
             {
                 var hex = parameters[2].Substring(i * 2, 2);
-                var value = (byte)Convert.ToByte(hex, 16);
+                var value = Convert.ToByte(hex, 16);
                 emulator.CPU.WRMEM((ushort)(addr + i), value);
             }
             return StandartAnswers.OK;
