@@ -15,7 +15,7 @@ namespace ZXMAK2.Hardware.Circuits.Ata
 
         private UInt32 c, h, s, lba;
         private byte[] regs { get { return reg.__regs; } }
-        private AtaRegsUnion reg = new AtaRegsUnion();
+        private readonly AtaRegsUnion reg = new AtaRegsUnion();
 
         private bool intrq;
         private bool atapi;                 // flag for CD-ROM device
@@ -23,9 +23,9 @@ namespace ZXMAK2.Hardware.Circuits.Ata
         private HD_STATE state;
         private uint transptr, transcount;
         private int phys_dev;
-        private byte[] transbf = new byte[0xFFFF]; // ATAPI is able to tranfer 0xFFFF bytes. passing more leads to error
+        private readonly byte[] transbf = new byte[0xFFFF]; // ATAPI is able to tranfer 0xFFFF bytes. passing more leads to error
 
-        private AtaPasser ata_p = new AtaPasser();
+        private readonly AtaPasser ata_p = new AtaPasser();
         //ATAPI_PASSER atapi_p;
 
         public bool LedIo;

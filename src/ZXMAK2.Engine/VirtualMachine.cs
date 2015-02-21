@@ -112,7 +112,7 @@ namespace ZXMAK2.Engine
 
         public void SaveConfigXml(XmlNode parent)
         {
-            var xeInfo = (XmlElement)parent.OwnerDocument.CreateElement("Info");
+            var xeInfo = parent.OwnerDocument.CreateElement("Info");
             if (m_name != "ZX Spectrum Clone")
             {
                 xeInfo.SetAttribute("name", m_name);

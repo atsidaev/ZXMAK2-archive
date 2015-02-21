@@ -32,7 +32,7 @@ namespace ZXMAK2.Hardware.GdbServer
         private GDBNetworkServer server;
         private IDebuggable emulator;
         private IBusManager busManager;
-        private List<Breakpoint> accessBreakpoints = new List<Breakpoint>();
+        private readonly List<Breakpoint> accessBreakpoints = new List<Breakpoint>();
         private int _port;
 
 

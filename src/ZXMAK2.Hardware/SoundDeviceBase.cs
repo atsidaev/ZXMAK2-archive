@@ -289,7 +289,7 @@ namespace ZXMAK2.Hardware
                 {
                     var src = queue.Dequeue();
                     // if (src.timestamp > clk_ticks) continue; // wrong input data leads to crash
-                    Update(src.Timestamp, (uint)src.Left, (uint)src.Right);
+                    Update(src.Timestamp, src.Left, src.Right);
                 }
                 EndFrame(clkTicks);
             }

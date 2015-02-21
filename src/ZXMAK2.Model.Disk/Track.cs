@@ -10,11 +10,11 @@ namespace ZXMAK2.Model.Disk
 {
     public class Track
     {
-        private long _trackTime; // Z80FQ * 60 / RPM; RPM=300, Z80FQ=3500000
+        private readonly long _trackTime; // Z80FQ * 60 / RPM; RPM=300, Z80FQ=3500000
         private long _byteTime;
-        private byte[] _trackImage = null;
-        private byte[] _trackClock = null;
-        private List<SectorHeader> _headerList = new List<SectorHeader>();
+        private byte[] _trackImage;
+        private byte[] _trackClock;
+        private readonly List<SectorHeader> _headerList = new List<SectorHeader>();
 
 
         public Track(long trackTime)

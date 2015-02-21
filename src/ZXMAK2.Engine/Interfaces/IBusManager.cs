@@ -1,4 +1,5 @@
-﻿using ZXMAK2.Engine.Cpu;
+﻿using System;
+using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Presentation.Interfaces;
 
@@ -12,16 +13,16 @@ namespace ZXMAK2.Engine.Interfaces
 		void SubscribeWrMem(int addrMask, int maskedValue, BusWriteProc proc);
 		void SubscribeRdIo(int addrMask, int maskedValue, BusReadIoProc proc);
 		void SubscribeWrIo(int addrMask, int maskedValue, BusWriteIoProc proc);
-		void SubscribeRdNoMreq(int addrMask, int maskedValue, BusNoMreqProc proc);
-		void SubscribeWrNoMreq(int addrMask, int maskedValue, BusNoMreqProc proc);
-		void SubscribeReset(BusSignalProc proc);
+        void SubscribeRdNoMreq(int addrMask, int maskedValue, Action<ushort> proc);
+        void SubscribeWrNoMreq(int addrMask, int maskedValue, Action<ushort> proc);
+		void SubscribeReset(Action proc);
         void SubscribeNmiRq(BusRqProc proc);
-        void SubscribeNmiAck(BusSignalProc proc);
-		void SubscribeIntAck(BusSignalProc proc);
+        void SubscribeNmiAck(Action proc);
+		void SubscribeIntAck(Action proc);
 
-		void SubscribePreCycle(BusCycleProc proc);
-		void SubscribeBeginFrame(BusFrameEventHandler handler);
-		void SubscribeEndFrame(BusFrameEventHandler handler);
+		void SubscribePreCycle(Action<int> proc);
+		void SubscribeBeginFrame(Action handler);
+		void SubscribeEndFrame(Action handler);
 
 		void AddSerializer(IFormatSerializer serializer);
 		void RegisterIcon(IIconDescriptor iconDesc);
@@ -43,11 +44,7 @@ namespace ZXMAK2.Engine.Interfaces
 	public delegate void BusWriteProc(ushort addr, byte value);
 	public delegate void BusReadIoProc(ushort addr, ref byte value, ref bool iorqge);
 	public delegate void BusWriteIoProc(ushort addr, byte value, ref bool iorqge);
-	public delegate void BusNoMreqProc(ushort addr);
     public delegate void BusRqProc(BusCancelArgs e);
-	public delegate void BusCycleProc(int frameTact);
-	public delegate void BusSignalProc();
-	public delegate void BusFrameEventHandler();
 
     public class BusCancelArgs
     {

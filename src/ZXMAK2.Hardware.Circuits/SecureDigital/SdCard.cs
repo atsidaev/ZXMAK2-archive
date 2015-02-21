@@ -10,30 +10,35 @@ namespace ZXMAK2.Hardware.Circuits.SecureDigital
     /// </summary>
     public class SdCard
     {
-        SdState currState;
-        SdCommand cmd;
+        #region Fields
 
-        UInt32 argCnt;
-        UInt32 ocrCnt;
-        UInt32 r7_Cnt;
+        private readonly byte[] cid;
+        private readonly byte[] csd;
+        private readonly byte[] buff;
 
-        byte[] cid;
-        byte[] csd;
+        private SdState currState;
+        private SdCommand cmd;
 
-        UInt32 cidCnt;
-        UInt32 csdCnt;
+        private UInt32 argCnt;
+        private UInt32 ocrCnt;
+        private UInt32 r7_Cnt;
 
-        bool appCmd;
 
-        int dataBlockLen;
-        UInt32 dataCnt;
-        UInt32 wrPos;
+        private UInt32 cidCnt;
+        private UInt32 csdCnt;
 
-        UInt32 arg;
+        private bool appCmd;
 
-        FileStream fstream;
+        private int dataBlockLen;
+        private UInt32 dataCnt;
+        private UInt32 wrPos;
 
-        byte[] buff;
+        private UInt32 arg;
+
+        private FileStream fstream;
+
+        #endregion Fields
+
 
         public SdCard()
         {

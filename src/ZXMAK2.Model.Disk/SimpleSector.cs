@@ -4,10 +4,10 @@ namespace ZXMAK2.Model.Disk
 {
 	public class SimpleSector : Sector
 	{
-		private bool _adPresent = false;
-		private bool _dataPresent = false;
-		private byte[] _adMark = new byte[4];
-		private byte[] _data = new byte[0];
+		private readonly bool _adPresent;
+		private readonly bool _dataPresent;
+		private readonly byte[] _adMark;
+		private readonly byte[] _data;
 
 		public override byte[] Data { get { return _data; } }
 		public override bool DataPresent { get { return _dataPresent; } }
@@ -29,23 +29,21 @@ namespace ZXMAK2.Model.Disk
 		public SimpleSector(int cc, int hh, int rr, int nn, byte[] data)
 		{
 			_adPresent = true;
-			_adMark[0] = (byte)cc;
-			_adMark[1] = (byte)hh;
-			_adMark[2] = (byte)rr;
-			_adMark[3] = (byte)nn;
-			if (data != null)
-			{
-				_dataPresent = true;
-				_data = data;
-			}
-			else
-			{
-				_dataPresent = false;
-			}
+            _dataPresent = data != null;
+            _adMark = new byte[4]
+            {
+			    (byte)cc,
+			    (byte)hh,
+			    (byte)rr,
+			    (byte)nn,
+            };
+			_data = data ?? new byte[0];
 		}
 
 		public SimpleSector(int cc, int hh, int rr, int nn) 
-			: this(cc,hh,rr,nn,new byte[128 << (nn&7)]) { }
+			: this(cc,hh,rr,nn,new byte[128 << (nn&7)]) 
+        { 
+        }
 
 		public SimpleSector(byte[] data)
 			: this(0,0,0,0, data)

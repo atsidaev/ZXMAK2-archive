@@ -25,11 +25,10 @@ namespace ZXMAK2.Hardware.Sprinter
     {
         #region Fields
 
-        private byte[][] m_cramPages = new byte[0x04][]; //кэш
-        private byte[][] m_vramPages = new byte[0x10][]; //видео-рам
-        private byte[] m_scorpion_pages = new byte[8];
-
-        private byte[] m_pages = new byte[16];
+        private readonly byte[][] m_cramPages = new byte[0x04][]; //кэш
+        private readonly byte[][] m_vramPages = new byte[0x10][]; //видео-рам
+        private readonly byte[] m_scorpion_pages = new byte[8];
+        private readonly byte[] m_pages = new byte[16];
 
         private byte m_page0;
         private byte m_page1;
@@ -158,9 +157,7 @@ namespace ZXMAK2.Hardware.Sprinter
 #if Debug
             bmgr.SubscribeRDMEM_M1(0x0000, 0x0000, new BusReadProc(this.readRamM1));  //read operator from memory
 #endif
-            bmgr.SubscribeReset(new BusSignalProc(this.busReset));
-
-
+            bmgr.SubscribeReset(Bus_OnReset);
         }
 
         #region Accelerator
@@ -223,10 +220,10 @@ namespace ZXMAK2.Hardware.Sprinter
                                 byte tmp = 0;
                                 switch (addr & 0xc000)
                                 {
-                                    case 0x0000: this.ReadMem0000((ushort)(addr), ref tmp); break;
-                                    case 0x4000: this.ReadMem4000((ushort)(addr), ref tmp); break;
-                                    case 0x8000: this.ReadMem8000((ushort)(addr), ref tmp); break;
-                                    case 0xc000: this.ReadMemC000((ushort)(addr), ref tmp); break;
+                                    case 0x0000: this.ReadMem0000(addr, ref tmp); break;
+                                    case 0x4000: this.ReadMem4000(addr, ref tmp); break;
+                                    case 0x8000: this.ReadMem8000(addr, ref tmp); break;
+                                    case 0xc000: this.ReadMemC000(addr, ref tmp); break;
                                 }
                                 switch (m_acc_submode)
                                 {
@@ -266,12 +263,12 @@ namespace ZXMAK2.Hardware.Sprinter
                         {
                             for (int i = 0; i < m_acc_buf_size; i++)
                             {
-                                switch ((addr) & 0xc000)
+                                switch (addr & 0xc000)
                                 {
-                                    case 0x0000: this.WriteMem0000((ushort)(addr), m_acc_buf[i]); break;
-                                    case 0x4000: this.WriteMem4000((ushort)(addr), m_acc_buf[i]); break;
-                                    case 0x8000: this.WriteMem8000((ushort)(addr), m_acc_buf[i]); break;
-                                    case 0xc000: this.WriteMemC000((ushort)(addr), m_acc_buf[i]); break;
+                                    case 0x0000: this.WriteMem0000(addr, m_acc_buf[i]); break;
+                                    case 0x4000: this.WriteMem4000(addr, m_acc_buf[i]); break;
+                                    case 0x8000: this.WriteMem8000(addr, m_acc_buf[i]); break;
+                                    case 0xc000: this.WriteMemC000(addr, m_acc_buf[i]); break;
                                 }
                                 //                                VRamPages[(m_port_y & 0xf0) >> 4][(m_port_y & 0x0f) * 1024 + (addr & 0x3FF)] = m_acc_buf[i];
                                 m_port_y++;
@@ -313,12 +310,12 @@ namespace ZXMAK2.Hardware.Sprinter
                         {
                             for (int i = 0; i < m_acc_buf_size; i++)
                             {
-                                switch ((addr) & 0xc000)
+                                switch (addr & 0xc000)
                                 {
-                                    case 0x0000: this.WriteMem0000((ushort)(addr), value); break;
-                                    case 0x4000: this.WriteMem4000((ushort)(addr), value); break;
-                                    case 0x8000: this.WriteMem8000((ushort)(addr), value); break;
-                                    case 0xc000: this.WriteMemC000((ushort)(addr), value); break;
+                                    case 0x0000: this.WriteMem0000(addr, value); break;
+                                    case 0x4000: this.WriteMem4000(addr, value); break;
+                                    case 0x8000: this.WriteMem8000(addr, value); break;
+                                    case 0xc000: this.WriteMemC000(addr, value); break;
                                 }
                                 //VRamPages[(m_port_y & 0xf0) >> 4][(m_port_y & 0x0f) * 1024 + (addr & 0x03FF)] = value;
                                 m_port_y++;
@@ -846,7 +843,7 @@ namespace ZXMAK2.Hardware.Sprinter
         }
 
 
-        private void busReset()
+        private void Bus_OnReset()
         {
             this.CMR0 = 0;
             this.CMR1 = 0;

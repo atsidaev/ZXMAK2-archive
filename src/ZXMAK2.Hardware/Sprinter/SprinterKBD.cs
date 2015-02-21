@@ -247,7 +247,7 @@ namespace ZXMAK2.Hardware.Sprinter
 //            m_zxkbd = bmgr.FindDevice(typeof(KeyboardDevice)) as KeyboardDevice;
 //            if (m_zxkbd == null) throw new ApplicationException("Standart ZX Keyboard Device not found");
             //InitializeKeyboard();
-            bmgr.SubscribeEndFrame(new BusFrameEventHandler(ScanKeys));
+            bmgr.SubscribeEndFrame(ScanKeys);
             bmgr.SubscribeRdIo(0x00ff, 0x0019, new BusReadIoProc(readKbdState));
             bmgr.SubscribeRdIo(0x00ff, 0x0018, new BusReadIoProc(readKbdData));
         }

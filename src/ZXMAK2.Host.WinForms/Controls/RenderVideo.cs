@@ -1,23 +1,15 @@
-//#define SHOW_LATENCY
 /// Description: Video renderer control
 /// Author: Alex Makeev
 /// Date: 27.03.2008
 using System;
 using System.Linq;
 using System.Drawing;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.ComponentModel;
-using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-using ZXMAK2.Engine;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.WinForms.Tools;
-using D3dFont = Microsoft.DirectX.Direct3D.Font;
-using D3dSprite = Microsoft.DirectX.Direct3D.Sprite;
-using D3dTexture = Microsoft.DirectX.Direct3D.Texture;
-using D3dTextureLoader = Microsoft.DirectX.Direct3D.TextureLoader;
 using ZXMAK2.Host.WinForms.Mdx;
 
 
@@ -25,22 +17,15 @@ namespace ZXMAK2.Host.WinForms.Controls
 {
     public class RenderVideo : Render3D, IHostVideo
     {
-        #region Constants
-
-        private const int GraphLength = 150;
-
-        #endregion Constants
-
-
         #region Fields
 
         private readonly FrameResampler _frameResampler = new FrameResampler(50);
         private readonly AutoResetEvent _eventFrame = new AutoResetEvent(false);
         private readonly AutoResetEvent _eventCancel = new AutoResetEvent(false);
 
-        private RenderVideoObject _renderVideo = new RenderVideoObject();
-        private RenderIconsObject _renderIcons = new RenderIconsObject();
-        private RenderDebugObject _renderDebug = new RenderDebugObject();
+        private readonly RenderVideoObject _renderVideo = new RenderVideoObject();
+        private readonly RenderIconsObject _renderIcons = new RenderIconsObject();
+        private readonly RenderDebugObject _renderDebug = new RenderDebugObject();
 
         #endregion Fields
 

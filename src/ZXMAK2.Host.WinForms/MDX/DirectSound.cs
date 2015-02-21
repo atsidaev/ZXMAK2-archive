@@ -2,7 +2,6 @@
 /// Author: Alex Makeev
 /// Date: 26.03.2008
 using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Windows.Forms;

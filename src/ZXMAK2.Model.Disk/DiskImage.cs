@@ -1,20 +1,12 @@
 /// Description: Disk image emulation
 /// Author: Alex Makeev
 /// Date: 31.01.2008
+using System;
 using System.Collections.Generic;
 
 
 namespace ZXMAK2.Model.Disk
 {
-    public enum ModifyFlag
-    {
-        None = 0,
-        SectorLevel = 1,
-        TrackLevel = 2
-    }
-    public delegate void SaveDiskDelegate(DiskImage sender);
-    public delegate void LoadDiskDelegate(DiskImage sender, bool readOnly);
-
     // TODO: DiskImage.Present logic
     public class DiskImage
     {
@@ -23,7 +15,7 @@ namespace ZXMAK2.Model.Disk
         private bool _present = false;
         private long _rotateTime;
         private long _indexTime;
-        private List<Track[]> _cylynderList = new List<Track[]>();     // SECHDR[2] list
+        private readonly List<Track[]> _cylynderList = new List<Track[]>();     // SECHDR[2] list
 
         private int _headSide = 0;
         private int _headCylynder = 0;
@@ -61,8 +53,8 @@ namespace ZXMAK2.Model.Disk
             set { _present = value; }
         }
 
-        public event SaveDiskDelegate SaveDisk;
-        public event LoadDiskDelegate LoadDisk;
+        public event Action<DiskImage> SaveDisk;
+        public event Action<DiskImage, bool> LoadDisk;
         
         public string FileName
         {
