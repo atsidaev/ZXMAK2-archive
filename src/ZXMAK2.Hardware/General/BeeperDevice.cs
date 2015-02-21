@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Xml;
+using System.Text;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Engine;
@@ -52,6 +53,7 @@ namespace ZXMAK2.Hardware.General
             set
             {
                 m_noDos = value;
+                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -62,6 +64,7 @@ namespace ZXMAK2.Hardware.General
             set
             {
                 m_mask = value;
+                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -72,6 +75,7 @@ namespace ZXMAK2.Hardware.General
             set
             {
                 m_port = value;
+                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -84,6 +88,7 @@ namespace ZXMAK2.Hardware.General
                 m_bitEar = value;
                 m_bitEarMask = (value >= 0 && value <= 7) ? 1 << value : 0;
                 m_shiftEar = (value >= 0 && value <= 7) ? 9 - value : 0;
+                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -97,8 +102,34 @@ namespace ZXMAK2.Hardware.General
                 m_bitMicMask = (value >= 0 && value <= 7) ? 1 << value : 0;
                 m_shiftMic = (value >= 0 && value <= 7) ? 8 - value : 0;
                 m_fixMic = (value >= 0 && value <= 7) ? 0 : 1;
+                UpdateDescription();
                 OnConfigChanged();
             }
+        }
+
+        private void UpdateDescription()
+        {
+            var builder = new StringBuilder();
+            builder.Append("Common Beeper Device");
+            builder.Append(Environment.NewLine);
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("NoDos: {0}", NoDos));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("Port:  #{0:X4}", Port));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("Mask:  #{0:X4}", Mask));
+            builder.Append(Environment.NewLine);
+            if (BitEar >= 0)
+            {
+                builder.Append(string.Format("Ear:   D{0}", BitEar));
+                builder.Append(Environment.NewLine);
+            }
+            if (BitMic >= 0)
+            {
+                builder.Append(string.Format("Mic:   D{0}", BitMic));
+                builder.Append(Environment.NewLine);
+            }
+            Description = builder.ToString();
         }
 
         #endregion Properties
