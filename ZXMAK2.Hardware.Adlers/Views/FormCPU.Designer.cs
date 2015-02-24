@@ -111,6 +111,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemAddNewTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItemUpdateTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
+            this.menuItemInsertNote = new System.Windows.Forms.MenuItem();
+            this.menuItem13 = new System.Windows.Forms.MenuItem();
             this.panelStatus.SuspendLayout();
             this.tabMenus.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -734,6 +736,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemInsertComment,
             this.menuItem12,
             this.menuItem11,
+            this.menuItemInsertNote,
+            this.menuItem13,
             this.menuItemLoadComments,
             this.menuItemSaveComments});
             this.menuItemCommentsSymbols.Text = "Comments/Symbols";
@@ -772,13 +776,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // menuItemLoadComments
             // 
-            this.menuItemLoadComments.Index = 3;
+            this.menuItemLoadComments.Index = 5;
             this.menuItemLoadComments.Text = "Load comments";
             this.menuItemLoadComments.Click += new System.EventHandler(this.menuItemLoadComments_Click);
             // 
             // menuItemSaveComments
             // 
-            this.menuItemSaveComments.Index = 4;
+            this.menuItemSaveComments.Index = 6;
             this.menuItemSaveComments.Text = "Save comments";
             this.menuItemSaveComments.Click += new System.EventHandler(this.menuItemSaveComments_Click);
             // 
@@ -941,6 +945,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem9.Index = 2;
             this.menuItem9.Text = "Delete current";
             // 
+            // menuItemInsertNote
+            // 
+            this.menuItemInsertNote.Index = 3;
+            this.menuItemInsertNote.Text = "Insert/Update note";
+            this.menuItemInsertNote.Click += new System.EventHandler(this.menuItemInsertNote_Click);
+            // 
+            // menuItem13
+            // 
+            this.menuItem13.Index = 4;
+            this.menuItem13.Text = "-";
+            // 
             // FormCpu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1071,5 +1086,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuItemSaveComments;
         private System.Windows.Forms.MenuItem menuItem11;
         private System.Windows.Forms.MenuItem menuItemInsertBreakpointHere;
+        private System.Windows.Forms.MenuItem menuItemInsertNote;
+        private System.Windows.Forms.MenuItem menuItem13;
     }
 }
