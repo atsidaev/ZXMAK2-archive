@@ -9,7 +9,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 {
     class BitmapGrid : Panel
     {
-        private byte X_BIT_COUNT = 8, Y_BIT_COUNT = 8*3;           // Grid Height and Width
+        private int X_BIT_COUNT = 8, Y_BIT_COUNT = 8*3;           // Grid Height and Width
         private BitArray[] _gridBits = null;
 
         private Size _originalSize;
@@ -27,11 +27,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             _originalSize = this.Size;
         }
-        public void Init(IDebuggable i_spectrum, byte i_gridWidth, byte i_gridHeight)
+        public void Init(IDebuggable i_spectrum, int i_gridWidth, int i_gridHeight)
         {
             Init();
 
             _spectrum = i_spectrum;
+
             X_BIT_COUNT = i_gridWidth;
             Y_BIT_COUNT = i_gridHeight;
 
@@ -54,17 +55,25 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
         }
 
-        public void setGridWidth(byte i_newWidth )
+        public void setGridWidth(byte i_newWidth)
         {
             X_BIT_COUNT = i_newWidth;
             //_needRepaint = true;
             //this.Draw(null);
+        }
+        public int getGridWidth()
+        {
+            return X_BIT_COUNT;
         }
         public void setGridHeight(byte i_newHeight)
         {
             Y_BIT_COUNT = i_newHeight;
             //_needRepaint = true;
             //this.Draw(null);
+        }
+        public int getGridHeight()
+        {
+            return Y_BIT_COUNT;
         }
 
         public void Draw(PaintEventArgs e)

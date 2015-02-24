@@ -1135,8 +1135,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                             //Logger.Finish();
                         }
                     }
-                    else
+                    else if (commandType == DebuggerManager.CommandType.memoryOrRegistryManipulation)
                     {
+                        if (parsedCommand.Count < 3)
+                            throw new CommandParseException("Incorrect left or right expression.");
+
                         // memory/registry manipulation(LD instruction)
                         string left = parsedCommand[1];
                         UInt16 leftNum = 0;
@@ -1790,6 +1793,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
                           && item.Info.ConditionTypeSign == info.ConditionTypeSign
                           && item.Info.RightCondition == info.RightCondition
                           && item.Info.CheckSecondCondition == item.Info.CheckSecondCondition //only one conditional breakpoints, ToDo:
+                          && item.Info.AccessType != BreakPointConditionType.memoryWrite
+                          && item.Info.AccessType != BreakPointConditionType.memoryWriteInRange
+                          && item.Info.AccessType != BreakPointConditionType.memoryRead
+                          && item.Info.AccessType != BreakPointConditionType.memoryReadInRange
                           )
                             return;
                     }

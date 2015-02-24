@@ -112,6 +112,12 @@
             this.dataGridViewTextBoxColumn46 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn47 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn48 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.contextMenuExportBitmap = new System.Windows.Forms.ContextMenu();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.menuItemSaveBitmapAsBitmap = new System.Windows.Forms.MenuItem();
+            this.menuItemSaveBitmapAsPNG = new System.Windows.Forms.MenuItem();
+            this.menuItemSaveBitmapAsJPG = new System.Windows.Forms.MenuItem();
+            this.menuItemSaveBitmapAsBytes = new System.Windows.Forms.MenuItem();
             this.groupBoxScreenViewType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).BeginInit();
@@ -156,6 +162,7 @@
             this.comboSpriteHeight.Name = "comboSpriteHeight";
             this.comboSpriteHeight.Size = new System.Drawing.Size(104, 23);
             this.comboSpriteHeight.TabIndex = 27;
+            this.comboSpriteHeight.SelectedIndexChanged += new System.EventHandler(this.comboSpriteHeight_SelectedIndexChanged);
             // 
             // comboSpriteWidth
             // 
@@ -484,6 +491,7 @@
             this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
             this.bitmapGridSpriteView.Size = new System.Drawing.Size(256, 256);
             this.bitmapGridSpriteView.TabIndex = 10;
+            this.bitmapGridSpriteView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseClick);
             this.bitmapGridSpriteView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseUp);
             // 
             // textBoxSpriteBytes
@@ -847,11 +855,50 @@
             this.dataGridViewTextBoxColumn48.Name = "dataGridViewTextBoxColumn48";
             this.dataGridViewTextBoxColumn48.Width = 15;
             // 
+            // contextMenuExportBitmap
+            // 
+            this.contextMenuExportBitmap.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem1});
+            // 
+            // menuItem1
+            // 
+            this.menuItem1.Index = 0;
+            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemSaveBitmapAsBitmap,
+            this.menuItemSaveBitmapAsPNG,
+            this.menuItemSaveBitmapAsJPG,
+            this.menuItemSaveBitmapAsBytes});
+            this.menuItem1.Text = "Export bitmap as";
+            // 
+            // menuItemSaveBitmapAsBitmap
+            // 
+            this.menuItemSaveBitmapAsBitmap.Index = 0;
+            this.menuItemSaveBitmapAsBitmap.Text = "Bitmap";
+            this.menuItemSaveBitmapAsBitmap.Click += new System.EventHandler(this.menuItemSaveBitmapAsBitmap_Click);
+            // 
+            // menuItemSaveBitmapAsPNG
+            // 
+            this.menuItemSaveBitmapAsPNG.Index = 1;
+            this.menuItemSaveBitmapAsPNG.Text = "PNG";
+            this.menuItemSaveBitmapAsPNG.Click += new System.EventHandler(this.menuItemSaveBitmapAsPNG_Click);
+            // 
+            // menuItemSaveBitmapAsJPG
+            // 
+            this.menuItemSaveBitmapAsJPG.Index = 2;
+            this.menuItemSaveBitmapAsJPG.Text = "JPG";
+            this.menuItemSaveBitmapAsJPG.Click += new System.EventHandler(this.menuItemSaveBitmapAsJPG_Click);
+            // 
+            // menuItemSaveBitmapAsBytes
+            // 
+            this.menuItemSaveBitmapAsBytes.Index = 3;
+            this.menuItemSaveBitmapAsBytes.Text = "Bytes";
+            this.menuItemSaveBitmapAsBytes.Click += new System.EventHandler(this.menuItemSaveBitmapAsBytes_Click);
+            // 
             // GraphicsEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(750, 517);
+            this.ClientSize = new System.Drawing.Size(750, 497);
             this.Controls.Add(this.groupBoxSpriteDetails);
             this.Controls.Add(this.checkBoxMirror);
             this.Controls.Add(this.pictureZoomedArea);
@@ -974,5 +1021,11 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn47;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn48;
         private Hardware.Adlers.Views.BitmapGrid bitmapGridSpriteView;
+        private System.Windows.Forms.ContextMenu contextMenuExportBitmap;
+        private System.Windows.Forms.MenuItem menuItem1;
+        private System.Windows.Forms.MenuItem menuItemSaveBitmapAsBitmap;
+        private System.Windows.Forms.MenuItem menuItemSaveBitmapAsPNG;
+        private System.Windows.Forms.MenuItem menuItemSaveBitmapAsJPG;
+        private System.Windows.Forms.MenuItem menuItemSaveBitmapAsBytes;
     }
 }
