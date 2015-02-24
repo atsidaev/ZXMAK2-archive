@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
+using ZXMAK2.Dependency;
+using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Hardware.Adlers.Core;
+using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {
@@ -28,7 +33,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             comboSpriteWidth.SelectedIndex = 0;
             comboSpriteHeight.SelectedIndex = 0;
 
-            bitmapGridSpriteView.Init(_spectrum, Convert.ToByte(comboSpriteWidth.SelectedItem), 32);
+            bitmapGridSpriteView.Init(_spectrum, Int32.Parse(comboSpriteWidth.Items[0].ToString()), 24);
 
             _isInitialised = true;
 
@@ -245,20 +250,28 @@ namespace ZXMAK2.Hardware.Adlers.Views
             switch (comboDisplayType.SelectedIndex)
             {
                 case 0: //Screen view
+                    comboSpriteHeight.Enabled = false;
                     setZXScreenView();
                     break;
                 case 1: //Sprite view
                     setZXSpriteView();
                     groupBoxSpriteDetails.Enabled = true;
+                    comboSpriteHeight.Enabled = true;
+                    if (comboSpriteHeight.SelectedIndex == 0) //if '-' selected
+                        bitmapGridSpriteView.setGridHeight(16);
+                    else
+                        bitmapGridSpriteView.setGridHeight(Convert.ToByte(comboSpriteHeight.Text));
                     bitmapGridSpriteView.setBitmapBits(_spectrum, Convert.ToUInt16(numericUpDownActualAddress.Value));
                     bitmapGridSpriteView.Draw(null);
                     break;
                 case 3: //Tile view
                     groupBoxSpriteDetails.Enabled = true;
+                    comboSpriteHeight.Enabled = false;
                     setTileView();
                     break;
                 case 4: //JetPac style
                     groupBoxSpriteDetails.Enabled = false;
+                    comboSpriteHeight.Enabled = false;
                     setZXJetpacView();
                     break;
                 default:
@@ -295,6 +308,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.Hide();
         }
         private void comboDisplayType_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            setZXImage();
+        }
+        private void comboSpriteHeight_SelectedIndexChanged(object sender, EventArgs e)
         {
             setZXImage();
         }
@@ -385,19 +402,22 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
         private void bitmapGridSpriteView_MouseUp(object sender, MouseEventArgs e)
         {
-            int clickedPixel = bitmapGridSpriteView.getClickedPixel(e);
-            int temp = (int)numericUpDownActualAddress.Value + clickedPixel / 8;
-            if (temp > 0xFFFF)
-                temp -= 0xFFFF;
-            UInt16 bitToToggleAddress = Convert.ToUInt16(temp);
-            if (bitToToggleAddress < 0x4000)
-                return; //cannot change ROM
-            byte memValue = _spectrum.ReadMemory(bitToToggleAddress);
+            if (e.Button == MouseButtons.Left)
+            {
+                int clickedPixel = bitmapGridSpriteView.getClickedPixel(e);
+                int temp = (int)numericUpDownActualAddress.Value + clickedPixel / 8;
+                if (temp > 0xFFFF)
+                    temp -= 0xFFFF;
+                UInt16 bitToToggleAddress = Convert.ToUInt16(temp);
+                if (bitToToggleAddress < 0x4000)
+                    return; //cannot change ROM
+                byte memValue = _spectrum.ReadMemory(bitToToggleAddress);
 
-            memValue = (byte)GraphicsTools.ToggleBit(memValue, clickedPixel % 8);
-            _spectrum.WriteMemory(Convert.ToUInt16(bitToToggleAddress), memValue);
+                memValue = (byte)GraphicsTools.ToggleBit(memValue, clickedPixel % 8);
+                _spectrum.WriteMemory(Convert.ToUInt16(bitToToggleAddress), memValue);
 
-            setZXImage(); //refresh
+                setZXImage(); //refresh
+            }
         }
         private void pictureZXDisplay_MouseDown(object sender, MouseEventArgs e)
         {
@@ -411,13 +431,79 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
         private void pictureZXDisplay_MouseUp(object sender, MouseEventArgs e)
         {
-            if (comboDisplayType.SelectedIndex == 0)  //for ScreenView only
+            if (e.Button == MouseButtons.Left)
             {
-                if (_mouseSelectionArea == null)
-                    return;
+                if (comboDisplayType.SelectedIndex == 0)  //for ScreenView only
+                {
+                    if (_mouseSelectionArea == null)
+                        return;
 
-                _mouseSelectionArea.MouseUp(ref pictureZXDisplay, e);
+                    _mouseSelectionArea.MouseUp(ref pictureZXDisplay, e);
+                }
             }
+        }
+        private void bitmapGridSpriteView_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                contextMenuExportBitmap.Show(this.bitmapGridSpriteView, e.Location);
+            }
+        }
+
+        //contextMenuExportBitmap
+        private void SaveBitmapAs(ImageFormat i_imgFormat)
+        {
+            string fileName = @"test_png_export.";
+            if(i_imgFormat == null)
+            {
+                //save bitmap as bytes
+                Locator.Resolve<IUserMessage>().Info("Not implemented yet, sorry..."); return;
+            }
+            else
+            {
+                if(i_imgFormat == ImageFormat.Png)
+                    fileName += "png";
+                else if (i_imgFormat == ImageFormat.Jpeg)
+                    fileName += "jpg";
+                else if (i_imgFormat == ImageFormat.Bmp)
+                    fileName += "bmp";
+                else {
+                    Locator.Resolve<IUserMessage>().Error("Invalid format to save!"); 
+                    return;
+                }
+            }
+
+            int zoomFactor = Convert.ToByte(numericUpDownZoomFactor.Value);
+            int bitmapWidth = this.bitmapGridSpriteView.getGridWidth() * zoomFactor;
+            int bitmapHeight = this.bitmapGridSpriteView.getGridHeight() * zoomFactor;
+
+            string filePath = Path.Combine(Utils.GetAppFolder(), fileName); //ToDo: make method which will save file to root app dir, avoid such contructions as this
+
+            Rectangle cloneRect = new Rectangle(0, 0, bitmapWidth, bitmapHeight);
+            Bitmap bmpToClone = new Bitmap(this.pictureZXDisplay.Image);
+            Bitmap cloneBitmap = bmpToClone.Clone(cloneRect, bmpToClone.PixelFormat);
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+            cloneBitmap.Save(filePath, i_imgFormat);
+            cloneBitmap.Dispose();
+
+            Locator.Resolve<IUserMessage>().Info(String.Format("File '{0}' saved to root app directory!", fileName));
+        }
+        private void menuItemSaveBitmapAsPNG_Click(object sender, EventArgs e)
+        {
+            SaveBitmapAs(ImageFormat.Png);
+        }
+        private void menuItemSaveBitmapAsBitmap_Click(object sender, EventArgs e)
+        {
+            SaveBitmapAs(ImageFormat.Bmp);
+        }
+        private void menuItemSaveBitmapAsJPG_Click(object sender, EventArgs e)
+        {
+            SaveBitmapAs(ImageFormat.Jpeg);
+        }
+        private void menuItemSaveBitmapAsBytes_Click(object sender, EventArgs e)
+        {
+            SaveBitmapAs(null);
         }
         #endregion
     }

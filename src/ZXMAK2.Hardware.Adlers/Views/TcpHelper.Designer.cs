@@ -160,6 +160,7 @@
             this.Controls.Add(this.progressBarDownloadStatus);
             this.KeyPreview = true;
             this.Name = "TcpHelper";
+            this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.Text = "TcpHelper";
             this.TopMost = true;
