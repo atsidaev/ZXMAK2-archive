@@ -788,7 +788,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private void dasmPanel_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.X > 30/*fGutterWidth*/ && e.Button == MouseButtons.Left)
+            if (e.X > dasmPanel.GetGutterWidth() && e.Button == MouseButtons.Left)
             {
                 //fill command line with current doubleclicked address on disassembly panel
                 dbgCmdLine.Text = dbgCmdLine.Text.Insert(dbgCmdLine.SelectionStart, String.Format("#{0:X4}", dasmPanel.ActiveAddress));
@@ -1538,6 +1538,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 Locator.Resolve<IUserMessage>().Info("Comments succesfully saved...");
                 writer.Close();
             }
+        }
+
+        //Dasm context menu: Insert note at address
+        private void menuItemInsertNote_Click(object sender, EventArgs e)
+        {
+            string strNoteText = String.Empty;
+            dasmPanel.IsCodeCommentAtAddress(dasmPanel.ActiveAddress, ref strNoteText);
+            string strAddressToComment = String.Format("#{0:X4}", dasmPanel.ActiveAddress);
+            if (!Locator.Resolve<IUserQuery>().QueryText("Note to add", "Enter note for address " + strAddressToComment + ":", ref strNoteText))
+                return;
+            dasmPanel.InsertCodeNote(dasmPanel.ActiveAddress, strNoteText);
         }
 
         //Trace context menu
