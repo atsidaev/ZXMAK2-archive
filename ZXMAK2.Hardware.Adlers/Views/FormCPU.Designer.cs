@@ -86,6 +86,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemClearCurrentComment = new System.Windows.Forms.MenuItem();
             this.menuItemClearAllComments = new System.Windows.Forms.MenuItem();
             this.menuItem11 = new System.Windows.Forms.MenuItem();
+            this.menuItemInsertNote = new System.Windows.Forms.MenuItem();
+            this.menuItem13 = new System.Windows.Forms.MenuItem();
             this.menuItemLoadComments = new System.Windows.Forms.MenuItem();
             this.menuItemSaveComments = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
@@ -111,8 +113,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemAddNewTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItemUpdateTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
-            this.menuItemInsertNote = new System.Windows.Forms.MenuItem();
-            this.menuItem13 = new System.Windows.Forms.MenuItem();
+            this.menuItem10 = new System.Windows.Forms.MenuItem();
+            this.menuItemClearCurrentNote = new System.Windows.Forms.MenuItem();
+            this.menuItemClearAllNotes = new System.Windows.Forms.MenuItem();
             this.panelStatus.SuspendLayout();
             this.tabMenus.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -737,6 +740,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem12,
             this.menuItem11,
             this.menuItemInsertNote,
+            this.menuItem10,
             this.menuItem13,
             this.menuItemLoadComments,
             this.menuItemSaveComments});
@@ -774,16 +778,27 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem11.Index = 2;
             this.menuItem11.Text = "-";
             // 
+            // menuItemInsertNote
+            // 
+            this.menuItemInsertNote.Index = 3;
+            this.menuItemInsertNote.Text = "Insert/Update note";
+            this.menuItemInsertNote.Click += new System.EventHandler(this.menuItemInsertNote_Click);
+            // 
+            // menuItem13
+            // 
+            this.menuItem13.Index = 5;
+            this.menuItem13.Text = "-";
+            // 
             // menuItemLoadComments
             // 
-            this.menuItemLoadComments.Index = 5;
-            this.menuItemLoadComments.Text = "Load comments";
+            this.menuItemLoadComments.Index = 6;
+            this.menuItemLoadComments.Text = "Load comments/notes";
             this.menuItemLoadComments.Click += new System.EventHandler(this.menuItemLoadComments_Click);
             // 
             // menuItemSaveComments
             // 
-            this.menuItemSaveComments.Index = 6;
-            this.menuItemSaveComments.Text = "Save comments";
+            this.menuItemSaveComments.Index = 7;
+            this.menuItemSaveComments.Text = "Save comments/notes";
             this.menuItemSaveComments.Click += new System.EventHandler(this.menuItemSaveComments_Click);
             // 
             // menuItem6
@@ -945,16 +960,25 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem9.Index = 2;
             this.menuItem9.Text = "Delete current";
             // 
-            // menuItemInsertNote
+            // menuItem10
             // 
-            this.menuItemInsertNote.Index = 3;
-            this.menuItemInsertNote.Text = "Insert/Update note";
-            this.menuItemInsertNote.Click += new System.EventHandler(this.menuItemInsertNote_Click);
+            this.menuItem10.Index = 4;
+            this.menuItem10.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemClearCurrentNote,
+            this.menuItemClearAllNotes});
+            this.menuItem10.Text = "Clear";
             // 
-            // menuItem13
+            // menuItemClearCurrentNote
             // 
-            this.menuItem13.Index = 4;
-            this.menuItem13.Text = "-";
+            this.menuItemClearCurrentNote.Index = 0;
+            this.menuItemClearCurrentNote.Text = "Current note";
+            this.menuItemClearCurrentNote.Click += new System.EventHandler(this.menuItemClearCurrentNote_Click);
+            // 
+            // menuItemClearAllNotes
+            // 
+            this.menuItemClearAllNotes.Index = 1;
+            this.menuItemClearAllNotes.Text = "All notes";
+            this.menuItemClearAllNotes.Click += new System.EventHandler(this.menuItemClearAllNotes_Click);
             // 
             // FormCpu
             // 
@@ -1088,5 +1112,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuItemInsertBreakpointHere;
         private System.Windows.Forms.MenuItem menuItemInsertNote;
         private System.Windows.Forms.MenuItem menuItem13;
+        private System.Windows.Forms.MenuItem menuItem10;
+        private System.Windows.Forms.MenuItem menuItemClearCurrentNote;
+        private System.Windows.Forms.MenuItem menuItemClearAllNotes;
     }
 }
