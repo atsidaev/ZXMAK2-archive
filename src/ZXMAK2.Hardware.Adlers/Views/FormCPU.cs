@@ -1460,22 +1460,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (loadDialog.FileName == null || loadDialog.FileName.Length == 0)
                 return;
 
-            //parsing comments
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(loadDialog.FileName);
 
+            //parsing comments
             XmlNodeList xmlNodes = xmlDoc.SelectNodes("/Root/Comments/AddressComment");
             ConcurrentDictionary<ushort, string> loadedCodeComments = new ConcurrentDictionary<ushort, string>();
             bool fParseFailed = false;
             foreach(XmlNode node in xmlNodes)
             {
-                ushort addressAt;
                 if (node.Attributes["AddressAt"] == null || node.InnerText == null)
-                {
-                    fParseFailed = true;
-                    break;
-                }
-                if (!ushort.TryParse(node.Attributes["AddressAt"].InnerText, out addressAt))
                 {
                     fParseFailed = true;
                     break;
@@ -1485,8 +1479,31 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     fParseFailed = true;
                     break;
                 }
+                ushort addressAt = ConvertRadix.ConvertNumberWithPrefix(node.Attributes["AddressAt"].InnerText);
                 loadedCodeComments.AddOrUpdate(addressAt, node.InnerText, (key, oldValue) => node.InnerText);
             }
+            ConcurrentDictionary<ushort, string> loadedCodeNotes = new ConcurrentDictionary<ushort, string>();
+            if (!fParseFailed)
+            {
+                //parsing notes
+                xmlNodes = xmlDoc.SelectNodes("/Root/Notes/AddressNote");
+                foreach (XmlNode node in xmlNodes)
+                {
+                    if (node.Attributes["AddressAt"] == null || node.InnerText == null)
+                    {
+                        fParseFailed = true;
+                        break;
+                    }
+                    if (node.InnerText == null)
+                    {
+                        fParseFailed = true;
+                        break;
+                    }
+                    ushort addressAt = ConvertRadix.ConvertNumberWithPrefix(node.Attributes["AddressAt"].InnerText);
+                    loadedCodeNotes.AddOrUpdate(addressAt, node.InnerText, (key, oldValue) => node.InnerText);
+                }
+            }
+
             if( fParseFailed )
             {
                 Locator.Resolve<IUserMessage>().Error("Error parsing file...\n\nNothing has been done.");
@@ -1498,6 +1515,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 Locator.Resolve<IUserMessage>().Info("Comments succesfully loaded...");
 
                 dasmPanel.SetCodeComments(loadedCodeComments);
+                dasmPanel.SetCodeNotes(loadedCodeNotes);
             }
         }
 
@@ -1521,17 +1539,35 @@ namespace ZXMAK2.Hardware.Adlers.Views
             using (XmlWriter writer = XmlWriter.Create(saveDialog.FileName))
             {
                 writer.WriteStartElement("Root");
-                writer.WriteStartElement("Comments");
 
-                foreach(var item in dasmPanel.GetCodeComments())
+                //Comments
+                if (dasmPanel.GetCodeComments() != null && dasmPanel.GetCodeComments().Count > 0)
                 {
-                    writer.WriteStartElement("AddressComment");
-                    writer.WriteAttributeString("AddressAt", item.Key.ToString());
-                    writer.WriteElementString("Text", item.Value.ToString());
-                    writer.WriteEndElement();
+                    writer.WriteStartElement("Comments");
+                    foreach (var item in dasmPanel.GetCodeComments())
+                    {
+                        writer.WriteStartElement("AddressComment");
+                        writer.WriteAttributeString("AddressAt", String.Format("#{0:X4}", item.Key));
+                        writer.WriteElementString("Text", item.Value.ToString());
+                        writer.WriteEndElement();
+                    }
+                    writer.WriteEndElement(); //Root(CommentsRoot)
                 }
 
-                writer.WriteEndElement(); //Root(CommentsRoot)
+                //Notes
+                if (dasmPanel.GetCodeNotes() != null && dasmPanel.GetCodeNotes().Count > 0)
+                {
+                    writer.WriteStartElement("Notes");
+                    foreach (var item in dasmPanel.GetCodeNotes())
+                    {
+                        writer.WriteStartElement("AddressNote");
+                        writer.WriteAttributeString("AddressAt", String.Format("#{0:X4}", item.Key));
+                        writer.WriteElementString("Text", item.Value.ToString());
+                        writer.WriteEndElement();
+                    }
+                    writer.WriteEndElement(); //Root(CommentsRoot)
+                }
+
                 writer.WriteEndElement(); //Root
 
                 writer.Flush();
@@ -1544,11 +1580,21 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void menuItemInsertNote_Click(object sender, EventArgs e)
         {
             string strNoteText = String.Empty;
-            dasmPanel.IsCodeCommentAtAddress(dasmPanel.ActiveAddress, ref strNoteText);
+            dasmPanel.IsCodeNoteAtAddress(dasmPanel.ActiveAddress, ref strNoteText);
             string strAddressToComment = String.Format("#{0:X4}", dasmPanel.ActiveAddress);
             if (!Locator.Resolve<IUserQuery>().QueryText("Note to add", "Enter note for address " + strAddressToComment + ":", ref strNoteText))
                 return;
             dasmPanel.InsertCodeNote(dasmPanel.ActiveAddress, strNoteText);
+        }
+        //Dasm context menu: Clear current note
+        private void menuItemClearCurrentNote_Click(object sender, EventArgs e)
+        {
+            dasmPanel.ClearCodeNote(dasmPanel.ActiveAddress);
+        }
+        //Dasm context menu: Clear all notes
+        private void menuItemClearAllNotes_Click(object sender, EventArgs e)
+        {
+            dasmPanel.ClearCodeNotes();
         }
 
         //Trace context menu
