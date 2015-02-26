@@ -42,9 +42,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private int m_cmdLineHistoryPos = 0;
         private string savedCmdLineString = String.Empty;
 
-        //find bytes in memory
-        static string m_strBytesToFindSave = "#AFC3, 201";
-
         public FormCpu(IDebuggable debugTarget, IBusManager bmgr)
         {
             InitializeComponent();
@@ -153,6 +150,92 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
         }
 
+        private void UpdateStack()
+        {
+            listState.Items.Clear();
+            if (m_showStack) // toggle by F12 key
+            {
+                //set font - it is different for stack and breakpoint list(must be smaller due to big strings)
+                FontFamily fontFamily = new FontFamily("Courier New");
+                Font fontStack = new Font(
+                   fontFamily,
+                   12,
+                   FontStyle.Regular,
+                   GraphicsUnit.Pixel);
+                listState.Font = fontStack;
+
+                // show stack on listState panel
+                int localStack = m_spectrum.CPU.regs.SP;
+                byte counter = 0;
+                do
+                {
+                    //the stack pointer can be set too low(SP=65535), e.g. Dizzy1
+                    if (localStack + 1 > 0xFFFF)
+                        break;
+
+                    UInt16 stackAdressLo = m_spectrum.ReadMemory(Convert.ToUInt16(localStack++));
+                    UInt16 stackAdressHi = m_spectrum.ReadMemory(Convert.ToUInt16(localStack++));
+
+                    listState.Items.Add((localStack - 2).ToString("X4") + ":   " + (stackAdressLo + stackAdressHi * 256).ToString("X4"));
+
+                    counter += 2;
+                    if (counter >= 20)
+                        break;
+
+                } while (true);
+            }
+            else
+            {
+                //set font - it is different for stack and breakpoint list(must be smaller due to big strings)
+                FontFamily fontFamily = new FontFamily("Arial");
+                Font fontStack = new Font(
+                   fontFamily,
+                   10,
+                   FontStyle.Regular,
+                   GraphicsUnit.Pixel);
+                listState.Font = fontStack;
+
+                if (GetExtBreakpointsList().Count <= 0)
+                {
+                    listState.Items.Add("No breakpoints entered!");
+                }
+                else
+                {
+                    // show conditional breakpoints list on listState panel
+                    foreach (KeyValuePair<byte, BreakpointAdlers> item in GetExtBreakpointsList())
+                    {
+                        string brDesc = String.Empty;
+
+                        brDesc += item.Key.ToString() + ":";
+                        if (!item.Value.Info.IsOn)
+                            brDesc += "(off)";
+                        else
+                            brDesc += " ";
+                        if (item.Value.Info.AccessType == BreakPointConditionType.memoryRead || item.Value.Info.AccessType == BreakPointConditionType.memoryReadInRange ||
+                             item.Value.Info.AccessType == BreakPointConditionType.memoryWrite || item.Value.Info.AccessType == BreakPointConditionType.memoryWriteInRange
+                           )
+                        {
+                            bool fMemWrite = item.Value.Info.AccessType == BreakPointConditionType.memoryWrite || item.Value.Info.AccessType == BreakPointConditionType.memoryWriteInRange;
+                            //desc of memory read breakpoint type
+                            if (fMemWrite)
+                                brDesc += String.Format("mem write #{0:X2}", item.Value.Info.LeftValue);
+                            else
+                                brDesc += String.Format("mem read #{0:X2}", item.Value.Info.LeftValue);
+                            //in range ?
+                            if (item.Value.Info.AccessType == BreakPointConditionType.memoryReadInRange || item.Value.Info.AccessType == BreakPointConditionType.memoryWriteInRange)
+                                brDesc += String.Format("-#{0:X2}", item.Value.Info.RightValue);
+                        }
+                        else
+                        {
+                            brDesc += item.Value.Info.BreakpointString;
+                        }
+
+                        listState.Items.Add(brDesc);
+                    }
+                }
+            }
+        }
+
         private void UpdateCPU(bool updatePC)
         {
             if (m_spectrum.IsRunning)
@@ -206,71 +289,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             listState.Items.Add("  FX=" + m_spectrum.CPU.FX.ToString());
             listState.Items.Add(" XFX=" + m_spectrum.CPU.XFX.ToString());*/
 
-            listState.Items.Clear();
-            if (m_showStack) // toggle by F12 key
-            {
-                // show stack on listState panel
-                int localStack = m_spectrum.CPU.regs.SP;
-                byte counter = 0;
-                do
-                {
-                    //the stack pointer can be set too low(SP=65535), e.g. Dizzy1,
-                    //so condition on stack top must be added
-                    if (localStack + 1 > 0xFFFF)
-                        break;
-
-                    UInt16 stackAdressLo = m_spectrum.ReadMemory(Convert.ToUInt16(localStack++));
-                    UInt16 stackAdressHi = m_spectrum.ReadMemory(Convert.ToUInt16(localStack++));
-
-                    listState.Items.Add((localStack - 2).ToString("X4") + ":   " + (stackAdressLo + stackAdressHi * 256).ToString("X4"));
-
-                    counter += 2;
-                    if (counter >= 20)
-                        break;
-
-                } while (true);
-            }
-            else
-            {
-                if (GetExtBreakpointsList().Count <= 0)
-                {
-                    listState.Items.Add("No breakpoints entered!");
-                }
-                else
-                {
-                    // show conditional breakpoints list on listState panel
-                    foreach (KeyValuePair<byte, BreakpointAdlers> item in GetExtBreakpointsList())
-                    {
-                        string brDesc = String.Empty;
-
-                        brDesc += item.Key.ToString() + ":";
-                        if (!item.Value.Info.IsOn)
-                            brDesc += "(off)";
-                        else
-                            brDesc += " ";
-                        if ( item.Value.Info.AccessType == BreakPointConditionType.memoryRead || item.Value.Info.AccessType == BreakPointConditionType.memoryReadInRange ||
-                             item.Value.Info.AccessType == BreakPointConditionType.memoryWrite || item.Value.Info.AccessType == BreakPointConditionType.memoryWriteInRange
-                           )
-                        {
-                            bool fMemWrite = item.Value.Info.AccessType == BreakPointConditionType.memoryWrite || item.Value.Info.AccessType == BreakPointConditionType.memoryWriteInRange;
-                            //desc of memory read breakpoint type
-                            if (fMemWrite)
-                                brDesc += String.Format("mem write #{0:X2}", item.Value.Info.LeftValue);
-                            else
-                                brDesc += String.Format("mem read #{0:X2}", item.Value.Info.LeftValue);
-                            //in range ?
-                            if (item.Value.Info.AccessType == BreakPointConditionType.memoryReadInRange || item.Value.Info.AccessType == BreakPointConditionType.memoryWriteInRange)
-                                brDesc += String.Format("-#{0:X2}", item.Value.Info.RightValue);
-                        }
-                        else
-                        {
-                            brDesc += item.Value.Info.BreakpointString;
-                        }
-
-                        listState.Items.Add(brDesc);
-                    }
-                }
-            }
+            UpdateStack();
 
             //Window text
             this.Text = "Z80 CPU(";
@@ -559,10 +578,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private void menuItemDataGotoADDR_Click(object sender, EventArgs e)
         {
-            int adr = dataPanel.TopAddress;
+            int adr = Historization.MemDumpGotoAddress;
             var service = Locator.Resolve<IUserQuery>();
             if (!service.QueryValue("Dump memory", "Address:", "#{0:X4}", ref adr, 0, 0xFFFF)) return;
-            dataPanel.TopAddress = (ushort)adr;
+            dataPanel.TopAddress = Historization.MemDumpGotoAddress = (ushort)adr;
             dataPanel.Focus();
         }
 
@@ -663,16 +682,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
             List<UInt16> bytesToFindInput = new List<UInt16>();
             var service = Locator.Resolve<IUserQuery>();
 
+            string strBytesToFind = Historization.FindBytesInMemory;
+
             if (sender != null) //null => Find next
             {
-                if (!service.QueryText("Find bytes in memory", "Bytes(comma delimited):", ref m_strBytesToFindSave))
+                if (!service.QueryText("Find bytes in memory", "Bytes(comma delimited):", ref strBytesToFind))
                     return;
             }
-            if (m_strBytesToFindSave.Trim() == String.Empty || m_strBytesToFindSave.Trim().Length == 0)
+            if (strBytesToFind.Trim() == String.Empty || strBytesToFind.Trim().Length == 0)
                 return;
+            else
+                Historization.FindBytesInMemory = strBytesToFind;
 
             bytesToFindInput.Clear();
-            foreach (string byteCandidate in Regex.Split(m_strBytesToFindSave, ","))
+            foreach (string byteCandidate in Regex.Split(strBytesToFind, ","))
             {
                 if (!String.IsNullOrEmpty(byteCandidate) && byteCandidate.Trim() != String.Empty && byteCandidate != ",")
                 {
@@ -1399,14 +1422,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
         //Dasm context menu: Goto adress
         private void menuItemDasmGotoADDR_Click(object sender, EventArgs e)
         {
-            int ToAddr = 0;
+            int ToAddr = Historization.DisassemblyGotoAddress;
             var service = Locator.Resolve<IUserQuery>();
             if (service == null)
             {
                 return;
             }
             if (!service.QueryValue("Disassembly Address", "Address:", "#{0:X4}", ref ToAddr, 0, 0xFFFF)) return;
-            dasmPanel.TopAddress = (ushort)ToAddr;
+            dasmPanel.TopAddress = Historization.DisassemblyGotoAddress = (ushort)ToAddr;
             dasmPanel.Focus();
         }
 
@@ -2049,7 +2072,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     break;
                 case Keys.F12:  // toggle Stack/Breakpoints on the panel
                     m_showStack = !m_showStack;
-                    UpdateREGS();
+                    UpdateStack();
                     break;
                 case Keys.F: //find bytes in memory(memory dump panel)
                     if (e.Control)

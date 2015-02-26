@@ -55,6 +55,7 @@
     <Compile Include="ConvertRadix.cs" />
     <Compile Include="Core\DebuggerTrace.cs" />
     <Compile Include="Core\GraphicsTools.cs" />
+    <Compile Include="Core\Historization.cs" />
     <Compile Include="Core\ILProcessor.cs" />
     <Compile Include="Core\SelectionArea.cs" />
     <Compile Include="Debugger.cs" />
