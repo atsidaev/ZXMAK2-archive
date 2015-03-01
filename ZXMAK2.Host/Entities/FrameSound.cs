@@ -63,7 +63,7 @@ namespace ZXMAK2.Host.Entities
                             right += psrc[index + 1];
                         }
                     }
-                    if (sources.Length > 0)
+                    if (sources.Length > 1)
                     {
                         left /= sources.Length;
                         right /= sources.Length;
