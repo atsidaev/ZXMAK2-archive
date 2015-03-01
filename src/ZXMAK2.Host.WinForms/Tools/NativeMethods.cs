@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace ZXMAK2.Host.WinForms.Tools
 {
-    internal sealed class NativeMethods
+    internal static class NativeMethods
     {
         #region P/Invoke
 

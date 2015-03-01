@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Xna.Framework.Audio;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Xna4.Tools;
 
 
 namespace ZXMAK2.Host.Xna4.Xna
@@ -126,7 +127,12 @@ namespace ZXMAK2.Host.Xna4.Xna
             {
                 return;
             }
-            Mix(buffer, soundFrame.Buffers);
+            var srcBuffer = soundFrame.GetBuffer();
+            fixed (uint* pSrc = srcBuffer)
+            fixed (byte* pbDst = buffer)
+            {
+                NativeMethods.CopyMemory((uint*)pbDst, pSrc, buffer.Length);
+            }
             UnlockBuffer(buffer);
         }
 
@@ -166,36 +172,6 @@ namespace ZXMAK2.Host.Xna4.Xna
                     return;
                 }
                 m_fillQueue.Enqueue(m_playQueue.Dequeue());
-            }
-        }
-
-        private void Mix(byte[] dst, uint[][] bufferArray)
-        {
-            fixed (byte* pbdst = dst)
-            {
-                var pdst = (short*)pbdst;
-                for (var i = 0; i < dst.Length / 4; i++)
-                {
-                    var index = i * 2;
-                    var left = 0;
-                    var right = 0;
-                    foreach (var src in bufferArray)
-                    {
-                        fixed (uint* puisrc = src)
-                        {
-                            var psrc = (short*)puisrc;
-                            left += psrc[index];
-                            right += psrc[index + 1];
-                        }
-                    }
-                    if (bufferArray.Length > 0)
-                    {
-                        left /= bufferArray.Length;
-                        right /= bufferArray.Length;
-                    }
-                    pdst[index] = (short)left;
-                    pdst[index + 1] = (short)right;
-                }
             }
         }
 
