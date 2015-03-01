@@ -47,7 +47,7 @@ namespace ZXMAK2.Hardware.Atm
 
         #region IUlaRenderer
 
-        public IVideoData VideoData { get; private set; }
+        public IFrameVideo VideoData { get; private set; }
 
         public virtual int FrameLength
         {
@@ -218,7 +218,7 @@ namespace ZXMAK2.Hardware.Atm
 
         protected virtual void OnParamsChanged()
         {
-            VideoData = new VideoData(Params.c_ulaWidth, Params.c_ulaHeight, 1F);
+            VideoData = new FrameVideo(Params.c_ulaWidth, Params.c_ulaHeight, 1F);
             m_ulaAction = new UlaAction[Params.c_frameTactCount];
             m_videoOffset = new int[Params.c_frameTactCount];
             m_memoryOffset = new int[Params.c_frameTactCount];

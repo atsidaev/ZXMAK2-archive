@@ -8,7 +8,7 @@ namespace ZXMAK2.Engine.Interfaces
     {
         int FrameLength { get; }
         int IntLength { get; }
-        IVideoData VideoData { get; }
+        IFrameVideo VideoData { get; }
 
         void UpdateBorder(int value);
 

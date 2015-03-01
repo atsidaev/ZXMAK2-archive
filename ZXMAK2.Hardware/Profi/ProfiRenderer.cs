@@ -46,7 +46,7 @@ namespace ZXMAK2.Hardware.Profi
 
         #region IUlaRenderer
 
-        public IVideoData VideoData { get; private set; }
+        public IFrameVideo VideoData { get; private set; }
 
         public virtual int FrameLength
         {
@@ -264,7 +264,7 @@ namespace ZXMAK2.Hardware.Profi
         private void OnParamsChanged()
         {
             // rebuild tables...
-            VideoData = new VideoData(Params.c_ulaWidth, Params.c_ulaHeight, 2F);
+            VideoData = new FrameVideo(Params.c_ulaWidth, Params.c_ulaHeight, 2F);
             m_ulaAction = new UlaAction[Params.c_frameTactCount];
             m_ulaBwOffset = new int[Params.c_frameTactCount];
             m_ulaVideoOffset = new int[Params.c_frameTactCount];

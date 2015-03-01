@@ -7,6 +7,9 @@ namespace ZXMAK2.Host.Interfaces
 {
     public interface IMediaRecorder : IDisposable
     {
-        void PushFrame(IVideoFrame videoFrame, ISoundFrame soundFrame);
+        void PushFrame(
+            IFrameInfo infoFrame,
+            IFrameVideo videoFrame, 
+            IFrameSound soundFrame);
     }
 }

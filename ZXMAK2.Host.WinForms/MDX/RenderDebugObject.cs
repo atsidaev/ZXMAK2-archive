@@ -76,6 +76,8 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public int FrameStartTact { get; set; }
 
+        public int SampleRate { get; set; }
+
         public Size FrameSize { get; set; }
 
         public bool IsEnabled
@@ -165,9 +167,13 @@ namespace ZXMAK2.Host.WinForms.Mdx
             var fpsRender = 1000D / avgT;
             var fpsUpdate = 1000D / avgU;
             var textValue = string.Format(
-                "Render FPS: {0:F3}\nUpdate FPS: {1:F3}\nDevice FPS: {2}\n" +
-                "Back: [{3}, {4}]\nFrame: [{5}, {6}]\n" +
-                "FrameStart: {7}T",
+                "Render FPS: {0:F3}\n" + 
+                "Update FPS: {1:F3}\n" +
+                "Device FPS: {2}\n" +
+                "Back: [{3}, {4}]\n"+ 
+                "Frame: [{5}, {6}]\n" +
+                "Sound: {7:F3} kHz\n" +
+                "FrameStart: {8}T",
                 fpsRender,
                 IsRunning ? fpsUpdate : (double?)null,
                 frameRate,
@@ -175,6 +181,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 wndSize.Height,
                 FrameSize.Width,
                 FrameSize.Height,
+                SampleRate / 1000D,
                 FrameStartTact);
             var textRect = _font.MeasureString(
                 null,

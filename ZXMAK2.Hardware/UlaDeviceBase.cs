@@ -174,7 +174,7 @@ namespace ZXMAK2.Hardware
             get { return Renderer.FrameLength; }
         }
 
-        public IVideoData VideoData 
+        public IFrameVideo VideoData 
         { 
             get { return m_renderer.VideoData; } 
         }

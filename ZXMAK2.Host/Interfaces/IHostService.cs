@@ -16,7 +16,10 @@ namespace ZXMAK2.Host.Interfaces
 
 
         bool CheckSyncSourceSupported(SyncSource value);
-        void PushFrame(IVideoFrame videoFrame, ISoundFrame soundFrame);
+        void PushFrame(
+            IFrameInfo infoFrame,
+            IFrameVideo videoFrame, 
+            IFrameSound soundFrame);
         void CancelPush();
         void Capture();
         void Uncapture();

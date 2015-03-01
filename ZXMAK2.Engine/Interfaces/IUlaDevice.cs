@@ -6,7 +6,7 @@ namespace ZXMAK2.Engine.Interfaces
 {
 	public interface IUlaDevice
 	{
-        IVideoData VideoData { get; }
+        IFrameVideo VideoData { get; }
 
         bool IsEarlyTimings { get; }
 

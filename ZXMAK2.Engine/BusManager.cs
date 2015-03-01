@@ -44,7 +44,7 @@ namespace ZXMAK2.Engine
         private IconDescriptor m_iconPause = new IconDescriptor(
             "PAUSE",
             ImageResources.Pause_32x32);
-        private ISoundFrame m_soundFrame;
+        private IFrameSound m_soundFrame;
 
         public event Action FrameReady;
         public event EventHandler BusConnected;
@@ -65,7 +65,7 @@ namespace ZXMAK2.Engine
         public string Name { get; set; }
         public int SampleRate { get; set; }
         
-        public ISoundFrame SoundFrame 
+        public IFrameSound SoundFrame 
         { 
             get { return /* m_frameOpened ? null : */ m_soundFrame; } 
         }
@@ -525,7 +525,7 @@ namespace ZXMAK2.Engine
                 if (jtag != null)
                     jtag.Attach(m_debuggable);
             }
-            m_soundFrame = new SoundFrame(
+            m_soundFrame = new FrameSound(
                 SampleRate,
                 soundRenderers.Select(sr => sr.AudioBuffer));
             OnBusConnected();

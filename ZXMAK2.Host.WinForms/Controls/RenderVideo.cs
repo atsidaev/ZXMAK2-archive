@@ -121,13 +121,13 @@ namespace ZXMAK2.Host.WinForms.Controls
             _eventCancel.Set();
         }
 
-        public void PushFrame(IVideoFrame frame)
+        public void PushFrame(IFrameInfo info, IFrameVideo frame)
         {
             if (frame == null)
             {
                 throw new ArgumentNullException("frame");
             }
-            if (_frameResampler.SourceRate > 0 && IsSynchronized && !frame.IsRefresh)
+            if (_frameResampler.SourceRate > 0 && IsSynchronized && !info.IsRefresh)
             {
                 do
                 {
@@ -137,16 +137,17 @@ namespace ZXMAK2.Host.WinForms.Controls
                     }
                 } while (!_frameResampler.Next());
             }
-            _renderDebug.FrameStartTact = frame.StartTact;
-            if (!frame.IsRefresh)
+            _renderDebug.FrameStartTact = info.StartTact;
+            _renderDebug.SampleRate = info.SampleRate;
+            if (!info.IsRefresh)
             {
-                _renderDebug.UpdateFrame(frame.InstantUpdateTime);
+                _renderDebug.UpdateFrame(info.UpdateTime);
             }
             FrameSize = new Size(
-                frame.VideoData.Size.Width,
-                (int)(frame.VideoData.Size.Height * frame.VideoData.Ratio + 0.5F));
-            _renderVideo.Update(frame.VideoData);
-            _renderIcons.Update(frame.Icons);
+                frame.Size.Width,
+                (int)(frame.Size.Height * frame.Ratio + 0.5F));
+            _renderVideo.Update(frame);
+            _renderIcons.Update(info.Icons);
         }
 
         #endregion IHostVideo

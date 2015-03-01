@@ -112,11 +112,15 @@ namespace ZXMAK2.Host.Xna4.Xna
             Thread.MemoryBarrier();
         }
 
-        public void PushFrame(ISoundFrame soundFrame)
+        public void PushFrame(IFrameInfo info, IFrameSound frame)
         {
-            if (soundFrame == null)
+            if (info == null)
             {
-                throw new ArgumentNullException("soundFrame");
+                throw new ArgumentNullException("info");
+            }
+            if (frame == null)
+            {
+                throw new ArgumentNullException("frame");
             }
             if (IsSynchronized)
             {
@@ -127,7 +131,7 @@ namespace ZXMAK2.Host.Xna4.Xna
             {
                 return;
             }
-            var srcBuffer = soundFrame.GetBuffer();
+            var srcBuffer = frame.GetBuffer();
             fixed (uint* pSrc = srcBuffer)
             fixed (byte* pbDst = buffer)
             {

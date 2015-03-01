@@ -24,7 +24,7 @@ namespace ZXMAK2.Host.Interfaces
         /// <summary>
         /// Push new frame
         /// </summary>
-        void PushFrame(ISoundFrame soundFrame);
+        void PushFrame(IFrameInfo info, IFrameSound frame);
         
         /// <summary>
         /// Cancel wait for blocking PushFrame
