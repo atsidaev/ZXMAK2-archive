@@ -19,7 +19,7 @@ namespace ZXMAK2.Host.Interfaces
         /// <summary>
         /// Push new frame
         /// </summary>
-        void PushFrame(IVideoFrame frame);
+        void PushFrame(IFrameInfo info, IFrameVideo frame);
 
         /// <summary>
         /// Cancel wait for blocking PushFrame

@@ -22,8 +22,8 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
 
         private readonly object _syncRoot = new object();
-        private readonly ConcurrentQueue<IVideoData> _queue = new ConcurrentQueue<IVideoData>();
-        private IVideoData _lastVideoData;
+        private readonly ConcurrentQueue<IFrameVideo> _queue = new ConcurrentQueue<IFrameVideo>();
+        private IFrameVideo _lastVideoData;
         private int[] _lastBuffer = new int[0];    // noflick
 
 
@@ -56,14 +56,14 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             lock (_syncRoot)
             {
-                IVideoData videoData;
+                IFrameVideo videoData;
                 if (!_queue.TryDequeue(out videoData))
                 {
                     videoData = _lastVideoData;
                 }
                 while (_queue.Count > 0)    // cleanup queue
                 {
-                    IVideoData tmp;
+                    IFrameVideo tmp;
                     if (_queue.TryDequeue(out tmp))
                     {
                         videoData = tmp;
@@ -145,7 +145,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
             }
         }
 
-        private unsafe void UpdateTexture(IVideoData videoData)
+        private unsafe void UpdateTexture(IFrameVideo videoData)
         {
             if (_texture0 == null)
             {
@@ -177,13 +177,13 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public VideoFilter VideoFilter { get; set; }
 
-        public void Update(IVideoData videoData)
+        public void Update(IFrameVideo videoData)
         {
             if (_queue.Count > 1)
             {
                 return;
             }
-            var clone = new VideoData(videoData.Size, videoData.Ratio);
+            var clone = new FrameVideo(videoData.Size, videoData.Ratio);
             Array.Copy(videoData.Buffer, clone.Buffer, clone.Buffer.Length);
             if (VideoFilter == VideoFilter.NoFlick)
             {

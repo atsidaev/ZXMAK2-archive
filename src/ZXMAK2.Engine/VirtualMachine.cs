@@ -23,7 +23,7 @@ namespace ZXMAK2.Engine
         private readonly object m_sync = new object();
         private readonly AutoResetEvent m_startedEvent = new AutoResetEvent(false);
         private Thread m_thread = null;
-        private IVideoData m_blankData = new VideoData(320, 240, 1F);
+        private IFrameVideo m_blankData = new FrameVideo(320, 240, 1F);
 
         private string m_name = "ZX Spectrum Clone";
         private string m_description = "N/A";
@@ -213,22 +213,21 @@ namespace ZXMAK2.Engine
             {
                 return;
             }
-            var ula = m_ula ?? Spectrum.BusManager.FindDevice<IUlaDevice>();
-            var videoData = ula != null && ula.VideoData != null ? ula.VideoData : m_blankData;
-            var videoFrame = new VideoFrame(
-                videoData,
+            var infoFrame = new FrameInfo(
                 Spectrum.BusManager.IconDescriptorArray,
                 DebugFrameStartTact,
                 m_instantUpdateTime,
-                m_instantRenderTime,
+                Spectrum.BusManager.SoundFrame.SampleRate,
                 isRequested);
+            var ula = m_ula ?? Spectrum.BusManager.FindDevice<IUlaDevice>();
+            var videoFrame = ula != null && ula.VideoData != null ? ula.VideoData : m_blankData;
             if (isRequested)
             {
-                m_host.PushFrame(videoFrame, null);
+                m_host.PushFrame(infoFrame, videoFrame, null);
                 return;
             }
             var soundFrame = Spectrum.BusManager.SoundFrame;
-            m_host.PushFrame(videoFrame, soundFrame);
+            m_host.PushFrame(infoFrame, videoFrame, soundFrame);
         }
 
         private long _renderTime;

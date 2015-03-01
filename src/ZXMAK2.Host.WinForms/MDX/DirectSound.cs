@@ -274,11 +274,15 @@ namespace ZXMAK2.Host.WinForms.Mdx
             _cancelEvent.Set();
         }
 
-        public void PushFrame(ISoundFrame soundFrame)
+        public void PushFrame(IFrameInfo info, IFrameSound frame)
         {
-            if (soundFrame == null)
+            if (info == null)
             {
-                throw new ArgumentNullException("soundFrame");
+                throw new ArgumentNullException("info");
+            }
+            if (frame == null)
+            {
+                throw new ArgumentNullException("frame");
             }
             if (IsSynchronized)
             {
@@ -289,7 +293,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 return;
             }
-            var srcBuffer = soundFrame.GetBuffer();
+            var srcBuffer = frame.GetBuffer();
             Array.Copy(srcBuffer, buffer, buffer.Length);
             UnlockBuffer(buffer);
         }

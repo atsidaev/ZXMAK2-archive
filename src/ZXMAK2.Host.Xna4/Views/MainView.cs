@@ -37,7 +37,7 @@ namespace ZXMAK2.Host.Xna4.Views
         private IHostService m_host;
         private int[] m_translateBuffer;
         private int m_debugFrameStart;
-        private IVideoData m_videoData;
+        private IFrameVideo m_videoData;
 
         private ICommand CommandViewFullScreen { get; set; }
         private ICommand CommandVmWarmReset { get; set; }
@@ -129,22 +129,22 @@ namespace ZXMAK2.Host.Xna4.Views
             m_cancelEvent.Set();
         }
 
-        public void PushFrame(IVideoFrame frame)
+        public void PushFrame(IFrameInfo info, IFrameVideo frame)
         {
             if (frame == null)
             {
                 throw new ArgumentNullException("frame");
             }
-            if (!frame.IsRefresh)
+            if (!info.IsRefresh)
             {
                 m_graphUpdate.PushPeriod();
             }
-            if (IsSynchronized && !frame.IsRefresh)
+            if (IsSynchronized && !info.IsRefresh)
             {
                 WaitFrame();
             }
-            m_debugFrameStart = frame.StartTact;
-            m_videoData = frame.VideoData;
+            m_debugFrameStart = info.StartTact;
+            m_videoData = frame;
             
             var videoLen = m_videoData.Size.Width * m_videoData.Size.Height;
             

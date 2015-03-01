@@ -108,18 +108,19 @@ namespace ZXMAK2.Host.Services
         }
 
         public void PushFrame(
-            IVideoFrame videoFrame,
-            ISoundFrame soundFrame)
+            IFrameInfo infoFrame,
+            IFrameVideo videoFrame,
+            IFrameSound soundFrame)
         {
             var timeSync = m_timeSync;
             var sound = m_sound;
             var video = m_video;
-            if (videoFrame.IsRefresh)
+            if (infoFrame.IsRefresh)
             {
                 // request from UI, so we don't need sound and sync
                 if (video != null && videoFrame != null)
                 {
-                    video.PushFrame(videoFrame);
+                    video.PushFrame(infoFrame, videoFrame);
                 }
                 return;
             }
@@ -129,18 +130,18 @@ namespace ZXMAK2.Host.Services
             }
             if (video != null && videoFrame != null)
             {
-                video.PushFrame(videoFrame);
+                video.PushFrame(infoFrame, videoFrame);
             }
             if (sound != null && soundFrame != null)
             {
-                sound.PushFrame(soundFrame);
+                sound.PushFrame(infoFrame, soundFrame);
             }
             var mediaRecorder = MediaRecorder;
             if (mediaRecorder != null && 
                 videoFrame != null && 
                 soundFrame != null)
             {
-                mediaRecorder.PushFrame(videoFrame, soundFrame);
+                mediaRecorder.PushFrame(infoFrame, videoFrame, soundFrame);
             }
         }
 

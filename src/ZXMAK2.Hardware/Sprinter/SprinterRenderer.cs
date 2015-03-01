@@ -11,10 +11,10 @@ namespace ZXMAK2.Hardware.Sprinter
     {
         public SprinterRenderer()
         {
-            VideoData = new VideoData(640, 256, 2F);
+            VideoData = new FrameVideo(640, 256, 2F);
         }
         
-        public IVideoData VideoData { get; private set; }
+        public IFrameVideo VideoData { get; private set; }
         
         public int FrameLength
         {
