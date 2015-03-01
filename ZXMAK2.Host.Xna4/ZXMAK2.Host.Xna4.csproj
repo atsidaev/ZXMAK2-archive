@@ -69,6 +69,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Tools\NativeMethods.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Xna\XnaKeyboard.cs" />

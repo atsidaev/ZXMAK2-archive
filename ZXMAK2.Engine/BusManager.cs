@@ -44,6 +44,7 @@ namespace ZXMAK2.Engine
         private IconDescriptor m_iconPause = new IconDescriptor(
             "PAUSE",
             ImageResources.Pause_32x32);
+        private ISoundFrame m_soundFrame;
 
         public event Action FrameReady;
         public event EventHandler BusConnected;
@@ -63,6 +64,12 @@ namespace ZXMAK2.Engine
         public ModelId ModelId { get; set; }
         public string Name { get; set; }
         public int SampleRate { get; set; }
+        
+        public ISoundFrame SoundFrame 
+        { 
+            get { return /* m_frameOpened ? null : */ m_soundFrame; } 
+        }
+            
 
         
         public BusManager()
@@ -421,8 +428,8 @@ namespace ZXMAK2.Engine
         {
             if (m_connected)
                 throw new InvalidOperationException("Cannot remove device from connected bus!");
-            m_deviceList.Clear();
             m_ula = null;
+            m_soundFrame = null;
 
             m_mapReadMemoryM1 = null;
             m_mapReadMemory = null;
@@ -438,6 +445,8 @@ namespace ZXMAK2.Engine
             m_intAck = null;
             m_beginFrame = null;
             m_endFrame = null;
+
+            m_deviceList.Clear();
         }
 
         #endregion
@@ -469,7 +478,8 @@ namespace ZXMAK2.Engine
             {
                 m_deviceList[i].BusOrder = i;
             }
-            foreach (var soundRenderer in m_deviceList.OfType<ISoundRenderer>())
+            var soundRenderers = m_deviceList.OfType<ISoundRenderer>();
+            foreach (var soundRenderer in soundRenderers)
             {
                 soundRenderer.SampleRate = SampleRate;
             }
@@ -515,6 +525,9 @@ namespace ZXMAK2.Engine
                 if (jtag != null)
                     jtag.Attach(m_debuggable);
             }
+            m_soundFrame = new SoundFrame(
+                SampleRate,
+                soundRenderers.Select(sr => sr.AudioBuffer));
             OnBusConnected();
             return success;
         }
@@ -526,6 +539,7 @@ namespace ZXMAK2.Engine
             m_connected = false;
             OnEndFrame();
             OnBusDisconnect();
+            m_soundFrame = null;
             if (LoadManager != null)
             {
                 LoadManager.Clear();
@@ -632,6 +646,11 @@ namespace ZXMAK2.Engine
             if (endHandler != null)
             {
                 endHandler();
+            }
+            var soundFrame = m_soundFrame;
+            if (soundFrame != null)
+            {
+                soundFrame.Refresh();
             }
             var readyHandler = FrameReady;
             if (readyHandler != null)

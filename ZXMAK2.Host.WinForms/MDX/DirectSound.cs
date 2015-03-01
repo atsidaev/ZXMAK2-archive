@@ -289,41 +289,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 return;
             }
-            Mix(buffer, soundFrame.Buffers);
+            var srcBuffer = soundFrame.GetBuffer();
+            Array.Copy(srcBuffer, buffer, buffer.Length);
             UnlockBuffer(buffer);
         }
 
         #endregion IHostSound
-
-        
-        private static void Mix(uint[] dst, uint[][] sources)
-        {
-            fixed (uint* puidst = dst)
-            {
-                var pdst = (short*)puidst;
-                for (var i = 0; i < dst.Length; i++)
-                {
-                    var index = i * 2;
-                    var left = 0;
-                    var right = 0;
-                    foreach (var src in sources)
-                    {
-                        fixed (uint* puisrc = src)
-                        {
-                            var psrc = (short*)puisrc;
-                            left += psrc[index];
-                            right += psrc[index + 1];
-                        }
-                    }
-                    if (sources.Length > 0)
-                    {
-                        left /= sources.Length;
-                        right /= sources.Length;
-                    }
-                    pdst[index] = (short)left;
-                    pdst[index + 1] = (short)right;
-                }
-            }
-        }
     }
 }

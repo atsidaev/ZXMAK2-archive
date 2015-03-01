@@ -199,7 +199,6 @@ namespace ZXMAK2.Engine
 
         #endregion Config
 
-        private uint[][] m_soundBuffers;
         private IUlaDevice m_ula;
 
         public void RequestFrame()
@@ -228,14 +227,7 @@ namespace ZXMAK2.Engine
                 m_host.PushFrame(videoFrame, null);
                 return;
             }
-            var soundFrame = default(ISoundFrame);
-            var soundData = m_soundBuffers;
-            if (soundData != null)
-            {
-                soundFrame = new SoundFrame(
-                    Spectrum.BusManager.SampleRate,
-                    soundData);
-            }
+            var soundFrame = Spectrum.BusManager.SoundFrame;
             m_host.PushFrame(videoFrame, soundFrame);
         }
 
@@ -307,12 +299,6 @@ namespace ZXMAK2.Engine
                     bus.FindDevices<IMouseDevice>().ToArray(),
                     bus.FindDevices<IJoystickDevice>().ToArray()))
                 {
-                    var list = new List<uint[]>();
-                    foreach (var renderer in Spectrum.BusManager.FindDevices<ISoundRenderer>())
-                    {
-                        list.Add(renderer.AudioBuffer);
-                    }
-                    m_soundBuffers = list.ToArray();
                     m_ula = Spectrum.BusManager.FindDevice<IUlaDevice>();
 
                     // main emulation loop
@@ -326,7 +312,6 @@ namespace ZXMAK2.Engine
                         m_instantRenderTime = _renderTime;
                     }
 
-                    m_soundBuffers = null;
                     m_ula = null;
                 }
             }
