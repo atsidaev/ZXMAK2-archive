@@ -157,6 +157,7 @@
             "24",
             "32",
             "48",
+            "80",
             "192"});
             this.comboSpriteHeight.Location = new System.Drawing.Point(7, 127);
             this.comboSpriteHeight.Name = "comboSpriteHeight";
