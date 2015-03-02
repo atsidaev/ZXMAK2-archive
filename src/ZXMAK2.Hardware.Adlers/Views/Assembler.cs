@@ -425,15 +425,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
             e.ChangedRange.ClearStyle(CommonInstructionStyle);
             e.ChangedRange.ClearStyle(JumpInstructionStyle);
             e.ChangedRange.ClearStyle(StackInstructionStyle);
+            e.ChangedRange.ClearStyle(RegistryStyle);
+            e.ChangedRange.ClearStyle(CompilerInstructionStyle);
 
             //comment highlighting
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(CommonInstructionStyle, @"ldir|lddr|\bld\b|\bim\b|add|\bsub\b|\bdec\b|sbc|halt|\bbit\b|\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
-                @"|\brr\b|scf|ccf|\bneg\b|srl|exx|\bex\b|\brla\b|rra|\brr\b|\bout\b|\bin\b",
+                @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b",
                 RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(CompilerInstructionStyle, @"#defb|#defw|#include|#incbin", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(StackInstructionStyle, @"push|pop|dec sp|inc sp", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(JumpInstructionStyle, @"org|reti|retn|ret|jp|jr|call|djnz", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(StackInstructionStyle, @"\bpush\b|\bpop\b|\bdec sp\b|\binc sp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(JumpInstructionStyle, @"\borg\b|\breti\b|\bretn\b|\bret\b|\bjp\b|\bjr\b|\bcall\b|\bdjnz\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(RegistryStyle, @"\bhl\b|\bbc\b|\bix\b|\biy\b|\bde\b|\bpc\b|\baf\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         }
 
