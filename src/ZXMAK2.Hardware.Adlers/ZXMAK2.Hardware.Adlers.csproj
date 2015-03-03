@@ -52,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandParseException.cs" />
-    <Compile Include="ConvertRadix.cs" />
+    <Compile Include="Core\ConvertRadix.cs" />
     <Compile Include="Core\DebuggerTrace.cs" />
     <Compile Include="Core\GraphicsTools.cs" />
     <Compile Include="Core\Historization.cs" />
