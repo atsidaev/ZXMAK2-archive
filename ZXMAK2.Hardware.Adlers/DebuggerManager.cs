@@ -28,6 +28,33 @@ namespace ZXMAK2.Hardware.Adlers
         memoryWriteInRange
     };
 
+    public enum DebuggerCommandType
+    {
+        memoryOrRegistryManipulation,
+        breakpointManipulation,
+        gotoAdress,
+        removeBreakpoint,
+        enableBreakpoint,
+        disableBreakpoint,
+        loadBreakpointsListFromFile,
+        saveBreakpointsListToFile,
+        showAssembler,
+        showGraphicsEditor,
+        traceLog,
+        Unidentified
+    };
+
+    public enum BreakPointAccessType
+    {
+        memoryAccess,
+        memoryWrite,
+        memoryChange,
+        memoryRead,
+        registryValue,
+        All,
+        Undefined
+    };
+
     //Information about extended breakpoint
     public class BreakpointInfo
     {
@@ -88,33 +115,6 @@ namespace ZXMAK2.Hardware.Adlers
         public static string[] Regs16Bit = new string[] { "AF", "BC", "DE", "HL", "IX", "IY", "SP", "IR", "PC", "AF'", "BC'", "DE'", "HL'" };
         public static char[]   Regs8Bit  = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'H', 'L' };
 
-        public enum CommandType 
-        { 
-            memoryOrRegistryManipulation, 
-            breakpointManipulation, 
-            gotoAdress, 
-            removeBreakpoint, 
-            enableBreakpoint,
-            disableBreakpoint, 
-            loadBreakpointsListFromFile, 
-            saveBreakpointsListToFile, 
-            showAssembler, 
-            showGraphicsEditor,
-            traceLog,
-            Unidentified
-        };
-
-        public enum BreakPointAccessType 
-        { 
-            memoryAccess, 
-            memoryWrite, 
-            memoryChange, 
-            memoryRead, 
-            registryValue, 
-            All, 
-            Undefined 
-        };
-
         public enum CharType { Number = 0, Letter, Other };
 
         //debugger commands list
@@ -171,11 +171,14 @@ namespace ZXMAK2.Hardware.Adlers
             //trim all whitespaces before ')'
             while (strOut.Contains(" )"))
                 strOut = strOut.Replace(" )", ")");
+            //if multiconditional breakpoint type then ensure that '&&' has space before and after
+            if (strOut.Contains("&&") && !strOut.Contains(" && "))
+                strOut = strOut.Replace("&&", " && ");
 
             return strOut;
         }
 
-        public static void HasDigitsAndLettersInString(string s, ref bool hasLetters, ref bool hasDigits)
+        /*public static void HasDigitsAndLettersInString(string s, ref bool hasLetters, ref bool hasDigits)
         {
             bool parsingDigits = false;
 
@@ -217,74 +220,71 @@ namespace ZXMAK2.Hardware.Adlers
             if (Char.IsLetter(inputChar))
                 return CharType.Letter;
 
-            foreach (char c in DebugDelimitersOther)
-            {
-                if (c == inputChar)
-                    return CharType.Other;
-            }
+            if (DebugDelimitersOther.Contains<char>(inputChar))
+                return CharType.Other;
 
             throw new CommandParseException("Incorrect character found: " + inputChar);
-        }
+        }*/
 
         //Method will resolve whether command entered is memory modification or breakpoint setting
-        public static CommandType getDbgCommandType(List<string> command)
+        public static DebuggerCommandType getDbgCommandType(List<string> command)
         {
             if (command[0].ToUpper() == DbgKeywordLD.ToString().ToUpper())
             {
-                return CommandType.memoryOrRegistryManipulation;
+                return DebuggerCommandType.memoryOrRegistryManipulation;
             }
 
             if (command[0].ToUpper() == DbgKeywordBREAK.ToString().ToUpper())
             {
-                return CommandType.breakpointManipulation;
+                return DebuggerCommandType.breakpointManipulation;
             }
 
             if (command[0].ToUpper() == DbgKeywordDissassemble.ToString().ToUpper())
             {
-                return CommandType.gotoAdress;
+                return DebuggerCommandType.gotoAdress;
             }
 
             if (command[0].ToUpper() == DbgEnableBreakpoint.ToString().ToUpper())
             {
-                return CommandType.enableBreakpoint;
+                return DebuggerCommandType.enableBreakpoint;
             }
 
             if (command[0].ToUpper() == DbgDisableBreakpoint.ToString().ToUpper())
             {
-                return CommandType.disableBreakpoint;
+                return DebuggerCommandType.disableBreakpoint;
             }
 
             if (command[0].ToUpper() == DbgRemoveBreakpoint.ToString().ToUpper())
             {
-                return CommandType.removeBreakpoint;
+                return DebuggerCommandType.removeBreakpoint;
             }
 
             if (command[0].ToUpper() == DbgLoadBreakpointsListFromFile.ToString().ToUpper())
             {
-                return CommandType.loadBreakpointsListFromFile;
+                return DebuggerCommandType.loadBreakpointsListFromFile;
             }
 
             if (command[0].ToUpper() == DbgSaveBreakpointsListFromFile.ToString().ToUpper())
             {
-                return CommandType.saveBreakpointsListToFile;
+                return DebuggerCommandType.saveBreakpointsListToFile;
             }
 
             if (command[0].ToUpper() == DbgOpenAssembler.ToString().ToUpper())
             {
-                return CommandType.showAssembler;
+                return DebuggerCommandType.showAssembler;
             }
 
             if (command[0].ToUpper() == DbgOpenGraphicsEditor.ToString().ToUpper())
             {
-                return CommandType.showGraphicsEditor;
+                return DebuggerCommandType.showGraphicsEditor;
             }
 
             if (command[0].ToUpper() == DbgTraceLog.ToString().ToUpper())
             {
-                return CommandType.traceLog;
+                return DebuggerCommandType.traceLog;
             }
 
-            return CommandType.Unidentified;
+            return DebuggerCommandType.Unidentified;
         }
 
         ////////////////////////////////////////////////////////////////////

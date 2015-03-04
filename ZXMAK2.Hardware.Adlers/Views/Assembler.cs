@@ -31,9 +31,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
         Style CommentStyle = new TextStyle(Brushes.Green, null, FontStyle.Italic);
         Style CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
         Style JumpInstructionStyle = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
-        Style StackInstructionStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
+        Style StackInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
         Style CompilerInstructionStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
         Style RegistryStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
+        Style NumbersStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
 
         private byte tabSpace = 16; //how many characters on tab
 
@@ -427,13 +428,18 @@ namespace ZXMAK2.Hardware.Adlers.Views
             e.ChangedRange.ClearStyle(StackInstructionStyle);
             e.ChangedRange.ClearStyle(RegistryStyle);
             e.ChangedRange.ClearStyle(CompilerInstructionStyle);
+            e.ChangedRange.ClearStyle(NumbersStyle);
 
             //comment highlighting
+            e.ChangedRange.SetStyle(NumbersStyle, @"((#)[0-9a-fA-F]+|(%|\$| )[0-9]+|(?<=\,[0-9]{0})\d+)", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
-            e.ChangedRange.SetStyle(CommonInstructionStyle, @"ldir|lddr|\bld\b|\bim\b|add|\bsub\b|\bdec\b|sbc|halt|\bbit\b|\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
+            e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" + 
+                @"\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
                 @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b",
                 RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(CompilerInstructionStyle, @"#defb|#defw|#include|#incbin", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(CompilerInstructionStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|include|incbin|" +
+                @"\bif\b|\bendif\b|\belse\b", 
+                RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(StackInstructionStyle, @"\bpush\b|\bpop\b|\bdec sp\b|\binc sp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(JumpInstructionStyle, @"\borg\b|\breti\b|\bretn\b|\bret\b|\bjp\b|\bjr\b|\bcall\b|\bdjnz\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(RegistryStyle, @"\bhl\b|\bbc\b|\bix\b|\biy\b|\bde\b|\bpc\b|\baf\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);

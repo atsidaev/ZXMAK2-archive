@@ -87,6 +87,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemClearAllComments = new System.Windows.Forms.MenuItem();
             this.menuItem11 = new System.Windows.Forms.MenuItem();
             this.menuItemInsertNote = new System.Windows.Forms.MenuItem();
+            this.menuItem10 = new System.Windows.Forms.MenuItem();
+            this.menuItemClearCurrentNote = new System.Windows.Forms.MenuItem();
+            this.menuItemClearAllNotes = new System.Windows.Forms.MenuItem();
             this.menuItem13 = new System.Windows.Forms.MenuItem();
             this.menuItemLoadComments = new System.Windows.Forms.MenuItem();
             this.menuItemSaveComments = new System.Windows.Forms.MenuItem();
@@ -113,9 +116,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemAddNewTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItemUpdateTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
-            this.menuItem10 = new System.Windows.Forms.MenuItem();
-            this.menuItemClearCurrentNote = new System.Windows.Forms.MenuItem();
-            this.menuItemClearAllNotes = new System.Windows.Forms.MenuItem();
             this.panelStatus.SuspendLayout();
             this.tabMenus.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -749,7 +749,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // menuItemInsertComment
             // 
             this.menuItemInsertComment.Index = 0;
-            this.menuItemInsertComment.Shortcut = System.Windows.Forms.Shortcut.Ins;
+            this.menuItemInsertComment.Shortcut = System.Windows.Forms.Shortcut.Ctrl1;
             this.menuItemInsertComment.Text = "Insert/Update comment";
             this.menuItemInsertComment.Click += new System.EventHandler(this.menuItemInsertComment_Click);
             // 
@@ -781,8 +781,29 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // menuItemInsertNote
             // 
             this.menuItemInsertNote.Index = 3;
+            this.menuItemInsertNote.Shortcut = System.Windows.Forms.Shortcut.Ctrl2;
             this.menuItemInsertNote.Text = "Insert/Update note";
             this.menuItemInsertNote.Click += new System.EventHandler(this.menuItemInsertNote_Click);
+            // 
+            // menuItem10
+            // 
+            this.menuItem10.Index = 4;
+            this.menuItem10.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemClearCurrentNote,
+            this.menuItemClearAllNotes});
+            this.menuItem10.Text = "Clear";
+            // 
+            // menuItemClearCurrentNote
+            // 
+            this.menuItemClearCurrentNote.Index = 0;
+            this.menuItemClearCurrentNote.Text = "Current note";
+            this.menuItemClearCurrentNote.Click += new System.EventHandler(this.menuItemClearCurrentNote_Click);
+            // 
+            // menuItemClearAllNotes
+            // 
+            this.menuItemClearAllNotes.Index = 1;
+            this.menuItemClearAllNotes.Text = "All notes";
+            this.menuItemClearAllNotes.Click += new System.EventHandler(this.menuItemClearAllNotes_Click);
             // 
             // menuItem13
             // 
@@ -959,26 +980,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.menuItem9.Index = 2;
             this.menuItem9.Text = "Delete current";
-            // 
-            // menuItem10
-            // 
-            this.menuItem10.Index = 4;
-            this.menuItem10.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItemClearCurrentNote,
-            this.menuItemClearAllNotes});
-            this.menuItem10.Text = "Clear";
-            // 
-            // menuItemClearCurrentNote
-            // 
-            this.menuItemClearCurrentNote.Index = 0;
-            this.menuItemClearCurrentNote.Text = "Current note";
-            this.menuItemClearCurrentNote.Click += new System.EventHandler(this.menuItemClearCurrentNote_Click);
-            // 
-            // menuItemClearAllNotes
-            // 
-            this.menuItemClearAllNotes.Index = 1;
-            this.menuItemClearAllNotes.Text = "All notes";
-            this.menuItemClearAllNotes.Click += new System.EventHandler(this.menuItemClearAllNotes_Click);
             // 
             // FormCpu
             // 

@@ -354,6 +354,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // buttonClearAssemblerLog
             // 
+            this.buttonClearAssemblerLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClearAssemblerLog.Location = new System.Drawing.Point(545, 485);
             this.buttonClearAssemblerLog.Name = "buttonClearAssemblerLog";
             this.buttonClearAssemblerLog.Size = new System.Drawing.Size(75, 23);

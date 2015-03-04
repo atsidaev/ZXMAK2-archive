@@ -1065,13 +1065,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     if (parsedCommand == null || parsedCommand.Count == 0)
                         return;
 
-                    DebuggerManager.CommandType commandType = DebuggerManager.getDbgCommandType(parsedCommand);
+                    DebuggerCommandType commandType = DebuggerManager.getDbgCommandType(parsedCommand);
 
-                    if (commandType == DebuggerManager.CommandType.Unidentified)
+                    if (commandType == DebuggerCommandType.Unidentified)
                         throw new Exception("unknown debugger command"); // unknown cmd line type
 
                     //breakpoint manipulation ?
-                    if (commandType == DebuggerManager.CommandType.breakpointManipulation)
+                    if (commandType == DebuggerCommandType.breakpointManipulation)
                     {
                         // add new enhanced breakpoint
                         string left = parsedCommand[1];
@@ -1089,40 +1089,40 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                         m_showStack = false; // show breakpoint list on listState panel
                     }
-                    else if (commandType == DebuggerManager.CommandType.gotoAdress)
+                    else if (commandType == DebuggerCommandType.gotoAdress)
                     {
                         // goto adress to dissasembly
                         dasmPanel.TopAddress = ConvertRadix.ConvertNumberWithPrefix(parsedCommand[1]);
                     }
-                    else if (commandType == DebuggerManager.CommandType.removeBreakpoint)
+                    else if (commandType == DebuggerCommandType.removeBreakpoint)
                     {
                         // remove breakpoint
                         if (parsedCommand.Count > 1)
                             RemoveExtBreakpoint(parsedCommand[1]);
                     }
-                    else if (commandType == DebuggerManager.CommandType.enableBreakpoint)
+                    else if (commandType == DebuggerCommandType.enableBreakpoint)
                     {
                         //enable breakpoint
                         EnableOrDisableBreakpointStatus(Convert.ToByte(ConvertRadix.ConvertNumberWithPrefix(parsedCommand[1])), true);
                     }
-                    else if (commandType == DebuggerManager.CommandType.disableBreakpoint)
+                    else if (commandType == DebuggerCommandType.disableBreakpoint)
                     {
                         //disable breakpoint
                         EnableOrDisableBreakpointStatus(Convert.ToByte(ConvertRadix.ConvertNumberWithPrefix(parsedCommand[1])), false);
                     }
-                    else if (commandType == DebuggerManager.CommandType.loadBreakpointsListFromFile)
+                    else if (commandType == DebuggerCommandType.loadBreakpointsListFromFile)
                     {
                         //load breakpoints list into debugger
                         LoadBreakpointsListFromFile(parsedCommand[1]);
 
                         m_showStack = false;
                     }
-                    else if (commandType == DebuggerManager.CommandType.saveBreakpointsListToFile)
+                    else if (commandType == DebuggerCommandType.saveBreakpointsListToFile)
                     {
                         //save breakpoints list into debugger
                         SaveBreakpointsListToFile(parsedCommand[1]);
                     }
-                    else if (commandType == DebuggerManager.CommandType.showAssembler)
+                    else if (commandType == DebuggerCommandType.showAssembler)
                     {
                         m_spectrum.DoStop();
                         UpdateCPU(true);
@@ -1132,7 +1132,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                         return;
                     }
-                    else if (commandType == DebuggerManager.CommandType.showGraphicsEditor)
+                    else if (commandType == DebuggerCommandType.showGraphicsEditor)
                     {
                         m_spectrum.DoStop();
                         UpdateCPU(true);
@@ -1142,7 +1142,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                         return;
                     }
-                    else if (commandType == DebuggerManager.CommandType.traceLog)
+                    else if (commandType == DebuggerCommandType.traceLog)
                     {
                         if (parsedCommand.Count < 2)
                             throw new Exception("Incorrect trace command syntax! Missing On or Off.");
@@ -1158,7 +1158,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                             //Logger.Finish();
                         }
                     }
-                    else if (commandType == DebuggerManager.CommandType.memoryOrRegistryManipulation)
+                    else if (commandType == DebuggerCommandType.memoryOrRegistryManipulation)
                     {
                         if (parsedCommand.Count < 3)
                             throw new CommandParseException("Incorrect left or right expression.");
@@ -1869,16 +1869,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 {
                     foreach(BreakpointAdlers item in breakpointCandidates)
                     {
-                        if (item.Info.LeftCondition == info.LeftCondition
-                          && item.Info.ConditionTypeSign == info.ConditionTypeSign
-                          && item.Info.RightCondition == info.RightCondition
-                          && item.Info.CheckSecondCondition == item.Info.CheckSecondCondition //only one conditional breakpoints, ToDo:
+                        if ( item.Info.BreakpointString == info.BreakpointString //ToDo: must be checked by RightValue, RightCondition, ...but for both conditions if multiconditional breakpoint type
                           && item.Info.AccessType != BreakPointConditionType.memoryWrite
                           && item.Info.AccessType != BreakPointConditionType.memoryWriteInRange
                           && item.Info.AccessType != BreakPointConditionType.memoryRead
                           && item.Info.AccessType != BreakPointConditionType.memoryReadInRange
                           )
+                        {
+                            item.Info.IsOn = true;
                             return;
+                        }
                     }
                 }
             }
@@ -2103,11 +2103,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         menuItemDataGotoADDR_Click(null, null);
                     }
                     break;
-                case Keys.Insert://Insert new comment
-                    this.menuItemInsertComment_Click(null, null);
-                    e.Handled = true;
+                case Keys.D1: //Insert new comment
+                    if (e.Control)
+                    {
+                        this.menuItemInsertComment_Click(null, null);
+                        e.Handled = true;
+                    }
                     break;
-
+                case Keys.D2: //Insert new note
+                    if (e.Control)
+                    {
+                        this.menuItemInsertNote_Click(null, null);
+                        e.Handled = true;
+                    }
+                    break;
             }
         }
         #endregion
