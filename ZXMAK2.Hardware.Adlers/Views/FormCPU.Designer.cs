@@ -944,10 +944,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // dbgCmdLine
             // 
-            this.dbgCmdLine.AutoCompleteCustomSource.AddRange(new string[] {
-            "ds",
-            "ld",
-            "br"});
+            this.dbgCmdLine.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.dbgCmdLine.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.dbgCmdLine.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dbgCmdLine.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dbgCmdLine.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
