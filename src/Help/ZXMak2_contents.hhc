@@ -33,6 +33,10 @@
 			<param name="Name" value="Shortcuts">
 			<param name="Local" value="Debugger.htm">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Assembler">
+			<param name="Local" value="Assembler.html">
+			</OBJECT>
 	</UL>
 </UL>
 </BODY></HTML>

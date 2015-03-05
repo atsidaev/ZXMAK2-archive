@@ -13,3 +13,22 @@ color: #e7ce00;
  padding: 0;
  color: blue;
 }
+
+h4
+{
+   padding: 0;
+   margin-bottom: 1px;
+}
+
+#code {
+    width: auto;
+    /*height: 25px;*/
+    position: relative;
+    /*float: left;*/
+    /*background-color: lightgray;*/
+}
+
+p
+{
+ 	text-indent: 2px;
+}

@@ -38,8 +38,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private readonly object m_sync = new object();
 
         //debugger command line history
-        private List<string> m_cmdLineHistory = new List<string>();
-        private int m_cmdLineHistoryPos = 0;
+        //private List<string> m_cmdLineHistory = new List<string>();
+        //private int m_cmdLineHistoryPos = 0;
         private string savedCmdLineString = String.Empty;
 
         public FormCpu(IDebuggable debugTarget, IBusManager bmgr)
@@ -1040,17 +1040,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
         }
 
+        private void ClearCommandLineErrorText()
+        {
+            //display debugger command line content before error occurred
+            dbgCmdLine.BackColor = Color.White;
+            dbgCmdLine.ForeColor = Color.Black;
+            dbgCmdLine.Text = savedCmdLineString;
+            savedCmdLineString = String.Empty;
+        }
+
         private void dbgCmdLine_KeyUp(object sender, KeyEventArgs e)
         {
-            //ToDo: process always lands here after changing TopAdress(menuItemDasmGotoADDR_Click()) in dasm panel(pressing enter)....must be resolved.
-            //In waiting mode(when error occurred then the error message will be displayed until keypres)
             if (savedCmdLineString != String.Empty)
             {
-                //display debugger command line content before error occurred
-                dbgCmdLine.BackColor = Color.White;
-                dbgCmdLine.ForeColor = Color.Black;
-                dbgCmdLine.Text = savedCmdLineString;
-                savedCmdLineString = String.Empty;
+                ClearCommandLineErrorText();
                 return;
             }
 
@@ -1311,8 +1314,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     }
 
                     //command line history
-                    m_cmdLineHistory.Add(actualCommand);
-                    this.m_cmdLineHistoryPos++;
+                    /*m_cmdLineHistory.Add(actualCommand);
+                    this.m_cmdLineHistoryPos++;*/
+                    this.dbgCmdLine.AutoCompleteCustomSource.Add(actualCommand);
 
                     UpdateREGS();
                     UpdateCPU(false);
@@ -1331,7 +1335,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     //System.Threading.Thread.Sleep(140);
                 }
             }
-            else if (e.KeyCode == Keys.Up && this.m_cmdLineHistory.Count != 0) //arrow up - history of command line
+            /*else if (e.KeyCode == Keys.Up && this.m_cmdLineHistory.Count != 0) //arrow up - history of command line
             {
                 if (this.m_cmdLineHistoryPos < (this.m_cmdLineHistory.Count - 1))
                 {
@@ -1362,7 +1366,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 dbgCmdLine.Focus();
                 e.Handled = true;
                 return;
-            }
+            }*/
             else if (this.dbgCmdLine.Text == "lo") //shortcut
             {
                 this.dbgCmdLine.Text = "loadbrs ";
@@ -2087,9 +2091,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     }
                     break;
                 case Keys.Escape:
-                    this.Hide();
-                    if (this.Owner != null)
-                        this.Owner.Focus();
+                    if (savedCmdLineString != String.Empty)
+                    {
+                        ClearCommandLineErrorText();
+                        e.Handled = true;
+                    }
+                    else
+                    {
+                        this.Hide();
+                        if (this.Owner != null)
+                            this.Owner.Focus();
+                    }
                     break;
                 case Keys.G: //Goto address(disassembly)
                     if (e.Control)
