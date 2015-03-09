@@ -230,7 +230,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (!File.Exists(@"Pasmo2.dll"))
             {
                 Locator.Resolve<IUserMessage>().Error(
-                    "Pasmo2.dll not found in " + Utils.GetAppFolder() + "!\nThis file is needed for compilation\n" +
+                    "Pasmo2.dll not found in " + Utils.GetAppFolder() + "!\n\nThis file is needed for compilation\n" +
                     "into Z80 code." +
                     "\n\n" +
                     "Now going to try to get it from internet.\nPlease click OK."

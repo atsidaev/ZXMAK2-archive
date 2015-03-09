@@ -401,6 +401,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void hexNumbersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             numericIncDecDelta.Hexadecimal = numericUpDownActualAddress.Hexadecimal = hexNumbersToolStripMenuItem.Checked;
+            txtbxX0.Hexadecimal = txtbxY0.Hexadecimal = txtbxY1.Hexadecimal = txtbxX1.Hexadecimal = hexNumbersToolStripMenuItem.Checked;
             labelMemoryAddress.Text = String.Format("Memory address({0}):", hexNumbersToolStripMenuItem.Checked ? "hex" : "dec");
         }
         private void bitmapGridSpriteView_MouseUp(object sender, MouseEventArgs e)
@@ -517,9 +518,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 _mouseSelectionArea = new MouseSelectionArea();
             _mouseSelectionArea.manualCrop(ref pictureZXDisplay, coords);
         }
-        private void buttonEnableManualSelectionArea_Click(object sender, EventArgs e)
+        private void buttonExportSelectionArea_Click(object sender, EventArgs e)
         {
-            txtbxX0.Enabled = txtbxX1.Enabled = txtbxY0.Enabled = txtbxY1.Enabled = true;
+            //export selection area to picture or bytes
         }
         #endregion
     }
