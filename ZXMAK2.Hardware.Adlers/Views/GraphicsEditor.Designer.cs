@@ -46,6 +46,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.numericUpDownZoomFactor = new System.Windows.Forms.NumericUpDown();
             this.groupBoxScreenInfo = new System.Windows.Forms.GroupBox();
+            this.textBoxAttributeAddress = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.textBoxBytesAtAdress = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -119,17 +121,15 @@
             this.menuItemSaveBitmapAsBytes = new System.Windows.Forms.MenuItem();
             this.groupBoxSelectionArea = new System.Windows.Forms.GroupBox();
             this.buttonSetManualSelectionArea = new System.Windows.Forms.Button();
-            this.buttonEnableManualSelectionArea = new System.Windows.Forms.Button();
-            this.txtbxY1 = new System.Windows.Forms.TextBox();
-            this.txtbxX1 = new System.Windows.Forms.TextBox();
+            this.buttonExportSelectionArea = new System.Windows.Forms.Button();
+            this.txtbxY1 = new System.Windows.Forms.NumericUpDown();
+            this.txtbxX1 = new System.Windows.Forms.NumericUpDown();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.txtbxY0 = new System.Windows.Forms.TextBox();
-            this.txtbxX0 = new System.Windows.Forms.TextBox();
+            this.txtbxY0 = new System.Windows.Forms.NumericUpDown();
+            this.txtbxX0 = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.textBoxAttributeAddress = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
             this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.BitmapGrid();
             this.groupBoxScreenViewType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
@@ -141,6 +141,10 @@
             this.groupBoxSpriteDetails.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupBoxSelectionArea.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtbxY1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtbxX1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtbxY0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtbxX0)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBoxScreenViewType
@@ -407,6 +411,25 @@
             this.groupBoxScreenInfo.TabStop = false;
             this.groupBoxScreenInfo.Text = "Data under cursor";
             // 
+            // textBoxAttributeAddress
+            // 
+            this.textBoxAttributeAddress.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.textBoxAttributeAddress.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxAttributeAddress.Location = new System.Drawing.Point(60, 45);
+            this.textBoxAttributeAddress.Name = "textBoxAttributeAddress";
+            this.textBoxAttributeAddress.Size = new System.Drawing.Size(53, 23);
+            this.textBoxAttributeAddress.TabIndex = 7;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(3, 50);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(58, 15);
+            this.label15.TabIndex = 6;
+            this.label15.Text = "Attribute:";
+            // 
             // textBoxBytesAtAdress
             // 
             this.textBoxBytesAtAdress.BackColor = System.Drawing.SystemColors.InactiveBorder;
@@ -553,7 +576,7 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // viewToolStripMenuItem
@@ -561,7 +584,7 @@
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.hexNumbersToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // hexNumbersToolStripMenuItem
@@ -570,7 +593,7 @@
             this.hexNumbersToolStripMenuItem.CheckOnClick = true;
             this.hexNumbersToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.hexNumbersToolStripMenuItem.Name = "hexNumbersToolStripMenuItem";
-            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.hexNumbersToolStripMenuItem.Text = "Hex numbers";
             this.hexNumbersToolStripMenuItem.Click += new System.EventHandler(this.hexNumbersToolStripMenuItem_Click);
             // 
@@ -904,7 +927,7 @@
             // groupBoxSelectionArea
             // 
             this.groupBoxSelectionArea.Controls.Add(this.buttonSetManualSelectionArea);
-            this.groupBoxSelectionArea.Controls.Add(this.buttonEnableManualSelectionArea);
+            this.groupBoxSelectionArea.Controls.Add(this.buttonExportSelectionArea);
             this.groupBoxSelectionArea.Controls.Add(this.txtbxY1);
             this.groupBoxSelectionArea.Controls.Add(this.txtbxX1);
             this.groupBoxSelectionArea.Controls.Add(this.label13);
@@ -915,55 +938,75 @@
             this.groupBoxSelectionArea.Controls.Add(this.label10);
             this.groupBoxSelectionArea.Location = new System.Drawing.Point(458, 429);
             this.groupBoxSelectionArea.Name = "groupBoxSelectionArea";
-            this.groupBoxSelectionArea.Size = new System.Drawing.Size(215, 77);
+            this.groupBoxSelectionArea.Size = new System.Drawing.Size(227, 77);
             this.groupBoxSelectionArea.TabIndex = 40;
             this.groupBoxSelectionArea.TabStop = false;
             this.groupBoxSelectionArea.Text = "Selection area:";
             // 
             // buttonSetManualSelectionArea
             // 
-            this.buttonSetManualSelectionArea.Location = new System.Drawing.Point(147, 23);
+            this.buttonSetManualSelectionArea.Location = new System.Drawing.Point(156, 23);
             this.buttonSetManualSelectionArea.Name = "buttonSetManualSelectionArea";
             this.buttonSetManualSelectionArea.Size = new System.Drawing.Size(56, 23);
-            this.buttonSetManualSelectionArea.TabIndex = 13;
+            this.buttonSetManualSelectionArea.TabIndex = 10;
             this.buttonSetManualSelectionArea.Text = "Set";
             this.buttonSetManualSelectionArea.UseVisualStyleBackColor = true;
             this.buttonSetManualSelectionArea.Click += new System.EventHandler(this.buttonSetManualSelectionArea_Click);
             // 
-            // buttonEnableManualSelectionArea
+            // buttonExportSelectionArea
             // 
-            this.buttonEnableManualSelectionArea.Location = new System.Drawing.Point(147, 49);
-            this.buttonEnableManualSelectionArea.Name = "buttonEnableManualSelectionArea";
-            this.buttonEnableManualSelectionArea.Size = new System.Drawing.Size(56, 23);
-            this.buttonEnableManualSelectionArea.TabIndex = 12;
-            this.buttonEnableManualSelectionArea.Text = "Manual";
-            this.buttonEnableManualSelectionArea.UseVisualStyleBackColor = true;
-            this.buttonEnableManualSelectionArea.Click += new System.EventHandler(this.buttonEnableManualSelectionArea_Click);
+            this.buttonExportSelectionArea.Location = new System.Drawing.Point(156, 49);
+            this.buttonExportSelectionArea.Name = "buttonExportSelectionArea";
+            this.buttonExportSelectionArea.Size = new System.Drawing.Size(56, 23);
+            this.buttonExportSelectionArea.TabIndex = 11;
+            this.buttonExportSelectionArea.Text = "Export";
+            this.buttonExportSelectionArea.UseVisualStyleBackColor = true;
+            this.buttonExportSelectionArea.Click += new System.EventHandler(this.buttonExportSelectionArea_Click);
             // 
             // txtbxY1
             // 
             this.txtbxY1.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.txtbxY1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtbxY1.Hexadecimal = true;
             this.txtbxY1.Location = new System.Drawing.Point(108, 48);
+            this.txtbxY1.Maximum = new decimal(new int[] {
+            192,
+            0,
+            0,
+            0});
             this.txtbxY1.Name = "txtbxY1";
-            this.txtbxY1.Size = new System.Drawing.Size(33, 23);
-            this.txtbxY1.TabIndex = 11;
-            this.txtbxY1.Text = "64";
+            this.txtbxY1.Size = new System.Drawing.Size(40, 23);
+            this.txtbxY1.TabIndex = 9;
+            this.txtbxY1.Value = new decimal(new int[] {
+            64,
+            0,
+            0,
+            0});
             // 
             // txtbxX1
             // 
             this.txtbxX1.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.txtbxX1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtbxX1.Hexadecimal = true;
             this.txtbxX1.Location = new System.Drawing.Point(108, 23);
+            this.txtbxX1.Maximum = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
             this.txtbxX1.Name = "txtbxX1";
-            this.txtbxX1.Size = new System.Drawing.Size(33, 23);
-            this.txtbxX1.TabIndex = 10;
-            this.txtbxX1.Text = "64";
+            this.txtbxX1.Size = new System.Drawing.Size(40, 23);
+            this.txtbxX1.TabIndex = 8;
+            this.txtbxX1.Value = new decimal(new int[] {
+            64,
+            0,
+            0,
+            0});
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(67, 54);
+            this.label13.Location = new System.Drawing.Point(70, 54);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(38, 13);
             this.label13.TabIndex = 9;
@@ -972,7 +1015,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(67, 28);
+            this.label14.Location = new System.Drawing.Point(70, 28);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(35, 13);
             this.label14.TabIndex = 8;
@@ -982,21 +1025,31 @@
             // 
             this.txtbxY0.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.txtbxY0.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtbxY0.Hexadecimal = true;
             this.txtbxY0.Location = new System.Drawing.Point(29, 50);
+            this.txtbxY0.Maximum = new decimal(new int[] {
+            192,
+            0,
+            0,
+            0});
             this.txtbxY0.Name = "txtbxY0";
-            this.txtbxY0.Size = new System.Drawing.Size(33, 23);
+            this.txtbxY0.Size = new System.Drawing.Size(40, 23);
             this.txtbxY0.TabIndex = 7;
-            this.txtbxY0.Text = "0";
             // 
             // txtbxX0
             // 
             this.txtbxX0.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.txtbxX0.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtbxX0.Hexadecimal = true;
             this.txtbxX0.Location = new System.Drawing.Point(29, 23);
+            this.txtbxX0.Maximum = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
             this.txtbxX0.Name = "txtbxX0";
-            this.txtbxX0.Size = new System.Drawing.Size(33, 23);
+            this.txtbxX0.Size = new System.Drawing.Size(40, 23);
             this.txtbxX0.TabIndex = 6;
-            this.txtbxX0.Text = "0";
             // 
             // label12
             // 
@@ -1015,25 +1068,6 @@
             this.label10.Size = new System.Drawing.Size(23, 13);
             this.label10.TabIndex = 0;
             this.label10.Text = "X0:";
-            // 
-            // textBoxAttributeAddress
-            // 
-            this.textBoxAttributeAddress.BackColor = System.Drawing.SystemColors.InactiveBorder;
-            this.textBoxAttributeAddress.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxAttributeAddress.Location = new System.Drawing.Point(60, 45);
-            this.textBoxAttributeAddress.Name = "textBoxAttributeAddress";
-            this.textBoxAttributeAddress.Size = new System.Drawing.Size(53, 23);
-            this.textBoxAttributeAddress.TabIndex = 7;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(3, 50);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(58, 15);
-            this.label15.TabIndex = 6;
-            this.label15.Text = "Attribute:";
             // 
             // bitmapGridSpriteView
             // 
@@ -1085,6 +1119,10 @@
             this.menuStrip1.PerformLayout();
             this.groupBoxSelectionArea.ResumeLayout(false);
             this.groupBoxSelectionArea.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtbxY1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtbxX1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtbxY0)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtbxX0)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1184,12 +1222,12 @@
         private System.Windows.Forms.GroupBox groupBoxSelectionArea;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox txtbxX0;
-        private System.Windows.Forms.TextBox txtbxY0;
+        private System.Windows.Forms.NumericUpDown txtbxX0;
+        private System.Windows.Forms.NumericUpDown txtbxY0;
         private System.Windows.Forms.Button buttonSetManualSelectionArea;
-        private System.Windows.Forms.Button buttonEnableManualSelectionArea;
-        private System.Windows.Forms.TextBox txtbxY1;
-        private System.Windows.Forms.TextBox txtbxX1;
+        private System.Windows.Forms.Button buttonExportSelectionArea;
+        private System.Windows.Forms.NumericUpDown txtbxY1;
+        private System.Windows.Forms.NumericUpDown txtbxX1;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox textBoxAttributeAddress;
