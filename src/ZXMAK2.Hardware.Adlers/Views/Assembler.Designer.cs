@@ -87,6 +87,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.txtAsm.BackBrush = null;
             this.txtAsm.CharHeight = 17;
             this.txtAsm.CharWidth = 8;
+            this.txtAsm.CommentPrefix = ";";
             this.txtAsm.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtAsm.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.txtAsm.Font = new System.Drawing.Font("Consolas", 11F);
@@ -95,6 +96,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.txtAsm.Name = "txtAsm";
             this.txtAsm.Paddings = new System.Windows.Forms.Padding(0);
             this.txtAsm.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.txtAsm.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAsm.ServiceColors")));
             this.txtAsm.Size = new System.Drawing.Size(381, 451);
             this.txtAsm.TabIndex = 0;
             this.txtAsm.Zoom = 100;
@@ -124,7 +126,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // richCompileMessages
             // 
-            this.richCompileMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.richCompileMessages.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.richCompileMessages.Location = new System.Drawing.Point(0, 0);
             this.richCompileMessages.Name = "richCompileMessages";
             this.richCompileMessages.Size = new System.Drawing.Size(381, 66);
@@ -335,6 +338,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.treeViewFiles.Location = new System.Drawing.Point(0, 35);
             this.treeViewFiles.Name = "treeViewFiles";
             treeNode1.Name = "Node0";
+            treeNode1.Tag = "text";
             treeNode1.Text = "noname.asm";
             this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1});

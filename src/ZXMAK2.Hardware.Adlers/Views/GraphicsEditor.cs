@@ -243,7 +243,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             comboSpriteWidth.Enabled = bIsSpriteViewType;
             //comboSpriteHeight.Enabled = bEnableControls;
             numericUpDownZoomFactor.Enabled = bIsSpriteViewType;
-            groupBoxScreenInfo.Visible = !bIsSpriteViewType;
+            groupBoxSelectionArea.Visible = groupBoxScreenInfo.Visible = !bIsSpriteViewType;
             groupBoxSpriteDetails.Visible = bIsSpriteViewType;
             pictureZoomedArea.Visible = !bIsSpriteViewType;
 
@@ -258,9 +258,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     groupBoxSpriteDetails.Enabled = true;
                     comboSpriteHeight.Enabled = true;
                     if (comboSpriteHeight.SelectedIndex == 0) //if '-' selected
-                        bitmapGridSpriteView.setGridHeight(16);
-                    else
-                        bitmapGridSpriteView.setGridHeight(Convert.ToByte(comboSpriteHeight.Text));
+                        comboSpriteHeight.SelectedIndex = 1;
+ 
+                    bitmapGridSpriteView.setGridHeight(Convert.ToByte(comboSpriteHeight.Text));
                     bitmapGridSpriteView.setBitmapBits(_spectrum, Convert.ToUInt16(numericUpDownActualAddress.Value));
                     bitmapGridSpriteView.Draw(null);
                     break;
@@ -351,6 +351,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             {
                 ushort screenAdress = GraphicsTools.getScreenAdress(Xcoor, Ycoor);
                 textBoxScreenAddress.Text = String.Format(numberFormat, screenAdress);
+
+                ushort attributeAdress = GraphicsTools.getAttributeAdress(Xcoor, Ycoor);
+                textBoxAttributeAddress.Text = String.Format(numberFormat, attributeAdress);
 
                 if (this.hexNumbersToolStripMenuItem.Checked)
                 {
@@ -453,29 +456,31 @@ namespace ZXMAK2.Hardware.Adlers.Views
         //contextMenuExportBitmap
         private void SaveBitmapAs(ImageFormat i_imgFormat)
         {
-            string fileName = @"test_png_export.";
-            if(i_imgFormat == null)
+            string fileName = @"image_export.";
+
+            int zoomFactor = Convert.ToByte(numericUpDownZoomFactor.Value);
+            int bitmapWidth = this.bitmapGridSpriteView.getGridWidth() * zoomFactor;
+            int bitmapHeight = this.bitmapGridSpriteView.getGridHeight() * zoomFactor;
+
+            if (i_imgFormat == null)
             {
                 //save bitmap as bytes
                 Locator.Resolve<IUserMessage>().Info("Not implemented yet, sorry..."); return;
             }
             else
             {
-                if(i_imgFormat == ImageFormat.Png)
+                if (i_imgFormat == ImageFormat.Png)
                     fileName += "png";
                 else if (i_imgFormat == ImageFormat.Jpeg)
                     fileName += "jpg";
                 else if (i_imgFormat == ImageFormat.Bmp)
                     fileName += "bmp";
-                else {
-                    Locator.Resolve<IUserMessage>().Error("Invalid format to save!"); 
+                else
+                {
+                    Locator.Resolve<IUserMessage>().Error("Invalid format to save!");
                     return;
                 }
             }
-
-            int zoomFactor = Convert.ToByte(numericUpDownZoomFactor.Value);
-            int bitmapWidth = this.bitmapGridSpriteView.getGridWidth() * zoomFactor;
-            int bitmapHeight = this.bitmapGridSpriteView.getGridHeight() * zoomFactor;
 
             string filePath = Path.Combine(Utils.GetAppFolder(), fileName); //ToDo: make method which will save file to root app dir, avoid such contructions as this
 
@@ -504,6 +509,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void menuItemSaveBitmapAsBytes_Click(object sender, EventArgs e)
         {
             SaveBitmapAs(null);
+        }
+        private void buttonSetManualSelectionArea_Click(object sender, EventArgs e)
+        {
+            string coords = String.Format("{0},{1},{2},{3}", txtbxX0.Text, txtbxY0.Text, txtbxX1.Text, txtbxY1.Text);
+            if (_mouseSelectionArea == null)
+                _mouseSelectionArea = new MouseSelectionArea();
+            _mouseSelectionArea.manualCrop(ref pictureZXDisplay, coords);
+        }
+        private void buttonEnableManualSelectionArea_Click(object sender, EventArgs e)
+        {
+            txtbxX0.Enabled = txtbxX1.Enabled = txtbxY0.Enabled = txtbxY1.Enabled = true;
         }
         #endregion
     }

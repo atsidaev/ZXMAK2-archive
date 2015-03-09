@@ -389,7 +389,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 loadDialog.InitialDirectory = ".";
                 loadDialog.SupportMultiDottedExtensions = true;
                 loadDialog.Title = "Load file...";
-                loadDialog.Filter = "Assembler files (asm,txt)|*.asm;*.txt";
+                loadDialog.Filter = "Assembler files (asm,txt)|*.asm;*.txt|All files (*.*)|*.*";
                 loadDialog.DefaultExt = "";
                 loadDialog.FileName = "";
                 loadDialog.ShowReadOnly = false;
@@ -403,9 +403,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 //TreeNode node = treeViewFiles.Nodes.Add( Path.GetFileName(loadDialog.FileName));
                 TreeNode node = new TreeNode(Path.GetFileName(loadDialog.FileName));
                 node.ToolTipText = loadDialog.FileName;
-                //node.ToolTipText = loadDialog.FileName;
+                node.Checked = true;
 
-                node.ForeColor = Color.Red;
+                //node.ForeColor = Color.Red;
                 treeViewFiles.Nodes.Add(node);
                 //add file content to Dictionary
                 //codeFileContent.Add(loadDialog.FileName, newFileContent);
@@ -422,17 +422,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void txtAsm_TextChanged(object sender, TextChangedEventArgs e)
         {
             //clear styles
-            e.ChangedRange.ClearStyle(CommentStyle);
             e.ChangedRange.ClearStyle(CommonInstructionStyle);
             e.ChangedRange.ClearStyle(JumpInstructionStyle);
             e.ChangedRange.ClearStyle(StackInstructionStyle);
             e.ChangedRange.ClearStyle(RegistryStyle);
             e.ChangedRange.ClearStyle(CompilerInstructionStyle);
             e.ChangedRange.ClearStyle(NumbersStyle);
+            e.ChangedRange.ClearStyle(CommentStyle);
 
-            //comment highlighting
-            e.ChangedRange.SetStyle(NumbersStyle, @"((#)[0-9a-fA-F]+|(%|\$| )[0-9]+|(?<=\,[0-9]{0})\d+)", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
+            e.ChangedRange.SetStyle(NumbersStyle, @"((#)[0-9a-fA-F]+|(%|\$| )[0-9]+|(?<=\,[0-9]{0})\d+)", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" + 
                 @"\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
                 @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b",
@@ -442,7 +441,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(StackInstructionStyle, @"\bpush\b|\bpop\b|\bdec sp\b|\binc sp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(JumpInstructionStyle, @"\borg\b|\breti\b|\bretn\b|\bret\b|\bjp\b|\bjr\b|\bcall\b|\bdjnz\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(RegistryStyle, @"\bhl\b|\bbc\b|\bix\b|\biy\b|\bde\b|\bpc\b|\baf\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(RegistryStyle, @"\bhl\b|\bbc\b|\bix\b|\biy\b|\bde\b|\bpc\b|\baf\b|\bsp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         }
 
         //Save button
@@ -487,7 +486,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 string asmCode = Encoding.UTF8.GetString(data, 0, data.Length);
                 this.txtAsm.Text = asmCode;
                 if (IsStartAdressInCode())
+                {
                     this.chckbxMemory.Checked = false;
+                    checkMemory_CheckedChanged(null, null);
+                }
 
                 if (this.richCompileMessages.Text.Trim() != String.Empty)
                     this.richCompileMessages.Text += "\n\n";
