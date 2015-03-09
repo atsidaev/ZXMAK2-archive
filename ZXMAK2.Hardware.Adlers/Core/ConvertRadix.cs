@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 
 namespace ZXMAK2.Hardware.Adlers
@@ -53,12 +54,14 @@ namespace ZXMAK2.Hardware.Adlers
         ////////////////////////////////////////////////////////////////////
         //
         // Method: convertNumberWithPrefix()
+        //       - default number(without prefix) is hexadecimal
         //
+        ////////////////////////////////////////////////////////////////////
         public static UInt16 ConvertNumberWithPrefix(string input) //Prefix: % - binary, # - hexadecimal
         {
             if (input == null || input.Trim() == String.Empty)
             {
-                throw new CommandParseException("ConvertNumberWithPrefix: Empty or null value to be converted => error");
+                throw new CommandParseException("ConvertNumberWithPrefix: Empty or null value cannot be converted => error");
             }
             string inputTrimmed = input.Trim();
 
@@ -68,14 +71,79 @@ namespace ZXMAK2.Hardware.Adlers
                 var number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
                 return ConvertRadix.ParseUInt16(number, 2);
             }
+            // $ - decimal
+            if (inputTrimmed[0] == '$')
+            {
+                var number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
+                return ConvertRadix.ParseUInt16(number, 10);
+            }
 
             // '#' or 'x' - hexadecimal
-            if (inputTrimmed[0] == '#' || inputTrimmed[0] == 'x')
+            if (inputTrimmed[0] == '#' || inputTrimmed[0] == 'x' )
             {
                 var number = inputTrimmed.Substring(1, inputTrimmed.Length - 1);
                 return ConvertRadix.ParseUInt16(number, 16);
             }
-            return ConvertRadix.ParseUInt16(inputTrimmed, 10);
+            // '0x' - hexadecimal
+            if (inputTrimmed.Length >= 3)
+            {
+                if (inputTrimmed[0] == '0' && inputTrimmed[1] == 'x')
+                {
+                    var number = inputTrimmed.Substring(2, inputTrimmed.Length - 2);
+                    return ConvertRadix.ParseUInt16(number, 16);
+
+                }
+            }
+            return ConvertRadix.ParseUInt16(inputTrimmed, 16);
+        }
+
+        ////////////////////////////////////////////////////////////////////
+        //
+        // Method: convertASCIIStringToBytes()
+        //
+        public static byte[] convertASCIIStringToBytes(string input)
+        {
+            List<byte> arrOut = new List<byte>();
+            foreach (char c in input)
+            {
+                if (c == '"')
+                    continue;
+                arrOut.Add((byte)c);
+            }
+
+            return arrOut.ToArray();
+        }
+
+        ////////////////////////////////////////////////////////////////////
+        //
+        // Method: GetBytesInStringBetweenCharacter()
+        //
+        // Returns byte[] of string between character, e.g. ld (C350), "Hello there" => returns byte[] { Hello there}
+        //
+        ////////////////////////////////////////////////////////////////////
+        public static byte[] GetBytesInStringBetweenCharacter(string i_inputStr, char i_chrToParse, int i_startPos = -1)
+        {
+            bool hasStartChar = i_startPos != -1;
+
+            List<byte> arrOut = new List<byte>();
+            string strToParse;
+            if (i_startPos != -1)
+                strToParse = i_inputStr.Substring(i_startPos, i_inputStr.Length - i_startPos);
+            else
+                strToParse = i_inputStr;
+            foreach (char c in strToParse)
+            {
+                if (c == '"')
+                {
+                    if (hasStartChar)
+                        break;
+                    hasStartChar = true;
+                    continue;
+                }
+                if (hasStartChar)
+                    arrOut.Add((byte)c);
+            }
+            return arrOut.ToArray();
         }
     }
 }

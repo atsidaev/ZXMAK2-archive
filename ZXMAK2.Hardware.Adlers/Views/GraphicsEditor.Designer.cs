@@ -55,7 +55,6 @@
             this.pictureZoomedArea = new System.Windows.Forms.PictureBox();
             this.checkBoxMirror = new System.Windows.Forms.CheckBox();
             this.groupBoxSpriteDetails = new System.Windows.Forms.GroupBox();
-            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.BitmapGrid();
             this.textBoxSpriteBytes = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -118,6 +117,20 @@
             this.menuItemSaveBitmapAsPNG = new System.Windows.Forms.MenuItem();
             this.menuItemSaveBitmapAsJPG = new System.Windows.Forms.MenuItem();
             this.menuItemSaveBitmapAsBytes = new System.Windows.Forms.MenuItem();
+            this.groupBoxSelectionArea = new System.Windows.Forms.GroupBox();
+            this.buttonSetManualSelectionArea = new System.Windows.Forms.Button();
+            this.buttonEnableManualSelectionArea = new System.Windows.Forms.Button();
+            this.txtbxY1 = new System.Windows.Forms.TextBox();
+            this.txtbxX1 = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.txtbxY0 = new System.Windows.Forms.TextBox();
+            this.txtbxX0 = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.textBoxAttributeAddress = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.BitmapGrid();
             this.groupBoxScreenViewType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).BeginInit();
@@ -127,6 +140,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureZoomedArea)).BeginInit();
             this.groupBoxSpriteDetails.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.groupBoxSelectionArea.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBoxScreenViewType
@@ -378,6 +392,8 @@
             // 
             // groupBoxScreenInfo
             // 
+            this.groupBoxScreenInfo.Controls.Add(this.textBoxAttributeAddress);
+            this.groupBoxScreenInfo.Controls.Add(this.label15);
             this.groupBoxScreenInfo.Controls.Add(this.textBoxBytesAtAdress);
             this.groupBoxScreenInfo.Controls.Add(this.label5);
             this.groupBoxScreenInfo.Controls.Add(this.label4);
@@ -386,7 +402,7 @@
             this.groupBoxScreenInfo.Controls.Add(this.label3);
             this.groupBoxScreenInfo.Location = new System.Drawing.Point(138, 429);
             this.groupBoxScreenInfo.Name = "groupBoxScreenInfo";
-            this.groupBoxScreenInfo.Size = new System.Drawing.Size(512, 76);
+            this.groupBoxScreenInfo.Size = new System.Drawing.Size(314, 76);
             this.groupBoxScreenInfo.TabIndex = 35;
             this.groupBoxScreenInfo.TabStop = false;
             this.groupBoxScreenInfo.Text = "Data under cursor";
@@ -395,7 +411,7 @@
             // 
             this.textBoxBytesAtAdress.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.textBoxBytesAtAdress.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxBytesAtAdress.Location = new System.Drawing.Point(159, 17);
+            this.textBoxBytesAtAdress.Location = new System.Drawing.Point(168, 47);
             this.textBoxBytesAtAdress.Name = "textBoxBytesAtAdress";
             this.textBoxBytesAtAdress.Size = new System.Drawing.Size(136, 23);
             this.textBoxBytesAtAdress.TabIndex = 5;
@@ -404,7 +420,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(119, 20);
+            this.label5.Location = new System.Drawing.Point(128, 52);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(39, 15);
             this.label5.TabIndex = 4;
@@ -414,7 +430,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(26, 51);
+            this.label4.Location = new System.Drawing.Point(134, 21);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(31, 15);
             this.label4.TabIndex = 3;
@@ -424,7 +440,7 @@
             // 
             this.textBoxXCoorYCoor.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.textBoxXCoorYCoor.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxXCoorYCoor.Location = new System.Drawing.Point(60, 47);
+            this.textBoxXCoorYCoor.Location = new System.Drawing.Point(168, 18);
             this.textBoxXCoorYCoor.Name = "textBoxXCoorYCoor";
             this.textBoxXCoorYCoor.Size = new System.Drawing.Size(53, 23);
             this.textBoxXCoorYCoor.TabIndex = 2;
@@ -484,16 +500,6 @@
             this.groupBoxSpriteDetails.TabStop = false;
             this.groupBoxSpriteDetails.Text = "Sprite details:";
             this.groupBoxSpriteDetails.Visible = false;
-            // 
-            // bitmapGridSpriteView
-            // 
-            this.bitmapGridSpriteView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.bitmapGridSpriteView.Location = new System.Drawing.Point(9, 84);
-            this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
-            this.bitmapGridSpriteView.Size = new System.Drawing.Size(256, 256);
-            this.bitmapGridSpriteView.TabIndex = 10;
-            this.bitmapGridSpriteView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseClick);
-            this.bitmapGridSpriteView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseUp);
             // 
             // textBoxSpriteBytes
             // 
@@ -895,11 +901,156 @@
             this.menuItemSaveBitmapAsBytes.Text = "Bytes";
             this.menuItemSaveBitmapAsBytes.Click += new System.EventHandler(this.menuItemSaveBitmapAsBytes_Click);
             // 
+            // groupBoxSelectionArea
+            // 
+            this.groupBoxSelectionArea.Controls.Add(this.buttonSetManualSelectionArea);
+            this.groupBoxSelectionArea.Controls.Add(this.buttonEnableManualSelectionArea);
+            this.groupBoxSelectionArea.Controls.Add(this.txtbxY1);
+            this.groupBoxSelectionArea.Controls.Add(this.txtbxX1);
+            this.groupBoxSelectionArea.Controls.Add(this.label13);
+            this.groupBoxSelectionArea.Controls.Add(this.label14);
+            this.groupBoxSelectionArea.Controls.Add(this.txtbxY0);
+            this.groupBoxSelectionArea.Controls.Add(this.txtbxX0);
+            this.groupBoxSelectionArea.Controls.Add(this.label12);
+            this.groupBoxSelectionArea.Controls.Add(this.label10);
+            this.groupBoxSelectionArea.Location = new System.Drawing.Point(458, 429);
+            this.groupBoxSelectionArea.Name = "groupBoxSelectionArea";
+            this.groupBoxSelectionArea.Size = new System.Drawing.Size(215, 77);
+            this.groupBoxSelectionArea.TabIndex = 40;
+            this.groupBoxSelectionArea.TabStop = false;
+            this.groupBoxSelectionArea.Text = "Selection area:";
+            // 
+            // buttonSetManualSelectionArea
+            // 
+            this.buttonSetManualSelectionArea.Location = new System.Drawing.Point(147, 23);
+            this.buttonSetManualSelectionArea.Name = "buttonSetManualSelectionArea";
+            this.buttonSetManualSelectionArea.Size = new System.Drawing.Size(56, 23);
+            this.buttonSetManualSelectionArea.TabIndex = 13;
+            this.buttonSetManualSelectionArea.Text = "Set";
+            this.buttonSetManualSelectionArea.UseVisualStyleBackColor = true;
+            this.buttonSetManualSelectionArea.Click += new System.EventHandler(this.buttonSetManualSelectionArea_Click);
+            // 
+            // buttonEnableManualSelectionArea
+            // 
+            this.buttonEnableManualSelectionArea.Location = new System.Drawing.Point(147, 49);
+            this.buttonEnableManualSelectionArea.Name = "buttonEnableManualSelectionArea";
+            this.buttonEnableManualSelectionArea.Size = new System.Drawing.Size(56, 23);
+            this.buttonEnableManualSelectionArea.TabIndex = 12;
+            this.buttonEnableManualSelectionArea.Text = "Manual";
+            this.buttonEnableManualSelectionArea.UseVisualStyleBackColor = true;
+            this.buttonEnableManualSelectionArea.Click += new System.EventHandler(this.buttonEnableManualSelectionArea_Click);
+            // 
+            // txtbxY1
+            // 
+            this.txtbxY1.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.txtbxY1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtbxY1.Location = new System.Drawing.Point(108, 48);
+            this.txtbxY1.Name = "txtbxY1";
+            this.txtbxY1.Size = new System.Drawing.Size(33, 23);
+            this.txtbxY1.TabIndex = 11;
+            this.txtbxY1.Text = "64";
+            // 
+            // txtbxX1
+            // 
+            this.txtbxX1.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.txtbxX1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtbxX1.Location = new System.Drawing.Point(108, 23);
+            this.txtbxX1.Name = "txtbxX1";
+            this.txtbxX1.Size = new System.Drawing.Size(33, 23);
+            this.txtbxX1.TabIndex = 10;
+            this.txtbxX1.Text = "64";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(67, 54);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(38, 13);
+            this.label13.TabIndex = 9;
+            this.label13.Text = "Height";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(67, 28);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(35, 13);
+            this.label14.TabIndex = 8;
+            this.label14.Text = "Width";
+            // 
+            // txtbxY0
+            // 
+            this.txtbxY0.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.txtbxY0.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtbxY0.Location = new System.Drawing.Point(29, 50);
+            this.txtbxY0.Name = "txtbxY0";
+            this.txtbxY0.Size = new System.Drawing.Size(33, 23);
+            this.txtbxY0.TabIndex = 7;
+            this.txtbxY0.Text = "0";
+            // 
+            // txtbxX0
+            // 
+            this.txtbxX0.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.txtbxX0.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtbxX0.Location = new System.Drawing.Point(29, 23);
+            this.txtbxX0.Name = "txtbxX0";
+            this.txtbxX0.Size = new System.Drawing.Size(33, 23);
+            this.txtbxX0.TabIndex = 6;
+            this.txtbxX0.Text = "0";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 54);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(23, 13);
+            this.label12.TabIndex = 1;
+            this.label12.Text = "Y0:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 28);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(23, 13);
+            this.label10.TabIndex = 0;
+            this.label10.Text = "X0:";
+            // 
+            // textBoxAttributeAddress
+            // 
+            this.textBoxAttributeAddress.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.textBoxAttributeAddress.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxAttributeAddress.Location = new System.Drawing.Point(60, 45);
+            this.textBoxAttributeAddress.Name = "textBoxAttributeAddress";
+            this.textBoxAttributeAddress.Size = new System.Drawing.Size(53, 23);
+            this.textBoxAttributeAddress.TabIndex = 7;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(3, 50);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(58, 15);
+            this.label15.TabIndex = 6;
+            this.label15.Text = "Attribute:";
+            // 
+            // bitmapGridSpriteView
+            // 
+            this.bitmapGridSpriteView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.bitmapGridSpriteView.Location = new System.Drawing.Point(9, 84);
+            this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
+            this.bitmapGridSpriteView.Size = new System.Drawing.Size(256, 256);
+            this.bitmapGridSpriteView.TabIndex = 10;
+            this.bitmapGridSpriteView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseClick);
+            this.bitmapGridSpriteView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseUp);
+            // 
             // GraphicsEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(750, 497);
+            this.ClientSize = new System.Drawing.Size(750, 508);
+            this.Controls.Add(this.groupBoxSelectionArea);
             this.Controls.Add(this.groupBoxSpriteDetails);
             this.Controls.Add(this.checkBoxMirror);
             this.Controls.Add(this.pictureZoomedArea);
@@ -932,6 +1083,8 @@
             this.groupBoxSpriteDetails.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.groupBoxSelectionArea.ResumeLayout(false);
+            this.groupBoxSelectionArea.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1028,5 +1181,18 @@
         private System.Windows.Forms.MenuItem menuItemSaveBitmapAsPNG;
         private System.Windows.Forms.MenuItem menuItemSaveBitmapAsJPG;
         private System.Windows.Forms.MenuItem menuItemSaveBitmapAsBytes;
+        private System.Windows.Forms.GroupBox groupBoxSelectionArea;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox txtbxX0;
+        private System.Windows.Forms.TextBox txtbxY0;
+        private System.Windows.Forms.Button buttonSetManualSelectionArea;
+        private System.Windows.Forms.Button buttonEnableManualSelectionArea;
+        private System.Windows.Forms.TextBox txtbxY1;
+        private System.Windows.Forms.TextBox txtbxX1;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox textBoxAttributeAddress;
+        private System.Windows.Forms.Label label15;
     }
 }

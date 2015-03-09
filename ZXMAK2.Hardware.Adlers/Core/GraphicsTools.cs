@@ -6,6 +6,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
     static class GraphicsTools
     {
         public static UInt16 ZX_SCREEN_START= 16384;
+        public static UInt16 ZX_ATTRIBUTE_START = 22528;
         public static UInt16 MAX_X_PIXEL = Convert.ToUInt16(256); // X-coordinate maximum(pixel)
         public static UInt16 MAX_Y_PIXEL = Convert.ToUInt16(192); // Y-coordinate maximum(pixel)
 
@@ -79,6 +80,20 @@ namespace ZXMAK2.Hardware.Adlers.Core
             sAdress += Convert.ToUInt16((attributeLineNumber * 32) + (lineInAttribute * MAX_X_PIXEL));
 
             return sAdress;
+        }
+
+        /// <summary>
+        /// getScreenAdress
+        /// </summary>
+        /// <param name="xCoor"></param>
+        /// <param name="yCoor"></param>
+        /// <returns>ushort</returns>
+        public static ushort getAttributeAdress(int xCoor, int yCoor)
+        {
+            ushort addrOut  = (ushort)((xCoor / 8) + (yCoor /8)*32 + ZX_ATTRIBUTE_START);
+            if (addrOut > 23296)
+                addrOut = (ushort)(ZX_ATTRIBUTE_START + 736 + (xCoor - 1) / 8); //correction due to double sized screen(256*2)
+            return addrOut;
         }
 
         /// <summary>

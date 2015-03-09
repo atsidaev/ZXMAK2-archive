@@ -1210,7 +1210,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                 rightNum = DebuggerManager.getRegistryValueByName(m_spectrum.CPU.regs, right);
                                 isRightRegistry = true;
                             }
-                            else
+                            else if( right[0] != '\"' ) //text will be placed into memory, will parsed later
                             {
                                 //must be a value
                                 rightNum = ConvertRadix.ConvertNumberWithPrefix(right);
@@ -1247,6 +1247,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                             }
                             else
                             {
+                                //write text or bytes to memory with "ld" directive
                                 bool isWritingCharacters = false;
                                 for (int counter = 2; parsedCommand.Count > counter; counter++)
                                 {
@@ -1256,16 +1257,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                     if (isWritingCharacters)
                                     {
                                         // e.g.: ld (<memAddr>), "something to write to mem"
-                                        byte[] arrToWriteToMem = DebuggerManager.convertASCIIStringToBytes(currExpr);
+                                        byte[] arrToWriteToMem = ConvertRadix.GetBytesInStringBetweenCharacter(actualCommand, '\"');
                                         m_spectrum.WriteMemory(leftNum, arrToWriteToMem, 0, arrToWriteToMem.Length);
-                                        leftNum += (ushort)arrToWriteToMem.Length;
-                                        if (currExpr.EndsWith("\""))
-                                            isWritingCharacters = false;
-                                        else
-                                        {
-                                            m_spectrum.WriteMemory(leftNum, 0x20 /*space*/);
-                                            leftNum++;
-                                        }
+                                        break;
                                     }
                                     else
                                     {

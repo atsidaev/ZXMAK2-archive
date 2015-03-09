@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Reflection.Emit;
 using ZXMAK2.Engine.Cpu;
-using ZXMAK2.Hardware.Adlers;
 using System.Linq;
 
 namespace ZXMAK2.Hardware.Adlers
@@ -285,23 +283,6 @@ namespace ZXMAK2.Hardware.Adlers
             }
 
             return DebuggerCommandType.Unidentified;
-        }
-
-        ////////////////////////////////////////////////////////////////////
-        //
-        // Method: convertASCIIStringToBytes()
-        //
-        public static byte[] convertASCIIStringToBytes(string input)
-        {
-            List<byte> arrOut = new List<byte>();
-            foreach (char c in input)
-            {
-                if (c == '"')
-                    continue;
-                arrOut.Add((byte)c);
-            }
-
-            return arrOut.ToArray();
         }
 
         public static bool isRegistry(string i_expr)
