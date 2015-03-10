@@ -116,8 +116,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 }
                 else
                 {
-                    if( chckbxMemory.Checked )
-                        asmToCompileOrFileName += "org " + textMemAdress.Text + "\n";
+                    /*if( chckbxMemory.Checked )
+                        asmToCompileOrFileName += "org " + textMemAdress.Text + "\n";*/
 
                     asmToCompileOrFileName += txtAsm.Text;
                     compileOption = "--bin";
