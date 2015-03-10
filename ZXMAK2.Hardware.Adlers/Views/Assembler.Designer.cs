@@ -32,7 +32,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Assembler));
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("noname.asm");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("noname.asm");
             this.txtAsm = new FastColoredTextBoxNS.FastColoredTextBox();
             this.btnCompile = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
@@ -58,19 +58,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.toolCodeLibrary = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.treeViewFiles = new System.Windows.Forms.TreeView();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.buttonClearAssemblerLog = new System.Windows.Forms.Button();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitter1 = new System.Windows.Forms.Splitter();
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.toolMenu.SuspendLayout();
-            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtAsm
             // 
-            this.txtAsm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtAsm.AutoCompleteBracketsList = new char[] {
         '(',
         ')',
@@ -90,14 +91,15 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.txtAsm.CommentPrefix = ";";
             this.txtAsm.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtAsm.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtAsm.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtAsm.Font = new System.Drawing.Font("Consolas", 11F);
             this.txtAsm.IsReplaceMode = false;
-            this.txtAsm.Location = new System.Drawing.Point(157, 35);
+            this.txtAsm.Location = new System.Drawing.Point(0, 0);
             this.txtAsm.Name = "txtAsm";
             this.txtAsm.Paddings = new System.Windows.Forms.Padding(0);
             this.txtAsm.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtAsm.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAsm.ServiceColors")));
-            this.txtAsm.Size = new System.Drawing.Size(381, 451);
+            this.txtAsm.Size = new System.Drawing.Size(379, 445);
             this.txtAsm.TabIndex = 0;
             this.txtAsm.Zoom = 100;
             this.txtAsm.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.txtAsm_TextChanged);
@@ -126,11 +128,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // richCompileMessages
             // 
-            this.richCompileMessages.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richCompileMessages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richCompileMessages.Location = new System.Drawing.Point(0, 0);
             this.richCompileMessages.Name = "richCompileMessages";
-            this.richCompileMessages.Size = new System.Drawing.Size(381, 66);
+            this.richCompileMessages.Size = new System.Drawing.Size(379, 64);
             this.richCompileMessages.TabIndex = 5;
             this.richCompileMessages.Text = "";
             // 
@@ -337,24 +338,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.treeViewFiles.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.treeViewFiles.Location = new System.Drawing.Point(0, 35);
             this.treeViewFiles.Name = "treeViewFiles";
-            treeNode1.Name = "Node0";
-            treeNode1.Tag = "text";
-            treeNode1.Text = "noname.asm";
+            treeNode3.Name = "Node0";
+            treeNode3.Tag = "0";
+            treeNode3.Text = "noname.asm";
+            treeNode3.ToolTipText = "not save assembler code";
             this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1});
+            treeNode3});
             this.treeViewFiles.ShowNodeToolTips = true;
             this.treeViewFiles.Size = new System.Drawing.Size(151, 516);
             this.treeViewFiles.TabIndex = 8;
-            // 
-            // panel1
-            // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.richCompileMessages);
-            this.panel1.Location = new System.Drawing.Point(157, 485);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(381, 66);
-            this.panel1.TabIndex = 9;
+            this.treeViewFiles.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewFiles_AfterSelect);
             // 
             // buttonClearAssemblerLog
             // 
@@ -367,19 +360,47 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.buttonClearAssemblerLog.UseVisualStyleBackColor = true;
             this.buttonClearAssemblerLog.Click += new System.EventHandler(this.buttonClearAssemblerLog_Click);
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer1.Location = new System.Drawing.Point(157, 38);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.txtAsm);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.richCompileMessages);
+            this.splitContainer1.Size = new System.Drawing.Size(379, 513);
+            this.splitContainer1.SplitterDistance = 445;
+            this.splitContainer1.TabIndex = 11;
+            // 
+            // splitter1
+            // 
+            this.splitter1.Location = new System.Drawing.Point(151, 35);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(3, 516);
+            this.splitter1.TabIndex = 12;
+            this.splitter1.TabStop = false;
+            // 
             // Assembler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(687, 551);
+            this.Controls.Add(this.splitter1);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.buttonClearAssemblerLog);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.treeViewFiles);
             this.Controls.Add(this.toolMenu);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnCompile);
-            this.Controls.Add(this.txtAsm);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Assembler";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -391,7 +412,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.groupBox1.PerformLayout();
             this.toolMenu.ResumeLayout(false);
             this.toolMenu.PerformLayout();
-            this.panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -424,7 +449,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.TreeView treeViewFiles;
         private System.Windows.Forms.ToolStripButton toolStripButtonRefresh;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button buttonClearAssemblerLog;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.Splitter splitter1;
     }
 }
