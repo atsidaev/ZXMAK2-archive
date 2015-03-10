@@ -11,6 +11,8 @@ using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {
@@ -27,20 +29,24 @@ namespace ZXMAK2.Hardware.Adlers.Views
                   /*char**/ IntPtr errReason
                   );
 
-        //text editor styles
-        Style CommentStyle = new TextStyle(Brushes.Green, null, FontStyle.Italic);
-        Style CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
-        Style JumpInstructionStyle = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
-        Style StackInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
-        Style CompilerInstructionStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
-        Style RegistryStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
-        Style NumbersStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
+        #region Syntax highlightning styles
+            Style CommentStyle = new TextStyle(Brushes.Green, null, FontStyle.Italic);
+            Style CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
+            Style JumpInstructionStyle = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
+            Style StackInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
+            Style CompilerInstructionStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
+            Style RegistryStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
+            Style NumbersStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
+        #endregion
 
-        private byte tabSpace = 16; //how many characters on tab
+        //private byte tabSpace = 16; //how many characters on tab
+
+        //sources array
+        private Dictionary<int, AssemblerSourceInfo> _assemblerSources = new Dictionary<int, AssemblerSourceInfo>();
 
         private IDebuggable m_spectrum;
 
-        private bool compileFromFile = false; //if loaded from file then --binfile compile parameter will be used
+        private bool compileFromFile = false; //if loaded from file then "--binfile" compile parameter will be used
         private string m_actualLoadedFile = String.Empty;
 
         private static Assembler m_instance = null;
@@ -50,14 +56,15 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             InitializeComponent();
 
-            //txtAsm.Selection.Start = Place.Empty;
             txtAsm.DoCaretVisible();
             txtAsm.IsChanged = false;
             txtAsm.ClearUndo();
 
-            txtAsm.Text = new string(' ', tabSpace);
             txtAsm.SelectionLength = 0;
             txtAsm.SelectionStart = txtAsm.Text.Length + 1;
+
+            //register assembler source(noname.asm)
+            _assemblerSources.Add(0, new AssemblerSourceInfo("noname.asm", false)); //will have Id = 0
 
             this.KeyPreview = true;
             this.BringToFront();
@@ -73,6 +80,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
             else
                 m_instance.Show();
+
+            m_instance.txtAsm.Focus();
         }
 
         /*internal unsafe struct FixedBuffer
@@ -256,12 +265,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (startAdressInCode && startAdressManual)
             {
                 //duplicate adress for compilation
-                Locator.Resolve<IUserMessage>().Warning(
+                /*Locator.Resolve<IUserMessage>().Warning(
                     "Compilation failed(duplicity in start address)\n\n" +
                     "Either UNcheck the check box for memory address(Compile to -> Memory)\n" +
                     "or remove ALL 'ORG' instructions from the source code !\n\n" +
                     "Compilation is canceled.");
-                return false;
+                return false;*/
+                //org has higher priority
+                this.chckbxMemory.Checked = false;
             }
 
             return true;
@@ -397,21 +408,21 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     return;
 
-                if (LoadAsm(loadDialog.FileName) == false)
+                string fileText;
+                if (LoadAsm(loadDialog.FileName, out fileText) == false)
                     return;
 
                 //TreeNode node = treeViewFiles.Nodes.Add( Path.GetFileName(loadDialog.FileName));
                 TreeNode node = new TreeNode(Path.GetFileName(loadDialog.FileName));
+                AssemblerSourceInfo sourceInfo = new AssemblerSourceInfo(loadDialog.FileName, true);
                 node.ToolTipText = loadDialog.FileName;
                 node.Checked = true;
+                node.Tag = sourceInfo.Id = SourceInfo_ActualMax();
 
-                //node.ForeColor = Color.Red;
+                sourceInfo.SourceCode = fileText;
+                _assemblerSources.Add(sourceInfo.Id, sourceInfo);
+
                 treeViewFiles.Nodes.Add(node);
-                //add file content to Dictionary
-                //codeFileContent.Add(loadDialog.FileName, newFileContent);
-
-                //add to TreeView Left Panel
-                //tabToAddNewFile.Controls.Add(this);
 
                 compileFromFile = true;
                 m_actualLoadedFile = loadDialog.FileName;
@@ -453,7 +464,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         //Refresh button
         private void toolStripButtonRefresh_Click(object sender, EventArgs e)
         {
-            LoadAsm(m_actualLoadedFile);
+            string dummy;
+            LoadAsm(m_actualLoadedFile, out dummy);
         }
 
         //Form close
@@ -468,10 +480,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             this.richCompileMessages.Clear();
         }
+
+        //Sources treeview select
+        private void treeViewFiles_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            int index = ConvertRadix.ParseUInt16(e.Node.Tag.ToString(), 10);
+            this.txtAsm.Text = _assemblerSources[index].SourceCode;
+        }
         #endregion
 
-        private bool LoadAsm(string i_fileName)
+        private bool LoadAsm(string i_fileName, out string o_strFileText)
         {
+            o_strFileText = string.Empty;
+
             if (i_fileName == String.Empty || i_fileName == null)
                 return false;
 
@@ -484,7 +505,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 using (FileStream fs = new FileStream(i_fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                     fs.Read(data, 0, data.Length);
                 string asmCode = Encoding.UTF8.GetString(data, 0, data.Length);
-                this.txtAsm.Text = asmCode;
+                o_strFileText = asmCode;
                 if (IsStartAdressInCode())
                 {
                     this.chckbxMemory.Checked = false;
@@ -514,5 +535,40 @@ namespace ZXMAK2.Hardware.Adlers.Views
             Locator.Resolve<IUserMessage>().Info("File " + i_fileName + " saved!");
             return true;
         }
+
+        #region Source managment(add/delete/save/refresh)
+        class AssemblerSourceInfo
+        {
+            private int _id;
+            public int Id{get { return this._id; } set{ if(value >= 0) this._id = value; }}
+
+            public string SourceCode{ get; set; }
+
+            private bool IsFile { get; set; }
+            private bool Saved { get; set; }
+            private string SourceName { get; set; } //empty when it is a file
+            private string FileName { get; set; }
+
+            public AssemblerSourceInfo(string i_sourceName, bool i_isFile)
+            {
+                SourceName = i_sourceName;
+                IsFile = i_isFile;
+                Saved = true;
+                SourceCode = string.Empty;
+            }
+        }
+
+        private int AddNewSource(AssemblerSourceInfo i_sourceCandidate)
+        {
+            i_sourceCandidate.Id = SourceInfo_ActualMax();
+            _assemblerSources.Add(i_sourceCandidate.Id, i_sourceCandidate);
+
+            return i_sourceCandidate.Id;
+        }
+        private int SourceInfo_ActualMax()
+        {
+            return _assemblerSources.Max(p => p.Key) + 1;
+        }
+        #endregion
     }
 }
