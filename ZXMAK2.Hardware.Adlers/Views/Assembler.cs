@@ -161,12 +161,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
                             {
                                 if (compileOption == "--binfile")
                                 {
-                                    errStringText += "Error on line " + errFileLine.ToString() + ", file: " + getString(perrFileName);
+                                    errStringText += "Error on line " + errFileLine.ToString() + ", file: " + GetStringFromMemory(perrFileName);
                                     errStringText += "\n    ";
-                                    errStringText += getString(perrReason);
+                                    errStringText += GetStringFromMemory(perrReason);
                                 }
                                 else
-                                    errStringText += String.Format("Compile error on line {0}!\n    {1}", errFileLine, getString(perrReason));
+                                    errStringText += String.Format("Compile error on line {0}!\n    {1}", errFileLine, GetStringFromMemory(perrReason));
 
                                 this.richCompileMessages.Text = errStringText + "\n===================\n" + this.richCompileMessages.Text;
                             }
@@ -281,13 +281,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
             return false;
         }
 
-        static unsafe private string getString(byte* i_pointer)
+        static unsafe private string GetStringFromMemory(byte* i_pointer)
         {
             string retString = String.Empty;
 
-            for (int counter = 0; ; counter++)
+            for (; ; )
             {
-                char c = (char)*(i_pointer + counter);
+                char c = (char)*(i_pointer++);
                 if (c == '\0')
                     break;
 
@@ -431,10 +431,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             e.ChangedRange.ClearStyle(CommentStyle);
 
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
-            e.ChangedRange.SetStyle(NumbersStyle, @"((#)[0-9a-fA-F]+|(%|\$| )[0-9]+|(?<=\,[0-9]{0})\d+)", RegexOptions.Multiline);
+            e.ChangedRange.SetStyle(NumbersStyle, @"((#|x)[0-9a-fA-F]+|(%|\$| )[0-9]+|(?<=\,[0-9]{0})\d+)", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" + 
                 @"\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
-                @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b",
+                @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b",
                 RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(CompilerInstructionStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|include|incbin|" +
                 @"\bif\b|\bendif\b|\belse\b", 
