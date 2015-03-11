@@ -32,7 +32,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Assembler));
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("noname.asm");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("noname.asm");
             this.txtAsm = new FastColoredTextBoxNS.FastColoredTextBox();
             this.btnCompile = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
@@ -72,6 +72,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // txtAsm
             // 
+            this.txtAsm.AutoCompleteBrackets = true;
             this.txtAsm.AutoCompleteBracketsList = new char[] {
         '(',
         ')',
@@ -83,6 +84,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         '\"',
         '\'',
         '\''};
+            this.txtAsm.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+\\s*(?<range>,)\\s*(?<range>[^;]+);";
             this.txtAsm.AutoScrollMinSize = new System.Drawing.Size(27, 17);
             this.txtAsm.AutoSize = true;
             this.txtAsm.BackBrush = null;
@@ -296,7 +298,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.colorToolStrip.Name = "colorToolStrip";
             this.colorToolStrip.Size = new System.Drawing.Size(32, 32);
             this.colorToolStrip.Text = "Select text color";
-            this.colorToolStrip.ToolTipText = "Select colors";
+            this.colorToolStrip.ToolTipText = "Select Text color";
             this.colorToolStrip.Click += new System.EventHandler(this.colorToolStrip_Click);
             // 
             // backColortoolStrip
@@ -336,14 +338,15 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.treeViewFiles.CheckBoxes = true;
             this.treeViewFiles.Dock = System.Windows.Forms.DockStyle.Left;
             this.treeViewFiles.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.treeViewFiles.HideSelection = false;
             this.treeViewFiles.Location = new System.Drawing.Point(0, 35);
             this.treeViewFiles.Name = "treeViewFiles";
-            treeNode3.Name = "Node0";
-            treeNode3.Tag = "0";
-            treeNode3.Text = "noname.asm";
-            treeNode3.ToolTipText = "not save assembler code";
+            treeNode1.Name = "Node0";
+            treeNode1.Tag = "0";
+            treeNode1.Text = "noname.asm";
+            treeNode1.ToolTipText = "not save assembler code";
             this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3});
+            treeNode1});
             this.treeViewFiles.ShowNodeToolTips = true;
             this.treeViewFiles.Size = new System.Drawing.Size(151, 516);
             this.treeViewFiles.TabIndex = 8;
