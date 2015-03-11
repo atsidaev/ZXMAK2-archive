@@ -41,13 +41,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         //private byte tabSpace = 16; //how many characters on tab
 
-        //sources array
+        //assembler sources array
+        private int _actualAssemblerNode = 0;
         private Dictionary<int, AssemblerSourceInfo> _assemblerSources = new Dictionary<int, AssemblerSourceInfo>();
 
         private IDebuggable m_spectrum;
 
         private bool compileFromFile = false; //if loaded from file then "--binfile" compile parameter will be used
-        private string m_actualLoadedFile = String.Empty;
+        //private string m_actualLoadedFile = String.Empty;
 
         private static Assembler m_instance = null;
         private Assembler(ref IDebuggable spectrum)
@@ -118,7 +119,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 string compileOption;
                 if (compileFromFile /*|| (!checkMemory.Checked && IsStartAdressInCode())*/)
                 {
-                    asmToCompileOrFileName = m_actualLoadedFile;
+                    asmToCompileOrFileName = _assemblerSources[_actualAssemblerNode].GetFileNameToSave();
                     compileOption = "--binfile";
                     //Set the current directory so that the compiler could find also include files(in the same dir as compiled source)
                     Directory.SetCurrentDirectory(Path.GetDirectoryName(asmToCompileOrFileName));
@@ -200,6 +201,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
                                         //memArrayDelta = 0;
                                     }
 
+                                    if (memAdress == 0 && this.chckbxMemory.Checked)
+                                        memAdress = ConvertRadix.ConvertNumberWithPrefix(this.textMemAdress.Text);
                                     if (memAdress >= 0x4000) //RAM start
                                     {
                                         Stopwatch watch = new Stopwatch();
@@ -272,7 +275,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     "Compilation is canceled.");
                 return false;*/
                 //org has higher priority
-                this.chckbxMemory.Checked = false;
+                this.checkMemory_CheckedChanged(null, null);
             }
 
             return true;
@@ -316,14 +319,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private void checkMemory_CheckedChanged(object sender, EventArgs e)
         {
-            if (chckbxMemory.Checked)
-            {
-                textMemAdress.Enabled = true;
-            }
-            else
-            {
-                textMemAdress.Enabled = false;
-            }
+            textMemAdress.Enabled = chckbxMemory.Checked;
         }
 
         private void assemblerForm_KeyDown(object sender, KeyEventArgs e)
@@ -417,16 +413,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 AssemblerSourceInfo sourceInfo = new AssemblerSourceInfo(loadDialog.FileName, true);
                 node.ToolTipText = loadDialog.FileName;
                 node.Checked = true;
-                node.Tag = sourceInfo.Id = SourceInfo_ActualMax();
+                node.Tag = sourceInfo.Id = _actualAssemblerNode = SourceInfo_ActualMax();
 
-                sourceInfo.SourceCode = fileText;
+                this.txtAsm.Text = sourceInfo.SourceCode = fileText;
                 _assemblerSources.Add(sourceInfo.Id, sourceInfo);
 
                 treeViewFiles.Nodes.Add(node);
+                treeViewFiles.SelectedNode = node;
+                //treeViewFiles.SelectedNode.BackColor = SystemColors.HighlightText; // This will work
 
                 compileFromFile = true;
-                m_actualLoadedFile = loadDialog.FileName;
-                textMemAdress.Enabled = false;
+                //textMemAdress.Enabled = false;
             }
         }
 
@@ -442,7 +439,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             e.ChangedRange.ClearStyle(CommentStyle);
 
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
-            e.ChangedRange.SetStyle(NumbersStyle, @"((#|x)[0-9a-fA-F]+|(%|\$| )[0-9]+|(?<=\,[0-9]{0})\d+)", RegexOptions.Multiline);
+            e.ChangedRange.SetStyle(NumbersStyle, @"(?:\(|\n|,| )\d{1,5}\b|[^a-zA-Z](?:x|#|\$)[0-9A-Fa-f]{1,4}|%[0-1]{1,16}", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" + 
                 @"\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
                 @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b",
@@ -458,14 +455,15 @@ namespace ZXMAK2.Hardware.Adlers.Views
         //Save button
         private void saveFileStripButton_Click(object sender, EventArgs e)
         {
-            SaveAsm(m_actualLoadedFile);
+            SaveAsm(_assemblerSources[_actualAssemblerNode].GetFileNameToSave());
+            _assemblerSources[_actualAssemblerNode].SourceCode = txtAsm.Text;
         }
 
         //Refresh button
         private void toolStripButtonRefresh_Click(object sender, EventArgs e)
         {
             string dummy;
-            LoadAsm(m_actualLoadedFile, out dummy);
+            LoadAsm(_assemblerSources[_actualAssemblerNode].GetFileNameToSave(), out dummy);
         }
 
         //Form close
@@ -484,8 +482,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         //Sources treeview select
         private void treeViewFiles_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            int index = ConvertRadix.ParseUInt16(e.Node.Tag.ToString(), 10);
-            this.txtAsm.Text = _assemblerSources[index].SourceCode;
+            _actualAssemblerNode = ConvertRadix.ParseUInt16(e.Node.Tag.ToString(), 10);
+            this.txtAsm.Text = _assemblerSources[_actualAssemblerNode].SourceCode;
         }
         #endregion
 
@@ -507,10 +505,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 string asmCode = Encoding.UTF8.GetString(data, 0, data.Length);
                 o_strFileText = asmCode;
                 if (IsStartAdressInCode())
-                {
                     this.chckbxMemory.Checked = false;
-                    checkMemory_CheckedChanged(null, null);
-                }
+                checkMemory_CheckedChanged(null, null);
 
                 if (this.richCompileMessages.Text.Trim() != String.Empty)
                     this.richCompileMessages.Text += "\n\n";
@@ -536,7 +532,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             return true;
         }
 
-        #region Source managment(add/delete/save/refresh)
+        #region Source management(add/delete/save/refresh)
         class AssemblerSourceInfo
         {
             private int _id;
@@ -545,16 +541,27 @@ namespace ZXMAK2.Hardware.Adlers.Views
             public string SourceCode{ get; set; }
 
             private bool IsFile { get; set; }
-            private bool Saved { get; set; }
+            private bool IsSaved { get; set; }
             private string SourceName { get; set; } //empty when it is a file
-            private string FileName { get; set; }
+
+            private string _fileName;
 
             public AssemblerSourceInfo(string i_sourceName, bool i_isFile)
             {
                 SourceName = i_sourceName;
                 IsFile = i_isFile;
-                Saved = true;
-                SourceCode = string.Empty;
+                IsSaved = true;
+                _fileName = SourceCode = string.Empty;
+            }
+
+            public string GetFileNameToSave()
+            {
+                if (_fileName == string.Empty || !IsFile)
+                {
+                    return SourceName;
+                }
+                else
+                    return _fileName;
             }
         }
 
