@@ -2225,10 +2225,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
         #endregion
 
         #region Config
-        private string configXmlFileName = "debugger_config.xml";
+        public static string ConfigXmlFileName = "debugger_config.xml";
         private void SaveConfig()
         {
-            using (XmlWriter writer = XmlWriter.Create(Path.Combine(Utils.GetAppFolder(), configXmlFileName)))
+            XmlWriter writer = XmlWriter.Create(Path.Combine(Utils.GetAppFolder(), ConfigXmlFileName));
+            //using (XmlWriter writer = XmlWriter.Create(Path.Combine(Utils.GetAppFolder(), configXmlFileName)))
             {
                 writer.WriteStartElement("Root");
                 //Load on startup
@@ -2277,6 +2278,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 //Misc(end)
                 writer.WriteEndElement();
 
+                //write assembler config
+                Assembler.GetInstance().GetPartialConfig(ref writer);
+
                 writer.WriteEndElement(); //Root
                 writer.Flush();
 
@@ -2286,11 +2290,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private void LoadConfig()
         {           
-            if (!File.Exists(Path.Combine(Utils.GetAppFolder(), configXmlFileName)))
+            if (!File.Exists(Path.Combine(Utils.GetAppFolder(), ConfigXmlFileName)))
                 return;
 
             XmlDocument xmlDoc = new System.Xml.XmlDocument();
-            xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), configXmlFileName));
+            xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), ConfigXmlFileName));
 
             XmlNode node;
 
