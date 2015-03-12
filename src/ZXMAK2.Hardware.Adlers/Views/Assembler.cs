@@ -13,6 +13,7 @@ using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {
@@ -48,8 +49,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private IDebuggable m_spectrum;
 
         private bool compileFromFile = false; //if loaded from file then "--binfile" compile parameter will be used
-        //private string m_actualLoadedFile = String.Empty;
-
+        
+        //colors
+        private static AssemblerColorConfig _ColorConfig;
+        //instance(this)
         private static Assembler m_instance = null;
         private Assembler(ref IDebuggable spectrum)
         {
@@ -64,8 +67,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
             txtAsm.SelectionLength = 0;
             txtAsm.SelectionStart = txtAsm.Text.Length + 1;
 
-            //register assembler source(noname.asm)
-            _assemblerSources.Add(0, new AssemblerSourceInfo("noname.asm", false)); //will have Id = 0
+            //register assembler source(noname.asm), will have Id = 0
+            treeViewFiles.Nodes[0].Tag = (int)0;
+            _assemblerSources.Add(0, new AssemblerSourceInfo("noname.asm", false));
+
+            //colors
+            _ColorConfig = new AssemblerColorConfig(this);
 
             this.KeyPreview = true;
             this.BringToFront();
@@ -76,6 +83,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (m_instance == null || m_instance.IsDisposed)
             {
                 m_instance = new Assembler(ref spectrum);
+                m_instance.LoadConfig();
                 m_instance.ShowInTaskbar = true;
                 m_instance.Show();
             }
@@ -83,6 +91,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 m_instance.Show();
 
             m_instance.txtAsm.Focus();
+        }
+
+        public static Assembler GetInstance()
+        {
+            return m_instance;
         }
 
         /*internal unsafe struct FixedBuffer
@@ -353,7 +366,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
 
         //Select font
-        private void fonttoolStrip_Click(object sender, EventArgs e)
+        /*private void fonttoolStrip_Click(object sender, EventArgs e)
         {
             FontDialog fontDialog = new FontDialog();
             fontDialog.Font = txtAsm.Font;
@@ -364,27 +377,24 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 Font font = fontDialog.Font;
                 txtAsm.Font = font; //FastColoredTextBox supports only monospaced fonts !
             }
-        }
+        }*/
 
         //text Color
-        private void colorToolStrip_Click(object sender, EventArgs e)
+        private void toolStripColors_Click(object sender, EventArgs e)
         {
-            ColorDialog colorDialog = new ColorDialog();
-            colorDialog.Color = txtAsm.ForeColor;
-            if (colorDialog.ShowDialog() != DialogResult.Cancel)
-            {
-                txtAsm.ForeColor = colorDialog.Color;
-            }
+            _ColorConfig.ShowDialog();
+            //this.RefreshAssemblerCode();
         }
-
-        //background Color
-        private void backColortoolStrip_Click(object sender, EventArgs e)
+        //refresh assembler text when color styles changed
+        public void RefreshAssemblerCode()
         {
-            ColorDialog colorDialog = new ColorDialog();
-            colorDialog.Color = txtAsm.BackColor;
-            if (colorDialog.ShowDialog() != DialogResult.Cancel)
+            if (_ColorConfig != null)
             {
-                txtAsm.BackColor = colorDialog.Color;
+                Range range = txtAsm.VisibleRange;
+                range.ClearStyle(CommentStyle);
+
+                CommentStyle = _ColorConfig.CommentStyle;
+                range.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
             }
         }
 
@@ -408,7 +418,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 if (LoadAsm(loadDialog.FileName, out fileText) == false)
                     return;
 
-                //TreeNode node = treeViewFiles.Nodes.Add( Path.GetFileName(loadDialog.FileName));
                 TreeNode node = new TreeNode(Path.GetFileName(loadDialog.FileName));
                 AssemblerSourceInfo sourceInfo = new AssemblerSourceInfo(loadDialog.FileName, true);
                 node.ToolTipText = loadDialog.FileName;
@@ -420,28 +429,27 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                 treeViewFiles.Nodes.Add(node);
                 treeViewFiles.SelectedNode = node;
-                //treeViewFiles.SelectedNode.BackColor = SystemColors.HighlightText; // This will work
 
                 compileFromFile = true;
-                //textMemAdress.Enabled = false;
             }
         }
 
         private void txtAsm_TextChanged(object sender, TextChangedEventArgs e)
         {
             //clear styles
-            e.ChangedRange.ClearStyle(CommonInstructionStyle);
+            /*e.ChangedRange.ClearStyle(CommonInstructionStyle);
             e.ChangedRange.ClearStyle(JumpInstructionStyle);
             e.ChangedRange.ClearStyle(StackInstructionStyle);
             e.ChangedRange.ClearStyle(RegistryStyle);
             e.ChangedRange.ClearStyle(CompilerInstructionStyle);
             e.ChangedRange.ClearStyle(NumbersStyle);
-            e.ChangedRange.ClearStyle(CommentStyle);
+            e.ChangedRange.ClearStyle(CommentStyle);*/
+            txtAsm.ClearStylesBuffer();
 
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(NumbersStyle, @"(?:\(|\n|,| )\d{1,5}\b|[^a-zA-Z](?:x|#|\$)[0-9A-Fa-f]{1,4}|%[0-1]{1,16}", RegexOptions.Multiline);
-            e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" + 
-                @"\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
+            e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" +
+                @"\bset\b|xor|\binc(?! sp)\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
                 @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b",
                 RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(CompilerInstructionStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|include|incbin|" +
@@ -557,11 +565,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
             public string GetFileNameToSave()
             {
                 if (_fileName == string.Empty || !IsFile)
-                {
                     return SourceName;
-                }
                 else
                     return _fileName;
+            }
+
+            public void SetSourceNameOrFilename(string i_newName)
+            {
+                if (_fileName == string.Empty || !IsFile) //if it is not file
+                    SourceName = i_newName;
+                else
+                    _fileName = i_newName;
             }
         }
 
@@ -572,9 +586,128 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             return i_sourceCandidate.Id;
         }
+        private void RemoveSource(int i_sourceIndex)
+        {
+            if( _assemblerSources != null && _assemblerSources.Count > 0 )
+                _assemblerSources.Remove(i_sourceIndex);
+            if (_assemblerSources.Count > 0)
+            {
+                _actualAssemblerNode = 0;
+                treeViewFiles.SelectedNode = treeViewFiles.Nodes[0];
+            }
+        }
         private int SourceInfo_ActualMax()
         {
             return _assemblerSources.Max(p => p.Key) + 1;
+        }
+
+        //treeViewFiles: KeyUp
+        private void treeViewFiles_KeyUp(object sender, KeyEventArgs e)
+        {
+            if( e.KeyCode == Keys.Delete && treeViewFiles.Nodes.Count > 0 )
+            {
+                var node = treeViewFiles.SelectedNode;
+                if (node != null)
+                {
+                    RemoveSource((int)node.Tag);
+                    treeViewFiles.Nodes.Remove(node);
+                }
+            }
+        }
+        //treeViewFiles: AfterLabelEdit
+        private void treeViewFiles_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            TreeNode node = treeViewFiles.SelectedNode;
+            if( node != null )
+            {
+                int index = (int)node.Tag;
+                AssemblerSourceInfo sourceInfo;
+                if( _assemblerSources != null && _assemblerSources.TryGetValue(index, out sourceInfo) )
+                {
+                    sourceInfo.SetSourceNameOrFilename(e.Label);
+                }
+
+                _actualAssemblerNode = index;
+            }
+        }
+        #endregion
+
+        #region Config
+        public AssemblerColorConfig GetColors()
+        {
+            return _ColorConfig;
+        }
+        public void GetPartialConfig(ref XmlWriter io_writer)
+        {
+            if (m_instance == null)
+                return;
+            AssemblerColorConfig colors = GetInstance().GetColors();
+
+            //Assembler root
+            io_writer.WriteStartElement("Assembler");
+            io_writer.WriteStartElement("Colors");
+                //Colors->Comments
+                io_writer.WriteStartElement("CommentStyle");
+                io_writer.WriteAttributeString("TextColor", colors.CommentStyle.GetCSS());
+                //io_writer.WriteElementString("Value", this.textBoxOpcode.Text);
+                io_writer.WriteEndElement();
+
+            io_writer.WriteEndElement(); //Colors end
+            io_writer.WriteEndElement(); //Assembler end
+        }
+        public void LoadConfig()
+        {
+            if (!File.Exists(Path.Combine(Utils.GetAppFolder(), FormCpu.ConfigXmlFileName)))
+                return;
+
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), FormCpu.ConfigXmlFileName));
+            XmlNode node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Colors/CommentStyle");
+            if (node != null)
+            {
+                string css = node.Attributes["TextColor"].InnerText;
+                Color commentColor = ParseCss_GetColor(css);
+                FontStyle fontStyle = new FontStyle();
+                if (ParseCss_IsItalic(css))
+                    fontStyle |= FontStyle.Italic;
+                if (ParseCss_IsBold(css))
+                    fontStyle |= FontStyle.Bold;
+                if (ParseCss_IsUnderline(css))
+                    fontStyle |= FontStyle.Underline;
+                if (ParseCss_IsStrikeout(css))
+                    fontStyle |= FontStyle.Strikeout;
+                GetInstance().GetColors().ChangeCommentsStyle(new TextStyle(new SolidBrush(commentColor), null, fontStyle));
+            }
+        }
+        private Color ParseCss_GetColor(string i_cssString)
+        {
+            Regex regex = new Regex(@"(?!color:)#[0-9a-fA-F]{6}");
+            Match match = regex.Match(i_cssString);
+            if (match.Success)
+            {
+                return ColorTranslator.FromHtml(match.Value);
+            }
+            return Color.Black;
+        }
+        private bool ParseCss_IsItalic(string i_cssString)
+        {
+            //;font-style:oblique;
+            return i_cssString.Contains(";font-style:oblique;");
+        }
+        private bool ParseCss_IsBold(string i_cssString)
+        {
+            //;font-weight:bold;
+            return i_cssString.Contains(";font-weight:bold;");
+        }
+        private bool ParseCss_IsUnderline(string i_cssString)
+        {
+            //;text-decoration:underline;
+            return i_cssString.Contains(";text-decoration:underline;");
+        }
+        private bool ParseCss_IsStrikeout(string i_cssString)
+        {
+            //;text-decoration:line-through;
+            return i_cssString.Contains(";text-decoration:line-through;");
         }
         #endregion
     }
