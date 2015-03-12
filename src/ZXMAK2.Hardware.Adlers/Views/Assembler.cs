@@ -35,7 +35,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             Style CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
             Style JumpInstructionStyle = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
             Style StackInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
-            Style CompilerInstructionStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
+            Style CompilerDirectivesStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
             Style RegistryStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
             Style NumbersStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
         #endregion
@@ -390,11 +390,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             if (_ColorConfig != null)
             {
+                txtAsm.ClearStylesBuffer();
+
                 Range range = txtAsm.VisibleRange;
                 range.ClearStyle(CommentStyle);
 
                 CommentStyle = _ColorConfig.CommentStyle;
                 range.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
+
+                CompilerDirectivesStyle = _ColorConfig.CompilerDirectivesStyle;
+                range.SetStyle(CompilerDirectivesStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|include|incbin|\bif\b|\bendif\b|\belse\b",
+                               RegexOptions.Multiline | RegexOptions.IgnoreCase);
             }
         }
 
@@ -448,13 +454,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(NumbersStyle, @"(?:\(|\n|,| )\d{1,5}\b|[^a-zA-Z](?:x|#|\$)[0-9A-Fa-f]{1,4}|%[0-1]{1,16}", RegexOptions.Multiline);
+            e.ChangedRange.SetStyle(CompilerDirectivesStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|\binclude\b|\bincbin\b|" +
+                                                    @"\bif\b|\bendif\b|\belse\b",
+                                                    RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" +
-                @"\bset\b|xor|\binc(?! sp)\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
+                @"\bset\b|xor|\binc\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
                 @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b",
                 RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(CompilerInstructionStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|include|incbin|" +
-                @"\bif\b|\bendif\b|\belse\b", 
-                RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(StackInstructionStyle, @"\bpush\b|\bpop\b|\bdec sp\b|\binc sp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(JumpInstructionStyle, @"\borg\b|\breti\b|\bretn\b|\bret\b|\bjp\b|\bjr\b|\bcall\b|\bdjnz\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(RegistryStyle, @"\bhl\b|\bbc\b|\bix\b|\biy\b|\bde\b|\bpc\b|\baf\b|\bsp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
