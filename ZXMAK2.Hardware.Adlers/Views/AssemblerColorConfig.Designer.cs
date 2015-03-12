@@ -31,6 +31,12 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AssemblerColorConfig));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBoxCompilerDirectivesUnderline = new System.Windows.Forms.CheckBox();
+            this.checkBoxCompilerDirectivesStrikeout = new System.Windows.Forms.CheckBox();
+            this.checkBoxCompilerDirectivesBold = new System.Windows.Forms.CheckBox();
+            this.checkBoxCompilerDirectivesItalic = new System.Windows.Forms.CheckBox();
+            this.colorPickerCompilerDirectives = new ZXMAK2.Hardware.Adlers.Views.CustomControls.ColorPicker();
+            this.label2 = new System.Windows.Forms.Label();
             this.checkBoxCommentsUnderline = new System.Windows.Forms.CheckBox();
             this.checkBoxCommentsStrikeOut = new System.Windows.Forms.CheckBox();
             this.checkBoxCommentsBold = new System.Windows.Forms.CheckBox();
@@ -47,6 +53,12 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.checkBoxCompilerDirectivesUnderline);
+            this.groupBox1.Controls.Add(this.checkBoxCompilerDirectivesStrikeout);
+            this.groupBox1.Controls.Add(this.checkBoxCompilerDirectivesBold);
+            this.groupBox1.Controls.Add(this.checkBoxCompilerDirectivesItalic);
+            this.groupBox1.Controls.Add(this.colorPickerCompilerDirectives);
+            this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.checkBoxCommentsUnderline);
             this.groupBox1.Controls.Add(this.checkBoxCommentsStrikeOut);
             this.groupBox1.Controls.Add(this.checkBoxCommentsBold);
@@ -55,15 +67,82 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(13, 13);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(470, 250);
+            this.groupBox1.Size = new System.Drawing.Size(493, 250);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Colors";
             // 
+            // checkBoxCompilerDirectivesUnderline
+            // 
+            this.checkBoxCompilerDirectivesUnderline.AutoSize = true;
+            this.checkBoxCompilerDirectivesUnderline.Location = new System.Drawing.Point(416, 58);
+            this.checkBoxCompilerDirectivesUnderline.Name = "checkBoxCompilerDirectivesUnderline";
+            this.checkBoxCompilerDirectivesUnderline.Size = new System.Drawing.Size(71, 17);
+            this.checkBoxCompilerDirectivesUnderline.TabIndex = 11;
+            this.checkBoxCompilerDirectivesUnderline.Text = "Underline";
+            this.checkBoxCompilerDirectivesUnderline.UseVisualStyleBackColor = true;
+            this.checkBoxCompilerDirectivesUnderline.CheckedChanged += new System.EventHandler(this.checkBoxCompilerDirectivesUnderline_CheckedChanged);
+            // 
+            // checkBoxCompilerDirectivesStrikeout
+            // 
+            this.checkBoxCompilerDirectivesStrikeout.AutoSize = true;
+            this.checkBoxCompilerDirectivesStrikeout.Location = new System.Drawing.Point(346, 58);
+            this.checkBoxCompilerDirectivesStrikeout.Name = "checkBoxCompilerDirectivesStrikeout";
+            this.checkBoxCompilerDirectivesStrikeout.Size = new System.Drawing.Size(68, 17);
+            this.checkBoxCompilerDirectivesStrikeout.TabIndex = 10;
+            this.checkBoxCompilerDirectivesStrikeout.Text = "Strikeout";
+            this.checkBoxCompilerDirectivesStrikeout.UseVisualStyleBackColor = true;
+            this.checkBoxCompilerDirectivesStrikeout.CheckedChanged += new System.EventHandler(this.checkBoxCompilerDirectivesStrikeout_CheckedChanged);
+            // 
+            // checkBoxCompilerDirectivesBold
+            // 
+            this.checkBoxCompilerDirectivesBold.AutoSize = true;
+            this.checkBoxCompilerDirectivesBold.Location = new System.Drawing.Point(293, 57);
+            this.checkBoxCompilerDirectivesBold.Name = "checkBoxCompilerDirectivesBold";
+            this.checkBoxCompilerDirectivesBold.Size = new System.Drawing.Size(47, 17);
+            this.checkBoxCompilerDirectivesBold.TabIndex = 9;
+            this.checkBoxCompilerDirectivesBold.Text = "Bold";
+            this.checkBoxCompilerDirectivesBold.UseVisualStyleBackColor = true;
+            this.checkBoxCompilerDirectivesBold.CheckedChanged += new System.EventHandler(this.checkBoxCompilerDirectivesBold_CheckedChanged);
+            // 
+            // checkBoxCompilerDirectivesItalic
+            // 
+            this.checkBoxCompilerDirectivesItalic.AutoSize = true;
+            this.checkBoxCompilerDirectivesItalic.Checked = true;
+            this.checkBoxCompilerDirectivesItalic.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCompilerDirectivesItalic.Location = new System.Drawing.Point(238, 57);
+            this.checkBoxCompilerDirectivesItalic.Name = "checkBoxCompilerDirectivesItalic";
+            this.checkBoxCompilerDirectivesItalic.Size = new System.Drawing.Size(48, 17);
+            this.checkBoxCompilerDirectivesItalic.TabIndex = 8;
+            this.checkBoxCompilerDirectivesItalic.Text = "Italic";
+            this.checkBoxCompilerDirectivesItalic.UseVisualStyleBackColor = true;
+            this.checkBoxCompilerDirectivesItalic.CheckedChanged += new System.EventHandler(this.checkBoxCompilerDirectivesItalic_CheckedChanged);
+            // 
+            // colorPickerCompilerDirectives
+            // 
+            this.colorPickerCompilerDirectives.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.colorPickerCompilerDirectives.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.colorPickerCompilerDirectives.FormattingEnabled = true;
+            this.colorPickerCompilerDirectives.Location = new System.Drawing.Point(102, 54);
+            this.colorPickerCompilerDirectives.Name = "colorPickerCompilerDirectives";
+            this.colorPickerCompilerDirectives.SelectedValue = System.Drawing.Color.White;
+            this.colorPickerCompilerDirectives.Size = new System.Drawing.Size(129, 21);
+            this.colorPickerCompilerDirectives.TabIndex = 7;
+            this.colorPickerCompilerDirectives.SelectedIndexChanged += new System.EventHandler(this.colorPickerCompilerDirectives_SelectedIndexChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 57);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(95, 13);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Compiler directives";
+            // 
             // checkBoxCommentsUnderline
             // 
             this.checkBoxCommentsUnderline.AutoSize = true;
-            this.checkBoxCommentsUnderline.Location = new System.Drawing.Point(395, 27);
+            this.checkBoxCommentsUnderline.Location = new System.Drawing.Point(418, 27);
             this.checkBoxCommentsUnderline.Name = "checkBoxCommentsUnderline";
             this.checkBoxCommentsUnderline.Size = new System.Drawing.Size(71, 17);
             this.checkBoxCommentsUnderline.TabIndex = 5;
@@ -74,7 +153,7 @@
             // checkBoxCommentsStrikeOut
             // 
             this.checkBoxCommentsStrikeOut.AutoSize = true;
-            this.checkBoxCommentsStrikeOut.Location = new System.Drawing.Point(325, 27);
+            this.checkBoxCommentsStrikeOut.Location = new System.Drawing.Point(348, 27);
             this.checkBoxCommentsStrikeOut.Name = "checkBoxCommentsStrikeOut";
             this.checkBoxCommentsStrikeOut.Size = new System.Drawing.Size(68, 17);
             this.checkBoxCommentsStrikeOut.TabIndex = 4;
@@ -85,7 +164,7 @@
             // checkBoxCommentsBold
             // 
             this.checkBoxCommentsBold.AutoSize = true;
-            this.checkBoxCommentsBold.Location = new System.Drawing.Point(272, 26);
+            this.checkBoxCommentsBold.Location = new System.Drawing.Point(295, 26);
             this.checkBoxCommentsBold.Name = "checkBoxCommentsBold";
             this.checkBoxCommentsBold.Size = new System.Drawing.Size(47, 17);
             this.checkBoxCommentsBold.TabIndex = 3;
@@ -98,7 +177,7 @@
             this.checkBoxCommentsItalic.AutoSize = true;
             this.checkBoxCommentsItalic.Checked = true;
             this.checkBoxCommentsItalic.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCommentsItalic.Location = new System.Drawing.Point(217, 26);
+            this.checkBoxCommentsItalic.Location = new System.Drawing.Point(240, 26);
             this.checkBoxCommentsItalic.Name = "checkBoxCommentsItalic";
             this.checkBoxCommentsItalic.Size = new System.Drawing.Size(48, 17);
             this.checkBoxCommentsItalic.TabIndex = 2;
@@ -111,7 +190,7 @@
             this.colorPickerComments.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.colorPickerComments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.colorPickerComments.FormattingEnabled = true;
-            this.colorPickerComments.Location = new System.Drawing.Point(81, 23);
+            this.colorPickerComments.Location = new System.Drawing.Point(104, 23);
             this.colorPickerComments.Name = "colorPickerComments";
             this.colorPickerComments.SelectedValue = System.Drawing.Color.White;
             this.colorPickerComments.Size = new System.Drawing.Size(129, 21);
@@ -160,14 +239,15 @@
             this.fastColoredPreview.Paddings = new System.Windows.Forms.Padding(0);
             this.fastColoredPreview.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.fastColoredPreview.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("fastColoredPreview.ServiceColors")));
-            this.fastColoredPreview.Size = new System.Drawing.Size(470, 205);
+            this.fastColoredPreview.Size = new System.Drawing.Size(493, 205);
             this.fastColoredPreview.TabIndex = 1;
             this.fastColoredPreview.Zoom = 100;
             this.fastColoredPreview.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.fastColoredPreview_TextChanged);
             // 
             // buttonDone
             // 
-            this.buttonDone.Location = new System.Drawing.Point(490, 23);
+            this.buttonDone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDone.Location = new System.Drawing.Point(512, 29);
             this.buttonDone.Name = "buttonDone";
             this.buttonDone.Size = new System.Drawing.Size(56, 23);
             this.buttonDone.TabIndex = 2;
@@ -179,7 +259,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(549, 487);
+            this.ClientSize = new System.Drawing.Size(572, 487);
             this.Controls.Add(this.buttonDone);
             this.Controls.Add(this.fastColoredPreview);
             this.Controls.Add(this.groupBox1);
@@ -205,5 +285,11 @@
         private System.Windows.Forms.CheckBox checkBoxCommentsUnderline;
         private System.Windows.Forms.CheckBox checkBoxCommentsStrikeOut;
         private System.Windows.Forms.Button buttonDone;
+        private System.Windows.Forms.CheckBox checkBoxCompilerDirectivesUnderline;
+        private System.Windows.Forms.CheckBox checkBoxCompilerDirectivesStrikeout;
+        private System.Windows.Forms.CheckBox checkBoxCompilerDirectivesBold;
+        private System.Windows.Forms.CheckBox checkBoxCompilerDirectivesItalic;
+        private CustomControls.ColorPicker colorPickerCompilerDirectives;
+        private System.Windows.Forms.Label label2;
     }
 }

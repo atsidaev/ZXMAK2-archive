@@ -12,7 +12,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             public Style CommonInstructionStyle;
             public Style JumpInstructionStyle;
             public Style StackInstructionStyle;
-            public Style CompilerInstructionStyle;
+            public Style CompilerDirectivesStyle;
             public Style RegistryStyle;
             public Style NumbersStyle;
         #endregion
@@ -32,7 +32,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
                 JumpInstructionStyle = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
                 StackInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
-                CompilerInstructionStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
+                CompilerDirectivesStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
                 RegistryStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
                 NumbersStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
             #endregion
@@ -58,7 +58,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             e.ChangedRange.ClearStyle(JumpInstructionStyle);
             e.ChangedRange.ClearStyle(StackInstructionStyle);
             e.ChangedRange.ClearStyle(RegistryStyle);
-            e.ChangedRange.ClearStyle(CompilerInstructionStyle);
+            e.ChangedRange.ClearStyle(CompilerDirectivesStyle);
             e.ChangedRange.ClearStyle(NumbersStyle);
 
             e.ChangedRange.SetStyle(NumbersStyle, @"(?:\(|\n|,| )\d{1,5}\b|[^a-zA-Z](?:x|#|\$)[0-9A-Fa-f]{1,4}|%[0-1]{1,16}", RegexOptions.Multiline);
@@ -66,7 +66,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 @"\bset\b|xor|\binc(\n| )\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
                 @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b",
                 RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(CompilerInstructionStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|include|incbin|" +
+            e.ChangedRange.SetStyle(CompilerDirectivesStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|include|incbin|" +
                 @"\bif\b|\bendif\b|\belse\b",
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(StackInstructionStyle, @"\bpush\b|\bpop\b|\bdec sp\b|\binc sp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
@@ -80,8 +80,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             fastColoredPreview.ClearStylesBuffer();
 
             Range range = fastColoredPreview.VisibleRange;
-            FontStyle commentsStyle = new FontStyle();
-
+            FontStyle commentsStyle = new FontStyle(); FontStyle compilerDirectivesStyle = new FontStyle();
             if (i_textStyleDynamic != null)
             {
                 _eventsDisabled = true;
@@ -94,6 +93,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 _eventsDisabled = false;
             }
 
+            //comments
             if (this.checkBoxCommentsItalic.Checked)
                 commentsStyle |= FontStyle.Italic;
             if (this.checkBoxCommentsBold.Checked)
@@ -102,9 +102,21 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 commentsStyle |= FontStyle.Strikeout;
             if (this.checkBoxCommentsUnderline.Checked)
                 commentsStyle |= FontStyle.Underline;
+            //compiler directvies
+            if (this.checkBoxCompilerDirectivesItalic.Checked)
+                compilerDirectivesStyle |= FontStyle.Italic;
+            if (this.checkBoxCompilerDirectivesBold.Checked)
+                compilerDirectivesStyle |= FontStyle.Bold;
+            if (this.checkBoxCompilerDirectivesStrikeout.Checked)
+                compilerDirectivesStyle |= FontStyle.Strikeout;
+            if (this.checkBoxCompilerDirectivesUnderline.Checked)
+                compilerDirectivesStyle |= FontStyle.Underline;
 
             CommentStyle = new TextStyle(new SolidBrush(colorPickerComments.SelectedValue), null, commentsStyle);
+            CompilerDirectivesStyle = new TextStyle(new SolidBrush(colorPickerCompilerDirectives.SelectedValue), null, compilerDirectivesStyle);
             range.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
+            range.SetStyle(CompilerDirectivesStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|include|incbin|\bif\b|\bendif\b|\belse\b",
+                           RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
             if (i_textStyleDynamic != null)
                 _assemblerForm.RefreshAssemblerCode();
@@ -130,6 +142,32 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 ChangeCommentsStyle();
         }
         private void checkBoxCommentsUnderline_CheckedChanged(object sender, System.EventArgs e)
+        {
+            if (!_eventsDisabled)
+                ChangeCommentsStyle();
+        }
+        //Compiler directive combobox
+        private void colorPickerCompilerDirectives_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            if (!_eventsDisabled)
+                ChangeCommentsStyle();
+        }
+        private void checkBoxCompilerDirectivesItalic_CheckedChanged(object sender, System.EventArgs e)
+        {
+            if (!_eventsDisabled)
+                ChangeCommentsStyle();
+        }
+        private void checkBoxCompilerDirectivesBold_CheckedChanged(object sender, System.EventArgs e)
+        {
+            if (!_eventsDisabled)
+                ChangeCommentsStyle();
+        }
+        private void checkBoxCompilerDirectivesStrikeout_CheckedChanged(object sender, System.EventArgs e)
+        {
+            if (!_eventsDisabled)
+                ChangeCommentsStyle();
+        }
+        private void checkBoxCompilerDirectivesUnderline_CheckedChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
                 ChangeCommentsStyle();
