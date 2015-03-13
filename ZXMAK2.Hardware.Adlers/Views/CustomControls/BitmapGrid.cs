@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Hardware.Adlers.Core;
 
-namespace ZXMAK2.Hardware.Adlers.Views
+namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
 {
     class BitmapGrid : Panel
     {

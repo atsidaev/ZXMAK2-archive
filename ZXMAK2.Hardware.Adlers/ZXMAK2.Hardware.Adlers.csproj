@@ -80,13 +80,13 @@
     <Compile Include="Views\AssemblerColorConfig.Designer.cs">
       <DependentUpon>AssemblerColorConfig.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\BitmapGrid.cs">
+    <Compile Include="Views\CustomControls\BitmapGrid.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\CustomControls\ColorPicker.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Views\DebugPanels.cs">
+    <Compile Include="Views\CustomControls\DebugPanels.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\FormCPU.cs">

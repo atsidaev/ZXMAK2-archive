@@ -428,7 +428,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 AssemblerSourceInfo sourceInfo = new AssemblerSourceInfo(loadDialog.FileName, true);
                 node.ToolTipText = loadDialog.FileName;
                 node.Checked = true;
-                node.Tag = sourceInfo.Id = _actualAssemblerNode = SourceInfo_ActualMax();
+                node.Tag = sourceInfo.Id = _actualAssemblerNode = SourceInfo_GetNextId();
 
                 this.txtAsm.Text = sourceInfo.SourceCode = fileText;
                 _assemblerSources.Add(sourceInfo.Id, sourceInfo);
@@ -443,13 +443,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void txtAsm_TextChanged(object sender, TextChangedEventArgs e)
         {
             //clear styles
-            /*e.ChangedRange.ClearStyle(CommonInstructionStyle);
+            e.ChangedRange.ClearStyle(CommonInstructionStyle);
             e.ChangedRange.ClearStyle(JumpInstructionStyle);
             e.ChangedRange.ClearStyle(StackInstructionStyle);
             e.ChangedRange.ClearStyle(RegistryStyle);
-            e.ChangedRange.ClearStyle(CompilerInstructionStyle);
+            e.ChangedRange.ClearStyle(CompilerDirectivesStyle);
             e.ChangedRange.ClearStyle(NumbersStyle);
-            e.ChangedRange.ClearStyle(CommentStyle);*/
+            e.ChangedRange.ClearStyle(CommentStyle);
             txtAsm.ClearStylesBuffer();
 
             e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
@@ -457,20 +457,38 @@ namespace ZXMAK2.Hardware.Adlers.Views
             e.ChangedRange.SetStyle(CompilerDirectivesStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|\binclude\b|\bincbin\b|" +
                                                     @"\bif\b|\bendif\b|\belse\b",
                                                     RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" +
-                @"\bset\b|xor|\binc\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
-                @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b",
-                RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(StackInstructionStyle, @"\bpush\b|\bpop\b|\bdec sp\b|\binc sp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(JumpInstructionStyle, @"\borg\b|\breti\b|\bretn\b|\bret\b|\bjp\b|\bjr\b|\bcall\b|\bdjnz\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" +
+                @"\bset\b|\bxor\b|\binc\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
+                @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b",
+                RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(StackInstructionStyle, @"\bpush\b|\bpop\b|\bdec sp\b|\binc sp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(RegistryStyle, @"\bhl\b|\bbc\b|\bix\b|\biy\b|\bde\b|\bpc\b|\baf\b|\bsp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         }
 
         //Save button
         private void saveFileStripButton_Click(object sender, EventArgs e)
         {
-            SaveAsm(_assemblerSources[_actualAssemblerNode].GetFileNameToSave());
-            _assemblerSources[_actualAssemblerNode].SourceCode = txtAsm.Text;
+            AssemblerSourceInfo sourceInfo = _assemblerSources[_actualAssemblerNode];
+            //save as if not a file
+            if (!sourceInfo.IsFile())
+            {
+                SaveFileDialog saveDialog = new SaveFileDialog();
+                saveDialog.Title = "Save assembler code";
+                saveDialog.ShowDialog();
+                if (saveDialog.FileName != String.Empty)
+                {
+                    sourceInfo.SetIsFile();
+                    sourceInfo.SetSourceNameOrFilename(saveDialog.FileName);
+
+                    //change name of actual source
+                    TreeNode node = treeViewFiles.Nodes[_actualAssemblerNode];
+                    node.Text = sourceInfo.GetDisplayName();
+                }
+            }
+
+            SaveAsm(sourceInfo.GetFileNameToSave());
+            sourceInfo.SourceCode = txtAsm.Text;
         }
 
         //Refresh button
@@ -501,50 +519,52 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
         #endregion
 
-        private bool LoadAsm(string i_fileName, out string o_strFileText)
-        {
-            o_strFileText = string.Empty;
-
-            if (i_fileName == String.Empty || i_fileName == null)
-                return false;
-
-            try
+        #region File operations
+            private bool LoadAsm(string i_fileName, out string o_strFileText)
             {
-                FileInfo fileInfo = new FileInfo(i_fileName);
-                int s_len = (int)fileInfo.Length;
+                o_strFileText = string.Empty;
 
-                byte[] data = new byte[s_len];
-                using (FileStream fs = new FileStream(i_fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    fs.Read(data, 0, data.Length);
-                string asmCode = Encoding.UTF8.GetString(data, 0, data.Length);
-                o_strFileText = asmCode;
-                if (IsStartAdressInCode())
-                    this.chckbxMemory.Checked = false;
-                checkMemory_CheckedChanged(null, null);
+                if (i_fileName == String.Empty || i_fileName == null)
+                    return false;
 
-                if (this.richCompileMessages.Text.Trim() != String.Empty)
-                    this.richCompileMessages.Text += "\n\n";
+                try
+                {
+                    FileInfo fileInfo = new FileInfo(i_fileName);
+                    int s_len = (int)fileInfo.Length;
 
-                this.richCompileMessages.Text += "File " + i_fileName + " read successfully..";
+                    byte[] data = new byte[s_len];
+                    using (FileStream fs = new FileStream(i_fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        fs.Read(data, 0, data.Length);
+                    string asmCode = Encoding.UTF8.GetString(data, 0, data.Length);
+                    o_strFileText = asmCode;
+                    if (IsStartAdressInCode())
+                        this.chckbxMemory.Checked = false;
+                    checkMemory_CheckedChanged(null, null);
+
+                    if (this.richCompileMessages.Text.Trim() != String.Empty)
+                        this.richCompileMessages.Text += "\n\n";
+
+                    this.richCompileMessages.Text += "File " + i_fileName + " read successfully..";
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                    this.richCompileMessages.Text += "\n\nFile " + i_fileName + " read ERROR!";
+                    return false;
+                }
+            }
+
+            private bool SaveAsm(string i_fileName)
+            {
+                if (i_fileName == String.Empty)
+                    i_fileName = "code_save.asm";
+                File.WriteAllText(Path.Combine(Utils.GetAppFolder(),i_fileName), this.txtAsm.Text);
+
+                Locator.Resolve<IUserMessage>().Info("File " + i_fileName + " saved!");
                 return true;
             }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-                this.richCompileMessages.Text += "\n\nFile " + i_fileName + " read ERROR!";
-                return false;
-            }
-        }
-
-        private bool SaveAsm(string i_fileName)
-        {
-            if (i_fileName == String.Empty)
-                i_fileName = "code_save.asm";
-            File.WriteAllText(Path.Combine(Utils.GetAppFolder(),i_fileName), this.txtAsm.Text);
-
-            Locator.Resolve<IUserMessage>().Info("File " + i_fileName + " saved!");
-            return true;
-        }
+        #endregion
 
         #region Source management(add/delete/save/refresh)
         class AssemblerSourceInfo
@@ -554,7 +574,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             public string SourceCode{ get; set; }
 
-            private bool IsFile { get; set; }
+            private  bool _isFile { get; set; }
             private bool IsSaved { get; set; }
             private string SourceName { get; set; } //empty when it is a file
 
@@ -563,31 +583,62 @@ namespace ZXMAK2.Hardware.Adlers.Views
             public AssemblerSourceInfo(string i_sourceName, bool i_isFile)
             {
                 SourceName = i_sourceName;
-                IsFile = i_isFile;
+                _isFile = i_isFile;
                 IsSaved = true;
                 _fileName = SourceCode = string.Empty;
             }
 
             public string GetFileNameToSave()
             {
-                if (_fileName == string.Empty || !IsFile)
+                if (_fileName == string.Empty || !_isFile)
                     return SourceName;
                 else
                     return _fileName;
             }
+            public string GetSourceName()
+            {
+                return SourceName;
+            }
+            public string GetDisplayName()
+            {
+                if (SourceName.IndexOf(Path.DirectorySeparatorChar) != -1)
+                {
+                    string[] splitted = SourceName.Split(Path.DirectorySeparatorChar);
+                    return splitted[splitted.Length-1];
+                }
+                return SourceName;
+            }
+            public bool IsFile()
+            {
+                return _isFile;
+            }
+            public void SetIsFile()
+            {
+                _isFile = true;
+            }
 
             public void SetSourceNameOrFilename(string i_newName)
             {
-                if (_fileName == string.Empty || !IsFile) //if it is not file
+                if (!_isFile) //if it is not file
                     SourceName = i_newName;
                 else
-                    _fileName = i_newName;
+                {
+                    int lastIndex = _fileName.LastIndexOf(Path.DirectorySeparatorChar);
+                    //if it is a file then we remember the file path
+                    if (lastIndex != -1)
+                    {
+                        _fileName = _fileName.Substring(0, lastIndex) + Path.DirectorySeparatorChar + i_newName;
+                        SourceName = _fileName.Substring(0, lastIndex);
+                    }
+                    else
+                        SourceName = _fileName = i_newName;
+                }
             }
         }
 
         private int AddNewSource(AssemblerSourceInfo i_sourceCandidate)
         {
-            i_sourceCandidate.Id = SourceInfo_ActualMax();
+            i_sourceCandidate.Id = SourceInfo_GetNextId();
             _assemblerSources.Add(i_sourceCandidate.Id, i_sourceCandidate);
 
             return i_sourceCandidate.Id;
@@ -602,9 +653,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 treeViewFiles.SelectedNode = treeViewFiles.Nodes[0];
             }
         }
-        private int SourceInfo_ActualMax()
+        private int SourceInfo_GetNextId()
         {
             return _assemblerSources.Max(p => p.Key) + 1;
+        }
+        private string GetNewSourceName()
+        {
+            for (int counter = 1; counter < int.MaxValue; counter++ )
+            {
+                string sourceNameCandidate = String.Format("noname{0}.asm", counter);
+                if( _assemblerSources.Values.FirstOrDefault( p => p.GetSourceName() == sourceNameCandidate ) == null )
+                    return sourceNameCandidate;
+            }
+            
+            return string.Empty;
         }
 
         //treeViewFiles: KeyUp
@@ -636,6 +698,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 _actualAssemblerNode = index;
             }
         }
+
+        //Create new source code
+        private void toolStripNewSource_Click(object sender, EventArgs e)
+        {
+            string newSourceName = GetNewSourceName();
+            
+            //register node + source
+            AssemblerSourceInfo newSource = new AssemblerSourceInfo(newSourceName, false);
+            TreeNode node = new TreeNode();
+            node.Text = newSource.GetSourceName();
+            node.Tag = AddNewSource(newSource);
+            treeViewFiles.Nodes.Add(node);
+        }
         #endregion
 
         #region Config
@@ -651,12 +726,17 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             //Assembler root
             io_writer.WriteStartElement("Assembler");
-            io_writer.WriteStartElement("Colors");
-                //Colors->Comments
-                io_writer.WriteStartElement("CommentStyle");
-                io_writer.WriteAttributeString("TextColor", colors.CommentStyle.GetCSS());
-                //io_writer.WriteElementString("Value", this.textBoxOpcode.Text);
-                io_writer.WriteEndElement();
+                io_writer.WriteStartElement("Colors");
+
+                    //Colors->Comments
+                    io_writer.WriteStartElement("CommentStyle");
+                    io_writer.WriteAttributeString("TextColor", colors.CommentStyle.GetCSS());
+                    io_writer.WriteEndElement();  //Colors->Comments end
+
+                    //Colors->CompilerDirectivesStyle
+                    io_writer.WriteStartElement("CompilerDirectivesStyle");
+                    io_writer.WriteAttributeString("TextColor", colors.CompilerDirectivesStyle.GetCSS());
+                    io_writer.WriteEndElement();  //Colors->Comments end
 
             io_writer.WriteEndElement(); //Colors end
             io_writer.WriteEndElement(); //Assembler end
@@ -668,6 +748,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), FormCpu.ConfigXmlFileName));
+
+            //comments
             XmlNode node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Colors/CommentStyle");
             if (node != null)
             {
@@ -682,7 +764,26 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     fontStyle |= FontStyle.Underline;
                 if (ParseCss_IsStrikeout(css))
                     fontStyle |= FontStyle.Strikeout;
-                GetInstance().GetColors().ChangeCommentsStyle(new TextStyle(new SolidBrush(commentColor), null, fontStyle));
+                GetInstance().GetColors().ChangeSyntaxStyle(new TextStyle(new SolidBrush(commentColor), null, fontStyle), 0);
+            }
+
+            //compiler directive style
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Colors/CompilerDirectivesStyle");
+            if (node != null)
+            {
+                string css = node.Attributes["TextColor"].InnerText;
+                Color compilerDirectivesColor = ParseCss_GetColor(css);
+                FontStyle fontStyle = new FontStyle();
+                if (ParseCss_IsItalic(css))
+                    fontStyle |= FontStyle.Italic;
+                if (ParseCss_IsBold(css))
+                    fontStyle |= FontStyle.Bold;
+                if (ParseCss_IsUnderline(css))
+                    fontStyle |= FontStyle.Underline;
+                if (ParseCss_IsStrikeout(css))
+                    fontStyle |= FontStyle.Strikeout;
+                CompilerDirectivesStyle = new TextStyle(new SolidBrush(compilerDirectivesColor), null, fontStyle);
+                GetInstance().GetColors().ChangeSyntaxStyle(new TextStyle(new SolidBrush(compilerDirectivesColor), null, fontStyle),1);
             }
         }
         private Color ParseCss_GetColor(string i_cssString)

@@ -43,6 +43,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkFile = new System.Windows.Forms.CheckBox();
             this.chckbxMemory = new System.Windows.Forms.CheckBox();
             this.toolMenu = new System.Windows.Forms.ToolStrip();
+            this.toolStripNewSource = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.compileToolStrip = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonRefresh = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -57,8 +59,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.buttonClearAssemblerLog = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.toolStripNewSource = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.toolMenu.SuspendLayout();
@@ -212,6 +212,21 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.toolMenu.TabIndex = 7;
             this.toolMenu.Text = "toolStrip1";
             // 
+            // toolStripNewSource
+            // 
+            this.toolStripNewSource.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripNewSource.Image = ((System.Drawing.Image)(resources.GetObject("toolStripNewSource.Image")));
+            this.toolStripNewSource.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripNewSource.Name = "toolStripNewSource";
+            this.toolStripNewSource.Size = new System.Drawing.Size(32, 32);
+            this.toolStripNewSource.ToolTipText = "New assembler source";
+            this.toolStripNewSource.Click += new System.EventHandler(this.toolStripNewSource_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 35);
+            // 
             // compileToolStrip
             // 
             this.compileToolStrip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -358,20 +373,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.splitter1.Size = new System.Drawing.Size(3, 516);
             this.splitter1.TabIndex = 12;
             this.splitter1.TabStop = false;
-            // 
-            // toolStripNewSource
-            // 
-            this.toolStripNewSource.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripNewSource.Image = ((System.Drawing.Image)(resources.GetObject("toolStripNewSource.Image")));
-            this.toolStripNewSource.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripNewSource.Name = "toolStripNewSource";
-            this.toolStripNewSource.Size = new System.Drawing.Size(32, 32);
-            this.toolStripNewSource.ToolTipText = "New assembler source";
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 35);
             // 
             // Assembler
             // 

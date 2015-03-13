@@ -75,13 +75,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
 
         //Comments style modification
-        public void ChangeCommentsStyle(TextStyle i_textStyleDynamic = null)
+        public void ChangeSyntaxStyle(TextStyle i_textStyleDynamic = null, int i_styleId = -1)
         {
             fastColoredPreview.ClearStylesBuffer();
 
             Range range = fastColoredPreview.VisibleRange;
             FontStyle commentsStyle = new FontStyle(); FontStyle compilerDirectivesStyle = new FontStyle();
-            if (i_textStyleDynamic != null)
+            if (i_styleId == 0)
             {
                 _eventsDisabled = true;
                 //dynamically changed(load config, ....)
@@ -90,6 +90,18 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 this.checkBoxCommentsBold.Checked = i_textStyleDynamic.FontStyle.HasFlag(FontStyle.Bold);
                 this.checkBoxCommentsStrikeOut.Checked = i_textStyleDynamic.FontStyle.HasFlag(FontStyle.Strikeout);
                 this.checkBoxCommentsUnderline.Checked = i_textStyleDynamic.FontStyle.HasFlag(FontStyle.Underline);
+                _eventsDisabled = false;
+            }
+            if (i_styleId == 1)
+            {
+                //compiler directive style
+                _eventsDisabled = true;
+                //dynamically changed(load config, ....)
+                this.colorPickerCompilerDirectives.SelectedValue = ((SolidBrush)i_textStyleDynamic.ForeBrush).Color;
+                this.checkBoxCompilerDirectivesItalic.Checked = i_textStyleDynamic.FontStyle.HasFlag(FontStyle.Italic);
+                this.checkBoxCompilerDirectivesBold.Checked = i_textStyleDynamic.FontStyle.HasFlag(FontStyle.Bold);
+                this.checkBoxCompilerDirectivesStrikeout.Checked = i_textStyleDynamic.FontStyle.HasFlag(FontStyle.Strikeout);
+                this.checkBoxCompilerDirectivesUnderline.Checked = i_textStyleDynamic.FontStyle.HasFlag(FontStyle.Underline);
                 _eventsDisabled = false;
             }
 
@@ -102,7 +114,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 commentsStyle |= FontStyle.Strikeout;
             if (this.checkBoxCommentsUnderline.Checked)
                 commentsStyle |= FontStyle.Underline;
-            //compiler directvies
+            //compiler directives
             if (this.checkBoxCompilerDirectivesItalic.Checked)
                 compilerDirectivesStyle |= FontStyle.Italic;
             if (this.checkBoxCompilerDirectivesBold.Checked)
@@ -124,53 +136,53 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void colorPickerComments_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
-                ChangeCommentsStyle();
+                ChangeSyntaxStyle();
         }
         private void checkBoxCommentsItalic_CheckedChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
-                ChangeCommentsStyle();
+                ChangeSyntaxStyle();
         }
         private void checkBoxCommentsBold_CheckedChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
-                ChangeCommentsStyle();
+                ChangeSyntaxStyle();
         }
         private void checkBoxCommentsStrikeOut_CheckedChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
-                ChangeCommentsStyle();
+                ChangeSyntaxStyle();
         }
         private void checkBoxCommentsUnderline_CheckedChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
-                ChangeCommentsStyle();
+                ChangeSyntaxStyle();
         }
         //Compiler directive combobox
         private void colorPickerCompilerDirectives_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
-                ChangeCommentsStyle();
+                ChangeSyntaxStyle();
         }
         private void checkBoxCompilerDirectivesItalic_CheckedChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
-                ChangeCommentsStyle();
+                ChangeSyntaxStyle();
         }
         private void checkBoxCompilerDirectivesBold_CheckedChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
-                ChangeCommentsStyle();
+                ChangeSyntaxStyle();
         }
         private void checkBoxCompilerDirectivesStrikeout_CheckedChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
-                ChangeCommentsStyle();
+                ChangeSyntaxStyle();
         }
         private void checkBoxCompilerDirectivesUnderline_CheckedChanged(object sender, System.EventArgs e)
         {
             if (!_eventsDisabled)
-                ChangeCommentsStyle();
+                ChangeSyntaxStyle();
         }
 
         //Done
