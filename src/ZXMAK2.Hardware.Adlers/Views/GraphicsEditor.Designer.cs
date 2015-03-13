@@ -130,7 +130,7 @@
             this.txtbxX0 = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.BitmapGrid();
+            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.CustomControls.BitmapGrid();
             this.groupBoxScreenViewType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).BeginInit();
@@ -1212,7 +1212,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn46;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn47;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn48;
-        private Hardware.Adlers.Views.BitmapGrid bitmapGridSpriteView;
+        private Hardware.Adlers.Views.CustomControls.BitmapGrid bitmapGridSpriteView;
         private System.Windows.Forms.ContextMenu contextMenuExportBitmap;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem menuItemSaveBitmapAsBitmap;
