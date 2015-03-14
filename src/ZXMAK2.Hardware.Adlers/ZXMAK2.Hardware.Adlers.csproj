@@ -66,18 +66,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Views\Assembler.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\Assembler.Designer.cs">
-      <DependentUpon>Assembler.cs</DependentUpon>
-    </Compile>
     <Compile Include="BreakpointAdlers.cs" />
     <Compile Include="DebuggerManager.cs" />
-    <Compile Include="Views\AssemblerColorConfig.cs">
+    <Compile Include="Views\Assembler\Assembler.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\AssemblerColorConfig.Designer.cs">
+    <Compile Include="Views\Assembler\Assembler.Designer.cs">
+      <DependentUpon>Assembler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Assembler\AssemblerColorConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Assembler\AssemblerColorConfig.Designer.cs">
       <DependentUpon>AssemblerColorConfig.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\CustomControls\BitmapGrid.cs">
@@ -95,12 +95,10 @@
     <Compile Include="Views\FormCPU.Designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\GraphicsEditor.cs">
+    <Compile Include="Views\GraphicsEditor\GraphicsEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\GraphicsEditor.Designer.cs">
-      <DependentUpon>GraphicsEditor.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Views\GraphicsEditor\GraphicsEditor.Designer.cs" />
     <Compile Include="Views\TcpHelper.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -113,18 +111,16 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Assembler.resx">
+    <EmbeddedResource Include="Views\Assembler\Assembler.resx">
       <DependentUpon>Assembler.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\AssemblerColorConfig.resx">
+    <EmbeddedResource Include="Views\Assembler\AssemblerColorConfig.resx">
       <DependentUpon>AssemblerColorConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\GraphicsEditor.resx">
-      <DependentUpon>GraphicsEditor.cs</DependentUpon>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Views\GraphicsEditor\GraphicsEditor.resx" />
     <EmbeddedResource Include="Views\TcpHelper.resx">
       <DependentUpon>TcpHelper.cs</DependentUpon>
     </EmbeddedResource>
