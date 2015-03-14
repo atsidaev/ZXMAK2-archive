@@ -1,6 +1,6 @@
 ﻿using FastColoredTextBoxNS;
 
-namespace ZXMAK2.Hardware.Adlers.Views
+namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
     partial class Assembler
     {
@@ -312,6 +312,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.toolCodeLibrary.Text = "toolStripButton1";
             this.toolCodeLibrary.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.toolCodeLibrary.ToolTipText = "Code Library(Includes)";
+            this.toolCodeLibrary.Click += new System.EventHandler(this.toolCodeLibrary_Click);
             // 
             // treeViewFiles
             // 

@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 
-namespace ZXMAK2.Hardware.Adlers.Views
+namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
     public partial class Assembler : Form
     {
@@ -475,8 +475,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             {
                 SaveFileDialog saveDialog = new SaveFileDialog();
                 saveDialog.Title = "Save assembler code";
-                saveDialog.ShowDialog();
-                if (saveDialog.FileName != String.Empty)
+                DialogResult dialogResult = saveDialog.ShowDialog();
+                if (saveDialog.FileName != String.Empty && dialogResult == DialogResult.OK)
                 {
                     sourceInfo.SetIsFile();
                     sourceInfo.SetSourceNameOrFilename(saveDialog.FileName);
@@ -484,6 +484,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     //change name of actual source
                     TreeNode node = treeViewFiles.Nodes[_actualAssemblerNode];
                     node.Text = sourceInfo.GetDisplayName();
+                }
+                else
+                {
+                    Locator.Resolve<IUserMessage>().Warning("File NOT saved!");
+                    return;
                 }
             }
 
@@ -516,6 +521,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             _actualAssemblerNode = ConvertRadix.ParseUInt16(e.Node.Tag.ToString(), 10);
             this.txtAsm.Text = _assemblerSources[_actualAssemblerNode].SourceCode;
+        }
+
+        //Z80 source code(Libs)
+        private void toolCodeLibrary_Click(object sender, EventArgs e)
+        {
+            Z80AsmResources resources = new Z80AsmResources(ref this.txtAsm);
+            resources.ShowDialog();
         }
         #endregion
 

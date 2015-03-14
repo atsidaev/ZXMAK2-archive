@@ -1,4 +1,4 @@
-﻿namespace ZXMAK2.Hardware.Adlers.Views
+﻿namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
     partial class AssemblerColorConfig
     {

@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-namespace ZXMAK2.Hardware.Adlers.Views
+namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
     public partial class AssemblerColorConfig : Form
     {
