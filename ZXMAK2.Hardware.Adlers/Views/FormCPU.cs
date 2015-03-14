@@ -21,6 +21,8 @@ using ZXMAK2.Engine;
 using System.Xml;
 using System.Text;
 using System.Collections.Concurrent;
+using ZXMAK2.Hardware.Adlers.Views.AssemblerView;
+using ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView;
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {

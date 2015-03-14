@@ -1,4 +1,4 @@
-﻿namespace ZXMAK2.Hardware.Adlers.Views
+﻿namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
 {
     partial class GraphicsEditor
     {
@@ -287,8 +287,8 @@
             // 
             this.pictureZXDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureZXDisplay.Cursor = System.Windows.Forms.Cursors.Cross;
-            this.pictureZXDisplay.Image = ((System.Drawing.Image)(resources.GetObject("pictureZXDisplay.Image")));
-            this.pictureZXDisplay.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureZXDisplay.InitialImage")));
+            //this.pictureZXDisplay.Image = ((System.Drawing.Image)(resources.GetObject("pictureZXDisplay.Image")));
+            //this.pictureZXDisplay.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureZXDisplay.InitialImage")));
             this.pictureZXDisplay.Location = new System.Drawing.Point(138, 28);
             this.pictureZXDisplay.Name = "pictureZXDisplay";
             this.pictureZXDisplay.Size = new System.Drawing.Size(512, 384);
@@ -1100,7 +1100,8 @@
             this.Controls.Add(this.labelMemoryAddress);
             this.Controls.Add(this.groupBoxScreenViewType);
             this.Controls.Add(this.menuStrip1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.ShowIcon = false;
+            //this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "GraphicsEditor";
             this.Text = "GraphicsEditor";

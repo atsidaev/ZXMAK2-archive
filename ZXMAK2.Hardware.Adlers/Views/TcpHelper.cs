@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
@@ -14,21 +15,36 @@ namespace ZXMAK2.Hardware.Adlers.Views
         public TcpHelper()
         {
             InitializeComponent();
+            _proxyAddress = _proxyPort = string.Empty;
 
             m_client = new WebClient();
             m_client.Headers.Add("User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0)");
         }
 
+        #region setters/getters
+            private string _proxyAddress;
+            public bool SetProxyAddress(string i_newAddress)
+            {
+                Match match = Regex.Match(i_newAddress, @"\b\d{2}\.\d{2}\.\d{2}\.\d{2}\b", RegexOptions.IgnoreCase);
+                if (!match.Success)
+                    return false;
+                _proxyAddress = i_newAddress;
+
+                return true;
+            }
+            private string _proxyPort;
+
+        #endregion
+
+        #region GUI
         private void checkBoxIsProxy_CheckedChanged(object sender, EventArgs e)
         {
-            bool isChecked = checkBoxIsProxy.Checked;
-
-            this.textBoxProxyAdress.Enabled = isChecked;
-            this.textBoxProxyPort.Enabled = isChecked;
+            this.textBoxProxyPort.Enabled = this.textBoxProxyAdress.Enabled = checkBoxIsProxy.Checked;
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
+            //download Pasmo2.dll
             try
             {
                 m_client.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
@@ -52,8 +68,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     .Error("Error: \n" + tcpException.Message);
             }
         }
-
-
         private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             this.progressBarDownloadStatus.Value = e.ProgressPercentage;
@@ -63,7 +77,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             labelStatusText.Text = "Completed!";
             buttonStart.Enabled = true;
         }
-
         private void buttonCancel_Click(object sender, EventArgs e)
         {
             if (m_client.IsBusy)
@@ -74,5 +87,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
             this.Hide();
         }
+        #endregion
     }
 }

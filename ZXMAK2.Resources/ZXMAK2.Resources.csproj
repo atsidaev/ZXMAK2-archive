@@ -63,6 +63,7 @@
     <Content Include="Icons\TapeRd_128x128.png" />
     <Content Include="Icons\ZXMAK2.ICO" />
     <Content Include="Pictures\KeyboardHelp.png" />
+    <Content Include="Pictures\ZXLogo.gif" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ImageResources.resx">

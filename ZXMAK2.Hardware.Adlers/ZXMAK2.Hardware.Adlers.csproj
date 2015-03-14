@@ -80,6 +80,13 @@
     <Compile Include="Views\Assembler\AssemblerColorConfig.Designer.cs">
       <DependentUpon>AssemblerColorConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Assembler\AssemblerConfig.cs" />
+    <Compile Include="Views\Assembler\Z80AsmResources.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Assembler\Z80AsmResources.Designer.cs">
+      <DependentUpon>Z80AsmResources.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\CustomControls\BitmapGrid.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -98,7 +105,9 @@
     <Compile Include="Views\GraphicsEditor\GraphicsEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\GraphicsEditor\GraphicsEditor.Designer.cs" />
+    <Compile Include="Views\GraphicsEditor\GraphicsEditor.Designer.cs">
+      <DependentUpon>GraphicsEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\TcpHelper.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -117,10 +126,12 @@
     <EmbeddedResource Include="Views\Assembler\AssemblerColorConfig.resx">
       <DependentUpon>AssemblerColorConfig.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Assembler\Z80AsmResources.resx">
+      <DependentUpon>Z80AsmResources.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\GraphicsEditor\GraphicsEditor.resx" />
     <EmbeddedResource Include="Views\TcpHelper.resx">
       <DependentUpon>TcpHelper.cs</DependentUpon>
     </EmbeddedResource>

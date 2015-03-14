@@ -10,7 +10,7 @@ using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Hardware.Adlers.Core;
 using ZXMAK2.Host.Interfaces;
 
-namespace ZXMAK2.Hardware.Adlers.Views
+namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
 {
     public partial class GraphicsEditor : Form
     {
@@ -29,6 +29,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             _spectrum = spectrum;
 
             InitializeComponent();
+            this.Icon = Icon.FromHandle(global::ZXMAK2.Resources.ImageResources.ZXLogo.GetHicon());
+            this.ShowIcon = true;
+
             comboDisplayType.SelectedIndex = 0;
             comboSpriteWidth.SelectedIndex = 0;
             comboSpriteHeight.SelectedIndex = 0;
