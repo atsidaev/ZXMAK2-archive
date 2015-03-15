@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -10,20 +11,23 @@ namespace ZXMAK2.Hardware.Adlers.Views
 {
     public partial class TcpHelper : Form
     {
-        private static WebClient m_client;
+        #region members
+            private static WebClient _client;
+            private static string _proxyAddress;
+            private static string _proxyPort;
+        #endregion
 
         public TcpHelper()
         {
             InitializeComponent();
             _proxyAddress = _proxyPort = string.Empty;
 
-            m_client = new WebClient();
-            m_client.Headers.Add("User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0)");
+            _client = new WebClient();
+            _client.Headers.Add("User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0)");
         }
 
         #region setters/getters
-            private string _proxyAddress;
-            public bool SetProxyAddress(string i_newAddress)
+            public static bool SetProxyAddress(string i_newAddress)
             {
                 Match match = Regex.Match(i_newAddress, @"\b\d{2}\.\d{2}\.\d{2}\.\d{2}\b", RegexOptions.IgnoreCase);
                 if (!match.Success)
@@ -32,8 +36,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                 return true;
             }
-            private string _proxyPort;
-
+            public static bool SetProxyPort( string i_newPort )
+            {
+                int proxyAdept = ConvertRadix.ParseUInt16(i_newPort, 10);
+                if (proxyAdept > 0xFFFF)
+                    return false;
+                _proxyPort = i_newPort;
+                return true;
+            }
         #endregion
 
         #region GUI
@@ -47,19 +57,19 @@ namespace ZXMAK2.Hardware.Adlers.Views
             //download Pasmo2.dll
             try
             {
-                m_client.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
-                m_client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
+                _client.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
+                _client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
 
                 if(checkBoxIsProxy.Checked)
                 {
                     WebProxy proxy = new WebProxy("http://" + this.textBoxProxyAdress.Text.Trim() + ":" + this.textBoxProxyPort.Text.Trim() + "/",true);
-                    m_client.Proxy = proxy;
+                    _client.Proxy = proxy;
                 }
 
                 labelStatusText.Text = "Downloading...";
                 buttonStart.Enabled = false;
 
-                m_client.DownloadFileAsync(new Uri(@"http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=pasmo2&DownloadId=1437196&FileTime=130703844002230000&Build=20959"), "Pasmo2.dll");
+                _client.DownloadFileAsync(new Uri(@"http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=pasmo2&DownloadId=1437196&FileTime=130703844002230000&Build=20959"), "Pasmo2.dll");
             }
             catch(Exception tcpException)
             {
@@ -79,8 +89,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            if (m_client.IsBusy)
-                m_client.CancelAsync();
+            if (_client.IsBusy)
+                _client.CancelAsync();
 
             labelStatusText.Text = "Canceled";
             buttonStart.Enabled = true;
@@ -88,5 +98,37 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.Hide();
         }
         #endregion
+
+        //
+        // get ftp file from internet
+        // i_filePath: e.g. "code_file.xml"
+        public static string GetFtpFileContents(string i_filePath, out string i_errMessage)
+        {
+            try
+            {
+                string fileContents;
+
+                WebRequest request = WebRequest.Create(@"http://adlers.host.sk/ZxSpectrum/" + i_filePath);
+                request.Credentials = CredentialCache.DefaultCredentials;
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                Stream responseStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(responseStream);
+                fileContents = reader.ReadToEnd();
+
+                i_errMessage = response.StatusDescription;
+
+                reader.Close();
+                response.Close();
+
+                return fileContents;
+            }
+            catch(Exception ex)
+            {
+                i_errMessage = ex.Message.ToString();
+                return string.Empty;
+            }
+        }
     }
 }

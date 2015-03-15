@@ -26,8 +26,17 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         {
             if (!File.Exists(Path.Combine(Utils.GetAppFolder(), _configFileName)))
             {
-                //ToDo: here get from internet
-                return;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+                string errMessage;
+                string fileContents = TcpHelper.GetFtpFileContents(_configFileName, out errMessage);
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+                if (fileContents != string.Empty)
+                {
+                    File.WriteAllText(_configFileName, fileContents);
+                    this.Focus();
+                }
+                else
+                    return;
             }
 
             XmlDocument xmlDoc = new XmlDocument();
