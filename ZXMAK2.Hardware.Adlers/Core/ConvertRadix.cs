@@ -101,6 +101,7 @@ namespace ZXMAK2.Hardware.Adlers
         //
         // Method: convertASCIIStringToBytes()
         //
+        ////////////////////////////////////////////////////////////////////
         public static byte[] convertASCIIStringToBytes(string input)
         {
             List<byte> arrOut = new List<byte>();
@@ -144,6 +145,26 @@ namespace ZXMAK2.Hardware.Adlers
                     arrOut.Add((byte)c);
             }
             return arrOut.ToArray();
+        }
+
+        ////////////////////////////////////////////////////////////////////
+        //
+        // Method: RemoveEndLinesAtEnd()
+        //
+        // removes all newlines from string
+        ////////////////////////////////////////////////////////////////////
+        public static string RemoveFormattingChars(ref string i_Str, bool i_bTrimStart)
+        {
+            char[] arrStr = i_Str.ToCharArray();
+            string strTrimmed = string.Empty;
+            foreach (char chr in arrStr)
+                if (chr != '\n' && chr != '\r' && !(chr == ' ' && i_bTrimStart && strTrimmed == string.Empty))
+                    strTrimmed += chr;
+
+            i_Str = strTrimmed;
+            return i_Str;
+            /*i_Str = i_Str.Trim('\n', '\r');
+            return i_Str;*/
         }
     }
 }

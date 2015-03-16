@@ -40,7 +40,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             Style NumbersStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
         #endregion
 
-        //private byte tabSpace = 16; //how many characters on tab
+        private byte _tabSpace = 16; //how many characters on tab
 
         //assembler sources array
         private int _actualAssemblerNode = 0;
@@ -189,7 +189,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                     errStringText += GetStringFromMemory(perrReason);
                                 }
                                 else
-                                    errStringText += String.Format("Compile error on line {0}!\n    {1}", errFileLine, GetStringFromMemory(perrReason));
+                                {
+                                    string errMessageTrimmed = GetStringFromMemory(perrReason);
+                                    ConvertRadix.RemoveFormattingChars(ref errMessageTrimmed, true/*trim start*/);
+                                    errStringText += String.Format("Compile error on line {0}!\n    {1}", errFileLine, errMessageTrimmed.TrimStart());
+                                }
 
                                 this.richCompileMessages.Text = errStringText + "\n===================\n" + this.richCompileMessages.Text;
                             }
@@ -529,7 +533,71 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             Z80AsmResources resources = new Z80AsmResources(ref this.txtAsm);
             resources.ShowDialog();
         }
-        #endregion
+
+        //Context menu - Assembler commands(visual)
+        private void txtAsm_MouseClick(object sender, MouseEventArgs e)
+        {
+            if( e.Button == System.Windows.Forms.MouseButtons.Right )
+                ctxMenuAssemblerCommands.Show(txtAsm, e.Location);
+        }
+
+        //Format code
+        private void btnFormatCode_Click(object sender, EventArgs e)
+        {
+            //ToDo: we need a list of all assembler commands here; Regex rgx = new Regex(@"\b(?!push|djnz)\b[ ]+\b", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "and", "sub", "xor", "jr", "jp", "exx",
+                                              "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn"};
+            string[] strAsmLines = txtAsm.Lines.ToArray<string>();
+
+            string codeFormatted = String.Empty;
+            foreach(string line in strAsmLines)
+            {
+                bool isNewLine = true; bool isInComment = false;
+
+                string[] lineSplitted = Regex.Split(line, @"\s+", RegexOptions.IgnoreCase);
+                foreach (string strToken in lineSplitted)
+                {
+                    if (strToken == String.Empty)
+                        continue;
+                    if (strToken.StartsWith(";"))
+                    {
+                        if (!isInComment)
+                        {
+                            isInComment = true;
+                            codeFormatted += strToken;
+                            continue;
+                        }
+                        isInComment = false;
+                    }
+                    if (isInComment)
+                    {
+                        codeFormatted += strToken + " ";
+                        continue;
+                    }
+
+                    if (opcodes.Contains(strToken))
+                    {
+                        if (isNewLine)
+                            codeFormatted += new String(' ', _tabSpace);
+                        codeFormatted += strToken + new String(' ', 6 - strToken.Length);
+                    }
+                    else
+                    {
+                        //label, compiler directive, ...
+                        int spacesAfter = 1;
+                        if (_tabSpace > strToken.Length && isNewLine)
+                            spacesAfter = _tabSpace - strToken.Length;
+                        codeFormatted += strToken + new String(' ', spacesAfter);
+                    }
+
+                    isNewLine = false;
+                }
+                codeFormatted += "\n";
+                isInComment = false;
+            }
+            txtAsm.Text = codeFormatted;
+        }
+        #endregion GUI
 
         #region File operations
             private bool LoadAsm(string i_fileName, out string o_strFileText)
