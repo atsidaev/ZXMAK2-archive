@@ -461,10 +461,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             e.ChangedRange.SetStyle(CompilerDirectivesStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|\binclude\b|\bincbin\b|" +
                                                     @"\bif\b|\bendif\b|\belse\b",
                                                     RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(JumpInstructionStyle, @"\borg\b|\breti\b|\bretn\b|\bret\b|\bjp\b|\bjr\b|\bcall\b|\bdjnz\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            e.ChangedRange.SetStyle(JumpInstructionStyle, @"\borg\b|\breti\b|\bretn\b|\bret\b|\bjp\b|\bjr\b|\bcall\b|\bdjnz\b|\brst\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" +
                 @"\bset\b|\bxor\b|\binc\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
-                @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b",
+                @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b|\bres\b",
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(StackInstructionStyle, @"\bpush\b|\bpop\b|\bdec sp\b|\binc sp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(RegistryStyle, @"\bhl\b|\bbc\b|\bix\b|\biy\b|\bde\b|\bpc\b|\baf\b|\bsp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
@@ -545,8 +545,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private void btnFormatCode_Click(object sender, EventArgs e)
         {
             //ToDo: we need a list of all assembler commands here; Regex rgx = new Regex(@"\b(?!push|djnz)\b[ ]+\b", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-            string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "and", "sub", "xor", "jr", "jp", "exx",
-                                              "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn"};
+            string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "adc", "and", "sub", "xor", "jr", "jp", "exx",
+                                              "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn", "rra", "rla", "sbc", "rst",
+                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa" };
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
 
             string codeFormatted = String.Empty;
@@ -558,13 +559,19 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 foreach (string strToken in lineSplitted)
                 {
                     if (strToken == String.Empty)
+                    {
+                        if (lineSplitted.Length == 1)
+                        {
+                            codeFormatted += "\n";
+                        }
                         continue;
+                    }
                     if (strToken.StartsWith(";"))
                     {
                         if (!isInComment)
                         {
                             isInComment = true;
-                            codeFormatted += strToken;
+                            codeFormatted += strToken + " ";
                             continue;
                         }
                         isInComment = false;
@@ -579,7 +586,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     {
                         if (isNewLine)
                             codeFormatted += new String(' ', _tabSpace);
-                        codeFormatted += strToken + new String(' ', 6 - strToken.Length);
+                        codeFormatted += strToken + new String(' ', 5 - strToken.Length);
                     }
                     else
                     {
@@ -592,7 +599,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                     isNewLine = false;
                 }
-                codeFormatted += "\n";
+                codeFormatted = codeFormatted.TrimEnd(' ') + "\n";
                 isInComment = false;
             }
             txtAsm.Text = codeFormatted;
