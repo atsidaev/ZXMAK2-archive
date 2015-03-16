@@ -17,13 +17,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         {
             InitializeComponent();
             ParseResourceFile();
-            this.treeZ80Resources.ExpandAll();
 
             _asmToAddSourceCode = i_asmToAddSourceCode;
         }
 
         private void ParseResourceFile()
         {
+            treeZ80Resources.Nodes.Clear();
+
             if (!File.Exists(Path.Combine(Utils.GetAppFolder(), _configFileName)))
             {
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
@@ -60,6 +61,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 }
                 treeZ80Resources.Nodes.Add(treeNodeLib);
             }
+            if( treeZ80Resources.Nodes.Count > 0 )
+                this.treeZ80Resources.ExpandAll();
         }
 
         #region GUI
@@ -88,14 +91,37 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Add
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            _asmToAddSourceCode.Text += "this has been added by includes...\n";
+            XmlNode xmlNode = (XmlNode)treeZ80Resources.SelectedNode.Tag;
+            if (this.checkBoxHeaders.Checked)
+            {
+                string headerString = xmlNode.SelectSingleNode("header").InnerText;
+                int headerLength = headerString.Length + 2;
+                string paddingHeaderComment = new String('-', headerLength);
+                paddingHeaderComment = "; " + paddingHeaderComment + "\n;\n;  " + headerString + "\n;\n; " + paddingHeaderComment;
+                _asmToAddSourceCode.Text += paddingHeaderComment;
+            }
+            _asmToAddSourceCode.Text += xmlNode.SelectSingleNode("code").InnerText;
+            //_asmToAddSourceCode.Text += "this has been added by includes...\n";
+        }
+        //Refresh
+        private void buttonRefreshRoutineList_Click(object sender, EventArgs e)
+        {
+            ParseResourceFile();
         }
         #endregion GUI
 
         #region HTML
         private string GetHtmlFormatted(string i_htmlToFormat)
         {
-            return "<body style=\"background-color:lightgrey;font-family:calibri;courier;\">" + i_htmlToFormat + "</body>";
+            //string htmlOut = i_htmlToFormat.Replace(" ", @"&nbsp;");
+            string css = "<style>table.routine_details {border=\"0\"; width=90%;} table.routine_defs{ border=\"1\"; cellpadding=\"10\"; } p.routineTitle {color:blue;display:inline;}";
+            css += "table.routine_details tr td{ font-size: 12px; }";
+            css += "</style>";
+            string css_bodyStyle = "<body style=\"background-color:lightgrey;font-family:consolas,courier;\">";
+
+            string htmlPrepared = "<!DOCTYPE html><html><head>" + css + "</head>" + css_bodyStyle + i_htmlToFormat + "</body></html>";
+
+            return htmlPrepared;
         }
         #endregion HTML
     }

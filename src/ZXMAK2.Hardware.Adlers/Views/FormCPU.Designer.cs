@@ -946,12 +946,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.dbgCmdLine.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.dbgCmdLine.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.dbgCmdLine.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dbgCmdLine.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dbgCmdLine.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.dbgCmdLine.Location = new System.Drawing.Point(0, 0);
             this.dbgCmdLine.Name = "dbgCmdLine";
-            this.dbgCmdLine.Size = new System.Drawing.Size(451, 17);
+            this.dbgCmdLine.Size = new System.Drawing.Size(451, 24);
             this.dbgCmdLine.TabIndex = 0;
             this.dbgCmdLine.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dbgCmdLine_KeyUp);
             // 

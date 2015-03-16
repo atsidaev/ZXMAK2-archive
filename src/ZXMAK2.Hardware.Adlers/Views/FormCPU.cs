@@ -23,6 +23,7 @@ using System.Text;
 using System.Collections.Concurrent;
 using ZXMAK2.Hardware.Adlers.Views.AssemblerView;
 using ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView;
+using System.Runtime.InteropServices;
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {
@@ -53,6 +54,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             bmgr.SubscribePreCycle(Bus_OnBeforeCpuCycle);
             m_cpuRegs = bmgr.CPU.regs;
         }
+
+        [DllImport("user32.dll")]
+        static extern bool CreateCaret(IntPtr hWnd, IntPtr hBitmap, int nWidth, int nHeight);
+        [DllImport("user32.dll")]
+        static extern bool ShowCaret(IntPtr hWnd);
 
         private void Init(IDebuggable debugTarget)
         {
@@ -106,6 +112,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private void FormCPU_Shown(object sender, EventArgs e)
         {
+            //caret, ToDo: http://stackoverflow.com/questions/12760616/command-line-style-caret-for-textbox-in-c-net
+            CreateCaret(dbgCmdLine.Handle, IntPtr.Zero, 5, dbgCmdLine.Height);
+            ShowCaret(dbgCmdLine.Handle);
+
             Show();
             UpdateCPU(false);
             dasmPanel.Focus();
