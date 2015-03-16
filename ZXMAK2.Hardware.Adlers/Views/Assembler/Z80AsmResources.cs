@@ -5,6 +5,8 @@ using System.Xml;
 using System.Linq;
 using ZXMAK2.Engine;
 using FastColoredTextBoxNS;
+using ZXMAK2.Dependency;
+using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
@@ -48,14 +50,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             {
                 TreeNode treeNodeLib = new TreeNode();
                 treeNodeLib.Text = libNodes.Attributes["file_name"].InnerText;
-                treeNodeLib.Checked = true;
+                treeNodeLib.Checked = false;
                 treeNodeLib.Tag = libNodes;
                 //Add lib routines
                 foreach (XmlNode routineNodes in libNodes.SelectNodes("routine_list/routine"))
                 {
                     TreeNode treeNodeRoutine = new TreeNode();
                     treeNodeRoutine.Text = routineNodes.Attributes["name"].InnerText;
-                    treeNodeRoutine.Checked = true;
+                    treeNodeRoutine.Checked = false;
                     treeNodeRoutine.Tag = routineNodes;
                     treeNodeLib.Nodes.Add(treeNodeRoutine);
                 }
@@ -91,17 +93,39 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Add
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            XmlNode xmlNode = (XmlNode)treeZ80Resources.SelectedNode.Tag;
-            if (this.checkBoxHeaders.Checked)
+            TreeNodeCollection treeNodes = treeZ80Resources.Nodes;
+            int sourceCodeAdded = 0;
+            foreach (TreeNode treeNodeLvl1 in treeNodes)
             {
-                string headerString = xmlNode.SelectSingleNode("header").InnerText;
-                int headerLength = headerString.Length + 2;
-                string paddingHeaderComment = new String('-', headerLength);
-                paddingHeaderComment = "; " + paddingHeaderComment + "\n;\n;  " + headerString + "\n;\n; " + paddingHeaderComment;
-                _asmToAddSourceCode.Text += paddingHeaderComment;
+                //libs level
+                //if (treeNodeLvl1.Checked)
+                {
+                    XmlNode xmlNodeLibs = (XmlNode)treeNodeLvl1.Tag;
+                    if (xmlNodeLibs.SelectSingleNode("header") == null) //if it is a "libs" element node
+                    {
+                        //code level
+                        foreach (TreeNode treeNodeLvl2 in treeNodeLvl1.Nodes)
+                        {
+                            XmlNode xmlNodeCode = (XmlNode)treeNodeLvl2.Tag;
+                            if (xmlNodeCode.SelectSingleNode("code") == null || !treeNodeLvl2.Checked)
+                                continue;
+                            if (this.checkBoxHeaders.Checked && xmlNodeCode.SelectSingleNode("header") != null)
+                            {
+                                string headerString = xmlNodeCode.SelectSingleNode("header").InnerText;
+                                int headerLength = headerString.Length + 2;
+                                string paddingHeaderComment = new String('-', headerLength);
+                                paddingHeaderComment = "; " + paddingHeaderComment + "\n;\n;  " + headerString + "\n;\n; " + paddingHeaderComment;
+                                _asmToAddSourceCode.Text += paddingHeaderComment;
+                            }
+
+                            _asmToAddSourceCode.Text += xmlNodeCode.SelectSingleNode("code").InnerText;
+                            sourceCodeAdded++;
+                        }
+                    }
+                }
             }
-            _asmToAddSourceCode.Text += xmlNode.SelectSingleNode("code").InnerText;
-            //_asmToAddSourceCode.Text += "this has been added by includes...\n";
+
+            Locator.Resolve<IUserMessage>().Info(String.Format("{0} source/s added into code editor.", sourceCodeAdded));
         }
         //Refresh
         private void buttonRefreshRoutineList_Click(object sender, EventArgs e)

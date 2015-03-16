@@ -122,6 +122,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnClose.Location = new System.Drawing.Point(691, 201);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(85, 23);
@@ -383,12 +384,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.ctxMenuAssemblerCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnFormatCode});
             this.ctxMenuAssemblerCommands.Name = "ctxMenuAssemblerCommands";
-            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(137, 26);
+            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(144, 26);
             // 
             // btnFormatCode
             // 
             this.btnFormatCode.Name = "btnFormatCode";
-            this.btnFormatCode.Size = new System.Drawing.Size(136, 22);
+            this.btnFormatCode.Size = new System.Drawing.Size(143, 22);
             this.btnFormatCode.Text = "Format Code";
             this.btnFormatCode.Click += new System.EventHandler(this.btnFormatCode_Click);
             // 
@@ -396,6 +397,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(835, 706);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.splitContainer1);
@@ -406,6 +408,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnCompile);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.Name = "Assembler";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Assembler";
