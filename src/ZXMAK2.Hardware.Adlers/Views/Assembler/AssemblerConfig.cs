@@ -23,7 +23,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             public static Style  styleCommonInstruction = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
             public static string regexCommonInstruction = @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" +
                                                           @"\bset\b|xor|\binc\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
-                                                          @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b";
+                                                          @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b|\brrca\b" + 
+                                                          @"|\brlca\b";
             //jumps
             public static Style  styleJumpInstruction = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
             public static string regexJumpInstruction = @"\breti\b|\bretn\b|\bret\b|\bjp\b|\bjr\b|\bcall\b|\bdjnz\b";

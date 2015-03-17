@@ -113,7 +113,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 //FixedBuffer fixedBuf = new FixedBuffer();
 
                 string  asmToCompileOrFileName = String.Empty;
-                byte[]  compiledOut = new byte[65536-16384 + 2/*memory start when --binfile is used*/];
+                byte[]  compiledOut = new byte[65536-16384 + 2/*first 2 bytes is memory address where to place the code*/];
                 byte[]  errReason = new byte[1024];
                 int     codeSize = 0;
                 int     errFileLine = 0;
@@ -203,17 +203,35 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                         memAdress = (ushort)(compiledOut[0] + compiledOut[1] * 256);
                                     else
                                     {
-                                        //--bin mode
-                                        memAdress = ConvertRadix.ConvertNumberWithPrefix(textMemAdress.Text);
-                                        //memArrayDelta = 0;
+                                        try
+                                        {
+                                            memAdress = ConvertRadix.ConvertNumberWithPrefix(textMemAdress.Text);
+                                        }
+                                        catch(CommandParseException exc)
+                                        {
+                                            Locator.Resolve<IUserMessage>().Error(String.Format("Incorrect memory address!\n{0}", exc.Message));
+                                            return;
+                                        }
                                     }
 
                                     if (memAdress == 0 && this.chckbxMemory.Checked)
-                                        memAdress = ConvertRadix.ConvertNumberWithPrefix(this.textMemAdress.Text);
+                                    {
+                                        try
+                                        {
+                                            memAdress = ConvertRadix.ConvertNumberWithPrefix(textMemAdress.Text);
+                                        }
+                                        catch(CommandParseException exc)
+                                        {
+                                            Locator.Resolve<IUserMessage>().Error(String.Format("Incorrect memory address!\n{0}", exc.Message));
+                                            return;
+                                        }
+                                    }
                                     if (memAdress >= 0x4000) //RAM start
                                     {
                                         Stopwatch watch = new Stopwatch();
                                         watch.Start();
+                                        if ((memAdress + codeSize) > 0xFFFF)
+                                            codeSize = 0xFFFF - memAdress; //preven memory overload
                                         m_spectrum.WriteMemory(memAdress, compiledOut, memArrayDelta, codeSize);
                                         watch.Stop();
 
@@ -515,7 +533,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             //ToDo: we need a list of all assembler commands here; Regex rgx = new Regex(@"\b(?!push|djnz)\b[ ]+\b", RegexOptions.IgnoreCase | RegexOptions.Multiline);
             string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "adc", "and", "sub", "xor", "jr", "jp", "exx",
                                               "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn", "rra", "rla", "sbc", "rst",
-                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "equ" };
+                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "equ", "rrca" };
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
 
             string codeFormatted = String.Empty;

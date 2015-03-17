@@ -61,7 +61,7 @@ namespace ZXMAK2.Hardware.Adlers
         {
             if (input == null || input.Trim() == String.Empty)
             {
-                throw new CommandParseException("ConvertNumberWithPrefix: Empty or null value cannot be converted => error");
+                throw new CommandParseException("Empty or null value cannot be converted => error");
             }
             string inputTrimmed = input.Trim();
 
