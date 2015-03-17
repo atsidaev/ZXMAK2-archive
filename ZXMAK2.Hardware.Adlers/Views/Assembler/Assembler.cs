@@ -20,8 +20,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
     public partial class Assembler : Form
     {
         [DllImport(@"Pasmo2.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "compile")]
-        private unsafe static extern int compile( 
-                  /*char**/ [MarshalAs(UnmanagedType.LPStr)] string compileArg,   //e.g. --bin, --tap; terminated by NULL(0)
+        private unsafe static extern int compile(
+                  /*char**/ [MarshalAs(UnmanagedType.LPStr)] string compileArg,   //e.g. --bin, --tap; terminated by NULL(0); generate symbol table: --<mode> <input> <output> <symbol_table_filename>
                   /*char**/ [MarshalAs(UnmanagedType.LPStr)] string inAssembler,
 	              /*char**/ IntPtr compiledOut,
                   /*int* */ IntPtr codeSize,
@@ -29,16 +29,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                   /*char**/ IntPtr errFileName,
                   /*char**/ IntPtr errReason
                   );
-
-        #region Syntax highlightning styles
-            Style CommentStyle = new TextStyle(Brushes.Green, null, FontStyle.Italic);
-            Style CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
-            Style JumpInstructionStyle = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
-            Style StackInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
-            Style CompilerDirectivesStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
-            Style RegistryStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
-            Style NumbersStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
-        #endregion
 
         private byte _tabSpace = 16; //how many characters on tab
 
@@ -397,14 +387,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 txtAsm.ClearStylesBuffer();
 
                 Range range = txtAsm.VisibleRange;
-                range.ClearStyle(CommentStyle);
+                range.ClearStyle(AssemblerConfig.styleComment);
 
-                CommentStyle = _ColorConfig.CommentStyle;
-                range.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
+                //AssemblerConfig.styleComment = _ColorConfig.CommentStyle;
+                range.SetStyle(AssemblerConfig.styleComment, AssemblerConfig.regexComment, RegexOptions.Multiline);
 
-                CompilerDirectivesStyle = _ColorConfig.CompilerDirectivesStyle;
-                range.SetStyle(CompilerDirectivesStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|include|incbin|\bif\b|\bendif\b|\belse\b",
-                               RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                //AssemblerConfig.styleCompilerDirectives = _ColorConfig.CompilerDirectivesStyle;
+                range.SetStyle(AssemblerConfig.styleCompilerDirectives, AssemblerConfig.regexCompilerDirectives, RegexOptions.Multiline | RegexOptions.IgnoreCase);
             }
         }
 
@@ -446,28 +435,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
         private void txtAsm_TextChanged(object sender, TextChangedEventArgs e)
         {
-            //clear styles
-            e.ChangedRange.ClearStyle(CommonInstructionStyle);
-            e.ChangedRange.ClearStyle(JumpInstructionStyle);
-            e.ChangedRange.ClearStyle(StackInstructionStyle);
-            e.ChangedRange.ClearStyle(RegistryStyle);
-            e.ChangedRange.ClearStyle(CompilerDirectivesStyle);
-            e.ChangedRange.ClearStyle(NumbersStyle);
-            e.ChangedRange.ClearStyle(CommentStyle);
-            txtAsm.ClearStylesBuffer();
-
-            e.ChangedRange.SetStyle(CommentStyle, @";.*$", RegexOptions.Multiline);
-            e.ChangedRange.SetStyle(NumbersStyle, @"(?:\(|\n|,| )\d{1,5}\b|[^a-zA-Z](?:x|#|\$)[0-9A-Fa-f]{1,4}|%[0-1]{1,16}", RegexOptions.Multiline);
-            e.ChangedRange.SetStyle(CompilerDirectivesStyle, @"\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|\binclude\b|\bincbin\b|" +
-                                                    @"\bif\b|\bendif\b|\belse\b",
-                                                    RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(JumpInstructionStyle, @"\borg\b|\breti\b|\bretn\b|\bret\b|\bjp\b|\bjr\b|\bcall\b|\bdjnz\b|\brst\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(CommonInstructionStyle, @"\bldir\b|\blddr\b|\bld\b|\bim\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" +
-                @"\bset\b|\bxor\b|\binc\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
-                @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b|\bres\b",
-                RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(StackInstructionStyle, @"\bpush\b|\bpop\b|\bdec sp\b|\binc sp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            e.ChangedRange.SetStyle(RegistryStyle, @"\bhl\b|\bbc\b|\bix\b|\biy\b|\bde\b|\bpc\b|\baf\b|\bsp\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            AssemblerConfig.RefreshControlStyles(txtAsm);
         }
 
         //Save button
@@ -547,13 +515,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             //ToDo: we need a list of all assembler commands here; Regex rgx = new Regex(@"\b(?!push|djnz)\b[ ]+\b", RegexOptions.IgnoreCase | RegexOptions.Multiline);
             string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "adc", "and", "sub", "xor", "jr", "jp", "exx",
                                               "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn", "rra", "rla", "sbc", "rst",
-                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa" };
+                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "equ" };
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
 
             string codeFormatted = String.Empty;
             foreach(string line in strAsmLines)
             {
-                bool isNewLine = true; bool isInComment = false;
+                bool isNewLine = true; bool isInComment = false; bool addNewlineAtLineEnd = true;
 
                 string[] lineSplitted = Regex.Split(line, @"\s+", RegexOptions.IgnoreCase);
                 foreach (string strToken in lineSplitted)
@@ -563,6 +531,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         if (lineSplitted.Length == 1)
                         {
                             codeFormatted += "\n";
+                            addNewlineAtLineEnd = false;
                         }
                         continue;
                     }
@@ -586,7 +555,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     {
                         if (isNewLine)
                             codeFormatted += new String(' ', _tabSpace);
-                        codeFormatted += strToken + new String(' ', 5 - strToken.Length);
+                        codeFormatted += strToken + new String(' ', 6 - strToken.Length);
                     }
                     else
                     {
@@ -599,7 +568,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                     isNewLine = false;
                 }
-                codeFormatted = codeFormatted.TrimEnd(' ') + "\n";
+                codeFormatted = codeFormatted.TrimEnd(' ');
+                if (addNewlineAtLineEnd)
+                    codeFormatted += "\n";
                 isInComment = false;
             }
             txtAsm.Text = codeFormatted;
@@ -651,10 +622,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 Locator.Resolve<IUserMessage>().Info("File " + i_fileName + " saved!");
                 return true;
             }
-        #endregion
+        #endregion File operations
 
         #region Source management(add/delete/save/refresh)
-        class AssemblerSourceInfo
+            class AssemblerSourceInfo
         {
             private int _id;
             public int Id{get { return this._id; } set{ if(value >= 0) this._id = value; }}
@@ -817,13 +788,18 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                     //Colors->Comments
                     io_writer.WriteStartElement("CommentStyle");
-                    io_writer.WriteAttributeString("TextColor", colors.CommentStyle.GetCSS());
+                    io_writer.WriteAttributeString("TextColor", AssemblerConfig.styleComment.GetCSS());
                     io_writer.WriteEndElement();  //Colors->Comments end
 
                     //Colors->CompilerDirectivesStyle
                     io_writer.WriteStartElement("CompilerDirectivesStyle");
-                    io_writer.WriteAttributeString("TextColor", colors.CompilerDirectivesStyle.GetCSS());
-                    io_writer.WriteEndElement();  //Colors->Comments end
+                    io_writer.WriteAttributeString("TextColor", AssemblerConfig.styleCompilerDirectives.GetCSS());
+                    io_writer.WriteEndElement();  //Colors->Compiler directives end
+
+                    //Colors->JumpsStyle
+                    io_writer.WriteStartElement("JumpsStyle");
+                    io_writer.WriteAttributeString("TextColor", AssemblerConfig.styleJumpInstruction.GetCSS());
+                    io_writer.WriteEndElement();  //Colors->Jumps end
 
             io_writer.WriteEndElement(); //Colors end
             io_writer.WriteEndElement(); //Assembler end
@@ -869,8 +845,25 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     fontStyle |= FontStyle.Underline;
                 if (ParseCss_IsStrikeout(css))
                     fontStyle |= FontStyle.Strikeout;
-                CompilerDirectivesStyle = new TextStyle(new SolidBrush(compilerDirectivesColor), null, fontStyle);
-                GetInstance().GetColors().ChangeSyntaxStyle(new TextStyle(new SolidBrush(compilerDirectivesColor), null, fontStyle),1);
+                GetInstance().GetColors().ChangeSyntaxStyle(new TextStyle(new SolidBrush(compilerDirectivesColor), null, fontStyle), 1);
+            }
+
+            //jumps style
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Colors/JumpsStyle");
+            if (node != null)
+            {
+                string css = node.Attributes["TextColor"].InnerText;
+                Color jumpsStyleColor = ParseCss_GetColor(css);
+                FontStyle fontStyle = new FontStyle();
+                if (ParseCss_IsItalic(css))
+                    fontStyle |= FontStyle.Italic;
+                if (ParseCss_IsBold(css))
+                    fontStyle |= FontStyle.Bold;
+                if (ParseCss_IsUnderline(css))
+                    fontStyle |= FontStyle.Underline;
+                if (ParseCss_IsStrikeout(css))
+                    fontStyle |= FontStyle.Strikeout;
+                GetInstance().GetColors().ChangeSyntaxStyle(new TextStyle(new SolidBrush(jumpsStyleColor), null, fontStyle), 2);
             }
         }
         private Color ParseCss_GetColor(string i_cssString)

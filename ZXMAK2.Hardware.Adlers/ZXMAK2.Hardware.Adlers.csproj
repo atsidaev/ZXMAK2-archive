@@ -93,6 +93,10 @@
     <Compile Include="Views\CustomControls\ColorPicker.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Views\CustomControls\DebuggerCommandLine.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\CustomControls\DebuggerCommandLine.Designer.cs" />
     <Compile Include="Views\CustomControls\DebugPanels.cs">
       <SubType>Component</SubType>
     </Compile>
