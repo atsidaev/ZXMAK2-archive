@@ -24,6 +24,7 @@ using System.Collections.Concurrent;
 using ZXMAK2.Hardware.Adlers.Views.AssemblerView;
 using ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView;
 using System.Runtime.InteropServices;
+using System.Xml.Schema;
 
 namespace ZXMAK2.Hardware.Adlers.Views
 {
@@ -54,11 +55,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             bmgr.SubscribePreCycle(Bus_OnBeforeCpuCycle);
             m_cpuRegs = bmgr.CPU.regs;
         }
-
-        [DllImport("user32.dll")]
-        static extern bool CreateCaret(IntPtr hWnd, IntPtr hBitmap, int nWidth, int nHeight);
-        [DllImport("user32.dll")]
-        static extern bool ShowCaret(IntPtr hWnd);
 
         private void Init(IDebuggable debugTarget)
         {
@@ -112,10 +108,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         private void FormCPU_Shown(object sender, EventArgs e)
         {
-            //caret, ToDo: http://stackoverflow.com/questions/12760616/command-line-style-caret-for-textbox-in-c-net
-            CreateCaret(dbgCmdLine.Handle, IntPtr.Zero, 5, dbgCmdLine.Height);
-            ShowCaret(dbgCmdLine.Handle);
-
             Show();
             UpdateCPU(false);
             dasmPanel.Focus();
@@ -2291,7 +2283,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 writer.WriteEndElement();
 
                 //write assembler config
-                Assembler.GetInstance().GetPartialConfig(ref writer);
+                if (Assembler.GetInstance() != null)
+                    Assembler.GetInstance().GetPartialConfig(ref writer);
 
                 writer.WriteEndElement(); //Root
                 writer.Flush();
@@ -2306,7 +2299,16 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 return;
 
             XmlDocument xmlDoc = new System.Xml.XmlDocument();
-            xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), ConfigXmlFileName));
+            try
+            {
+                xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), ConfigXmlFileName));
+            }
+            catch(XmlException)
+            {
+                Locator.Resolve<IUserMessage>().Error("Configuration file is corrupted and will be deleted.");
+                File.Delete(Path.Combine(Utils.GetAppFolder(), ConfigXmlFileName));
+                return;
+            }
 
             XmlNode node;
 

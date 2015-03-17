@@ -111,7 +111,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.menuItemDataRefresh = new System.Windows.Forms.MenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.dbgCmdLine = new System.Windows.Forms.TextBox();
+            this.dbgCmdLine = new ZXMAK2.Hardware.Adlers.Views.CustomControls.DebuggerCommandLine();
             this.contextMenuTraceAddrArea = new System.Windows.Forms.ContextMenu();
             this.menuItemAddNewTraceAddrArea = new System.Windows.Forms.MenuItem();
             this.menuItemUpdateTraceAddrArea = new System.Windows.Forms.MenuItem();
@@ -1058,7 +1058,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuDataSaveBlock;
         private System.Windows.Forms.MenuItem menuItem3;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox dbgCmdLine;
+        private ZXMAK2.Hardware.Adlers.Views.CustomControls.DebuggerCommandLine dbgCmdLine;
         private System.Windows.Forms.MenuItem menuItem8;
         private System.Windows.Forms.MenuItem menuItemSaveDisassembly;
         private System.Windows.Forms.MenuItem menuItemSaveAsBytes;
