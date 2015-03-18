@@ -14,6 +14,7 @@ using ZXMAK2.Engine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using ZXMAK2.Hardware.Adlers.Views.CustomControls;
 
 namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
@@ -101,7 +102,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             if (txtAsm.Text.Trim().Length < 2)
             {
-                this.richCompileMessages.Text = DateTime.Now.ToLongTimeString() + ": Nothing to compile...\n===================\n" + this.richCompileMessages.Text;
+                this.richCompileMessages.AppendLog( "Nothing to compile...", LOG_LEVEL.Info, true/*log time*/);
                 return;
             }
 
@@ -113,7 +114,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 //FixedBuffer fixedBuf = new FixedBuffer();
 
                 string  asmToCompileOrFileName = String.Empty;
-                byte[]  compiledOut = new byte[65536-16384 + 2/*first 2 bytes is memory address where to place the code*/];
+                byte[]  compiledOut = new byte[65536/*big as ROM+RAM - security reason*/];
                 byte[]  errReason = new byte[1024];
                 int     codeSize = 0;
                 int     errFileLine = 0;
@@ -142,8 +143,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     {
                         fixed (byte* perrFileName = &errFileName[0])
                         {
-                            string errStringText = DateTime.Now.ToLongTimeString() + ": Compiling...\n";
-                            this.richCompileMessages.Text = errStringText + this.richCompileMessages.Text;
+                            string errStringText = String.Empty;
+                            this.richCompileMessages.AppendLog("Compiling...\n", LOG_LEVEL.Error, true);
 
                             try
                             {
@@ -185,12 +186,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                     errStringText += String.Format("Compile error on line {0}!\n    {1}", errFileLine, errMessageTrimmed.TrimStart());
                                 }
 
-                                this.richCompileMessages.Text = errStringText + "\n===================\n" + this.richCompileMessages.Text;
+                                LOG_INFO logInfo = new LOG_INFO();
+                                logInfo.ErrorLine = errFileLine; logInfo.SetMessage( errStringText ); logInfo.Level = LOG_LEVEL.Error;
+                                this.richCompileMessages.AppendLog(logInfo);
                             }
                             else
                             {
                                 //we got a assembly
-                                this.richCompileMessages.Text = DateTime.Now.ToLongTimeString() + ": Compilation OK ! Now writing memory...";
+                                this.richCompileMessages.AppendLog(DateTime.Now.ToLongTimeString() + ": Compilation OK ! Now writing memory...", LOG_LEVEL.Info);
 
                                 //write to memory ?
                                 //if (checkMemory.Checked)
@@ -231,22 +234,24 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                         Stopwatch watch = new Stopwatch();
                                         watch.Start();
                                         if ((memAdress + codeSize) > 0xFFFF)
-                                            codeSize = 0xFFFF - memAdress; //preven memory overload
+                                            codeSize = 0xFFFF - memAdress; //prevent memory overload
                                         m_spectrum.WriteMemory(memAdress, compiledOut, memArrayDelta, codeSize);
                                         watch.Stop();
 
                                         TimeSpan time = watch.Elapsed;
-                                        this.richCompileMessages.Text += String.Format("\n    Memory written at start address: #{0:X04}({1})", memAdress, memAdress);
-                                        this.richCompileMessages.Text += String.Format("\n    Written #{0:X04}({1}) bytes", codeSize, codeSize);
+                                        string compileInfo = String.Format("\n    Memory written at start address: #{0:X04}({1})", memAdress, memAdress);
+                                        compileInfo += String.Format("\n    Written #{0:X04}({1}) bytes", codeSize, codeSize);
+
+                                        this.richCompileMessages.AppendLog(compileInfo, LOG_LEVEL.Info);
                                     }
                                     else
                                     {
-                                        this.richCompileMessages.Text = "\n    Cannot write to ROM(address = " + memAdress.ToString() + "). Bail out." + this.richCompileMessages.Text;
+                                        this.richCompileMessages.AppendLog("Cannot write to ROM(address = " + memAdress.ToString() + "). Bail out.", LOG_LEVEL.Error);
                                         return;
                                     }
                                 }
                                 else
-                                    this.richCompileMessages.Text = "\n    Nothing to write to memory !" + this.richCompileMessages.Text;
+                                    this.richCompileMessages.AppendLog("Nothing to write to memory !", LOG_LEVEL.Info);
                             }   
                         }
                     }
@@ -503,7 +508,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Clear compilation log
         private void buttonClearAssemblerLog_Click(object sender, EventArgs e)
         {
-            this.richCompileMessages.Clear();
+            this.richCompileMessages.ClearLog();
         }
 
         //Sources treeview select
@@ -569,7 +574,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         continue;
                     }
 
-                    if (opcodes.Contains(strToken))
+                    if (opcodes.Contains(strToken.ToLower()))
                     {
                         if (isNewLine)
                             codeFormatted += new String(' ', _tabSpace);
@@ -592,6 +597,17 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 isInComment = false;
             }
             txtAsm.Text = codeFormatted;
+        }
+
+        private void richCompileMessages_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            LOG_INFO logInfo = richCompileMessages.GetCurrentMessage();
+            if (logInfo != null && logInfo.ErrorLine != -1 && logInfo.ErrorLine-1 < txtAsm.LinesCount)
+            {
+                Range range = new Range(txtAsm, logInfo.ErrorLine-1);
+                txtAsm.DoRangeVisible(range);
+            }
+            //Locator.Resolve<IUserMessage>().Info(String.Format("Current error line: {0}", logInfo.ErrorLine));
         }
         #endregion GUI
 
@@ -915,5 +931,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             return i_cssString.Contains(";text-decoration:line-through;");
         }
         #endregion
+
     }
 }

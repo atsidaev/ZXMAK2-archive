@@ -36,7 +36,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.txtAsm = new FastColoredTextBoxNS.FastColoredTextBox();
             this.btnCompile = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
-            this.richCompileMessages = new System.Windows.Forms.RichTextBox();
+            this.richCompileMessages = new ZXMAK2.Hardware.Adlers.Views.CustomControls.EventLogger();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.textSaveFileName = new System.Windows.Forms.TextBox();
             this.textMemAdress = new System.Windows.Forms.TextBox();
@@ -102,7 +102,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.txtAsm.Paddings = new System.Windows.Forms.Padding(0);
             this.txtAsm.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtAsm.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAsm.ServiceColors")));
-            this.txtAsm.Size = new System.Drawing.Size(527, 579);
+            this.txtAsm.Size = new System.Drawing.Size(527, 541);
             this.txtAsm.TabIndex = 0;
             this.txtAsm.Zoom = 100;
             this.txtAsm.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.txtAsm_TextChanged);
@@ -133,12 +133,17 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             // richCompileMessages
             // 
+            this.richCompileMessages.BackColor = System.Drawing.Color.Black;
             this.richCompileMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.richCompileMessages.Font = new System.Drawing.Font("Consolas", 9F);
+            this.richCompileMessages.ForeColor = System.Drawing.Color.Green;
             this.richCompileMessages.Location = new System.Drawing.Point(0, 0);
             this.richCompileMessages.Name = "richCompileMessages";
-            this.richCompileMessages.Size = new System.Drawing.Size(527, 85);
+            this.richCompileMessages.ReadOnly = true;
+            this.richCompileMessages.Size = new System.Drawing.Size(527, 132);
             this.richCompileMessages.TabIndex = 5;
             this.richCompileMessages.Text = "";
+            this.richCompileMessages.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.richCompileMessages_MouseDoubleClick);
             // 
             // groupBox1
             // 
@@ -334,7 +339,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1});
             this.treeViewFiles.ShowNodeToolTips = true;
-            this.treeViewFiles.Size = new System.Drawing.Size(151, 671);
+            this.treeViewFiles.Size = new System.Drawing.Size(151, 680);
             this.treeViewFiles.TabIndex = 8;
             this.treeViewFiles.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeViewFiles_AfterLabelEdit);
             this.treeViewFiles.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewFiles_AfterSelect);
@@ -343,7 +348,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // buttonClearAssemblerLog
             // 
             this.buttonClearAssemblerLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClearAssemblerLog.Location = new System.Drawing.Point(691, 619);
+            this.buttonClearAssemblerLog.Location = new System.Drawing.Point(686, 585);
             this.buttonClearAssemblerLog.Name = "buttonClearAssemblerLog";
             this.buttonClearAssemblerLog.Size = new System.Drawing.Size(75, 23);
             this.buttonClearAssemblerLog.TabIndex = 10;
@@ -367,15 +372,15 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.richCompileMessages);
-            this.splitContainer1.Size = new System.Drawing.Size(527, 668);
-            this.splitContainer1.SplitterDistance = 579;
+            this.splitContainer1.Size = new System.Drawing.Size(527, 677);
+            this.splitContainer1.SplitterDistance = 541;
             this.splitContainer1.TabIndex = 11;
             // 
             // splitter1
             // 
             this.splitter1.Location = new System.Drawing.Point(151, 35);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 671);
+            this.splitter1.Size = new System.Drawing.Size(3, 680);
             this.splitter1.TabIndex = 12;
             this.splitter1.TabStop = false;
             // 
@@ -384,12 +389,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.ctxMenuAssemblerCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnFormatCode});
             this.ctxMenuAssemblerCommands.Name = "ctxMenuAssemblerCommands";
-            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(144, 26);
+            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(137, 26);
             // 
             // btnFormatCode
             // 
             this.btnFormatCode.Name = "btnFormatCode";
-            this.btnFormatCode.Size = new System.Drawing.Size(143, 22);
+            this.btnFormatCode.Size = new System.Drawing.Size(136, 22);
             this.btnFormatCode.Text = "Format Code";
             this.btnFormatCode.Click += new System.EventHandler(this.btnFormatCode_Click);
             // 
@@ -398,7 +403,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(835, 706);
+            this.ClientSize = new System.Drawing.Size(835, 715);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.buttonClearAssemblerLog);
@@ -435,7 +440,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private FastColoredTextBoxNS.FastColoredTextBox txtAsm;
         private System.Windows.Forms.Button btnCompile;
         private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.RichTextBox richCompileMessages;
+        private ZXMAK2.Hardware.Adlers.Views.CustomControls.EventLogger richCompileMessages;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox checkFile;
         private System.Windows.Forms.CheckBox chckbxMemory;
