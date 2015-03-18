@@ -140,6 +140,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             //string htmlOut = i_htmlToFormat.Replace(" ", @"&nbsp;");
             string css = "<style>table.routine_details {border=\"0\"; width=90%;} table.routine_defs{ border=\"1\"; cellpadding=\"10\"; } p.routineTitle {color:blue;display:inline;}";
             css += "table.routine_details tr td{ font-size: 12px; }";
+            css += "p.source_code { font-size: 12px;}";
             css += "</style>";
             string css_bodyStyle = "<body style=\"background-color:lightgrey;font-family:consolas,courier;\">";
 
