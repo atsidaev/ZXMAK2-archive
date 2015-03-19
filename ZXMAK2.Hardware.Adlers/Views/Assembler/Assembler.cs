@@ -462,10 +462,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 if (info != null)
                 {
                     _assemblerSources[_actualAssemblerNode].SetIsSaved(false);
-                    if (treeViewFiles.SelectedNode != null)
-                        treeViewFiles.SelectedNode.Text = _assemblerSources[_actualAssemblerNode].GetDisplayName();
-                    else
-                        treeViewFiles.Nodes[0].Text = _assemblerSources[_actualAssemblerNode].GetDisplayName();
+                    GetActualNode().Text = _assemblerSources[_actualAssemblerNode].GetDisplayName();
                 }
             }
         }
@@ -623,6 +620,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
             //Locator.Resolve<IUserMessage>().Info(String.Format("Current error line: {0}", logInfo.ErrorLine));
         }
+
+        private TreeNode GetActualNode()
+        {
+            if (treeViewFiles.SelectedNode != null)
+                return treeViewFiles.SelectedNode;
+            else
+                return treeViewFiles.Nodes[0];
+        }
         #endregion GUI
 
         #region File operations
@@ -674,7 +679,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 if (info != null)
                 {
                     _assemblerSources[_actualAssemblerNode].SetIsSaved(true);
-                    treeViewFiles.SelectedNode.Text = _assemblerSources[_actualAssemblerNode].GetDisplayName();
+                    GetActualNode().Text = _assemblerSources[_actualAssemblerNode].GetDisplayName();
                 }
                 return true;
             }

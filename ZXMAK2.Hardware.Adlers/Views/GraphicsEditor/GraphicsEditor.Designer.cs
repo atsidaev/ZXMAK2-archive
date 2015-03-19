@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GraphicsEditor));
             this.groupBoxScreenViewType = new System.Windows.Forms.GroupBox();
             this.comboSpriteHeight = new System.Windows.Forms.ComboBox();
             this.comboSpriteWidth = new System.Windows.Forms.ComboBox();
@@ -57,6 +56,7 @@
             this.pictureZoomedArea = new System.Windows.Forms.PictureBox();
             this.checkBoxMirror = new System.Windows.Forms.CheckBox();
             this.groupBoxSpriteDetails = new System.Windows.Forms.GroupBox();
+            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.CustomControls.BitmapGrid();
             this.textBoxSpriteBytes = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -130,7 +130,6 @@
             this.txtbxX0 = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.CustomControls.BitmapGrid();
             this.groupBoxScreenViewType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).BeginInit();
@@ -287,8 +286,6 @@
             // 
             this.pictureZXDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureZXDisplay.Cursor = System.Windows.Forms.Cursors.Cross;
-            //this.pictureZXDisplay.Image = ((System.Drawing.Image)(resources.GetObject("pictureZXDisplay.Image")));
-            //this.pictureZXDisplay.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureZXDisplay.InitialImage")));
             this.pictureZXDisplay.Location = new System.Drawing.Point(138, 28);
             this.pictureZXDisplay.Name = "pictureZXDisplay";
             this.pictureZXDisplay.Size = new System.Drawing.Size(512, 384);
@@ -523,6 +520,16 @@
             this.groupBoxSpriteDetails.TabStop = false;
             this.groupBoxSpriteDetails.Text = "Sprite details:";
             this.groupBoxSpriteDetails.Visible = false;
+            // 
+            // bitmapGridSpriteView
+            // 
+            this.bitmapGridSpriteView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.bitmapGridSpriteView.Location = new System.Drawing.Point(9, 84);
+            this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
+            this.bitmapGridSpriteView.Size = new System.Drawing.Size(256, 256);
+            this.bitmapGridSpriteView.TabIndex = 10;
+            this.bitmapGridSpriteView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseClick);
+            this.bitmapGridSpriteView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseUp);
             // 
             // textBoxSpriteBytes
             // 
@@ -1069,20 +1076,11 @@
             this.label10.TabIndex = 0;
             this.label10.Text = "X0:";
             // 
-            // bitmapGridSpriteView
-            // 
-            this.bitmapGridSpriteView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.bitmapGridSpriteView.Location = new System.Drawing.Point(9, 84);
-            this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
-            this.bitmapGridSpriteView.Size = new System.Drawing.Size(256, 256);
-            this.bitmapGridSpriteView.TabIndex = 10;
-            this.bitmapGridSpriteView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseClick);
-            this.bitmapGridSpriteView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseUp);
-            // 
             // GraphicsEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.buttonClose;
             this.ClientSize = new System.Drawing.Size(750, 508);
             this.Controls.Add(this.groupBoxSelectionArea);
             this.Controls.Add(this.groupBoxSpriteDetails);
@@ -1100,10 +1098,10 @@
             this.Controls.Add(this.labelMemoryAddress);
             this.Controls.Add(this.groupBoxScreenViewType);
             this.Controls.Add(this.menuStrip1);
-            this.ShowIcon = false;
-            //this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "GraphicsEditor";
+            this.ShowIcon = false;
             this.Text = "GraphicsEditor";
             this.groupBoxScreenViewType.ResumeLayout(false);
             this.groupBoxScreenViewType.PerformLayout();

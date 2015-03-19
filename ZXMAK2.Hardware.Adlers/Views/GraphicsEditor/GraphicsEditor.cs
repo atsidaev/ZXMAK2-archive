@@ -469,7 +469,27 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             if (i_imgFormat == null)
             {
                 //save bitmap as bytes
-                Locator.Resolve<IUserMessage>().Info("Not implemented yet, sorry..."); return;
+                //Locator.Resolve<IUserMessage>().Info("Not implemented yet, sorry..."); return;
+                byte[] arrSprite = GetBytesFromBitmap();
+                string fileOut = String.Format("; defb #{0:X2}, #{1:x2} ; width x height", this.bitmapGridSpriteView.getGridWidth() / 8, this.bitmapGridSpriteView.getGridHeight());
+                fileOut += Environment.NewLine + "defb ";
+                for(int counter = 0; counter < arrSprite.Length; counter++ )
+                {
+                    if (counter != 0)
+                    {
+                        if (counter % (bitmapGridSpriteView.getGridWidth() / 8) == 0)
+                            fileOut += Environment.NewLine + "defb ";
+                        else
+                            fileOut += ", ";
+                    }
+                    fileOut += String.Format("#{0:X2}", arrSprite[counter]);
+                }
+                if (fileOut != String.Empty)
+                {
+                    File.WriteAllText(Path.Combine(Utils.GetAppFolder(), "sprite_bytes.asm"), fileOut);
+                    Locator.Resolve<IUserMessage>().Info("Sprite saved in sprite_bytes.asm file !");
+                }
+                return;
             }
             else
             {
@@ -526,5 +546,31 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             //export selection area to picture or bytes
         }
         #endregion
+
+        #region Graphics tools
+        private byte[] GetBytesFromBitmap()
+        {
+            byte[] i_arrOut = new byte[(bitmapGridSpriteView.getGridWidth() / 8) * bitmapGridSpriteView.getGridHeight()];
+            //for (int byteCounter = 0; byteCounter < i_arrOut.Length; )
+            int byteCounter = 0;
+            //byte actByte = 0;
+            {
+                for (int actHeight = 0; actHeight < bitmapGridSpriteView.getGridHeight(); actHeight++)
+                {
+                    for( int actLineBit = 0; actLineBit < bitmapGridSpriteView.getGridWidth(); actLineBit++ )
+                    {
+                        if( actLineBit != 0 && actLineBit % 8 == 0 )
+                            byteCounter++; //next byte in out arr
+                        bool bitValue = bitmapGridSpriteView.getGridBitValue(actLineBit, actHeight);
+                        if( bitValue )
+                            ConvertRadix.setBitInByteRightToLeft(ref i_arrOut[byteCounter], (byte)(actLineBit % 8));
+                    }
+                    byteCounter++; //next byte in out arr
+                }
+            }
+            
+            return i_arrOut;
+        }
+        #endregion Graphics tools
     }
 }
