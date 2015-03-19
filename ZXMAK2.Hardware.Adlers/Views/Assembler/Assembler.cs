@@ -38,9 +38,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private Dictionary<int, AssemblerSourceInfo> _assemblerSources = new Dictionary<int, AssemblerSourceInfo>();
 
         private IDebuggable m_spectrum;
-
-        private bool compileFromFile = false; //if loaded from file then "--binfile" compile parameter will be used
-        
+       
         //colors
         private static AssemblerColorConfig _ColorConfig;
         //instance(this)
@@ -121,14 +119,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 byte[]  errFileName = new byte[512];
 
                 string compileOption;
-                if (compileFromFile /*|| (!checkMemory.Checked && IsStartAdressInCode())*/)
-                {
-                    asmToCompileOrFileName = _assemblerSources[_actualAssemblerNode].GetFileNameToSave();
-                    compileOption = "--binfile";
-                    //Set the current directory so that the compiler could find also include files(in the same dir as compiled source)
-                    Directory.SetCurrentDirectory(Path.GetDirectoryName(asmToCompileOrFileName));
-                }
-                else
+                //if (compileFromFile /*|| (!checkMemory.Checked && IsStartAdressInCode())*/)
+                //{
+                //    asmToCompileOrFileName = _assemblerSources[_actualAssemblerNode].GetFileNameToSave();
+                //    compileOption = "--binfile";
+                //    //Set the current directory so that the compiler could find also include files(in the same dir as compiled source)
+                //    Directory.SetCurrentDirectory(Path.GetDirectoryName(asmToCompileOrFileName));
+                //}
+                //else
                 {
                     /*if( chckbxMemory.Checked )
                         asmToCompileOrFileName += "org " + textMemAdress.Text + "\n";*/
@@ -239,7 +237,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                         watch.Stop();
 
                                         TimeSpan time = watch.Elapsed;
-                                        string compileInfo = String.Format("\n    Memory written at start address: #{0:X04}({1})", memAdress, memAdress);
+                                        string compileInfo = String.Format("\n    Memory written starting at address: #{0:X04}({1})", memAdress, memAdress);
                                         compileInfo += String.Format("\n    Written #{0:X04}({1}) bytes", codeSize, codeSize);
 
                                         this.richCompileMessages.AppendLog(compileInfo, LOG_LEVEL.Info);
@@ -451,14 +449,25 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                 treeViewFiles.Nodes.Add(node);
                 treeViewFiles.SelectedNode = node;
-
-                compileFromFile = true;
             }
         }
 
         private void txtAsm_TextChanged(object sender, TextChangedEventArgs e)
         {
             AssemblerConfig.RefreshControlStyles(txtAsm);
+            if (_assemblerSources.Count > 0)
+            {
+                AssemblerSourceInfo info;
+                _assemblerSources.TryGetValue(_actualAssemblerNode, out info);
+                if (info != null)
+                {
+                    _assemblerSources[_actualAssemblerNode].SetIsSaved(false);
+                    if (treeViewFiles.SelectedNode != null)
+                        treeViewFiles.SelectedNode.Text = _assemblerSources[_actualAssemblerNode].GetDisplayName();
+                    else
+                        treeViewFiles.Nodes[0].Text = _assemblerSources[_actualAssemblerNode].GetDisplayName();
+                }
+            }
         }
 
         //Save button
@@ -511,7 +520,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.richCompileMessages.ClearLog();
         }
 
-        //Sources treeview select
+        //Sources treeview before node changed
+        private void treeViewFiles_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
+            _assemblerSources[_actualAssemblerNode].SourceCode = txtAsm.Text;
+        }
+        //Sources treeview after node changed
         private void treeViewFiles_AfterSelect(object sender, TreeViewEventArgs e)
         {
             _actualAssemblerNode = ConvertRadix.ParseUInt16(e.Node.Tag.ToString(), 10);
@@ -596,7 +610,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     codeFormatted += "\n";
                 isInComment = false;
             }
-            txtAsm.Text = codeFormatted;
+            txtAsm.Text = codeFormatted.TrimEnd('\n') + '\n';
         }
 
         private void richCompileMessages_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -654,12 +668,20 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 File.WriteAllText(Path.Combine(Utils.GetAppFolder(),i_fileName), this.txtAsm.Text);
 
                 Locator.Resolve<IUserMessage>().Info("File " + i_fileName + " saved!");
+
+                AssemblerSourceInfo info;
+                _assemblerSources.TryGetValue(_actualAssemblerNode, out info);
+                if (info != null)
+                {
+                    _assemblerSources[_actualAssemblerNode].SetIsSaved(true);
+                    treeViewFiles.SelectedNode.Text = _assemblerSources[_actualAssemblerNode].GetDisplayName();
+                }
                 return true;
             }
         #endregion File operations
 
         #region Source management(add/delete/save/refresh)
-            class AssemblerSourceInfo
+        class AssemblerSourceInfo
         {
             private int _id;
             public int Id{get { return this._id; } set{ if(value >= 0) this._id = value; }}
@@ -693,12 +715,17 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
             public string GetDisplayName()
             {
+                string fileName = SourceName;
+
                 if (SourceName.IndexOf(Path.DirectorySeparatorChar) != -1)
                 {
                     string[] splitted = SourceName.Split(Path.DirectorySeparatorChar);
-                    return splitted[splitted.Length-1];
+                    fileName = splitted[splitted.Length-1];
                 }
-                return SourceName;
+                if (!IsSaved)
+                    return "*" + fileName;
+                else
+                    return fileName;
             }
             public bool IsFile()
             {
@@ -708,7 +735,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             {
                 _isFile = true;
             }
-
+            public void SetIsSaved(bool i_isSaved)
+            {
+                IsSaved = i_isSaved;
+            }
             public void SetSourceNameOrFilename(string i_newName)
             {
                 if (!_isFile) //if it is not file

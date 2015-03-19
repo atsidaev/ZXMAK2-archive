@@ -78,6 +78,9 @@ namespace ZXMAK2.Hardware.Adlers.Core
         //Instruction history
         private ushort _prevPC;
         private bool _isPrevInstructionJumpOrCall;
+
+        //Tacts
+        private int _tactCount;
         #endregion
 
         public DebuggerTrace(IDebuggable i_spectrum)
@@ -96,6 +99,8 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             lock (_sync)
             {
+                _tactCount = -1;
+
                 SetTraceOpcodes(i_form);
                 SetTraceArea(i_form);
                 //Detecting jump to an address
@@ -142,8 +147,11 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 }
 
                 string sumLine = String.Format("Total addresses: {0}   Total occurences: {1}", countersOut.Length, totalOccurences);
+                //tact count
+                if (_tactCount != -1)
+                    sumLine += String.Format("   Tact count: {0}", _tactCount + 1);
                 traceCountersLog += new String('=', sumLine.Length) + "\r\n";
-                traceCountersLog += String.Format("Total addresses: {0}   Total occurences: {1}", countersOut.Length, totalOccurences);
+                traceCountersLog += sumLine;
 
                 traceCountersLog += "\r\n\r\n\n";
 
@@ -343,6 +351,10 @@ namespace ZXMAK2.Hardware.Adlers.Core
         public void IncCounter(int i_memPointer)
         {
             _counters[i_memPointer]++;
+        }
+        public void IncTactCount(int i_tact)
+        {
+            _tactCount += i_tact;
         }
         public bool ParseTracedOpcode(FormCpu i_form, bool i_justParse = false)
         {
