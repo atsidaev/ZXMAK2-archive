@@ -324,6 +324,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
             dataPanel.Refresh();
         }
 
+        public int? GetOpcodeTiming(int i_addr)
+        {
+            return m_timingTool.GetTiming(i_addr);
+        }
+
         private bool dasmPanel_CheckExecuting(object Sender, ushort ADDR)
         {
             if (m_spectrum.IsRunning) return false;
@@ -1040,6 +1045,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 {
                     //trace filter is defined, but does not contain any Jumps/Calls, Opcode, ... criteria
                     m_debuggerTrace.IncCounter(m_cpuRegs.PC);
+                }
+
+                //Tacts
+                if (checkBoxTactCount.Checked)
+                {
+                    int? tactCount = GetOpcodeTiming(m_cpuRegs.PC);
+                    if (tactCount!=null)
+                        m_debuggerTrace.IncTactCount((int)tactCount);
                 }
             }
         }
@@ -2230,6 +2243,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
         #region Config
         public static string ConfigXmlFileName = "debugger_config.xml";
+        private XmlNode _xmlNode_SavedAssemblerSettings = null;
         private void SaveConfig()
         {
             XmlWriter writer = XmlWriter.Create(Path.Combine(Utils.GetAppFolder(), ConfigXmlFileName));
@@ -2249,7 +2263,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 writer.WriteElementString("AllJumpsCalls", this.checkBoxAllJumps.Checked ? "1" : "0");
                 writer.WriteElementString("ConditionalJumps", this.checkBoxConditionalJumps.Checked ? "1" : "0");
                 writer.WriteElementString("ConditionalCalls", this.checkBoxConditionalCalls.Checked ? "1" : "0");
-                writer.WriteElementString("CallToRom", this.checkBoxCallToROM.Checked ? "1" : "0");
                     //Trace->DetectJumpToAnAdress
                     writer.WriteStartElement("DetectJumpToAnAdress");
                     writer.WriteAttributeString("Checked", this.checkBoxDetectJumpOnAddress.Checked ? "1" : "0");
@@ -2271,6 +2284,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     writer.WriteElementString("TagArray", tagArr);
                 writer.WriteEndElement(); //Trace(end)
 
+                writer.WriteElementString("TraceCount", this.checkBoxTactCount.Checked ? "1" : "0");
                 writer.WriteElementString("ConsoleOutput", this.checkBoxShowConsole.Checked ? "1" : "0");
                 writer.WriteElementString("OutputToFile", this.checkBoxTraceFileOut.Checked ? "1" : "0");
                 writer.WriteElementString("OutputFileName", this.textBoxTraceFileName.Text);
@@ -2285,6 +2299,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 //write assembler config
                 if (Assembler.GetInstance() != null)
                     Assembler.GetInstance().GetPartialConfig(ref writer);
+                else
+                {
+                    if (_xmlNode_SavedAssemblerSettings != null)
+                        writer.WriteRaw(_xmlNode_SavedAssemblerSettings.OuterXml);
+                }
 
                 writer.WriteEndElement(); //Root
                 writer.Flush();
@@ -2341,9 +2360,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/ConditionalCalls");
             if (node != null)
                 this.checkBoxConditionalCalls.Checked = (node.InnerText == "1");
-            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/CallToRom");
-            if (node != null)
-                this.checkBoxCallToROM.Checked = (node.InnerText == "1");
 
                 //Trace->DetectJumpToAnAdress
                 node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/DetectJumpToAnAdress");
@@ -2362,6 +2378,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 }
 
                 //Trace->AddressRange
+                node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/AddressRange");
+                if (node != null)
+                    this.checkBoxTraceArea.Checked = (node.Attributes["Checked"].InnerText == "1");
                 node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/AddressRange/TagArray");
                 if( node != null )
                 {
@@ -2387,6 +2406,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             if (node != null)
                 this.checkBoxTraceAutoOpenLog.Checked = (node.InnerText == "1");
 
+            //TraceCount
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/TraceCount");
+            if (node != null)
+                this.checkBoxTactCount.Checked = (node.InnerText == "1");
             //ConsoleOutput
             node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/ConsoleOutput");
             if( node != null )
@@ -2399,6 +2422,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Trace/OutputFileName");
             if (node != null)
                 this.textBoxTraceFileName.Text = node.InnerText;
+
+            //Assembler
+            _xmlNode_SavedAssemblerSettings = xmlDoc.SelectSingleNode("Root/Assembler");
         }
         #endregion
 

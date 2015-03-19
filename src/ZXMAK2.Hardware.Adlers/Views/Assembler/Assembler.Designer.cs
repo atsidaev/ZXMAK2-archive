@@ -342,6 +342,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.treeViewFiles.Size = new System.Drawing.Size(151, 680);
             this.treeViewFiles.TabIndex = 8;
             this.treeViewFiles.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeViewFiles_AfterLabelEdit);
+            this.treeViewFiles.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewFiles_BeforeSelect);
             this.treeViewFiles.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewFiles_AfterSelect);
             this.treeViewFiles.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeViewFiles_KeyUp);
             // 

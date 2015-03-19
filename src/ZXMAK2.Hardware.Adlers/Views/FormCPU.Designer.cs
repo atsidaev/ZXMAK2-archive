@@ -38,6 +38,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listF = new System.Windows.Forms.ListBox();
             this.splitter4 = new System.Windows.Forms.Splitter();
             this.tabPageTrace = new System.Windows.Forms.TabPage();
+            this.checkBoxTactCount = new System.Windows.Forms.CheckBox();
             this.checkBoxTraceArea = new System.Windows.Forms.CheckBox();
             this.buttonSetTraceFileName = new System.Windows.Forms.Button();
             this.textBoxTraceFileName = new System.Windows.Forms.TextBox();
@@ -49,7 +50,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkBoxConditionalCalls = new System.Windows.Forms.CheckBox();
             this.textBoxOpcode = new System.Windows.Forms.TextBox();
             this.checkBoxOpcode = new System.Windows.Forms.CheckBox();
-            this.checkBoxCallToROM = new System.Windows.Forms.CheckBox();
             this.checkBoxConditionalJumps = new System.Windows.Forms.CheckBox();
             this.checkBoxAllJumps = new System.Windows.Forms.CheckBox();
             this.listViewAdressRanges = new System.Windows.Forms.ListView();
@@ -262,6 +262,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // tabPageTrace
             // 
+            this.tabPageTrace.Controls.Add(this.checkBoxTactCount);
             this.tabPageTrace.Controls.Add(this.checkBoxTraceArea);
             this.tabPageTrace.Controls.Add(this.buttonSetTraceFileName);
             this.tabPageTrace.Controls.Add(this.textBoxTraceFileName);
@@ -279,11 +280,23 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.tabPageTrace.Text = "Trace";
             this.tabPageTrace.UseVisualStyleBackColor = true;
             // 
+            // checkBoxTactCount
+            // 
+            this.checkBoxTactCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBoxTactCount.AutoSize = true;
+            this.checkBoxTactCount.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.checkBoxTactCount.Location = new System.Drawing.Point(7, 281);
+            this.checkBoxTactCount.Name = "checkBoxTactCount";
+            this.checkBoxTactCount.Size = new System.Drawing.Size(108, 16);
+            this.checkBoxTactCount.TabIndex = 12;
+            this.checkBoxTactCount.Text = "Tact counter";
+            this.checkBoxTactCount.UseVisualStyleBackColor = true;
+            // 
             // checkBoxTraceArea
             // 
             this.checkBoxTraceArea.AutoSize = true;
             this.checkBoxTraceArea.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxTraceArea.Location = new System.Drawing.Point(6, 176);
+            this.checkBoxTraceArea.Location = new System.Drawing.Point(8, 163);
             this.checkBoxTraceArea.Name = "checkBoxTraceArea";
             this.checkBoxTraceArea.Size = new System.Drawing.Size(122, 16);
             this.checkBoxTraceArea.TabIndex = 11;
@@ -333,7 +346,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.checkBoxShowConsole.Checked = true;
             this.checkBoxShowConsole.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxShowConsole.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxShowConsole.Location = new System.Drawing.Point(7, 296);
+            this.checkBoxShowConsole.Location = new System.Drawing.Point(7, 298);
             this.checkBoxShowConsole.Name = "checkBoxShowConsole";
             this.checkBoxShowConsole.Size = new System.Drawing.Size(122, 16);
             this.checkBoxShowConsole.TabIndex = 7;
@@ -347,13 +360,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.groupBoxTraceOptions.Controls.Add(this.checkBoxConditionalCalls);
             this.groupBoxTraceOptions.Controls.Add(this.textBoxOpcode);
             this.groupBoxTraceOptions.Controls.Add(this.checkBoxOpcode);
-            this.groupBoxTraceOptions.Controls.Add(this.checkBoxCallToROM);
             this.groupBoxTraceOptions.Controls.Add(this.checkBoxConditionalJumps);
             this.groupBoxTraceOptions.Controls.Add(this.checkBoxAllJumps);
             this.groupBoxTraceOptions.Location = new System.Drawing.Point(5, 0);
             this.groupBoxTraceOptions.Name = "groupBoxTraceOptions";
             this.groupBoxTraceOptions.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.groupBoxTraceOptions.Size = new System.Drawing.Size(150, 170);
+            this.groupBoxTraceOptions.Size = new System.Drawing.Size(150, 157);
             this.groupBoxTraceOptions.TabIndex = 6;
             this.groupBoxTraceOptions.TabStop = false;
             this.groupBoxTraceOptions.Text = "Trace filter";
@@ -395,7 +407,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.textBoxOpcode.Enabled = false;
             this.textBoxOpcode.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.textBoxOpcode.Location = new System.Drawing.Point(22, 146);
+            this.textBoxOpcode.Location = new System.Drawing.Point(22, 132);
             this.textBoxOpcode.Name = "textBoxOpcode";
             this.textBoxOpcode.Size = new System.Drawing.Size(122, 19);
             this.textBoxOpcode.TabIndex = 4;
@@ -405,25 +417,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             this.checkBoxOpcode.AutoSize = true;
             this.checkBoxOpcode.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxOpcode.Location = new System.Drawing.Point(3, 129);
+            this.checkBoxOpcode.Location = new System.Drawing.Point(3, 115);
             this.checkBoxOpcode.Name = "checkBoxOpcode";
             this.checkBoxOpcode.Size = new System.Drawing.Size(66, 16);
             this.checkBoxOpcode.TabIndex = 3;
             this.checkBoxOpcode.Text = "Opcode";
             this.checkBoxOpcode.UseVisualStyleBackColor = true;
             this.checkBoxOpcode.CheckedChanged += new System.EventHandler(this.checkBoxOpcode_CheckedChanged);
-            // 
-            // checkBoxCallToROM
-            // 
-            this.checkBoxCallToROM.AutoSize = true;
-            this.checkBoxCallToROM.Enabled = false;
-            this.checkBoxCallToROM.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxCallToROM.Location = new System.Drawing.Point(3, 111);
-            this.checkBoxCallToROM.Name = "checkBoxCallToROM";
-            this.checkBoxCallToROM.Size = new System.Drawing.Size(143, 16);
-            this.checkBoxCallToROM.TabIndex = 2;
-            this.checkBoxCallToROM.Text = "Call to ROM(ToDo)";
-            this.checkBoxCallToROM.UseVisualStyleBackColor = true;
             // 
             // checkBoxConditionalJumps
             // 
@@ -458,7 +458,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.listViewAdressRanges.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.listViewAdressRanges.FullRowSelect = true;
             this.listViewAdressRanges.GridLines = true;
-            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 197);
+            this.listViewAdressRanges.Location = new System.Drawing.Point(5, 179);
             this.listViewAdressRanges.Name = "listViewAdressRanges";
             this.listViewAdressRanges.Size = new System.Drawing.Size(150, 97);
             this.listViewAdressRanges.TabIndex = 5;
@@ -1075,7 +1075,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.Button btnStartTrace;
         private System.Windows.Forms.Button btnStopTrace;
         private System.Windows.Forms.GroupBox groupBoxTraceOptions;
-        private System.Windows.Forms.CheckBox checkBoxCallToROM;
         private System.Windows.Forms.CheckBox checkBoxShowConsole;
         private System.Windows.Forms.CheckBox checkBoxTraceFileOut;
         private System.Windows.Forms.Button buttonSetTraceFileName;
@@ -1113,5 +1112,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuItem10;
         private System.Windows.Forms.MenuItem menuItemClearCurrentNote;
         private System.Windows.Forms.MenuItem menuItemClearAllNotes;
+        private System.Windows.Forms.CheckBox checkBoxTactCount;
     }
 }
