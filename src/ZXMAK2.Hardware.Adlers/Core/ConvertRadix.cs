@@ -166,5 +166,25 @@ namespace ZXMAK2.Hardware.Adlers
             /*i_Str = i_Str.Trim('\n', '\r');
             return i_Str;*/
         }
+
+        // bits: 0-1-2-3-4-5-6-7-8 : 1-2-4-8-16-32-64-128
+        public static void setBitInByteRightToLeft(ref byte manipulatinByte, byte bitToBeSet)
+        {
+            manipulatinByte ^= (byte)(1 << (7 - bitToBeSet));
+        }
+
+        // bits: 7-6-5-4-3-2-1-0 : 128-64-32-16-8-4-2-1
+        public static void setBitInByte(ref byte manipulatinByte, byte bitToBeSet)
+        {
+            byte bitValue = Convert.ToByte(Math.Pow(2, bitToBeSet));
+
+            if ((manipulatinByte & bitValue) == bitValue) // bit already set
+                return;
+
+            manipulatinByte += bitValue;
+
+            // another solution:
+            // number |= 1 << bitToBeSet;
+        }
     }
 }

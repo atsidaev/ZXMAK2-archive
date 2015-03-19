@@ -43,6 +43,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
         {
             return XBit + YBit * X_BIT_COUNT;
         }
+        public bool getGridBitValue(int XBit, int YBit)
+        {
+            int attr = (X_BIT_COUNT / 8) * YBit;
+            attr += XBit / 8;
+            return _gridBits[attr][XBit % 8];
+        }
         public void setBitmapBits(IDebuggable i_spectrum, ushort i_startAddress)
         {
             int gridBytes = X_BIT_COUNT / 8 * Y_BIT_COUNT;
