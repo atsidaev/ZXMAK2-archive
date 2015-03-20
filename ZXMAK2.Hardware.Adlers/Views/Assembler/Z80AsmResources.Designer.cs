@@ -37,6 +37,7 @@
             this.buttonRefreshRoutineList = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBoxHeaders = new System.Windows.Forms.CheckBox();
+            this.checkBoxDestroy = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitterRoutines)).BeginInit();
             this.splitterRoutines.Panel1.SuspendLayout();
@@ -142,6 +143,7 @@
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.checkBoxDestroy);
             this.groupBox2.Controls.Add(this.checkBoxHeaders);
             this.groupBox2.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(681, 109);
@@ -149,7 +151,7 @@
             this.groupBox2.Size = new System.Drawing.Size(109, 530);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Options";
+            this.groupBox2.Text = "Source header";
             // 
             // checkBoxHeaders
             // 
@@ -162,6 +164,18 @@
             this.checkBoxHeaders.TabIndex = 0;
             this.checkBoxHeaders.Text = "Headers";
             this.checkBoxHeaders.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxDestroy
+            // 
+            this.checkBoxDestroy.AutoSize = true;
+            this.checkBoxDestroy.Checked = true;
+            this.checkBoxDestroy.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxDestroy.Location = new System.Drawing.Point(6, 45);
+            this.checkBoxDestroy.Name = "checkBoxDestroy";
+            this.checkBoxDestroy.Size = new System.Drawing.Size(73, 18);
+            this.checkBoxDestroy.TabIndex = 1;
+            this.checkBoxDestroy.Text = "Destroys";
+            this.checkBoxDestroy.UseVisualStyleBackColor = true;
             // 
             // Z80AsmResources
             // 
@@ -201,5 +215,6 @@
         private System.Windows.Forms.Button buttonRefreshRoutineList;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox checkBoxHeaders;
+        private System.Windows.Forms.CheckBox checkBoxDestroy;
     }
 }

@@ -113,8 +113,21 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                             {
                                 string headerString = xmlNodeCode.SelectSingleNode("header").InnerText;
                                 int headerLength = headerString.Length + 2;
+                                
                                 string paddingHeaderComment = new String('-', headerLength);
-                                paddingHeaderComment = "; " + paddingHeaderComment + "\n;\n;  " + headerString + "\n;\n; " + paddingHeaderComment;
+
+                                //make Destroys registry:
+                                string destroysRegistry = String.Empty;
+                                if (checkBoxDestroy.Checked)
+                                {
+                                    destroysRegistry = "  destroys: <no information>";
+                                    if (xmlNodeCode.SelectSingleNode("destroys") != null)
+                                    {
+                                        destroysRegistry = "  destroys: " + xmlNodeCode.SelectSingleNode("destroys").InnerText;
+                                    }
+                                    destroysRegistry += "\n;\n;";
+                                }
+                                paddingHeaderComment = "; " + paddingHeaderComment + "\n;\n;  " + headerString + "\n;\n;" + destroysRegistry + paddingHeaderComment;
                                 _asmToAddSourceCode.Text += paddingHeaderComment;
                             }
 
