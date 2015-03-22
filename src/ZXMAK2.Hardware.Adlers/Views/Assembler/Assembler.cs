@@ -766,6 +766,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private int AddNewSource(AssemblerSourceInfo i_sourceCandidate)
         {
             i_sourceCandidate.Id = SourceInfo_GetNextId();
+            if (i_sourceCandidate.Id == 0) //there were none
+                i_sourceCandidate.SourceCode = txtAsm.Text;
             _assemblerSources.Add(i_sourceCandidate.Id, i_sourceCandidate);
 
             return i_sourceCandidate.Id;
@@ -782,6 +784,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         }
         private int SourceInfo_GetNextId()
         {
+            if (_assemblerSources.Count == 0)
+                return 0;
             return _assemblerSources.Max(p => p.Key) + 1;
         }
         private string GetNewSourceName()
