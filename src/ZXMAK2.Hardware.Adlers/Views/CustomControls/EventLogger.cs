@@ -133,6 +133,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
             _logInfo.Add(i_logInfo);
             Display();
         }
+        public void AppendInfo(string i_infoMessage)
+        {
+            LOG_INFO logInfo = new LOG_INFO();
+            logInfo.SetMessage("INFO:  " + i_infoMessage);
+            logInfo.Id = GetNextLogInfoId();
+            _logInfo.Add(logInfo);
+            Display();
+        }
 
         public LOG_INFO GetCurrentMessage(/*int i_lineNumber*/)
         {

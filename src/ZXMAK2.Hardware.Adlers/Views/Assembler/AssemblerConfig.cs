@@ -33,7 +33,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             public static string regexStackInstruction = @"\bpush\b|\bpop\b|\bdec sp\b|\binc sp\b";
             //registry
             public static Style  styleRegistry = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
-            public static string regexRegistry = @"\bhl\b|\bbc\b|\bix\b|\biy\b|\bde\b|\bpc\b|\baf\b|\bsp\b|[\( ,]\b[a-fA-FhHlLrRiI]\b";
+            public static string regexRegistry = @"\bhl\b|(?<=[ ,(])BC(?=[ ,)\n;\r])|\bix\b|\biy\b|\bde\b|\bpc\b|\bsp\b|[\( ,]\b(IR|HL)\b|(?<=[ ,(])AF(?=[ ,)\n;\r])";
             //compiler directives
             public static Style  styleCompilerDirectives = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
             public static string regexCompilerDirectives = @"\borg\b|\bdefb\b|\bdefw\b|\bdefl\b|\bdefm\b|\bdefs\b|\bequ\b|\bmacro\b|\bendm\b|include|incbin|" +
