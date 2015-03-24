@@ -106,7 +106,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             try
             {
-                string fileContents;
+                string fileContents = string.Empty;
 
                 WebRequest request = WebRequest.Create(@"http://adlers.host.sk/ZxSpectrum/" + i_filePath);
                 request.Credentials = CredentialCache.DefaultCredentials;
@@ -115,9 +115,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
 
                 Stream responseStream = response.GetResponseStream();
                 StreamReader reader = new StreamReader(responseStream);
-                fileContents = reader.ReadToEnd();
-
-                i_errMessage = response.StatusDescription;
+                HttpStatusCode status = response.StatusCode;
+                if (status != HttpStatusCode.OK)
+                    i_errMessage = response.StatusDescription;
+                else
+                {
+                    i_errMessage = string.Empty;
+                    fileContents = reader.ReadToEnd();
+                }
 
                 reader.Close();
                 response.Close();

@@ -41,6 +41,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 else
                     return;
             }
+            //ToDo: here must file check follow because server returns html back instead of erroneous HttpStatusCode response
 
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), _configFileName));

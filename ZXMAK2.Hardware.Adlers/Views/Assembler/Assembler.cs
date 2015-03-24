@@ -615,8 +615,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             LOG_INFO logInfo = richCompileMessages.GetCurrentMessage();
             if (logInfo != null && logInfo.ErrorLine != -1 && logInfo.ErrorLine-1 < txtAsm.LinesCount)
             {
-                Range range = new Range(txtAsm, logInfo.ErrorLine-1);
-                txtAsm.DoRangeVisible(range);
+                int lineIndex = logInfo.ErrorLine - 1;
+                txtAsm.Selection = new Range(txtAsm, lineIndex);
+                //txtAsm.SelectionColor = Color.DarkRed;
+                txtAsm.DoSelectionVisible();
             }
             //Locator.Resolve<IUserMessage>().Info(String.Format("Current error line: {0}", logInfo.ErrorLine));
         }
@@ -672,7 +674,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     i_fileName = "code_save.asm";
                 File.WriteAllText(Path.Combine(Utils.GetAppFolder(),i_fileName), this.txtAsm.Text);
 
-                Locator.Resolve<IUserMessage>().Info("File " + i_fileName + " saved!");
+                //Locator.Resolve<IUserMessage>().Info("File " + i_fileName + " saved!");
+                this.richCompileMessages.AppendInfo("File " + i_fileName + " saved!");
 
                 AssemblerSourceInfo info;
                 _assemblerSources.TryGetValue(_actualAssemblerNode, out info);
