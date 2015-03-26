@@ -186,5 +186,21 @@ namespace ZXMAK2.Hardware.Adlers
             // another solution:
             // number |= 1 << bitToBeSet;
         }
+
+        public unsafe static byte[] PointerToManagedType(byte* i_arrayStart, int i_length)
+        {
+            if( i_length <= 0  )
+                return null;
+            else
+            {
+                byte[] arrOut = new byte[i_length];
+
+                for (int counter = 0; counter < i_length; counter++)
+                {
+                    arrOut[counter] = i_arrayStart[counter];
+                }
+                return arrOut;
+            }
+        }
     }
 }

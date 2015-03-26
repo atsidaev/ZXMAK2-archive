@@ -32,10 +32,19 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
                 info.RangeStart = realLinesCount - 1;
                 if( info.HasLogTime )
                     base.Text += info.LogTime.ToLongTimeString() + ": ";
-                base.Text += info.GetDisplayMessage();
-                base.Text += "\n";
+                if( info.Level == LOG_LEVEL.Info )
+                {
+                    this.AppendText(info.GetDisplayMessage(), Color.Green);
+                }
+                else if (info.Level == LOG_LEVEL.Error)
+                {
+                    this.AppendText(info.GetDisplayMessage(), Color.Red);
+                }
+                else
+                    base.AppendText(info.GetDisplayMessage());
+                base.AppendText("\n");
                 info.RangeEnd = realLinesCount;
-                base.Text += "====================================\n";
+                base.AppendText("====================================\n");
 
                 realLinesCount = base.Lines.Length;
             }
@@ -75,6 +84,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
             int firstcharindex = base.GetFirstCharIndexOfCurrentLine();
             string currentlinetext = base.Lines[GetCurrentLine()];
             base.Select(firstcharindex, currentlinetext.Length);
+        }
+
+        public void AppendText(string text, Color color)
+        {
+            this.SelectionStart = this.TextLength;
+            this.SelectionLength = 0;
+
+            this.SelectionColor = color;
+            this.AppendText(text);
+            this.SelectionColor = this.ForeColor;
         }
         public int GetCurrentLine()
         {
@@ -138,6 +157,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
             LOG_INFO logInfo = new LOG_INFO();
             logInfo.SetMessage("INFO:  " + i_infoMessage);
             logInfo.Id = GetNextLogInfoId();
+            logInfo.Level = LOG_LEVEL.Info;
             _logInfo.Add(logInfo);
             Display();
         }
