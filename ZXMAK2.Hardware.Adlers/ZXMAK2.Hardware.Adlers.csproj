@@ -55,6 +55,7 @@
     <Compile Include="CommandParseException.cs" />
     <Compile Include="Core\ConvertRadix.cs" />
     <Compile Include="Core\DebuggerTrace.cs" />
+    <Compile Include="Core\FileTools.cs" />
     <Compile Include="Core\GraphicsTools.cs" />
     <Compile Include="Core\Historization.cs" />
     <Compile Include="Core\ILProcessor.cs" />
@@ -81,6 +82,7 @@
       <DependentUpon>AssemblerColorConfig.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Assembler\AssemblerConfig.cs" />
+    <Compile Include="Views\Assembler\Compiler.cs" />
     <Compile Include="Views\Assembler\Z80AsmResources.cs">
       <SubType>Form</SubType>
     </Compile>

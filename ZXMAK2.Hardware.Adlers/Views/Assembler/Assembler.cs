@@ -20,21 +20,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
     public partial class Assembler : Form
     {
-        [DllImport(@"Pasmo2.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "compile")]
-        private unsafe static extern int compile(
-                  /*char**/ [MarshalAs(UnmanagedType.LPStr)] string compileArg,   //e.g. --bin, --tap; terminated by NULL(0); generate symbol table: --<mode> <input> <output> <symbol_table_filename>
-                  /*char**/ [MarshalAs(UnmanagedType.LPStr)] string inAssembler,
-	              /*char**/ IntPtr compiledOut,
-                  /*int* */ IntPtr codeSize,
-                  /*int**/  IntPtr errFileLine,
-                  /*char**/ IntPtr errFileName,
-                  /*char**/ IntPtr errReason
-                  );
-
         private byte _tabSpace = 16; //how many characters on tab
 
         //assembler sources array
-        private int _actualAssemblerNode = 0;
+        private int _actualAssemblerNodeIndex = 0;
         private Dictionary<int, AssemblerSourceInfo> _assemblerSources = new Dictionary<int, AssemblerSourceInfo>();
 
         private IDebuggable m_spectrum;
@@ -48,6 +37,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             m_spectrum = spectrum;
 
             InitializeComponent();
+
+            //Symbols list view
+            listViewSymbols.View = View.Details;
+            listViewSymbols.Columns.Add("      Name      ", -2, HorizontalAlignment.Center);
+            listViewSymbols.Columns.Add("Addr", -2, HorizontalAlignment.Left);
 
             txtAsm.DoCaretVisible();
             txtAsm.IsChanged = false;
@@ -65,6 +59,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             this.KeyPreview = true;
             this.BringToFront();
+
+            //print compiler version to form title
+            double compilerVersion;
+            if (Compiler.GetVersion(out compilerVersion) == 0)
+                this.Text = "Assembler, " + String.Format("ver {0:0.##}", compilerVersion).Replace(',', '.');
         }
 
         public static void Show(ref IDebuggable spectrum)
@@ -87,13 +86,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             return m_instance;
         }
 
-        /*internal unsafe struct FixedBuffer
-        {
-            public fixed byte compiledOut[0xFFFF + 1];
-            public fixed byte errMessage[1024];
-            public int     codeSize;
-        }*/
-
         private void compileToZ80()
         {
             int retCode = -1;
@@ -112,11 +104,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 //FixedBuffer fixedBuf = new FixedBuffer();
 
                 string  asmToCompileOrFileName = String.Empty;
-                byte[]  compiledOut = new byte[65536/*big as ROM+RAM - security reason*/];
-                byte[]  errReason = new byte[1024];
-                int     codeSize = 0;
-                int     errFileLine = 0;
-                byte[]  errFileName = new byte[512];
+                COMPILED_INFO compiled = new COMPILED_INFO();
 
                 string compileOption;
                 //if (compileFromFile /*|| (!checkMemory.Checked && IsStartAdressInCode())*/)
@@ -135,57 +123,43 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     compileOption = "--bin";
                 }
 
-                fixed (byte* pcompiledOut = &compiledOut[0])
+                //fixed (byte* pcompiledOut = &compiledOut[0])
                 {
-                    fixed (byte* perrReason = &errReason[0])
+                    /*fixed (*/
+                    //char* perrReason = compiled.czErrMessage;
                     {
-                        fixed (byte* perrFileName = &errFileName[0])
+                        //fixed (byte* perrFileName = &errFileName[0])
                         {
                             string errStringText = String.Empty;
-                            this.richCompileMessages.AppendLog("Compiling...\n", LOG_LEVEL.Error, true);
+                            this.richCompileMessages.AppendLog("Compiling...\n", LOG_LEVEL.Info, true);
 
                             try
                             {
-                                if (LoadLibrary(Path.Combine(Utils.GetAppFolder(), "Pasmo2.dll"))==IntPtr.Zero)
-                                {
-                                    Locator.Resolve<IUserMessage>()
-                                        .Error("Cannot load Pasmo2.dll...\n\nTrying to download it again.");
-
-                                    File.Delete(Path.Combine(Utils.GetAppFolder(), "Pasmo2.dll"));
-
-                                    TcpHelper client = new TcpHelper();
-                                    client.Show();
-
-                                    return;
-                                }
-                                retCode = compile(compileOption, asmToCompileOrFileName, new IntPtr(pcompiledOut),
-                                                  new IntPtr(&codeSize), new IntPtr(&errFileLine),
-                                                  new IntPtr(perrFileName), new IntPtr(perrReason)
-                                                  );
+                                retCode = Compiler.DoCompile(compileOption, asmToCompileOrFileName, ref compiled);
                             }
                             catch (Exception ex)
                             {
                                 Logger.Error(ex);
-                                Locator.Resolve<IUserMessage>().Error( "Technical error in compilation...\nSorry, compilation cannot be executed.");
+                                Locator.Resolve<IUserMessage>().Error( "Technical error in compilation...\nSorry, compilation cannot be executed.\n\nDetail:\n" + ex.Message);
                                 return;
                             }
                             if (retCode != 0)
                             {
                                 if (compileOption == "--binfile")
                                 {
-                                    errStringText += "Error on line " + errFileLine.ToString() + ", file: " + GetStringFromMemory(perrFileName);
+                                    errStringText += "Error on line " + compiled.iErrFileLine.ToString() + ", file: " + Compiler.GetStringFromMemory(compiled.czErrFileName);
                                     errStringText += "\n    ";
-                                    errStringText += GetStringFromMemory(perrReason);
+                                    errStringText += Compiler.GetStringFromMemory(compiled.czErrMessage);
                                 }
                                 else
                                 {
-                                    string errMessageTrimmed = GetStringFromMemory(perrReason);
+                                    string errMessageTrimmed = Compiler.GetStringFromMemory(compiled.czErrMessage);
                                     ConvertRadix.RemoveFormattingChars(ref errMessageTrimmed, true/*trim start*/);
-                                    errStringText += String.Format("Compile error on line {0}!\n    {1}", errFileLine, errMessageTrimmed.TrimStart());
+                                    errStringText += String.Format("Compile error on line {0}!\n    {1}", compiled.iErrFileLine, errMessageTrimmed.TrimStart());
                                 }
 
                                 LOG_INFO logInfo = new LOG_INFO();
-                                logInfo.ErrorLine = errFileLine; logInfo.SetMessage( errStringText ); logInfo.Level = LOG_LEVEL.Error;
+                                logInfo.ErrorLine = compiled.iErrFileLine; logInfo.SetMessage(errStringText); logInfo.Level = LOG_LEVEL.Error;
                                 this.richCompileMessages.AppendLog(logInfo);
                             }
                             else
@@ -195,13 +169,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                                 //write to memory ?
                                 //if (checkMemory.Checked)
-                                if( codeSize > 0 )
+                                if ( compiled.iCompiledSize > 0)
                                 {
                                     //get address where to write the code
                                     ushort memAdress = 0;
-                                    ushort memArrayDelta = 2;
                                     if (compileOption != "--bin" || !chckbxMemory.Checked) //binary
-                                        memAdress = (ushort)(compiledOut[0] + compiledOut[1] * 256);
+                                        memAdress = (ushort)(compiled.czCompiled[0] + compiled.czCompiled[1] * 256);
                                     else
                                     {
                                         try
@@ -231,14 +204,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                     {
                                         Stopwatch watch = new Stopwatch();
                                         watch.Start();
-                                        if ((memAdress + codeSize) > 0xFFFF)
-                                            codeSize = 0xFFFF - memAdress; //prevent memory overload
-                                        m_spectrum.WriteMemory(memAdress, compiledOut, memArrayDelta, codeSize);
+                                        if ((memAdress + compiled.iCompiledSize) > 0xFFFF)
+                                            compiled.iCompiledSize = 0xFFFF - memAdress; //prevent memory overload
+                                        byte[] memBytesCompiled = ConvertRadix.PointerToManagedType(compiled.czCompiled + 2/*omit memory address*/, compiled.iCompiledSize);
+                                        if( memBytesCompiled != null )
+                                            m_spectrum.WriteMemory(memAdress, memBytesCompiled, 0, compiled.iCompiledSize);
                                         watch.Stop();
 
                                         TimeSpan time = watch.Elapsed;
                                         string compileInfo = String.Format("\n    Memory written starting at address: #{0:X04}({1})", memAdress, memAdress);
-                                        compileInfo += String.Format("\n    Written #{0:X04}({1}) bytes", codeSize, codeSize);
+                                        compileInfo += String.Format("\n    Written #{0:X04}({1}) bytes", compiled.iCompiledSize, compiled.iCompiledSize);
 
                                         this.richCompileMessages.AppendLog(compileInfo, LOG_LEVEL.Info);
                                     }
@@ -246,6 +221,22 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                     {
                                         this.richCompileMessages.AppendLog("Cannot write to ROM(address = " + memAdress.ToString() + "). Bail out.", LOG_LEVEL.Error);
                                         return;
+                                    }
+
+                                    //Symbols
+                                    this.listViewSymbols.Items.Clear();
+                                    if (new IntPtr(compiled.arrSourceSymbols) != IntPtr.Zero)
+                                    {
+                                        Dictionary<string, ushort> symbolsParsed = Compiler.ParseSymbols(Compiler.GetStringFromMemory(compiled.arrSourceSymbols));
+                                        if (symbolsParsed != null && symbolsParsed.Keys.Count > 0)
+                                        {
+                                            foreach (var item in symbolsParsed)
+                                            {
+                                                ListViewItem itemToAdd = new ListViewItem(new[] { item.Key, String.Format("#{0:X2}", item.Value) });
+                                                //itemToAdd.Tag = tag;
+                                                this.listViewSymbols.Items.Add(itemToAdd);
+                                            }
+                                        }
                                     }
                                 }
                                 else
@@ -256,9 +247,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 }
             }
         }
-
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr LoadLibrary(string fileName);
 
         private bool validateCompile()
         {
@@ -321,22 +309,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 }
             }
             return false;
-        }
-
-        static unsafe private string GetStringFromMemory(byte* i_pointer)
-        {
-            string retString = String.Empty;
-
-            for (; ; )
-            {
-                char c = (char)*(i_pointer++);
-                if (c == '\0')
-                    break;
-
-                retString += c;
-            }
-
-            return retString;
         }
 
         #region GUI methods
@@ -442,7 +414,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 AssemblerSourceInfo sourceInfo = new AssemblerSourceInfo(loadDialog.FileName, true);
                 node.ToolTipText = loadDialog.FileName;
                 node.Checked = true;
-                node.Tag = sourceInfo.Id = _actualAssemblerNode = SourceInfo_GetNextId();
+                node.Tag = sourceInfo.Id = _actualAssemblerNodeIndex = SourceInfo_GetNextId();
 
                 this.txtAsm.Text = sourceInfo.SourceCode = fileText;
                 _assemblerSources.Add(sourceInfo.Id, sourceInfo);
@@ -455,22 +427,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private void txtAsm_TextChanged(object sender, TextChangedEventArgs e)
         {
             AssemblerConfig.RefreshControlStyles(txtAsm);
-            if (_assemblerSources.Count > 0)
-            {
-                AssemblerSourceInfo info;
-                _assemblerSources.TryGetValue(_actualAssemblerNode, out info);
-                if (info != null)
-                {
-                    _assemblerSources[_actualAssemblerNode].SetIsSaved(false);
-                    GetActualNode().Text = _assemblerSources[_actualAssemblerNode].GetDisplayName();
-                }
-            }
         }
 
         //Save button
         private void saveFileStripButton_Click(object sender, EventArgs e)
         {
-            AssemblerSourceInfo sourceInfo = _assemblerSources[_actualAssemblerNode];
+            AssemblerSourceInfo sourceInfo = _assemblerSources[_actualAssemblerNodeIndex];
             //save as if not a file
             if (!sourceInfo.IsFile())
             {
@@ -483,7 +445,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     sourceInfo.SetSourceNameOrFilename(saveDialog.FileName);
 
                     //change name of actual source
-                    TreeNode node = treeViewFiles.Nodes[_actualAssemblerNode];
+                    TreeNode node = treeViewFiles.Nodes[_actualAssemblerNodeIndex];
                     node.Text = sourceInfo.GetDisplayName();
                 }
                 else
@@ -501,7 +463,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private void toolStripButtonRefresh_Click(object sender, EventArgs e)
         {
             string dummy;
-            LoadAsm(_assemblerSources[_actualAssemblerNode].GetFileNameToSave(), out dummy);
+            AssemblerSourceInfo info;
+            _assemblerSources.TryGetValue(_actualAssemblerNodeIndex, out info);
+
+            if (info.IsFile())
+                LoadAsm(info.GetFileNameToSave(), out dummy);
         }
 
         //Form close
@@ -520,13 +486,23 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Sources treeview before node changed
         private void treeViewFiles_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
-            _assemblerSources[_actualAssemblerNode].SourceCode = txtAsm.Text;
+            if (GetActualSourceInfo() != null)
+            {
+                AssemblerSourceInfo info = GetActualSourceInfo();
+                if (info.IsSourceEqual(txtAsm.Text) == false)
+                {
+                    info.SetIsSaved(false);
+                }
+                info.SourceCode = txtAsm.Text;
+            }
+            if (treeViewFiles.SelectedNode != null)
+                treeViewFiles.SelectedNode.Text = GetActualSourceInfo().GetDisplayName();
         }
         //Sources treeview after node changed
         private void treeViewFiles_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            _actualAssemblerNode = ConvertRadix.ParseUInt16(e.Node.Tag.ToString(), 10);
-            this.txtAsm.Text = _assemblerSources[_actualAssemblerNode].SourceCode;
+            _actualAssemblerNodeIndex = ConvertRadix.ParseUInt16(e.Node.Tag.ToString(), 10);
+            this.txtAsm.Text = _assemblerSources[_actualAssemblerNodeIndex].SourceCode;
         }
 
         //Z80 source code(Libs)
@@ -630,6 +606,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             else
                 return treeViewFiles.Nodes[0];
         }
+        private AssemblerSourceInfo GetActualSourceInfo()
+        {
+            //TreeNode nodeAct = GetActualNode();
+            AssemblerSourceInfo info;
+            _assemblerSources.TryGetValue(_actualAssemblerNodeIndex, out info);
+            return info;
+        }
         #endregion GUI
 
         #region File operations
@@ -678,11 +661,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 this.richCompileMessages.AppendInfo("File " + i_fileName + " saved!");
 
                 AssemblerSourceInfo info;
-                _assemblerSources.TryGetValue(_actualAssemblerNode, out info);
+                _assemblerSources.TryGetValue(_actualAssemblerNodeIndex, out info);
                 if (info != null)
                 {
-                    _assemblerSources[_actualAssemblerNode].SetIsSaved(true);
-                    GetActualNode().Text = _assemblerSources[_actualAssemblerNode].GetDisplayName();
+                    _assemblerSources[_actualAssemblerNodeIndex].SetIsSaved(true);
+                    GetActualNode().Text = _assemblerSources[_actualAssemblerNodeIndex].GetDisplayName();
                 }
                 return true;
             }
@@ -747,6 +730,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             {
                 IsSaved = i_isSaved;
             }
+            public bool IsSourceEqual(string i_sourceActual)
+            {
+                return i_sourceActual == this.SourceCode;
+            }
             public void SetSourceNameOrFilename(string i_newName)
             {
                 if (!_isFile) //if it is not file
@@ -781,7 +768,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 _assemblerSources.Remove(i_sourceIndex);
             if (_assemblerSources.Count > 0)
             {
-                _actualAssemblerNode = 0;
+                _actualAssemblerNodeIndex = 0;
                 treeViewFiles.SelectedNode = treeViewFiles.Nodes[0];
             }
         }
@@ -829,7 +816,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     sourceInfo.SetSourceNameOrFilename(e.Label);
                 }
 
-                _actualAssemblerNode = index;
+                _actualAssemblerNodeIndex = index;
             }
         }
 
