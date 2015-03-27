@@ -40,7 +40,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             //Symbols list view
             listViewSymbols.View = View.Details;
-            listViewSymbols.Columns.Add("      Name      ", -2, HorizontalAlignment.Center);
+            listViewSymbols.Columns.Add("Name    ", -2, HorizontalAlignment.Center);
             listViewSymbols.Columns.Add("Addr", -2, HorizontalAlignment.Left);
 
             txtAsm.DoCaretVisible();
@@ -118,9 +118,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 {
                     /*if( chckbxMemory.Checked )
                         asmToCompileOrFileName += "org " + textMemAdress.Text + "\n";*/
-
-                    asmToCompileOrFileName += txtAsm.Text;
-                    compileOption = "--bin";
+                    if (GetActualSourceInfo().IsFile())
+                    {
+                        asmToCompileOrFileName = GetActualSourceInfo().GetFileNameToSave();
+                        compileOption = "--binfile";
+                    }
+                    else
+                    {
+                        asmToCompileOrFileName += txtAsm.Text;
+                        compileOption = "--bin";
+                    }
                 }
 
                 //fixed (byte* pcompiledOut = &compiledOut[0])
@@ -312,6 +319,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         }
 
         #region GUI methods
+        private bool _eventsDisabled = false;
+
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -410,17 +419,24 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 if (LoadAsm(loadDialog.FileName, out fileText) == false)
                     return;
 
-                TreeNode node = new TreeNode(Path.GetFileName(loadDialog.FileName));
                 AssemblerSourceInfo sourceInfo = new AssemblerSourceInfo(loadDialog.FileName, true);
+                sourceInfo.SetIsFile();
+                sourceInfo.SetIsSaved(true);
+                sourceInfo.SetSourceNameOrFilename(loadDialog.FileName);
+                sourceInfo.SetSourceCode(fileText);
+                _actualAssemblerNodeIndex = AddNewSource(sourceInfo);
+
+                //_assemblerSources.Add(sourceInfo.Id, sourceInfo);
+
+                TreeNode node = new TreeNode(Path.GetFileName(loadDialog.FileName));
                 node.ToolTipText = loadDialog.FileName;
                 node.Checked = true;
-                node.Tag = sourceInfo.Id = _actualAssemblerNodeIndex = SourceInfo_GetNextId();
-
-                this.txtAsm.Text = sourceInfo.SourceCode = fileText;
-                _assemblerSources.Add(sourceInfo.Id, sourceInfo);
-
+                node.Tag = _actualAssemblerNodeIndex;
                 treeViewFiles.Nodes.Add(node);
+                txtAsm.Text = sourceInfo.GetSourceCode();
+                _eventsDisabled = true;
                 treeViewFiles.SelectedNode = node;
+                _eventsDisabled = false;
             }
         }
 
@@ -456,18 +472,41 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
 
             SaveAsm(sourceInfo.GetFileNameToSave());
-            sourceInfo.SourceCode = txtAsm.Text;
+            sourceInfo.SetSourceCode( txtAsm.Text );
         }
 
         //Refresh button
         private void toolStripButtonRefresh_Click(object sender, EventArgs e)
         {
-            string dummy;
             AssemblerSourceInfo info;
             _assemblerSources.TryGetValue(_actualAssemblerNodeIndex, out info);
 
-            if (info.IsFile())
-                LoadAsm(info.GetFileNameToSave(), out dummy);
+            if (info != null)
+            {
+                string dummy;
+                if (info.IsFile())
+                    if(LoadAsm(info.GetFileNameToSave(), out dummy))
+                    {
+                        info.SetSourceCode(dummy);
+                        info.SetIsSaved(true);
+                        txtAsm.Text = dummy;
+                    }
+
+                RefreshFileList();
+            }
+        }
+        //Refresh file list treenode
+        private void RefreshFileList()
+        {
+            _eventsDisabled = true;
+            if (_assemblerSources.Count == treeViewFiles.Nodes.Count)
+            {
+                foreach (TreeNode node in treeViewFiles.Nodes)
+                {
+                    node.Text = _assemblerSources[(int)node.Tag].GetDisplayName();
+                }
+            }
+            _eventsDisabled = false;
         }
 
         //Form close
@@ -486,6 +525,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Sources treeview before node changed
         private void treeViewFiles_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
+            if (_eventsDisabled)
+                return;
             if (GetActualSourceInfo() != null)
             {
                 AssemblerSourceInfo info = GetActualSourceInfo();
@@ -493,7 +534,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 {
                     info.SetIsSaved(false);
                 }
-                info.SourceCode = txtAsm.Text;
+                info.SetSourceCode( txtAsm.Text );
             }
             if (treeViewFiles.SelectedNode != null)
                 treeViewFiles.SelectedNode.Text = GetActualSourceInfo().GetDisplayName();
@@ -501,8 +542,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Sources treeview after node changed
         private void treeViewFiles_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (_eventsDisabled)
+                return;
+
             _actualAssemblerNodeIndex = ConvertRadix.ParseUInt16(e.Node.Tag.ToString(), 10);
-            this.txtAsm.Text = _assemblerSources[_actualAssemblerNodeIndex].SourceCode;
+            this.txtAsm.Text = _assemblerSources[_actualAssemblerNodeIndex].GetSourceCode();
         }
 
         //Z80 source code(Libs)
@@ -527,6 +571,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                               "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn", "rra", "rla", "sbc", "rst",
                                               "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "equ", "rrca" };
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
+
+            //ToDo: parse brackets; e.g.: ld(hl... is not parsed correctly
 
             string codeFormatted = String.Empty;
             foreach(string line in strAsmLines)
@@ -677,7 +723,18 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             private int _id;
             public int Id{get { return this._id; } set{ if(value >= 0) this._id = value; }}
 
-            public string SourceCode{ get; set; }
+            private string _sourceCode;
+            public string GetSourceCode()
+            {
+                return _sourceCode;
+            }
+            public void SetSourceCode(string i_newSourceCode)
+            {
+                if (i_newSourceCode != null)
+                    _sourceCode = i_newSourceCode;
+                else
+                    _sourceCode = String.Empty;
+            }
 
             private  bool _isFile { get; set; }
             private bool IsSaved { get; set; }
@@ -690,7 +747,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 SourceName = i_sourceName;
                 _isFile = i_isFile;
                 IsSaved = true;
-                _fileName = SourceCode = string.Empty;
+                _fileName = _sourceCode = string.Empty;
             }
 
             public string GetFileNameToSave()
@@ -732,7 +789,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
             public bool IsSourceEqual(string i_sourceActual)
             {
-                return i_sourceActual == this.SourceCode;
+                return i_sourceActual == this._sourceCode;
             }
             public void SetSourceNameOrFilename(string i_newName)
             {
@@ -757,7 +814,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         {
             i_sourceCandidate.Id = SourceInfo_GetNextId();
             if (i_sourceCandidate.Id == 0) //there were none
-                i_sourceCandidate.SourceCode = txtAsm.Text;
+                i_sourceCandidate.SetSourceCode( txtAsm.Text );
             _assemblerSources.Add(i_sourceCandidate.Id, i_sourceCandidate);
 
             return i_sourceCandidate.Id;
@@ -769,8 +826,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             if (_assemblerSources.Count > 0)
             {
                 _actualAssemblerNodeIndex = 0;
+                this.txtAsm.Text = _assemblerSources.FirstOrDefault().Value.GetSourceCode(); //setting to first in list
                 treeViewFiles.SelectedNode = treeViewFiles.Nodes[0];
             }
+            else
+                this.txtAsm.Text = String.Empty;
         }
         private int SourceInfo_GetNextId()
         {
