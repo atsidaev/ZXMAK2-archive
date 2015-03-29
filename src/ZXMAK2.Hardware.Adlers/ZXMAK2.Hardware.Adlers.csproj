@@ -108,6 +108,12 @@
     <Compile Include="Views\CustomControls\EventLogger.Designer.cs">
       <DependentUpon>EventLogger.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\CustomControls\ListViewCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\CustomControls\ListViewCustom.Designer.cs">
+      <DependentUpon>ListViewCustom.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\FormCPU.cs">
       <SubType>Form</SubType>
     </Compile>

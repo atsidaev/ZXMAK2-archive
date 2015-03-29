@@ -57,15 +57,15 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.treeViewFiles = new System.Windows.Forms.TreeView();
             this.buttonClearAssemblerLog = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.richCompileMessages = new ZXMAK2.Hardware.Adlers.Views.CustomControls.EventLogger();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.ctxMenuAssemblerCommands = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.btnFormatCode = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.listViewSymbols = new System.Windows.Forms.ListView();
+            this.listViewSymbols = new ZXMAK2.Hardware.Adlers.Views.CustomControls.ListViewCustom();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.richCompileMessages = new ZXMAK2.Hardware.Adlers.Views.CustomControls.EventLogger();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.toolMenu.SuspendLayout();
@@ -79,11 +79,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtAsm
@@ -117,7 +117,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.txtAsm.Paddings = new System.Windows.Forms.Padding(0);
             this.txtAsm.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtAsm.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAsm.ServiceColors")));
-            this.txtAsm.Size = new System.Drawing.Size(536, 541);
+            this.txtAsm.Size = new System.Drawing.Size(516, 541);
             this.txtAsm.TabIndex = 0;
             this.txtAsm.Zoom = 100;
             this.txtAsm.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.txtAsm_TextChanged);
@@ -340,7 +340,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1});
             this.treeViewFiles.ShowNodeToolTips = true;
-            this.treeViewFiles.Size = new System.Drawing.Size(131, 381);
+            this.treeViewFiles.Size = new System.Drawing.Size(151, 381);
             this.treeViewFiles.TabIndex = 8;
             this.treeViewFiles.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeViewFiles_AfterLabelEdit);
             this.treeViewFiles.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewFiles_BeforeSelect);
@@ -372,9 +372,23 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.richCompileMessages);
-            this.splitContainer1.Size = new System.Drawing.Size(536, 677);
+            this.splitContainer1.Size = new System.Drawing.Size(516, 677);
             this.splitContainer1.SplitterDistance = 541;
             this.splitContainer1.TabIndex = 11;
+            // 
+            // richCompileMessages
+            // 
+            this.richCompileMessages.BackColor = System.Drawing.Color.Black;
+            this.richCompileMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.richCompileMessages.Font = new System.Drawing.Font("Consolas", 9F);
+            this.richCompileMessages.ForeColor = System.Drawing.Color.Green;
+            this.richCompileMessages.Location = new System.Drawing.Point(0, 0);
+            this.richCompileMessages.Name = "richCompileMessages";
+            this.richCompileMessages.ReadOnly = true;
+            this.richCompileMessages.Size = new System.Drawing.Size(516, 132);
+            this.richCompileMessages.TabIndex = 5;
+            this.richCompileMessages.Text = "";
+            this.richCompileMessages.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.richCompileMessages_MouseDoubleClick);
             // 
             // splitter1
             // 
@@ -389,12 +403,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.ctxMenuAssemblerCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnFormatCode});
             this.ctxMenuAssemblerCommands.Name = "ctxMenuAssemblerCommands";
-            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(137, 26);
+            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(144, 26);
             // 
             // btnFormatCode
             // 
             this.btnFormatCode.Name = "btnFormatCode";
-            this.btnFormatCode.Size = new System.Drawing.Size(136, 22);
+            this.btnFormatCode.Size = new System.Drawing.Size(143, 22);
             this.btnFormatCode.Text = "Format Code";
             this.btnFormatCode.Click += new System.EventHandler(this.btnFormatCode_Click);
             // 
@@ -404,7 +418,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(137, 273);
+            this.groupBox2.Size = new System.Drawing.Size(157, 273);
             this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Symbols";
@@ -412,9 +426,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // listViewSymbols
             // 
             this.listViewSymbols.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewSymbols.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.listViewSymbols.FullRowSelect = true;
+            this.listViewSymbols.GridLines = true;
             this.listViewSymbols.Location = new System.Drawing.Point(3, 16);
+            this.listViewSymbols.MultiSelect = false;
             this.listViewSymbols.Name = "listViewSymbols";
-            this.listViewSymbols.Size = new System.Drawing.Size(131, 254);
+            this.listViewSymbols.Size = new System.Drawing.Size(151, 254);
             this.listViewSymbols.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listViewSymbols.TabIndex = 0;
             this.listViewSymbols.UseCompatibleStateImageBehavior = false;
@@ -435,19 +453,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer1);
             this.splitContainer2.Size = new System.Drawing.Size(677, 677);
-            this.splitContainer2.SplitterDistance = 137;
+            this.splitContainer2.SplitterDistance = 157;
             this.splitContainer2.TabIndex = 14;
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.treeViewFiles);
-            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Location = new System.Drawing.Point(0, 0);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(137, 400);
-            this.groupBox3.TabIndex = 9;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Files:";
             // 
             // splitContainer3
             // 
@@ -463,23 +470,20 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
-            this.splitContainer3.Size = new System.Drawing.Size(137, 677);
+            this.splitContainer3.Size = new System.Drawing.Size(157, 677);
             this.splitContainer3.SplitterDistance = 400;
             this.splitContainer3.TabIndex = 15;
             // 
-            // richCompileMessages
+            // groupBox3
             // 
-            this.richCompileMessages.BackColor = System.Drawing.Color.Black;
-            this.richCompileMessages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richCompileMessages.Font = new System.Drawing.Font("Consolas", 9F);
-            this.richCompileMessages.ForeColor = System.Drawing.Color.Green;
-            this.richCompileMessages.Location = new System.Drawing.Point(0, 0);
-            this.richCompileMessages.Name = "richCompileMessages";
-            this.richCompileMessages.ReadOnly = true;
-            this.richCompileMessages.Size = new System.Drawing.Size(536, 132);
-            this.richCompileMessages.TabIndex = 5;
-            this.richCompileMessages.Text = "";
-            this.richCompileMessages.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.richCompileMessages_MouseDoubleClick);
+            this.groupBox3.Controls.Add(this.treeViewFiles);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox3.Location = new System.Drawing.Point(0, 0);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(157, 400);
+            this.groupBox3.TabIndex = 9;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Files:";
             // 
             // Assembler
             // 
@@ -517,11 +521,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -558,7 +562,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private System.Windows.Forms.ContextMenuStrip ctxMenuAssemblerCommands;
         private System.Windows.Forms.ToolStripMenuItem btnFormatCode;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.ListView listViewSymbols;
+        private ZXMAK2.Hardware.Adlers.Views.CustomControls.ListViewCustom listViewSymbols;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.GroupBox groupBox3;

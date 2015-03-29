@@ -40,8 +40,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             //Symbols list view
             listViewSymbols.View = View.Details;
-            listViewSymbols.Columns.Add("Name    ", -2, HorizontalAlignment.Center);
-            listViewSymbols.Columns.Add("Addr", -2, HorizontalAlignment.Left);
+            listViewSymbols.Columns.Add("Name      ", -2, HorizontalAlignment.Center);
+            listViewSymbols.Columns.Add("Addr ", -2, HorizontalAlignment.Left);
 
             txtAsm.DoCaretVisible();
             txtAsm.IsChanged = false;
@@ -240,6 +240,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                             foreach (var item in symbolsParsed)
                                             {
                                                 ListViewItem itemToAdd = new ListViewItem(new[] { item.Key, String.Format("#{0:X2}", item.Value) });
+                                                itemToAdd.Tag = String.Format("#{0:X2}", item.Value); //will be parsed in ListViewCustom
                                                 //itemToAdd.Tag = tag;
                                                 this.listViewSymbols.Items.Add(itemToAdd);
                                             }
@@ -572,7 +573,20 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                               "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "equ", "rrca" };
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
 
-            //ToDo: parse brackets; e.g.: ld(hl... is not parsed correctly
+            //step 1
+            for(int lineCounter = 0; lineCounter < strAsmLines.Length; lineCounter++)
+            {
+                string[] lineSplitted = strAsmLines[lineCounter].Split('(');
+                strAsmLines[lineCounter] = String.Empty;
+                bool isFirst = true;
+                foreach (string token in lineSplitted)
+                {
+                    if( !isFirst )
+                        strAsmLines[lineCounter] += "(";
+                    strAsmLines[lineCounter] += token + " ";
+                    isFirst = false;
+                }
+            }
 
             string codeFormatted = String.Empty;
             foreach(string line in strAsmLines)
@@ -580,9 +594,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 bool isNewLine = true; bool isInComment = false; bool addNewlineAtLineEnd = true;
 
                 string[] lineSplitted = Regex.Split(line, @"\s+", RegexOptions.IgnoreCase);
-                foreach (string strToken in lineSplitted)
+                foreach (string token in lineSplitted)
                 {
-                    if (strToken == String.Empty)
+                    if (token == String.Empty)
                     {
                         if (lineSplitted.Length == 1)
                         {
@@ -591,35 +605,35 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         }
                         continue;
                     }
-                    if (strToken.StartsWith(";"))
+                    if (token.StartsWith(";"))
                     {
                         if (!isInComment)
                         {
                             isInComment = true;
-                            codeFormatted += strToken + " ";
+                            codeFormatted += token + " ";
                             continue;
                         }
                         isInComment = false;
                     }
                     if (isInComment)
                     {
-                        codeFormatted += strToken + " ";
+                        codeFormatted += token + " ";
                         continue;
                     }
 
-                    if (opcodes.Contains(strToken.ToLower()))
+                    if (opcodes.Contains(token.ToLower()))
                     {
                         if (isNewLine)
                             codeFormatted += new String(' ', _tabSpace);
-                        codeFormatted += strToken + new String(' ', 6 - strToken.Length);
+                        codeFormatted += token + new String(' ', 6 - token.Length);
                     }
                     else
                     {
                         //label, compiler directive, ...
                         int spacesAfter = 1;
-                        if (_tabSpace > strToken.Length && isNewLine)
-                            spacesAfter = _tabSpace - strToken.Length;
-                        codeFormatted += strToken + new String(' ', spacesAfter);
+                        if (_tabSpace > token.Length && isNewLine)
+                            spacesAfter = _tabSpace - token.Length;
+                        codeFormatted += token + new String(' ', spacesAfter);
                     }
 
                     isNewLine = false;
