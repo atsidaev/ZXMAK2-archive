@@ -137,6 +137,30 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             return out_ParsedSymbols;
         }
 
+        public static List<string> ParseIncludes(string i_compiledFullPathFileName)
+        {
+            if (!File.Exists(i_compiledFullPathFileName))
+                return null;
+            string fileRootDir = FileTools.GetFileDirectory(i_compiledFullPathFileName);
+            string fileContent;
+            bool retCode = FileTools.ReadFile(i_compiledFullPathFileName, out fileContent);
+            if (!retCode || fileContent == null || fileContent.Length <= 0)
+                return null;
+
+            List<string> o_includes = new List<string>();
+            string[] sourceCodeParsed = Regex.Split(fileContent, @"\s+");
+            for( int counter = 0; counter < sourceCodeParsed.Length; counter++)
+            {
+                if (sourceCodeParsed[counter].ToLower() == "include" && counter + 1 < sourceCodeParsed.Length)
+                {
+                    string incFound = fileRootDir + sourceCodeParsed[++counter].Replace("\"", "");
+                    if (File.Exists(incFound))
+                        o_includes.Add(incFound);
+                }
+            }
+            return o_includes;
+        }
+
         static unsafe public string GetStringFromMemory(byte* i_pointer)
         {
             string retString = String.Empty;

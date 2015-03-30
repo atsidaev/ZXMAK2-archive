@@ -403,12 +403,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.ctxMenuAssemblerCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnFormatCode});
             this.ctxMenuAssemblerCommands.Name = "ctxMenuAssemblerCommands";
-            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(144, 26);
+            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(137, 26);
             // 
             // btnFormatCode
             // 
             this.btnFormatCode.Name = "btnFormatCode";
-            this.btnFormatCode.Size = new System.Drawing.Size(143, 22);
+            this.btnFormatCode.Size = new System.Drawing.Size(136, 22);
             this.btnFormatCode.Text = "Format Code";
             this.btnFormatCode.Click += new System.EventHandler(this.btnFormatCode_Click);
             // 
@@ -428,7 +428,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.listViewSymbols.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewSymbols.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.listViewSymbols.FullRowSelect = true;
-            this.listViewSymbols.GridLines = true;
             this.listViewSymbols.Location = new System.Drawing.Point(3, 16);
             this.listViewSymbols.MultiSelect = false;
             this.listViewSymbols.Name = "listViewSymbols";
@@ -436,6 +435,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.listViewSymbols.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listViewSymbols.TabIndex = 0;
             this.listViewSymbols.UseCompatibleStateImageBehavior = false;
+            this.listViewSymbols.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewSymbols_MouseDoubleClick);
             // 
             // splitContainer2
             // 
