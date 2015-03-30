@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using ZXMAK2.Hardware.Adlers.Views.CustomControls;
+using ZXMAK2.Hardware.Adlers.Core;
 
 namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
@@ -420,20 +421,41 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 if (LoadAsm(loadDialog.FileName, out fileText) == false)
                     return;
 
+                //new source code
                 AssemblerSourceInfo sourceInfo = new AssemblerSourceInfo(loadDialog.FileName, true);
                 sourceInfo.SetIsFile();
                 sourceInfo.SetIsSaved(true);
                 sourceInfo.SetSourceNameOrFilename(loadDialog.FileName);
                 sourceInfo.SetSourceCode(fileText);
                 _actualAssemblerNodeIndex = AddNewSource(sourceInfo);
-
-                //_assemblerSources.Add(sourceInfo.Id, sourceInfo);
-
+                //new node
                 TreeNode node = new TreeNode(Path.GetFileName(loadDialog.FileName));
+
+                //add subitems(includes)
+                List<string> includes = Compiler.ParseIncludes(loadDialog.FileName);
+                if( includes != null )
+                    foreach (string include in includes)
+                    {
+                        AssemblerSourceInfo includeInfo = new AssemblerSourceInfo(include, true);
+                        includeInfo.SetIsFile();
+                        includeInfo.SetIsSaved(true);
+                        includeInfo.SetSourceNameOrFilename(include);
+                        string includeFileContent;
+                        bool retCode = FileTools.ReadFile(include, out includeFileContent);
+                        if( retCode )
+                            includeInfo.SetSourceCode(includeFileContent);
+
+                        TreeNode incNode = new TreeNode(Path.GetFileName(include));
+                        incNode.ToolTipText = include;
+                        incNode.Checked = false;
+                        incNode.Tag = AddNewSource(includeInfo);
+                        node.Nodes.Add(incNode);
+                    }
                 node.ToolTipText = loadDialog.FileName;
                 node.Checked = true;
                 node.Tag = _actualAssemblerNodeIndex;
                 treeViewFiles.Nodes.Add(node);
+                //setting GUI
                 txtAsm.Text = sourceInfo.GetSourceCode();
                 _eventsDisabled = true;
                 treeViewFiles.SelectedNode = node;
@@ -546,8 +568,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             if (_eventsDisabled)
                 return;
 
-            _actualAssemblerNodeIndex = ConvertRadix.ParseUInt16(e.Node.Tag.ToString(), 10);
-            this.txtAsm.Text = _assemblerSources[_actualAssemblerNodeIndex].GetSourceCode();
+            if (e.Node.Tag != null)
+            {
+                _actualAssemblerNodeIndex = ConvertRadix.ParseUInt16(e.Node.Tag.ToString(), 10);
+                this.txtAsm.Text = _assemblerSources[_actualAssemblerNodeIndex].GetSourceCode();
+            }
         }
 
         //Z80 source code(Libs)
@@ -673,6 +698,38 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             _assemblerSources.TryGetValue(_actualAssemblerNodeIndex, out info);
             return info;
         }
+
+        private void listViewSymbols_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listViewSymbols.SelectedItems.Count == 1)
+            {
+                ListView.SelectedListViewItemCollection items = listViewSymbols.SelectedItems;
+
+                ListViewItem lvItem = items[0];
+                string label = lvItem.Text;
+
+                int labelLineIndex = -1;
+                for( int counter = 0; counter < txtAsm.Lines.Count; counter++ )
+                {
+                    string actLine = txtAsm.Lines[counter];
+                    string[] lineTokens = Regex.Split(actLine, @"\s+");
+                    if( lineTokens.Length > 0 && lineTokens != null )
+                    {
+                        if (lineTokens[0] == label || lineTokens[0] == label + ":")
+                        {
+                            labelLineIndex = counter;
+                            txtAsm.Focus();
+                            break;
+                        }
+                    }
+                }
+                if (labelLineIndex >= 0)
+                {
+                    txtAsm.Selection = new Range(txtAsm, labelLineIndex);
+                    txtAsm.DoSelectionVisible();
+                }
+            }
+        }
         #endregion GUI
 
         #region File operations
@@ -685,14 +742,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                 try
                 {
-                    FileInfo fileInfo = new FileInfo(i_fileName);
-                    int s_len = (int)fileInfo.Length;
-
-                    byte[] data = new byte[s_len];
-                    using (FileStream fs = new FileStream(i_fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-                        fs.Read(data, 0, data.Length);
-                    string asmCode = Encoding.UTF8.GetString(data, 0, data.Length);
-                    o_strFileText = asmCode;
+                    bool retCode = FileTools.ReadFile(i_fileName, out o_strFileText);
+                    if (!retCode)
+                        return retCode;
                     if (IsStartAdressInCode())
                         this.chckbxMemory.Checked = false;
                     checkMemory_CheckedChanged(null, null);
@@ -752,13 +804,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             private  bool _isFile { get; set; }
             private bool IsSaved { get; set; }
-            private string SourceName { get; set; } //empty when it is a file
+            private string _sourceName { get; set; } //empty when it is a file
 
             private string _fileName;
 
             public AssemblerSourceInfo(string i_sourceName, bool i_isFile)
             {
-                SourceName = i_sourceName;
+                _sourceName = i_sourceName;
                 _isFile = i_isFile;
                 IsSaved = true;
                 _fileName = _sourceCode = string.Empty;
@@ -767,21 +819,21 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             public string GetFileNameToSave()
             {
                 if (_fileName == string.Empty || !_isFile)
-                    return SourceName;
+                    return _sourceName;
                 else
                     return _fileName;
             }
             public string GetSourceName()
             {
-                return SourceName;
+                return _sourceName;
             }
             public string GetDisplayName()
             {
-                string fileName = SourceName;
+                string fileName = _sourceName;
 
-                if (SourceName.IndexOf(Path.DirectorySeparatorChar) != -1)
+                if (_sourceName.IndexOf(Path.DirectorySeparatorChar) != -1)
                 {
-                    string[] splitted = SourceName.Split(Path.DirectorySeparatorChar);
+                    string[] splitted = _sourceName.Split(Path.DirectorySeparatorChar);
                     fileName = splitted[splitted.Length-1];
                 }
                 if (!IsSaved)
@@ -808,7 +860,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             public void SetSourceNameOrFilename(string i_newName)
             {
                 if (!_isFile) //if it is not file
-                    SourceName = i_newName;
+                    _sourceName = i_newName;
                 else
                 {
                     int lastIndex = _fileName.LastIndexOf(Path.DirectorySeparatorChar);
@@ -816,10 +868,30 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     if (lastIndex != -1)
                     {
                         _fileName = _fileName.Substring(0, lastIndex) + Path.DirectorySeparatorChar + i_newName;
-                        SourceName = _fileName.Substring(0, lastIndex);
+                        _sourceName = i_newName;
                     }
                     else
-                        SourceName = _fileName = i_newName;
+                        _sourceName = _fileName = i_newName;
+                }
+            }
+            public string GetFileDirectory()
+            {
+                if (IsFile() && _fileName.Length > 1)
+                    return _fileName.Substring(0, _fileName.LastIndexOf(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
+                else
+                    return String.Empty;
+            }
+            public void RenameFile(string i_newName)
+            {
+                if (IsFile())
+                {
+                    string newFileWithFullPath = GetFileDirectory() + i_newName;
+                    if (File.Exists(_fileName))
+                        File.Move(_fileName, newFileWithFullPath);
+                    else
+                        SetIsSaved(false);
+                    _sourceName = i_newName;
+                    _fileName = newFileWithFullPath;
                 }
             }
         }
@@ -883,11 +955,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             TreeNode node = treeViewFiles.SelectedNode;
             if( node != null )
             {
+                if ( e.Label == null || e.Label == node.Text)
+                    return;
+
                 int index = (int)node.Tag;
                 AssemblerSourceInfo sourceInfo;
                 if( _assemblerSources != null && _assemblerSources.TryGetValue(index, out sourceInfo) )
                 {
-                    sourceInfo.SetSourceNameOrFilename(e.Label);
+                    sourceInfo.RenameFile(e.Label);
                 }
 
                 _actualAssemblerNodeIndex = index;
