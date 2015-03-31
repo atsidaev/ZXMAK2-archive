@@ -654,10 +654,10 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem4,
             this.menuDasmLoadBlock,
             this.menuDasmSaveBlock,
+            this.menuItemSaveDisassembly,
             this.menuItem8,
             this.menuItemCommentsSymbols,
             this.menuItem6,
-            this.menuItemSaveDisassembly,
             this.menuItem1,
             this.menuItemDasmRefresh});
             this.contextMenuDasm.Popup += new System.EventHandler(this.contextMenuDasm_Popup);
@@ -729,12 +729,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // menuItem8
             // 
-            this.menuItem8.Index = 10;
+            this.menuItem8.Index = 11;
             this.menuItem8.Text = "-";
             // 
             // menuItemCommentsSymbols
             // 
-            this.menuItemCommentsSymbols.Index = 11;
+            this.menuItemCommentsSymbols.Index = 12;
             this.menuItemCommentsSymbols.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItemInsertComment,
             this.menuItem12,
@@ -824,13 +824,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // menuItem6
             // 
-            this.menuItem6.Index = 12;
+            this.menuItem6.Index = 13;
             this.menuItem6.Text = "-";
             // 
             // menuItemSaveDisassembly
             // 
-            this.menuItemSaveDisassembly.Index = 13;
-            this.menuItemSaveDisassembly.Text = "Save disassembly";
+            this.menuItemSaveDisassembly.Index = 10;
+            this.menuItemSaveDisassembly.Text = "Save Disassembly";
             this.menuItemSaveDisassembly.Click += new System.EventHandler(this.menuItemSaveDisassembly_Click);
             // 
             // menuItem1

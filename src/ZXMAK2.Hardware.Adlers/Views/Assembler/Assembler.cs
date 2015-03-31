@@ -27,15 +27,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private int _actualAssemblerNodeIndex = 0;
         private Dictionary<int, AssemblerSourceInfo> _assemblerSources = new Dictionary<int, AssemblerSourceInfo>();
 
-        private IDebuggable m_spectrum;
+        //private IDebuggable m_spectrum;
+        private FormCpu m_debugger;
        
         //colors
         private static AssemblerColorConfig _ColorConfig;
         //instance(this)
         private static Assembler m_instance = null;
-        private Assembler(ref IDebuggable spectrum)
+        private Assembler(FormCpu spectrum)
         {
-            m_spectrum = spectrum;
+            m_debugger = spectrum;
 
             InitializeComponent();
 
@@ -67,11 +68,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 this.Text = "Assembler, " + String.Format("ver {0:0.##}", compilerVersion).Replace(',', '.');
         }
 
-        public static void Show(ref IDebuggable spectrum)
+        public static void Show(FormCpu i_formCpu)
         {
             if (m_instance == null || m_instance.IsDisposed)
             {
-                m_instance = new Assembler(ref spectrum);
+                m_instance = new Assembler(i_formCpu);
                 m_instance.LoadConfig();
                 m_instance.ShowInTaskbar = true;
                 m_instance.Show();
@@ -97,7 +98,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 return;
             }
 
-            if(validateCompile() == false)
+            if(ValidateCompile() == false)
                 return;
 
             unsafe
@@ -180,23 +181,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                 if ( compiled.iCompiledSize > 0)
                                 {
                                     //get address where to write the code
-                                    ushort memAdress = 0;
-                                    if (compileOption != "--bin" || !chckbxMemory.Checked) //binary
-                                        memAdress = (ushort)(compiled.czCompiled[0] + compiled.czCompiled[1] * 256);
-                                    else
-                                    {
-                                        try
-                                        {
-                                            memAdress = ConvertRadix.ConvertNumberWithPrefix(textMemAdress.Text);
-                                        }
-                                        catch(CommandParseException exc)
-                                        {
-                                            Locator.Resolve<IUserMessage>().Error(String.Format("Incorrect memory address!\n{0}", exc.Message));
-                                            return;
-                                        }
-                                    }
+                                    ushort memAdress = (ushort)(compiled.czCompiled[0] + compiled.czCompiled[1] * 256);
 
-                                    if (memAdress == 0 && this.chckbxMemory.Checked)
+                                    /*if (memAdress == 0 && this.chckbxMemory.Checked)
                                     {
                                         try
                                         {
@@ -207,7 +194,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                             Locator.Resolve<IUserMessage>().Error(String.Format("Incorrect memory address!\n{0}", exc.Message));
                                             return;
                                         }
-                                    }
+                                    }*/
                                     if (memAdress >= 0x4000) //RAM start
                                     {
                                         Stopwatch watch = new Stopwatch();
@@ -216,7 +203,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                             compiled.iCompiledSize = 0xFFFF - memAdress; //prevent memory overload
                                         byte[] memBytesCompiled = ConvertRadix.PointerToManagedType(compiled.czCompiled + 2/*omit memory address*/, compiled.iCompiledSize);
                                         if( memBytesCompiled != null )
-                                            m_spectrum.WriteMemory(memAdress, memBytesCompiled, 0, compiled.iCompiledSize);
+                                            m_debugger.GetVMKernel().WriteMemory(memAdress, memBytesCompiled, 0, compiled.iCompiledSize);
                                         watch.Stop();
 
                                         TimeSpan time = watch.Elapsed;
@@ -257,13 +244,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
         }
 
-        private bool validateCompile()
+        private bool ValidateCompile()
         {
-            bool startAdressManual = chckbxMemory.Checked;
-            bool startAdressInCode = this.IsStartAdressInCode();
-
             Directory.SetCurrentDirectory(Utils.GetAppFolder());
-
             if (!File.Exists(@"Pasmo2.dll"))
             {
                 Locator.Resolve<IUserMessage>().Error(
@@ -279,45 +262,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 return false;
             }
 
-            if (startAdressInCode == false && startAdressManual == false)
+            if (Compiler.IsStartAdressInCode(txtAsm.Lines) == false)
             {
                 //start adress for compilation not found
-                Locator.Resolve<IUserMessage>()
-                    .Warning(
-                        "Compilation failed(missing start address)\n\n" +
-                        "Either check the check box for memory address(Compile to -> Memory)\n" + 
-                        "or define it using 'ORG' instruction in source code !\n\n" +
-                        "Compilation is canceled.");
+                Locator.Resolve<IUserMessage>().Error("Compile validation failed...\n\nMissing start address(ORG instruction).");
                 return false;
-            }
-            if (startAdressInCode && startAdressManual)
-            {
-                //duplicate adress for compilation
-                /*Locator.Resolve<IUserMessage>().Warning(
-                    "Compilation failed(duplicity in start address)\n\n" +
-                    "Either UNcheck the check box for memory address(Compile to -> Memory)\n" +
-                    "or remove ALL 'ORG' instructions from the source code !\n\n" +
-                    "Compilation is canceled.");
-                return false;*/
-                //org has higher priority
-                this.checkMemory_CheckedChanged(null, null);
             }
 
             return true;
-        }
-
-        private bool IsStartAdressInCode()
-        {
-            foreach (string line in this.txtAsm.Lines)
-            {
-                string toCheck = line.Split(';')[0].Trim(); //remove comments
-                Match match = Regex.Match(toCheck, @"\borg\b", RegexOptions.IgnoreCase);
-                if (match.Success)
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         #region GUI methods
@@ -326,11 +278,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Hide();
-        }
-
-        private void checkMemory_CheckedChanged(object sender, EventArgs e)
-        {
-            textMemAdress.Enabled = chckbxMemory.Checked;
         }
 
         private void assemblerForm_KeyDown(object sender, KeyEventArgs e)
@@ -589,38 +536,94 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 ctxMenuAssemblerCommands.Show(txtAsm, e.Location);
         }
 
+        //Context menu - Symbols(compiled by Pasmo2.dll)
+        private void listViewSymbols_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+                ctxmenuSymbols.Show(listViewSymbols, e.Location);
+        }
+        private void noteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listViewSymbols.SelectedItems.Count >= 1)
+            {
+                ListView.SelectedListViewItemCollection items = listViewSymbols.SelectedItems;
+                foreach (ListViewItem item in items)
+                    m_debugger.InsertCodeNote("; " + item.Text, ConvertRadix.ConvertNumberWithPrefix(item.Tag.ToString()));
+            }
+        }
+        private void commentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listViewSymbols.SelectedItems.Count >= 1)
+            {
+                ListView.SelectedListViewItemCollection items = listViewSymbols.SelectedItems;
+                foreach(ListViewItem item in items )
+                    m_debugger.InsertCodeComment(item.Text, ConvertRadix.ConvertNumberWithPrefix(item.Tag.ToString()));
+            }
+        }
+
         //Format code
         private void btnFormatCode_Click(object sender, EventArgs e)
         {
             //ToDo: we need a list of all assembler commands here; Regex rgx = new Regex(@"\b(?!push|djnz)\b[ ]+\b", RegexOptions.IgnoreCase | RegexOptions.Multiline);
             string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "adc", "and", "sub", "xor", "jr", "jp", "exx",
                                               "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn", "rra", "rla", "sbc", "rst",
-                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "equ", "rrca" };
+                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "rrca"};
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
 
-            //step 1
+            //step 1: add whitespace after each ',' and '('
             for(int lineCounter = 0; lineCounter < strAsmLines.Length; lineCounter++)
             {
-                string[] lineSplitted = strAsmLines[lineCounter].Split('(');
-                strAsmLines[lineCounter] = String.Empty;
-                bool isFirst = true;
-                foreach (string token in lineSplitted)
+                //while (Regex.IsMatch(strAsmLines[lineCounter], @"[,\(]\S+"))
                 {
-                    if( !isFirst )
-                        strAsmLines[lineCounter] += "(";
-                    strAsmLines[lineCounter] += token + " ";
-                    isFirst = false;
+                    int index = strAsmLines[lineCounter].IndexOf(",");
+                    while (index >= 0)
+                    {
+                        if (index < strAsmLines[lineCounter].Length - 1)
+                        {
+                            if (strAsmLines[lineCounter][index + 1] != ' ')
+                                strAsmLines[lineCounter] = strAsmLines[lineCounter].Substring(0, index) + ", " + strAsmLines[lineCounter].Substring(index + 1, strAsmLines[lineCounter].Length - index - 1);
+                        }
+                        index = strAsmLines[lineCounter].IndexOf(",", index+1);
+                    }
+
+                    //whitespace after each bracket "("
+                    index = strAsmLines[lineCounter].IndexOf("(");
+                    while (index >= 0)
+                    {
+                        if (index > 0)
+                        {
+                            if (strAsmLines[lineCounter][index - 1] != ' ')
+                                strAsmLines[lineCounter] = strAsmLines[lineCounter].Substring(0, index) + " (" + strAsmLines[lineCounter].Substring(index + 1, strAsmLines[lineCounter].Length - index - 1);
+                        }
+                        index = strAsmLines[lineCounter].IndexOf("(", index + 1);
+                    }
                 }
             }
 
             string codeFormatted = String.Empty;
             foreach(string line in strAsmLines)
             {
-                bool isNewLine = true; bool isInComment = false; bool addNewlineAtLineEnd = true;
+                bool isNewLine = true; bool isInComment = false; bool addNewlineAtLineEnd = true; bool bIsInCompilerDirective = false;
 
                 string[] lineSplitted = Regex.Split(line, @"\s+", RegexOptions.IgnoreCase);
                 foreach (string token in lineSplitted)
                 {
+                    //compiler directives
+                    if( Regex.IsMatch(token, AssemblerConfig.regexCompilerDirectives) )
+                    {
+                        codeFormatted += token + new String(' ', 6 - token.Length);
+                        bIsInCompilerDirective = true;
+                        continue;
+                    }
+                    if (bIsInCompilerDirective)
+                    {
+                        if (token == String.Empty) //newline?
+                            bIsInCompilerDirective = false;
+                        else
+                            codeFormatted += token + " ";
+                        continue;
+                    }
+
                     if (token == String.Empty)
                     {
                         if (lineSplitted.Length == 1)
@@ -649,15 +652,19 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     if (opcodes.Contains(token.ToLower()))
                     {
                         if (isNewLine)
+                        {
                             codeFormatted += new String(' ', _tabSpace);
+                            bIsInCompilerDirective = false;
+                        }
                         codeFormatted += token + new String(' ', 6 - token.Length);
                     }
                     else
                     {
                         //label, compiler directive, ...
                         int spacesAfter = 1;
-                        if (_tabSpace > token.Length && isNewLine)
+                        if ((_tabSpace > token.Length && isNewLine))
                             spacesAfter = _tabSpace - token.Length;
+
                         codeFormatted += token + new String(' ', spacesAfter);
                     }
 
@@ -745,9 +752,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     bool retCode = FileTools.ReadFile(i_fileName, out o_strFileText);
                     if (!retCode)
                         return retCode;
-                    if (IsStartAdressInCode())
-                        this.chckbxMemory.Checked = false;
-                    checkMemory_CheckedChanged(null, null);
 
                     if (this.richCompileMessages.Text.Trim() != String.Empty)
                         this.richCompileMessages.Text += "\n\n";
@@ -1109,6 +1113,5 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             return i_cssString.Contains(";text-decoration:line-through;");
         }
         #endregion
-
     }
 }

@@ -36,16 +36,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.txtAsm = new FastColoredTextBoxNS.FastColoredTextBox();
             this.btnCompile = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.textSaveFileName = new System.Windows.Forms.TextBox();
-            this.textMemAdress = new System.Windows.Forms.TextBox();
-            this.checkFile = new System.Windows.Forms.CheckBox();
-            this.chckbxMemory = new System.Windows.Forms.CheckBox();
             this.toolMenu = new System.Windows.Forms.ToolStrip();
             this.toolStripNewSource = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.compileToolStrip = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButtonRefresh = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonReloadFile = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.openFileStripButton = new System.Windows.Forms.ToolStripButton();
             this.saveFileStripButton = new System.Windows.Forms.ToolStripButton();
@@ -66,8 +61,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.checkBoxGenerateBasic = new System.Windows.Forms.CheckBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ctxmenuSymbols = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addToDebuggerAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.commentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.noteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
-            this.groupBox1.SuspendLayout();
             this.toolMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -84,6 +84,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.ctxmenuSymbols.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtAsm
@@ -117,7 +119,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.txtAsm.Paddings = new System.Windows.Forms.Padding(0);
             this.txtAsm.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtAsm.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAsm.ServiceColors")));
-            this.txtAsm.Size = new System.Drawing.Size(516, 541);
+            this.txtAsm.Size = new System.Drawing.Size(542, 552);
             this.txtAsm.TabIndex = 0;
             this.txtAsm.Zoom = 100;
             this.txtAsm.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.txtAsm_TextChanged);
@@ -126,7 +128,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // btnCompile
             // 
             this.btnCompile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCompile.Location = new System.Drawing.Point(691, 172);
+            this.btnCompile.Location = new System.Drawing.Point(728, 35);
             this.btnCompile.Name = "btnCompile";
             this.btnCompile.Size = new System.Drawing.Size(85, 23);
             this.btnCompile.TabIndex = 1;
@@ -138,66 +140,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(691, 201);
+            this.btnClose.Location = new System.Drawing.Point(728, 64);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(85, 23);
             this.btnClose.TabIndex = 2;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.textSaveFileName);
-            this.groupBox1.Controls.Add(this.textMemAdress);
-            this.groupBox1.Controls.Add(this.checkFile);
-            this.groupBox1.Controls.Add(this.chckbxMemory);
-            this.groupBox1.Location = new System.Drawing.Point(691, 35);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(132, 131);
-            this.groupBox1.TabIndex = 6;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Compile to:";
-            // 
-            // textSaveFileName
-            // 
-            this.textSaveFileName.Enabled = false;
-            this.textSaveFileName.Location = new System.Drawing.Point(7, 95);
-            this.textSaveFileName.Name = "textSaveFileName";
-            this.textSaveFileName.Size = new System.Drawing.Size(119, 20);
-            this.textSaveFileName.TabIndex = 3;
-            // 
-            // textMemAdress
-            // 
-            this.textMemAdress.Location = new System.Drawing.Point(7, 46);
-            this.textMemAdress.Name = "textMemAdress";
-            this.textMemAdress.Size = new System.Drawing.Size(119, 20);
-            this.textMemAdress.TabIndex = 2;
-            this.textMemAdress.Text = "#9C40";
-            // 
-            // checkFile
-            // 
-            this.checkFile.AutoSize = true;
-            this.checkFile.Location = new System.Drawing.Point(7, 72);
-            this.checkFile.Name = "checkFile";
-            this.checkFile.Size = new System.Drawing.Size(42, 17);
-            this.checkFile.TabIndex = 1;
-            this.checkFile.Text = "File";
-            this.checkFile.UseVisualStyleBackColor = true;
-            // 
-            // chckbxMemory
-            // 
-            this.chckbxMemory.AutoSize = true;
-            this.chckbxMemory.Checked = true;
-            this.chckbxMemory.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chckbxMemory.Location = new System.Drawing.Point(7, 22);
-            this.chckbxMemory.Name = "chckbxMemory";
-            this.chckbxMemory.Size = new System.Drawing.Size(63, 17);
-            this.chckbxMemory.TabIndex = 0;
-            this.chckbxMemory.Text = "Memory";
-            this.chckbxMemory.UseVisualStyleBackColor = true;
-            this.chckbxMemory.CheckedChanged += new System.EventHandler(this.checkMemory_CheckedChanged);
             // 
             // toolMenu
             // 
@@ -207,7 +156,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.toolStripNewSource,
             this.toolStripSeparator2,
             this.compileToolStrip,
-            this.toolStripButtonRefresh,
+            this.toolStripButtonReloadFile,
             this.toolStripSeparator1,
             this.openFileStripButton,
             this.saveFileStripButton,
@@ -218,7 +167,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.toolCodeLibrary});
             this.toolMenu.Location = new System.Drawing.Point(0, 0);
             this.toolMenu.Name = "toolMenu";
-            this.toolMenu.Size = new System.Drawing.Size(835, 35);
+            this.toolMenu.Size = new System.Drawing.Size(868, 35);
             this.toolMenu.TabIndex = 7;
             this.toolMenu.Text = "toolStrip1";
             // 
@@ -247,15 +196,15 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.compileToolStrip.Text = "Compile(F5)";
             this.compileToolStrip.Click += new System.EventHandler(this.compileToolStrip_Click);
             // 
-            // toolStripButtonRefresh
+            // toolStripButtonReloadFile
             // 
-            this.toolStripButtonRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonRefresh.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonRefresh.Image")));
-            this.toolStripButtonRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonRefresh.Name = "toolStripButtonRefresh";
-            this.toolStripButtonRefresh.Size = new System.Drawing.Size(32, 32);
-            this.toolStripButtonRefresh.Text = "Refresh";
-            this.toolStripButtonRefresh.Click += new System.EventHandler(this.toolStripButtonRefresh_Click);
+            this.toolStripButtonReloadFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonReloadFile.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonReloadFile.Image")));
+            this.toolStripButtonReloadFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonReloadFile.Name = "toolStripButtonReloadFile";
+            this.toolStripButtonReloadFile.Size = new System.Drawing.Size(32, 32);
+            this.toolStripButtonReloadFile.Text = "Reload file";
+            this.toolStripButtonReloadFile.Click += new System.EventHandler(this.toolStripButtonRefresh_Click);
             // 
             // toolStripSeparator1
             // 
@@ -340,7 +289,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1});
             this.treeViewFiles.ShowNodeToolTips = true;
-            this.treeViewFiles.Size = new System.Drawing.Size(151, 381);
+            this.treeViewFiles.Size = new System.Drawing.Size(158, 389);
             this.treeViewFiles.TabIndex = 8;
             this.treeViewFiles.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeViewFiles_AfterLabelEdit);
             this.treeViewFiles.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewFiles_BeforeSelect);
@@ -350,7 +299,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // buttonClearAssemblerLog
             // 
             this.buttonClearAssemblerLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClearAssemblerLog.Location = new System.Drawing.Point(686, 585);
+            this.buttonClearAssemblerLog.Location = new System.Drawing.Point(719, 600);
             this.buttonClearAssemblerLog.Name = "buttonClearAssemblerLog";
             this.buttonClearAssemblerLog.Size = new System.Drawing.Size(75, 23);
             this.buttonClearAssemblerLog.TabIndex = 10;
@@ -372,8 +321,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.richCompileMessages);
-            this.splitContainer1.Size = new System.Drawing.Size(516, 677);
-            this.splitContainer1.SplitterDistance = 541;
+            this.splitContainer1.Size = new System.Drawing.Size(542, 692);
+            this.splitContainer1.SplitterDistance = 552;
             this.splitContainer1.TabIndex = 11;
             // 
             // richCompileMessages
@@ -385,7 +334,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.richCompileMessages.Location = new System.Drawing.Point(0, 0);
             this.richCompileMessages.Name = "richCompileMessages";
             this.richCompileMessages.ReadOnly = true;
-            this.richCompileMessages.Size = new System.Drawing.Size(516, 132);
+            this.richCompileMessages.Size = new System.Drawing.Size(542, 136);
             this.richCompileMessages.TabIndex = 5;
             this.richCompileMessages.Text = "";
             this.richCompileMessages.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.richCompileMessages_MouseDoubleClick);
@@ -394,7 +343,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             this.splitter1.Location = new System.Drawing.Point(0, 35);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 680);
+            this.splitter1.Size = new System.Drawing.Size(3, 695);
             this.splitter1.TabIndex = 12;
             this.splitter1.TabStop = false;
             // 
@@ -418,7 +367,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(157, 273);
+            this.groupBox2.Size = new System.Drawing.Size(164, 280);
             this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Symbols";
@@ -429,12 +378,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.listViewSymbols.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.listViewSymbols.FullRowSelect = true;
             this.listViewSymbols.Location = new System.Drawing.Point(3, 16);
-            this.listViewSymbols.MultiSelect = false;
             this.listViewSymbols.Name = "listViewSymbols";
-            this.listViewSymbols.Size = new System.Drawing.Size(151, 254);
+            this.listViewSymbols.Size = new System.Drawing.Size(158, 261);
             this.listViewSymbols.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listViewSymbols.TabIndex = 0;
             this.listViewSymbols.UseCompatibleStateImageBehavior = false;
+            this.listViewSymbols.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listViewSymbols_MouseClick);
             this.listViewSymbols.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewSymbols_MouseDoubleClick);
             // 
             // splitContainer2
@@ -452,8 +401,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer1);
-            this.splitContainer2.Size = new System.Drawing.Size(677, 677);
-            this.splitContainer2.SplitterDistance = 157;
+            this.splitContainer2.Size = new System.Drawing.Size(710, 692);
+            this.splitContainer2.SplitterDistance = 164;
             this.splitContainer2.TabIndex = 14;
             // 
             // splitContainer3
@@ -470,8 +419,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
-            this.splitContainer3.Size = new System.Drawing.Size(157, 677);
-            this.splitContainer3.SplitterDistance = 400;
+            this.splitContainer3.Size = new System.Drawing.Size(164, 692);
+            this.splitContainer3.SplitterDistance = 408;
             this.splitContainer3.TabIndex = 15;
             // 
             // groupBox3
@@ -480,22 +429,76 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(0, 0);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(157, 400);
+            this.groupBox3.Size = new System.Drawing.Size(164, 408);
             this.groupBox3.TabIndex = 9;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Files:";
+            // 
+            // checkBoxGenerateBasic
+            // 
+            this.checkBoxGenerateBasic.AutoSize = true;
+            this.checkBoxGenerateBasic.Checked = true;
+            this.checkBoxGenerateBasic.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxGenerateBasic.Location = new System.Drawing.Point(6, 19);
+            this.checkBoxGenerateBasic.Name = "checkBoxGenerateBasic";
+            this.checkBoxGenerateBasic.Size = new System.Drawing.Size(104, 17);
+            this.checkBoxGenerateBasic.TabIndex = 15;
+            this.checkBoxGenerateBasic.Text = "Generate BASIC";
+            this.checkBoxGenerateBasic.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.checkBoxGenerateBasic);
+            this.groupBox1.Location = new System.Drawing.Point(728, 93);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(122, 497);
+            this.groupBox1.TabIndex = 16;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Compile options:";
+            // 
+            // ctxmenuSymbols
+            // 
+            this.ctxmenuSymbols.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addToDebuggerAsToolStripMenuItem});
+            this.ctxmenuSymbols.Name = "ctxmenuSymbols";
+            this.ctxmenuSymbols.Size = new System.Drawing.Size(170, 26);
+            // 
+            // addToDebuggerAsToolStripMenuItem
+            // 
+            this.addToDebuggerAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.commentToolStripMenuItem,
+            this.noteToolStripMenuItem});
+            this.addToDebuggerAsToolStripMenuItem.Name = "addToDebuggerAsToolStripMenuItem";
+            this.addToDebuggerAsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.addToDebuggerAsToolStripMenuItem.Text = "Add to debugger as";
+            // 
+            // commentToolStripMenuItem
+            // 
+            this.commentToolStripMenuItem.Name = "commentToolStripMenuItem";
+            this.commentToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.commentToolStripMenuItem.Text = "Comment";
+            this.commentToolStripMenuItem.Click += new System.EventHandler(this.commentToolStripMenuItem_Click);
+            // 
+            // noteToolStripMenuItem
+            // 
+            this.noteToolStripMenuItem.Name = "noteToolStripMenuItem";
+            this.noteToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.noteToolStripMenuItem.Text = "Note";
+            this.noteToolStripMenuItem.Click += new System.EventHandler(this.noteToolStripMenuItem_Click);
             // 
             // Assembler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(835, 715);
+            this.ClientSize = new System.Drawing.Size(868, 730);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.splitContainer2);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.buttonClearAssemblerLog);
             this.Controls.Add(this.toolMenu);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnCompile);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -506,8 +509,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Assembler_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.assemblerForm_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.toolMenu.ResumeLayout(false);
             this.toolMenu.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -526,6 +527,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.ctxmenuSymbols.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -537,11 +541,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private System.Windows.Forms.Button btnCompile;
         private System.Windows.Forms.Button btnClose;
         private ZXMAK2.Hardware.Adlers.Views.CustomControls.EventLogger richCompileMessages;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox checkFile;
-        private System.Windows.Forms.CheckBox chckbxMemory;
-        private System.Windows.Forms.TextBox textSaveFileName;
-        private System.Windows.Forms.TextBox textMemAdress;
         private System.Windows.Forms.ToolStrip toolMenu;
         private System.Windows.Forms.ToolStripButton compileToolStrip;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -552,7 +551,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private System.Windows.Forms.ToolStripButton saveFileStripButton;
         private System.Windows.Forms.ToolStripButton toolCodeLibrary;
         private System.Windows.Forms.TreeView treeViewFiles;
-        private System.Windows.Forms.ToolStripButton toolStripButtonRefresh;
+        private System.Windows.Forms.ToolStripButton toolStripButtonReloadFile;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.Button buttonClearAssemblerLog;
         private System.Windows.Forms.SplitContainer splitContainer1;
@@ -566,5 +565,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.CheckBox checkBoxGenerateBasic;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.ContextMenuStrip ctxmenuSymbols;
+        private System.Windows.Forms.ToolStripMenuItem addToDebuggerAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem commentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem noteToolStripMenuItem;
     }
 }
