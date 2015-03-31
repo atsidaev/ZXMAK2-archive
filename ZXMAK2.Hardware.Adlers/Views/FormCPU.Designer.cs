@@ -79,6 +79,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem4 = new System.Windows.Forms.MenuItem();
             this.menuDasmLoadBlock = new System.Windows.Forms.MenuItem();
             this.menuDasmSaveBlock = new System.Windows.Forms.MenuItem();
+            this.menuItemSaveDisassembly = new System.Windows.Forms.MenuItem();
             this.menuItem8 = new System.Windows.Forms.MenuItem();
             this.menuItemCommentsSymbols = new System.Windows.Forms.MenuItem();
             this.menuItemInsertComment = new System.Windows.Forms.MenuItem();
@@ -94,8 +95,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItemLoadComments = new System.Windows.Forms.MenuItem();
             this.menuItemSaveComments = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
-            this.menuItemSaveDisassembly = new System.Windows.Forms.MenuItem();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.menuItemDasmRefresh = new System.Windows.Forms.MenuItem();
             this.contextMenuData = new System.Windows.Forms.ContextMenu();
             this.menuItemDataGotoADDR = new System.Windows.Forms.MenuItem();
@@ -572,8 +571,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // panelMem
             // 
-            this.panelMem.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelMem.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.panelMem.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panelMem.Controls.Add(this.dataPanel);
             this.panelMem.Location = new System.Drawing.Point(0, 280);
@@ -608,9 +607,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             // 
             // panelDasm
             // 
-            this.panelDasm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelDasm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.panelDasm.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panelDasm.Controls.Add(this.dasmPanel);
             this.panelDasm.Location = new System.Drawing.Point(0, 0);
@@ -658,7 +657,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem8,
             this.menuItemCommentsSymbols,
             this.menuItem6,
-            this.menuItem1,
             this.menuItemDasmRefresh});
             this.contextMenuDasm.Popup += new System.EventHandler(this.contextMenuDasm_Popup);
             // 
@@ -726,6 +724,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuDasmSaveBlock.Index = 9;
             this.menuDasmSaveBlock.Text = "Save Block...";
             this.menuDasmSaveBlock.Click += new System.EventHandler(this.menuSaveBlock_Click);
+            // 
+            // menuItemSaveDisassembly
+            // 
+            this.menuItemSaveDisassembly.Index = 10;
+            this.menuItemSaveDisassembly.Text = "Save Disassembly";
+            this.menuItemSaveDisassembly.Click += new System.EventHandler(this.menuItemSaveDisassembly_Click);
             // 
             // menuItem8
             // 
@@ -827,20 +831,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
             this.menuItem6.Index = 13;
             this.menuItem6.Text = "-";
             // 
-            // menuItemSaveDisassembly
-            // 
-            this.menuItemSaveDisassembly.Index = 10;
-            this.menuItemSaveDisassembly.Text = "Save Disassembly";
-            this.menuItemSaveDisassembly.Click += new System.EventHandler(this.menuItemSaveDisassembly_Click);
-            // 
-            // menuItem1
-            // 
-            this.menuItem1.Index = 14;
-            this.menuItem1.Text = "-";
-            // 
             // menuItemDasmRefresh
             // 
-            this.menuItemDasmRefresh.Index = 15;
+            this.menuItemDasmRefresh.Index = 14;
             this.menuItemDasmRefresh.Text = "Refresh";
             this.menuItemDasmRefresh.Click += new System.EventHandler(this.menuItemDasmRefresh_Click);
             // 
@@ -1053,7 +1046,6 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private System.Windows.Forms.MenuItem menuItemDataRefresh;
         private System.Windows.Forms.MenuItem menuDasmLoadBlock;
         private System.Windows.Forms.MenuItem menuDasmSaveBlock;
-        private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem menuDataLoadBlock;
         private System.Windows.Forms.MenuItem menuDataSaveBlock;
         private System.Windows.Forms.MenuItem menuItem3;

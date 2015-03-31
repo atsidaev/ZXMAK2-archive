@@ -65,6 +65,26 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 }
                 treeZ80Resources.Nodes.Add(treeNodeLib);
             }
+            //Add graphics(tiles & sprites)
+            nodes = xmlDoc.DocumentElement.SelectNodes("/Root/graphics");
+            foreach (XmlNode grapicsNodes in nodes)
+            {
+                TreeNode demosRootNode = new TreeNode();
+                demosRootNode.Text = grapicsNodes.Attributes["title"].InnerText;
+                demosRootNode.Checked = false;
+                demosRootNode.Tag = grapicsNodes;
+                //Add demo items
+                foreach (XmlNode graphicsItemNode in grapicsNodes.SelectNodes("graphicsItem"))
+                {
+                    TreeNode demoDesc = new TreeNode();
+                    demoDesc.Text = graphicsItemNode.Attributes["name"].InnerText;
+                    demoDesc.Checked = false;
+                    demoDesc.Tag = graphicsItemNode;
+                    demosRootNode.Nodes.Add(demoDesc);
+                }
+
+                treeZ80Resources.Nodes.Add(demosRootNode);
+            }
             //Add demos
             nodes = xmlDoc.DocumentElement.SelectNodes("/Root/demos");
             foreach (XmlNode demoNodes in nodes)
@@ -166,7 +186,44 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Refresh
         private void buttonRefreshRoutineList_Click(object sender, EventArgs e)
         {
+            //remember selected index
+            string savedNode = FindSelectedNodeText(treeZ80Resources.Nodes);
             ParseResourceFile();
+
+            if (treeZ80Resources.Nodes.Count > 0)
+                SetNodeByText(treeZ80Resources.Nodes, savedNode);
+        }
+        private string FindSelectedNodeText(TreeNodeCollection i_treeNode)
+        {
+            if (i_treeNode.Count == 0 || i_treeNode == null)
+                return string.Empty;
+            foreach (TreeNode node in i_treeNode)
+            {
+                if (node.IsSelected)
+                    return node.Text;
+                string recursive = FindSelectedNodeText(node.Nodes);
+                if (recursive != string.Empty)
+                    return recursive;
+            }
+            return String.Empty;
+        }
+        private bool SetNodeByText(TreeNodeCollection i_treeNode, string i_nodeTextToSelect)
+        {
+            if (i_treeNode.Count == 0 || treeZ80Resources == null)
+                return false;
+            foreach (TreeNode node in i_treeNode)
+            {
+                if (node.Text == i_nodeTextToSelect)
+                {
+                    treeZ80Resources.SelectedNode = node;
+                    return true;
+                }
+
+                if (SetNodeByText(node.Nodes, i_nodeTextToSelect))
+                    return true;
+            }
+
+            return false;
         }
         #endregion GUI
 
@@ -174,9 +231,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private string GetHtmlFormatted(string i_htmlToFormat)
         {
             //string htmlOut = i_htmlToFormat.Replace(" ", @"&nbsp;");
-            string css = "<style>table.routine_details {border=\"0\"; width=90%;} table.routine_defs{ border=\"1\"; cellpadding=\"10\"; } p.routineTitle {color:blue;display:inline;}";
+            string css = "<style>table.routine_details {border=\"0\"; width=90%;} table.routine_defs{ border=\"1\"; cellpadding=\"10\"; font-size: 14px; } p.routineTitle {color:blue;display:inline;}";
             css += "table.routine_details tr td{ font-size: 12px; }";
-            css += "p.source_code { font-size: 12px;}";
+            css += "p.source_code { font-size: 10px;}";
             css += "</style>";
             string css_bodyStyle = "<body style=\"background-color:lightgrey;font-family:consolas,courier;\">";
 
