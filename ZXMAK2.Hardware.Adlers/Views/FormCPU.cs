@@ -566,6 +566,11 @@ namespace ZXMAK2.Hardware.Adlers.Views
                     throw new Exception("Bad registry name: " + i_registryName);
             }
         }
+
+        public IDebuggable GetVMKernel()
+        {
+            return m_spectrum;
+        }
         #endregion
 
         private void contextMenuDasm_Popup(object sender, EventArgs e)
@@ -1147,7 +1152,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                         m_spectrum.DoStop();
                         UpdateCPU(true);
 
-                        Assembler.Show(ref m_spectrum);
+                        Assembler.Show(this);
                         Assembler.ActiveForm.Focus();
 
                         return;
@@ -1459,6 +1464,22 @@ namespace ZXMAK2.Hardware.Adlers.Views
         }
 
         //Dasm context menu: Insert code comment
+        public void InsertCodeComment(string i_newComment, ushort i_addr)
+        {
+            string strCommentText = String.Empty;
+            if (i_newComment == null) //manually inserting by user
+            {
+                dasmPanel.IsCodeNoteAtAddress(dasmPanel.ActiveAddress, ref strCommentText);
+                string strAddressToComment = String.Format("#{0:X4}", dasmPanel.ActiveAddress);
+                if (!Locator.Resolve<IUserQuery>().QueryText("Note to add", "Enter note for address " + strAddressToComment + ":", ref strCommentText))
+                    return;
+            }
+            else
+                strCommentText = i_newComment;
+
+            dasmPanel.InsertCodeComment(i_addr, strCommentText);
+        }
+
         private void menuItemInsertComment_Click(object sender, EventArgs e)
         {
             string strCommentText = String.Empty;
@@ -1617,12 +1638,22 @@ namespace ZXMAK2.Hardware.Adlers.Views
         //Dasm context menu: Insert note at address
         private void menuItemInsertNote_Click(object sender, EventArgs e)
         {
+            InsertCodeNote(null/*note entering manually by user*/, dasmPanel.ActiveAddress);
+        }
+        public void InsertCodeNote(string i_newNote, ushort i_addr)
+        {
             string strNoteText = String.Empty;
-            dasmPanel.IsCodeNoteAtAddress(dasmPanel.ActiveAddress, ref strNoteText);
-            string strAddressToComment = String.Format("#{0:X4}", dasmPanel.ActiveAddress);
-            if (!Locator.Resolve<IUserQuery>().QueryText("Note to add", "Enter note for address " + strAddressToComment + ":", ref strNoteText))
-                return;
-            dasmPanel.InsertCodeNote(dasmPanel.ActiveAddress, strNoteText);
+            if (i_newNote == null) //manually inserting by user
+            {
+                dasmPanel.IsCodeNoteAtAddress(dasmPanel.ActiveAddress, ref strNoteText);
+                string strAddressToComment = String.Format("#{0:X4}", dasmPanel.ActiveAddress);
+                if (!Locator.Resolve<IUserQuery>().QueryText("Note to add", "Enter note for address " + strAddressToComment + ":", ref strNoteText))
+                    return;
+            }
+            else
+                strNoteText = i_newNote;
+
+            dasmPanel.InsertCodeNote(i_addr, strNoteText);
         }
         //Dasm context menu: Clear current note
         private void menuItemClearCurrentNote_Click(object sender, EventArgs e)

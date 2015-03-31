@@ -193,6 +193,9 @@
             "24",
             "32",
             "40",
+            "48",
+            "56",
+            "64",
             "96"});
             this.comboSpriteWidth.Location = new System.Drawing.Point(7, 83);
             this.comboSpriteWidth.Name = "comboSpriteWidth";
@@ -310,6 +313,7 @@
             // 
             // buttonClose
             // 
+            this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonClose.Font = new System.Drawing.Font("Calibri", 9.75F);
             this.buttonClose.Location = new System.Drawing.Point(670, 58);
             this.buttonClose.Name = "buttonClose";
@@ -583,7 +587,7 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // viewToolStripMenuItem
@@ -591,7 +595,7 @@
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.hexNumbersToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // hexNumbersToolStripMenuItem
@@ -600,7 +604,7 @@
             this.hexNumbersToolStripMenuItem.CheckOnClick = true;
             this.hexNumbersToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.hexNumbersToolStripMenuItem.Name = "hexNumbersToolStripMenuItem";
-            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.hexNumbersToolStripMenuItem.Text = "Hex numbers";
             this.hexNumbersToolStripMenuItem.Click += new System.EventHandler(this.hexNumbersToolStripMenuItem_Click);
             // 

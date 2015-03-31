@@ -161,6 +161,38 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             return o_includes;
         }
 
+        public static List<string> ParseSourceCodeTokens(List<string> i_sourceCode)
+        {
+            List<string> o_tokens = new List<string>();
+
+            return o_tokens;
+        }
+
+        public static List<string> RemoveSourceCodeComments(List<string> i_sourceCode)
+        {
+            List<string> o_noComments = new List<string>();
+            foreach( string sourceLine in i_sourceCode )
+            {
+                o_noComments.Add(sourceLine.Split(';')[0].Trim());
+            }
+
+            return o_noComments;
+        }
+
+        public static bool IsStartAdressInCode(IList<string> i_sourceCode)
+        {
+            foreach (string line in i_sourceCode)
+            {
+                string toCheck = line.Split(';')[0].Trim(); //remove comments
+                Match match = Regex.Match(toCheck, @"\borg\b", RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         static unsafe public string GetStringFromMemory(byte* i_pointer)
         {
             string retString = String.Empty;

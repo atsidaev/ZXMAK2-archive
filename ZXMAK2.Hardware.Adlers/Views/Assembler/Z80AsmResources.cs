@@ -46,6 +46,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), _configFileName));
 
+            //Add libraries
             XmlNodeList nodes = xmlDoc.DocumentElement.SelectNodes("/Root/libs/item");
             foreach(XmlNode libNodes in nodes)
             {
@@ -64,6 +65,27 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 }
                 treeZ80Resources.Nodes.Add(treeNodeLib);
             }
+            //Add demos
+            nodes = xmlDoc.DocumentElement.SelectNodes("/Root/demos");
+            foreach (XmlNode demoNodes in nodes)
+            {
+                TreeNode demosRootNode = new TreeNode();
+                demosRootNode.Text = demoNodes.Attributes["title"].InnerText;
+                demosRootNode.Checked = false;
+                demosRootNode.Tag = demoNodes;
+                //Add demo items
+                foreach (XmlNode demoItemNode in demoNodes.SelectNodes("demoItem"))
+                {
+                    TreeNode demoDesc = new TreeNode();
+                    demoDesc.Text = demoItemNode.Attributes["name"].InnerText;
+                    demoDesc.Checked = false;
+                    demoDesc.Tag = demoItemNode;
+                    demosRootNode.Nodes.Add(demoDesc);
+                }
+
+                treeZ80Resources.Nodes.Add(demosRootNode);
+            }
+
             if( treeZ80Resources.Nodes.Count > 0 )
                 this.treeZ80Resources.ExpandAll();
         }
