@@ -36,8 +36,8 @@
             this.buttonAdd = new System.Windows.Forms.Button();
             this.buttonRefreshRoutineList = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkBoxHeaders = new System.Windows.Forms.CheckBox();
             this.checkBoxDestroy = new System.Windows.Forms.CheckBox();
+            this.checkBoxHeaders = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitterRoutines)).BeginInit();
             this.splitterRoutines.Panel1.SuspendLayout();
@@ -48,23 +48,23 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.splitterRoutines);
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(663, 627);
+            this.groupBox1.Size = new System.Drawing.Size(663, 677);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Source code to use:";
             // 
             // splitterRoutines
             // 
-            this.splitterRoutines.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitterRoutines.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.splitterRoutines.Location = new System.Drawing.Point(3, 19);
             this.splitterRoutines.Name = "splitterRoutines";
             // 
@@ -75,7 +75,7 @@
             // splitterRoutines.Panel2
             // 
             this.splitterRoutines.Panel2.Controls.Add(this.htmlItemDesc);
-            this.splitterRoutines.Size = new System.Drawing.Size(649, 605);
+            this.splitterRoutines.Size = new System.Drawing.Size(649, 655);
             this.splitterRoutines.SplitterDistance = 170;
             this.splitterRoutines.TabIndex = 3;
             // 
@@ -87,7 +87,7 @@
             this.treeZ80Resources.HideSelection = false;
             this.treeZ80Resources.Location = new System.Drawing.Point(0, 0);
             this.treeZ80Resources.Name = "treeZ80Resources";
-            this.treeZ80Resources.Size = new System.Drawing.Size(170, 605);
+            this.treeZ80Resources.Size = new System.Drawing.Size(170, 655);
             this.treeZ80Resources.TabIndex = 0;
             this.treeZ80Resources.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeZ80Resources_AfterCheck);
             this.treeZ80Resources.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeZ80Resources_AfterSelect);
@@ -98,8 +98,7 @@
             this.htmlItemDesc.Location = new System.Drawing.Point(0, 0);
             this.htmlItemDesc.MinimumSize = new System.Drawing.Size(20, 20);
             this.htmlItemDesc.Name = "htmlItemDesc";
-            this.htmlItemDesc.ScrollBarsEnabled = false;
-            this.htmlItemDesc.Size = new System.Drawing.Size(475, 605);
+            this.htmlItemDesc.Size = new System.Drawing.Size(475, 655);
             this.htmlItemDesc.TabIndex = 0;
             // 
             // buttonDone
@@ -141,29 +140,17 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.checkBoxDestroy);
             this.groupBox2.Controls.Add(this.checkBoxHeaders);
             this.groupBox2.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(681, 109);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(109, 530);
+            this.groupBox2.Size = new System.Drawing.Size(109, 580);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Source header";
-            // 
-            // checkBoxHeaders
-            // 
-            this.checkBoxHeaders.AutoSize = true;
-            this.checkBoxHeaders.Checked = true;
-            this.checkBoxHeaders.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxHeaders.Location = new System.Drawing.Point(6, 21);
-            this.checkBoxHeaders.Name = "checkBoxHeaders";
-            this.checkBoxHeaders.Size = new System.Drawing.Size(72, 18);
-            this.checkBoxHeaders.TabIndex = 0;
-            this.checkBoxHeaders.Text = "Headers";
-            this.checkBoxHeaders.UseVisualStyleBackColor = true;
             // 
             // checkBoxDestroy
             // 
@@ -177,12 +164,24 @@
             this.checkBoxDestroy.Text = "Destroys";
             this.checkBoxDestroy.UseVisualStyleBackColor = true;
             // 
+            // checkBoxHeaders
+            // 
+            this.checkBoxHeaders.AutoSize = true;
+            this.checkBoxHeaders.Checked = true;
+            this.checkBoxHeaders.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxHeaders.Location = new System.Drawing.Point(6, 21);
+            this.checkBoxHeaders.Name = "checkBoxHeaders";
+            this.checkBoxHeaders.Size = new System.Drawing.Size(72, 18);
+            this.checkBoxHeaders.TabIndex = 0;
+            this.checkBoxHeaders.Text = "Headers";
+            this.checkBoxHeaders.UseVisualStyleBackColor = true;
+            // 
             // Z80AsmResources
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonDone;
-            this.ClientSize = new System.Drawing.Size(792, 640);
+            this.ClientSize = new System.Drawing.Size(792, 690);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.buttonRefreshRoutineList);
             this.Controls.Add(this.buttonAdd);

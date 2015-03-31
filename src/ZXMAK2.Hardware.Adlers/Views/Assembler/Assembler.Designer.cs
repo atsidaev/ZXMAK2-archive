@@ -299,7 +299,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // buttonClearAssemblerLog
             // 
             this.buttonClearAssemblerLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClearAssemblerLog.Location = new System.Drawing.Point(719, 600);
+            this.buttonClearAssemblerLog.Location = new System.Drawing.Point(728, 597);
             this.buttonClearAssemblerLog.Name = "buttonClearAssemblerLog";
             this.buttonClearAssemblerLog.Size = new System.Drawing.Size(75, 23);
             this.buttonClearAssemblerLog.TabIndex = 10;
@@ -388,9 +388,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             // splitContainer2
             // 
-            this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.splitContainer2.Location = new System.Drawing.Point(12, 38);
             this.splitContainer2.Name = "splitContainer2";
             // 
@@ -448,8 +448,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.checkBoxGenerateBasic);
             this.groupBox1.Location = new System.Drawing.Point(728, 93);
             this.groupBox1.Name = "groupBox1";
@@ -477,14 +477,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // commentToolStripMenuItem
             // 
             this.commentToolStripMenuItem.Name = "commentToolStripMenuItem";
-            this.commentToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.commentToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.commentToolStripMenuItem.Text = "Comment";
             this.commentToolStripMenuItem.Click += new System.EventHandler(this.commentToolStripMenuItem_Click);
             // 
             // noteToolStripMenuItem
             // 
             this.noteToolStripMenuItem.Name = "noteToolStripMenuItem";
-            this.noteToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.noteToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.noteToolStripMenuItem.Text = "Note";
             this.noteToolStripMenuItem.Click += new System.EventHandler(this.noteToolStripMenuItem_Click);
             // 
@@ -497,9 +497,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.splitContainer2);
             this.Controls.Add(this.splitter1);
-            this.Controls.Add(this.buttonClearAssemblerLog);
             this.Controls.Add(this.toolMenu);
             this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.buttonClearAssemblerLog);
             this.Controls.Add(this.btnCompile);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;

@@ -915,6 +915,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 {
                     return;
                 }
+                s_addr = dasmPanel.ActiveAddress;
                 if (!service.QueryValue("Load Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xFFFF))
                     return;
                 if (!service.QueryValue("Load Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
@@ -930,6 +931,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
         private void menuSaveBlock_Click(object sender, EventArgs e)
         {
             var service = Locator.Resolve<IUserQuery>();
+            s_addr = dasmPanel.ActiveAddress;
             if (!service.QueryValue("Save Block", "Memory Address:", "#{0:X4}", ref s_addr, 0, 0xFFFF))
                 return;
             if (!service.QueryValue("Save Block", "Block Length:", "#{0:X4}", ref s_len, 0, 0x10000))
