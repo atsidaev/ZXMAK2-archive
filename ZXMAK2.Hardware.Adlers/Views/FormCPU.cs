@@ -1399,6 +1399,13 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 dbgCmdLine.Focus();
                 return;
             }
+            else if (this.dbgCmdLine.Text == "a") //shortcut - asm
+            {
+                this.dbgCmdLine.Text = "asm";
+                dbgCmdLine.Select(3, 0);
+                dbgCmdLine.Focus();
+                return;
+            }
         }
 
         #region ContextMenus

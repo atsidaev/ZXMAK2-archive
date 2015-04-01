@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.IO;
-using System.Text;
 using FastColoredTextBoxNS;
 using System.Diagnostics;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
-using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +23,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //assembler sources array
         private int _actualAssemblerNodeIndex = 0;
         private Dictionary<int, AssemblerSourceInfo> _assemblerSources = new Dictionary<int, AssemblerSourceInfo>();
+        private readonly string _strDefaultAsmSourceCode = "org 40000\n\nret\n";
 
         //private IDebuggable m_spectrum;
         private FormCpu m_debugger;
@@ -54,7 +52,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             //register assembler source(noname.asm), will have Id = 0
             treeViewFiles.Nodes[0].Tag = (int)0;
-            _assemblerSources.Add(0, new AssemblerSourceInfo("noname.asm", false));
+            txtAsm.Text = _strDefaultAsmSourceCode; //must be here; will be used as source code for the new added source code
+            AddNewSource(new AssemblerSourceInfo("noname.asm", false), _strDefaultAsmSourceCode);
+            btnFormatCode_Click(null, null);
 
             //colors
             _ColorConfig = new AssemblerColorConfig(this);
@@ -564,11 +564,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Format code
         private void btnFormatCode_Click(object sender, EventArgs e)
         {
-            //ToDo: we need a list of all assembler commands here; Regex rgx = new Regex(@"\b(?!push|djnz)\b[ ]+\b", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            //ToDo: we need a list of all assembler commands here, but cannot use AssemblerConfig regex patterns
             string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "adc", "and", "sub", "xor", "jr", "jp", "exx",
                                               "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn", "rra", "rla", "sbc", "rst",
-                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "rrca"};
+                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "rrca", "rr"};
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
+            Range actLineSave = new Range(txtAsm, txtAsm.Selection.Start, txtAsm.Selection.End);
 
             //step 1: add whitespace after each ',' and '('
             for(int lineCounter = 0; lineCounter < strAsmLines.Length; lineCounter++)
@@ -611,7 +612,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     //compiler directives
                     if( Regex.IsMatch(token, AssemblerConfig.regexCompilerDirectives) )
                     {
-                        codeFormatted += token + new String(' ', 6 - token.Length);
+                        codeFormatted += token + new String(' ', Math.Max( 8 - token.Length, 1)); //"include" has 7 chars
                         bIsInCompilerDirective = true;
                         continue;
                     }
@@ -656,7 +657,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                             codeFormatted += new String(' ', _tabSpace);
                             bIsInCompilerDirective = false;
                         }
-                        codeFormatted += token + new String(' ', 6 - token.Length);
+                        codeFormatted += token + new String(' ', Math.Max(6 - token.Length, 1));
                     }
                     else
                     {
@@ -675,7 +676,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     codeFormatted += "\n";
                 isInComment = false;
             }
+
             txtAsm.Text = codeFormatted.TrimEnd('\n') + '\n';
+            txtAsm.Selection = actLineSave;
+            txtAsm.DoSelectionVisible();
         }
 
         private void richCompileMessages_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -900,11 +904,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
         }
 
-        private int AddNewSource(AssemblerSourceInfo i_sourceCandidate)
+        private int AddNewSource(AssemblerSourceInfo i_sourceCandidate, string i_sourceCode = null)
         {
             i_sourceCandidate.Id = SourceInfo_GetNextId();
             if (i_sourceCandidate.Id == 0) //there were none
                 i_sourceCandidate.SetSourceCode( txtAsm.Text );
+            if (i_sourceCode!=null)
+                i_sourceCandidate.SetSourceCode(_strDefaultAsmSourceCode);
             _assemblerSources.Add(i_sourceCandidate.Id, i_sourceCandidate);
 
             return i_sourceCandidate.Id;
