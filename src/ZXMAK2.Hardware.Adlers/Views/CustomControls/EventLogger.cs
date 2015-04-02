@@ -81,9 +81,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
-            int firstcharindex = base.GetFirstCharIndexOfCurrentLine();
-            string currentlinetext = base.Lines[GetCurrentLine()];
-            base.Select(firstcharindex, currentlinetext.Length);
+            if (GetCurrentLine() < base.Lines.Length)
+            {
+                int firstcharindex = base.GetFirstCharIndexOfCurrentLine();
+                string currentlinetext = base.Lines[GetCurrentLine()];
+                base.Select(firstcharindex, currentlinetext.Length);
+            }
         }
 
         public void AppendText(string text, Color color)

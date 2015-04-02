@@ -21,7 +21,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             public static string regexComment = @";.*$";
             //common instructions
             public static Style  styleCommonInstruction = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
-            public static string regexCommonInstruction = @"\bldir\b|\blddr\b|\bld\b|\bim[ ]+\b|\badd\b|\bsub\b|\bdec[ ]+\b|\bsbc\b|\bhalt\b|\bbit\b|" +
+            public static string regexCommonInstruction = @"\bldir\b|\blddr\b|\bld\b|\bim[ ]+\b|\badd\b|\bsub\b|[ ]dec[ ]|\bsbc\b|\bhalt\b|\bbit\b|" +
                                                           @"\bset\b|xor|[ ]inc[ ]|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
                                                           @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b|\brrca\b" + 
                                                           @"|\brlca\b";
@@ -52,11 +52,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             styleRegistry = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
             styleNumbers = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
         }
-        public static void RefreshControlStyles( FastColoredTextBox fctxbBox)
+        public static void RefreshControlStyles( FastColoredTextBox fctxbBox, TextChangedEventArgs e)
         {
             Range range = fctxbBox.Range;
+            range = (e == null ? fctxbBox.Range : e.ChangedRange);
 
-            //compiler directives
             range.ClearStyle(AssemblerConfig.styleCompilerDirectives);
             range.ClearStyle(AssemblerConfig.styleComment);
             range.ClearStyle(AssemblerConfig.styleNumbers);

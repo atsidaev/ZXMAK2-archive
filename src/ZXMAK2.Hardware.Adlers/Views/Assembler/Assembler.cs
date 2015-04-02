@@ -56,7 +56,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             AddNewSource(new AssemblerSourceInfo("noname.asm", false), _strDefaultAsmSourceCode);
             btnFormatCode_Click(null, null);
 
-            //colors
+            //highlight colors
             _ColorConfig = new AssemblerColorConfig(this);
 
             this.KeyPreview = true;
@@ -412,7 +412,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
         private void txtAsm_TextChanged(object sender, TextChangedEventArgs e)
         {
-            AssemblerConfig.RefreshControlStyles(txtAsm);
+            AssemblerConfig.RefreshControlStyles(txtAsm, e);
         }
 
         //Save button
@@ -564,6 +564,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Format code
         private void btnFormatCode_Click(object sender, EventArgs e)
         {
+            ProgressBarCustom progress = new ProgressBarCustom("Format code", "Formatting code....");
+            progress.Init(() => FormatCode(() => progress.GetBackgroundWorker().ReportProgress(0, null)), txtAsm.Lines.Count);
+            progress.Start();
+        }
+
+        private void FormatCode(Action actionIncCounter)
+        {
             //ToDo: we need a list of all assembler commands here, but cannot use AssemblerConfig regex patterns
             string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "adc", "and", "sub", "xor", "jr", "jp", "exx",
                                               "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn", "rra", "rla", "sbc", "rst",
@@ -572,7 +579,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             Range actLineSave = new Range(txtAsm, txtAsm.Selection.Start, txtAsm.Selection.End);
 
             //step 1: add whitespace after each ',' and '('
-            for(int lineCounter = 0; lineCounter < strAsmLines.Length; lineCounter++)
+            for (int lineCounter = 0; lineCounter < strAsmLines.Length; lineCounter++)
             {
                 //while (Regex.IsMatch(strAsmLines[lineCounter], @"[,\(]\S+"))
                 {
@@ -584,7 +591,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                             if (strAsmLines[lineCounter][index + 1] != ' ')
                                 strAsmLines[lineCounter] = strAsmLines[lineCounter].Substring(0, index) + ", " + strAsmLines[lineCounter].Substring(index + 1, strAsmLines[lineCounter].Length - index - 1);
                         }
-                        index = strAsmLines[lineCounter].IndexOf(",", index+1);
+                        index = strAsmLines[lineCounter].IndexOf(",", index + 1);
                     }
 
                     //whitespace after each bracket "("
@@ -602,7 +609,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
 
             string codeFormatted = String.Empty;
-            foreach(string line in strAsmLines)
+            foreach (string line in strAsmLines)
             {
                 bool isNewLine = true; bool isInComment = false; bool addNewlineAtLineEnd = true; bool bIsInCompilerDirective = false;
 
@@ -610,9 +617,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 foreach (string token in lineSplitted)
                 {
                     //compiler directives
-                    if( Regex.IsMatch(token, AssemblerConfig.regexCompilerDirectives) )
+                    if (Regex.IsMatch(token, AssemblerConfig.regexCompilerDirectives))
                     {
-                        codeFormatted += token + new String(' ', Math.Max( 8 - token.Length, 1)); //"include" has 7 chars
+                        codeFormatted += token + new String(' ', Math.Max(8 - token.Length, 1)); //"include" has 7 chars
                         bIsInCompilerDirective = true;
                         continue;
                     }
@@ -675,6 +682,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 if (addNewlineAtLineEnd)
                     codeFormatted += "\n";
                 isInComment = false;
+
+                //increase progress bar counter;
+                actionIncCounter();
             }
 
             txtAsm.Text = codeFormatted.TrimEnd('\n') + '\n';
