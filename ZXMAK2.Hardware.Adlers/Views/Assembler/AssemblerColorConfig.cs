@@ -32,7 +32,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private void fastColoredPreview_TextChanged(object sender, TextChangedEventArgs e)
         {
             FastColoredTextBox fctbx = sender as FastColoredTextBox;
-            AssemblerConfig.RefreshControlStyles(fctbx);
+            AssemblerConfig.RefreshControlStyles(fctbx, e);
         }
 
         //Comments style modification
@@ -111,7 +111,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 style |= FontStyle.Underline;
             AssemblerConfig.styleJumpInstruction = new TextStyle(new SolidBrush(colorPickerJumps.SelectedValue), null, style);
             
-            AssemblerConfig.RefreshControlStyles(this.fastColoredPreview);
+            AssemblerConfig.RefreshControlStyles(this.fastColoredPreview, null);
 
             if (i_textStyleDynamic != null)
                 _assemblerForm.RefreshAssemblerCode();

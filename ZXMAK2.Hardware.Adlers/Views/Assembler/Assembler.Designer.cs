@@ -67,6 +67,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.addToDebuggerAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.commentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnValidateCode = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
             this.toolMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -102,7 +104,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         '\"',
         '\'',
         '\''};
-            this.txtAsm.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+\\s*(?<range>,)\\s*(?<range>[^;]+);";
+            this.txtAsm.AutoIndentCharsPatterns = "";
             this.txtAsm.AutoScrollMinSize = new System.Drawing.Size(27, 17);
             this.txtAsm.AutoSize = true;
             this.txtAsm.BackBrush = null;
@@ -350,14 +352,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // ctxMenuAssemblerCommands
             // 
             this.ctxMenuAssemblerCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnFormatCode});
+            this.btnFormatCode,
+            this.btnValidateCode,
+            this.toolStripMenuItem1});
             this.ctxMenuAssemblerCommands.Name = "ctxMenuAssemblerCommands";
-            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(137, 26);
+            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(153, 76);
             // 
             // btnFormatCode
             // 
             this.btnFormatCode.Name = "btnFormatCode";
-            this.btnFormatCode.Size = new System.Drawing.Size(136, 22);
+            this.btnFormatCode.Size = new System.Drawing.Size(152, 22);
             this.btnFormatCode.Text = "Format Code";
             this.btnFormatCode.Click += new System.EventHandler(this.btnFormatCode_Click);
             // 
@@ -388,9 +392,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             // splitContainer2
             // 
-            this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.splitContainer2.Location = new System.Drawing.Point(12, 38);
             this.splitContainer2.Name = "splitContainer2";
             // 
@@ -448,8 +452,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.checkBoxGenerateBasic);
             this.groupBox1.Location = new System.Drawing.Point(728, 93);
             this.groupBox1.Name = "groupBox1";
@@ -477,16 +481,27 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // commentToolStripMenuItem
             // 
             this.commentToolStripMenuItem.Name = "commentToolStripMenuItem";
-            this.commentToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.commentToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.commentToolStripMenuItem.Text = "Comment";
             this.commentToolStripMenuItem.Click += new System.EventHandler(this.commentToolStripMenuItem_Click);
             // 
             // noteToolStripMenuItem
             // 
             this.noteToolStripMenuItem.Name = "noteToolStripMenuItem";
-            this.noteToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.noteToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.noteToolStripMenuItem.Text = "Note";
             this.noteToolStripMenuItem.Click += new System.EventHandler(this.noteToolStripMenuItem_Click);
+            // 
+            // btnValidateCode
+            // 
+            this.btnValidateCode.Name = "btnValidateCode";
+            this.btnValidateCode.Size = new System.Drawing.Size(152, 22);
+            this.btnValidateCode.Text = "Validate Code";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
             // 
             // Assembler
             // 
@@ -571,5 +586,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private System.Windows.Forms.ToolStripMenuItem addToDebuggerAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem commentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem noteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem btnValidateCode;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }
