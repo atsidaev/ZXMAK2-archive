@@ -156,9 +156,6 @@
     <EmbeddedResource Include="Views\Assembler\AssemblerColorConfig.resx">
       <DependentUpon>AssemblerColorConfig.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Assembler\Settings.resx">
-      <DependentUpon>Settings.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Views\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </EmbeddedResource>
