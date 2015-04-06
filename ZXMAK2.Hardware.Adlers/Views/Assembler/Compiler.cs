@@ -154,7 +154,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 if (sourceCodeParsed[counter].ToLower() == "include" && counter + 1 < sourceCodeParsed.Length)
                 {
                     string incFound = fileRootDir + sourceCodeParsed[++counter].Replace("\"", "");
-                    if (File.Exists(incFound))
+                    if (File.Exists(incFound) && !o_includes.Contains(incFound) /*prevent duplicates*/)
                         o_includes.Add(incFound);
                 }
             }

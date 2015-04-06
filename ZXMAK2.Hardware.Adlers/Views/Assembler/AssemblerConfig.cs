@@ -55,7 +55,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         public static void RefreshControlStyles( FastColoredTextBox fctxbBox, TextChangedEventArgs e)
         {
             Range range = fctxbBox.Range;
-            range = (e == null ? fctxbBox.Range : e.ChangedRange);
+            range = (e == null ? fctxbBox.VisibleRange : e.ChangedRange);
 
             range.ClearStyle(AssemblerConfig.styleCompilerDirectives);
             range.ClearStyle(AssemblerConfig.styleComment);

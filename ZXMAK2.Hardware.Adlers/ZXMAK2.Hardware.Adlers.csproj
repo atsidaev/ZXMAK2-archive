@@ -83,6 +83,12 @@
     </Compile>
     <Compile Include="Views\Assembler\AssemblerConfig.cs" />
     <Compile Include="Views\Assembler\Compiler.cs" />
+    <Compile Include="Views\Assembler\Settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Assembler\Settings.Designer.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Assembler\Z80AsmResources.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -114,11 +120,11 @@
     <Compile Include="Views\CustomControls\ListViewCustom.Designer.cs">
       <DependentUpon>ListViewCustom.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\CustomControls\ProgressBarCustom.cs">
-      <SubType>Form</SubType>
+    <Compile Include="Views\CustomControls\ProgressBarBackgroundProcess.cs">
+      <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Views\CustomControls\ProgressBarCustom.Designer.cs">
-      <DependentUpon>ProgressBarCustom.cs</DependentUpon>
+    <Compile Include="Views\CustomControls\ProgressBarBackgroundProcess.Designer.cs">
+      <DependentUpon>ProgressBarBackgroundProcess.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\FormCPU.cs">
       <SubType>Form</SubType>
@@ -150,8 +156,8 @@
     <EmbeddedResource Include="Views\Assembler\AssemblerColorConfig.resx">
       <DependentUpon>AssemblerColorConfig.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\CustomControls\ProgressBarCustom.resx">
-      <DependentUpon>ProgressBarCustom.cs</DependentUpon>
+    <EmbeddedResource Include="Views\Assembler\Settings.resx">
+      <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>

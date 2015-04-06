@@ -13,6 +13,9 @@ using System.Linq;
 using System.Xml;
 using ZXMAK2.Hardware.Adlers.Views.CustomControls;
 using ZXMAK2.Hardware.Adlers.Core;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
@@ -30,8 +33,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
        
         //colors
         private static AssemblerColorConfig _ColorConfig;
-        //instance(this)
+        //instance
         private static Assembler m_instance = null;
+
         private Assembler(FormCpu spectrum)
         {
             m_debugger = spectrum;
@@ -52,9 +56,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             //register assembler source(noname.asm), will have Id = 0
             treeViewFiles.Nodes[0].Tag = (int)0;
-            txtAsm.Text = _strDefaultAsmSourceCode; //must be here; will be used as source code for the new added source code
+            txtAsm.InsertText(_strDefaultAsmSourceCode); //must be here; will be used as source code for the new added source code
             AddNewSource(new AssemblerSourceInfo("noname.asm", false), _strDefaultAsmSourceCode);
-            btnFormatCode_Click(null, null);
 
             //highlight colors
             _ColorConfig = new AssemblerColorConfig(this);
@@ -66,6 +69,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             double compilerVersion;
             if (Compiler.GetVersion(out compilerVersion) == 0)
                 this.Text = "Assembler, " + String.Format("ver {0:0.##}", compilerVersion).Replace(',', '.');
+
+            //progress bar
+            this.btnStopBackgroundProcess.Image = global::ZXMAK2.Resources.ImageResources.Stop_real_16x16;
         }
 
         public static void Show(FormCpu i_formCpu)
@@ -132,114 +138,104 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     }
                 }
 
-                //fixed (byte* pcompiledOut = &compiledOut[0])
-                {
-                    /*fixed (*/
-                    //char* perrReason = compiled.czErrMessage;
-                    {
-                        //fixed (byte* perrFileName = &errFileName[0])
-                        {
-                            string errStringText = String.Empty;
-                            this.richCompileMessages.AppendLog("Compiling...\n", LOG_LEVEL.Info, true);
+                string errStringText = String.Empty;
+                this.richCompileMessages.AppendInfo("Compiling...\n", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime);
 
+                try
+                {
+                    retCode = Compiler.DoCompile(compileOption, asmToCompileOrFileName, ref compiled);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                    Locator.Resolve<IUserMessage>().Error("Technical error in compilation...\nSorry, compilation cannot be executed.\n\nDetail:\n" + ex.Message);
+                    return;
+                }
+                if (retCode != 0)
+                {
+                    if (compileOption == "--binfile")
+                    {
+                        errStringText += "Error on line " + compiled.iErrFileLine.ToString() + ", file: " + Compiler.GetStringFromMemory(compiled.czErrFileName);
+                        errStringText += "\n    ";
+                        errStringText += Compiler.GetStringFromMemory(compiled.czErrMessage);
+                    }
+                    else
+                    {
+                        string errMessageTrimmed = Compiler.GetStringFromMemory(compiled.czErrMessage);
+                        ConvertRadix.RemoveFormattingChars(ref errMessageTrimmed, true/*trim start*/);
+                        errStringText += String.Format("Compile error on line {0}!\n    {1}", compiled.iErrFileLine, errMessageTrimmed.TrimStart());
+                    }
+
+                    LOG_INFO logInfo = new LOG_INFO();
+                    logInfo.ErrorLine = compiled.iErrFileLine; logInfo.SetMessage(errStringText); logInfo.Level = LOG_LEVEL.Error;
+                    this.richCompileMessages.AppendLog(logInfo);
+                }
+                else
+                {
+                    //we got a assembly
+                    this.richCompileMessages.AppendInfo("Compilation OK ! Now writing memory...", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime);
+
+                    //write to memory ?
+                    //if (checkMemory.Checked)
+                    if (compiled.iCompiledSize > 0)
+                    {
+                        //get address where to write the code
+                        ushort memAdress = (ushort)(compiled.czCompiled[0] + compiled.czCompiled[1] * 256);
+
+                        /*if (memAdress == 0 && this.chckbxMemory.Checked)
+                        {
                             try
                             {
-                                retCode = Compiler.DoCompile(compileOption, asmToCompileOrFileName, ref compiled);
+                                memAdress = ConvertRadix.ConvertNumberWithPrefix(textMemAdress.Text);
                             }
-                            catch (Exception ex)
+                            catch(CommandParseException exc)
                             {
-                                Logger.Error(ex);
-                                Locator.Resolve<IUserMessage>().Error( "Technical error in compilation...\nSorry, compilation cannot be executed.\n\nDetail:\n" + ex.Message);
+                                Locator.Resolve<IUserMessage>().Error(String.Format("Incorrect memory address!\n{0}", exc.Message));
                                 return;
                             }
-                            if (retCode != 0)
-                            {
-                                if (compileOption == "--binfile")
-                                {
-                                    errStringText += "Error on line " + compiled.iErrFileLine.ToString() + ", file: " + Compiler.GetStringFromMemory(compiled.czErrFileName);
-                                    errStringText += "\n    ";
-                                    errStringText += Compiler.GetStringFromMemory(compiled.czErrMessage);
-                                }
-                                else
-                                {
-                                    string errMessageTrimmed = Compiler.GetStringFromMemory(compiled.czErrMessage);
-                                    ConvertRadix.RemoveFormattingChars(ref errMessageTrimmed, true/*trim start*/);
-                                    errStringText += String.Format("Compile error on line {0}!\n    {1}", compiled.iErrFileLine, errMessageTrimmed.TrimStart());
-                                }
+                        }*/
+                        if (memAdress >= 0x4000) //RAM start
+                        {
+                            Stopwatch watch = new Stopwatch();
+                            watch.Start();
+                            if ((memAdress + compiled.iCompiledSize) > 0xFFFF)
+                                compiled.iCompiledSize = 0xFFFF - memAdress; //prevent memory overload
+                            byte[] memBytesCompiled = ConvertRadix.PointerToManagedType(compiled.czCompiled + 2/*omit memory address*/, compiled.iCompiledSize);
+                            if (memBytesCompiled != null)
+                                m_debugger.GetVMKernel().WriteMemory(memAdress, memBytesCompiled, 0, compiled.iCompiledSize);
+                            watch.Stop();
 
-                                LOG_INFO logInfo = new LOG_INFO();
-                                logInfo.ErrorLine = compiled.iErrFileLine; logInfo.SetMessage(errStringText); logInfo.Level = LOG_LEVEL.Error;
-                                this.richCompileMessages.AppendLog(logInfo);
+                            TimeSpan time = watch.Elapsed;
+                            string compileInfo = String.Format("\n    Memory written starting at address: #{0:X04}({1})", memAdress, memAdress);
+                            compileInfo += String.Format("\n    Written #{0:X04}({1}) bytes", compiled.iCompiledSize, compiled.iCompiledSize);
+
+                            this.richCompileMessages.AppendLog(compileInfo, LOG_LEVEL.Info);
+                        }
+                        else
+                        {
+                            this.richCompileMessages.AppendLog("Cannot write to ROM(address = " + memAdress.ToString() + "). Bail out.", LOG_LEVEL.Error);
+                            return;
+                        }
+
+                        //Symbols
+                        this.listViewSymbols.Items.Clear();
+                        if (new IntPtr(compiled.arrSourceSymbols) != IntPtr.Zero)
+                        {
+                            Dictionary<string, ushort> symbolsParsed = Compiler.ParseSymbols(Compiler.GetStringFromMemory(compiled.arrSourceSymbols));
+                            if (symbolsParsed != null && symbolsParsed.Keys.Count > 0)
+                            {
+                                foreach (var item in symbolsParsed)
+                                {
+                                    ListViewItem itemToAdd = new ListViewItem(new[] { item.Key, String.Format("#{0:X2}", item.Value) });
+                                    itemToAdd.Tag = String.Format("#{0:X2}", item.Value); //will be parsed in ListViewCustom
+                                    //itemToAdd.Tag = tag;
+                                    this.listViewSymbols.Items.Add(itemToAdd);
+                                }
                             }
-                            else
-                            {
-                                //we got a assembly
-                                this.richCompileMessages.AppendLog(DateTime.Now.ToLongTimeString() + ": Compilation OK ! Now writing memory...", LOG_LEVEL.Info);
-
-                                //write to memory ?
-                                //if (checkMemory.Checked)
-                                if ( compiled.iCompiledSize > 0)
-                                {
-                                    //get address where to write the code
-                                    ushort memAdress = (ushort)(compiled.czCompiled[0] + compiled.czCompiled[1] * 256);
-
-                                    /*if (memAdress == 0 && this.chckbxMemory.Checked)
-                                    {
-                                        try
-                                        {
-                                            memAdress = ConvertRadix.ConvertNumberWithPrefix(textMemAdress.Text);
-                                        }
-                                        catch(CommandParseException exc)
-                                        {
-                                            Locator.Resolve<IUserMessage>().Error(String.Format("Incorrect memory address!\n{0}", exc.Message));
-                                            return;
-                                        }
-                                    }*/
-                                    if (memAdress >= 0x4000) //RAM start
-                                    {
-                                        Stopwatch watch = new Stopwatch();
-                                        watch.Start();
-                                        if ((memAdress + compiled.iCompiledSize) > 0xFFFF)
-                                            compiled.iCompiledSize = 0xFFFF - memAdress; //prevent memory overload
-                                        byte[] memBytesCompiled = ConvertRadix.PointerToManagedType(compiled.czCompiled + 2/*omit memory address*/, compiled.iCompiledSize);
-                                        if( memBytesCompiled != null )
-                                            m_debugger.GetVMKernel().WriteMemory(memAdress, memBytesCompiled, 0, compiled.iCompiledSize);
-                                        watch.Stop();
-
-                                        TimeSpan time = watch.Elapsed;
-                                        string compileInfo = String.Format("\n    Memory written starting at address: #{0:X04}({1})", memAdress, memAdress);
-                                        compileInfo += String.Format("\n    Written #{0:X04}({1}) bytes", compiled.iCompiledSize, compiled.iCompiledSize);
-
-                                        this.richCompileMessages.AppendLog(compileInfo, LOG_LEVEL.Info);
-                                    }
-                                    else
-                                    {
-                                        this.richCompileMessages.AppendLog("Cannot write to ROM(address = " + memAdress.ToString() + "). Bail out.", LOG_LEVEL.Error);
-                                        return;
-                                    }
-
-                                    //Symbols
-                                    this.listViewSymbols.Items.Clear();
-                                    if (new IntPtr(compiled.arrSourceSymbols) != IntPtr.Zero)
-                                    {
-                                        Dictionary<string, ushort> symbolsParsed = Compiler.ParseSymbols(Compiler.GetStringFromMemory(compiled.arrSourceSymbols));
-                                        if (symbolsParsed != null && symbolsParsed.Keys.Count > 0)
-                                        {
-                                            foreach (var item in symbolsParsed)
-                                            {
-                                                ListViewItem itemToAdd = new ListViewItem(new[] { item.Key, String.Format("#{0:X2}", item.Value) });
-                                                itemToAdd.Tag = String.Format("#{0:X2}", item.Value); //will be parsed in ListViewCustom
-                                                //itemToAdd.Tag = tag;
-                                                this.listViewSymbols.Items.Add(itemToAdd);
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                    this.richCompileMessages.AppendLog("Nothing to write to memory !", LOG_LEVEL.Info);
-                            }   
                         }
                     }
+                    else
+                        this.richCompileMessages.AppendLog("Nothing to write to memory !", LOG_LEVEL.Info);
                 }
             }
         }
@@ -364,23 +360,38 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     return;
 
-                string fileText;
-                if (LoadAsm(loadDialog.FileName, out fileText) == false)
-                    return;
+                progressBarBackgroundProcess.Init(4, () => RegisterAsmFile(loadDialog.FileName), null);
+                progressBarBackgroundProcess.Start();
+                //RegisterAsmFile(loadDialog.FileName);
+            }
+        }
 
+        private void RegisterAsmFile( string i_fileName )
+        {
+            //ProgressBarBackgroundProcess.ProcessInvokeRequired(txtAsm, () => txtAsm.Cursor = Cursors.WaitCursor);
+            ProgressBarBackgroundProcess.ProcessInvokeRequired(richCompileMessages, () => richCompileMessages.AppendInfo("Registering new file...\n", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime | LOG_OPTIONS.AddLogTitle));
+
+            string fileText;
+            bool loadRetCode = LoadAsm(i_fileName, out fileText);
+            progressBarBackgroundProcess.IncreaseCounter();
+            if (loadRetCode == false)
+                return;
+
+            //progressBarBackgroundProcess.RunOnNewThread(this, () =>
+            {
                 //new source code
-                AssemblerSourceInfo sourceInfo = new AssemblerSourceInfo(loadDialog.FileName, true);
+                AssemblerSourceInfo sourceInfo = new AssemblerSourceInfo(i_fileName, true);
                 sourceInfo.SetIsFile();
                 sourceInfo.SetIsSaved(true);
-                sourceInfo.SetSourceNameOrFilename(loadDialog.FileName);
+                sourceInfo.SetSourceNameOrFilename(i_fileName);
                 sourceInfo.SetSourceCode(fileText);
                 _actualAssemblerNodeIndex = AddNewSource(sourceInfo);
                 //new node
-                TreeNode node = new TreeNode(Path.GetFileName(loadDialog.FileName));
+                TreeNode node = new TreeNode(Path.GetFileName(i_fileName));
 
                 //add subitems(includes)
-                List<string> includes = Compiler.ParseIncludes(loadDialog.FileName);
-                if( includes != null )
+                List<string> includes = Compiler.ParseIncludes(i_fileName);
+                if (includes != null)
                     foreach (string include in includes)
                     {
                         AssemblerSourceInfo includeInfo = new AssemblerSourceInfo(include, true);
@@ -389,7 +400,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         includeInfo.SetSourceNameOrFilename(include);
                         string includeFileContent;
                         bool retCode = FileTools.ReadFile(include, out includeFileContent);
-                        if( retCode )
+                        if (retCode)
                             includeInfo.SetSourceCode(includeFileContent);
 
                         TreeNode incNode = new TreeNode(Path.GetFileName(include));
@@ -398,16 +409,29 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         incNode.Tag = AddNewSource(includeInfo);
                         node.Nodes.Add(incNode);
                     }
-                node.ToolTipText = loadDialog.FileName;
+                node.ToolTipText = i_fileName;
                 node.Checked = true;
                 node.Tag = _actualAssemblerNodeIndex;
-                treeViewFiles.Nodes.Add(node);
+                ProgressBarBackgroundProcess.ProcessInvokeRequired(treeViewFiles, () => treeViewFiles.Nodes.Add(node));
+                
+                //increase progress bar
+                ProgressBarBackgroundProcess.ProcessInvokeRequired(progressBarBackgroundProcess, () => progressBarBackgroundProcess.IncreaseCounter());
                 //setting GUI
-                txtAsm.Text = sourceInfo.GetSourceCode();
+                ProgressBarBackgroundProcess.ProcessInvokeRequired(richCompileMessages, 
+                    () => richCompileMessages.AppendInfo("Applying source code...", 
+                          LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime));
+                Application.DoEvents();
+                ProgressBarBackgroundProcess.ProcessInvokeRequired(txtAsm, 
+                    () => txtAsm.InsertText(sourceInfo.GetSourceCode()));
+                Application.DoEvents();
+
                 _eventsDisabled = true;
-                treeViewFiles.SelectedNode = node;
+                ProgressBarBackgroundProcess.ProcessInvokeRequired(treeViewFiles, () => treeViewFiles.SelectedNode = node);
                 _eventsDisabled = false;
-            }
+
+                //progressBarBackgroundProcess.RunOnNewThread(txtAsm, () => txtAsm.Cursor = Cursors.IBeam);
+                ProgressBarBackgroundProcess.ProcessInvokeRequired(richCompileMessages, () => richCompileMessages.AppendInfo("Registering finished.\n", LOG_OPTIONS.AddFooter | LOG_OPTIONS.AddTime));
+            }//);
         }
 
         private void txtAsm_TextChanged(object sender, TextChangedEventArgs e)
@@ -564,12 +588,23 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Format code
         private void btnFormatCode_Click(object sender, EventArgs e)
         {
-            ProgressBarCustom progress = new ProgressBarCustom("Format code", "Formatting code....");
-            progress.Init(() => FormatCode(() => progress.GetBackgroundWorker().ReportProgress(0, null)), txtAsm.Lines.Count);
-            progress.Start();
+            progressBarBackgroundProcess.Init(txtAsm.Lines.Count, () => FormatCode(), () => FormatCodeFinish());
+            progressBarBackgroundProcess.Start();
         }
-
-        private void FormatCode(Action actionIncCounter)
+        private void btnStopBackgroundProcess_Click(object sender, EventArgs e)
+        {
+            if (progressBarBackgroundProcess.IsWorking())
+            {
+                progressBarBackgroundProcess.CancelProcessManual();
+                richCompileMessages.AppendInfo("Code formatting canceled by user!\n", LOG_OPTIONS.AddFooter | LOG_OPTIONS.AddTime);
+            }
+        }
+        private void FormatCodeFinish()
+        {
+            //LOG_INFO loginfo = new LOG_INFO("Code formatting finished...\n", LOG_OPTIONS.AddFooter);
+            //richCompileMessages.AppendLog(loginfo);
+        }
+        private void FormatCode()
         {
             //ToDo: we need a list of all assembler commands here, but cannot use AssemblerConfig regex patterns
             string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "adc", "and", "sub", "xor", "jr", "jp", "exx",
@@ -577,6 +612,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                               "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "rrca", "rr"};
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
             Range actLineSave = new Range(txtAsm, txtAsm.Selection.Start, txtAsm.Selection.End);
+
+            //progressBarBackgroundProcess.RunOnNewThread(txtAsm, () => txtAsm.Cursor = Cursors.WaitCursor);
+            ProgressBarBackgroundProcess.ProcessInvokeRequired(richCompileMessages, () => richCompileMessages.AppendInfo("Code formatting started...\n", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime));
 
             //step 1: add whitespace after each ',' and '('
             for (int lineCounter = 0; lineCounter < strAsmLines.Length; lineCounter++)
@@ -608,10 +646,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 }
             }
 
-            string codeFormatted = String.Empty;
+            //Application.DoEvents();
+
+            StringBuilder codeFormatted = new StringBuilder();
             foreach (string line in strAsmLines)
             {
                 bool isNewLine = true; bool isInComment = false; bool addNewlineAtLineEnd = true; bool bIsInCompilerDirective = false;
+
+                //canceled ?
+                if (progressBarBackgroundProcess.IsTerminateSignalReceived())
+                    return;
 
                 string[] lineSplitted = Regex.Split(line, @"\s+", RegexOptions.IgnoreCase);
                 foreach (string token in lineSplitted)
@@ -619,7 +663,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     //compiler directives
                     if (Regex.IsMatch(token, AssemblerConfig.regexCompilerDirectives))
                     {
-                        codeFormatted += token + new String(' ', Math.Max(8 - token.Length, 1)); //"include" has 7 chars
+                        codeFormatted.Append( token + new String(' ', Math.Max(8 - token.Length, 1))); //"include" has 7 chars
                         bIsInCompilerDirective = true;
                         continue;
                     }
@@ -628,7 +672,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         if (token == String.Empty) //newline?
                             bIsInCompilerDirective = false;
                         else
-                            codeFormatted += token + " ";
+                            codeFormatted.Append(token + " ");
                         continue;
                     }
 
@@ -636,7 +680,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     {
                         if (lineSplitted.Length == 1)
                         {
-                            codeFormatted += "\n";
+                            codeFormatted.AppendLine();
                             addNewlineAtLineEnd = false;
                         }
                         continue;
@@ -646,14 +690,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         if (!isInComment)
                         {
                             isInComment = true;
-                            codeFormatted += token + " ";
+                            codeFormatted.Append(token + " ");
                             continue;
                         }
                         isInComment = false;
                     }
                     if (isInComment)
                     {
-                        codeFormatted += token + " ";
+                        codeFormatted.Append(token + " ");
                         continue;
                     }
 
@@ -661,10 +705,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     {
                         if (isNewLine)
                         {
-                            codeFormatted += new String(' ', _tabSpace);
+                            codeFormatted.Append(new String(' ', _tabSpace));
                             bIsInCompilerDirective = false;
                         }
-                        codeFormatted += token + new String(' ', Math.Max(6 - token.Length, 1));
+                        codeFormatted.Append(token + new String(' ', Math.Max(6 - token.Length, 1)));
                     }
                     else
                     {
@@ -673,23 +717,33 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         if ((_tabSpace > token.Length && isNewLine))
                             spacesAfter = _tabSpace - token.Length;
 
-                        codeFormatted += token + new String(' ', spacesAfter);
+                        codeFormatted.Append(token + new String(' ', spacesAfter));
                     }
 
                     isNewLine = false;
                 }
-                codeFormatted = codeFormatted.TrimEnd(' ');
                 if (addNewlineAtLineEnd)
-                    codeFormatted += "\n";
+                    codeFormatted.Append("\n");
                 isInComment = false;
 
                 //increase progress bar counter;
-                actionIncCounter();
+                Invoke(new Action(() =>
+                {
+                    //codeFormatted = codeFormatted.ToString().TrimEnd(' ');
+                    progressBarBackgroundProcess.IncreaseCounter();
+                }));
             }
 
-            txtAsm.Text = codeFormatted.TrimEnd('\n') + '\n';
-            txtAsm.Selection = actLineSave;
-            txtAsm.DoSelectionVisible();
+            Invoke(new Action(() =>
+            {
+                richCompileMessages.AppendInfo("Applying formatted code...", LOG_OPTIONS.NoHeaderOrFooter);
+                txtAsm.Text = codeFormatted.ToString() + '\n';
+                txtAsm.Selection = actLineSave;
+                txtAsm.DoSelectionVisible();
+
+                //txtAsm.Cursor = Cursors.IBeam;
+                richCompileMessages.AppendInfo("Code formatting finished...\n", LOG_OPTIONS.AddFooter | LOG_OPTIONS.AddTime);
+            }));
         }
 
         private void richCompileMessages_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -751,34 +805,45 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 }
             }
         }
+
+        //Settings
+        private void settingsToolStrip_Click(object sender, EventArgs e)
+        {
+            Adlers.Views.AssemblerView.Settings.ShowForm();
+        }
         #endregion GUI
 
         #region File operations
             private bool LoadAsm(string i_fileName, out string o_strFileText)
             {
-                o_strFileText = string.Empty;
+                    Func<string> delegateLoadAsm = delegate()
+                    {
+                        string lambdaOut = string.Empty;
 
-                if (i_fileName == String.Empty || i_fileName == null)
-                    return false;
+                        if (i_fileName == String.Empty || i_fileName == null)
+                            return string.Empty;
 
-                try
-                {
-                    bool retCode = FileTools.ReadFile(i_fileName, out o_strFileText);
-                    if (!retCode)
-                        return retCode;
+                        try
+                        {
+                            bool retCode = FileTools.ReadFile(i_fileName, out lambdaOut);
+                            if (!retCode)
+                                return lambdaOut;
 
-                    if (this.richCompileMessages.Text.Trim() != String.Empty)
-                        this.richCompileMessages.Text += "\n\n";
-
-                    this.richCompileMessages.Text += "File " + i_fileName + " read successfully..";
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                    this.richCompileMessages.Text += "\n\nFile " + i_fileName + " read ERROR!";
-                    return false;
-                }
+                            Invoke(new Action(() =>
+                            {
+                                this.richCompileMessages.AppendInfo("File " + i_fileName + " read successfully..", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime);
+                            }));
+                            return lambdaOut;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                            this.richCompileMessages.Text += "\n\nFile " + i_fileName + " read ERROR!";
+                            return lambdaOut;
+                        }
+                    };
+                    o_strFileText = delegateLoadAsm.Invoke();
+                    return o_strFileText != string.Empty;
             }
 
             private bool SaveAsm(string i_fileName)

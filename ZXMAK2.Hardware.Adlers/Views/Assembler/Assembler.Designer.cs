@@ -52,10 +52,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.treeViewFiles = new System.Windows.Forms.TreeView();
             this.buttonClearAssemblerLog = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.btnStopBackgroundProcess = new System.Windows.Forms.Button();
+            this.progressBarBackgroundProcess = new ZXMAK2.Hardware.Adlers.Views.CustomControls.ProgressBarBackgroundProcess();
             this.richCompileMessages = new ZXMAK2.Hardware.Adlers.Views.CustomControls.EventLogger();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.ctxMenuAssemblerCommands = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.btnFormatCode = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnValidateCode = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.listViewSymbols = new ZXMAK2.Hardware.Adlers.Views.CustomControls.ListViewCustom();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -67,8 +71,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.addToDebuggerAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.commentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnValidateCode = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
             this.toolMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -246,6 +248,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.settingsToolStrip.Name = "settingsToolStrip";
             this.settingsToolStrip.Size = new System.Drawing.Size(32, 32);
             this.settingsToolStrip.Text = "Settings";
+            this.settingsToolStrip.Click += new System.EventHandler(this.settingsToolStrip_Click);
             // 
             // toolStripColors
             // 
@@ -322,21 +325,44 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.btnStopBackgroundProcess);
+            this.splitContainer1.Panel2.Controls.Add(this.progressBarBackgroundProcess);
             this.splitContainer1.Panel2.Controls.Add(this.richCompileMessages);
             this.splitContainer1.Size = new System.Drawing.Size(542, 692);
             this.splitContainer1.SplitterDistance = 552;
             this.splitContainer1.TabIndex = 11;
             // 
+            // btnStopBackgroundProcess
+            // 
+            this.btnStopBackgroundProcess.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnStopBackgroundProcess.Location = new System.Drawing.Point(526, 118);
+            this.btnStopBackgroundProcess.Name = "btnStopBackgroundProcess";
+            this.btnStopBackgroundProcess.Size = new System.Drawing.Size(16, 16);
+            this.btnStopBackgroundProcess.TabIndex = 17;
+            this.btnStopBackgroundProcess.UseVisualStyleBackColor = true;
+            this.btnStopBackgroundProcess.Click += new System.EventHandler(this.btnStopBackgroundProcess_Click);
+            // 
+            // progressBarBackgroundProcess
+            // 
+            this.progressBarBackgroundProcess.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBarBackgroundProcess.Location = new System.Drawing.Point(1, 119);
+            this.progressBarBackgroundProcess.Name = "progressBarBackgroundProcess";
+            this.progressBarBackgroundProcess.Size = new System.Drawing.Size(522, 15);
+            this.progressBarBackgroundProcess.TabIndex = 6;
+            // 
             // richCompileMessages
             // 
+            this.richCompileMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.richCompileMessages.BackColor = System.Drawing.Color.Black;
-            this.richCompileMessages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richCompileMessages.Font = new System.Drawing.Font("Consolas", 9F);
             this.richCompileMessages.ForeColor = System.Drawing.Color.Green;
-            this.richCompileMessages.Location = new System.Drawing.Point(0, 0);
+            this.richCompileMessages.Location = new System.Drawing.Point(0, 2);
             this.richCompileMessages.Name = "richCompileMessages";
             this.richCompileMessages.ReadOnly = true;
-            this.richCompileMessages.Size = new System.Drawing.Size(542, 136);
+            this.richCompileMessages.Size = new System.Drawing.Size(542, 118);
             this.richCompileMessages.TabIndex = 5;
             this.richCompileMessages.Text = "";
             this.richCompileMessages.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.richCompileMessages_MouseDoubleClick);
@@ -356,14 +382,25 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.btnValidateCode,
             this.toolStripMenuItem1});
             this.ctxMenuAssemblerCommands.Name = "ctxMenuAssemblerCommands";
-            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(153, 76);
+            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(148, 54);
             // 
             // btnFormatCode
             // 
             this.btnFormatCode.Name = "btnFormatCode";
-            this.btnFormatCode.Size = new System.Drawing.Size(152, 22);
+            this.btnFormatCode.Size = new System.Drawing.Size(147, 22);
             this.btnFormatCode.Text = "Format Code";
             this.btnFormatCode.Click += new System.EventHandler(this.btnFormatCode_Click);
+            // 
+            // btnValidateCode
+            // 
+            this.btnValidateCode.Name = "btnValidateCode";
+            this.btnValidateCode.Size = new System.Drawing.Size(147, 22);
+            this.btnValidateCode.Text = "Validate Code";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(144, 6);
             // 
             // groupBox2
             // 
@@ -467,7 +504,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.ctxmenuSymbols.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addToDebuggerAsToolStripMenuItem});
             this.ctxmenuSymbols.Name = "ctxmenuSymbols";
-            this.ctxmenuSymbols.Size = new System.Drawing.Size(170, 26);
+            this.ctxmenuSymbols.Size = new System.Drawing.Size(179, 26);
             // 
             // addToDebuggerAsToolStripMenuItem
             // 
@@ -475,33 +512,22 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.commentToolStripMenuItem,
             this.noteToolStripMenuItem});
             this.addToDebuggerAsToolStripMenuItem.Name = "addToDebuggerAsToolStripMenuItem";
-            this.addToDebuggerAsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.addToDebuggerAsToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.addToDebuggerAsToolStripMenuItem.Text = "Add to debugger as";
             // 
             // commentToolStripMenuItem
             // 
             this.commentToolStripMenuItem.Name = "commentToolStripMenuItem";
-            this.commentToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.commentToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.commentToolStripMenuItem.Text = "Comment";
             this.commentToolStripMenuItem.Click += new System.EventHandler(this.commentToolStripMenuItem_Click);
             // 
             // noteToolStripMenuItem
             // 
             this.noteToolStripMenuItem.Name = "noteToolStripMenuItem";
-            this.noteToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.noteToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.noteToolStripMenuItem.Text = "Note";
             this.noteToolStripMenuItem.Click += new System.EventHandler(this.noteToolStripMenuItem_Click);
-            // 
-            // btnValidateCode
-            // 
-            this.btnValidateCode.Name = "btnValidateCode";
-            this.btnValidateCode.Size = new System.Drawing.Size(152, 22);
-            this.btnValidateCode.Text = "Validate Code";
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
             // 
             // Assembler
             // 
@@ -588,5 +614,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private System.Windows.Forms.ToolStripMenuItem noteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem btnValidateCode;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private CustomControls.ProgressBarBackgroundProcess progressBarBackgroundProcess;
+        private System.Windows.Forms.Button btnStopBackgroundProcess;
     }
 }
