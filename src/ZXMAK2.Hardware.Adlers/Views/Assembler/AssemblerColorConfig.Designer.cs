@@ -51,6 +51,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.fastColoredPreview = new FastColoredTextBoxNS.FastColoredTextBox();
             this.buttonDone = new System.Windows.Forms.Button();
+            this.checkBoxEnabledSyntaxHighlightning = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fastColoredPreview)).BeginInit();
             this.SuspendLayout();
@@ -77,7 +78,7 @@
             this.groupBox1.Controls.Add(this.checkBoxCommentsItalic);
             this.groupBox1.Controls.Add(this.colorPickerComments);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(13, 13);
+            this.groupBox1.Location = new System.Drawing.Point(13, 26);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(493, 250);
             this.groupBox1.TabIndex = 0;
@@ -334,11 +335,24 @@
             this.buttonDone.UseVisualStyleBackColor = true;
             this.buttonDone.Click += new System.EventHandler(this.buttonDone_Click);
             // 
+            // checkBoxEnabledSyntaxHighlightning
+            // 
+            this.checkBoxEnabledSyntaxHighlightning.AutoSize = true;
+            this.checkBoxEnabledSyntaxHighlightning.Checked = true;
+            this.checkBoxEnabledSyntaxHighlightning.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxEnabledSyntaxHighlightning.Location = new System.Drawing.Point(16, 9);
+            this.checkBoxEnabledSyntaxHighlightning.Name = "checkBoxEnabledSyntaxHighlightning";
+            this.checkBoxEnabledSyntaxHighlightning.Size = new System.Drawing.Size(65, 17);
+            this.checkBoxEnabledSyntaxHighlightning.TabIndex = 3;
+            this.checkBoxEnabledSyntaxHighlightning.Text = "Enabled";
+            this.checkBoxEnabledSyntaxHighlightning.UseVisualStyleBackColor = true;
+            // 
             // AssemblerColorConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(572, 507);
+            this.Controls.Add(this.checkBoxEnabledSyntaxHighlightning);
             this.Controls.Add(this.buttonDone);
             this.Controls.Add(this.fastColoredPreview);
             this.Controls.Add(this.groupBox1);
@@ -377,5 +391,6 @@
         private System.Windows.Forms.CheckBox checkBoxJumpsItalic;
         private CustomControls.ColorPicker colorPickerJumps;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox checkBoxEnabledSyntaxHighlightning;
     }
 }

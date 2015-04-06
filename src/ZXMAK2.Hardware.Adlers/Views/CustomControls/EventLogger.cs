@@ -44,7 +44,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
                     base.AppendText(info.GetDisplayMessage());
                 base.AppendText("\n");
                 info.RangeEnd = realLinesCount;
-                base.AppendText("====================================\n");
+                if( info.LogOptions.HasFlag(LOG_OPTIONS.AddFooter) || info.LogOptions == LOG_OPTIONS.AddFooterAndHeader )
+                    base.AppendText("====================================\n");
 
                 realLinesCount = base.Lines.Length;
             }
@@ -155,12 +156,21 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
             _logInfo.Add(i_logInfo);
             Display();
         }
-        public void AppendInfo(string i_infoMessage)
+        public void AppendInfo(string i_infoMessage, LOG_OPTIONS i_logOptions = LOG_OPTIONS.AddFooterAndHeader)
         {
             LOG_INFO logInfo = new LOG_INFO();
-            logInfo.SetMessage("INFO:  " + i_infoMessage);
+            if (i_logOptions.HasFlag(LOG_OPTIONS.AddLogTitle))
+                logInfo.SetMessage("INFO: " + i_infoMessage);
+            else
+                logInfo.SetMessage(i_infoMessage);
             logInfo.Id = GetNextLogInfoId();
             logInfo.Level = LOG_LEVEL.Info;
+            logInfo.LogOptions = i_logOptions;
+            if (i_logOptions.HasFlag(LOG_OPTIONS.AddTime))
+            {
+                logInfo.HasLogTime = true;
+                logInfo.LogTime = DateTime.Now;
+            }
             _logInfo.Add(logInfo);
             Display();
         }
@@ -189,14 +199,36 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
     }
 
     public enum LOG_LEVEL { Warning, Error, Info, Unknown };
+    [Flags]
+    public enum LOG_OPTIONS 
+    { 
+        NoHeaderOrFooter = 0x01,
+        AddHeader = 0x02, 
+        AddFooter = 0x04,
+        AddFooterAndHeader = 0x08,
+        AddTime = 0x10,
+        AddLogTitle = 0x20
+    };
+
     public class LOG_INFO
     {
         public int Id = 0;
-        public string _originalMessage = String.Empty;
-        public string _displayMessage = String.Empty;
+        public string OriginalMessage = String.Empty;
+        public string DisplayMessage = String.Empty;
         public bool HasLogTime = false;
         public DateTime LogTime;
         public LOG_LEVEL Level;
+        public LOG_OPTIONS LogOptions = LOG_OPTIONS.AddFooterAndHeader;
+        
+        public LOG_INFO()
+        {
+
+        }
+        public LOG_INFO(string message, LOG_OPTIONS options)
+        {
+            SetMessage(message);
+            LogOptions = options;
+        }
 
         public int RangeStart = 0; //line number where starts the current log info
         public int RangeEnd = 0; //line number where ends the current log info
@@ -205,16 +237,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
 
         public int GetMessageLines()
         {
-            return _displayMessage.Split('\n').Length;
+            return DisplayMessage.Split('\n').Length;
         }
         public void SetMessage(string i_message)
         {
-            _originalMessage = i_message;
-            _displayMessage = i_message.TrimEnd('\n');
+            OriginalMessage = i_message;
+            DisplayMessage = i_message.TrimEnd('\n');
         }
         public string GetDisplayMessage()
         {
-            return _displayMessage;
+            return DisplayMessage;
         }
     };
 }

@@ -193,6 +193,16 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Stop_real_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("Stop_real_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap TapeRd_128x128 {
             get {
                 object obj = ResourceManager.GetObject("TapeRd_128x128", resourceCulture);

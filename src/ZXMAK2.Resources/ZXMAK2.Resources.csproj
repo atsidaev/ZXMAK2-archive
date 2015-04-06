@@ -60,6 +60,7 @@
     <Content Include="Icons\Rewind_16x16.png" />
     <Content Include="Icons\Rocket_32x32.png" />
     <Content Include="Icons\Stop_16x16.png" />
+    <Content Include="Icons\Stop_real_16x16.png" />
     <Content Include="Icons\TapeRd_128x128.png" />
     <Content Include="Icons\ZXMAK2.ICO" />
     <Content Include="Pictures\KeyboardHelp.png" />
