@@ -14,8 +14,6 @@ using System.Xml;
 using ZXMAK2.Hardware.Adlers.Views.CustomControls;
 using ZXMAK2.Hardware.Adlers.Core;
 using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
@@ -31,8 +29,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //private IDebuggable m_spectrum;
         private FormCpu m_debugger;
        
-        //colors
-        private static AssemblerColorConfig _ColorConfig;
         //instance
         private static Assembler m_instance = null;
 
@@ -41,6 +37,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             m_debugger = spectrum;
 
             InitializeComponent();
+
+            //Init colors object
+            AssemblerColorConfig.Init(this);
 
             //Symbols list view
             listViewSymbols.View = View.Details;
@@ -58,9 +57,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             treeViewFiles.Nodes[0].Tag = (int)0;
             txtAsm.InsertText(_strDefaultAsmSourceCode); //must be here; will be used as source code for the new added source code
             AddNewSource(new AssemblerSourceInfo("noname.asm", false), _strDefaultAsmSourceCode);
-
-            //highlight colors
-            _ColorConfig = new AssemblerColorConfig(this);
 
             this.KeyPreview = true;
             this.BringToFront();
@@ -323,25 +319,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //text Color
         private void toolStripColors_Click(object sender, EventArgs e)
         {
-            _ColorConfig.ShowDialog();
-            //this.RefreshAssemblerCode();
+            AssemblerColorConfig.ShowForm();
         }
         //refresh assembler text when color styles changed
-        public void RefreshAssemblerCode()
+        public void RefreshAssemblerCodeSyntaxHighlightning()
         {
-            if (_ColorConfig != null)
-            {
-                txtAsm.ClearStylesBuffer();
-
-                Range range = txtAsm.VisibleRange;
-                range.ClearStyle(AssemblerConfig.styleComment);
-
-                //AssemblerConfig.styleComment = _ColorConfig.CommentStyle;
-                range.SetStyle(AssemblerConfig.styleComment, AssemblerConfig.regexComment, RegexOptions.Multiline);
-
-                //AssemblerConfig.styleCompilerDirectives = _ColorConfig.CompilerDirectivesStyle;
-                range.SetStyle(AssemblerConfig.styleCompilerDirectives, AssemblerConfig.regexCompilerDirectives, RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            }
+            AssemblerColorConfig.RefreshControlStyles(this.txtAsm, null);
         }
 
         //open file
@@ -360,9 +343,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 if (loadDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     return;
 
-                progressBarBackgroundProcess.Init(4, () => RegisterAsmFile(loadDialog.FileName), null);
-                progressBarBackgroundProcess.Start();
-                //RegisterAsmFile(loadDialog.FileName);
+                //progressBarBackgroundProcess.Init(4, () => RegisterAsmFile(loadDialog.FileName), null);
+                //progressBarBackgroundProcess.Start();
+                RegisterAsmFile(loadDialog.FileName);
             }
         }
 
@@ -420,10 +403,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 ProgressBarBackgroundProcess.ProcessInvokeRequired(richCompileMessages, 
                     () => richCompileMessages.AppendInfo("Applying source code...", 
                           LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime));
-                Application.DoEvents();
-                ProgressBarBackgroundProcess.ProcessInvokeRequired(txtAsm, 
-                    () => txtAsm.InsertText(sourceInfo.GetSourceCode()));
-                Application.DoEvents();
+                //Application.DoEvents();
+                txtAsm.Clear();
+                progressBarBackgroundProcess.Init(1, () => txtAsm.AppendText(sourceInfo.GetSourceCode()), null);
+                progressBarBackgroundProcess.Start();
 
                 _eventsDisabled = true;
                 ProgressBarBackgroundProcess.ProcessInvokeRequired(treeViewFiles, () => treeViewFiles.SelectedNode = node);
@@ -436,7 +419,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
         private void txtAsm_TextChanged(object sender, TextChangedEventArgs e)
         {
-            AssemblerConfig.RefreshControlStyles(txtAsm, e);
+            AssemblerColorConfig.RefreshControlStyles(txtAsm, e);
         }
 
         //Save button
@@ -661,7 +644,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 foreach (string token in lineSplitted)
                 {
                     //compiler directives
-                    if (Regex.IsMatch(token, AssemblerConfig.regexCompilerDirectives))
+                    if (Regex.IsMatch(token, AssemblerColorConfig.regexCompilerDirectives))
                     {
                         codeFormatted.Append( token + new String(' ', Math.Max(8 - token.Length, 1))); //"include" has 7 chars
                         bIsInCompilerDirective = true;
@@ -1069,15 +1052,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         #endregion
 
         #region Config
-        public AssemblerColorConfig GetColors()
-        {
-            return _ColorConfig;
-        }
         public void GetPartialConfig(ref XmlWriter io_writer)
         {
             if (m_instance == null)
                 return;
-            AssemblerColorConfig colors = GetInstance().GetColors();
 
             //Assembler root
             io_writer.WriteStartElement("Assembler");
@@ -1085,20 +1063,27 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                     //Colors->Comments
                     io_writer.WriteStartElement("CommentStyle");
-                    io_writer.WriteAttributeString("TextColor", AssemblerConfig.styleComment.GetCSS());
+                    io_writer.WriteAttributeString("Enabled", AssemblerColorConfig.GetInstance().IsCommentsColorEnabled() ? "1" : "0");
+                    io_writer.WriteAttributeString("TextColor", AssemblerColorConfig.CommentStyle.GetCSS());
                     io_writer.WriteEndElement();  //Colors->Comments end
 
                     //Colors->CompilerDirectivesStyle
                     io_writer.WriteStartElement("CompilerDirectivesStyle");
-                    io_writer.WriteAttributeString("TextColor", AssemblerConfig.styleCompilerDirectives.GetCSS());
+                    io_writer.WriteAttributeString("Enabled", AssemblerColorConfig.GetInstance().IsCompilerDirectivesEnabled() ? "1" : "0");
+                    io_writer.WriteAttributeString("TextColor", AssemblerColorConfig.CompilerDirectivesStyle.GetCSS());
                     io_writer.WriteEndElement();  //Colors->Compiler directives end
 
                     //Colors->JumpsStyle
                     io_writer.WriteStartElement("JumpsStyle");
-                    io_writer.WriteAttributeString("TextColor", AssemblerConfig.styleJumpInstruction.GetCSS());
+                    io_writer.WriteAttributeString("Enabled", AssemblerColorConfig.GetInstance().IsJumpStyleEnabled() ? "1" : "0");
+                    io_writer.WriteAttributeString("TextColor", AssemblerColorConfig.JumpInstructionStyle.GetCSS());
                     io_writer.WriteEndElement();  //Colors->Jumps end
 
             io_writer.WriteEndElement(); //Colors end
+
+            //save settings
+            Settings.GetPartialConfig(ref io_writer);
+
             io_writer.WriteEndElement(); //Assembler end
         }
         public void LoadConfig()
@@ -1113,6 +1098,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             XmlNode node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Colors/CommentStyle");
             if (node != null)
             {
+                bool isStyleEnabled = false;
+                if (node.Attributes["Enabled"] != null)
+                    isStyleEnabled = node.Attributes["Enabled"].InnerText == "1";
                 string css = node.Attributes["TextColor"].InnerText;
                 Color commentColor = ParseCss_GetColor(css);
                 FontStyle fontStyle = new FontStyle();
@@ -1124,13 +1112,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     fontStyle |= FontStyle.Underline;
                 if (ParseCss_IsStrikeout(css))
                     fontStyle |= FontStyle.Strikeout;
-                GetInstance().GetColors().ChangeSyntaxStyle(new TextStyle(new SolidBrush(commentColor), null, fontStyle), 0);
+                AssemblerColorConfig.GetInstance().ChangeSyntaxStyle(isStyleEnabled, new TextStyle(new SolidBrush(commentColor), null, fontStyle), 0);
             }
 
             //compiler directive style
             node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Colors/CompilerDirectivesStyle");
             if (node != null)
             {
+                bool isStyleEnabled = false;
+                if (node.Attributes["Enabled"] != null)
+                    isStyleEnabled = node.Attributes["Enabled"].InnerText == "1";
                 string css = node.Attributes["TextColor"].InnerText;
                 Color compilerDirectivesColor = ParseCss_GetColor(css);
                 FontStyle fontStyle = new FontStyle();
@@ -1142,13 +1133,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     fontStyle |= FontStyle.Underline;
                 if (ParseCss_IsStrikeout(css))
                     fontStyle |= FontStyle.Strikeout;
-                GetInstance().GetColors().ChangeSyntaxStyle(new TextStyle(new SolidBrush(compilerDirectivesColor), null, fontStyle), 1);
+                AssemblerColorConfig.GetInstance().ChangeSyntaxStyle(isStyleEnabled, new TextStyle(new SolidBrush(compilerDirectivesColor), null, fontStyle), 1);
             }
 
             //jumps style
             node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Colors/JumpsStyle");
             if (node != null)
             {
+                bool isStyleEnabled = false;
+                if (node.Attributes["Enabled"] != null)
+                    isStyleEnabled = node.Attributes["Enabled"].InnerText == "1";
                 string css = node.Attributes["TextColor"].InnerText;
                 Color jumpsStyleColor = ParseCss_GetColor(css);
                 FontStyle fontStyle = new FontStyle();
@@ -1160,7 +1154,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     fontStyle |= FontStyle.Underline;
                 if (ParseCss_IsStrikeout(css))
                     fontStyle |= FontStyle.Strikeout;
-                GetInstance().GetColors().ChangeSyntaxStyle(new TextStyle(new SolidBrush(jumpsStyleColor), null, fontStyle), 2);
+                AssemblerColorConfig.GetInstance().ChangeSyntaxStyle(isStyleEnabled, new TextStyle(new SolidBrush(jumpsStyleColor), null, fontStyle), 2);
             }
         }
         private Color ParseCss_GetColor(string i_cssString)
