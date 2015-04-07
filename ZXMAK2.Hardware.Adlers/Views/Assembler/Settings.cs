@@ -124,6 +124,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         #endregion public getters
 
         #region GUI
+        //settings icon comes from here: https://www.iconfinder.com/icons/17814/preferences_settings_tools_icon#size=128
+
         //Save
         private void btnSave_Click(object sender, System.EventArgs e)
         {

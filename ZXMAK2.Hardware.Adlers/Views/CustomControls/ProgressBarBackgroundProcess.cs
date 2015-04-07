@@ -11,6 +11,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
         readonly object _sync = new object();
 
         Action _doworkAction = null;
+        Action _onCompletedAction = null;
         Action _cancelActionGUI = null;
         int _maxProgressBarValue = -1;
 
@@ -48,7 +49,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
             lock (_sync)
             {
                 if (_doworkAction == null || _maxProgressBarValue == -1 /*|| _cancelActionGUI == null*/)
-                    throw new Exception("Assembler: Process not initialised");
+                    throw new Exception("Assembler: Process not initialized");
 
                 this.Maximum = _maxProgressBarValue;
 
@@ -70,10 +71,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
 
                 if (_backgroundWorker.CancellationPending == false) //already canceled by user?
                     _backgroundWorker.CancelAsync();
-                _doworkAction = _cancelActionGUI = null;
                 this.Value = this.Maximum;
                 _isStarted = false;
+
+                if (_onCompletedAction != null)
+                    _onCompletedAction();
             }
+            _doworkAction = _cancelActionGUI = _onCompletedAction = null;
         }
         public void CancelProcessManual()
         {
@@ -118,6 +122,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
         private void _backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Finish();
+        }
+
+        public void SetOnFinishedAction(Action i_onCompletedAction)
+        {
+            _onCompletedAction = i_onCompletedAction;
         }
 
         //run async without progress bar

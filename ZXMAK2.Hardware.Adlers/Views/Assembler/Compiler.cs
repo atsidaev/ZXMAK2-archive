@@ -69,7 +69,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             if (pDllModule == IntPtr.Zero)
             {
                 Locator.Resolve<IUserMessage>()
-                    .Error("Cannot load Pasmo2.dll...\n\nTrying to download it again. Press OK please.");
+                    .Error("Cannot load Pasmo2.dll...\n\nTrying to download it again.\n\nIf problem persists please download it manually from: http://pasmo2.codeplex.com/ \n\nPress OK please.");
 
                 File.Delete(Path.Combine(Utils.GetAppFolder(), "Pasmo2.dll"));
 

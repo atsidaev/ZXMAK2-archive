@@ -378,9 +378,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     foreach (string include in includes)
                     {
                         AssemblerSourceInfo includeInfo = new AssemblerSourceInfo(include, true);
-                        includeInfo.SetIsFile();
-                        includeInfo.SetIsSaved(true);
+                        //includeInfo.SetIsFile();
+                        //includeInfo.SetIsSaved(true);
                         includeInfo.SetSourceNameOrFilename(include);
+                        includeInfo.IdParent = _actualAssemblerNodeIndex;
                         string includeFileContent;
                         bool retCode = FileTools.ReadFile(include, out includeFileContent);
                         if (retCode)
@@ -406,6 +407,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 //Application.DoEvents();
                 txtAsm.Clear();
                 progressBarBackgroundProcess.Init(1, () => txtAsm.AppendText(sourceInfo.GetSourceCode()), null);
+                progressBarBackgroundProcess.SetOnFinishedAction(() =>
+                    ProgressBarBackgroundProcess.ProcessInvokeRequired(richCompileMessages, () => richCompileMessages.AppendInfo("Registering finished.\n", LOG_OPTIONS.AddFooter | LOG_OPTIONS.AddTime))
+                );
                 progressBarBackgroundProcess.Start();
 
                 _eventsDisabled = true;
@@ -413,7 +417,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 _eventsDisabled = false;
 
                 //progressBarBackgroundProcess.RunOnNewThread(txtAsm, () => txtAsm.Cursor = Cursors.IBeam);
-                ProgressBarBackgroundProcess.ProcessInvokeRequired(richCompileMessages, () => richCompileMessages.AppendInfo("Registering finished.\n", LOG_OPTIONS.AddFooter | LOG_OPTIONS.AddTime));
+                //ProgressBarBackgroundProcess.ProcessInvokeRequired(richCompileMessages, () => richCompileMessages.AppendInfo("Registering finished.\n", LOG_OPTIONS.AddFooter | LOG_OPTIONS.AddTime));
             }//);
         }
 
@@ -854,6 +858,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         {
             private int _id;
             public int Id{get { return this._id; } set{ if(value >= 0) this._id = value; }}
+            public int IdParent;
 
             private string _sourceCode;
             public string GetSourceCode()
@@ -880,6 +885,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 _isFile = i_isFile;
                 IsSaved = true;
                 _fileName = _sourceCode = string.Empty;
+                IdParent = -1;
             }
 
             public string GetFileNameToSave()
@@ -975,8 +981,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         }
         private void RemoveSource(int i_sourceIndex)
         {
-            if( _assemblerSources != null && _assemblerSources.Count > 0 )
+            if (_assemblerSources != null && _assemblerSources.Count > 0)
+            {
                 _assemblerSources.Remove(i_sourceIndex);
+                //remove child nodes(includes) too
+                foreach (var idToRemove in _assemblerSources.Where(p => p.Value.IdParent == i_sourceIndex).ToList())
+                    _assemblerSources.Remove(idToRemove.Key);
+            }
             if (_assemblerSources.Count > 0)
             {
                 _actualAssemblerNodeIndex = 0;
@@ -1079,6 +1090,24 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     io_writer.WriteAttributeString("TextColor", AssemblerColorConfig.JumpInstructionStyle.GetCSS());
                     io_writer.WriteEndElement();  //Colors->Jumps end
 
+                    //Colors->CommonInstructionStyle
+                    io_writer.WriteStartElement("CommonInstructionsStyle");
+                    io_writer.WriteAttributeString("Enabled", AssemblerColorConfig.GetInstance().IsCommonInstructionsStyleEnabled() ? "1" : "0");
+                    io_writer.WriteAttributeString("TextColor", AssemblerColorConfig.CommonInstructionStyle.GetCSS());
+                    io_writer.WriteEndElement();  //Colors->CommonInstructionStyle end
+
+                    //Colors->NumbersStyle
+                    io_writer.WriteStartElement("NumbersStyle");
+                    io_writer.WriteAttributeString("Enabled", AssemblerColorConfig.GetInstance().IsNumbersStyleEnabled() ? "1" : "0");
+                    io_writer.WriteAttributeString("TextColor", AssemblerColorConfig.NumbersStyle.GetCSS());
+                    io_writer.WriteEndElement();  //Colors->NumbersStyle end
+
+                    //Colors->StackInstructionsStyle
+                    io_writer.WriteStartElement("StackInstructionsStyle");
+                    io_writer.WriteAttributeString("Enabled", AssemblerColorConfig.GetInstance().IsStackInstructionsStyleEnabled() ? "1" : "0");
+                    io_writer.WriteAttributeString("TextColor", AssemblerColorConfig.StackInstructionStyle.GetCSS());
+                    io_writer.WriteEndElement();  //Colors->StackInstructionsStyle end
+
             io_writer.WriteEndElement(); //Colors end
 
             //save settings
@@ -1156,6 +1185,69 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     fontStyle |= FontStyle.Strikeout;
                 AssemblerColorConfig.GetInstance().ChangeSyntaxStyle(isStyleEnabled, new TextStyle(new SolidBrush(jumpsStyleColor), null, fontStyle), 2);
             }
+
+            //common instruction style
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Colors/CommonInstructionsStyle");
+            if (node != null)
+            {
+                bool isStyleEnabled = false;
+                if (node.Attributes["Enabled"] != null)
+                    isStyleEnabled = node.Attributes["Enabled"].InnerText == "1";
+                string css = node.Attributes["TextColor"].InnerText;
+                Color commonInstructionsStyleColor = ParseCss_GetColor(css);
+                FontStyle fontStyle = new FontStyle();
+                if (ParseCss_IsItalic(css))
+                    fontStyle |= FontStyle.Italic;
+                if (ParseCss_IsBold(css))
+                    fontStyle |= FontStyle.Bold;
+                if (ParseCss_IsUnderline(css))
+                    fontStyle |= FontStyle.Underline;
+                if (ParseCss_IsStrikeout(css))
+                    fontStyle |= FontStyle.Strikeout;
+                AssemblerColorConfig.GetInstance().ChangeSyntaxStyle(isStyleEnabled, new TextStyle(new SolidBrush(commonInstructionsStyleColor), null, fontStyle), 3);
+            }
+
+            //numbers style
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Colors/NumbersStyle");
+            if (node != null)
+            {
+                bool isStyleEnabled = false;
+                if (node.Attributes["Enabled"] != null)
+                    isStyleEnabled = node.Attributes["Enabled"].InnerText == "1";
+                string css = node.Attributes["TextColor"].InnerText;
+                Color numbersStyleColor = ParseCss_GetColor(css);
+                FontStyle fontStyle = new FontStyle();
+                if (ParseCss_IsItalic(css))
+                    fontStyle |= FontStyle.Italic;
+                if (ParseCss_IsBold(css))
+                    fontStyle |= FontStyle.Bold;
+                if (ParseCss_IsUnderline(css))
+                    fontStyle |= FontStyle.Underline;
+                if (ParseCss_IsStrikeout(css))
+                    fontStyle |= FontStyle.Strikeout;
+                AssemblerColorConfig.GetInstance().ChangeSyntaxStyle(isStyleEnabled, new TextStyle(new SolidBrush(numbersStyleColor), null, fontStyle), 4);
+            }
+
+            //stack instructions style
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Colors/StackInstructionsStyle");
+            if (node != null)
+            {
+                bool isStyleEnabled = false;
+                if (node.Attributes["Enabled"] != null)
+                    isStyleEnabled = node.Attributes["Enabled"].InnerText == "1";
+                string css = node.Attributes["TextColor"].InnerText;
+                Color stackInstrucionsStyleColor = ParseCss_GetColor(css);
+                FontStyle fontStyle = new FontStyle();
+                if (ParseCss_IsItalic(css))
+                    fontStyle |= FontStyle.Italic;
+                if (ParseCss_IsBold(css))
+                    fontStyle |= FontStyle.Bold;
+                if (ParseCss_IsUnderline(css))
+                    fontStyle |= FontStyle.Underline;
+                if (ParseCss_IsStrikeout(css))
+                    fontStyle |= FontStyle.Strikeout;
+                AssemblerColorConfig.GetInstance().ChangeSyntaxStyle(isStyleEnabled, new TextStyle(new SolidBrush(stackInstrucionsStyleColor), null, fontStyle), 5);
+            }
         }
         private Color ParseCss_GetColor(string i_cssString)
         {
@@ -1187,6 +1279,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             //;text-decoration:line-through;
             return i_cssString.Contains(";text-decoration:line-through;");
         }
-        #endregion
+        #endregion Config
     }
 }
