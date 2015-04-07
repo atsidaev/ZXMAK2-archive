@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ZXMAK2.Dependency;
@@ -134,6 +135,71 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 i_errMessage = ex.Message.ToString();
                 return string.Empty;
             }
+        }
+
+        public static bool TestTcpConnection(out string o_message, string i_proxyIP = null, string i_proxyPort = null)
+        {
+            try
+            {
+                WebRequest request = WebRequest.Create(@"http://adlers.host.sk/");
+                request.Credentials = CredentialCache.DefaultCredentials;
+                if (i_proxyIP != null && i_proxyPort != null)
+                {
+                    IPAddress address;
+                    if (IPAddress.TryParse(i_proxyIP, out address) == false)
+                    {
+                        o_message = "Error in parsing IP address";
+                        return false;
+                    }
+
+                    WebProxy proxy = new WebProxy(String.Format("{0}:{1}", i_proxyIP, i_proxyPort), false);
+                    request.Proxy = proxy;
+                }
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    o_message = "success";
+                    return true;
+                }
+                Stream responseStream = response.GetResponseStream();
+
+                o_message = String.Format("Error:\n\nResponse code: {0}\nResponse text: {1}");
+                return false;
+            }
+            catch(Exception ex)
+            {
+                o_message = String.Format("Error: " + ex.Message);
+                return false;
+            }
+
+            /*bool retResult = false;
+            TcpClient client = new TcpClient();
+            
+            o_message = String.Empty;
+
+            IPAddress address;
+            if(IPAddress.TryParse(i_IPAddress, out address) == false )
+            {
+                o_message = "Error in parsing IP address";
+                return false;
+            }
+
+            try
+            {
+                client.Connect(address, i_Port);
+                retResult = true;
+            } 
+            catch (SocketException ex)
+            {
+                o_message = ex.Message;
+            }
+            finally
+            {
+                client.Close();
+            }
+
+            return retResult;*/
         }
     }
 }

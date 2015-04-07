@@ -81,7 +81,6 @@
     <Compile Include="Views\Assembler\AssemblerColorConfig.Designer.cs">
       <DependentUpon>AssemblerColorConfig.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Assembler\AssemblerConfig.cs" />
     <Compile Include="Views\Assembler\Compiler.cs" />
     <Compile Include="Views\Assembler\Settings.cs">
       <SubType>Form</SubType>
@@ -126,6 +125,12 @@
     <Compile Include="Views\CustomControls\ProgressBarBackgroundProcess.Designer.cs">
       <DependentUpon>ProgressBarBackgroundProcess.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\CustomControls\SourceCodeEditorBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\CustomControls\SourceCodeEditorBox.Designer.cs">
+      <DependentUpon>SourceCodeEditorBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\FormCPU.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -155,6 +160,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Assembler\AssemblerColorConfig.resx">
       <DependentUpon>AssemblerColorConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Assembler\Settings.resx">
+      <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
