@@ -45,12 +45,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
             Items.Add(new ColorInfo("White", Color.White));
             Items.Add(new ColorInfo("Navy", Color.Navy));
             Items.Add(new ColorInfo("Green", Color.Green));
+            Items.Add(new ColorInfo("DarkGreen", Color.DarkGreen));
             Items.Add(new ColorInfo("Teal", Color.Teal));
             Items.Add(new ColorInfo("Maroon", Color.Maroon));
             Items.Add(new ColorInfo("Purple", Color.Purple));
             Items.Add(new ColorInfo("DarkViolet", Color.DarkViolet));
             Items.Add(new ColorInfo("Olive", Color.Olive));
             Items.Add(new ColorInfo("Gray", Color.Gray));
+            Items.Add(new ColorInfo("Silver", Color.Silver));
             Items.Add(new ColorInfo("SaddleBrown", Color.SaddleBrown));
             Items.Add(new ColorInfo("Salmon", Color.Salmon));
         }
