@@ -31,6 +31,12 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AssemblerColorConfig));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chcbxStackInstructionsEnabled = new System.Windows.Forms.CheckBox();
+            this.checkBoxStackInstructionsUnderline = new System.Windows.Forms.CheckBox();
+            this.checkBoxStackInstructionsStrikeout = new System.Windows.Forms.CheckBox();
+            this.checkBoxStackInstructionsBold = new System.Windows.Forms.CheckBox();
+            this.checkBoxStackInstructionsItalic = new System.Windows.Forms.CheckBox();
+            this.colorPickerStackInstructions = new ZXMAK2.Hardware.Adlers.Views.CustomControls.ColorPicker();
             this.chcbxNumbersEnabled = new System.Windows.Forms.CheckBox();
             this.checkBoxNumbersUnderline = new System.Windows.Forms.CheckBox();
             this.checkBoxNumbersStrikeout = new System.Windows.Forms.CheckBox();
@@ -62,24 +68,18 @@
             this.checkBoxCommentsBold = new System.Windows.Forms.CheckBox();
             this.checkBoxCommentsItalic = new System.Windows.Forms.CheckBox();
             this.colorPickerComments = new ZXMAK2.Hardware.Adlers.Views.CustomControls.ColorPicker();
-            this.buttonDone = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.btnUndo = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
-            this.chcbxStackInstructionsEnabled = new System.Windows.Forms.CheckBox();
-            this.checkBoxStackInstructionsUnderline = new System.Windows.Forms.CheckBox();
-            this.checkBoxStackInstructionsStrikeout = new System.Windows.Forms.CheckBox();
-            this.checkBoxStackInstructionsBold = new System.Windows.Forms.CheckBox();
-            this.checkBoxStackInstructionsItalic = new System.Windows.Forms.CheckBox();
-            this.colorPickerStackInstructions = new ZXMAK2.Hardware.Adlers.Views.CustomControls.ColorPicker();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fctbxPreview)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.chcbxStackInstructionsEnabled);
             this.groupBox1.Controls.Add(this.checkBoxStackInstructionsUnderline);
             this.groupBox1.Controls.Add(this.checkBoxStackInstructionsStrikeout);
@@ -124,6 +124,77 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Syntax highlightning colors";
+            // 
+            // chcbxStackInstructionsEnabled
+            // 
+            this.chcbxStackInstructionsEnabled.AutoSize = true;
+            this.chcbxStackInstructionsEnabled.Checked = true;
+            this.chcbxStackInstructionsEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chcbxStackInstructionsEnabled.Location = new System.Drawing.Point(9, 278);
+            this.chcbxStackInstructionsEnabled.Name = "chcbxStackInstructionsEnabled";
+            this.chcbxStackInstructionsEnabled.Size = new System.Drawing.Size(124, 19);
+            this.chcbxStackInstructionsEnabled.TabIndex = 37;
+            this.chcbxStackInstructionsEnabled.Text = "Stack instructions";
+            this.chcbxStackInstructionsEnabled.UseVisualStyleBackColor = true;
+            this.chcbxStackInstructionsEnabled.CheckedChanged += new System.EventHandler(this.chcbxStackInstructionsEnabled_CheckedChanged);
+            // 
+            // checkBoxStackInstructionsUnderline
+            // 
+            this.checkBoxStackInstructionsUnderline.AutoSize = true;
+            this.checkBoxStackInstructionsUnderline.Location = new System.Drawing.Point(363, 300);
+            this.checkBoxStackInstructionsUnderline.Name = "checkBoxStackInstructionsUnderline";
+            this.checkBoxStackInstructionsUnderline.Size = new System.Drawing.Size(80, 19);
+            this.checkBoxStackInstructionsUnderline.TabIndex = 36;
+            this.checkBoxStackInstructionsUnderline.Text = "Underline";
+            this.checkBoxStackInstructionsUnderline.UseVisualStyleBackColor = true;
+            this.checkBoxStackInstructionsUnderline.CheckedChanged += new System.EventHandler(this.checkBoxStackInstructionsUnderline_CheckedChanged);
+            // 
+            // checkBoxStackInstructionsStrikeout
+            // 
+            this.checkBoxStackInstructionsStrikeout.AutoSize = true;
+            this.checkBoxStackInstructionsStrikeout.Location = new System.Drawing.Point(284, 300);
+            this.checkBoxStackInstructionsStrikeout.Name = "checkBoxStackInstructionsStrikeout";
+            this.checkBoxStackInstructionsStrikeout.Size = new System.Drawing.Size(75, 19);
+            this.checkBoxStackInstructionsStrikeout.TabIndex = 35;
+            this.checkBoxStackInstructionsStrikeout.Text = "Strikeout";
+            this.checkBoxStackInstructionsStrikeout.UseVisualStyleBackColor = true;
+            this.checkBoxStackInstructionsStrikeout.CheckedChanged += new System.EventHandler(this.checkBoxStackInstructionsStrikeout_CheckedChanged);
+            // 
+            // checkBoxStackInstructionsBold
+            // 
+            this.checkBoxStackInstructionsBold.AutoSize = true;
+            this.checkBoxStackInstructionsBold.Location = new System.Drawing.Point(227, 300);
+            this.checkBoxStackInstructionsBold.Name = "checkBoxStackInstructionsBold";
+            this.checkBoxStackInstructionsBold.Size = new System.Drawing.Size(51, 19);
+            this.checkBoxStackInstructionsBold.TabIndex = 34;
+            this.checkBoxStackInstructionsBold.Text = "Bold";
+            this.checkBoxStackInstructionsBold.UseVisualStyleBackColor = true;
+            this.checkBoxStackInstructionsBold.CheckedChanged += new System.EventHandler(this.checkBoxStackInstructionsBold_CheckedChanged);
+            // 
+            // checkBoxStackInstructionsItalic
+            // 
+            this.checkBoxStackInstructionsItalic.AutoSize = true;
+            this.checkBoxStackInstructionsItalic.Checked = true;
+            this.checkBoxStackInstructionsItalic.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxStackInstructionsItalic.Location = new System.Drawing.Point(164, 300);
+            this.checkBoxStackInstructionsItalic.Name = "checkBoxStackInstructionsItalic";
+            this.checkBoxStackInstructionsItalic.Size = new System.Drawing.Size(55, 19);
+            this.checkBoxStackInstructionsItalic.TabIndex = 33;
+            this.checkBoxStackInstructionsItalic.Text = "Italic";
+            this.checkBoxStackInstructionsItalic.UseVisualStyleBackColor = true;
+            this.checkBoxStackInstructionsItalic.CheckedChanged += new System.EventHandler(this.checkBoxStackInstructionsItalic_CheckedChanged);
+            // 
+            // colorPickerStackInstructions
+            // 
+            this.colorPickerStackInstructions.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.colorPickerStackInstructions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.colorPickerStackInstructions.FormattingEnabled = true;
+            this.colorPickerStackInstructions.Location = new System.Drawing.Point(29, 298);
+            this.colorPickerStackInstructions.Name = "colorPickerStackInstructions";
+            this.colorPickerStackInstructions.SelectedValue = System.Drawing.Color.White;
+            this.colorPickerStackInstructions.Size = new System.Drawing.Size(129, 24);
+            this.colorPickerStackInstructions.TabIndex = 32;
+            this.colorPickerStackInstructions.SelectedIndexChanged += new System.EventHandler(this.colorPickerStackInstructions_SelectedIndexChanged);
             // 
             // chcbxNumbersEnabled
             // 
@@ -291,8 +362,8 @@
             // 
             // fctbxPreview
             // 
-            this.fctbxPreview.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.fctbxPreview.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.fctbxPreview.AutoCompleteBrackets = true;
             this.fctbxPreview.AutoCompleteBracketsList = new char[] {
         '(',
@@ -520,17 +591,17 @@
             this.colorPickerComments.TabIndex = 1;
             this.colorPickerComments.SelectedIndexChanged += new System.EventHandler(this.colorPickerComments_SelectedIndexChanged);
             // 
-            // buttonDone
+            // btnSave
             // 
-            this.buttonDone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonDone.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonDone.Location = new System.Drawing.Point(562, 29);
-            this.buttonDone.Name = "buttonDone";
-            this.buttonDone.Size = new System.Drawing.Size(56, 23);
-            this.buttonDone.TabIndex = 2;
-            this.buttonDone.Text = "Done";
-            this.buttonDone.UseVisualStyleBackColor = true;
-            this.buttonDone.Click += new System.EventHandler(this.buttonDone_Click);
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSave.Location = new System.Drawing.Point(562, 29);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(56, 23);
+            this.btnSave.TabIndex = 2;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnUndo
             // 
@@ -542,6 +613,7 @@
             this.btnUndo.TabIndex = 3;
             this.btnUndo.Text = "Undo";
             this.btnUndo.UseVisualStyleBackColor = true;
+            this.btnUndo.Click += new System.EventHandler(this.btnUndo_Click);
             // 
             // btnExit
             // 
@@ -555,86 +627,15 @@
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
-            // chcbxStackInstructionsEnabled
-            // 
-            this.chcbxStackInstructionsEnabled.AutoSize = true;
-            this.chcbxStackInstructionsEnabled.Checked = true;
-            this.chcbxStackInstructionsEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chcbxStackInstructionsEnabled.Location = new System.Drawing.Point(9, 278);
-            this.chcbxStackInstructionsEnabled.Name = "chcbxStackInstructionsEnabled";
-            this.chcbxStackInstructionsEnabled.Size = new System.Drawing.Size(124, 19);
-            this.chcbxStackInstructionsEnabled.TabIndex = 37;
-            this.chcbxStackInstructionsEnabled.Text = "Stack instructions";
-            this.chcbxStackInstructionsEnabled.UseVisualStyleBackColor = true;
-            this.chcbxStackInstructionsEnabled.CheckedChanged += new System.EventHandler(this.chcbxStackInstructionsEnabled_CheckedChanged);
-            // 
-            // checkBoxStackInstructionsUnderline
-            // 
-            this.checkBoxStackInstructionsUnderline.AutoSize = true;
-            this.checkBoxStackInstructionsUnderline.Location = new System.Drawing.Point(363, 300);
-            this.checkBoxStackInstructionsUnderline.Name = "checkBoxStackInstructionsUnderline";
-            this.checkBoxStackInstructionsUnderline.Size = new System.Drawing.Size(80, 19);
-            this.checkBoxStackInstructionsUnderline.TabIndex = 36;
-            this.checkBoxStackInstructionsUnderline.Text = "Underline";
-            this.checkBoxStackInstructionsUnderline.UseVisualStyleBackColor = true;
-            this.checkBoxStackInstructionsUnderline.CheckedChanged += new System.EventHandler(this.checkBoxStackInstructionsUnderline_CheckedChanged);
-            // 
-            // checkBoxStackInstructionsStrikeout
-            // 
-            this.checkBoxStackInstructionsStrikeout.AutoSize = true;
-            this.checkBoxStackInstructionsStrikeout.Location = new System.Drawing.Point(284, 300);
-            this.checkBoxStackInstructionsStrikeout.Name = "checkBoxStackInstructionsStrikeout";
-            this.checkBoxStackInstructionsStrikeout.Size = new System.Drawing.Size(75, 19);
-            this.checkBoxStackInstructionsStrikeout.TabIndex = 35;
-            this.checkBoxStackInstructionsStrikeout.Text = "Strikeout";
-            this.checkBoxStackInstructionsStrikeout.UseVisualStyleBackColor = true;
-            this.checkBoxStackInstructionsStrikeout.CheckedChanged += new System.EventHandler(this.checkBoxStackInstructionsStrikeout_CheckedChanged);
-            // 
-            // checkBoxStackInstructionsBold
-            // 
-            this.checkBoxStackInstructionsBold.AutoSize = true;
-            this.checkBoxStackInstructionsBold.Location = new System.Drawing.Point(227, 300);
-            this.checkBoxStackInstructionsBold.Name = "checkBoxStackInstructionsBold";
-            this.checkBoxStackInstructionsBold.Size = new System.Drawing.Size(51, 19);
-            this.checkBoxStackInstructionsBold.TabIndex = 34;
-            this.checkBoxStackInstructionsBold.Text = "Bold";
-            this.checkBoxStackInstructionsBold.UseVisualStyleBackColor = true;
-            this.checkBoxStackInstructionsBold.CheckedChanged += new System.EventHandler(this.checkBoxStackInstructionsBold_CheckedChanged);
-            // 
-            // checkBoxStackInstructionsItalic
-            // 
-            this.checkBoxStackInstructionsItalic.AutoSize = true;
-            this.checkBoxStackInstructionsItalic.Checked = true;
-            this.checkBoxStackInstructionsItalic.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxStackInstructionsItalic.Location = new System.Drawing.Point(164, 300);
-            this.checkBoxStackInstructionsItalic.Name = "checkBoxStackInstructionsItalic";
-            this.checkBoxStackInstructionsItalic.Size = new System.Drawing.Size(55, 19);
-            this.checkBoxStackInstructionsItalic.TabIndex = 33;
-            this.checkBoxStackInstructionsItalic.Text = "Italic";
-            this.checkBoxStackInstructionsItalic.UseVisualStyleBackColor = true;
-            this.checkBoxStackInstructionsItalic.CheckedChanged += new System.EventHandler(this.checkBoxStackInstructionsItalic_CheckedChanged);
-            // 
-            // colorPickerStackInstructions
-            // 
-            this.colorPickerStackInstructions.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.colorPickerStackInstructions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.colorPickerStackInstructions.FormattingEnabled = true;
-            this.colorPickerStackInstructions.Location = new System.Drawing.Point(29, 298);
-            this.colorPickerStackInstructions.Name = "colorPickerStackInstructions";
-            this.colorPickerStackInstructions.SelectedValue = System.Drawing.Color.White;
-            this.colorPickerStackInstructions.Size = new System.Drawing.Size(129, 24);
-            this.colorPickerStackInstructions.TabIndex = 32;
-            this.colorPickerStackInstructions.SelectedIndexChanged += new System.EventHandler(this.colorPickerStackInstructions_SelectedIndexChanged);
-            // 
             // AssemblerColorConfig
             // 
-            this.AcceptButton = this.buttonDone;
+            this.AcceptButton = this.btnSave;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(622, 634);
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.btnUndo);
-            this.Controls.Add(this.buttonDone);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.groupBox1);
             this.KeyPreview = true;
             this.Name = "AssemblerColorConfig";
@@ -658,7 +659,7 @@
         private System.Windows.Forms.CheckBox checkBoxCommentsBold;
         private System.Windows.Forms.CheckBox checkBoxCommentsUnderline;
         private System.Windows.Forms.CheckBox checkBoxCommentsStrikeOut;
-        private System.Windows.Forms.Button buttonDone;
+        private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.CheckBox checkBoxCompilerDirectivesUnderline;
         private System.Windows.Forms.CheckBox checkBoxCompilerDirectivesStrikeout;
         private System.Windows.Forms.CheckBox checkBoxCompilerDirectivesBold;

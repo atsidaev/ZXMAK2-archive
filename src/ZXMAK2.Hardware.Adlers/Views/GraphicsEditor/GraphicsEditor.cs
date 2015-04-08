@@ -457,7 +457,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             }
         }
 
-        //contextMenuExportBitmap
+        //ContextMenuExportBitmap
         private void SaveBitmapAs(ImageFormat i_imgFormat)
         {
             string fileName = @"image_export.";
@@ -469,7 +469,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             if (i_imgFormat == null)
             {
                 //save bitmap as bytes
-                //Locator.Resolve<IUserMessage>().Info("Not implemented yet, sorry..."); return;
                 byte[] arrSprite = GetBytesFromBitmap();
                 string fileOut = String.Format("; defb #{0:X2}, #{1:x2} ; width x height", this.bitmapGridSpriteView.getGridWidth() / 8, this.bitmapGridSpriteView.getGridHeight());
                 fileOut += Environment.NewLine + "defb ";
@@ -541,6 +540,38 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
                 _mouseSelectionArea = new MouseSelectionArea();
             _mouseSelectionArea.manualCrop(ref pictureZXDisplay, coords);
         }
+        private void menuItemMovePixelsLeft_Click(object sender, EventArgs e)
+        {
+            MovePixels(0);
+        }
+        private void menuItemMovePixelsRight_Click(object sender, EventArgs e)
+        {
+            MovePixels(1);
+        }
+        private void MovePixels(byte i_mode) //0 => move left; 1 => move right
+        {
+            if (comboDisplayType.SelectedIndex == 1) //Sprite view only for now
+            {
+                //move pixels left
+                int bytesToMoveLeft = (this.bitmapGridSpriteView.getGridWidth() / 8) * this.bitmapGridSpriteView.getGridHeight();
+                ushort screenPointer = (ushort)numericUpDownActualAddress.Value;
+
+                for (int counter = (this.bitmapGridSpriteView.getGridWidth() / 8) * this.bitmapGridSpriteView.getGridHeight(); counter > 0; counter--)
+                {
+                    if (i_mode == 0)
+                        _spectrum.WriteMemory(screenPointer, (byte)(_spectrum.ReadMemory(screenPointer) << 1));
+                    else
+                        _spectrum.WriteMemory(screenPointer, (byte)(_spectrum.ReadMemory(screenPointer) >> 1));
+                    screenPointer++;
+                }
+            }
+            else
+                Locator.Resolve<IUserMessage>().Info("This feature implemented only for Sprite view...Todo!");
+
+            //Refresh
+            setZXImage();
+        }
+
         private void buttonExportSelectionArea_Click(object sender, EventArgs e)
         {
             //export selection area to picture or bytes
@@ -572,5 +603,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             return i_arrOut;
         }
         #endregion Graphics tools
+
     }
 }

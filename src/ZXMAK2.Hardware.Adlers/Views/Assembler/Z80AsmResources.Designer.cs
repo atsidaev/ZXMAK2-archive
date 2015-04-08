@@ -48,23 +48,23 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.splitterRoutines);
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(663, 677);
+            this.groupBox1.Size = new System.Drawing.Size(799, 740);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Source code to use:";
             // 
             // splitterRoutines
             // 
-            this.splitterRoutines.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitterRoutines.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.splitterRoutines.Location = new System.Drawing.Point(3, 19);
             this.splitterRoutines.Name = "splitterRoutines";
             // 
@@ -75,8 +75,8 @@
             // splitterRoutines.Panel2
             // 
             this.splitterRoutines.Panel2.Controls.Add(this.htmlItemDesc);
-            this.splitterRoutines.Size = new System.Drawing.Size(649, 655);
-            this.splitterRoutines.SplitterDistance = 170;
+            this.splitterRoutines.Size = new System.Drawing.Size(785, 718);
+            this.splitterRoutines.SplitterDistance = 215;
             this.splitterRoutines.TabIndex = 3;
             // 
             // treeZ80Resources
@@ -87,7 +87,7 @@
             this.treeZ80Resources.HideSelection = false;
             this.treeZ80Resources.Location = new System.Drawing.Point(0, 0);
             this.treeZ80Resources.Name = "treeZ80Resources";
-            this.treeZ80Resources.Size = new System.Drawing.Size(170, 655);
+            this.treeZ80Resources.Size = new System.Drawing.Size(215, 718);
             this.treeZ80Resources.TabIndex = 0;
             this.treeZ80Resources.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeZ80Resources_AfterCheck);
             this.treeZ80Resources.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeZ80Resources_AfterSelect);
@@ -98,7 +98,7 @@
             this.htmlItemDesc.Location = new System.Drawing.Point(0, 0);
             this.htmlItemDesc.MinimumSize = new System.Drawing.Size(20, 20);
             this.htmlItemDesc.Name = "htmlItemDesc";
-            this.htmlItemDesc.Size = new System.Drawing.Size(475, 655);
+            this.htmlItemDesc.Size = new System.Drawing.Size(566, 718);
             this.htmlItemDesc.TabIndex = 0;
             // 
             // buttonDone
@@ -106,7 +106,7 @@
             this.buttonDone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDone.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonDone.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonDone.Location = new System.Drawing.Point(681, 41);
+            this.buttonDone.Location = new System.Drawing.Point(817, 41);
             this.buttonDone.Name = "buttonDone";
             this.buttonDone.Size = new System.Drawing.Size(67, 23);
             this.buttonDone.TabIndex = 2;
@@ -118,7 +118,7 @@
             // 
             this.buttonAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonAdd.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonAdd.Location = new System.Drawing.Point(681, 12);
+            this.buttonAdd.Location = new System.Drawing.Point(817, 12);
             this.buttonAdd.Name = "buttonAdd";
             this.buttonAdd.Size = new System.Drawing.Size(67, 23);
             this.buttonAdd.TabIndex = 3;
@@ -130,7 +130,7 @@
             // 
             this.buttonRefreshRoutineList.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonRefreshRoutineList.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonRefreshRoutineList.Location = new System.Drawing.Point(681, 80);
+            this.buttonRefreshRoutineList.Location = new System.Drawing.Point(817, 80);
             this.buttonRefreshRoutineList.Name = "buttonRefreshRoutineList";
             this.buttonRefreshRoutineList.Size = new System.Drawing.Size(67, 23);
             this.buttonRefreshRoutineList.TabIndex = 4;
@@ -140,14 +140,14 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.checkBoxDestroy);
             this.groupBox2.Controls.Add(this.checkBoxHeaders);
             this.groupBox2.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(681, 109);
+            this.groupBox2.Location = new System.Drawing.Point(817, 109);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(109, 580);
+            this.groupBox2.Size = new System.Drawing.Size(109, 643);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Source header";
@@ -181,7 +181,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonDone;
-            this.ClientSize = new System.Drawing.Size(792, 690);
+            this.ClientSize = new System.Drawing.Size(928, 753);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.buttonRefreshRoutineList);
             this.Controls.Add(this.buttonAdd);
@@ -191,6 +191,7 @@
             this.Name = "Z80AsmResources";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Z80AsmResources";
             this.groupBox1.ResumeLayout(false);
             this.splitterRoutines.Panel1.ResumeLayout(false);

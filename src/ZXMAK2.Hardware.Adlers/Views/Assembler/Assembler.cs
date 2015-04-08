@@ -1248,6 +1248,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     fontStyle |= FontStyle.Strikeout;
                 AssemblerColorConfig.GetInstance().ChangeSyntaxStyle(isStyleEnabled, new TextStyle(new SolidBrush(stackInstrucionsStyleColor), null, fontStyle), 5);
             }
+
+            AssemblerColorConfig.GetInstance().SaveGUIForUndo(); //save color settings
         }
         private Color ParseCss_GetColor(string i_cssString)
         {
