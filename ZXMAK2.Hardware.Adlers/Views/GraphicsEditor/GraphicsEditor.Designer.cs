@@ -119,6 +119,10 @@
             this.menuItemSaveBitmapAsPNG = new System.Windows.Forms.MenuItem();
             this.menuItemSaveBitmapAsJPG = new System.Windows.Forms.MenuItem();
             this.menuItemSaveBitmapAsBytes = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.menuItem3 = new System.Windows.Forms.MenuItem();
+            this.menuItemMovePixelsLeft = new System.Windows.Forms.MenuItem();
+            this.menuItemMovePixelsRight = new System.Windows.Forms.MenuItem();
             this.groupBoxSelectionArea = new System.Windows.Forms.GroupBox();
             this.buttonSetManualSelectionArea = new System.Windows.Forms.Button();
             this.buttonExportSelectionArea = new System.Windows.Forms.Button();
@@ -899,7 +903,9 @@
             // contextMenuExportBitmap
             // 
             this.contextMenuExportBitmap.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem1});
+            this.menuItem1,
+            this.menuItem2,
+            this.menuItem3});
             // 
             // menuItem1
             // 
@@ -934,6 +940,31 @@
             this.menuItemSaveBitmapAsBytes.Index = 3;
             this.menuItemSaveBitmapAsBytes.Text = "Bytes";
             this.menuItemSaveBitmapAsBytes.Click += new System.EventHandler(this.menuItemSaveBitmapAsBytes_Click);
+            // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 1;
+            this.menuItem2.Text = "-";
+            // 
+            // menuItem3
+            // 
+            this.menuItem3.Index = 2;
+            this.menuItem3.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemMovePixelsLeft,
+            this.menuItemMovePixelsRight});
+            this.menuItem3.Text = "Move pixels";
+            // 
+            // menuItemMovePixelsLeft
+            // 
+            this.menuItemMovePixelsLeft.Index = 0;
+            this.menuItemMovePixelsLeft.Text = "Left";
+            this.menuItemMovePixelsLeft.Click += new System.EventHandler(this.menuItemMovePixelsLeft_Click);
+            // 
+            // menuItemMovePixelsRight
+            // 
+            this.menuItemMovePixelsRight.Index = 1;
+            this.menuItemMovePixelsRight.Text = "Right";
+            this.menuItemMovePixelsRight.Click += new System.EventHandler(this.menuItemMovePixelsRight_Click);
             // 
             // groupBoxSelectionArea
             // 
@@ -1235,5 +1266,9 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox textBoxAttributeAddress;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.MenuItem menuItem2;
+        private System.Windows.Forms.MenuItem menuItem3;
+        private System.Windows.Forms.MenuItem menuItemMovePixelsLeft;
+        private System.Windows.Forms.MenuItem menuItemMovePixelsRight;
     }
 }

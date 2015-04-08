@@ -3,6 +3,10 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ZXMAK2.Hardware.Adlers.Views.CustomControls;
+using System.Linq;
+using System.Collections.Generic;
+using System;
+using System.Reflection;
 
 namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
@@ -288,6 +292,70 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         }
 
         #region GUI
+        //Save
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            _assemblerForm.RefreshAssemblerCodeSyntaxHighlightning();
+            SaveGUIForUndo();
+        }
+
+        private Dictionary<Control, object/*old value*/> _undoObjects;
+
+        public IEnumerable<Control> GetAllControls(Control control, Type type = null)
+        {
+            var controls = control.Controls.Cast<Control>();
+            if (type == null)
+                return controls.SelectMany(ctrl => GetAllControls(ctrl, type)).Concat(controls);
+            else
+                return controls.SelectMany(ctrl => GetAllControls(ctrl, type)).Concat(controls).Where(c => c.GetType() == type);
+        }
+
+        public void SaveGUIForUndo()
+        {
+            _undoObjects = new Dictionary<Control, object>();
+            foreach( Control ctrl in GetAllControls(this, typeof(CheckBox)))
+            {
+                _undoObjects.Add(ctrl, ((CheckBox)ctrl).Checked ? true : false);
+            }
+            foreach (Control ctrl in GetAllControls(this, typeof(ColorPicker)))
+            {
+                _undoObjects.Add(ctrl, ((ColorPicker)ctrl).SelectedValue);
+            }
+        }
+        public void Undo()
+        {
+            if (_undoObjects == null)
+                return;
+            foreach( KeyValuePair<Control, object> control in _undoObjects )
+            {
+                Control[] foundControls = this.Controls.Find(control.Key.Name, true);
+                if( foundControls.Length > 0 )
+                {
+                    if (foundControls[0] is CheckBox) //checkboxes
+                        ((CheckBox)foundControls[0]).Checked = (bool)control.Value;
+                    if (foundControls[0] is ColorPicker) //checkboxes
+                        ((ColorPicker)foundControls[0]).SelectedValue = (Color)control.Value;
+                }
+            }
+        }
+
+        //Undo
+        private void btnUndo_Click(object sender, System.EventArgs e)
+        {
+            Undo();
+        }
+
+        //Exit
+        private void AssemblerColorConfig_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+                this.Hide();
+        }
+        private void btnExit_Click(object sender, System.EventArgs e)
+        {
+            this.Hide();
+        }
+
         //comments controls(combo and checkbox)
         private void colorPickerComments_SelectedIndexChanged(object sender, System.EventArgs e)
         {
@@ -425,24 +493,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         {
             if (!_eventsDisabled)
                 ChangeSyntaxStyle();
-        }
-
-        //Done
-        private void buttonDone_Click(object sender, System.EventArgs e)
-        {
-            _assemblerForm.RefreshAssemblerCodeSyntaxHighlightning();
-            this.Hide();
-        }
-
-        //Exit
-        private void AssemblerColorConfig_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Escape)
-                this.Hide();
-        }
-        private void btnExit_Click(object sender, System.EventArgs e)
-        {
-            this.Hide();
         }
 
         //comments enabled

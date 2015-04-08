@@ -71,6 +71,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.addToDebuggerAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.commentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toHexadecimalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toDecimalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
             this.toolMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -380,27 +384,28 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.ctxMenuAssemblerCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnFormatCode,
             this.btnValidateCode,
-            this.toolStripMenuItem1});
+            this.toolStripMenuItem1,
+            this.convertNumbersToolStripMenuItem});
             this.ctxMenuAssemblerCommands.Name = "ctxMenuAssemblerCommands";
-            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(148, 54);
+            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(158, 98);
             // 
             // btnFormatCode
             // 
             this.btnFormatCode.Name = "btnFormatCode";
-            this.btnFormatCode.Size = new System.Drawing.Size(147, 22);
+            this.btnFormatCode.Size = new System.Drawing.Size(157, 22);
             this.btnFormatCode.Text = "Format Code";
             this.btnFormatCode.Click += new System.EventHandler(this.btnFormatCode_Click);
             // 
             // btnValidateCode
             // 
             this.btnValidateCode.Name = "btnValidateCode";
-            this.btnValidateCode.Size = new System.Drawing.Size(147, 22);
+            this.btnValidateCode.Size = new System.Drawing.Size(157, 22);
             this.btnValidateCode.Text = "Validate Code";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(144, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(154, 6);
             // 
             // groupBox2
             // 
@@ -504,7 +509,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.ctxmenuSymbols.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addToDebuggerAsToolStripMenuItem});
             this.ctxmenuSymbols.Name = "ctxmenuSymbols";
-            this.ctxmenuSymbols.Size = new System.Drawing.Size(179, 26);
+            this.ctxmenuSymbols.Size = new System.Drawing.Size(170, 26);
             // 
             // addToDebuggerAsToolStripMenuItem
             // 
@@ -512,22 +517,50 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.commentToolStripMenuItem,
             this.noteToolStripMenuItem});
             this.addToDebuggerAsToolStripMenuItem.Name = "addToDebuggerAsToolStripMenuItem";
-            this.addToDebuggerAsToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.addToDebuggerAsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.addToDebuggerAsToolStripMenuItem.Text = "Add to debugger as";
             // 
             // commentToolStripMenuItem
             // 
             this.commentToolStripMenuItem.Name = "commentToolStripMenuItem";
-            this.commentToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.commentToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.commentToolStripMenuItem.Text = "Comment";
             this.commentToolStripMenuItem.Click += new System.EventHandler(this.commentToolStripMenuItem_Click);
             // 
             // noteToolStripMenuItem
             // 
             this.noteToolStripMenuItem.Name = "noteToolStripMenuItem";
-            this.noteToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.noteToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.noteToolStripMenuItem.Text = "Note";
             this.noteToolStripMenuItem.Click += new System.EventHandler(this.noteToolStripMenuItem_Click);
+            // 
+            // convertNumbersToolStripMenuItem
+            // 
+            this.convertNumbersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toHexadecimalToolStripMenuItem,
+            this.toDecimalToolStripMenuItem,
+            this.toBinaryToolStripMenuItem});
+            this.convertNumbersToolStripMenuItem.Name = "convertNumbersToolStripMenuItem";
+            this.convertNumbersToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.convertNumbersToolStripMenuItem.Text = "Convert numbers";
+            // 
+            // toHexadecimalToolStripMenuItem
+            // 
+            this.toHexadecimalToolStripMenuItem.Name = "toHexadecimalToolStripMenuItem";
+            this.toHexadecimalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.toHexadecimalToolStripMenuItem.Text = "to hexadecimal";
+            // 
+            // toDecimalToolStripMenuItem
+            // 
+            this.toDecimalToolStripMenuItem.Name = "toDecimalToolStripMenuItem";
+            this.toDecimalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.toDecimalToolStripMenuItem.Text = "to decimal";
+            // 
+            // toBinaryToolStripMenuItem
+            // 
+            this.toBinaryToolStripMenuItem.Name = "toBinaryToolStripMenuItem";
+            this.toBinaryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.toBinaryToolStripMenuItem.Text = "to binary";
             // 
             // Assembler
             // 
@@ -616,5 +649,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private CustomControls.ProgressBarBackgroundProcess progressBarBackgroundProcess;
         private System.Windows.Forms.Button btnStopBackgroundProcess;
+        private System.Windows.Forms.ToolStripMenuItem convertNumbersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toHexadecimalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toDecimalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toBinaryToolStripMenuItem;
     }
 }

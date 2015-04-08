@@ -42,12 +42,15 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
                 }
                 else
                     base.AppendText(info.GetDisplayMessage());
-                base.AppendText("\n");
-                info.RangeEnd = realLinesCount;
-                if( info.LogOptions.HasFlag(LOG_OPTIONS.AddFooter) || info.LogOptions == LOG_OPTIONS.AddFooterAndHeader )
-                    base.AppendText("====================================\n");
 
                 realLinesCount = base.Lines.Length;
+                info.RangeEnd = realLinesCount - 1;
+
+                base.AppendText("\n");
+
+                //Footer
+                if( info.LogOptions.HasFlag(LOG_OPTIONS.AddFooter) || info.LogOptions == LOG_OPTIONS.AddFooterAndHeader )
+                    base.AppendText("====================================\n");
             }
             base.SelectionStart = base.Text.Length;
             base.ScrollToCaret();
