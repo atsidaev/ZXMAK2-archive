@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
 
 namespace ZXMAK2.Hardware.Adlers
 {
@@ -187,7 +187,7 @@ namespace ZXMAK2.Hardware.Adlers
             // number |= 1 << bitToBeSet;
         }
 
-        public unsafe static byte[] PointerToManagedType(byte* i_arrayStart, int i_length)
+        public unsafe static byte[] PointerDataToManagedType(byte* i_arrayStart, int i_length)
         {
             if( i_length <= 0  )
                 return null;
@@ -201,6 +201,24 @@ namespace ZXMAK2.Hardware.Adlers
                 }
                 return arrOut;
             }
+        }
+        public unsafe static byte* ManagedArrayToPointerData(string i_toConvert)
+        {
+            byte[] arrOut;
+            if( i_toConvert == String.Empty )
+            {
+                arrOut = new byte[1]; arrOut[0] = 0;
+            }
+            else
+            {
+                arrOut = new byte[i_toConvert.Length];
+                for( int chrItem = 0; chrItem < i_toConvert.Length; chrItem++ )
+                {
+                    arrOut[chrItem] = (byte)i_toConvert[chrItem];
+                }
+            }
+
+            return (byte*)arrOut[0]; 
         }
     }
 }

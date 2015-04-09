@@ -110,7 +110,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 string  asmToCompileOrFileName = String.Empty;
                 COMPILED_INFO compiled = new COMPILED_INFO();
 
-                string compileOption;
+                byte compileOption;
                 //if (compileFromFile /*|| (!checkMemory.Checked && IsStartAdressInCode())*/)
                 //{
                 //    asmToCompileOrFileName = _assemblerSources[_actualAssemblerNode].GetFileNameToSave();
@@ -125,12 +125,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     if (GetActualSourceInfo().IsFile())
                     {
                         asmToCompileOrFileName = GetActualSourceInfo().GetFileNameToSave();
-                        compileOption = "--binfile";
+                        compileOption = Compiler.COMPILE_OPTION_BIN_FILE;
                     }
                     else
                     {
                         asmToCompileOrFileName += txtAsm.Text;
-                        compileOption = "--bin";
+                        compileOption = Compiler.COMPILE_OPTION_BIN;
                     }
                 }
 
@@ -149,7 +149,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 }
                 if (retCode != 0)
                 {
-                    if (compileOption == "--binfile")
+                    if (compileOption == Compiler.COMPILE_OPTION_BIN_FILE)
                     {
                         errStringText += "Error on line " + compiled.iErrFileLine.ToString() + ", file: " + Compiler.GetStringFromMemory(compiled.czErrFileName);
                         errStringText += "\n    ";
@@ -196,7 +196,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                             watch.Start();
                             if ((memAdress + compiled.iCompiledSize) > 0xFFFF)
                                 compiled.iCompiledSize = 0xFFFF - memAdress; //prevent memory overload
-                            byte[] memBytesCompiled = ConvertRadix.PointerToManagedType(compiled.czCompiled + 2/*omit memory address*/, compiled.iCompiledSize);
+                            byte[] memBytesCompiled = ConvertRadix.PointerDataToManagedType(compiled.czCompiled + 2/*omit memory address*/, compiled.iCompiledSize);
                             if (memBytesCompiled != null)
                                 m_debugger.GetVMKernel().WriteMemory(memAdress, memBytesCompiled, 0, compiled.iCompiledSize);
                             watch.Stop();
