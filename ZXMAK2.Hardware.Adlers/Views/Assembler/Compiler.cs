@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using ZXMAK2.Dependency;
@@ -15,7 +16,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
     public class Compiler
     {
-        public static int DoCompile(string i_compileOption, string i_sourceOrFileName, ref COMPILED_INFO o_compiled)
+        public static int DoCompile(byte i_compileMode, string i_sourceOrFileName, ref COMPILED_INFO o_compiled)
         {
             int retCode;
 
@@ -27,14 +28,21 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             unsafe
             {
+                //init IN data
+                COMPILE_IN compileIn = new COMPILE_IN();
+                compileIn.CompileMode = i_compileMode;
+                compileIn.chrSourceCode = ConvertRadix.ManagedArrayToPointerData(i_sourceOrFileName);
+
+                //init OUT data
                 COMPILED_INFO info = new COMPILED_INFO();
-                retCode = compile(i_compileOption, i_sourceOrFileName, &info);
+                retCode = compile( ref compileIn, &info);
 
                 o_compiled = info;
             }
             return retCode;
         }
 
+        //Get DLL version
         public static int GetVersion(out double i_version)
         {
             i_version = 0.0;
@@ -46,8 +54,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             unsafe
             {
+                //in data init
+                COMPILE_IN compileIn = new COMPILE_IN();
+                compileIn.CompileMode = Compiler.COMPILE_OPTION__version;
+
                 COMPILED_INFO info = new COMPILED_INFO();
-                int retCode = compile("--version", "", &info);
+                int retCode = compile( ref compileIn, &info);
                 if (retCode != 0)
                     return 1;
 
@@ -76,18 +88,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 TcpHelper client = new TcpHelper();
                 client.Show();
             }
-            else
+            /*else
             {
                 bIsCompilerDllLoaded = true;
 
                 unsafe
                 {
                     //ToDo: check dll version
-                    string dllVersion = String.Empty;
-                    COMPILED_INFO temp = new COMPILED_INFO();
-
-                    int retCode = compile("--version", "", &temp);
-                    if (retCode != 0 || new IntPtr(temp.czCompiled) == IntPtr.Zero)
+                    double dDllVersion = 0.0;
+                    int retCode = GetVersion(out dDllVersion);
+                    if (retCode != 0 || dDllVersion < 1.03)
                     {
                         Locator.Resolve<IUserMessage>().Error("Pasmo2.dll has incorrect version...\n\nPlease delete the Pasmo2.dll file when application is closed.");
 
@@ -106,15 +116,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                         return false;
                     }
-                    else
-                    {
-                        dllVersion = GetStringFromMemory(temp.czCompiled);
-                    }
                 }
                 return true; //OK
-            }
+            }*/
 
-            return false;
+            return true;
         }
 
         public static Dictionary<string, ushort> ParseSymbols(string i_symbols)
@@ -213,9 +219,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
         #region members
             [DllImport(@"Pasmo2.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "compile")]
-            private unsafe static extern int compile( [MarshalAs(UnmanagedType.LPStr)] string compileArg,   //e.g. --bin, --tap; terminated by NULL(0); generate symbol table: --<mode> <input> <output> <symbol_table_filename>
-                                                      [MarshalAs(UnmanagedType.LPStr)] string inAssembler,
-                                                      [In, Out] COMPILED_INFO* out_Compiled
+            private unsafe static extern int compile(ref COMPILE_IN in_CompileArgs,
+                                                     [In, Out] COMPILED_INFO* out_Compiled
                                                     );
             [DllImport("kernel32.dll")]
             private static extern IntPtr LoadLibrary(string fileName);
@@ -228,7 +233,38 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             private static IntPtr pDllModule = IntPtr.Zero;
             private static bool bIsCompilerDllLoaded = false;
         #endregion members
-    }
+
+        public static readonly byte COMPILE_OPTION__version = 0;
+        public static readonly byte COMPILE_OPTION__machine = 1;
+        public static readonly byte COMPILE_OPTION_TAP_BAS = 2;
+        public static readonly byte COMPILE_OPTION_BIN = 3;
+        public static readonly byte COMPILE_OPTION_BIN_FILE = 4;
+
+    } //class Compiler end
+
+
+    //Compiler input data structure
+    public unsafe struct COMPILE_IN
+    {
+        public byte* chrFileIn;
+        public byte* chrFileOut;
+        public byte* chrFileSymbols;
+        public byte* chrSourceCode;
+
+        bool fInputIsFile; //true if the input is file; false => source code
+        bool fEmitSymbols;
+
+        //cannot use enum for CompileMode because of C# managed enums
+        public byte CompileMode;
+
+        public void ResetValues()
+        {
+            chrFileIn = chrFileOut = chrFileSymbols = chrSourceCode = null;
+
+            fInputIsFile = false;
+            fEmitSymbols = false;
+        }
+    };
 
     public unsafe struct COMPILED_INFO
     {
