@@ -67,8 +67,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             public static string regexComment = @";.*";
             //common instructions
             public static Style  CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
-            public static string regexCommonInstruction = @"\bldir\b|\blddr\b|\bld\b|\bim[ ]+\b|\badd\b|\bsub\b|[ ]dec[ ]|\bsbc\b|\bhalt\b|\bbit\b|" +
-                                                          @"\bset\b|xor|[ ]inc[ ]|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
+            public static string regexCommonInstruction = @"\bldir\b|\blddr\b|\bld\b|\bim[ ]+\b|\badd\b|\bsub\b|\bdec\b|\bsbc\b|\bhalt\b|\bbit\b|" +
+                                                          @"\bset\b|xor|\binc\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
                                                           @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b|\brrca\b" + 
                                                           @"|\brlca\b";
             //jumps

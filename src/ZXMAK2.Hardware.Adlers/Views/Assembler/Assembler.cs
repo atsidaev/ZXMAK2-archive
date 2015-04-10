@@ -107,30 +107,36 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             {
                 //FixedBuffer fixedBuf = new FixedBuffer();
 
-                string  asmToCompileOrFileName = String.Empty;
+                //init IN data
+                COMPILE_IN compileIn = new COMPILE_IN();
+                compileIn.ResetValues();
                 COMPILED_INFO compiled = new COMPILED_INFO();
 
-                byte compileOption;
-                //if (compileFromFile /*|| (!checkMemory.Checked && IsStartAdressInCode())*/)
-                //{
-                //    asmToCompileOrFileName = _assemblerSources[_actualAssemblerNode].GetFileNameToSave();
-                //    compileOption = "--binfile";
-                //    //Set the current directory so that the compiler could find also include files(in the same dir as compiled source)
-                //    Directory.SetCurrentDirectory(Path.GetDirectoryName(asmToCompileOrFileName));
-                //}
-                //else
+                string asmToCompileOrFileName = (GetActualSourceInfo().IsFile() ? GetActualSourceInfo().GetFileNameToSave() : txtAsm.Text);
+                ConvertRadix.ManagedArrayToPointerData(asmToCompileOrFileName, ref compileIn.chrSourceCode);
+
+                if (radioBtnTAPBASOutput.Checked)
                 {
-                    /*if( chckbxMemory.Checked )
-                        asmToCompileOrFileName += "org " + textMemAdress.Text + "\n";*/
+                    string tapbasFileName = txtbxFileOutputPath.Text;
+                    if (FileTools.IsPathCorrect(tapbasFileName) == false || tapbasFileName == String.Empty)
+                    {
+                        //incorrect path entered
+                        this.richCompileMessages.AppendLog("Output path is incorrect..Error!", LOG_LEVEL.Error, true);
+                        return;
+                    }
+                    compileIn.cCompileMode = Compiler.COMPILE_OPTION_TAP_BAS;
+                    compileIn.cfInputIsFile = (byte)'N';
+                    ConvertRadix.ManagedArrayToPointerData(tapbasFileName, ref compileIn.chrFileOut);
+                }
+                else
+                {
                     if (GetActualSourceInfo().IsFile())
                     {
-                        asmToCompileOrFileName = GetActualSourceInfo().GetFileNameToSave();
-                        compileOption = Compiler.COMPILE_OPTION_BIN_FILE;
+                        compileIn.cCompileMode = Compiler.COMPILE_OPTION_BIN_FILE;
                     }
                     else
                     {
-                        asmToCompileOrFileName += txtAsm.Text;
-                        compileOption = Compiler.COMPILE_OPTION_BIN;
+                        compileIn.cCompileMode = Compiler.COMPILE_OPTION_BIN;
                     }
                 }
 
@@ -139,7 +145,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                 try
                 {
-                    retCode = Compiler.DoCompile(compileOption, asmToCompileOrFileName, ref compiled);
+                    retCode = Compiler.DoCompile(compileIn, ref compiled);
                 }
                 catch (Exception ex)
                 {
@@ -149,7 +155,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 }
                 if (retCode != 0)
                 {
-                    if (compileOption == Compiler.COMPILE_OPTION_BIN_FILE)
+                    if (compileIn.cCompileMode == Compiler.COMPILE_OPTION_BIN_FILE)
                     {
                         errStringText += "Error on line " + compiled.iErrFileLine.ToString() + ", file: " + Compiler.GetStringFromMemory(compiled.czErrFileName);
                         errStringText += "\n    ";
@@ -791,6 +797,18 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     txtAsm.DoSelectionVisible();
                 }
             }
+        }
+
+        //Compiled output options
+        private void radioBtnMemoryOutput_CheckedChanged(object sender, EventArgs e)
+        {
+            //Memory compiled output
+            txtbxFileOutputPath.Enabled = false;
+        }
+        private void radioBtnTAPBASOutput_MouseClick(object sender, MouseEventArgs e)
+        {
+            //TAP_BAS compiled output
+            txtbxFileOutputPath.Enabled = true;
         }
 
         //Settings

@@ -16,7 +16,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
     public class Compiler
     {
-        public static int DoCompile(byte i_compileMode, string i_sourceOrFileName, ref COMPILED_INFO o_compiled)
+        public unsafe static int DoCompile(COMPILE_IN i_compileIn, ref COMPILED_INFO o_compiled)
         {
             int retCode;
 
@@ -26,18 +26,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     return 1; //missing library
             }
 
-            unsafe
+            //unsafe
             {
-                //init IN data
-                COMPILE_IN compileIn = new COMPILE_IN();
-                compileIn.CompileMode = i_compileMode;
-                compileIn.chrSourceCode = ConvertRadix.ManagedArrayToPointerData(i_sourceOrFileName);
+                //fixed (byte* compileModeFixed = &compileIn.cCompileMode)
+                {
+                    //init OUT data
+                    COMPILED_INFO info = new COMPILED_INFO();
+                    retCode = compile(&i_compileIn, &info);
 
-                //init OUT data
-                COMPILED_INFO info = new COMPILED_INFO();
-                retCode = compile( ref compileIn, &info);
-
-                o_compiled = info;
+                    o_compiled = info;
+                }
             }
             return retCode;
         }
@@ -56,10 +54,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             {
                 //in data init
                 COMPILE_IN compileIn = new COMPILE_IN();
-                compileIn.CompileMode = Compiler.COMPILE_OPTION__version;
+                compileIn.cCompileMode = Compiler.COMPILE_OPTION__version;
 
                 COMPILED_INFO info = new COMPILED_INFO();
-                int retCode = compile( ref compileIn, &info);
+                int retCode = compile( &compileIn, &info);
                 if (retCode != 0)
                     return 1;
 
@@ -219,7 +217,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
         #region members
             [DllImport(@"Pasmo2.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "compile")]
-            private unsafe static extern int compile(ref COMPILE_IN in_CompileArgs,
+            private unsafe static extern int compile([In, Out] COMPILE_IN* in_CompileArgs,
                                                      [In, Out] COMPILED_INFO* out_Compiled
                                                     );
             [DllImport("kernel32.dll")]
@@ -251,33 +249,25 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         public byte* chrFileSymbols;
         public byte* chrSourceCode;
 
-        bool fInputIsFile; //true if the input is file; false => source code
-        bool fEmitSymbols;
+        public byte cfInputIsFile; //char
+        public byte cEmitSymbols;  //char
 
-        //cannot use enum for CompileMode because of C# managed enums
-        public byte CompileMode;
+        public byte cCompileMode; //char
 
         public void ResetValues()
         {
             chrFileIn = chrFileOut = chrFileSymbols = chrSourceCode = null;
 
-            fInputIsFile = false;
-            fEmitSymbols = false;
+            cfInputIsFile = 0x2D; //cannot be flags(bool) due to inconsitency with managed types in C#(.NET)
+            cEmitSymbols = 0x2D;
         }
     };
 
     public unsafe struct COMPILED_INFO
     {
-        public void ResetValues()
-        {
-            czCompiled = null;
-            iCompiledSize = -1;
-            iErrFileLine = -1; czErrFileName = czErrMessage = null;
-            arrSourceSymbols = null;
-        }
-
         //compiled
         public byte* czCompiled;
+        public byte* czFileNameCompiled;
         public int iCompiledSize; // REAL compiled size, without first 2 bytes(mem address where the code will be placed)
 
         //error info
@@ -287,5 +277,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
         //source code symbols
         public byte* arrSourceSymbols;
+
+        public void ResetValues()
+        {
+            czCompiled = null;
+            iCompiledSize = -1;
+            iErrFileLine = -1; czErrFileName = czErrMessage = czFileNameCompiled = null;
+            arrSourceSymbols = null;
+        }
     }
 }
