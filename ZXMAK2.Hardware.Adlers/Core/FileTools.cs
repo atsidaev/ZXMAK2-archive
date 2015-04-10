@@ -52,5 +52,19 @@ namespace ZXMAK2.Hardware.Adlers.Core
 
             return true;
         }
+
+        public static bool IsPathCorrect(string i_PathToCheck)
+        {
+            try
+            {
+                Path.Combine(i_PathToCheck);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

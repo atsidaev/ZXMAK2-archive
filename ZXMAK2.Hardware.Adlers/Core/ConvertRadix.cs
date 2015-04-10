@@ -202,23 +202,24 @@ namespace ZXMAK2.Hardware.Adlers
                 return arrOut;
             }
         }
-        public unsafe static byte* ManagedArrayToPointerData(string i_toConvert)
+        public unsafe static void ManagedArrayToPointerData(string i_toConvert, ref byte* out_PointeredData)
         {
-            byte[] arrOut;
             if( i_toConvert == String.Empty )
             {
-                arrOut = new byte[1]; arrOut[0] = 0;
+                out_PointeredData = (byte*)IntPtr.Zero;
             }
             else
             {
-                arrOut = new byte[i_toConvert.Length];
-                for( int chrItem = 0; chrItem < i_toConvert.Length; chrItem++ )
+                byte[] arrOut = new byte[i_toConvert.Length+1];
+                fixed (byte* tempPointer = arrOut)
                 {
-                    arrOut[chrItem] = (byte)i_toConvert[chrItem];
+                    for (int chrItem = 0; chrItem < i_toConvert.Length; chrItem++)
+                    {
+                        arrOut[chrItem] = (byte)i_toConvert[chrItem];
+                    }
+                    out_PointeredData = tempPointer;
                 }
             }
-
-            return (byte*)arrOut[0]; 
         }
     }
 }

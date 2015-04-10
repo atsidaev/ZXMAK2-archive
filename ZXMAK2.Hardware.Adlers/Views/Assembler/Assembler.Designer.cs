@@ -32,7 +32,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Assembler));
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("noname.asm");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("noname.asm");
             this.txtAsm = new FastColoredTextBoxNS.FastColoredTextBox();
             this.btnCompile = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
@@ -60,21 +60,24 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.btnFormatCode = new System.Windows.Forms.ToolStripMenuItem();
             this.btnValidateCode = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.convertNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toHexadecimalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toDecimalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.listViewSymbols = new ZXMAK2.Hardware.Adlers.Views.CustomControls.ListViewCustom();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.checkBoxGenerateBasic = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtbxFileOutputPath = new System.Windows.Forms.TextBox();
+            this.radioBtnMemoryOutput = new System.Windows.Forms.RadioButton();
+            this.radioBtnTAPBASOutput = new System.Windows.Forms.RadioButton();
             this.ctxmenuSymbols = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addToDebuggerAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.commentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.convertNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toHexadecimalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toDecimalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
             this.toolMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -291,12 +294,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.treeViewFiles.LabelEdit = true;
             this.treeViewFiles.Location = new System.Drawing.Point(3, 16);
             this.treeViewFiles.Name = "treeViewFiles";
-            treeNode1.Name = "Node0";
-            treeNode1.Tag = "0";
-            treeNode1.Text = "noname.asm";
-            treeNode1.ToolTipText = "not save assembler code";
+            treeNode2.Name = "Node0";
+            treeNode2.Tag = "0";
+            treeNode2.Text = "noname.asm";
+            treeNode2.ToolTipText = "not save assembler code";
             this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1});
+            treeNode2});
             this.treeViewFiles.ShowNodeToolTips = true;
             this.treeViewFiles.Size = new System.Drawing.Size(158, 389);
             this.treeViewFiles.TabIndex = 8;
@@ -387,7 +390,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.toolStripMenuItem1,
             this.convertNumbersToolStripMenuItem});
             this.ctxMenuAssemblerCommands.Name = "ctxMenuAssemblerCommands";
-            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(158, 98);
+            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(158, 76);
             // 
             // btnFormatCode
             // 
@@ -406,6 +409,34 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(154, 6);
+            // 
+            // convertNumbersToolStripMenuItem
+            // 
+            this.convertNumbersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toHexadecimalToolStripMenuItem,
+            this.toDecimalToolStripMenuItem,
+            this.toBinaryToolStripMenuItem});
+            this.convertNumbersToolStripMenuItem.Name = "convertNumbersToolStripMenuItem";
+            this.convertNumbersToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.convertNumbersToolStripMenuItem.Text = "Convert numbers";
+            // 
+            // toHexadecimalToolStripMenuItem
+            // 
+            this.toHexadecimalToolStripMenuItem.Name = "toHexadecimalToolStripMenuItem";
+            this.toHexadecimalToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.toHexadecimalToolStripMenuItem.Text = "to hexadecimal";
+            // 
+            // toDecimalToolStripMenuItem
+            // 
+            this.toDecimalToolStripMenuItem.Name = "toDecimalToolStripMenuItem";
+            this.toDecimalToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.toDecimalToolStripMenuItem.Text = "to decimal";
+            // 
+            // toBinaryToolStripMenuItem
+            // 
+            this.toBinaryToolStripMenuItem.Name = "toBinaryToolStripMenuItem";
+            this.toBinaryToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.toBinaryToolStripMenuItem.Text = "to binary";
             // 
             // groupBox2
             // 
@@ -480,29 +511,62 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Files:";
             // 
-            // checkBoxGenerateBasic
-            // 
-            this.checkBoxGenerateBasic.AutoSize = true;
-            this.checkBoxGenerateBasic.Checked = true;
-            this.checkBoxGenerateBasic.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxGenerateBasic.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxGenerateBasic.Name = "checkBoxGenerateBasic";
-            this.checkBoxGenerateBasic.Size = new System.Drawing.Size(104, 17);
-            this.checkBoxGenerateBasic.TabIndex = 15;
-            this.checkBoxGenerateBasic.Text = "Generate BASIC";
-            this.checkBoxGenerateBasic.UseVisualStyleBackColor = true;
-            // 
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.checkBoxGenerateBasic);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.txtbxFileOutputPath);
+            this.groupBox1.Controls.Add(this.radioBtnMemoryOutput);
+            this.groupBox1.Controls.Add(this.radioBtnTAPBASOutput);
+            this.groupBox1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(728, 93);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(122, 497);
             this.groupBox1.TabIndex = 16;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Compile options:";
+            this.groupBox1.Text = "Compile output:";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 63);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(97, 15);
+            this.label1.TabIndex = 19;
+            this.label1.Text = "File output path:";
+            // 
+            // txtbxFileOutputPath
+            // 
+            this.txtbxFileOutputPath.Enabled = false;
+            this.txtbxFileOutputPath.Location = new System.Drawing.Point(8, 79);
+            this.txtbxFileOutputPath.Name = "txtbxFileOutputPath";
+            this.txtbxFileOutputPath.Size = new System.Drawing.Size(110, 23);
+            this.txtbxFileOutputPath.TabIndex = 18;
+            // 
+            // radioBtnMemoryOutput
+            // 
+            this.radioBtnMemoryOutput.AutoSize = true;
+            this.radioBtnMemoryOutput.Checked = true;
+            this.radioBtnMemoryOutput.Location = new System.Drawing.Point(7, 20);
+            this.radioBtnMemoryOutput.Name = "radioBtnMemoryOutput";
+            this.radioBtnMemoryOutput.Size = new System.Drawing.Size(70, 19);
+            this.radioBtnMemoryOutput.TabIndex = 17;
+            this.radioBtnMemoryOutput.TabStop = true;
+            this.radioBtnMemoryOutput.Text = "Memory";
+            this.radioBtnMemoryOutput.UseVisualStyleBackColor = true;
+            this.radioBtnMemoryOutput.CheckedChanged += new System.EventHandler(this.radioBtnMemoryOutput_CheckedChanged);
+            // 
+            // radioBtnTAPBASOutput
+            // 
+            this.radioBtnTAPBASOutput.AutoSize = true;
+            this.radioBtnTAPBASOutput.Location = new System.Drawing.Point(6, 43);
+            this.radioBtnTAPBASOutput.Name = "radioBtnTAPBASOutput";
+            this.radioBtnTAPBASOutput.Size = new System.Drawing.Size(104, 19);
+            this.radioBtnTAPBASOutput.TabIndex = 16;
+            this.radioBtnTAPBASOutput.Text = "TAP with Basic";
+            this.radioBtnTAPBASOutput.UseVisualStyleBackColor = true;
+            this.radioBtnTAPBASOutput.MouseClick += new System.Windows.Forms.MouseEventHandler(this.radioBtnTAPBASOutput_MouseClick);
             // 
             // ctxmenuSymbols
             // 
@@ -533,34 +597,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.noteToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.noteToolStripMenuItem.Text = "Note";
             this.noteToolStripMenuItem.Click += new System.EventHandler(this.noteToolStripMenuItem_Click);
-            // 
-            // convertNumbersToolStripMenuItem
-            // 
-            this.convertNumbersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toHexadecimalToolStripMenuItem,
-            this.toDecimalToolStripMenuItem,
-            this.toBinaryToolStripMenuItem});
-            this.convertNumbersToolStripMenuItem.Name = "convertNumbersToolStripMenuItem";
-            this.convertNumbersToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.convertNumbersToolStripMenuItem.Text = "Convert numbers";
-            // 
-            // toHexadecimalToolStripMenuItem
-            // 
-            this.toHexadecimalToolStripMenuItem.Name = "toHexadecimalToolStripMenuItem";
-            this.toHexadecimalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.toHexadecimalToolStripMenuItem.Text = "to hexadecimal";
-            // 
-            // toDecimalToolStripMenuItem
-            // 
-            this.toDecimalToolStripMenuItem.Name = "toDecimalToolStripMenuItem";
-            this.toDecimalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.toDecimalToolStripMenuItem.Text = "to decimal";
-            // 
-            // toBinaryToolStripMenuItem
-            // 
-            this.toBinaryToolStripMenuItem.Name = "toBinaryToolStripMenuItem";
-            this.toBinaryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.toBinaryToolStripMenuItem.Text = "to binary";
             // 
             // Assembler
             // 
@@ -639,7 +675,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.CheckBox checkBoxGenerateBasic;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ContextMenuStrip ctxmenuSymbols;
         private System.Windows.Forms.ToolStripMenuItem addToDebuggerAsToolStripMenuItem;
@@ -653,5 +688,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private System.Windows.Forms.ToolStripMenuItem toHexadecimalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toDecimalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toBinaryToolStripMenuItem;
+        private System.Windows.Forms.RadioButton radioBtnMemoryOutput;
+        private System.Windows.Forms.RadioButton radioBtnTAPBASOutput;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtbxFileOutputPath;
     }
 }
