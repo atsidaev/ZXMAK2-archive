@@ -7,6 +7,7 @@ using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Serializers.SnapshotSerializers;
 using ZXMAK2.Model.Tape.Interfaces;
 using ZXMAK2.Model.Tape.Entities;
+using ZXMAK2.Engine.Tools;
 
 
 namespace ZXMAK2.Serializers.TapeSerializers

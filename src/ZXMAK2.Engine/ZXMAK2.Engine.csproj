@@ -114,6 +114,7 @@
     <Compile Include="Serializers\TapeSerializers\TzxSerializer.cs" />
     <Compile Include="Serializers\TapeSerializers\WavSerializer.cs" />
     <Compile Include="Spectrum.cs" />
+    <Compile Include="Tools\StreamHelper.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VirtualMachine.cs" />
   </ItemGroup>
