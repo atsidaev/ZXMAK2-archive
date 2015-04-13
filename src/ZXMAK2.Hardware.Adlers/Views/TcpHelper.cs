@@ -70,7 +70,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 labelStatusText.Text = "Downloading...";
                 buttonStart.Enabled = false;
 
-                _client.DownloadFileAsync(new Uri(@"http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=pasmo2&DownloadId=1442134&FileTime=130721688031900000&Build=20983"), "Pasmo2.dll");
+                _client.DownloadFileAsync(new Uri(@"http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=pasmo2&DownloadId=1448407&FileTime=130734215334470000&Build=20988"), "Pasmo2.dll");
             }
             catch(Exception tcpException)
             {
@@ -135,6 +135,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 i_errMessage = ex.Message.ToString();
                 return string.Empty;
             }
+        }
+
+        public static bool DownloadFileSilent()
+        {
+            //todo: download file in background, e.g.: Pasmo2.dll
+            return false;
         }
 
         public static bool TestTcpConnection(out string o_message, string i_proxyIP = null, string i_proxyPort = null)
