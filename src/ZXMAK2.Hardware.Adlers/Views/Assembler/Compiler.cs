@@ -18,25 +18,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
     {
         public unsafe static int DoCompile(COMPILE_IN i_compileIn, ref COMPILED_INFO o_compiled)
         {
-            int retCode;
-
             if (bIsCompilerDllLoaded == false)
             {
                 if(Compiler.LoadCompilerDll() == false)
                     return 1; //missing library
             }
 
-            //unsafe
-            {
-                //fixed (byte* compileModeFixed = &compileIn.cCompileMode)
-                {
-                    //init OUT data
-                    COMPILED_INFO info = new COMPILED_INFO();
-                    retCode = compile(&i_compileIn, &info);
+            COMPILED_INFO info = new COMPILED_INFO();
+            int retCode = compile(&i_compileIn, &info);
 
-                    o_compiled = info;
-                }
-            }
+            o_compiled = info;
             return retCode;
         }
 
