@@ -167,10 +167,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         Locator.Resolve<IUserMessage>().Error("Technical error in compilation...\nSorry, compilation cannot be executed.\n\nDetail:\n" + ex.Message);
                         return;
                     }
-
-                    //compile ret code
                     if (retCode != 0)
                     {
+                        //Compile ERROR!
                         if (compileIn.cCompileMode == Compiler.COMPILE_OPTION_BIN_FILE)
                         {
                             if (compiled.iErrFileLine >= 0)
@@ -200,24 +199,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         this.richCompileMessages.AppendInfo("Compilation OK !", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime);
 
                         //write to memory ?
-                        //if (checkMemory.Checked)
                         if (compiled.iCompiledSize > 0)
                         {
                             //get address where to write the code
                             ushort memAdress = (ushort)(compiled.czCompiled[0] + compiled.czCompiled[1] * 256);
-
-                            /*if (memAdress == 0 && this.chckbxMemory.Checked)
-                            {
-                                try
-                                {
-                                    memAdress = ConvertRadix.ConvertNumberWithPrefix(textMemAdress.Text);
-                                }
-                                catch(CommandParseException exc)
-                                {
-                                    Locator.Resolve<IUserMessage>().Error(String.Format("Incorrect memory address!\n{0}", exc.Message));
-                                    return;
-                                }
-                            }*/
                             if (memAdress >= 0x4000) //RAM start
                             {
                                 Stopwatch watch = new Stopwatch();
@@ -259,7 +244,23 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                             }
                         }
                         else
-                            this.richCompileMessages.AppendLog("Nothing to write to memory !", LOG_LEVEL.Info);
+                        {
+                            if (compileIn.cCompileMode == Compiler.COMPILE_OPTION_TAP_BAS)
+                            {
+                                string generatedFileName = txtbxFileOutputPath.Text;
+                                bool isFileGenerated = File.Exists(generatedFileName);
+
+                                string compilationInfo;
+                                if (isFileGenerated)
+                                    compilationInfo = String.Format("Compilation finished: File {0} generated!", generatedFileName);
+                                else
+                                    compilationInfo = String.Format("Compilation finished: File {0} NOT generated(access denied?)!", generatedFileName);
+
+                                this.richCompileMessages.AppendInfo(String.Format("Compilation finished, file {0} generated!", generatedFileName), LOG_OPTIONS.AddFooter | LOG_OPTIONS.AddTime);
+                            }
+                            else
+                                this.richCompileMessages.AppendInfo("Compilation finished: Nothing to write to memory !", LOG_OPTIONS.AddFooter | LOG_OPTIONS.AddTime);
+                        }
                     }
                 }
             }
