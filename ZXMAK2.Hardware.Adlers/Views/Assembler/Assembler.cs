@@ -110,134 +110,157 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 //init IN data
                 COMPILE_IN compileIn = new COMPILE_IN();
                 compileIn.ResetValues();
+                compileIn.cEmitSymbols = 0x59; //generate symbols information
                 COMPILED_INFO compiled = new COMPILED_INFO();
 
-                string asmToCompileOrFileName = (GetActualSourceInfo().IsFile() ? GetActualSourceInfo().GetFileNameToSave() : txtAsm.Text);
-                ConvertRadix.ManagedArrayToPointerData(asmToCompileOrFileName, ref compileIn.chrSourceCode);
-
-                if (radioBtnTAPBASOutput.Checked)
+                //fixed (COMPILE_IN* compileInPointer = &compileIn)
                 {
-                    string tapbasFileName = txtbxFileOutputPath.Text;
-                    if (FileTools.IsPathCorrect(tapbasFileName) == false || tapbasFileName == String.Empty)
-                    {
-                        //incorrect path entered
-                        this.richCompileMessages.AppendLog("Output path is incorrect..Error!", LOG_LEVEL.Error, true);
-                        return;
-                    }
-                    compileIn.cCompileMode = Compiler.COMPILE_OPTION_TAP_BAS;
-                    compileIn.cfInputIsFile = (byte)'N';
-                    ConvertRadix.ManagedArrayToPointerData(tapbasFileName, ref compileIn.chrFileOut);
-                }
-                else
-                {
-                    if (GetActualSourceInfo().IsFile())
-                    {
-                        compileIn.cCompileMode = Compiler.COMPILE_OPTION_BIN_FILE;
-                    }
-                    else
-                    {
-                        compileIn.cCompileMode = Compiler.COMPILE_OPTION_BIN;
-                    }
-                }
+                    string asmToCompileOrFileName = (GetActualSourceInfo().IsFile() ? GetActualSourceInfo().GetFileNameToSave() : txtAsm.Text);
+                    ConvertRadix.ManagedArrayToPointerData(asmToCompileOrFileName, ref compileIn.chrSourceCode);
 
-                string errStringText = String.Empty;
-                this.richCompileMessages.AppendInfo("Compiling...\n", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime);
-
-                try
-                {
-                    retCode = Compiler.DoCompile(compileIn, ref compiled);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                    Locator.Resolve<IUserMessage>().Error("Technical error in compilation...\nSorry, compilation cannot be executed.\n\nDetail:\n" + ex.Message);
-                    return;
-                }
-                if (retCode != 0)
-                {
-                    if (compileIn.cCompileMode == Compiler.COMPILE_OPTION_BIN_FILE)
+                    if (radioBtnTAPBASOutput.Checked)
                     {
-                        errStringText += "Error on line " + compiled.iErrFileLine.ToString() + ", file: " + Compiler.GetStringFromMemory(compiled.czErrFileName);
-                        errStringText += "\n    ";
-                        errStringText += Compiler.GetStringFromMemory(compiled.czErrMessage);
-                    }
-                    else
-                    {
-                        string errMessageTrimmed = Compiler.GetStringFromMemory(compiled.czErrMessage);
-                        ConvertRadix.RemoveFormattingChars(ref errMessageTrimmed, true/*trim start*/);
-                        errStringText += String.Format("Compile error on line {0}!\n    {1}", compiled.iErrFileLine, errMessageTrimmed.TrimStart());
-                    }
-
-                    LOG_INFO logInfo = new LOG_INFO();
-                    logInfo.ErrorLine = compiled.iErrFileLine; logInfo.SetMessage(errStringText); logInfo.Level = LOG_LEVEL.Error;
-                    this.richCompileMessages.AppendLog(logInfo);
-                }
-                else
-                {
-                    //we got a assembly
-                    this.richCompileMessages.AppendInfo("Compilation OK ! Now writing memory...", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime);
-
-                    //write to memory ?
-                    //if (checkMemory.Checked)
-                    if (compiled.iCompiledSize > 0)
-                    {
-                        //get address where to write the code
-                        ushort memAdress = (ushort)(compiled.czCompiled[0] + compiled.czCompiled[1] * 256);
-
-                        /*if (memAdress == 0 && this.chckbxMemory.Checked)
+                        string tapbasFileName = txtbxFileOutputPath.Text;
+                        if (FileTools.IsPathCorrect(tapbasFileName) == false || tapbasFileName == String.Empty)
                         {
-                            try
-                            {
-                                memAdress = ConvertRadix.ConvertNumberWithPrefix(textMemAdress.Text);
-                            }
-                            catch(CommandParseException exc)
-                            {
-                                Locator.Resolve<IUserMessage>().Error(String.Format("Incorrect memory address!\n{0}", exc.Message));
-                                return;
-                            }
-                        }*/
-                        if (memAdress >= 0x4000) //RAM start
+                            //incorrect path entered
+                            this.richCompileMessages.AppendLog("Output path is incorrect..Error!", LOG_LEVEL.Error, true);
+                            return;
+                        }
+                        compileIn.cCompileMode = Compiler.COMPILE_OPTION_TAP_BAS;
+                        if (GetActualSourceInfo().IsFile())
                         {
-                            Stopwatch watch = new Stopwatch();
-                            watch.Start();
-                            if ((memAdress + compiled.iCompiledSize) > 0xFFFF)
-                                compiled.iCompiledSize = 0xFFFF - memAdress; //prevent memory overload
-                            byte[] memBytesCompiled = ConvertRadix.PointerDataToManagedType(compiled.czCompiled + 2/*omit memory address*/, compiled.iCompiledSize);
-                            if (memBytesCompiled != null)
-                                m_debugger.GetVMKernel().WriteMemory(memAdress, memBytesCompiled, 0, compiled.iCompiledSize);
-                            watch.Stop();
-
-                            TimeSpan time = watch.Elapsed;
-                            string compileInfo = String.Format("\n    Memory written starting at address: #{0:X04}({1})", memAdress, memAdress);
-                            compileInfo += String.Format("\n    Written #{0:X04}({1}) bytes", compiled.iCompiledSize, compiled.iCompiledSize);
-
-                            this.richCompileMessages.AppendLog(compileInfo, LOG_LEVEL.Info);
+                            compileIn.cfInputIsFile = (byte)'Y';
+                            ConvertRadix.ManagedArrayToPointerData(GetActualSourceInfo().GetFileNameToSave(), ref compileIn.chrFileIn);
                         }
                         else
                         {
-                            this.richCompileMessages.AppendLog("Cannot write to ROM(address = " + memAdress.ToString() + "). Bail out.", LOG_LEVEL.Error);
-                            return;
+                            compileIn.cfInputIsFile = (byte)'N';
+                        }
+                        ConvertRadix.ManagedArrayToPointerData(tapbasFileName, ref compileIn.chrFileOut);
+                    }
+                    else
+                    {
+                        if (GetActualSourceInfo().IsFile())
+                        {
+                            compileIn.cCompileMode = Compiler.COMPILE_OPTION_BIN_FILE;
+                            compileIn.cfInputIsFile = (byte)'Y';
+                            ConvertRadix.ManagedArrayToPointerData(GetActualSourceInfo().GetFileNameToSave(), ref compileIn.chrFileIn);
+                        }
+                        else
+                        {
+                            compileIn.cCompileMode = Compiler.COMPILE_OPTION_BIN;
+                        }
+                    }
+
+                    string errStringText = String.Empty;
+                    this.richCompileMessages.AppendInfo("Compiling...\n", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime);
+
+                    try
+                    {
+                        //COMPILE!
+                        retCode = Compiler.DoCompile(compileIn, ref compiled);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                        Locator.Resolve<IUserMessage>().Error("Technical error in compilation...\nSorry, compilation cannot be executed.\n\nDetail:\n" + ex.Message);
+                        return;
+                    }
+
+                    //compile ret code
+                    if (retCode != 0)
+                    {
+                        if (compileIn.cCompileMode == Compiler.COMPILE_OPTION_BIN_FILE)
+                        {
+                            if (compiled.iErrFileLine >= 0)
+                            {
+                                errStringText += "Error on line " + compiled.iErrFileLine.ToString() + ", file: " + Compiler.GetStringFromMemory(compiled.czErrFileName);
+                                errStringText += "\n    ";
+                            }
+                            errStringText += Compiler.GetStringFromMemory(compiled.czErrMessage);
+                        }
+                        else
+                        {
+                            string errMessageTrimmed = Compiler.GetStringFromMemory(compiled.czErrMessage);
+                            ConvertRadix.RemoveFormattingChars(ref errMessageTrimmed, true/*trim start*/);
+                            if (compiled.iErrFileLine >= 0)
+                                errStringText += String.Format("Compile error on line {0}!\n    {1}", compiled.iErrFileLine, errMessageTrimmed.TrimStart());
+                            else
+                                errStringText += String.Format("Compile error: {0}", errMessageTrimmed.TrimStart());
                         }
 
-                        //Symbols
-                        this.listViewSymbols.Items.Clear();
-                        if (new IntPtr(compiled.arrSourceSymbols) != IntPtr.Zero)
+                        LOG_INFO logInfo = new LOG_INFO();
+                        logInfo.ErrorLine = compiled.iErrFileLine; logInfo.SetMessage(errStringText); logInfo.Level = LOG_LEVEL.Error;
+                        this.richCompileMessages.AppendLog(logInfo);
+                    }
+                    else
+                    {
+                        //we got a assembly
+                        this.richCompileMessages.AppendInfo("Compilation OK !", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime);
+
+                        //write to memory ?
+                        //if (checkMemory.Checked)
+                        if (compiled.iCompiledSize > 0)
                         {
-                            Dictionary<string, ushort> symbolsParsed = Compiler.ParseSymbols(Compiler.GetStringFromMemory(compiled.arrSourceSymbols));
-                            if (symbolsParsed != null && symbolsParsed.Keys.Count > 0)
+                            //get address where to write the code
+                            ushort memAdress = (ushort)(compiled.czCompiled[0] + compiled.czCompiled[1] * 256);
+
+                            /*if (memAdress == 0 && this.chckbxMemory.Checked)
                             {
-                                foreach (var item in symbolsParsed)
+                                try
                                 {
-                                    ListViewItem itemToAdd = new ListViewItem(new[] { item.Key, String.Format("#{0:X2}", item.Value) });
-                                    itemToAdd.Tag = String.Format("#{0:X2}", item.Value); //will be parsed in ListViewCustom
-                                    //itemToAdd.Tag = tag;
-                                    this.listViewSymbols.Items.Add(itemToAdd);
+                                    memAdress = ConvertRadix.ConvertNumberWithPrefix(textMemAdress.Text);
+                                }
+                                catch(CommandParseException exc)
+                                {
+                                    Locator.Resolve<IUserMessage>().Error(String.Format("Incorrect memory address!\n{0}", exc.Message));
+                                    return;
+                                }
+                            }*/
+                            if (memAdress >= 0x4000) //RAM start
+                            {
+                                Stopwatch watch = new Stopwatch();
+                                watch.Start();
+                                if ((memAdress + compiled.iCompiledSize) > 0xFFFF)
+                                    compiled.iCompiledSize = 0xFFFF - memAdress; //prevent memory overload
+                                byte[] memBytesCompiled = ConvertRadix.PointerDataToManagedType(compiled.czCompiled + 2/*omit memory address*/, compiled.iCompiledSize);
+                                if (memBytesCompiled != null)
+                                    m_debugger.GetVMKernel().WriteMemory(memAdress, memBytesCompiled, 0, compiled.iCompiledSize);
+                                watch.Stop();
+
+                                TimeSpan time = watch.Elapsed;
+                                string compileInfo = String.Format("\n    Memory written starting at address: #{0:X04}({1})", memAdress, memAdress);
+                                compileInfo += String.Format("\n    Written #{0:X04}({1}) bytes", compiled.iCompiledSize, compiled.iCompiledSize);
+
+                                this.richCompileMessages.AppendLog(compileInfo, LOG_LEVEL.Info);
+                            }
+                            else
+                            {
+                                this.richCompileMessages.AppendLog("Cannot write to ROM(address = " + memAdress.ToString() + "). Bail out.", LOG_LEVEL.Error);
+                                return;
+                            }
+
+                            //Symbols
+                            this.listViewSymbols.Items.Clear();
+                            if (new IntPtr(compiled.arrSourceSymbols) != IntPtr.Zero)
+                            {
+                                Dictionary<string, ushort> symbolsParsed = Compiler.ParseSymbols(Compiler.GetStringFromMemory(compiled.arrSourceSymbols));
+                                if (symbolsParsed != null && symbolsParsed.Keys.Count > 0)
+                                {
+                                    foreach (var item in symbolsParsed)
+                                    {
+                                        ListViewItem itemToAdd = new ListViewItem(new[] { item.Key, String.Format("#{0:X2}", item.Value) });
+                                        itemToAdd.Tag = String.Format("#{0:X2}", item.Value); //will be parsed in ListViewCustom
+                                        //itemToAdd.Tag = tag;
+                                        this.listViewSymbols.Items.Add(itemToAdd);
+                                    }
                                 }
                             }
                         }
+                        else
+                            this.richCompileMessages.AppendLog("Nothing to write to memory !", LOG_LEVEL.Info);
                     }
-                    else
-                        this.richCompileMessages.AppendLog("Nothing to write to memory !", LOG_LEVEL.Info);
                 }
             }
         }
