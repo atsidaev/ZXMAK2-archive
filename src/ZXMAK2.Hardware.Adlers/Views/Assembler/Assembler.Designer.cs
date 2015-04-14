@@ -32,7 +32,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Assembler));
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("noname.asm");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("noname.asm");
             this.txtAsm = new FastColoredTextBoxNS.FastColoredTextBox();
             this.btnCompile = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
@@ -294,12 +294,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.treeViewFiles.LabelEdit = true;
             this.treeViewFiles.Location = new System.Drawing.Point(3, 16);
             this.treeViewFiles.Name = "treeViewFiles";
-            treeNode2.Name = "Node0";
-            treeNode2.Tag = "0";
-            treeNode2.Text = "noname.asm";
-            treeNode2.ToolTipText = "not save assembler code";
+            treeNode1.Name = "Node0";
+            treeNode1.Tag = "0";
+            treeNode1.Text = "noname.asm";
+            treeNode1.ToolTipText = "not save assembler code";
             this.treeViewFiles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode2});
+            treeNode1});
             this.treeViewFiles.ShowNodeToolTips = true;
             this.treeViewFiles.Size = new System.Drawing.Size(158, 389);
             this.treeViewFiles.TabIndex = 8;
@@ -390,7 +390,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.toolStripMenuItem1,
             this.convertNumbersToolStripMenuItem});
             this.ctxMenuAssemblerCommands.Name = "ctxMenuAssemblerCommands";
-            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(158, 76);
+            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(158, 98);
             // 
             // btnFormatCode
             // 
@@ -423,19 +423,20 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // toHexadecimalToolStripMenuItem
             // 
             this.toHexadecimalToolStripMenuItem.Name = "toHexadecimalToolStripMenuItem";
-            this.toHexadecimalToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.toHexadecimalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.toHexadecimalToolStripMenuItem.Text = "to hexadecimal";
+            this.toHexadecimalToolStripMenuItem.Click += new System.EventHandler(this.toHexadecimalToolStripMenuItem_Click);
             // 
             // toDecimalToolStripMenuItem
             // 
             this.toDecimalToolStripMenuItem.Name = "toDecimalToolStripMenuItem";
-            this.toDecimalToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.toDecimalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.toDecimalToolStripMenuItem.Text = "to decimal";
             // 
             // toBinaryToolStripMenuItem
             // 
             this.toBinaryToolStripMenuItem.Name = "toBinaryToolStripMenuItem";
-            this.toBinaryToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.toBinaryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.toBinaryToolStripMenuItem.Text = "to binary";
             // 
             // groupBox2
