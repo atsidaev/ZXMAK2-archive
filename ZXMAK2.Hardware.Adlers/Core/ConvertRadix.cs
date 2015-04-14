@@ -102,7 +102,7 @@ namespace ZXMAK2.Hardware.Adlers
         // Method: convertASCIIStringToBytes()
         //
         ////////////////////////////////////////////////////////////////////
-        public static byte[] convertASCIIStringToBytes(string input)
+        public static byte[] ASCIIStringToBytes(string input)
         {
             List<byte> arrOut = new List<byte>();
             foreach (char c in input)
@@ -113,6 +113,88 @@ namespace ZXMAK2.Hardware.Adlers
             }
 
             return arrOut.ToArray();
+        }
+
+        ////////////////////////////////////////////////////////////////////
+        //
+        // Method: NumbersInTextToHex()
+        //
+        //         Converts decimal numbers in text to hexadecimal format
+        ////////////////////////////////////////////////////////////////////
+        public unsafe static string NumbersInTextToHex(string i_toConvert)
+        {
+            //char* buf = stackalloc char[i_toConvert.Length];
+            string outString = String.Empty;
+            int pos = 0;
+            bool isParsingNumber = false;
+            char[] arrToConvert = i_toConvert.ToCharArray();
+            string actNumber = String.Empty;
+            bool parsingAllowed = true;
+
+            while (pos < i_toConvert.Length)
+            {
+                char curr = arrToConvert[pos];
+                if (isParsingNumber == false || pos == 0)
+                {
+                    if (curr == 0x20 || curr == (byte)'(' || curr == (byte)')' || curr == (byte)',')
+                        parsingAllowed = true;
+                    else if (!Char.IsDigit(curr))
+                    {
+                        parsingAllowed = false;
+                        outString += curr;
+                        pos++;
+                        continue;
+                    }
+                }
+                if (curr == (byte)'$' || curr == (byte)'#')
+                {
+                    parsingAllowed = false;
+                    actNumber = String.Empty;
+                    outString += curr;
+                    pos++;
+                    continue;
+                }
+                if (parsingAllowed == false)
+                {
+                    outString += curr;
+                    pos++;
+                    continue;
+                }
+
+                if (curr >= (byte)'0' && curr <= (byte)'9')
+                {
+                    if (isParsingNumber)
+                    {
+                        actNumber += curr;
+                        pos++;
+                        continue;
+                    }
+                    if (parsingAllowed)
+                    {
+                        isParsingNumber = true;
+                        actNumber += curr;
+                        pos++;
+                        continue;
+                    }
+                }
+
+                if (isParsingNumber)
+                {
+                    int numberDecimal = int.Parse(actNumber);
+                    if (numberDecimal > 0xFF)
+                        outString += String.Format("#{0:X4}", numberDecimal);
+                    else
+                        outString += String.Format("#{0:X2}", numberDecimal);
+
+                    actNumber = String.Empty;
+                    isParsingNumber = false;
+                }
+
+                outString += curr;
+                pos++;
+            }
+
+            return outString;
         }
 
         ////////////////////////////////////////////////////////////////////

@@ -68,7 +68,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             //common instructions
             public static Style  CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
             public static string regexCommonInstruction = @"\bldir\b|\blddr\b|\bld\b|\bim[ ]+\b|\badd\b|\bsub\b|\bsbc\b|\bhalt\b|\bbit\b|" +
-                                                          @"\bset\b|xor|[^\.\S+](inc|dec)\b|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
+                                                          @"\bset\b|xor|[^.a-zA-Z0-9:_\/\[\]](inc|dec)[ ]|\bcp\b|\bcpl\b|\bei\b|\bdi\b|\band\b|\bor\b|\band\b" +
                                                           @"|\brr\b|\bscf\b|\bccf\b|\bneg\b|\bsrl\b|exx|\bex\b|\brla\b|\brra\b|\brr\b|\bout\b|\bin\b|\bsla\b|\brl\b|\brrca\b" + 
                                                           @"|\brlca\b";
             //jumps

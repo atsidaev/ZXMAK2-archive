@@ -208,8 +208,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
         #region members
             [DllImport(@"Pasmo2.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "compile")]
-            private unsafe static extern int compile([In, Out] COMPILE_IN* in_CompileArgs,
-                                                     [In, Out] COMPILED_INFO* out_Compiled
+            private unsafe static extern int compile([In] COMPILE_IN* in_CompileArgs,
+                                                     [In, Out ] COMPILED_INFO* out_Compiled
                                                     );
             [DllImport("kernel32.dll")]
             private static extern IntPtr LoadLibrary(string fileName);
@@ -259,10 +259,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //compiled
         public byte* czCompiled;
         public byte* czFileNameCompiled;
-        public int iCompiledSize; // REAL compiled size, without first 2 bytes(mem address where the code will be placed)
+        public int   iCompiledSize; // REAL compiled size, without first 2 bytes(mem address where the code will be placed)
 
         //error info
-        public int iErrFileLine;
+        public int   iErrFileLine;
         public byte* czErrFileName;
         public byte* czErrMessage;
 

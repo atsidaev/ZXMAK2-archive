@@ -106,66 +106,117 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             unsafe
             {
                 //FixedBuffer fixedBuf = new FixedBuffer();
+                bool fIsTapBasMode = radioBtnTAPBASOutput.Checked;
 
                 //init IN data
                 COMPILE_IN compileIn = new COMPILE_IN();
                 compileIn.ResetValues();
-                compileIn.cEmitSymbols = 0x59; //generate symbols information
                 COMPILED_INFO compiled = new COMPILED_INFO();
 
-                //fixed (COMPILE_IN* compileInPointer = &compileIn)
-                {
-                    string asmToCompileOrFileName = (GetActualSourceInfo().IsFile() ? GetActualSourceInfo().GetFileNameToSave() : txtAsm.Text);
-                    ConvertRadix.ManagedArrayToPointerData(asmToCompileOrFileName, ref compileIn.chrSourceCode);
+                string asmToCompileOrFileName = (GetActualSourceInfo().IsFile() ? GetActualSourceInfo().GetFileNameToSave() : txtAsm.Text);
+                byte[] arrSourceCode = ConvertRadix.ASCIIStringToBytes(txtAsm.Text);
 
-                    if (radioBtnTAPBASOutput.Checked)
+                fixed (byte* pointerSourceCode = &arrSourceCode[0])
+                {
+                    //Source code pointer
+                    compileIn.chrSourceCode = pointerSourceCode;
+                    //Symbols
+                    compileIn.cEmitSymbols = (byte)'Y'; //always generate source code symbols
+
+                    //Compile method: TAP_BAS or BIN
+                    if (fIsTapBasMode)
                     {
+                        //TAP_BAS - check output file
                         string tapbasFileName = txtbxFileOutputPath.Text;
                         if (FileTools.IsPathCorrect(tapbasFileName) == false || tapbasFileName == String.Empty)
                         {
-                            //incorrect path entered
+                            //incorrect output path entered
                             this.richCompileMessages.AppendLog("Output path is incorrect..Error!", LOG_LEVEL.Error, true);
                             return;
-                        }
-                        compileIn.cCompileMode = Compiler.COMPILE_OPTION_TAP_BAS;
-                        if (GetActualSourceInfo().IsFile())
-                        {
-                            compileIn.cfInputIsFile = (byte)'Y';
-                            ConvertRadix.ManagedArrayToPointerData(GetActualSourceInfo().GetFileNameToSave(), ref compileIn.chrFileIn);
-                        }
-                        else
-                        {
-                            compileIn.cfInputIsFile = (byte)'N';
-                        }
-                        ConvertRadix.ManagedArrayToPointerData(tapbasFileName, ref compileIn.chrFileOut);
-                    }
-                    else
-                    {
-                        if (GetActualSourceInfo().IsFile())
-                        {
-                            compileIn.cCompileMode = Compiler.COMPILE_OPTION_BIN_FILE;
-                            compileIn.cfInputIsFile = (byte)'Y';
-                            ConvertRadix.ManagedArrayToPointerData(GetActualSourceInfo().GetFileNameToSave(), ref compileIn.chrFileIn);
-                        }
-                        else
-                        {
-                            compileIn.cCompileMode = Compiler.COMPILE_OPTION_BIN;
                         }
                     }
 
                     string errStringText = String.Empty;
                     this.richCompileMessages.AppendInfo("Compiling...\n", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime);
 
-                    try
+                    //COMPILE!
+                    //fixed ( ... )
                     {
-                        //COMPILE!
-                        retCode = Compiler.DoCompile(compileIn, ref compiled);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                        Locator.Resolve<IUserMessage>().Error("Technical error in compilation...\nSorry, compilation cannot be executed.\n\nDetail:\n" + ex.Message);
-                        return;
+                        //Input is file ?
+                        if (GetActualSourceInfo().IsFile())
+                        {
+                            byte[] arrFileIn = ConvertRadix.ASCIIStringToBytes(GetActualSourceInfo().GetFileNameToSave());
+                            byte[] arrFileOut = fIsTapBasMode ? ConvertRadix.ASCIIStringToBytes(txtbxFileOutputPath.Text) : new byte[1];
+
+                            compileIn.cfInputIsFile = (byte)'Y';
+
+                            fixed(byte* pointerFileIn = &arrFileIn[0])
+                            {
+                                fixed (byte* pointerFileOut = &arrFileOut[0])
+                                {
+                                    compileIn.chrFileIn = pointerFileIn;
+
+                                    if (fIsTapBasMode)
+                                    {
+                                        compileIn.chrFileOut = pointerFileOut;
+                                        compileIn.cCompileMode = Compiler.COMPILE_OPTION_TAP_BAS;
+                                    }
+                                    else
+                                        compileIn.cCompileMode = Compiler.COMPILE_OPTION_BIN_FILE;
+
+                                    //COMPILE(input is file) = TAP_BAS(input is file) or BIN_FILE mode!!!
+                                    try
+                                    {
+                                        retCode = Compiler.DoCompile(compileIn, ref compiled);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Logger.Error(ex);
+                                        Locator.Resolve<IUserMessage>().Error("Technical error in compilation...\nSorry, compilation cannot be executed.\n\nDetail:\n" + ex.Message);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (fIsTapBasMode == false)
+                            {
+                                //COMPILE(input is source code) = BIN mode!!!
+                                compileIn.cCompileMode = Compiler.COMPILE_OPTION_BIN;
+                                try
+                                {
+                                    retCode = Compiler.DoCompile(compileIn, ref compiled);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logger.Error(ex);
+                                    Locator.Resolve<IUserMessage>().Error("Technical error in compilation...\nSorry, compilation cannot be executed.\n\nDetail:\n" + ex.Message);
+                                    return;
+                                }
+                            }
+                            else
+                            {   
+                                //COMPILE TAP_BAS mode with source code as input!!!
+                                byte[] arrFileOut = ConvertRadix.ASCIIStringToBytes(txtbxFileOutputPath.Text);
+                                fixed (byte* pointerFileOut = &arrFileOut[0])
+                                {
+                                    compileIn.chrFileOut = pointerFileOut;
+                                    compileIn.cCompileMode = Compiler.COMPILE_OPTION_TAP_BAS;
+
+                                    try
+                                    {
+                                        retCode = Compiler.DoCompile(compileIn, ref compiled);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Logger.Error(ex);
+                                        Locator.Resolve<IUserMessage>().Error("Technical error in compilation...\nSorry, compilation cannot be executed.\n\nDetail:\n" + ex.Message);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
                     }
                     if (retCode != 0)
                     {
@@ -602,6 +653,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
         }
 
+        //Context menu - Convert numbers to hexadecimal format
+        private void toHexadecimalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //send selection from assembler code
+            txtAsm.Text = ConvertRadix.NumbersInTextToHex(txtAsm.Text);
+        }
+
         //Format code
         private void btnFormatCode_Click(object sender, EventArgs e)
         {
@@ -628,7 +686,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                               "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn", "rra", "rla", "sbc", "rst",
                                               "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "rrca", "rr"};
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
-            Range actLineSave = new Range(txtAsm, txtAsm.Selection.Start, txtAsm.Selection.End);
+            //Range actLineSave = new Range(txtAsm, txtAsm.Selection.Start, txtAsm.Selection.End);
+            //Place actLineSave = ...
 
             //progressBarBackgroundProcess.RunOnNewThread(txtAsm, () => txtAsm.Cursor = Cursors.WaitCursor);
             ProgressBarBackgroundProcess.ProcessInvokeRequired(richCompileMessages, () => richCompileMessages.AppendInfo("Code formatting started...\n", LOG_OPTIONS.NoHeaderOrFooter | LOG_OPTIONS.AddTime));
@@ -754,9 +813,18 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             Invoke(new Action(() =>
             {
                 richCompileMessages.AppendInfo("Applying formatted code...", LOG_OPTIONS.NoHeaderOrFooter);
-                txtAsm.Text = codeFormatted.ToString() + '\n';
-                txtAsm.Selection = actLineSave;
-                txtAsm.DoSelectionVisible();
+                string code = codeFormatted.ToString();
+                while (code.EndsWith("\n") || code.EndsWith("\r"))
+                {
+                    code = code.TrimEnd('\n');
+                    code = code.TrimEnd('\r');
+                }
+                txtAsm.Text = code;
+                /*if (txtAsm.Range.End.iLine > code.Length)
+                    txtAsm.Selection = actLineSave;
+                else
+                    txtAsm.Selection = new Range(code.Length, code.Length);
+                txtAsm.DoSelectionVisible();*/
 
                 //txtAsm.Cursor = Cursors.IBeam;
                 richCompileMessages.AppendInfo("Code formatting finished...\n", LOG_OPTIONS.AddFooter | LOG_OPTIONS.AddTime);
@@ -1150,7 +1218,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     io_writer.WriteAttributeString("TextColor", AssemblerColorConfig.StackInstructionStyle.GetCSS());
                     io_writer.WriteEndElement();  //Colors->StackInstructionsStyle end
 
-            io_writer.WriteEndElement(); //Colors end
+                io_writer.WriteEndElement(); //Colors end
+
+                //Compile mode
+                io_writer.WriteStartElement("Compiler");
+                io_writer.WriteAttributeString("MinCompilerVersion", "1.03");
+                    io_writer.WriteStartElement("OutputOptions");
+                        io_writer.WriteElementString("OutputMode", radioBtnTAPBASOutput.Checked ? "2" : "1"); //TAP_BAS = 2; BIN = 1
+                        io_writer.WriteElementString("TapBasOutputPath", txtbxFileOutputPath.Text);
+                    io_writer.WriteEndElement(); //OutputOptions end
+                io_writer.WriteEndElement(); //Compiler end
 
             //save settings
             Settings.GetPartialConfig(ref io_writer);
@@ -1289,6 +1366,28 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 if (ParseCss_IsStrikeout(css))
                     fontStyle |= FontStyle.Strikeout;
                 AssemblerColorConfig.GetInstance().ChangeSyntaxStyle(isStyleEnabled, new TextStyle(new SolidBrush(stackInstrucionsStyleColor), null, fontStyle), 5);
+            }
+
+            //Compile options
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Compiler/OutputOptions/OutputMode");
+            if (node != null)
+            {
+                this.SuspendLayout();
+                if (node.InnerText == "1")
+                    radioBtnMemoryOutput.Checked = true; //1
+                else
+                {
+                    radioBtnTAPBASOutput.Checked = true; //2
+                    txtbxFileOutputPath.Enabled = true;
+                }
+                this.ResumeLayout();
+            }
+            node = xmlDoc.DocumentElement.SelectSingleNode("/Root/Assembler/Compiler/OutputOptions/TapBasOutputPath");
+            if (node != null)
+            {
+                this.SuspendLayout();
+                txtbxFileOutputPath.Text = node.InnerText;
+                this.ResumeLayout();
             }
 
             AssemblerColorConfig.GetInstance().SaveGUIForUndo(); //save color settings

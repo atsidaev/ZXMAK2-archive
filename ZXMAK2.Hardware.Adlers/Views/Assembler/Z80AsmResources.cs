@@ -46,7 +46,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), _configFileName));
 
-            //Add libraries
+            //Add screen libs
             XmlNodeList nodes = xmlDoc.DocumentElement.SelectNodes("/Root/libs/item");
             foreach(XmlNode libNodes in nodes)
             {
@@ -65,7 +65,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 }
                 treeZ80Resources.Nodes.Add(treeNodeLib);
             }
-            //Add graphics(tiles & sprites)
+            //Add graphics(tiles & sprites) libs
             nodes = xmlDoc.DocumentElement.SelectNodes("/Root/graphics");
             foreach (XmlNode grapicsNodes in nodes)
             {
@@ -80,6 +80,46 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     demoDesc.Text = graphicsItemNode.Attributes["name"].InnerText;
                     demoDesc.Checked = false;
                     demoDesc.Tag = graphicsItemNode;
+                    demosRootNode.Nodes.Add(demoDesc);
+                }
+
+                treeZ80Resources.Nodes.Add(demosRootNode);
+            }
+            //Add fonts
+            nodes = xmlDoc.DocumentElement.SelectNodes("/Root/fonts");
+            foreach (XmlNode demoNodes in nodes)
+            {
+                TreeNode demosRootNode = new TreeNode();
+                demosRootNode.Text = demoNodes.Attributes["title"].InnerText;
+                demosRootNode.Checked = false;
+                demosRootNode.Tag = demoNodes;
+                //Add demo items
+                foreach (XmlNode demoItemNode in demoNodes.SelectNodes("fontsItem"))
+                {
+                    TreeNode demoDesc = new TreeNode();
+                    demoDesc.Text = demoItemNode.Attributes["name"].InnerText;
+                    demoDesc.Checked = false;
+                    demoDesc.Tag = demoItemNode;
+                    demosRootNode.Nodes.Add(demoDesc);
+                }
+
+                treeZ80Resources.Nodes.Add(demosRootNode);
+            }
+            //Add string manipulation routines
+            nodes = xmlDoc.DocumentElement.SelectNodes("/Root/strings");
+            foreach (XmlNode demoNodes in nodes)
+            {
+                TreeNode demosRootNode = new TreeNode();
+                demosRootNode.Text = demoNodes.Attributes["title"].InnerText;
+                demosRootNode.Checked = false;
+                demosRootNode.Tag = demoNodes;
+                //Add demo items
+                foreach (XmlNode demoItemNode in demoNodes.SelectNodes("stringItem"))
+                {
+                    TreeNode demoDesc = new TreeNode();
+                    demoDesc.Text = demoItemNode.Attributes["name"].InnerText;
+                    demoDesc.Checked = false;
+                    demoDesc.Tag = demoItemNode;
                     demosRootNode.Nodes.Add(demoDesc);
                 }
 
