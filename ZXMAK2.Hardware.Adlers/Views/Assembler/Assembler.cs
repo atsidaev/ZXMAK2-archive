@@ -748,7 +748,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         if (token == String.Empty) //newline?
                             bIsInCompilerDirective = false;
                         else
-                            codeFormatted.Append(token + " ");
+                            codeFormatted.Append(token);
                         continue;
                     }
 
@@ -766,14 +766,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         if (!isInComment)
                         {
                             isInComment = true;
-                            codeFormatted.Append(token + " ");
+                            codeFormatted.Append(" " + token);
                             continue;
                         }
                         isInComment = false;
                     }
                     if (isInComment)
                     {
-                        codeFormatted.Append(token + " ");
+                        codeFormatted.Append(" " + token);
                         continue;
                     }
 
@@ -789,17 +789,19 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     else
                     {
                         //label, compiler directive, ...
-                        int spacesAfter = 1;
                         if ((_tabSpace > token.Length && isNewLine))
-                            spacesAfter = _tabSpace - token.Length;
-
-                        codeFormatted.Append(token + new String(' ', spacesAfter));
+                        {
+                            int spacesAfter = _tabSpace - token.Length;
+                            codeFormatted.Append(token + new String(' ', spacesAfter));
+                        }
+                        else
+                            codeFormatted.Append(" " + token);
                     }
 
                     isNewLine = false;
                 }
                 if (addNewlineAtLineEnd)
-                    codeFormatted.Append("\n");
+                    codeFormatted.AppendLine();
                 isInComment = false;
 
                 //increase progress bar counter;
@@ -819,7 +821,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                     code = code.TrimEnd('\n');
                     code = code.TrimEnd('\r');
                 }
-                txtAsm.Text = code;
+                txtAsm.Text = code + Environment.NewLine;
                 /*if (txtAsm.Range.End.iLine > code.Length)
                     txtAsm.Selection = actLineSave;
                 else
