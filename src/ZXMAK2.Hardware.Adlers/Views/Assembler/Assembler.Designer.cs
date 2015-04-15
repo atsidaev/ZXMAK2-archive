@@ -113,13 +113,16 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         '\"',
         '\'',
         '\''};
+            this.txtAsm.AutoIndent = false;
+            this.txtAsm.AutoIndentChars = false;
             this.txtAsm.AutoIndentCharsPatterns = "";
+            this.txtAsm.AutoIndentExistingLines = false;
             this.txtAsm.AutoScrollMinSize = new System.Drawing.Size(27, 17);
             this.txtAsm.AutoSize = true;
             this.txtAsm.BackBrush = null;
             this.txtAsm.CharHeight = 17;
             this.txtAsm.CharWidth = 8;
-            this.txtAsm.CommentPrefix = ";";
+            this.txtAsm.CommentPrefix = "";
             this.txtAsm.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtAsm.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.txtAsm.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -132,6 +135,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.txtAsm.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAsm.ServiceColors")));
             this.txtAsm.Size = new System.Drawing.Size(542, 552);
             this.txtAsm.TabIndex = 0;
+            this.txtAsm.WordWrapAutoIndent = false;
             this.txtAsm.Zoom = 100;
             this.txtAsm.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.txtAsm_TextChanged);
             this.txtAsm.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtAsm_MouseClick);
@@ -390,7 +394,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.toolStripMenuItem1,
             this.convertNumbersToolStripMenuItem});
             this.ctxMenuAssemblerCommands.Name = "ctxMenuAssemblerCommands";
-            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(158, 98);
+            this.ctxMenuAssemblerCommands.Size = new System.Drawing.Size(158, 76);
             // 
             // btnFormatCode
             // 
@@ -423,20 +427,20 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // toHexadecimalToolStripMenuItem
             // 
             this.toHexadecimalToolStripMenuItem.Name = "toHexadecimalToolStripMenuItem";
-            this.toHexadecimalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.toHexadecimalToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.toHexadecimalToolStripMenuItem.Text = "to hexadecimal";
             this.toHexadecimalToolStripMenuItem.Click += new System.EventHandler(this.toHexadecimalToolStripMenuItem_Click);
             // 
             // toDecimalToolStripMenuItem
             // 
             this.toDecimalToolStripMenuItem.Name = "toDecimalToolStripMenuItem";
-            this.toDecimalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.toDecimalToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.toDecimalToolStripMenuItem.Text = "to decimal";
             // 
             // toBinaryToolStripMenuItem
             // 
             this.toBinaryToolStripMenuItem.Name = "toBinaryToolStripMenuItem";
-            this.toBinaryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.toBinaryToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.toBinaryToolStripMenuItem.Text = "to binary";
             // 
             // groupBox2
@@ -461,6 +465,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.listViewSymbols.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listViewSymbols.TabIndex = 0;
             this.listViewSymbols.UseCompatibleStateImageBehavior = false;
+            this.listViewSymbols.SizeChanged += new System.EventHandler(this.listViewSymbols_SizeChanged);
             this.listViewSymbols.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listViewSymbols_MouseClick);
             this.listViewSymbols.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewSymbols_MouseDoubleClick);
             // 

@@ -43,8 +43,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             //Symbols list view
             listViewSymbols.View = View.Details;
-            listViewSymbols.Columns.Add("Name      ", -2, HorizontalAlignment.Center);
-            listViewSymbols.Columns.Add("Addr ", -2, HorizontalAlignment.Left);
+            listViewSymbols.Columns.Add("Name      ", 100, HorizontalAlignment.Center);
+            listViewSymbols.Columns.Add("Addr ", 60, HorizontalAlignment.Left);
 
             txtAsm.DoCaretVisible();
             txtAsm.IsChanged = false;
@@ -291,6 +291,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                         //itemToAdd.Tag = tag;
                                         this.listViewSymbols.Items.Add(itemToAdd);
                                     }
+
+                                    //this.listViewSymbols.AutoResizeColumn(1, ColumnHeaderAutoResizeStyle.ColumnContent);
+                                    //this.listViewSymbols.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
                                 }
                             }
                         }
@@ -719,6 +722,18 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         }
                         index = strAsmLines[lineCounter].IndexOf("(", index + 1);
                     }
+
+                    //whitespace after ":"
+                    index = strAsmLines[lineCounter].IndexOf(":");
+                    while (index >= 0)
+                    {
+                        if (index > 0)
+                        {
+                            if (strAsmLines[lineCounter][index - 1] != ' ')
+                                strAsmLines[lineCounter] = strAsmLines[lineCounter].Substring(0, index) + ": " + strAsmLines[lineCounter].Substring(index + 1, strAsmLines[lineCounter].Length - index - 1);
+                        }
+                        index = strAsmLines[lineCounter].IndexOf(":", index + 1);
+                    }
                 }
             }
 
@@ -727,20 +742,26 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             StringBuilder codeFormatted = new StringBuilder();
             foreach (string line in strAsmLines)
             {
-                bool isNewLine = true; bool isInComment = false; bool addNewlineAtLineEnd = true; bool bIsInCompilerDirective = false;
+                bool isNewLine = true; bool isInComment = false; bool addNewlineAtLineEnd = true; bool bIsInCompilerDirective = false; int lineTokeCounter = 0;
 
                 //canceled ?
                 if (progressBarBackgroundProcess.IsTerminateSignalReceived())
                     return;
 
                 string[] lineSplitted = Regex.Split(line, @"\s+", RegexOptions.IgnoreCase);
+                string prevToken = String.Empty;
                 foreach (string token in lineSplitted)
                 {
+                    lineTokeCounter++;
+
                     //compiler directives
                     if (Regex.IsMatch(token, AssemblerColorConfig.regexCompilerDirectives))
                     {
-                        codeFormatted.Append( token + new String(' ', Math.Max(8 - token.Length, 1))); //"include" has 7 chars
+                        if (prevToken != String.Empty)
+                            codeFormatted.Append(" ");
+                        codeFormatted.Append( token); //"include" has 7 chars
                         bIsInCompilerDirective = true;
+                        prevToken = token;
                         continue;
                     }
                     if (bIsInCompilerDirective)
@@ -748,7 +769,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         if (token == String.Empty) //newline?
                             bIsInCompilerDirective = false;
                         else
-                            codeFormatted.Append(token);
+                            codeFormatted.Append(" " + token);
+                        prevToken = token;
                         continue;
                     }
 
@@ -759,6 +781,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                             codeFormatted.AppendLine();
                             addNewlineAtLineEnd = false;
                         }
+                        prevToken = token;
                         continue;
                     }
                     if (token.StartsWith(";"))
@@ -766,7 +789,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         if (!isInComment)
                         {
                             isInComment = true;
-                            codeFormatted.Append(" " + token);
+                            if( prevToken == String.Empty )
+                                codeFormatted.Append(token);
+                            else
+                                codeFormatted.Append(" " + token);
+                            prevToken = token;
                             continue;
                         }
                         isInComment = false;
@@ -784,21 +811,40 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                             codeFormatted.Append(new String(' ', _tabSpace));
                             bIsInCompilerDirective = false;
                         }
-                        codeFormatted.Append(token + new String(' ', Math.Max(6 - token.Length, 1)));
+                        else if (prevToken != String.Empty)
+                        {
+                            string spaces = new String(' ', Math.Max(_tabSpace - prevToken.Length, 1));
+                            codeFormatted.Append(spaces);
+                        }
+                        codeFormatted.Append(token);
                     }
                     else
                     {
-                        //label, compiler directive, ...
+                        //rest(numbers, ...)
                         if ((_tabSpace > token.Length && isNewLine))
                         {
                             int spacesAfter = _tabSpace - token.Length;
-                            codeFormatted.Append(token + new String(' ', spacesAfter));
+                            codeFormatted.Append(token);
                         }
                         else
-                            codeFormatted.Append(" " + token);
+                        {
+                            if (prevToken != String.Empty)
+                            {
+                                string spaces;
+                                
+                                if( prevToken.EndsWith(",") )
+                                    spaces = new String(' ', Math.Max(4 - prevToken.Length, 1));
+                                else
+                                    spaces = new String(' ', Math.Max(6 - prevToken.Length, 1));
+                                codeFormatted.Append(spaces + token);
+                            }
+                            else
+                                codeFormatted.Append(token);
+                        }
                     }
 
                     isNewLine = false;
+                    prevToken = token;
                 }
                 if (addNewlineAtLineEnd)
                     codeFormatted.AppendLine();
@@ -909,6 +955,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private void settingsToolStrip_Click(object sender, EventArgs e)
         {
             Adlers.Views.AssemblerView.Settings.ShowForm();
+        }
+
+        //Symbols list view size changed
+        private void listViewSymbols_SizeChanged(object sender, EventArgs e)
+        {
+            listViewSymbols.Columns[0].Width = Math.Max(listViewSymbols.Width - 50, 100);
         }
         #endregion GUI
 
