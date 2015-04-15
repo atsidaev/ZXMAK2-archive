@@ -85,6 +85,26 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                 treeZ80Resources.Nodes.Add(demosRootNode);
             }
+            //Add SOUNDS routines
+            nodes = xmlDoc.DocumentElement.SelectNodes("/Root/sounds");
+            foreach (XmlNode demoNodes in nodes)
+            {
+                TreeNode soundsRootNode = new TreeNode();
+                soundsRootNode.Text = demoNodes.Attributes["title"].InnerText;
+                soundsRootNode.Checked = false;
+                soundsRootNode.Tag = demoNodes;
+                //Add demo items
+                foreach (XmlNode soundsItemNode in demoNodes.SelectNodes("soundsItem"))
+                {
+                    TreeNode demoDesc = new TreeNode();
+                    demoDesc.Text = soundsItemNode.Attributes["name"].InnerText;
+                    demoDesc.Checked = false;
+                    demoDesc.Tag = soundsItemNode;
+                    soundsRootNode.Nodes.Add(demoDesc);
+                }
+
+                treeZ80Resources.Nodes.Add(soundsRootNode);
+            }
             //Add fonts
             nodes = xmlDoc.DocumentElement.SelectNodes("/Root/fonts");
             foreach (XmlNode demoNodes in nodes)
