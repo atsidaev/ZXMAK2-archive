@@ -469,7 +469,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             if (i_imgFormat == null)
             {
                 //save bitmap as bytes
-                byte[] arrSprite = GetBytesFromBitmap();
+                byte[] arrSprite = GraphicsTools.GetBytesFromBitmap(this.bitmapGridSpriteView);
                 string fileOut = String.Format("; defb #{0:X2}, #{1:x2} ; width x height", this.bitmapGridSpriteView.getGridWidth() / 8, this.bitmapGridSpriteView.getGridHeight());
                 fileOut += Environment.NewLine + "defb ";
                 for(int counter = 0; counter < arrSprite.Length; counter++ )
@@ -556,13 +556,39 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
                 int bytesToMoveLeft = (this.bitmapGridSpriteView.getGridWidth() / 8) * this.bitmapGridSpriteView.getGridHeight();
                 ushort screenPointer = (ushort)numericUpDownActualAddress.Value;
 
-                for (int counter = (this.bitmapGridSpriteView.getGridWidth() / 8) * this.bitmapGridSpriteView.getGridHeight(); counter > 0; counter--)
+                bool setZeroBit;
+                if (screenPointer <= 0xFFFF)
+                    setZeroBit = GraphicsTools.IsBitSet(_spectrum.ReadMemory((ushort)(screenPointer + 1)), 7);
+                else
+                    setZeroBit = false;
+
+                //moving right to left
+                for (int pixelPointer = (this.bitmapGridSpriteView.getGridWidth() / 8) * this.bitmapGridSpriteView.getGridHeight(); pixelPointer > 0; pixelPointer--)
                 {
                     if (i_mode == 0)
-                        _spectrum.WriteMemory(screenPointer, (byte)(_spectrum.ReadMemory(screenPointer) << 1));
+                    {
+                        byte actByte = (byte)(_spectrum.ReadMemory(screenPointer) << 1);
+
+                        //set bit 0(most right) if there is a sprite view bitmap size more than 8 pixels(continous scrolling)
+                        if (this.bitmapGridSpriteView.getGridWidth() > 8 && pixelPointer % 8 == 0 && screenPointer+1 <= 0xFFFF)
+                        {
+                            if (setZeroBit)
+                                actByte |= 0x01;
+                        }
+                        //move left
+                        _spectrum.WriteMemory(screenPointer, actByte);
+                    }
                     else
+                    {
+                        //move right
                         _spectrum.WriteMemory(screenPointer, (byte)(_spectrum.ReadMemory(screenPointer) >> 1));
-                    screenPointer++;
+                    }
+
+                    screenPointer++; //move to next byte
+                    if (screenPointer <= 0xFFFF)
+                        setZeroBit = GraphicsTools.IsBitSet(_spectrum.ReadMemory((ushort)(screenPointer + 1)), 7);
+                    else
+                        setZeroBit = false;
                 }
             }
             else
@@ -577,32 +603,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             //export selection area to picture or bytes
         }
         #endregion
-
-        #region Graphics tools
-        private byte[] GetBytesFromBitmap()
-        {
-            byte[] i_arrOut = new byte[(bitmapGridSpriteView.getGridWidth() / 8) * bitmapGridSpriteView.getGridHeight()];
-            //for (int byteCounter = 0; byteCounter < i_arrOut.Length; )
-            int byteCounter = 0;
-            //byte actByte = 0;
-            {
-                for (int actHeight = 0; actHeight < bitmapGridSpriteView.getGridHeight(); actHeight++)
-                {
-                    for( int actLineBit = 0; actLineBit < bitmapGridSpriteView.getGridWidth(); actLineBit++ )
-                    {
-                        if( actLineBit != 0 && actLineBit % 8 == 0 )
-                            byteCounter++; //next byte in out arr
-                        bool bitValue = bitmapGridSpriteView.getGridBitValue(actLineBit, actHeight);
-                        if( bitValue )
-                            ConvertRadix.setBitInByteRightToLeft(ref i_arrOut[byteCounter], (byte)(actLineBit % 8));
-                    }
-                    byteCounter++; //next byte in out arr
-                }
-            }
-            
-            return i_arrOut;
-        }
-        #endregion Graphics tools
 
     }
 }
