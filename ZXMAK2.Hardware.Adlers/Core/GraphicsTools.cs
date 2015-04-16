@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Drawing;
+using ZXMAK2.Hardware.Adlers.Views.CustomControls;
 
 namespace ZXMAK2.Hardware.Adlers.Core
 {
@@ -117,5 +119,57 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             return value ^ (1 << 7-bit);
         }
+
+        public static bool IsBitSet(byte b, int pos)
+        {
+            return (b & (1 << pos)) != 0;
+        }
+
+        #region Bitmap manipulation
+        public static byte[] GetBytesFromBitmap(BitmapGrid i_bitmapGridView)
+        {
+            byte[] i_arrOut = new byte[(i_bitmapGridView.getGridWidth() / 8) * i_bitmapGridView.getGridHeight()];
+            //for (int byteCounter = 0; byteCounter < i_arrOut.Length; )
+            int byteCounter = 0;
+            //byte actByte = 0;
+            {
+                for (int actHeight = 0; actHeight < i_bitmapGridView.getGridHeight(); actHeight++)
+                {
+                    for (int actLineBit = 0; actLineBit < i_bitmapGridView.getGridWidth(); actLineBit++)
+                    {
+                        if (actLineBit != 0 && actLineBit % 8 == 0)
+                            byteCounter++; //next byte in out arr
+                        bool bitValue = i_bitmapGridView.getGridBitValue(actLineBit, actHeight);
+                        if (bitValue)
+                            ConvertRadix.setBitInByteRightToLeft(ref i_arrOut[byteCounter], (byte)(actLineBit % 8));
+                    }
+                    byteCounter++; //next byte in out arr
+                }
+            }
+
+            return i_arrOut;
+        }
+
+        //returns cropped area from Image
+        public static Bitmap GetBitmapCroppedArea(Bitmap i_bitmapBase, Point i_startPoint, Point i_endPoint)
+        {
+            int width = i_endPoint.X - i_startPoint.X;
+            int height = i_endPoint.Y - i_endPoint.Y;
+            if (width <= 0 || height <= 0)
+                return null;
+
+            Bitmap out_Bitmap = new Bitmap(width, height);
+            for (int heightCounter = 0; heightCounter < height; heightCounter++ )
+            {
+                for (int widthCounter = 0; widthCounter < width; widthCounter++)
+                {
+                    Color pixelColorAct = i_bitmapBase.GetPixel(i_startPoint.X + widthCounter, i_startPoint.Y + heightCounter);
+                    out_Bitmap.SetPixel(widthCounter, heightCounter, pixelColorAct);
+                }
+            }
+            
+            return out_Bitmap;
+        }
+        #endregion Bitmap manipulation
     }
 }

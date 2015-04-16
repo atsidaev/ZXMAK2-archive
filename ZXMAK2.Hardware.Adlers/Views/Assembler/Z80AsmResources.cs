@@ -167,14 +167,14 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
 
             if( treeZ80Resources.Nodes.Count > 0 )
-                this.treeZ80Resources.ExpandAll();
+                this.treeZ80Resources.CollapseAll();
         }
 
         #region GUI
         private void treeZ80Resources_AfterSelect(object sender, TreeViewEventArgs e)
         {
             XmlNode treeNodeXml = (XmlNode)e.Node.Tag;
-            htmlItemDesc.DocumentText = GetHtmlFormatted(treeNodeXml.SelectSingleNode("desc").InnerText);
+            htmlItemDesc.DocumentText = GetHtml(treeNodeXml.SelectSingleNode("desc").InnerText);
         }
 
         private void treeZ80Resources_AfterCheck(object sender, TreeViewEventArgs e)
@@ -288,7 +288,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         #endregion GUI
 
         #region HTML
-        private string GetHtmlFormatted(string i_htmlToFormat)
+        private string GetHtml(string i_htmlToFormat)
         {
             //string htmlOut = i_htmlToFormat.Replace(" ", @"&nbsp;");
             string css = "<style>table.routine_details {border=\"0\"; width=90%;} table.routine_defs{ border=\"1\"; cellpadding=\"10\"; font-size: 14px; } p.routineTitle {color:blue;display:inline;}";

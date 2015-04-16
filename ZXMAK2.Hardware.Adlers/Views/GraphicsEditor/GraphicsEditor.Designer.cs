@@ -200,6 +200,7 @@
             "48",
             "56",
             "64",
+            "80",
             "96"});
             this.comboSpriteWidth.Location = new System.Drawing.Point(7, 83);
             this.comboSpriteWidth.Name = "comboSpriteWidth";
