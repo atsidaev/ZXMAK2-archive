@@ -563,14 +563,19 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
                     setZeroBit = false;
 
                 //moving right to left
-                for (int pixelPointer = (this.bitmapGridSpriteView.getGridWidth() / 8) * this.bitmapGridSpriteView.getGridHeight(); pixelPointer > 0; pixelPointer--)
+                int maxScreenByteToMove = (this.bitmapGridSpriteView.getGridWidth() / 8) * this.bitmapGridSpriteView.getGridHeight();
+                int spriteViewWidthInTokens = this.bitmapGridSpriteView.getGridWidth() / 8;
+                bool isLastTokenInLine = false;
+                for (int pixelPointer = 0; pixelPointer < maxScreenByteToMove; pixelPointer++)
                 {
+                    isLastTokenInLine = ((pixelPointer+1) % spriteViewWidthInTokens == 0);
+                    isLastTokenInLine = isLastTokenInLine && spriteViewWidthInTokens != 1 && pixelPointer != 0 && pixelPointer != maxScreenByteToMove;
                     if (i_mode == 0)
                     {
                         byte actByte = (byte)(_spectrum.ReadMemory(screenPointer) << 1);
 
                         //set bit 0(most right) if there is a sprite view bitmap size more than 8 pixels(continous scrolling)
-                        if (this.bitmapGridSpriteView.getGridWidth() > 8 && pixelPointer % 8 == 0 && screenPointer+1 <= 0xFFFF)
+                        if (isLastTokenInLine == false && screenPointer + 1 <= 0xFFFF)
                         {
                             if (setZeroBit)
                                 actByte |= 0x01;
