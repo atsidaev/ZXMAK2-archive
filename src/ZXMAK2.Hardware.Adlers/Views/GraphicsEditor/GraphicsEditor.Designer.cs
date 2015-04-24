@@ -134,6 +134,7 @@
             this.txtbxX0 = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.menuItemClearBitmap = new System.Windows.Forms.MenuItem();
             this.groupBoxScreenViewType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).BeginInit();
@@ -906,7 +907,8 @@
             this.contextMenuExportBitmap.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem1,
             this.menuItem2,
-            this.menuItem3});
+            this.menuItem3,
+            this.menuItemClearBitmap});
             // 
             // menuItem1
             // 
@@ -1112,6 +1114,12 @@
             this.label10.TabIndex = 0;
             this.label10.Text = "X0:";
             // 
+            // menuItemClearBitmap
+            // 
+            this.menuItemClearBitmap.Index = 3;
+            this.menuItemClearBitmap.Text = "Clear bitmap";
+            this.menuItemClearBitmap.Click += new System.EventHandler(this.menuItemClearBitmap_Click);
+            // 
             // GraphicsEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1271,5 +1279,6 @@
         private System.Windows.Forms.MenuItem menuItem3;
         private System.Windows.Forms.MenuItem menuItemMovePixelsLeft;
         private System.Windows.Forms.MenuItem menuItemMovePixelsRight;
+        private System.Windows.Forms.MenuItem menuItemClearBitmap;
     }
 }

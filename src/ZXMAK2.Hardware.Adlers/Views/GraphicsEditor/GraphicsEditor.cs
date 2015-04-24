@@ -14,11 +14,13 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
 {
     public partial class GraphicsEditor : Form
     {
-        private static ushort ZX_SCREEN_WIDTH  = 512;
-        private static ushort ZX_SCREEN_HEIGHT = 384;
+        private static ushort ZX_SCREEN_WIDTH  = 512; //in pixels
+        private static ushort ZX_SCREEN_HEIGHT = 384; //in pixels 
 
         private static GraphicsEditor m_instance = null;
         private IDebuggable _spectrum = null;
+
+        private Bitmap bmpZXMonochromatic = null;
 
         private bool _isInitialised = false;
 
@@ -75,7 +77,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             pictureZXDisplay.Width = ZX_SCREEN_WIDTH;
             pictureZXDisplay.Height = ZX_SCREEN_HEIGHT;
 
-            Bitmap bmpZXMonochromatic = new Bitmap(ZX_SCREEN_WIDTH/2, ZX_SCREEN_HEIGHT/2);
+            bmpZXMonochromatic = new Bitmap(ZX_SCREEN_WIDTH/2, ZX_SCREEN_HEIGHT/2);
             ushort screenPointer = (ushort)numericUpDownActualAddress.Value;
 
             //Screen View
@@ -457,6 +459,30 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             }
         }
 
+        private bool SaveScreenBytes(byte[] i_arrToSave, int i_Width, int i_Height)
+        {
+            //save bitmap as bytes
+            string fileOut = String.Format("; defb #{0:X2}, #{1:x2} ; width[pixels] x height", i_Width, i_Height);
+            fileOut += Environment.NewLine + "defb ";
+            for (int counter = 0; counter < i_arrToSave.Length; counter++)
+            {
+                if (counter != 0)
+                {
+                    if (counter % (bitmapGridSpriteView.getGridWidth() / 8) == 0)
+                        fileOut += Environment.NewLine + "defb ";
+                    else
+                        fileOut += ", ";
+                }
+                fileOut += String.Format("#{0:X2}", i_arrToSave[counter]);
+            }
+            if (fileOut != String.Empty)
+            {
+                File.WriteAllText(Path.Combine(Utils.GetAppFolder(), "screen_bytes.asm"), fileOut);
+                Locator.Resolve<IUserMessage>().Info("Sprite saved in screen_bytes.asm file !");
+            }
+            return true;
+        }
+
         //ContextMenuExportBitmap
         private void SaveBitmapAs(ImageFormat i_imgFormat)
         {
@@ -468,26 +494,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
 
             if (i_imgFormat == null)
             {
-                //save bitmap as bytes
                 byte[] arrSprite = GraphicsTools.GetBytesFromBitmap(this.bitmapGridSpriteView);
-                string fileOut = String.Format("; defb #{0:X2}, #{1:x2} ; width x height", this.bitmapGridSpriteView.getGridWidth() / 8, this.bitmapGridSpriteView.getGridHeight());
-                fileOut += Environment.NewLine + "defb ";
-                for(int counter = 0; counter < arrSprite.Length; counter++ )
-                {
-                    if (counter != 0)
-                    {
-                        if (counter % (bitmapGridSpriteView.getGridWidth() / 8) == 0)
-                            fileOut += Environment.NewLine + "defb ";
-                        else
-                            fileOut += ", ";
-                    }
-                    fileOut += String.Format("#{0:X2}", arrSprite[counter]);
-                }
-                if (fileOut != String.Empty)
-                {
-                    File.WriteAllText(Path.Combine(Utils.GetAppFolder(), "sprite_bytes.asm"), fileOut);
-                    Locator.Resolve<IUserMessage>().Info("Sprite saved in sprite_bytes.asm file !");
-                }
+                SaveScreenBytes(arrSprite, this.bitmapGridSpriteView.getGridWidth() / 8, this.bitmapGridSpriteView.getGridHeight());
+
                 return;
             }
             else
@@ -507,13 +516,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
 
             string filePath = Path.Combine(Utils.GetAppFolder(), fileName); //ToDo: make method which will save file to root app dir, avoid such contructions as this
 
-            Rectangle cloneRect = new Rectangle(0, 0, bitmapWidth, bitmapHeight);
-            Bitmap bmpToClone = new Bitmap(this.pictureZXDisplay.Image);
-            Bitmap cloneBitmap = bmpToClone.Clone(cloneRect, bmpToClone.PixelFormat);
             if (File.Exists(filePath))
                 File.Delete(filePath);
-            cloneBitmap.Save(filePath, i_imgFormat);
-            cloneBitmap.Dispose();
+            bmpZXMonochromatic.Save(filePath, i_imgFormat);
+            bmpZXMonochromatic.Dispose();
 
             Locator.Resolve<IUserMessage>().Info(String.Format("File '{0}' saved to root app directory!", fileName));
         }
@@ -538,7 +544,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             string coords = String.Format("{0},{1},{2},{3}", txtbxX0.Text, txtbxY0.Text, txtbxX1.Text, txtbxY1.Text);
             if (_mouseSelectionArea == null)
                 _mouseSelectionArea = new MouseSelectionArea();
-            _mouseSelectionArea.manualCrop(ref pictureZXDisplay, coords);
+            _mouseSelectionArea.manualCrop(ref pictureZXDisplay, coords, this.hexNumbersToolStripMenuItem.Checked);
         }
         private void menuItemMovePixelsLeft_Click(object sender, EventArgs e)
         {
@@ -556,18 +562,18 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
                 int bytesToMoveLeft = (this.bitmapGridSpriteView.getGridWidth() / 8) * this.bitmapGridSpriteView.getGridHeight();
                 ushort screenPointer = (ushort)numericUpDownActualAddress.Value;
 
-                bool setZeroBit;
-                if (screenPointer <= 0xFFFF)
-                    setZeroBit = GraphicsTools.IsBitSet(_spectrum.ReadMemory((ushort)(screenPointer + 1)), 7);
-                else
-                    setZeroBit = false;
-
                 //moving right to left
                 int maxScreenByteToMove = (this.bitmapGridSpriteView.getGridWidth() / 8) * this.bitmapGridSpriteView.getGridHeight();
                 int spriteViewWidthInTokens = this.bitmapGridSpriteView.getGridWidth() / 8;
                 bool isLastTokenInLine = false;
                 for (int pixelPointer = 0; pixelPointer < maxScreenByteToMove; pixelPointer++)
                 {
+                    bool setZeroBit;
+                    if (screenPointer <= 0xFFFF && this.bitmapGridSpriteView.getGridWidth() > 8)
+                        setZeroBit = GraphicsTools.IsBitSet(_spectrum.ReadMemory((ushort)(screenPointer + 1)), 7);
+                    else
+                        setZeroBit = false;
+
                     isLastTokenInLine = ((pixelPointer+1) % spriteViewWidthInTokens == 0);
                     isLastTokenInLine = isLastTokenInLine && spriteViewWidthInTokens != 1 && pixelPointer != 0 && pixelPointer != maxScreenByteToMove;
                     if (i_mode == 0)
@@ -590,10 +596,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
                     }
 
                     screenPointer++; //move to next byte
-                    if (screenPointer <= 0xFFFF)
-                        setZeroBit = GraphicsTools.IsBitSet(_spectrum.ReadMemory((ushort)(screenPointer + 1)), 7);
-                    else
-                        setZeroBit = false;
                 }
             }
             else
@@ -603,11 +605,39 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             setZXImage();
         }
 
+        //Context menu: Clear bitmap
+        private void menuItemClearBitmap_Click(object sender, EventArgs e)
+        {
+            ushort address = (ushort)this.numericUpDownActualAddress.Value;
+            int length = (bitmapGridSpriteView.getGridWidth() / 8 ) * bitmapGridSpriteView.getGridHeight();
+            byte[] arrZeros = new byte[length];
+
+            _spectrum.WriteMemory(address, arrZeros, 0, length);
+
+            setZXImage(); //Refresh
+        }
+
         private void buttonExportSelectionArea_Click(object sender, EventArgs e)
         {
             //export selection area to picture or bytes
-        }
-        #endregion
+            if (_mouseSelectionArea == null || _mouseSelectionArea.isSelected() == false)
+                return;
 
+            int width = _mouseSelectionArea.getCroppedArea().Width/2;
+            int height =  _mouseSelectionArea.getCroppedArea().Height/2;
+
+            Bitmap croppedArea = GraphicsTools.GetBitmapCroppedArea(bmpZXMonochromatic, new Point(_mouseSelectionArea.getCroppedArea().X/2, _mouseSelectionArea.getCroppedArea().Y/2),
+                new Size(width, height));
+            if( croppedArea == null )
+            {
+                Locator.Resolve<IUserMessage>().Warning("Could not get cropped area...nothing done!");
+                return;
+            }
+
+            byte[] arrScreenBytes = GraphicsTools.GetBytesFromBitmap(croppedArea);
+            SaveScreenBytes(arrScreenBytes, width, height);
+            croppedArea.Save(@"image_export_cropped.bmp");
+        }
+        #endregion GUI methods
     }
 }

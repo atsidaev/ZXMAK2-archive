@@ -9,7 +9,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.CustomControls
 {
     class BitmapGrid : Panel
     {
-        private int X_BIT_COUNT = 8, Y_BIT_COUNT = 8*3;           // Grid Height and Width
+        private int X_BIT_COUNT = 8, Y_BIT_COUNT = 8*3; // Grid Height(in pixels) and Width(=rows)
         private BitArray[] _gridBits = null;
 
         private Size _originalSize;
