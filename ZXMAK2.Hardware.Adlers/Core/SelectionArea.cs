@@ -29,9 +29,9 @@ namespace ZXMAK2.Hardware.Adlers.Core
         public Rectangle getCroppedArea()
         {
            if (isSelected())
-              return m_rectCropArea;
+               return m_rectCropArea;
            else
-              return new Rectangle(new Point(0, 0), new Size());
+               return new Rectangle(new Point(0, 0), new Size());
         }
 
         public void ResetSelectionArea()
@@ -47,7 +47,8 @@ namespace ZXMAK2.Hardware.Adlers.Core
               Pen drawLine = new Pen(Color.Red);
               drawLine.DashStyle = DashStyle.Dash;
 
-              e.Graphics.DrawRectangle(drawLine, m_rectCropArea);
+              if (isSelected())
+                e.Graphics.DrawRectangle(drawLine, getCroppedArea());
 
               //m_bIsSelected = true;
               return true;
@@ -182,7 +183,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
             }
         }
 
-        public Boolean manualCrop(ref PictureBox i_pcbxZXScreen, string i_strCoordinates)
+        public Boolean manualCrop(ref PictureBox i_pcbxZXScreen, string i_strCoordinates, bool i_hexValues)
         {
             // Parameter checks
             if (i_strCoordinates == String.Empty || i_strCoordinates == null || i_strCoordinates == "")
@@ -203,25 +204,25 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 
                 try
                 {
-                    cordX = Convert.ToInt32(cordinates[0]);
+                    cordX = i_hexValues ? ConvertRadix.ParseUInt16(cordinates[0],16) : Convert.ToInt32(cordinates[0]);
                     if (cordX > GraphicsTools.MAX_X_PIXEL)
                         cordX = GraphicsTools.MAX_X_PIXEL * 2;
                     else
                         cordX *= 2;
 
-                    cordY = Convert.ToInt32(cordinates[1]);
+                    cordY = i_hexValues ? ConvertRadix.ParseUInt16(cordinates[1], 16) : Convert.ToInt32(cordinates[1]);
                     if (cordY > GraphicsTools.MAX_Y_PIXEL)
                         cordY = GraphicsTools.MAX_Y_PIXEL * 2;
                     else
                         cordY *= 2;
 
-                    cordWidth = Convert.ToInt32(cordinates[2]);
+                    cordWidth = i_hexValues ? ConvertRadix.ParseUInt16(cordinates[2], 16) : Convert.ToInt32(cordinates[2]);
                     if (cordWidth > GraphicsTools.MAX_X_PIXEL)
                         cordWidth = GraphicsTools.MAX_X_PIXEL * 2;
                     else
                         cordWidth *= 2;
 
-                    cordHeight = Convert.ToInt32(cordinates[3]);
+                    cordHeight = i_hexValues ? ConvertRadix.ParseUInt16(cordinates[3], 16) : Convert.ToInt32(cordinates[3]);
                     if (cordHeight > GraphicsTools.MAX_Y_PIXEL)
                         cordHeight = GraphicsTools.MAX_Y_PIXEL * 2;
                     else
