@@ -447,7 +447,20 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
                     if (_mouseSelectionArea == null)
                         return;
 
+                    Point startPoint = _mouseSelectionArea.GetStartSelection();
+                    int width = _mouseSelectionArea.getCroppedArea().Width / 2;
+                    int height = _mouseSelectionArea.getCroppedArea().Height / 2;
+
                     _mouseSelectionArea.MouseUp(ref pictureZXDisplay, e);
+
+                    //show selected area preview
+                    ShowZoomedSelectionArea();
+
+                    //update coords in manual
+                    txtbxX0.Value = startPoint.X / 2;
+                    txtbxY0.Value = startPoint.Y / 2;
+                    txtbxX1.Value = width;
+                    txtbxY1.Value = height;
                 }
             }
         }
@@ -459,20 +472,39 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             }
         }
 
-        private bool SaveScreenBytes(byte[] i_arrToSave, int i_Width, int i_Height)
+        public void ShowZoomedSelectionArea()
+        {
+            if (_mouseSelectionArea == null)
+                return;
+
+            //show selected area preview
+            int width = _mouseSelectionArea.getCroppedArea().Width / 2;
+            int height = _mouseSelectionArea.getCroppedArea().Height / 2;
+            Bitmap croppedArea = GraphicsTools.GetBitmapCroppedArea(bmpZXMonochromatic, new Point(_mouseSelectionArea.getCroppedArea().X / 2, _mouseSelectionArea.getCroppedArea().Y / 2),
+                new Size(width, height));
+            pictureZoomedArea.Image = croppedArea;
+        }
+
+        private bool SaveScreenBytes(byte[] i_arrToSave, int i_WidthPixels, int i_Height)
         {
             //save bitmap as bytes
-            string fileOut = String.Format("; defb #{0:X2}, #{1:x2} ; width[pixels] x height", i_Width, i_Height);
+            string fileOut = String.Format("; defb #{0:X2}, #{1:x2} ; width[pixels] x height", i_WidthPixels, i_Height);
+            int lineBytesCountMax = i_WidthPixels / 8;
+            if (i_WidthPixels % 8 != 0)
+                lineBytesCountMax++;
+            int lineByteCounter = 0;
+
             fileOut += Environment.NewLine + "defb ";
             for (int counter = 0; counter < i_arrToSave.Length; counter++)
             {
-                if (counter != 0)
+                if (lineByteCounter == lineBytesCountMax)
                 {
-                    if (counter % (bitmapGridSpriteView.getGridWidth() / 8) == 0)
-                        fileOut += Environment.NewLine + "defb ";
-                    else
-                        fileOut += ", ";
+                    fileOut += Environment.NewLine + "defb ";
+                    lineByteCounter = 0;
                 }
+                else if( counter != 0 )
+                    fileOut += ", ";
+                lineByteCounter++;
                 fileOut += String.Format("#{0:X2}", i_arrToSave[counter]);
             }
             if (fileOut != String.Empty)
@@ -539,12 +571,15 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
         {
             SaveBitmapAs(null);
         }
+        //SET manual selection area
         private void buttonSetManualSelectionArea_Click(object sender, EventArgs e)
         {
             string coords = String.Format("{0},{1},{2},{3}", txtbxX0.Text, txtbxY0.Text, txtbxX1.Text, txtbxY1.Text);
             if (_mouseSelectionArea == null)
                 _mouseSelectionArea = new MouseSelectionArea();
             _mouseSelectionArea.manualCrop(ref pictureZXDisplay, coords, this.hexNumbersToolStripMenuItem.Checked);
+
+            ShowZoomedSelectionArea();
         }
         private void menuItemMovePixelsLeft_Click(object sender, EventArgs e)
         {
@@ -636,7 +671,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
 
             byte[] arrScreenBytes = GraphicsTools.GetBytesFromBitmap(croppedArea);
             SaveScreenBytes(arrScreenBytes, width, height);
-            croppedArea.Save(@"image_export_cropped.bmp");
+            //croppedArea.Save(@"image_export_cropped.bmp");
         }
         #endregion GUI methods
     }

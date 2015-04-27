@@ -152,24 +152,31 @@ namespace ZXMAK2.Hardware.Adlers.Core
         //overload
         public static byte[] GetBytesFromBitmap(Bitmap i_bitmapBase)
         {
-            byte[] i_arrOut = new byte[(i_bitmapBase.Width / 8) * i_bitmapBase.Height];
-            //for (int byteCounter = 0; byteCounter < i_arrOut.Length; )
+            int width = i_bitmapBase.Width/8;
+            if (i_bitmapBase.Width % 8 != 0)
+                width++;
+            int height = i_bitmapBase.Height;
+
+            byte[] i_arrOut = new byte[width * height];
             int byteCounter = 0;
-            //byte actByte = 0;
             {
-                for (int actHeight = 0; actHeight < i_bitmapBase.Height; actHeight++)
+                for (int actHeight = 0; actHeight < height; actHeight++)
                 {
-                    for (int actLineBit = 0; actLineBit < i_bitmapBase.Width; actLineBit++)
+                    for (int actLineBit = 0; actLineBit < width*8; actLineBit++)
                     {
                         if (actLineBit != 0 && actLineBit % 8 == 0)
-                            byteCounter++; //next byte in out arr
-                        bool bitValue = i_bitmapBase.GetPixel(actLineBit, actHeight).Name != "ffffffff";
+                            byteCounter++;
+                        bool bitValue;
+                        if( actLineBit > i_bitmapBase.Width - 1 )
+                            bitValue = false; //fills rest of toke pixels to not set
+                        else 
+                            bitValue = i_bitmapBase.GetPixel(actLineBit, actHeight).Name != "ffffffff";
                         if (bitValue)
                             ConvertRadix.setBitInByteRightToLeft(ref i_arrOut[byteCounter], (byte)(actLineBit % 8));
 
                         //Logger.Debug(String.Format("X:{0} Y:{1} Color:{2}", actLineBit, actHeight, i_bitmapBase.GetPixel(actLineBit, actHeight).Name));
                     }
-                    byteCounter++; //next byte in out arr
+                    byteCounter++;
                 }
             }
 
@@ -192,7 +199,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
                     if (actX >= i_bitmapBase.Width || actY >= i_bitmapBase.Height)
                         return out_Bitmap;
 
-                    Color pixelColorAct = i_bitmapBase.GetPixel(i_startPoint.X + widthCounter, i_startPoint.Y + heightCounter);
+                    Color pixelColorAct = i_bitmapBase.GetPixel(actX, actY);
                     out_Bitmap.SetPixel(widthCounter, heightCounter, pixelColorAct);
                 }
             }
