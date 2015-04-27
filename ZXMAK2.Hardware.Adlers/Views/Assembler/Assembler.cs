@@ -32,6 +32,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //instance
         private static Assembler m_instance = null;
 
+        //Z80 assembler resources(libscreen.asm, fonts, sounds, graphics, ...)
+        Z80AsmResources _Z80AsmResourcesForm;
+
         private Assembler(FormCpu spectrum)
         {
             m_debugger = spectrum;
@@ -68,6 +71,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             //progress bar
             this.btnStopBackgroundProcess.Image = global::ZXMAK2.Resources.ImageResources.Stop_real_16x16;
+            
+            //Z80 assembler resources
+            _Z80AsmResourcesForm = new Z80AsmResources(ref this.txtAsm);
         }
 
         public static void Show(FormCpu i_formCpu)
@@ -620,8 +626,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         //Z80 source code(Libs)
         private void toolCodeLibrary_Click(object sender, EventArgs e)
         {
-            Z80AsmResources resources = new Z80AsmResources(ref this.txtAsm);
-            resources.ShowDialog();
+            _Z80AsmResourcesForm.ShowDialog();
         }
 
         //Context menu - Assembler commands(visual)

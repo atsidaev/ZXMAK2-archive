@@ -34,6 +34,11 @@ namespace ZXMAK2.Hardware.Adlers.Core
                return new Rectangle(new Point(0, 0), new Size());
         }
 
+        public Point GetStartSelection()
+        {
+            return ptOriginal;
+        }
+
         public void ResetSelectionArea()
         {
             m_rectCropArea = new Rectangle(new Point(0, 0), new Size());
@@ -91,13 +96,13 @@ namespace ZXMAK2.Hardware.Adlers.Core
                 m_bHaveMouse = true;
 
                 // Store the "starting point" for this rubber-band rectangle.
-                ptOriginal.X = e.X;
-                ptOriginal.Y = e.Y;
+                ptOriginal.X = e.X; // Math.Max(e.X - 2, 0);
+                ptOriginal.Y = e.Y; // Math.Max(e.Y - 2, 0);
 
                 ptLast.X = -1;
                 ptLast.Y = -1;
 
-                m_rectCropArea = new Rectangle(new Point(e.X, e.Y), new Size());
+                m_rectCropArea = new Rectangle(new Point(ptOriginal.X, ptOriginal.Y), new Size());
             }
         }
 

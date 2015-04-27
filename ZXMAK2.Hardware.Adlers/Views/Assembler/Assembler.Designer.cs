@@ -113,7 +113,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         '\"',
         '\'',
         '\''};
-            this.txtAsm.AutoIndent = false;
             this.txtAsm.AutoIndentChars = false;
             this.txtAsm.AutoIndentCharsPatterns = "";
             this.txtAsm.AutoIndentExistingLines = false;

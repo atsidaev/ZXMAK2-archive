@@ -123,6 +123,7 @@
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.menuItemMovePixelsLeft = new System.Windows.Forms.MenuItem();
             this.menuItemMovePixelsRight = new System.Windows.Forms.MenuItem();
+            this.menuItemClearBitmap = new System.Windows.Forms.MenuItem();
             this.groupBoxSelectionArea = new System.Windows.Forms.GroupBox();
             this.buttonSetManualSelectionArea = new System.Windows.Forms.Button();
             this.buttonExportSelectionArea = new System.Windows.Forms.Button();
@@ -134,7 +135,6 @@
             this.txtbxX0 = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.menuItemClearBitmap = new System.Windows.Forms.MenuItem();
             this.groupBoxScreenViewType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).BeginInit();
@@ -202,7 +202,8 @@
             "56",
             "64",
             "80",
-            "96"});
+            "96",
+            "104"});
             this.comboSpriteWidth.Location = new System.Drawing.Point(7, 83);
             this.comboSpriteWidth.Name = "comboSpriteWidth";
             this.comboSpriteWidth.Size = new System.Drawing.Size(104, 23);
@@ -500,6 +501,7 @@
             this.pictureZoomedArea.Location = new System.Drawing.Point(12, 248);
             this.pictureZoomedArea.Name = "pictureZoomedArea";
             this.pictureZoomedArea.Size = new System.Drawing.Size(120, 96);
+            this.pictureZoomedArea.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureZoomedArea.TabIndex = 36;
             this.pictureZoomedArea.TabStop = false;
             // 
@@ -969,6 +971,12 @@
             this.menuItemMovePixelsRight.Text = "Right";
             this.menuItemMovePixelsRight.Click += new System.EventHandler(this.menuItemMovePixelsRight_Click);
             // 
+            // menuItemClearBitmap
+            // 
+            this.menuItemClearBitmap.Index = 3;
+            this.menuItemClearBitmap.Text = "Clear bitmap";
+            this.menuItemClearBitmap.Click += new System.EventHandler(this.menuItemClearBitmap_Click);
+            // 
             // groupBoxSelectionArea
             // 
             this.groupBoxSelectionArea.Controls.Add(this.buttonSetManualSelectionArea);
@@ -1113,12 +1121,6 @@
             this.label10.Size = new System.Drawing.Size(23, 13);
             this.label10.TabIndex = 0;
             this.label10.Text = "X0:";
-            // 
-            // menuItemClearBitmap
-            // 
-            this.menuItemClearBitmap.Index = 3;
-            this.menuItemClearBitmap.Text = "Clear bitmap";
-            this.menuItemClearBitmap.Click += new System.EventHandler(this.menuItemClearBitmap_Click);
             // 
             // GraphicsEditor
             // 

@@ -167,7 +167,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
 
             if( treeZ80Resources.Nodes.Count > 0 )
-                this.treeZ80Resources.CollapseAll();
+                this.treeZ80Resources.ExpandAll();
         }
 
         #region GUI
