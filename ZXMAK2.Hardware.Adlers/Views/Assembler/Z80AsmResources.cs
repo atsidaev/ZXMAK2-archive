@@ -234,6 +234,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                                 _asmToAddSourceCode.Text += paddingHeaderComment;
                             }
 
+                            treeNodeLvl2.Checked = false; //uncheck when done
+
                             _asmToAddSourceCode.Text += xmlNodeCode.SelectSingleNode("code").InnerText;
                             sourceCodeAdded++;
                         }
