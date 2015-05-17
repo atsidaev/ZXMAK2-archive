@@ -217,6 +217,7 @@ namespace ZXMAK2
 
 
         [Obsolete("remove call to LogAgent.DumpArray")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public static void DumpArray<T>(string fileName, T[] array)
         {
             using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
@@ -230,6 +231,7 @@ namespace ZXMAK2
         }
 
         [Obsolete("remove call to LogAgent.DumpAppend")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public static void DumpAppend(
             string fileName, 
             string format, 

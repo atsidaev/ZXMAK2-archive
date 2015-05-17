@@ -61,7 +61,9 @@ namespace ZXMAK2.Host.Xna4.Xna
             m_isDisposed = true;
             m_soundEffect.Stop();
             CancelWait();
+            m_soundEffect.Dispose();
             m_waitEvent.Dispose();
+            m_frameEvent.Dispose();
         }
 
         

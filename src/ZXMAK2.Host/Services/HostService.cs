@@ -42,12 +42,21 @@ namespace ZXMAK2.Host.Services
 
         public void Dispose()
         {
-            Dispose(ref m_timeSync);
-            Dispose(ref m_sound);
-            Dispose(ref m_keyboard);
-            Dispose(ref m_mouse);
-            Dispose(ref m_joystick);
-            Dispose(ref m_mediaRecorder);
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Dispose(ref m_timeSync);
+                Dispose(ref m_sound);
+                Dispose(ref m_keyboard);
+                Dispose(ref m_mouse);
+                Dispose(ref m_joystick);
+                Dispose(ref m_mediaRecorder);
+            }
         }
 
         #endregion .ctor
@@ -201,15 +210,16 @@ namespace ZXMAK2.Host.Services
             }
         }
 
-        private static void Dispose<T>(ref T disposable)
+        private static void Dispose<T>(ref T fieldRef)
             where T : IDisposable
         {
-            var value = disposable;
-            disposable = default(T);
-            if (value != null)
+            var value = fieldRef;
+            if (value == null)
             {
-                value.Dispose();
+                return;
             }
+            fieldRef = default(T);
+            value.Dispose();
         }
 
         #endregion Private

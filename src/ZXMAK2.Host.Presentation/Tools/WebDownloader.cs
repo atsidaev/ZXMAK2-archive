@@ -150,7 +150,7 @@ namespace ZXMAK2.Host.Presentation.Tools
             Parse(rawValue);
         }
 
-        protected virtual void Parse(string rawValue)
+        protected void Parse(string rawValue)
         {
             m_params.Clear();
             string[] keyPairs = rawValue.Split(';');
