@@ -56,7 +56,6 @@
             this.pictureZoomedArea = new System.Windows.Forms.PictureBox();
             this.checkBoxMirror = new System.Windows.Forms.CheckBox();
             this.groupBoxSpriteDetails = new System.Windows.Forms.GroupBox();
-            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.CustomControls.BitmapGrid();
             this.textBoxSpriteBytes = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -135,6 +134,9 @@
             this.txtbxX0 = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.CustomControls.BitmapGrid();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxScreenViewType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).BeginInit();
@@ -149,10 +151,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.txtbxX1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtbxY0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtbxX0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBoxScreenViewType
             // 
+            this.groupBoxScreenViewType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxScreenViewType.Controls.Add(this.comboSpriteHeight);
             this.groupBoxScreenViewType.Controls.Add(this.comboSpriteWidth);
             this.groupBoxScreenViewType.Controls.Add(this.label9);
@@ -160,15 +168,17 @@
             this.groupBoxScreenViewType.Controls.Add(this.comboDisplayType);
             this.groupBoxScreenViewType.Controls.Add(this.label7);
             this.groupBoxScreenViewType.Font = new System.Drawing.Font("Calibri", 9.75F);
-            this.groupBoxScreenViewType.Location = new System.Drawing.Point(12, 346);
+            this.groupBoxScreenViewType.Location = new System.Drawing.Point(6, 327);
             this.groupBoxScreenViewType.Name = "groupBoxScreenViewType";
-            this.groupBoxScreenViewType.Size = new System.Drawing.Size(120, 159);
+            this.groupBoxScreenViewType.Size = new System.Drawing.Size(139, 159);
             this.groupBoxScreenViewType.TabIndex = 25;
             this.groupBoxScreenViewType.TabStop = false;
             this.groupBoxScreenViewType.Text = "Screen View Type:";
             // 
             // comboSpriteHeight
             // 
+            this.comboSpriteHeight.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboSpriteHeight.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboSpriteHeight.Enabled = false;
             this.comboSpriteHeight.FormattingEnabled = true;
@@ -189,6 +199,8 @@
             // 
             // comboSpriteWidth
             // 
+            this.comboSpriteWidth.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboSpriteWidth.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboSpriteWidth.Enabled = false;
             this.comboSpriteWidth.FormattingEnabled = true;
@@ -232,6 +244,8 @@
             // 
             // comboDisplayType
             // 
+            this.comboDisplayType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboDisplayType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboDisplayType.FormattingEnabled = true;
             this.comboDisplayType.Items.AddRange(new object[] {
@@ -258,9 +272,11 @@
             // 
             // labelMemoryAddress
             // 
+            this.labelMemoryAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.labelMemoryAddress.AutoSize = true;
             this.labelMemoryAddress.Font = new System.Drawing.Font("Calibri", 9.75F);
-            this.labelMemoryAddress.Location = new System.Drawing.Point(9, 28);
+            this.labelMemoryAddress.Location = new System.Drawing.Point(3, 9);
             this.labelMemoryAddress.Name = "labelMemoryAddress";
             this.labelMemoryAddress.Size = new System.Drawing.Size(129, 15);
             this.labelMemoryAddress.TabIndex = 26;
@@ -268,6 +284,8 @@
             // 
             // numericUpDownActualAddress
             // 
+            this.numericUpDownActualAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numericUpDownActualAddress.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.numericUpDownActualAddress.Hexadecimal = true;
             this.numericUpDownActualAddress.Increment = new decimal(new int[] {
@@ -275,7 +293,7 @@
             0,
             0,
             0});
-            this.numericUpDownActualAddress.Location = new System.Drawing.Point(12, 47);
+            this.numericUpDownActualAddress.Location = new System.Drawing.Point(6, 28);
             this.numericUpDownActualAddress.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -296,7 +314,7 @@
             // 
             this.pictureZXDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureZXDisplay.Cursor = System.Windows.Forms.Cursors.Cross;
-            this.pictureZXDisplay.Location = new System.Drawing.Point(138, 28);
+            this.pictureZXDisplay.Location = new System.Drawing.Point(5, 9);
             this.pictureZXDisplay.Name = "pictureZXDisplay";
             this.pictureZXDisplay.Size = new System.Drawing.Size(512, 384);
             this.pictureZXDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -310,7 +328,7 @@
             // buttonRefresh
             // 
             this.buttonRefresh.Font = new System.Drawing.Font("Calibri", 9.75F);
-            this.buttonRefresh.Location = new System.Drawing.Point(670, 28);
+            this.buttonRefresh.Location = new System.Drawing.Point(749, 36);
             this.buttonRefresh.Name = "buttonRefresh";
             this.buttonRefresh.Size = new System.Drawing.Size(75, 23);
             this.buttonRefresh.TabIndex = 29;
@@ -322,7 +340,7 @@
             // 
             this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonClose.Font = new System.Drawing.Font("Calibri", 9.75F);
-            this.buttonClose.Location = new System.Drawing.Point(670, 58);
+            this.buttonClose.Location = new System.Drawing.Point(749, 66);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 30;
@@ -332,9 +350,11 @@
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label1.Location = new System.Drawing.Point(9, 85);
+            this.label1.Location = new System.Drawing.Point(3, 66);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(128, 15);
             this.label1.TabIndex = 31;
@@ -342,9 +362,11 @@
             // 
             // numericIncDecDelta
             // 
+            this.numericIncDecDelta.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numericIncDecDelta.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.numericIncDecDelta.Hexadecimal = true;
-            this.numericIncDecDelta.Location = new System.Drawing.Point(84, 103);
+            this.numericIncDecDelta.Location = new System.Drawing.Point(78, 84);
             this.numericIncDecDelta.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -368,9 +390,11 @@
             // 
             // label2
             // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label2.Location = new System.Drawing.Point(12, 131);
+            this.label2.Location = new System.Drawing.Point(6, 112);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(76, 15);
             this.label2.TabIndex = 33;
@@ -378,9 +402,11 @@
             // 
             // numericUpDownZoomFactor
             // 
+            this.numericUpDownZoomFactor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numericUpDownZoomFactor.Enabled = false;
             this.numericUpDownZoomFactor.Font = new System.Drawing.Font("Calibri", 9.75F);
-            this.numericUpDownZoomFactor.Location = new System.Drawing.Point(84, 149);
+            this.numericUpDownZoomFactor.Location = new System.Drawing.Point(78, 130);
             this.numericUpDownZoomFactor.Maximum = new decimal(new int[] {
             5,
             0,
@@ -412,7 +438,7 @@
             this.groupBoxScreenInfo.Controls.Add(this.textBoxXCoorYCoor);
             this.groupBoxScreenInfo.Controls.Add(this.textBoxScreenAddress);
             this.groupBoxScreenInfo.Controls.Add(this.label3);
-            this.groupBoxScreenInfo.Location = new System.Drawing.Point(138, 429);
+            this.groupBoxScreenInfo.Location = new System.Drawing.Point(5, 410);
             this.groupBoxScreenInfo.Name = "groupBoxScreenInfo";
             this.groupBoxScreenInfo.Size = new System.Drawing.Size(314, 76);
             this.groupBoxScreenInfo.TabIndex = 35;
@@ -497,19 +523,24 @@
             // 
             // pictureZoomedArea
             // 
+            this.pictureZoomedArea.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureZoomedArea.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureZoomedArea.Location = new System.Drawing.Point(12, 248);
+            this.pictureZoomedArea.Location = new System.Drawing.Point(6, 185);
             this.pictureZoomedArea.Name = "pictureZoomedArea";
-            this.pictureZoomedArea.Size = new System.Drawing.Size(120, 96);
+            this.pictureZoomedArea.Size = new System.Drawing.Size(139, 140);
             this.pictureZoomedArea.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureZoomedArea.TabIndex = 36;
             this.pictureZoomedArea.TabStop = false;
             // 
             // checkBoxMirror
             // 
+            this.checkBoxMirror.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxMirror.AutoSize = true;
             this.checkBoxMirror.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxMirror.Location = new System.Drawing.Point(15, 179);
+            this.checkBoxMirror.Location = new System.Drawing.Point(9, 160);
             this.checkBoxMirror.Name = "checkBoxMirror";
             this.checkBoxMirror.Size = new System.Drawing.Size(99, 19);
             this.checkBoxMirror.TabIndex = 37;
@@ -525,23 +556,13 @@
             this.groupBoxSpriteDetails.Controls.Add(this.label6);
             this.groupBoxSpriteDetails.Controls.Add(this.textBoxSpriteAddress);
             this.groupBoxSpriteDetails.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxSpriteDetails.Location = new System.Drawing.Point(390, 28);
+            this.groupBoxSpriteDetails.Location = new System.Drawing.Point(278, 9);
             this.groupBoxSpriteDetails.Name = "groupBoxSpriteDetails";
             this.groupBoxSpriteDetails.Size = new System.Drawing.Size(274, 346);
             this.groupBoxSpriteDetails.TabIndex = 38;
             this.groupBoxSpriteDetails.TabStop = false;
             this.groupBoxSpriteDetails.Text = "Sprite details:";
             this.groupBoxSpriteDetails.Visible = false;
-            // 
-            // bitmapGridSpriteView
-            // 
-            this.bitmapGridSpriteView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.bitmapGridSpriteView.Location = new System.Drawing.Point(9, 84);
-            this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
-            this.bitmapGridSpriteView.Size = new System.Drawing.Size(256, 256);
-            this.bitmapGridSpriteView.TabIndex = 10;
-            this.bitmapGridSpriteView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseClick);
-            this.bitmapGridSpriteView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseUp);
             // 
             // textBoxSpriteBytes
             // 
@@ -588,12 +609,14 @@
             this.viewToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(750, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(837, 24);
             this.menuStrip1.TabIndex = 39;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -989,7 +1012,7 @@
             this.groupBoxSelectionArea.Controls.Add(this.txtbxX0);
             this.groupBoxSelectionArea.Controls.Add(this.label12);
             this.groupBoxSelectionArea.Controls.Add(this.label10);
-            this.groupBoxSelectionArea.Location = new System.Drawing.Point(458, 429);
+            this.groupBoxSelectionArea.Location = new System.Drawing.Point(325, 409);
             this.groupBoxSelectionArea.Name = "groupBoxSelectionArea";
             this.groupBoxSelectionArea.Size = new System.Drawing.Size(227, 77);
             this.groupBoxSelectionArea.TabIndex = 40;
@@ -1122,28 +1145,61 @@
             this.label10.TabIndex = 0;
             this.label10.Text = "X0:";
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.splitContainer1.Location = new System.Drawing.Point(10, 32);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.labelMemoryAddress);
+            this.splitContainer1.Panel1.Controls.Add(this.groupBoxScreenViewType);
+            this.splitContainer1.Panel1.Controls.Add(this.checkBoxMirror);
+            this.splitContainer1.Panel1.Controls.Add(this.numericUpDownActualAddress);
+            this.splitContainer1.Panel1.Controls.Add(this.pictureZoomedArea);
+            this.splitContainer1.Panel1.Controls.Add(this.label1);
+            this.splitContainer1.Panel1.Controls.Add(this.numericIncDecDelta);
+            this.splitContainer1.Panel1.Controls.Add(this.numericUpDownZoomFactor);
+            this.splitContainer1.Panel1.Controls.Add(this.label2);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.groupBoxSpriteDetails);
+            this.splitContainer1.Panel2.Controls.Add(this.pictureZXDisplay);
+            this.splitContainer1.Panel2.Controls.Add(this.groupBoxSelectionArea);
+            this.splitContainer1.Panel2.Controls.Add(this.groupBoxScreenInfo);
+            this.splitContainer1.Size = new System.Drawing.Size(724, 494);
+            this.splitContainer1.SplitterDistance = 155;
+            this.splitContainer1.TabIndex = 41;
+            // 
+            // bitmapGridSpriteView
+            // 
+            this.bitmapGridSpriteView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.bitmapGridSpriteView.Location = new System.Drawing.Point(9, 84);
+            this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
+            this.bitmapGridSpriteView.Size = new System.Drawing.Size(256, 256);
+            this.bitmapGridSpriteView.TabIndex = 10;
+            this.bitmapGridSpriteView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseClick);
+            this.bitmapGridSpriteView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseUp);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
             // GraphicsEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonClose;
-            this.ClientSize = new System.Drawing.Size(750, 508);
-            this.Controls.Add(this.groupBoxSelectionArea);
-            this.Controls.Add(this.groupBoxSpriteDetails);
-            this.Controls.Add(this.checkBoxMirror);
-            this.Controls.Add(this.pictureZoomedArea);
-            this.Controls.Add(this.groupBoxScreenInfo);
-            this.Controls.Add(this.numericUpDownZoomFactor);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.numericIncDecDelta);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(837, 535);
+            this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.buttonRefresh);
-            this.Controls.Add(this.pictureZXDisplay);
-            this.Controls.Add(this.numericUpDownActualAddress);
-            this.Controls.Add(this.labelMemoryAddress);
-            this.Controls.Add(this.groupBoxScreenViewType);
-            this.Controls.Add(this.menuStrip1);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "GraphicsEditor";
@@ -1168,6 +1224,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.txtbxX1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtbxY0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtbxX0)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1282,5 +1343,7 @@
         private System.Windows.Forms.MenuItem menuItemMovePixelsLeft;
         private System.Windows.Forms.MenuItem menuItemMovePixelsRight;
         private System.Windows.Forms.MenuItem menuItemClearBitmap;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }

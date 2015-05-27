@@ -673,6 +673,12 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             SaveScreenBytes(arrScreenBytes, width, height);
             //croppedArea.Save(@"image_export_cropped.bmp");
         }
+        
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         #endregion GUI methods
     }
 }
