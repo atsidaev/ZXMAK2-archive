@@ -2,10 +2,12 @@
 using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Diagnostics;
+using System.Security;
 
 
 namespace ZXMAK2.Host.WinForms.Tools
 {
+    [SuppressUnmanagedCodeSecurity]
     internal static class NativeMethods
     {
         #region P/Invoke
@@ -28,12 +30,18 @@ namespace ZXMAK2.Host.WinForms.Tools
 
 
         [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetAncestor(IntPtr hwnd, int gaFlags);
+
+        [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWindowVisible(IntPtr hWnd);
 
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool InvalidateRect(IntPtr hWnd, IntPtr lpRect, bool bErase);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
@@ -107,5 +115,8 @@ namespace ZXMAK2.Host.WinForms.Tools
         }
 
         #endregion Wrappers
+
+        [DllImport("user32.dll", ExactSpelling = true)]
+        public static extern IntPtr MonitorFromWindow(IntPtr handle, int flags);
     }
 }

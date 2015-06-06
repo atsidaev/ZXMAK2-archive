@@ -25,7 +25,7 @@ namespace ZXMAK2.Host.WinForms.Tools
                     return;
                 }
                 _sourceRate = value;
-                Update();
+                _ratio = _targetRate / _sourceRate;
             }
         }
 
@@ -48,11 +48,6 @@ namespace ZXMAK2.Host.WinForms.Tools
             }
             Time = time;
             return !isSkipped;
-        }
-
-        private void Update()
-        {
-            _ratio = _targetRate / _sourceRate;
         }
     }
 }
