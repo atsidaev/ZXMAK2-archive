@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Security;
 
 
 namespace ZXMAK2.Logging.Appenders
@@ -148,6 +149,7 @@ namespace ZXMAK2.Logging.Appenders
 
         private delegate bool HandlerRoutine(int dwCtrlType);
 
+        [SuppressUnmanagedCodeSecurity]
         private static class NativeMethods
         {
             [DllImport("kernel32.dll", SetLastError = true)]
