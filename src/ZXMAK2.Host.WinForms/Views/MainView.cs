@@ -574,11 +574,6 @@ namespace ZXMAK2.Host.WinForms.Views
             UpdateLayout();
         }
 
-        private void renderVideo_DeviceReset(object sender, EventArgs e)
-        {
-            OnRequestFrame();
-        }
-
         private void renderVideo_DoubleClick(object sender, EventArgs e)
         {
             if (!renderVideo.Focused)
