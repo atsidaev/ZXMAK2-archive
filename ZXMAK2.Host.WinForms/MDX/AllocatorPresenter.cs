@@ -297,11 +297,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     while (true)
                     {
                         var success = RenderIteration();
+                        Thread.Yield();
                         if (!success)
                         {
                             Thread.Sleep(10);
                         }
-                        Thread.Sleep(0);
                     }
                 }
                 finally

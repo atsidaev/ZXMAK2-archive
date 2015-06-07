@@ -18,6 +18,8 @@ namespace ZXMAK2
             {
                 AppDomain.CurrentDomain.UnhandledException +=
                     (s, e) => Logger.Fatal(e.ExceptionObject as Exception, "AppDomain.UnhandledException");
+                //AppDomain.CurrentDomain.FirstChanceException += 
+                //    (s, e) => Logger.Error(e.Exception, "AppDomain.FirstChanceException");
                 RunSafe(args);
             }
             catch (Exception ex)
