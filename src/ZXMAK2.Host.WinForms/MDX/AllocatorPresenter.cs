@@ -152,6 +152,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 {
                     if (_monitorId != _window.MonitorId)
                     {
+                        // we need to recreate device for another adapterId
                         OnLost();
                         OnDeviceDestroy();
                     }
@@ -161,6 +162,28 @@ namespace ZXMAK2.Host.WinForms.Mdx
                         Thread.Sleep(1000);
                         return false;
                     }
+                    var hr = TestCooperativeLevel();
+                    switch (hr)
+                    {
+                        case ResultCode.Success:
+                            break;
+                        case ResultCode.DeviceNotReset: // appears once after DeviceLost
+                            //Logger.Debug("Direct3D: DeviceNotReset");
+                            //OnLost();
+                            //OnDeviceDestroy();
+                            OnDeviceReset();
+                            return false;
+                        case ResultCode.DeviceLost:     // appears continuously when DeviceLost
+                            //Logger.Debug("Direct3D: DeviceLost");
+                            OnLost();
+                            Thread.Sleep(500);
+                            return false;
+                        default:                        // never seen
+                            Logger.Warn("TestCooperativeLevel() = {0}", hr);
+                            return false;
+                    }
+
+                    // device OK, check resources...
                     OnAcquireCheck();
                     OnLoadCheck();
                     if (_renderTarget == null)
@@ -181,34 +204,19 @@ namespace ZXMAK2.Host.WinForms.Mdx
                         return true;
                     }
                     
-                    var hr = TestCooperativeLevel();
-                    switch (hr)
+                    // device & resources OK
+                    OnRender();
+                    if (_swapChain != null)
                     {
-                        case ResultCode.Success:
-                            OnRender();
-                            if (_swapChain != null)
-                            {
-                                _swapChain.Present(); // Present.DoNotWait // Present.None
-                            }
-                            else
-                            {
-                                _device.Present();
-                            }
-                            OnPresentCompleted();
-                            IsRendering = true;
-                            return true;
-                        case ResultCode.DeviceNotReset:
-                            OnLost();
-                            OnDeviceDestroy();
-                            break;
-                        case ResultCode.DeviceLost:
-                            OnLost();
-                            break;
-                        default:
-                            Logger.Warn("TestCooperativeLevel() = {0}", hr);
-                            break;
+                        _swapChain.Present(); // Present.DoNotWait // Present.None
                     }
-                    return false;
+                    else
+                    {
+                        _device.Present();
+                    }
+                    OnPresentCompleted();
+                    IsRendering = true;
+                    return true;
                 }
                 catch (ThreadAbortException)
                 {
@@ -234,6 +242,14 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     return false;
                 }
             }
+        }
+
+        private void OnDeviceReset()
+        {
+            OnLost();   // actually already called in case of DeviceLost
+            Logger.Debug("Direct3D: reset");
+            _device.Reset(_d3dpp);
+            OnDeviceInit();
         }
 
         public void Register(IRenderer renderer)
@@ -358,6 +374,21 @@ namespace ZXMAK2.Host.WinForms.Mdx
             _device.DeviceResizing += (s, e) => e.Cancel = true;
             //_device.DeviceReset += Device_OnDeviceReset;
 
+            OnDeviceInit();
+        }
+
+        private void OnDeviceDestroy()
+        {
+            if (_device != null)
+            {
+                Logger.Debug("Direct3D: dispose Device, threadId={0}", Thread.CurrentThread.ManagedThreadId);
+                _device.Dispose();
+                _device = null;
+            }
+        }
+
+        private void OnDeviceInit()
+        {
             // Set default sampler/renderer state
             _device.SetSamplerState(0, SamplerStageStates.MagFilter, (int)TextureFilter.Linear);
             _device.SetSamplerState(0, SamplerStageStates.MinFilter, (int)TextureFilter.Linear);
@@ -370,16 +401,6 @@ namespace ZXMAK2.Host.WinForms.Mdx
             _device.SetRenderState(RenderStates.SourceBlend, (int)Blend.SourceAlpha);
             _device.SetRenderState(RenderStates.DestinationBlend, (int)Blend.InvSourceAlpha);
             //_device.SetRenderState(RenderStates.BlendOperation, (int)BlendOperation.Add);
-        }
-
-        private void OnDeviceDestroy()
-        {
-            if (_device != null)
-            {
-                Logger.Debug("Direct3D: dispose Device, threadId={0}", Thread.CurrentThread.ManagedThreadId);
-                _device.Dispose();
-                _device = null;
-            }
         }
 
         private void OnLoadCheck()
