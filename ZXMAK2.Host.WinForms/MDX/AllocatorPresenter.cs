@@ -37,6 +37,8 @@ namespace ZXMAK2.Host.WinForms.Mdx
         private readonly object _syncRoot = new object();
         private readonly List<IRenderer> _renderers = new List<IRenderer>();
         private readonly HashSet<IRenderer> _loaded = new HashSet<IRenderer>();
+        private readonly HashSet<IRenderer> _failed = new HashSet<IRenderer>();
+        private readonly HashSet<IRenderer> _good = new HashSet<IRenderer>();
         private SubclassWindow _window;
         private IntPtr _monitorId;
         private Thread _thread;
@@ -69,11 +71,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public event EventHandler PresentCompleted;
 
-        public bool IsAttached
-        {
-            get { return _window != null && _device != null; }
-        }
+        public string ErrorMessage { get; private set; }
 
+        public bool IsRendering { get; private set; }
+
+        
         public void Attach(IntPtr hwnd)
         {
             if (hwnd == IntPtr.Zero)
@@ -86,6 +88,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 {
                     throw new InvalidOperationException("Already attached!");
                 }
+                ErrorMessage = null;
                 try
                 {
                     _window = new SubclassWindow(this);
@@ -95,6 +98,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 catch (Exception ex)
                 {
                     Logger.Error(ex);
+                    ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
                     if (_window != null)
                     {
                         _window.ReleaseHandle();
@@ -113,6 +117,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             try
             {
+                IsRendering = false;
                 var waitNeeded = false;
                 lock (_syncRoot)
                 {
@@ -139,7 +144,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
             }
         }
 
-        private bool Render()
+        private bool RenderIteration()
         {
             lock (_syncRoot)
             {
@@ -190,6 +195,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                                 _device.Present();
                             }
                             OnPresentCompleted();
+                            IsRendering = true;
                             return true;
                         case ResultCode.DeviceNotReset:
                             OnLost();
@@ -216,12 +222,14 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 catch (GraphicsException ex)
                 {
                     Logger.Error(ex);
+                    ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
                     Thread.Sleep(1000);
                     return false;
                 }
                 catch (Exception ex)
                 {
                     Logger.Error(ex);
+                    ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
                     Thread.Sleep(1000);
                     return false;
                 }
@@ -239,10 +247,13 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 if (_loaded.Contains(renderer))
                 {
-                    _loaded.Remove(renderer);
-                    renderer.Unload();
+                    RendererUnload(renderer);
                 }
                 _renderers.Remove(renderer);
+                if (_failed.Contains(renderer))
+                {
+                    _failed.Remove(renderer);
+                }
             });
         }
 
@@ -281,13 +292,22 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             try
             {
-                while (true)
+                try
                 {
-                    var success = Render();
-                    if (!success)
+                    while (true)
                     {
-                        Thread.Sleep(10);
+                        var success = RenderIteration();
+                        if (!success)
+                        {
+                            Thread.Sleep(10);
+                        }
+                        Thread.Sleep(0);
                     }
+                }
+                finally
+                {
+                    OnLost();
+                    OnDeviceDestroy();
                 }
             }
             catch (ThreadAbortException)
@@ -298,12 +318,6 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 Logger.Fatal(ex);
                 throw;
-            }
-            finally
-            {
-                OnLost();
-                OnDeviceDestroy();
-                Logger.Debug("Direct3D: RenderThreadProc finished");
             }
         }
 
@@ -370,39 +384,84 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         private void OnLoadCheck()
         {
-            if (_renderTarget == null ||
-                _loaded.Count == _renderers.Count)
+            if (_renderTarget == null)
             {
                 return;
             }
-            if (_loaded.Count > _renderers.Count)
-            {
-                _loaded
-                    .Except(_renderers)
-                    .ToList()
-                    .ForEach(renderer =>
-                        {
-                            _loaded.Remove(renderer);
-                            renderer.Unload();
-                        });
-            }
+            _loaded
+                .Except(_renderers)
+                .ToList()
+                .ForEach(RendererUnload);
             _renderers
+                .Except(_failed)
                 .Except(_loaded)
                 .ToList()
-                .ForEach(renderer =>
-                    {
-                        _loaded.Add(renderer);
-                        renderer.Load();
-                    });
+                .ForEach(RendererLoad);
         }
 
         private void OnUnload()
         {
-            var renderers = _loaded.ToArray();
-            foreach (var renderer in renderers)
+            _loaded
+                .ToList()
+                .ForEach(RendererUnload);
+        }
+
+        private void RendererLoad(IRenderer renderer)
+        {
+            if (_loaded.Contains(renderer) || 
+                _failed.Contains(renderer))
             {
+                return;
+            }
+            _loaded.Add(renderer);
+            try
+            {
+                renderer.Load();
+                _good.Add(renderer);
+            }
+            catch (ThreadAbortException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                _failed.Add(renderer);
                 _loaded.Remove(renderer);
+                try
+                {
+                    renderer.Unload();
+                }
+                catch (ThreadAbortException)
+                {
+                    throw;
+                }
+                catch (Exception ex2)
+                {
+                    Logger.Error(ex2);
+                }
+            }
+        }
+
+        private void RendererUnload(IRenderer renderer)
+        {
+            if (!_loaded.Contains(renderer))
+            {
+                return;
+            }
+            _loaded.Remove(renderer);
+            try
+            {
                 renderer.Unload();
+            }
+            catch (ThreadAbortException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                _failed.Add(renderer);
             }
         }
 
@@ -463,9 +522,9 @@ namespace ZXMAK2.Host.WinForms.Mdx
             _device.BeginScene();
             try
             {
-                foreach (var renderLayer in _loaded)
+                foreach (var renderer in _good)
                 {
-                    renderLayer.Render(_size.Width, _size.Height);
+                    renderer.Render(_size.Width, _size.Height);
                 }
             }
             finally
@@ -589,18 +648,40 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     Logger.Warn("SubclassWindow.GetAdapterId: Screen.FromHandle({0}) == null", Handle);
                     return Manager.Adapters.Default;
                 }
+                var deviceName = FixWinXpDeviceName(screen.DeviceName);
                 var adapterInfo = Manager.Adapters
                     .OfType<AdapterInformation>()
-                    .FirstOrDefault(ai => ai.Information.DeviceName == screen.DeviceName);
+                    .FirstOrDefault(ai => ai.Information.DeviceName == deviceName);
                 if (adapterInfo == null)
                 {
                     // happens when display just connected on the fly
                     // so it is missing from Manager.Adapters
                     Logger.Warn("SubclassWindow.GetAdapterId: adapter not found!");
+                    Logger.Debug("Screen.DeviceName: \"{0}\"", screen.DeviceName);
+                    Logger.Debug("Fixed DeviceName: \"{0}\"", deviceName);
+                    Manager.Adapters
+                        .OfType<AdapterInformation>()
+                        .ToList()
+                        .ForEach(ai=>Logger.Debug("Manager.Adapters[{0}].DeviceName: \"{1}\"", ai.Adapter, ai.Information.DeviceName));
                     return Manager.Adapters.Default;
                 }
                 adapterInfo = adapterInfo ?? Manager.Adapters.Default;
                 return adapterInfo;
+            }
+
+            private string FixWinXpDeviceName(string name)
+            {
+                // http://stackoverflow.com/questions/12319903/system-windows-forms-screen-devicename-gives-garbage-on-windows-xp
+                if (name == null)
+                {
+                    return null;
+                }
+                var endIndex = name.IndexOf((char)0);
+                if (endIndex > 0)
+                {
+                    return name.Substring(0, endIndex);
+                }
+                return name;
             }
 
             private void CheckAdapter()
@@ -650,8 +731,6 @@ namespace ZXMAK2.Host.WinForms.Mdx
                             base.WndProc(ref m);
                         }
                         CheckAdapter();
-                        return;
-                    case WM_PAINT:
                         return;
                 }
                 base.WndProc(ref m);

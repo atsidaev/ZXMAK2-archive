@@ -183,15 +183,28 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            if (_allocator.IsRendering)
+            {
+                return;
+            }
             e.Graphics.FillRectangle(Brushes.Black, e.ClipRectangle);
             e.Graphics.DrawImage(SystemIcons.Warning.ToBitmap(), new Point(20, 20));
             using (var font = new System.Drawing.Font(Font.FontFamily, 20))
             {
+                var iconWidth = SystemIcons.Warning.Width;
+                var width = ClientSize.Width - (20 + iconWidth + 20);
+                var height = ClientSize.Height - 20;
+                width = width < 20 ? 20 : width;
+                height = height < 20 ? 20 : height;
                 e.Graphics.DrawString(
-                    "Failed to initialize DirectX!",
+                    _allocator.ErrorMessage ?? "Loading...",
                     font,
                     Brushes.White,
-                    new PointF(20 + SystemIcons.Warning.Width + 20, 20));
+                    new RectangleF(
+                        20 + iconWidth + 20, 
+                        20,
+                        width,
+                        height));
             }
         }
 

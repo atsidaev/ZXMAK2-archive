@@ -66,7 +66,10 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
         {
             if (IsLoaded)
             {
-                throw new InvalidOperationException("Attach already done!");
+                throw new InvalidOperationException(
+                    string.Format(
+                        "{0}.Load() already done!", 
+                        GetType().Name));
             }
             Allocator.ExecuteSynchronized(() =>
             {

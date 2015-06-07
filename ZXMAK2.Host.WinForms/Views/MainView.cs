@@ -38,6 +38,7 @@ namespace ZXMAK2.Host.WinForms.Views
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Application.ThreadException += (s, e) => Logger.Error(e.Exception, "Application.ThreadException");
         }
 
         public MainView(IResolver resolver)

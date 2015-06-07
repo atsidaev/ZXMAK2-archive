@@ -16,6 +16,8 @@ namespace ZXMAK2
             Logger.Start();
             try
             {
+                AppDomain.CurrentDomain.UnhandledException +=
+                    (s, e) => Logger.Fatal(e.ExceptionObject as Exception, "AppDomain.UnhandledException");
                 RunSafe(args);
             }
             catch (Exception ex)
