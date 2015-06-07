@@ -75,16 +75,20 @@
     <Compile Include="Controls\MenuStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ScaleMode.cs" />
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\ToolStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Mdx\RenderDebugObject.cs" />
-    <Compile Include="Mdx\RenderIconsObject.cs" />
-    <Compile Include="Mdx\RenderObject.cs" />
-    <Compile Include="Mdx\RenderVideoObject.cs" />
+    <Compile Include="Controls\VideoFilter.cs" />
+    <Compile Include="Mdx\AllocatorPresenter.cs" />
+    <Compile Include="Mdx\IRenderer.cs" />
+    <Compile Include="Mdx\Renderers\OsdRenderer.cs" />
+    <Compile Include="Mdx\Renderers\IconRenderer.cs" />
+    <Compile Include="Mdx\Renderers\RendererBase.cs" />
+    <Compile Include="Mdx\Renderers\VideoRenderer.cs" />
     <Compile Include="Services\ObjectSelectorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -176,9 +180,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Controls\Render3D.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Controls\RenderVideo.cs">
       <SubType>Component</SubType>
     </Compile>

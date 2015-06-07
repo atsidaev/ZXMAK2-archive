@@ -616,7 +616,6 @@
             this.renderVideo.Size = new System.Drawing.Size(526, 385);
             this.renderVideo.TabIndex = 3;
             this.renderVideo.Text = "renderVideo";
-            this.renderVideo.DeviceReset += new System.EventHandler(this.renderVideo_DeviceReset);
             this.renderVideo.DoubleClick += new System.EventHandler(this.renderVideo_DoubleClick);
             this.renderVideo.MouseMove += new System.Windows.Forms.MouseEventHandler(this.renderVideo_MouseMove);
             this.renderVideo.Resize += new System.EventHandler(this.renderVideo_Resize);
