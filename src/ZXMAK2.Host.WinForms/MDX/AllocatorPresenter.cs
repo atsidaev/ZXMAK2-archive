@@ -69,6 +69,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public event EventHandler PresentCompleted;
 
+        public bool IsAttached
+        {
+            get { return _window != null && _device != null; }
+        }
+
         public void Attach(IntPtr hwnd)
         {
             if (hwnd == IntPtr.Zero)
@@ -81,25 +86,57 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 {
                     throw new InvalidOperationException("Already attached!");
                 }
-                _window = new SubclassWindow(this);
-                _window.AssignHandle(hwnd);
-                _thread.Start();
+                try
+                {
+                    _window = new SubclassWindow(this);
+                    _window.AssignHandle(hwnd);
+                    _thread.Start();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                    if (_window != null)
+                    {
+                        _window.ReleaseHandle();
+                        _window = null;
+                    }
+                    if (_thread.IsAlive)
+                    {
+                        _thread.Abort();
+                        _thread.Join();
+                    }
+                }
             }
         }
 
         public void Detach()
         {
-            lock (_syncRoot)
+            try
             {
-                if (_window != null)
+                var waitNeeded = false;
+                lock (_syncRoot)
                 {
-                    _window.ReleaseHandle();
-                    _window = null;
+                    if (_window != null)
+                    {
+                        _window.ReleaseHandle();
+                        _window = null;
+                    }
+                    waitNeeded = _thread.IsAlive;
+                    if (waitNeeded)
+                    {
+                        _thread.Abort();
+                    }
                 }
-                _thread.Abort();
+                // wait outside lock to avoid deadlock
+                if (waitNeeded)
+                {
+                    _thread.Join();
+                }
             }
-            // wait outside lock to avoid deadlock
-            _thread.Join();
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private bool Render()
@@ -614,10 +651,8 @@ namespace ZXMAK2.Host.WinForms.Mdx
                         }
                         CheckAdapter();
                         return;
-                    //case WM_PAINT:
-                    //    _allocator.Render();
-                    //    NativeMethods.InvalidateRect(Handle, IntPtr.Zero, false);
-                    //    return;
+                    case WM_PAINT:
+                        return;
                 }
                 base.WndProc(ref m);
             }
