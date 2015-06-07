@@ -17,10 +17,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
     public sealed class DirectKeyboard : IHostKeyboard, IKeyboardState
     {
         private readonly Form m_form;
-        private Device m_device = null;
+        private Device m_device;
         private KeyboardStateMapper<MdxKey> m_mapper = new KeyboardStateMapper<MdxKey>();
         private readonly Dictionary<ZxmakKey, bool> m_state = new Dictionary<ZxmakKey, bool>();
-        private bool m_isActive = false;
+        private bool m_isActive;
 
 
 
@@ -31,14 +31,12 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 throw new ArgumentNullException("form");
             }
             m_form = form;
-            if (m_device == null)
-            {
-                m_device = new Device(SystemGuid.Keyboard);
-                m_device.SetCooperativeLevel(form, CooperativeLevelFlags.NonExclusive | CooperativeLevelFlags.Foreground);
-                form.Activated += WndActivated;
-                form.Deactivate += WndDeactivate;
-                WndActivated(null, null);
-            }
+            OtherApplicationHasPriorityException.IsExceptionIgnored = true;
+            m_device = new Device(SystemGuid.Keyboard);
+            m_device.SetCooperativeLevel(form, CooperativeLevelFlags.NonExclusive | CooperativeLevelFlags.Foreground);
+            form.Activated += WndActivated;
+            form.Deactivate += WndDeactivate;
+            WndActivated(null, null);
             m_mapper.LoadMapFromString(
                 global::ZXMAK2.Host.WinForms.Properties.Resources.Keyboard_Mdx);
         }
