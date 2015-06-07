@@ -31,7 +31,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 throw new ArgumentNullException("form");
             }
             m_form = form;
-            OtherApplicationHasPriorityException.IsExceptionIgnored = true;
+            //OtherApplicationHasPriorityException.IsExceptionIgnored = true;
             m_device = new Device(SystemGuid.Keyboard);
             m_device.SetCooperativeLevel(form, CooperativeLevelFlags.NonExclusive | CooperativeLevelFlags.Foreground);
             form.Activated += WndActivated;
