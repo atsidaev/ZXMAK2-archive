@@ -77,16 +77,16 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 
         #region RenderBase
 
-        protected override void AttachSynchronized()
+        protected override void LoadSynchronized()
         {
-            base.AttachSynchronized();
+            base.LoadSynchronized();
             _sprite = new Sprite(Allocator.Device);
             _spriteTv = new Sprite(Allocator.Device);
         }
 
-        protected override void DetachSynchronized()
+        protected override void UnloadSynchronized()
         {
-            base.DetachSynchronized();
+            base.UnloadSynchronized();
             if (_texture0 != null)
             {
                 _texture0.Dispose();
@@ -136,10 +136,10 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 
             var size = new Size(width, height);
             var dstRect = GetDestinationRect(size);
-            RenderFrame(dstRect);
+            RenderSprite(_sprite, _texture0, dstRect, AntiAlias);
             if (MimicTv)
             {
-                RenderMaskTv(dstRect);
+                RenderSprite(_spriteTv, _textureMaskTv, dstRect, true);
             }
         }
 
@@ -165,14 +165,6 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             {
                 clone = new FrameVideo(videoData.Size, videoData.Ratio);
             }
-
-
-
-            //if (_showQueue.Count > 0)
-            //{
-            //    return;
-            //}
-            //var clone = new FrameVideo(videoData.Size, videoData.Ratio);
             Array.Copy(videoData.Buffer, clone.Buffer, clone.Buffer.Length);
             if (VideoFilter == VideoFilter.NoFlick)
             {
@@ -192,20 +184,28 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 
         #region Private
 
-        private void RenderFrame(RectangleF dstRect)
+        private void RenderSprite(
+            Sprite sprite, 
+            Texture texture, 
+            RectangleF dstRect, 
+            bool antiAlias)
         {
-            var srcRect = new Rectangle(0, 0, _frameSize.Width, _frameSize.Height);
-            _sprite.Begin(SpriteFlags.None);
+            var srcRect = new Rectangle(
+                0, 
+                0, 
+                _frameSize.Width, 
+                _frameSize.Height);
+            sprite.Begin(SpriteFlags.None);
             try
             {
-                if (!AntiAlias)
+                if (!antiAlias)
                 {
                     Allocator.Device.SetSamplerState(0, SamplerStageStates.MinFilter, (int)TextureFilter.Point);
                     Allocator.Device.SetSamplerState(0, SamplerStageStates.MagFilter, (int)TextureFilter.Point);
                     Allocator.Device.SetSamplerState(0, SamplerStageStates.MipFilter, (int)TextureFilter.Point);
                 }
-                _sprite.Draw2D(
-                   _texture0,
+                sprite.Draw2D(
+                   texture,
                    srcRect,
                    dstRect.Size,
                    dstRect.Location,
@@ -213,26 +213,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             }
             finally
             {
-                _sprite.End();
-            }
-        }
-
-        private void RenderMaskTv(RectangleF dstRect)
-        {
-            var srcRect = new Rectangle(0, 0, _frameSize.Width, _frameSize.Height * MimicTvRatio);
-            _spriteTv.Begin(SpriteFlags.AlphaBlend);
-            try
-            {
-                _spriteTv.Draw2D(
-                    _textureMaskTv,
-                    srcRect,
-                    dstRect.Size,
-                    dstRect.Location,
-                    -1);
-            }
-            finally
-            {
-                _spriteTv.End();
+                sprite.End();
             }
         }
 

@@ -48,15 +48,15 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 
         #region RendererBase
 
-        protected override void AttachSynchronized()
+        protected override void LoadSynchronized()
         {
-            base.AttachSynchronized();
+            base.LoadSynchronized();
             _spriteIcon = new Sprite(Allocator.Device);
         }
 
-        protected override void DetachSynchronized()
+        protected override void UnloadSynchronized()
         {
-            base.DetachSynchronized();
+            base.UnloadSynchronized();
             if (_spriteIcon != null)
             {
                 _spriteIcon.Dispose();
