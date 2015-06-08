@@ -111,9 +111,9 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 
         #region RendererBase
 
-        protected override void AttachSynchronized()
+        protected override void LoadSynchronized()
         {
-            base.AttachSynchronized();
+            base.LoadSynchronized();
             var gdiFont = new SysFont(
                 "Microsoft Sans Serif",
                 10f/*8.25f*/,
@@ -122,9 +122,9 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             _font = new D3dFont(Allocator.Device, gdiFont);
         }
 
-        protected override void DetachSynchronized()
+        protected override void UnloadSynchronized()
         {
-            base.DetachSynchronized();
+            base.UnloadSynchronized();
             if (_font != null)
             {
                 _font.Dispose();

@@ -78,7 +78,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                     throw new InvalidOperationException("Attach already done!");
                 }
                 IsLoaded = true;
-                AttachSynchronized();
+                LoadSynchronized();
             });
         }
 
@@ -86,7 +86,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
         {
             Allocator.ExecuteSynchronized(() =>
             {
-                DetachSynchronized();
+                UnloadSynchronized();
                 IsLoaded = false;
             });
         }
@@ -114,11 +114,11 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 
         protected bool IsLoaded { get; private set; }
 
-        protected virtual void AttachSynchronized()
+        protected virtual void LoadSynchronized()
         {
         }
 
-        protected virtual void DetachSynchronized()
+        protected virtual void UnloadSynchronized()
         {
         }
 
