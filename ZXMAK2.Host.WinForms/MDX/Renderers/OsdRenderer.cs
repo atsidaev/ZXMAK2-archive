@@ -21,10 +21,10 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
+using Microsoft.DirectX.Direct3D;
 using ZXMAK2.Engine;
 using SysFont = System.Drawing.Font;
 using D3dFont = Microsoft.DirectX.Direct3D.Font;
-using Microsoft.DirectX.Direct3D;
 
 
 namespace ZXMAK2.Host.WinForms.Mdx.Renderers

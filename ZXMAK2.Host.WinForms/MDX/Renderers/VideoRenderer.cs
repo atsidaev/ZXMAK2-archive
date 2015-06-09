@@ -18,16 +18,15 @@
  *
  */
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
+using System.Collections.Concurrent;
+using System.Drawing;
 using Microsoft.DirectX.Direct3D;
-using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.WinForms.Controls;
 using ZXMAK2.Host.WinForms.Tools;
+
 
 namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 {
@@ -124,7 +123,6 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             videoData = _lastVideoData;
             if (videoData == null)
             {
-                Logger.Debug("Frame skip");
                 return;
             }
             if (_frameSize != videoData.Size || _texture0 == null)
@@ -165,16 +163,16 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             {
                 clone = new FrameVideo(videoData.Size, videoData.Ratio);
             }
-            Array.Copy(videoData.Buffer, clone.Buffer, clone.Buffer.Length);
+            Array.Copy(
+                videoData.Buffer, 
+                clone.Buffer, 
+                clone.Buffer.Length);
             if (VideoFilter == VideoFilter.NoFlick)
             {
-                unsafe
-                {
-                    fixed (int* srcPtr = clone.Buffer)
-                    {
-                        FilterNoFlick(srcPtr, clone.Size.Width, clone.Size.Height);
-                    }
-                }
+                FilterNoFlick(
+                    clone.Buffer, 
+                    clone.Size.Width, 
+                    clone.Size.Height);
             }
             _showQueue.Enqueue(clone);
         }
@@ -360,8 +358,8 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             }
         }
 
-        private unsafe void FilterNoFlick(
-            int* pSrcBuffer,
+        private void FilterNoFlick(
+            int[] buffer,
             int width,
             int height)
         {
@@ -370,24 +368,28 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             {
                 _lastBuffer = new int[size];
             }
-            fixed (int* pSrcBuffer2 = _lastBuffer)
+            unsafe
             {
-                var pSrcArray1 = pSrcBuffer;
-                var pSrcArray2 = pSrcBuffer2;
-                for (var y = 0; y < height; y++)
+                fixed (int* pSrcBuffer1 = buffer)
+                fixed (int* pSrcBuffer2 = _lastBuffer)
                 {
-                    for (var i = 0; i < width; i++)
+                    var pSrcArray1 = pSrcBuffer1;
+                    var pSrcArray2 = pSrcBuffer2;
+                    for (var y = 0; y < height; y++)
                     {
-                        var src1 = pSrcArray1[i];
-                        var src2 = pSrcArray2[i];
-                        var r1 = (((src1 >> 16) & 0xFF) + ((src2 >> 16) & 0xFF)) / 2;
-                        var g1 = (((src1 >> 8) & 0xFF) + ((src2 >> 8) & 0xFF)) / 2;
-                        var b1 = (((src1 >> 0) & 0xFF) + ((src2 >> 0) & 0xFF)) / 2;
-                        pSrcArray2[i] = src1;
-                        pSrcArray1[i] = -16777216 | (r1 << 16) | (g1 << 8) | b1;
+                        for (var i = 0; i < width; i++)
+                        {
+                            var src1 = pSrcArray1[i];
+                            var src2 = pSrcArray2[i];
+                            var r1 = (((src1 >> 16) & 0xFF) + ((src2 >> 16) & 0xFF)) / 2;
+                            var g1 = (((src1 >> 8) & 0xFF) + ((src2 >> 8) & 0xFF)) / 2;
+                            var b1 = (((src1 >> 0) & 0xFF) + ((src2 >> 0) & 0xFF)) / 2;
+                            pSrcArray2[i] = src1;
+                            pSrcArray1[i] = -16777216 | (r1 << 16) | (g1 << 8) | b1;
+                        }
+                        pSrcArray1 += width;
+                        pSrcArray2 += width;
                     }
-                    pSrcArray1 += width;
-                    pSrcArray2 += width;
                 }
             }
         }
