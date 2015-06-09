@@ -60,7 +60,12 @@ namespace ZXMAK2.Host.WinForms.Tools
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool InvalidateRect(IntPtr hWnd, IntPtr lpRect, bool bErase);
+
+        [DllImport("user32.dll", SetLastError = true, ExactSpelling = true)]
+        public static extern IntPtr MonitorFromWindow(IntPtr handle, int flags);
+
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
@@ -134,8 +139,5 @@ namespace ZXMAK2.Host.WinForms.Tools
         }
 
         #endregion Wrappers
-
-        [DllImport("user32.dll", ExactSpelling = true)]
-        public static extern IntPtr MonitorFromWindow(IntPtr handle, int flags);
     }
 }

@@ -30,18 +30,18 @@ using Size=System.Drawing.Size;
 
 namespace ZXMAK2.Host.WinForms.Mdx
 {
-    public sealed class AllocatorPresenter
+    public sealed class AllocatorPresenter : IDisposable
     {
         #region Fields
 
         private readonly object _syncRoot = new object();
+        private readonly Thread _thread;
         private readonly List<IRenderer> _renderers = new List<IRenderer>();
         private readonly HashSet<IRenderer> _loaded = new HashSet<IRenderer>();
         private readonly HashSet<IRenderer> _failed = new HashSet<IRenderer>();
         private readonly HashSet<IRenderer> _good = new HashSet<IRenderer>();
         private SubclassWindow _window;
         private IntPtr _monitorId;
-        private Thread _thread;
         private Device _device;
         private PresentParameters _d3dpp;
         private SwapChain _swapChain;
@@ -619,13 +619,13 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         #region SubclassWindow
 
-        private class SubclassWindow : NativeWindow
+        private sealed class SubclassWindow : NativeWindow
         {
             private const int WM_WINDOWPOSCHANGING = 0x0046;
             private const int WM_WINDOWPOSCHANGED = 0x0047;
             //private const int WM_MOVING = 0x0216;
-            private const int WM_PAINT = 0x000F;
-            private const int WM_SIZE = 0x0005;
+            //private const int WM_PAINT = 0x000F;
+            //private const int WM_SIZE = 0x0005;
             private const int MONITOR_DEFAULTTONEAREST = 2;
             private const int GA_ROOT = 2;
 
@@ -642,6 +642,17 @@ namespace ZXMAK2.Host.WinForms.Mdx
             public int AdapterId { get; private set; }
             public string AdapterName { get; private set; }
             public string AdapterDriver { get; private set; }
+
+            public Size Size
+            {
+                get { return NativeMethods.GetWindowRect(Handle).Size; }
+            }
+
+            public bool Visible
+            {
+                get { return NativeMethods.IsWindowVisible(Handle); }
+            }
+
 
             protected override void OnHandleChange()
             {
@@ -661,49 +672,23 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 CheckAdapter();
             }
 
-            public AdapterInformation GetAdapterId(IntPtr hwnd)
+            protected override void WndProc(ref Message m)
             {
-                var screen = System.Windows.Forms.Screen.FromHandle(hwnd);
-                if (screen == null)
+                switch (m.Msg)
                 {
-                    Logger.Warn("SubclassWindow.GetAdapterId: Screen.FromHandle({0}) == null", Handle);
-                    return Manager.Adapters.Default;
+                    case WM_WINDOWPOSCHANGING:
+                        lock (_allocator._syncRoot)
+                        {
+                            base.WndProc(ref m);
+                        }
+                        CheckAdapter();
+                        return;
                 }
-                var deviceName = FixWinXpDeviceName(screen.DeviceName);
-                var adapterInfo = Manager.Adapters
-                    .OfType<AdapterInformation>()
-                    .FirstOrDefault(ai => ai.Information.DeviceName == deviceName);
-                if (adapterInfo == null)
-                {
-                    // happens when display just connected on the fly
-                    // so it is missing from Manager.Adapters
-                    Logger.Warn("SubclassWindow.GetAdapterId: adapter not found!");
-                    Logger.Debug("Screen.DeviceName: \"{0}\"", screen.DeviceName);
-                    Logger.Debug("Fixed DeviceName: \"{0}\"", deviceName);
-                    Manager.Adapters
-                        .OfType<AdapterInformation>()
-                        .ToList()
-                        .ForEach(ai=>Logger.Debug("Manager.Adapters[{0}].DeviceName: \"{1}\"", ai.Adapter, ai.Information.DeviceName));
-                    return Manager.Adapters.Default;
-                }
-                adapterInfo = adapterInfo ?? Manager.Adapters.Default;
-                return adapterInfo;
+                base.WndProc(ref m);
             }
 
-            private string FixWinXpDeviceName(string name)
-            {
-                // http://stackoverflow.com/questions/12319903/system-windows-forms-screen-devicename-gives-garbage-on-windows-xp
-                if (name == null)
-                {
-                    return null;
-                }
-                var endIndex = name.IndexOf((char)0);
-                if (endIndex > 0)
-                {
-                    return name.Substring(0, endIndex);
-                }
-                return name;
-            }
+            
+            #region Private
 
             private void CheckAdapter()
             {
@@ -725,39 +710,61 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 {
                     AdapterId = adapter.Adapter;
                     Logger.Debug(
-                        "AdapterId: {0} [\"{1}\", \"{2}\"]", 
-                        AdapterId, 
+                        "AdapterId: {0} [\"{1}\", \"{2}\"]",
+                        AdapterId,
                         adapter.Information.DeviceName,
                         adapter.Information.Description);
                 }
             }
 
-            public System.Drawing.Size Size
+            private AdapterInformation GetAdapterId(IntPtr hwnd)
             {
-                get { return NativeMethods.GetWindowRect(Handle).Size; }
-            }
-
-            public bool Visible
-            {
-                get { return NativeMethods.IsWindowVisible(Handle); }
-            }
-
-            protected override void WndProc(ref Message m)
-            {
-                switch (m.Msg)
+                var screen = System.Windows.Forms.Screen.FromHandle(hwnd);
+                if (screen == null)
                 {
-                    case WM_WINDOWPOSCHANGING:
-                        lock (_allocator._syncRoot)
-                        {
-                            base.WndProc(ref m);
-                        }
-                        CheckAdapter();
-                        return;
+                    Logger.Warn("SubclassWindow.GetAdapterId: Screen.FromHandle({0}) == null", Handle);
+                    return Manager.Adapters.Default;
                 }
-                base.WndProc(ref m);
+                var deviceName = FixWinXpDeviceName(screen.DeviceName);
+                var adapterInfo = Manager.Adapters
+                    .OfType<AdapterInformation>()
+                    .FirstOrDefault(ai => ai.Information.DeviceName == deviceName);
+                if (adapterInfo == null)
+                {
+                    // happens when display just connected on the fly
+                    // so it is missing from Manager.Adapters
+                    Logger.Warn("SubclassWindow.GetAdapterId: adapter not found!");
+                    Logger.Debug("Screen.DeviceName: \"{0}\"", screen.DeviceName);
+                    Logger.Debug("Fixed DeviceName: \"{0}\"", deviceName);
+                    Manager.Adapters
+                        .OfType<AdapterInformation>()
+                        .ToList()
+                        .ForEach(ai => Logger.Debug("Manager.Adapters[{0}].DeviceName: \"{1}\"", ai.Adapter, ai.Information.DeviceName));
+                    return Manager.Adapters.Default;
+                }
+                adapterInfo = adapterInfo ?? Manager.Adapters.Default;
+                return adapterInfo;
             }
 
-            private class SubclassWindowRoot : NativeWindow
+            private string FixWinXpDeviceName(string name)
+            {
+                // http://stackoverflow.com/questions/12319903/system-windows-forms-screen-devicename-gives-garbage-on-windows-xp
+                if (name == null)
+                {
+                    return null;
+                }
+                var endIndex = name.IndexOf((char)0);
+                if (endIndex > 0)
+                {
+                    return name.Substring(0, endIndex);
+                }
+                return name;
+            }
+
+            #endregion Private
+
+
+            private sealed class SubclassWindowRoot : NativeWindow
             {
                 private readonly SubclassWindow _child;
 
