@@ -134,10 +134,10 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 
             var size = new Size(width, height);
             var dstRect = GetDestinationRect(size);
-            RenderSprite(_sprite, _texture0, dstRect, AntiAlias);
+            RenderSprite(_sprite, _texture0, _frameSize, dstRect, AntiAlias);
             if (MimicTv)
             {
-                RenderSprite(_spriteTv, _textureMaskTv, dstRect, true);
+                RenderSprite(_spriteTv, _textureMaskTv, new Size(_frameSize.Width, (int)(_frameSize.Height * MimicTvRatio+0.5F)), dstRect, true);
             }
         }
 
@@ -184,15 +184,16 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 
         private void RenderSprite(
             Sprite sprite, 
-            Texture texture, 
+            Texture texture,
+            Size srcSize,
             RectangleF dstRect, 
             bool antiAlias)
         {
             var srcRect = new Rectangle(
                 0, 
                 0, 
-                _frameSize.Width, 
-                _frameSize.Height);
+                srcSize.Width, 
+                srcSize.Height);
             sprite.Begin(SpriteFlags.None);
             try
             {
