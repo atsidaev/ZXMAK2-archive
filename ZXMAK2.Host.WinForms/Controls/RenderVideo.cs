@@ -125,7 +125,14 @@ namespace ZXMAK2.Host.WinForms.Controls
 
         public void InitWnd()
         {
-            _allocator.Attach(Handle);
+            try
+            {
+                _allocator.Attach(Handle);
+            }
+            catch (Exception ex)    // process error on Mono
+            {
+                Logger.Error(ex);
+            }
         }
 
         public void FreeWnd()
