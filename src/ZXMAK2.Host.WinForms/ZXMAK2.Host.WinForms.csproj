@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="Controls\VideoFilter.cs" />
     <Compile Include="Mdx\AllocatorPresenter.cs" />
+    <Compile Include="Mdx\IAllocatorPresenter.cs" />
     <Compile Include="Mdx\IRenderer.cs" />
     <Compile Include="Mdx\Renderers\OsdRenderer.cs" />
     <Compile Include="Mdx\Renderers\IconRenderer.cs" />

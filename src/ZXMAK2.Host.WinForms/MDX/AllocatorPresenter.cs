@@ -30,7 +30,7 @@ using Size=System.Drawing.Size;
 
 namespace ZXMAK2.Host.WinForms.Mdx
 {
-    public sealed class AllocatorPresenter : IDisposable
+    public sealed class AllocatorPresenter : IAllocatorPresenter
     {
         #region Fields
 
@@ -54,6 +54,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         #region .ctor
 
+        public AllocatorPresenter()
+        {
+            RefreshRate = 50;
+        }
+
         public void Dispose()
         {
             Detach();
@@ -70,6 +75,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public bool IsRendering { get; private set; }
 
+        public int RefreshRate { get; private set; }
         
         public void Attach(IntPtr hwnd)
         {
@@ -192,6 +198,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     {
                         _device.Present();
                     }
+                    RefreshRate = Device.DisplayMode.RefreshRate;
                     OnPresentCompleted();
                     IsRendering = true;
                     return true;
