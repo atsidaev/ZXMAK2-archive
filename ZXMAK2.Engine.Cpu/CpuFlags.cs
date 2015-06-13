@@ -23,42 +23,97 @@ using System;
 
 namespace ZXMAK2.Engine.Cpu
 {
+    /// <summary>
+    /// Represent masks for the Z80 flags register
+    /// </summary>
     public static class CpuFlags
     {
+        #region Flags
+
+        /// <summary>
+        /// Sign Flag 
+        /// [Set if the 2-complement value is negative (copy of MSB)]
+        /// </summary>
         public const byte S = 0x80;
+        
+        /// <summary>
+        /// Zero Flag 
+        /// [Set if the value is zero]
+        /// </summary>
         public const byte Z = 0x40;
+
+        /// <summary>
+        /// Undocumented flag F5
+        /// </summary>
         public const byte F5 = 0x20;
+        
+        /// <summary>
+        /// Half Carry Flag 
+        /// [Carry from bit 3 to bit 4]
+        /// </summary>
         public const byte H = 0x10;
+
+        /// <summary>
+        /// Undocumented flag F3
+        /// </summary>
         public const byte F3 = 0x08;
-        public const byte Pv = 0x04;
+
+        /// <summary>
+        /// P/V - Parity/Overflow Flag
+        /// [Parity set if even number of bits set.
+        /// Overflow set if the 2-complement result does not fit in the register]
+        /// </summary>
+        public const byte P = 0x04;
+        
+        /// <summary>
+        /// Add/Subtract Flag 
+        /// [Set if the last operation was a subtraction]
+        /// </summary>
         public const byte N = 0x02;
+
+        /// <summary>
+        /// Carry Flag
+        /// [Set if the result did not fit in the register]
+        /// </summary>
         public const byte C = 0x01;
+
+        #endregion Flags
+
+
+        #region Inverted Masks
 
         public const byte NotS = S ^ 0xFF;
         public const byte NotZ = Z ^ 0xFF;
         public const byte NotF5 = F5 ^ 0xFF;
         public const byte NotH = H ^ 0xFF;
         public const byte NotF3 = F3 ^ 0xFF;
-        public const byte NotPv = Pv ^ 0xFF;
+        public const byte NotP = P ^ 0xFF;
         public const byte NotN = N ^ 0xFF;
         public const byte NotC = C ^ 0xFF;
 
+        #endregion Inverted Masks
+
+
+        #region Internal flag sets (used by engine)
+
         internal const byte F3F5 = F3 | F5;
-        internal const byte F3F5S = F3 | F5 | S;
-        internal const byte F3F5PvC = F3 | F5 | Pv | C;
-        internal const byte NCF3F5H = N | C | F3 | F5 | H;
-        internal const byte NHPvF3F5 = N | H | Pv | F3 | F5;
+        internal const byte SF3F5 = S | F3 | F5;
+        internal const byte PCF3F5 = P | C | F3 | F5;
+        internal const byte HNCF3F5 = H | N | C | F3 | F5;
+        internal const byte HPNF3F5 = H | P | N | F3 | F5;
         internal const byte HC = H | C;
-        internal const byte SZPv = S | Z | Pv;
-        internal const byte NH = N | H;
+        internal const byte SZP = S | Z | P;
+        internal const byte HN = H | N;
 
         internal const byte NotF3F5 = F3F5 ^ 0xFF;
-        internal const byte NotF3F5S = F3F5S ^ 0xFF;
-        internal const byte NotF3F5PvC = F3F5PvC ^ 0xFF;
-        internal const byte NotNCF3F5H = NCF3F5H ^ 0xFF;
-        internal const byte NotNHPvF3F5 = NHPvF3F5 ^ 0xFF;
+        internal const byte NotSF3F5 = SF3F5 ^ 0xFF;
+        internal const byte NotPCF3F5 = PCF3F5 ^ 0xFF;
+        internal const byte NotHNCF3F5 = HNCF3F5 ^ 0xFF;
+        internal const byte NotHPNF3F5 = HPNF3F5 ^ 0xFF;
         internal const byte NotHC = HC ^ 0xFF;
-        internal const byte NotSZPv = SZPv ^ 0xFF;
-        internal const byte NotNH = NH ^ 0xFF;
+        internal const byte NotSZP = SZP ^ 0xFF;
+        internal const byte NotHN = HN ^ 0xFF;
+
+        #endregion Internal flag sets (used by engine)
     }
 }
