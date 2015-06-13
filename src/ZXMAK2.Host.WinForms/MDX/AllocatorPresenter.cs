@@ -84,66 +84,37 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     throw new InvalidOperationException("Already attached!");
                 }
                 ErrorMessage = null;
-                try
-                {
-                    _window = new SubclassWindow(this);
-                    _window.AssignHandle(hwnd);
-                    _good.Clear();
-                    _isRunning = true;
-                    _thread = new Thread(RenderThreadProc);
-                    _thread.IsBackground = false;
-                    _thread.Start();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                    ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
-                    
-                    var window = _window;
-                    _window = null;
-                    var thread = _thread;
-                    _thread = null;
-                    _isRunning = false;
-                    if (thread != null && thread.IsAlive)
-                    {
-                        thread.Join();
-                    }
-                    if (window != null)
-                    {
-                        window.ReleaseHandle();
-                    }
-                }
+                IsRendering = false;
+                _window = CreateSubclassWindow(hwnd);
+                _good.Clear();
+                _isRunning = true;
+                _thread = new Thread(RenderThreadProc);
+                _thread.IsBackground = false;
+                _thread.Start();
             }
         }
 
         public void Detach()
         {
-            try
+            IsRendering = false;
+            Thread thread = null;
+            SubclassWindow window = null;
+            lock (_syncRoot)
             {
-                IsRendering = false;
-                Thread thread = null;
-                SubclassWindow window = null;
-                lock (_syncRoot)
-                {
-                    window = _window;
-                    _window = null;
-                    thread = _thread;
-                    _thread = null;
-                    _isRunning = false;
-                }
-                // wait&release outside lock to avoid deadlock
-                if (thread != null && thread.IsAlive)
-                {
-                    thread.Join();
-                }
-                if (window != null)
-                {
-                    window.ReleaseHandle();
-                }
+                window = _window;
+                _window = null;
+                thread = _thread;
+                _thread = null;
+                _isRunning = false;
             }
-            catch (Exception ex)
+            // wait&release outside lock to avoid deadlock
+            if (thread != null && thread.IsAlive)
             {
-                Logger.Error(ex);
+                thread.Join();
+            }
+            if (window != null)
+            {
+                window.ReleaseHandle();
             }
         }
 
@@ -478,20 +449,25 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 return;
             }
+            var failed = false;
             try
             {
                 _swapChain = new SwapChain(_device, d3dpp);
                 _renderTarget = _swapChain.GetBackBuffer(0, BackBufferType.Mono);
                 //_renderTarget = _device.GetRenderTarget(0);
             }
-            catch
+            catch (Exception ex)
             {
-                if (_swapChain != null)
-                {
-                    _swapChain.Dispose();
-                    _swapChain = null;
-                }
+                failed = true;
+                ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
                 throw;
+            }
+            finally
+            {
+                if (failed)
+                {
+                    OnLost();
+                }
             }
         }
 
@@ -569,6 +545,30 @@ namespace ZXMAK2.Host.WinForms.Mdx
             //d3dpp.MultiSample = MultiSampleType.NonMaskable;
             d3dpp.PresentFlag = PresentFlag.Video; // PresentFlag.DeviceClip == single display mode
             return d3dpp;
+        }
+
+        private SubclassWindow CreateSubclassWindow(IntPtr hwnd)
+        {
+            var window = new SubclassWindow(this);
+            var failed = false;
+            try
+            {
+                window.AssignHandle(hwnd);
+                return window;
+            }
+            catch (Exception ex)
+            {
+                failed = true;
+                ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
+                throw;
+            }
+            finally
+            {
+                if (failed)
+                {
+                    window.ReleaseHandle();
+                }
+            }
         }
 
         #endregion Private
