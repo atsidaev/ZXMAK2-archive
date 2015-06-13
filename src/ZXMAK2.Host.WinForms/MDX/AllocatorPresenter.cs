@@ -35,12 +35,13 @@ namespace ZXMAK2.Host.WinForms.Mdx
         #region Fields
 
         private readonly object _syncRoot = new object();
-        private readonly Thread _thread;
         private readonly List<IRenderer> _renderers = new List<IRenderer>();
         private readonly HashSet<IRenderer> _loaded = new HashSet<IRenderer>();
         private readonly HashSet<IRenderer> _failed = new HashSet<IRenderer>();
         private readonly HashSet<IRenderer> _good = new HashSet<IRenderer>();
         private SubclassWindow _window;
+        private Thread _thread;
+        private bool _isRunning;
         private IntPtr _monitorId;
         private Device _device;
         private PresentParameters _d3dpp;
@@ -52,12 +53,6 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
 
         #region .ctor
-
-        public AllocatorPresenter()
-        {
-            _thread = new Thread(RenderThreadProc);
-            _thread.IsBackground = false;
-        }
 
         public void Dispose()
         {
@@ -93,21 +88,29 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 {
                     _window = new SubclassWindow(this);
                     _window.AssignHandle(hwnd);
+                    _good.Clear();
+                    _isRunning = true;
+                    _thread = new Thread(RenderThreadProc);
+                    _thread.IsBackground = false;
                     _thread.Start();
                 }
                 catch (Exception ex)
                 {
                     Logger.Error(ex);
                     ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
-                    if (_window != null)
+                    
+                    var window = _window;
+                    _window = null;
+                    var thread = _thread;
+                    _thread = null;
+                    _isRunning = false;
+                    if (thread != null && thread.IsAlive)
                     {
-                        _window.ReleaseHandle();
-                        _window = null;
+                        thread.Join();
                     }
-                    if (_thread.IsAlive)
+                    if (window != null)
                     {
-                        _thread.Abort();
-                        _thread.Join();
+                        window.ReleaseHandle();
                     }
                 }
             }
@@ -118,24 +121,24 @@ namespace ZXMAK2.Host.WinForms.Mdx
             try
             {
                 IsRendering = false;
-                var waitNeeded = false;
+                Thread thread = null;
+                SubclassWindow window = null;
                 lock (_syncRoot)
                 {
-                    if (_window != null)
-                    {
-                        _window.ReleaseHandle();
-                        _window = null;
-                    }
-                    waitNeeded = _thread.IsAlive;
-                    if (waitNeeded)
-                    {
-                        _thread.Abort();
-                    }
+                    window = _window;
+                    _window = null;
+                    thread = _thread;
+                    _thread = null;
+                    _isRunning = false;
                 }
-                // wait outside lock to avoid deadlock
-                if (waitNeeded)
+                // wait&release outside lock to avoid deadlock
+                if (thread != null && thread.IsAlive)
                 {
-                    _thread.Join();
+                    thread.Join();
+                }
+                if (window != null)
+                {
+                    window.ReleaseHandle();
                 }
             }
             catch (Exception ex)
@@ -148,6 +151,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             lock (_syncRoot)
             {
+                if (_window == null)
+                {
+                    return false;
+                }
                 try
                 {
                     if (_monitorId != _window.MonitorId)
@@ -218,10 +225,6 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     IsRendering = true;
                     return true;
                 }
-                catch (ThreadAbortException)
-                {
-                    throw;
-                }
                 catch (DeviceLostException ex)
                 {
                     Logger.Debug(ex);
@@ -231,13 +234,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 {
                     Logger.Error(ex);
                     ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
-                    Thread.Sleep(1000);
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                    ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
+                    IsRendering = false;
                     Thread.Sleep(1000);
                     return false;
                 }
@@ -310,11 +307,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 try
                 {
-                    while (true)
+                    while (_isRunning)
                     {
                         var success = RenderIteration();
                         Thread.Yield();
-                        if (!success)
+                        if (!success && _isRunning)
                         {
                             Thread.Sleep(10);
                         }
@@ -326,14 +323,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     OnDeviceDestroy();
                 }
             }
-            catch (ThreadAbortException)
-            {
-                throw;
-            }
             catch (Exception ex)
             {
                 Logger.Fatal(ex);
-                throw;
+                ErrorMessage = string.Format("{0}: {1}", ex.GetType(), ex.Message);
             }
         }
 
@@ -440,27 +433,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 renderer.Load();
                 _good.Add(renderer);
             }
-            catch (ThreadAbortException)
+            catch
             {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
                 _failed.Add(renderer);
                 _loaded.Remove(renderer);
-                try
-                {
-                    renderer.Unload();
-                }
-                catch (ThreadAbortException)
-                {
-                    throw;
-                }
-                catch (Exception ex2)
-                {
-                    Logger.Error(ex2);
-                }
+                throw;
             }
         }
 
@@ -475,14 +452,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 renderer.Unload();
             }
-            catch (ThreadAbortException)
+            catch
             {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
                 _failed.Add(renderer);
+                throw;
             }
         }
 
@@ -518,6 +491,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     _swapChain.Dispose();
                     _swapChain = null;
                 }
+                throw;
             }
         }
 
@@ -543,9 +517,19 @@ namespace ZXMAK2.Host.WinForms.Mdx
             _device.BeginScene();
             try
             {
-                foreach (var renderer in _good)
+                var renderers = _good.ToArray();
+                foreach (var renderer in renderers)
                 {
-                    renderer.Render(_size.Width, _size.Height);
+                    try
+                    {
+                        renderer.Render(_size.Width, _size.Height);
+                    }
+                    catch
+                    {
+                        _good.Remove(renderer);
+                        _failed.Add(renderer);
+                        throw;
+                    }
                 }
             }
             finally
