@@ -15,7 +15,7 @@ namespace ZXMAK2.Host.WinForms.Controls
 {
     public class RenderVideo : Control, IHostVideo
     {
-        private readonly AllocatorPresenter _allocator;
+        private readonly IAllocatorPresenter _allocator;
         private readonly VideoRenderer _videoLayer;
         private readonly OsdRenderer _osdLayer;
         private readonly IconRenderer _iconLayer;
@@ -30,11 +30,12 @@ namespace ZXMAK2.Host.WinForms.Controls
             SetStyle(
                 ControlStyles.Opaque | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.AllPaintingInWmPaint, 
                 true);
-            
-            _allocator = new AllocatorPresenter();
-            _videoLayer = new VideoRenderer(_allocator);
-            _osdLayer = new OsdRenderer(_allocator);
-            _iconLayer = new IconRenderer(_allocator);
+
+            var allocator = new AllocatorPresenter();
+            _allocator = allocator;
+            _videoLayer = new VideoRenderer(allocator);
+            _osdLayer = new OsdRenderer(allocator);
+            _iconLayer = new IconRenderer(allocator);
             _videoLayer.IsVisible = true;
 
             _allocator.Register(_videoLayer);
@@ -219,7 +220,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         {
             _osdLayer.UpdatePresent();
             _frameEvent.Set();
-            _frameResampler.SourceRate = _allocator.Device.DisplayMode.RefreshRate;
+            _frameResampler.SourceRate = _allocator.RefreshRate;
         }
     }
 }
