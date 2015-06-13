@@ -1,18 +1,34 @@
-/// Description: Z80 CPU Emulator [registers part]
-/// Author: Alex Makeev
-/// Date: 18.03.2007
+/* 
+ *  Copyright 2007, 2015 Alex Makeev
+ * 
+ *  This file is part of ZXMAK2 (ZX Spectrum virtual machine).
+ *
+ *  ZXMAK2 is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  ZXMAK2 is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with ZXMAK2.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *  Description: Z80 CPU Emulator [registers part]
+ *  Date: 18.03.2007
+ *  
+ */
 using System;
 using System.Runtime.InteropServices;
-using ZXMAK2.Engine.Cpu.Processor;
 
 
 namespace ZXMAK2.Engine.Cpu
 {
     [StructLayout(LayoutKind.Explicit)]
-    public class CpuRegs
+    public sealed class CpuRegs
     {
-        #region storage
-
         [FieldOffset(0)]
         public ushort AF = 0;
         [FieldOffset(2)]
@@ -76,88 +92,5 @@ namespace ZXMAK2.Engine.Cpu
         public byte MH;
         [FieldOffset(26)]
         public byte ML;
-        #endregion
-
-        #region accessors
-
-        internal void EXX()
-        {
-            ushort tmp = BC;
-            BC = _BC;
-            _BC = tmp;
-            tmp = DE;
-            DE = _DE;
-            _DE = tmp;
-            tmp = HL;
-            HL = _HL;
-            _HL = tmp;
-        }
-        
-        internal void EXAF()
-        {
-            ushort tmp = AF;
-            AF = _AF;
-            _AF = tmp;
-        }
-
-        internal byte this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case CpuRegId.B: return B;
-                    case CpuRegId.C: return C;
-                    case CpuRegId.D: return D;
-                    case CpuRegId.E: return E;
-                    case CpuRegId.H: return H;
-                    case CpuRegId.L: return L;
-                    case CpuRegId.A: return A;
-                    case CpuRegId.F: return F;
-                    default: throw new ArgumentOutOfRangeException("index");
-                }
-            }
-            set
-            {
-                switch (index)
-                {
-                    case CpuRegId.B: B = value; break;
-                    case CpuRegId.C: C = value; break;
-                    case CpuRegId.D: D = value; break;
-                    case CpuRegId.E: E = value; break;
-                    case CpuRegId.H: H = value; break;
-                    case CpuRegId.L: L = value; break;
-                    case CpuRegId.A: A = value; break;
-                    case CpuRegId.F: F = value; break;
-                    default: throw new ArgumentOutOfRangeException("index");
-                }
-            }
-        }
-
-        internal void SetPair(int rr, ushort value)
-        {
-            switch (rr)
-            {
-                case CpuRegId.Bc: BC = value; return;
-                case CpuRegId.De: DE = value; return;
-                case CpuRegId.Hl: HL = value; return;
-                case CpuRegId.Sp: SP = value; return;
-                default: throw new ArgumentOutOfRangeException("rr");
-            }
-        }
-
-        internal ushort GetPair(int rr)
-        {
-            switch (rr)
-            {
-                case CpuRegId.Bc: return BC;
-                case CpuRegId.De: return DE;
-                case CpuRegId.Hl: return HL;
-                case CpuRegId.Sp: return SP;
-                default: throw new ArgumentOutOfRangeException("rr");
-            }
-        }
-
-        #endregion
     }
 }

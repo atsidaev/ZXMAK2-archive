@@ -78,7 +78,6 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 			regs.R = regsData[20];
 			regs.AF = (ushort)(regsData[21] + 256 * regsData[22]);
 			regs.SP = (ushort)(regsData[23] + 256 * regsData[24]);
-			_spec.CPU.regs = regs;
 
 			_spec.CPU.BINT = false;
 			_spec.CPU.XFX = CpuModeEx.None;
