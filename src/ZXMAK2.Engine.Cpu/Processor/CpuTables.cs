@@ -57,11 +57,11 @@ namespace ZXMAK2.Engine.Cpu.Processor
                     for (var y = 0; y < 0x100; y++)
                     {
                         var res = x - y - c;
-                        var fl = res & CpuFlags.F3F5S;
+                        var fl = res & CpuFlags.SF3F5;
                         if ((res & 0xFF) == 0) fl |= CpuFlags.Z;
                         if ((res & 0x10000) != 0) fl |= CpuFlags.C;
                         var r = (sbyte)x - (sbyte)y - c;
-                        if (r >= 0x80 || r < -0x80) fl |= CpuFlags.Pv;
+                        if (r >= 0x80 || r < -0x80) fl |= CpuFlags.P;
                         if ((((x & 0x0F) - (res & 0x0F) - c) & 0x10) != 0) fl |= CpuFlags.H;
                         fl |= CpuFlags.N;
                         Sbcf[c * 0x10000 + x * 0x100 + y] = (byte)fl;
@@ -72,7 +72,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             {
                 Cpf[i] = (byte)((Sbcf[i] & CpuFlags.NotF3F5) | (i & CpuFlags.F3F5));
                 var val = (byte)((i >> 8) - (i & 0xFF) - ((Sbcf[i] & CpuFlags.H) >> 4));
-                Cpf8b[i] = (byte)((Sbcf[i] & CpuFlags.NotF3F5PvC) + (val & CpuFlags.F3) + ((val << 4) & CpuFlags.F5));
+                Cpf8b[i] = (byte)((Sbcf[i] & CpuFlags.NotPCF3F5) + (val & CpuFlags.F3) + ((val << 4) & CpuFlags.F5));
             }
         }
 
@@ -82,11 +82,11 @@ namespace ZXMAK2.Engine.Cpu.Processor
             var log_f = new byte[0x100];
             for (var x = 0; x < 0x100; x++)
             {
-                var fl = x & CpuFlags.F3F5S;
-                var p = CpuFlags.Pv;
+                var fl = x & CpuFlags.SF3F5;
+                var p = CpuFlags.P;
                 for (var i = 0x80; i != 0; i /= 2)
                 {
-                    if ((x & i) == i) p ^= CpuFlags.Pv;
+                    if ((x & i) == i) p ^= CpuFlags.P;
                 }
                 log_f[x] = (byte)(fl | p);
             }
@@ -107,11 +107,11 @@ namespace ZXMAK2.Engine.Cpu.Processor
                         uint res = (uint)(x + y + c);
                         byte fl = 0;
                         if ((res & 0xFF) == 0) fl |= CpuFlags.Z;
-                        fl |= (byte)(res & CpuFlags.F3F5S);
+                        fl |= (byte)(res & CpuFlags.SF3F5);
                         if (res >= 0x100) fl |= CpuFlags.C;
                         if ((((x & 0x0F) + (y & 0x0F) + c) & 0x10) != 0) fl |= CpuFlags.H;
                         int ri = (sbyte)x + (sbyte)y + c;
-                        if (ri >= 0x80 || ri <= -0x81) fl |= CpuFlags.Pv;
+                        if (ri >= 0x80 || ri <= -0x81) fl |= CpuFlags.P;
                         adcf[c * 0x10000 + x * 0x100 + y] = fl;
                     }
                 }

@@ -130,7 +130,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void RLCA(byte cmd)
         {
-            regs.F = (byte)(CpuTables.Rlcaf[regs.A] | (regs.F & CpuFlags.SZPv));
+            regs.F = (byte)(CpuTables.Rlcaf[regs.A] | (regs.F & CpuFlags.SZP));
             int x = regs.A;
             x <<= 1;
             if ((x & 0x100) != 0) x = (x | 0x01) & 0xFF;
@@ -139,7 +139,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void RRCA(byte cmd)
         {
-            regs.F = (byte)(CpuTables.Rrcaf[regs.A] | (regs.F & CpuFlags.SZPv));
+            regs.F = (byte)(CpuTables.Rrcaf[regs.A] | (regs.F & CpuFlags.SZP));
             int x = regs.A;
             if ((x & 0x01) != 0) x = (x >> 1) | 0x80;
             else x >>= 1;
@@ -149,7 +149,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void RLA(byte cmd)
         {
             var carry = (regs.F & CpuFlags.C) != 0;
-            regs.F = (byte)(CpuTables.Rlcaf[regs.A] | (regs.F & CpuFlags.SZPv)); // use same table with rlca
+            regs.F = (byte)(CpuTables.Rlcaf[regs.A] | (regs.F & CpuFlags.SZP)); // use same table with rlca
             regs.A = (byte)((regs.A << 1) & 0xFF);
             if (carry) regs.A |= (byte)0x01;
         }
@@ -157,7 +157,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void RRA(byte cmd)
         {
             var carry = (regs.F & CpuFlags.C) != 0;
-            regs.F = (byte)(CpuTables.Rrcaf[regs.A] | (regs.F & CpuFlags.SZPv)); // use same table with rrca
+            regs.F = (byte)(CpuTables.Rrcaf[regs.A] | (regs.F & CpuFlags.SZP)); // use same table with rrca
             regs.A = (byte)(regs.A >> 1);
             if (carry) regs.A |= (byte)0x80;
         }
@@ -170,13 +170,13 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void CPL(byte cmd)
         {
             regs.A ^= (byte)0xFF;
-            regs.F = (byte)((regs.F & CpuFlags.NotF3F5) | CpuFlags.NH | (regs.A & CpuFlags.F3F5));
+            regs.F = (byte)((regs.F & CpuFlags.NotF3F5) | CpuFlags.HN | (regs.A & CpuFlags.F3F5));
         }
 
         private void SCF(byte cmd)
         {
             //regs.F = (byte)((regs.F & (int)~(ZFLAGS.H | ZFLAGS.N)) | (regs.A & (int)(ZFLAGS.F3 | ZFLAGS.F5)) | (int)ZFLAGS.C);
-            regs.F = (byte)((regs.F & CpuFlags.SZPv) |
+            regs.F = (byte)((regs.F & CpuFlags.SZP) |
                 (regs.A & CpuFlags.F3F5) |
                 CpuFlags.C);
         }
@@ -184,7 +184,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         private void CCF(byte cmd)
         {
             //regs.F = (byte)(((regs.F & (int)~(ZFLAGS.N | ZFLAGS.H)) | ((regs.F << 4) & (int)ZFLAGS.H) | (regs.A & (int)(ZFLAGS.F3 | ZFLAGS.F5))) ^ (int)ZFLAGS.C);
-            regs.F = (byte)((regs.F & CpuFlags.SZPv) |
+            regs.F = (byte)((regs.F & CpuFlags.SZP) |
                 ((regs.F & CpuFlags.C) != 0 ? CpuFlags.H : CpuFlags.C) | 
                 (regs.A & CpuFlags.F3F5));
         }
@@ -197,7 +197,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         { 
             CpuFlags.Z, 
             CpuFlags.C, 
-            CpuFlags.Pv, 
+            CpuFlags.P, 
             CpuFlags.S 
         };
 

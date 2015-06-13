@@ -93,7 +93,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private ushort ALU_ADDHLRR(ushort rhl, ushort rde)
         {
-            regs.F = (byte)(regs.F & CpuFlags.NotNCF3F5H);
+            regs.F = (byte)(regs.F & CpuFlags.NotHNCF3F5);
             regs.F |= (byte)((((rhl & 0x0FFF) + (rde & 0x0FFF)) >> 8) & CpuFlags.H);
             uint res = (uint)((rhl & 0xFFFF) + (rde & 0xFFFF));
 
