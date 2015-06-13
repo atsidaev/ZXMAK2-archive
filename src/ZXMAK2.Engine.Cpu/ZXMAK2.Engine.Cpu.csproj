@@ -39,19 +39,21 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CpuUnit.cs" />
     <Compile Include="CpuFlags.cs" />
+    <Compile Include="CpuUnit.cs" />
     <Compile Include="CpuType.cs" />
     <Compile Include="CpuModeIndex.cs" />
     <Compile Include="CpuModeEx.cs" />
     <Compile Include="Processor\CpuRegId.cs" />
-    <Compile Include="Processor\Z80.cs" />
-    <Compile Include="Processor\Z80ALU.cs" />
-    <Compile Include="Processor\Z80CBops.cs" />
-    <Compile Include="Processor\Z80EDops.cs" />
-    <Compile Include="Processor\Z80FXCBops.cs" />
-    <Compile Include="Processor\Z80FXops.cs" />
-    <Compile Include="Processor\Z80OPS.cs" />
+    <Compile Include="Processor\CpuTables.cs" />
+    <Compile Include="Processor\Z80Cpu.cs" />
+    <Compile Include="Processor\Z80Cpu.Tables.cs" />
+    <Compile Include="Processor\Z80Cpu.Alu.cs" />
+    <Compile Include="Processor\Z80Cpu.OpcodesCb.cs" />
+    <Compile Include="Processor\Z80Cpu.OpcodesEd.cs" />
+    <Compile Include="Processor\Z80Cpu.OpcodesFxCb.cs" />
+    <Compile Include="Processor\Z80Cpu.OpcodesFx.cs" />
+    <Compile Include="Processor\Z80Cpu.Opcodes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\DasmTool.cs" />
     <Compile Include="Tools\TimingTool.cs" />
