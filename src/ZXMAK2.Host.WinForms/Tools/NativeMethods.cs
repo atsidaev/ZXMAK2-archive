@@ -145,6 +145,11 @@ namespace ZXMAK2.Host.WinForms.Tools
             int height,
             int dstStride)
         {
+            if (dstStride == width)
+            {
+                CopyMemory(pDstBuffer, pSrcBuffer, (width * height) << 2);
+                return;
+            }
             var lineSize = width << 2;
             var srcLine = pSrcBuffer;
             var dstLine = pDstBuffer;
