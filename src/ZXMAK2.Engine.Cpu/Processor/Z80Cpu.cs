@@ -59,16 +59,16 @@ namespace ZXMAK2.Engine.Cpu.Processor
         public Z80Cpu()
         {
             _pairGetters = Enumerable
-                .Range(0, 4).Select(CreatePairGetter)
+                .Range(0, 4).Select(regs.CreatePairGetter)
                 .ToArray();
             _pairSetters = Enumerable
-                .Range(0, 4).Select(CreatePairSetter)
+                .Range(0, 4).Select(regs.CreatePairSetter)
                 .ToArray();
             _regGetters = Enumerable
-                .Range(0, 8).Select(CreateRegGetter)
+                .Range(0, 8).Select(regs.CreateRegGetter)
                 .ToArray();
             _regSetters = Enumerable
-                .Range(0, 8).Select(CreateRegSetter)
+                .Range(0, 8).Select(regs.CreateRegSetter)
                 .ToArray();
             _alualg = CreateAluAlg();
             _opcodes = CreateOpcodes();

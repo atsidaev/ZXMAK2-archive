@@ -22,6 +22,7 @@
  */
 using System;
 using System.Runtime.InteropServices;
+using ZXMAK2.Engine.Cpu.Processor;
 
 
 namespace ZXMAK2.Engine.Cpu
@@ -92,5 +93,69 @@ namespace ZXMAK2.Engine.Cpu
         public byte MH;
         [FieldOffset(26)]
         public byte ML;
+
+
+        #region Access Lamda Generators
+        
+        // Access field from an object context
+        // makes one native instruction lesser
+
+        internal Func<byte> CreateRegGetter(int r)
+        {
+            switch (r)
+            {
+                case CpuRegId.B: return () => B;
+                case CpuRegId.C: return () => C;
+                case CpuRegId.D: return () => D;
+                case CpuRegId.E: return () => E;
+                case CpuRegId.H: return () => H;
+                case CpuRegId.L: return () => L;
+                case CpuRegId.A: return () => A;
+                case CpuRegId.F: return () => F;
+                default: throw new ArgumentOutOfRangeException("r");
+            }
+        }
+
+        internal Action<byte> CreateRegSetter(int r)
+        {
+            switch (r)
+            {
+                case CpuRegId.B: return arg => B = arg;
+                case CpuRegId.C: return arg => C = arg;
+                case CpuRegId.D: return arg => D = arg;
+                case CpuRegId.E: return arg => E = arg;
+                case CpuRegId.H: return arg => H = arg;
+                case CpuRegId.L: return arg => L = arg;
+                case CpuRegId.A: return arg => A = arg;
+                case CpuRegId.F: return arg => F = arg;
+                default: throw new ArgumentOutOfRangeException("r");
+            }
+        }
+
+        internal Func<ushort> CreatePairGetter(int rr)
+        {
+            switch (rr)
+            {
+                case CpuRegId.Bc: return () => BC;
+                case CpuRegId.De: return () => DE;
+                case CpuRegId.Hl: return () => HL;
+                case CpuRegId.Sp: return () => SP;
+                default: throw new ArgumentOutOfRangeException("rr");
+            }
+        }
+
+        internal Action<ushort> CreatePairSetter(int rr)
+        {
+            switch (rr)
+            {
+                case CpuRegId.Bc: return arg => BC = arg;
+                case CpuRegId.De: return arg => DE = arg;
+                case CpuRegId.Hl: return arg => HL = arg;
+                case CpuRegId.Sp: return arg => SP = arg;
+                default: throw new ArgumentOutOfRangeException("rr");
+            }
+        }
+
+        #endregion Access Lamda Generators
     }
 }
