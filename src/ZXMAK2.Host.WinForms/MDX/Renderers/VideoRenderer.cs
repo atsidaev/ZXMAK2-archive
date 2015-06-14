@@ -133,7 +133,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             UpdateTextureData(videoData);
 
             var size = new Size(width, height);
-            var dstRect = GetDestinationRect(size);
+            var dstRect = ScaleHelper.GetDestinationRect(ScaleMode, size, _frameSizeNormalized);
             RenderSprite(_sprite, _texture0, _frameSize, dstRect, AntiAlias);
             if (MimicTv)
             {
@@ -216,50 +216,6 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             }
         }
 
-        private RectangleF GetDestinationRect(SizeF wndSize)
-        {
-            var dstSize = _frameSizeNormalized;
-            if (dstSize.Width <= 0 || dstSize.Height <= 0)
-            {
-                return new RectangleF(new PointF(0, 0), dstSize);
-            }
-            var rx = wndSize.Width / dstSize.Width;
-            var ry = wndSize.Height / dstSize.Height;
-            if (ScaleMode == ScaleMode.SquarePixelSize)
-            {
-                rx = (float)Math.Floor(rx);
-                ry = (float)Math.Floor(ry);
-                rx = ry = Math.Min(rx, ry);
-                rx = rx < 1F ? 1F : rx;
-                ry = ry < 1F ? 1F : ry;
-            }
-            if (ScaleMode == ScaleMode.FixedPixelSize)
-            {
-                rx = (float)Math.Floor(rx);
-                ry = (float)Math.Floor(ry);
-                rx = rx < 1F ? 1F : rx;
-                ry = ry < 1F ? 1F : ry;
-            }
-            else if (ScaleMode == ScaleMode.KeepProportion)
-            {
-                if (rx > ry)
-                {
-                    rx = (wndSize.Width * ry / rx) / dstSize.Width;
-                }
-                else if (rx < ry)
-                {
-                    ry = (wndSize.Height * rx / ry) / dstSize.Height;
-                }
-            }
-            dstSize = new SizeF(
-                dstSize.Width * rx,
-                dstSize.Height * ry);
-            var dstPos = new PointF(
-                (float)Math.Floor((wndSize.Width - dstSize.Width) / 2F),
-                (float)Math.Floor((wndSize.Height - dstSize.Height) / 2F));
-            return new RectangleF(dstPos, dstSize);
-        }
-
         private void UpdateTextureSize(Size size)
         {
             if (_texture0 != null)
@@ -275,7 +231,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 
             _frameSize = size;
             var maxSize = Math.Max(size.Width, size.Height);
-            var potSize = AllocatorPresenter.GetPotSize(maxSize);
+            var potSize = ScaleHelper.GetPotSize(maxSize);
             _texture0 = new Texture(
                 Allocator.Device,
                 potSize,
@@ -288,7 +244,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 
             var maskSizeTv = new Size(size.Width, size.Height * MimicTvRatio);
             var maxSizeTv = Math.Max(maskSizeTv.Width, maskSizeTv.Height);
-            var potSizeTv = AllocatorPresenter.GetPotSize(maxSizeTv);
+            var potSizeTv = ScaleHelper.GetPotSize(maxSizeTv);
             _textureMaskTv = new Texture(
                 Allocator.Device,
                 potSizeTv,
@@ -329,7 +285,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                 {
                     fixed (int* srcPtr = videoData.Buffer)
                     {
-                        CopyStride(
+                        NativeMethods.CopyStride(
                             (int*)gs.InternalData.ToPointer(),
                             srcPtr,
                             _frameSize.Width,
@@ -339,24 +295,6 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                 }
             }
             _texture0.UnlockRectangle(0);
-        }
-
-        private static unsafe void CopyStride(
-            int* pDstBuffer,
-            int* pSrcBuffer,
-            int width,
-            int height,
-            int dstStride)
-        {
-            var lineSize = width << 2;
-            var srcLine = pSrcBuffer;
-            var dstLine = pDstBuffer;
-            for (var y = 0; y < height; y++)
-            {
-                NativeMethods.CopyMemory(dstLine, srcLine, lineSize);
-                srcLine += width;
-                dstLine += dstStride;
-            }
         }
 
         private void FilterNoFlick(

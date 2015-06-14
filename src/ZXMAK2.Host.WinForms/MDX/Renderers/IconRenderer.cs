@@ -23,6 +23,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using Microsoft.DirectX.Direct3D;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.WinForms.Tools;
 
 namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 {
@@ -77,7 +78,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             {
                 icon.LoadResources(Allocator.Device);
             }
-            var potSize = AllocatorPresenter.GetPotSize(32);
+            var potSize = ScaleHelper.GetPotSize(32);
             var iconSize = new SizeF(potSize, potSize);
             var iconNumber = 1;
             foreach (var iconTexture in visibleIcons)

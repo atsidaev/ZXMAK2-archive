@@ -75,7 +75,7 @@
     <Compile Include="Controls\MenuStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\ScaleMode.cs" />
+    <Compile Include="Tools\ScaleMode.cs" />
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -102,6 +102,7 @@
     <Compile Include="Tools\EnumMapper.cs" />
     <Compile Include="Tools\FrameResampler.cs" />
     <Compile Include="Tools\NativeMethods.cs" />
+    <Compile Include="Tools\ScaleHelper.cs" />
     <Compile Include="Views\Configuration\Devices\ConfigScreenControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
