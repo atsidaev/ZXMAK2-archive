@@ -60,6 +60,7 @@
     <EmbeddedResource Include="testVideo.z80" />
     <EmbeddedResource Include="zexall.sna" />
     <EmbeddedResource Include="testOutFe.z80" />
+    <None Include="machines.testLight.config" />
     <None Include="machines.test.config" />
   </ItemGroup>
   <ItemGroup>
