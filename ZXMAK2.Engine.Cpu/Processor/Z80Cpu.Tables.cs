@@ -40,7 +40,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private Action<byte>[] CreateOpcodes()
         {
-            return new Action<byte>[256]
+            var opcodes = new Action<byte>[256]
             {
 //              0        1         2         3         4          5        6         7          8       9        A         B        C          D         E         F
                 null,    LDRRNNNN, LD_RR_A,  INCRR,    INCR,      DECR,    LDRNN,    RLCA,      EXAFAF, ADDHLRR, LDA_RR_,  DECRR,   INCR,      DECR,     LDRNN,    RRCA,   // 00..0F
@@ -63,6 +63,16 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 RETX,    POPRR,    JPXNN,    EX_SP_HL, CALLXNNNN, PUSHRR,  ALUAN,    RSTNN,     RETX,   JP_HL_,  JPXNN,    EXDEHL,  CALLXNNNN, null,     ALUAN,    RSTNN,  // E0..EF
                 RETX,    POPRR,    JPXNN,    DI,       CALLXNNNN, PUSHRR,  ALUAN,    RSTNN,     RETX,   LDSPHL,  JPXNN,    EI,      CALLXNNNN, null,     ALUAN,    RSTNN,  // F0..FF
             };
+            return opcodes;
+            // patch opcodes with optimized version
+            //for (var cmd = 0; cmd < 0x100; cmd++)
+            //{
+            //    opcodes[cmd] =
+            //        EmitOpcodeLdRegReg(cmd) ??
+            //        EmitOpcodeJrXdisp(cmd) ??
+            //        opcodes[cmd];
+            //}
+            //return opcodes;
         }
 
         private Action<byte>[] CreateOpcodesFx()
@@ -171,60 +181,71 @@ namespace ZXMAK2.Engine.Cpu.Processor
             };
         }
 
-        private Func<byte> CreateRegGetter(int r)
-        {
-            switch (r)
-            {
-                case CpuRegId.B: return () => regs.B;
-                case CpuRegId.C: return () => regs.C;
-                case CpuRegId.D: return () => regs.D;
-                case CpuRegId.E: return () => regs.E;
-                case CpuRegId.H: return () => regs.H;
-                case CpuRegId.L: return () => regs.L;
-                case CpuRegId.A: return () => regs.A;
-                case CpuRegId.F: return () => regs.F;
-                default: throw new ArgumentOutOfRangeException("r");
-            }
-        }
 
-        private Action<byte> CreateRegSetter(int r)
-        {
-            switch (r)
-            {
-                case CpuRegId.B: return arg => regs.B = arg;
-                case CpuRegId.C: return arg => regs.C = arg;
-                case CpuRegId.D: return arg => regs.D = arg;
-                case CpuRegId.E: return arg => regs.E = arg;
-                case CpuRegId.H: return arg => regs.H = arg;
-                case CpuRegId.L: return arg => regs.L = arg;
-                case CpuRegId.A: return arg => regs.A = arg;
-                case CpuRegId.F: return arg => regs.F = arg;
-                default: throw new ArgumentOutOfRangeException("r");
-            }
-        }
 
-        private Func<ushort> CreatePairGetter(int rr)
-        {
-            switch (rr)
-            {
-                case CpuRegId.Bc: return () => regs.BC;
-                case CpuRegId.De: return () => regs.DE;
-                case CpuRegId.Hl: return () => regs.HL;
-                case CpuRegId.Sp: return () => regs.SP;
-                default: throw new ArgumentOutOfRangeException("rr");
-            }
-        }
+        #region Optimized emitters
 
-        private Action<ushort> CreatePairSetter(int rr)
-        {
-            switch (rr)
-            {
-                case CpuRegId.Bc: return arg => regs.BC = arg;
-                case CpuRegId.De: return arg => regs.DE = arg;
-                case CpuRegId.Hl: return arg => regs.HL = arg;
-                case CpuRegId.Sp: return arg => regs.SP = arg;
-                default: throw new ArgumentOutOfRangeException("rr");
-            }
-        }
+        //private Action<byte> EmitOpcodeLdRegReg(int cmd)
+        //{
+        //    if (cmd < 0x40 || cmd >= 0x80)
+        //    {
+        //        return null;
+        //    }
+        //    var rsrc = cmd & 0x07;
+        //    var rdst = (cmd & 0x38) >> 3;
+        //    if (rsrc == rdst)
+        //    {
+        //        return rsrc == 6 ? HALT : (Action<byte>)null;
+        //    }
+        //    var getter = rsrc != 6 ? regs.CreateRegGetter(rsrc) :
+        //        new Func<byte>(() =>
+        //        {
+        //            // LD R,(HL)
+        //            // 7T (4, 3)
+        //            var value = RDMEM(regs.HL); Tact += 3;
+        //            return value;
+        //        });
+        //    var setter = rdst != 6 ? regs.CreateRegSetter(rdst) :
+        //        new Action<byte>(arg =>
+        //        {
+        //            // LD (HL),R
+        //            // 7T (4, 3)
+        //            WRMEM(regs.HL, arg); Tact += 3;
+        //        });
+        //    return arg => setter(getter());
+        //}
+
+        //private Action<byte> EmitOpcodeJrXdisp(int cmd)
+        //{
+        //    if (cmd < 0x20 || cmd >= 0x40 || (cmd & 7) != 0)
+        //    {
+        //        return null;
+        //    }
+        //    // JR x,disp
+        //    // false => 7T (4, 3)
+        //    // true  => 12 (4, 3, 5)
+        //    var cond = (cmd & 0x18) >> 3;
+        //    var mask = s_conds[cond >> 1];
+        //    var xor = (cond & 1) == 0 ? -1 : 0;
+        //    return new Action<byte>(arg =>
+        //        {
+        //            int drel = (sbyte)RDMEM(regs.PC); Tact += 3;
+        //            regs.PC++;
+        //            var f = (regs.AF ^ xor) & mask;
+        //            if (f == 0)
+        //            {
+        //                return;
+        //            }
+        //            RDNOMREQ(regs.PC); Tact++;
+        //            RDNOMREQ(regs.PC); Tact++;
+        //            RDNOMREQ(regs.PC); Tact++;
+        //            RDNOMREQ(regs.PC); Tact++;
+        //            RDNOMREQ(regs.PC); Tact++;
+        //            regs.MW = (ushort)(regs.PC + drel);
+        //            regs.PC = regs.MW;
+        //        });
+        //}
+
+        #endregion Optimized emitters
     }
 }
