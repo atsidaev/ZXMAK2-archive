@@ -9,6 +9,7 @@ using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Engine.Cpu;
+using System.Threading;
 
 
 namespace Test
@@ -22,6 +23,16 @@ namespace Test
 				runZexall();
 				return;
 			}
+            if (args.Length >= 1 && args[0].ToLower() == "/perf")
+            {
+                runPerf();
+                return;
+            }
+            if (args.Length >= 1 && args[0].ToLower() == "/cpu")
+            {
+                runCpu();
+                return;
+            }
 
 			SanityUla("NOP        ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0x00 }, s_patternUla48_Early_NOP);
 			SanityUla("DJNZ       ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum48_Early(), new byte[] { 0x10, 0x00 }, s_patternUla48_Early_DJNZ);
@@ -53,8 +64,9 @@ namespace Test
 			SanityUla("IN A,(C)   ", new ZXMAK2.Hardware.Spectrum.UlaSpectrum128(), new byte[] { 0xED, 0x78, 0x03 }, s_patternUla128_OUTCA); // pattern the same as out (c),a
 
 			Console.WriteLine("=====Engine Performance Benchmark (500 frames rendering time)=====");
-			Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-			int frameCount = 50 * 10;
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            int frameCount = 50 * 10;
 			ExecTests("testVideo.z80", frameCount);
 			ExecTests("testVideo.z80", frameCount);
 			ExecTests("testVideo.z80", frameCount);
@@ -69,6 +81,11 @@ namespace Test
             ExecLightTests("zexall.sna", frameCount);
             ExecLightTests("zexall.sna", frameCount);
             ExecLightTests("zexall.sna", frameCount);
+            ExecCpuTests("zexall.sna", frameCount);
+            ExecCpuTests("zexall.sna", frameCount);
+            ExecCpuTests("zexall.sna", frameCount);
+            ExecCpuTests("zexall.sna", frameCount);
+            ExecCpuTests("zexall.sna", frameCount);
         }
 
 		private static void SanityUla(string name, IUlaDevice ula, byte[] opcode, int[] pattern)
@@ -373,6 +390,28 @@ namespace Test
 			p128.BusManager.Disconnect();
 		}
 
+        private static void runPerf()
+        {
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            var frameCount = 50 * 10;
+            while (true)
+            {
+                ExecTests("zexall.sna", frameCount);
+            }
+        }
+
+        private static void runCpu()
+        {
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            var frameCount = 50 * 10;
+            while (true)
+            {
+                ExecCpuTests("zexall.sna", frameCount);
+            }
+        }
+
 		private static void ExecTests(string testName, int frameCount)
 		{
             var p128 = GetTestMachine(Resources.machines_test);
@@ -419,6 +458,29 @@ namespace Test
             Console.WriteLine("{0} [light]:\t{1} [ms]", testName, watch.ElapsedMilliseconds);
             //p128.Loader.SaveFileName(testName);
             p128.BusManager.Disconnect();
+        }
+
+        private static void ExecCpuTests(string testName, int frameCount)
+        {
+            var cpu = new CpuUnit();
+            cpu.regs.PC = 0;
+            cpu.RESET = () => { };
+            cpu.NMIACK_M1 = () => { };
+            cpu.INTACK_M1 = () => { };
+            cpu.RDMEM_M1 = addr => (byte)addr;
+            cpu.RDMEM = addr => (byte)addr;
+            cpu.WRMEM = (addr,value) => { };
+            cpu.RDPORT = addr => 0xFF;
+            cpu.WRPORT = (addr, value) => { };
+            cpu.RDNOMREQ = addr => { };
+            cpu.WRNOMREQ = addr => { };
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            for (var cycle = 0L; cycle < 71980 * frameCount; cycle++)
+                cpu.ExecCycle();
+            watch.Stop();
+            Console.WriteLine("{0} [cpu]:\t{1} [ms]", testName, watch.ElapsedMilliseconds);
         }
 
 		private static Stream GetTestStream(string testName)
