@@ -64,12 +64,17 @@ namespace Test
 			ExecTests("testOutFe.z80", frameCount);
 			ExecTests("testOutFe.z80", frameCount);
 			ExecTests("testOutFe.z80", frameCount);
-		}
+            ExecLightTests("zexall.sna", frameCount);
+            ExecLightTests("zexall.sna", frameCount);
+            ExecLightTests("zexall.sna", frameCount);
+            ExecLightTests("zexall.sna", frameCount);
+            ExecLightTests("zexall.sna", frameCount);
+        }
 
 		private static void SanityUla(string name, IUlaDevice ula, byte[] opcode, int[] pattern)
 		{
 			IMemoryDevice mem = new ZXMAK2.Hardware.Spectrum.MemorySpectrum48();// MemoryPentagon128();
-            var p128 = GetDefaultTestMachine();
+            var p128 = GetTestMachine(Resources.machines_test);
 			p128.Init();
 			p128.BusManager.Disconnect();
 			p128.BusManager.Clear();
@@ -145,10 +150,10 @@ namespace Test
 			Console.ForegroundColor = tmp2;
 		}
 
-        private static Spectrum GetDefaultTestMachine()
+        private static Spectrum GetTestMachine(string configXml)
         {
             var config = new XmlDocument();
-            config.LoadXml(Resources.machines_test);
+            config.LoadXml(configXml);
             var machine = new Spectrum();
             try
             {
@@ -338,7 +343,7 @@ namespace Test
 
 		private static void runZexall()
 		{
-            var p128 = GetDefaultTestMachine();
+            var p128 = GetTestMachine(Resources.machines_test);
 			p128.Init();
 			p128.IsRunning = true;
 			p128.DebugReset();
@@ -370,7 +375,7 @@ namespace Test
 
 		private static void ExecTests(string testName, int frameCount)
 		{
-            var p128 = GetDefaultTestMachine();
+            var p128 = GetTestMachine(Resources.machines_test);
 			p128.Init();
 			p128.IsRunning = true;
 			p128.DebugReset();
@@ -391,6 +396,30 @@ namespace Test
 			//p128.Loader.SaveFileName(testName);
 			p128.BusManager.Disconnect();
 		}
+
+        private static void ExecLightTests(string testName, int frameCount)
+        {
+            var p128 = GetTestMachine(Resources.machines_testLight);
+            p128.Init();
+            p128.IsRunning = true;
+            p128.DebugReset();
+            p128.ExecuteFrame();
+
+            p128.IsRunning = false;
+            using (Stream testStream = GetTestStream(testName))
+                p128.BusManager.LoadManager.GetSerializer(Path.GetExtension(testName)).Deserialize(testStream);
+            p128.IsRunning = true;
+
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            for (int frame = 0; frame < frameCount; frame++)
+                p128.ExecuteFrame();
+            watch.Stop();
+            Console.WriteLine("{0} [light]:\t{1} [ms]", testName, watch.ElapsedMilliseconds);
+            //p128.Loader.SaveFileName(testName);
+            p128.BusManager.Disconnect();
+        }
 
 		private static Stream GetTestStream(string testName)
 		{
