@@ -138,6 +138,24 @@ namespace ZXMAK2.Host.WinForms.Tools
             return new Rectangle(wndRect.Location, wndRect.Size);
         }
 
+        public static unsafe void CopyStride(
+            int* pDstBuffer,
+            int* pSrcBuffer,
+            int width,
+            int height,
+            int dstStride)
+        {
+            var lineSize = width << 2;
+            var srcLine = pSrcBuffer;
+            var dstLine = pDstBuffer;
+            for (var y = 0; y < height; y++)
+            {
+                CopyMemory(dstLine, srcLine, lineSize);
+                srcLine += width;
+                dstLine += dstStride;
+            }
+        }
+
         #endregion Wrappers
     }
 }

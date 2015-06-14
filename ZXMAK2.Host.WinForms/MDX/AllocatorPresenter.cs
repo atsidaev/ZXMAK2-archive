@@ -581,33 +581,6 @@ namespace ZXMAK2.Host.WinForms.Mdx
         #endregion Private
 
 
-        #region Helpers
-
-        internal static int GetPotSize(int size)
-        {
-            // Create POT texture (e.g. 512x512) to render NPOT image (e.g. 320x240),
-            // because NPOT textures is not supported on some videocards
-            var potSize = 0;
-            for (var power = 1; potSize < size; power++)
-            {
-                potSize = Pow(2, power);
-            }
-            return potSize;
-        }
-
-        private static int Pow(int value, int power)
-        {
-            var result = value;
-            for (var i = 0; i < power; i++)
-            {
-                result *= value;
-            }
-            return result;
-        }
-
-        #endregion Helpers
-
-
         #region SubclassWindow
 
         private sealed class SubclassWindow : NativeWindow
