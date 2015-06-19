@@ -47,6 +47,8 @@ namespace ZXMAK2.Host.WinForms.Tools
         [DllImport("winmm.dll")]
         private static extern uint timeEndPeriod(uint uPeriod);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr GetAncestor(IntPtr hwnd, int gaFlags);
