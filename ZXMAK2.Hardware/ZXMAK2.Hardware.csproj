@@ -51,7 +51,6 @@
     <Compile Include="Atm\EvoHwmRenderer.cs" />
     <Compile Include="Atm\EvoTxtRenderer.cs" />
     <Compile Include="Atm\IdeAtm.cs" />
-    <Compile Include="Atm\KeyboardAtm.cs" />
     <Compile Include="Atm\MemoryAtm450.cs" />
     <Compile Include="Atm\MemoryAtm710.cs" />
     <Compile Include="Atm\UlaAtm450.cs" />
@@ -63,7 +62,6 @@
     <Compile Include="Evo\CmosPentEvo.cs" />
     <Compile Include="Evo\FddPentEvo.cs" />
     <Compile Include="Evo\IdePentEvo.cs" />
-    <Compile Include="Evo\KeyboardPentEvo.cs" />
     <Compile Include="Evo\MemoryPentEvo.cs" />
     <Compile Include="Evo\UlaPentEvo.cs" />
     <Compile Include="Evo\ZsdPentEvo.cs" />
