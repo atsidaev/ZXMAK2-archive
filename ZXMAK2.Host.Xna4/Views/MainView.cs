@@ -50,8 +50,6 @@ namespace ZXMAK2.Host.Xna4.Views
             m_deviceManager = new GraphicsDeviceManager(this);
         }
 
-        public string KeyboardMapFile { get; set; }
-
 
         #region IMainView
 
@@ -243,7 +241,6 @@ namespace ZXMAK2.Host.Xna4.Views
             m_deviceManager.ApplyChanges();
             m_sprite = new SpriteBatch(m_deviceManager.GraphicsDevice);
             //m_deviceManager.SynchronizeWithVerticalRetrace = false;
-            LoadConfig();
         }
 
         private IHostService CreateHost()
@@ -258,22 +255,6 @@ namespace ZXMAK2.Host.Xna4.Views
             var mouse = viewResolver.TryResolve<IHostMouse>();
             var joystick = viewResolver.TryResolve<IHostJoystick>();
             return new HostService(this, sound, keyboard, mouse, joystick);
-        }
-
-        private void LoadConfig()
-        {
-            if (string.IsNullOrEmpty(KeyboardMapFile))
-            {
-                return;
-            }
-            try
-            {
-                m_host.Keyboard.LoadConfiguration(KeyboardMapFile);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
         }
 
         protected override void OnExiting(object sender, EventArgs args)
