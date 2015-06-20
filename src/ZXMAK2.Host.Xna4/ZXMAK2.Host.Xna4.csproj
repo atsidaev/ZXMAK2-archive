@@ -110,9 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\SansSerifBold.xnb" />
-    <None Include="Keyboard.Xna.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="Keyboard.Xna.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

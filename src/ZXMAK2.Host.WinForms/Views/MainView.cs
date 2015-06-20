@@ -54,9 +54,6 @@ namespace ZXMAK2.Host.WinForms.Views
         }
 
 
-        public string KeyboardMapFile { get; set; }
-
-
         #region Commands
 
         private ICommand CommandViewFullScreen { get; set; }
@@ -242,7 +239,6 @@ namespace ZXMAK2.Host.WinForms.Views
                 renderVideo.InitWnd();
                 m_host = CreateHost();
                 OnViewOpened();
-                LoadConfig();
             }
             catch (Exception ex)
             {
@@ -263,23 +259,6 @@ namespace ZXMAK2.Host.WinForms.Views
             var mouse = viewResolver.TryResolve<IHostMouse>(arg);
             var joystick = viewResolver.TryResolve<IHostJoystick>(arg);
             return new HostService(renderVideo, sound, keyboard, mouse, joystick);
-        }
-
-        private void LoadConfig()
-        {
-            if (m_host.Keyboard == null || 
-                string.IsNullOrEmpty(KeyboardMapFile))
-            {
-                return;
-            }
-            try
-            {
-                m_host.Keyboard.LoadConfiguration(KeyboardMapFile);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
         }
 
         protected override void OnShown(EventArgs e)

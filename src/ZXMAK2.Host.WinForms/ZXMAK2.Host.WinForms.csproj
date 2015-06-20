@@ -296,9 +296,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="Keyboard.Mdx.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="Keyboard.Mdx.config" />
     <Content Include="Resources\EmuColdReset_32x32.png" />
     <Content Include="Resources\EmuFileOpen_32x32.png" />
     <Content Include="Resources\EmuFileSave_32x32.png" />

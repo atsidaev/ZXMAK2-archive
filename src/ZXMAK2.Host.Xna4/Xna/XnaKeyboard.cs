@@ -58,16 +58,16 @@ namespace ZXMAK2.Host.Xna4.Xna
         {
         }
 
-        public void LoadConfiguration(string fileName)
-        {
-            using (var reader = (TextReader)new StreamReader(fileName))
-            {
-                var xml = reader.ReadToEnd();
-                var mapper = new KeyboardStateMapper<XnaKey>();
-                mapper.LoadMapFromString(xml);
-                m_mapper = mapper;
-            }
-        }
+        //public void LoadConfiguration(string fileName)
+        //{
+        //    using (var reader = (TextReader)new StreamReader(fileName))
+        //    {
+        //        var xml = reader.ReadToEnd();
+        //        var mapper = new KeyboardStateMapper<XnaKey>();
+        //        mapper.LoadMapFromString(xml);
+        //        m_mapper = mapper;
+        //    }
+        //}
 
         #endregion IHostKeyboard
     }

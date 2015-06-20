@@ -88,16 +88,16 @@ namespace ZXMAK2.Host.WinForms.Mdx
             get { return this; }
         }
 
-        public void LoadConfiguration(string fileName)
-        {
-            using (var reader = (TextReader)new StreamReader(fileName))
-            {
-                var xml = reader.ReadToEnd();
-                var mapper = new KeyboardStateMapper<MdxKey>();
-                mapper.LoadMapFromString(xml);
-                _mapper = mapper;
-            }
-        }
+        //public void LoadConfiguration(string fileName)
+        //{
+        //    using (var reader = (TextReader)new StreamReader(fileName))
+        //    {
+        //        var xml = reader.ReadToEnd();
+        //        var mapper = new KeyboardStateMapper<MdxKey>();
+        //        mapper.LoadMapFromString(xml);
+        //        _mapper = mapper;
+        //    }
+        //}
 
         public void Scan()
         {
