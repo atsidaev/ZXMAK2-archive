@@ -56,8 +56,8 @@ namespace ZXMAK2.Hardware.General
             get { return m_keyboardState; }
 			set 
             { 
-                m_keyboardState = value; 
-                ScanState(m_keyboardState); 
+                m_keyboardState = value;
+                _rows = _matrix.Scan(value);//new MockState(Key.A, Key.B));
             }
         }
 
@@ -71,46 +71,9 @@ namespace ZXMAK2.Hardware.General
 				return;
 			//iorqge = false;
 			value &= 0xE0;
-			value |= (byte)ScanKbdPort(addr);
+			value |= (byte)(~KeyboardMatrix.ScanPort(_rows, addr) & 0x1F);
 		}
 		
 		#endregion
-
-        /// <summary>
-        /// Scans keyboard state for specified port
-        /// </summary>
-        /// <param name="ADDR">Port address</param>
-        private int ScanKbdPort(ushort port)
-        {
-            if (_rows == null)
-            {
-                return 0x1F;
-            }
-            //var addrMask = port >> 8;
-            //var result = _rows
-            //    .Where((arg, index) => (addrMask & (1 << index)) == 0)
-            //    .Aggregate((seed, arg) => seed | arg);
-            // Optimized version:
-            var result = 0;
-            var mask = 0x100;
-            for (var i = 0; i < _rows.Length; i++, mask<<=1)
-            {
-                if ((port & mask) == 0)
-                {
-                    result |= _rows[i];
-                }
-            }
-            return ~result & 0x1F;
-		}
-
-		private void ScanState(IKeyboardState state)
-		{
-            if (state == null ||
-                ((state[Key.LeftAlt] || state[Key.RightAlt]) && state[Key.Return]))
-            {
-                return;
-            }
-            _rows = _matrix.Scan(state);//new MockState(Key.A, Key.B));
-		}
 	}
 }

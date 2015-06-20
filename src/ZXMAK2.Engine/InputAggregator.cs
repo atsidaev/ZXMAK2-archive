@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Host.Entities;
 
 
 namespace ZXMAK2.Engine
@@ -78,9 +79,15 @@ namespace ZXMAK2.Engine
                 (m_keyboards.Length > 0 || m_hostJoystick.IsKeyboardStateRequired))
             {
                 m_hostKeyboard.Scan();
-                foreach (var kbd in m_keyboards)
+                var state = m_hostKeyboard.State;
+                //if (!((state[Key.LeftAlt] || state[Key.RightAlt]) && state[Key.Return]))
                 {
-                    kbd.KeyboardState = m_hostKeyboard.State;
+                    // lock for Alt+Enter?
+                    // TODO: implement system key lock (set from ui)
+                    foreach (var kbd in m_keyboards)
+                    {
+                        kbd.KeyboardState = m_hostKeyboard.State;
+                    }
                 }
                 if (m_hostJoystick != null)
                 {

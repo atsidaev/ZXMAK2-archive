@@ -48,6 +48,10 @@ namespace ZXMAK2.Host.Tools
             //    .ToArray();
             // Optimized version:
             var result = new int[_rowConditions.Length];
+            if (state == null)
+            {
+                return result;
+            }
             for (var j = 0; j < result.Length; j++)
             {
                 var conditions = _rowConditions[j];
@@ -92,6 +96,32 @@ namespace ZXMAK2.Host.Tools
 
 
         #region Static
+
+        /// <summary>
+        /// Scan rows according to spectrum port address
+        /// </summary>
+        public static int ScanPort(int[] rows, int port)
+        {
+            if (rows == null)
+            {
+                return 0;
+            }
+            //var addrMask = port >> 8;
+            //var result = _rows
+            //    .Where((arg, index) => (addrMask & (1 << index)) == 0)
+            //    .Aggregate((seed, arg) => seed | arg);
+            // Optimized version:
+            var result = 0;
+            var mask = 0x100;
+            for (var i = 0; i < rows.Length; i++, mask <<= 1)
+            {
+                if ((port & mask) == 0)
+                {
+                    result |= rows[i];
+                }
+            }
+            return result;
+        }
 
         public static KeyboardMatrix Deserialize(
             SpeccyKey[][] rows,
