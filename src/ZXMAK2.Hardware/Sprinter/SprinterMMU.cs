@@ -335,79 +335,80 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private void Accelerator(ushort addr, ref byte value)
         {
-            if (m_acc_enable)
+            if (!m_acc_enable || value < 0x40)
             {
-                switch (this.RDMEM_DBG(addr))
-                {
-                    //Accelerator off - ld b,b
-                    case 0x40:
-                        {
-                            //                            m_acc_on = false;
-                            //                            m_acc_wait_cmd = false;
-                            m_acc_mode = AccelCMD.Off;
-                            m_acc_submode = AccelSubCMD.None;
-                        }
-                        break;
-                    //Accelerator on - ld d,d
-                    case 0x52:
-                        {
-                            m_acc_on = true;
-                            //                            m_acc_wait_cmd = true;
-                            m_acc_mode = AccelCMD.On;
-                            m_acc_submode = AccelSubCMD.None;
-                        }
-                        break;
-                    case 0x49:
-                        {
-                            m_acc_on = true;
-                            m_acc_mode = AccelCMD.Fill;
-                            m_acc_submode = AccelSubCMD.None;
-                        }
-                        break;
-                    case 0x5B:
-                        {
-                            m_acc_on = true;
-                            m_acc_mode = AccelCMD.GrFill;
-                            m_acc_submode = AccelSubCMD.None;
-                        }
-                        break;
-                    case 0x64:
-                        {
-                            m_acc_on = true;
-                            m_acc_mode = AccelCMD.Reserved;
-                            m_acc_submode = AccelSubCMD.None;
-                        }
-                        break;
-                    case 0x6D:
-                        {
-                            m_acc_on = true;
-                            m_acc_mode = AccelCMD.CopyBlok;
-                            m_acc_submode = AccelSubCMD.None;
-                        }
-                        break;
-                    case 0x7F:
-                        {
-                            m_acc_on = true;
-                            m_acc_mode = AccelCMD.GrCopyBlok;
-                            m_acc_submode = AccelSubCMD.None;
-                        }
-                        break;
-                    case 0xAE:
-                        {
-                            m_acc_on = true;
-                            m_acc_submode = AccelSubCMD.XORBlok;
-                        } break;
-                    case 0xB6:
-                        {
-                            m_acc_on = true;
-                            m_acc_submode = AccelSubCMD.ORBlok;
-                        } break;
-                    case 0xA6:
-                        {
-                            m_acc_on = true;
-                            m_acc_submode = AccelSubCMD.ANDBlok;
-                        } break;
-                }
+                return;
+            }
+            switch (value)//this.RDMEM_DBG(addr))
+            {
+                //Accelerator off - ld b,b
+                case 0x40:
+                    {
+                        //                            m_acc_on = false;
+                        //                            m_acc_wait_cmd = false;
+                        m_acc_mode = AccelCMD.Off;
+                        m_acc_submode = AccelSubCMD.None;
+                    }
+                    break;
+                //Accelerator on - ld d,d
+                case 0x52:
+                    {
+                        m_acc_on = true;
+                        //                            m_acc_wait_cmd = true;
+                        m_acc_mode = AccelCMD.On;
+                        m_acc_submode = AccelSubCMD.None;
+                    }
+                    break;
+                case 0x49:
+                    {
+                        m_acc_on = true;
+                        m_acc_mode = AccelCMD.Fill;
+                        m_acc_submode = AccelSubCMD.None;
+                    }
+                    break;
+                case 0x5B:
+                    {
+                        m_acc_on = true;
+                        m_acc_mode = AccelCMD.GrFill;
+                        m_acc_submode = AccelSubCMD.None;
+                    }
+                    break;
+                case 0x64:
+                    {
+                        m_acc_on = true;
+                        m_acc_mode = AccelCMD.Reserved;
+                        m_acc_submode = AccelSubCMD.None;
+                    }
+                    break;
+                case 0x6D:
+                    {
+                        m_acc_on = true;
+                        m_acc_mode = AccelCMD.CopyBlok;
+                        m_acc_submode = AccelSubCMD.None;
+                    }
+                    break;
+                case 0x7F:
+                    {
+                        m_acc_on = true;
+                        m_acc_mode = AccelCMD.GrCopyBlok;
+                        m_acc_submode = AccelSubCMD.None;
+                    }
+                    break;
+                case 0xAE:
+                    {
+                        m_acc_on = true;
+                        m_acc_submode = AccelSubCMD.XORBlok;
+                    } break;
+                case 0xB6:
+                    {
+                        m_acc_on = true;
+                        m_acc_submode = AccelSubCMD.ORBlok;
+                    } break;
+                case 0xA6:
+                    {
+                        m_acc_on = true;
+                        m_acc_submode = AccelSubCMD.ANDBlok;
+                    } break;
             }
         }
         #endregion
