@@ -77,56 +77,54 @@ namespace ZXMAK2.Hardware.Evo
             buf = 0xFF;
         }
 
-        protected virtual void WrXX57(ushort addr, byte val, ref bool iorqge)
+        protected virtual void WrXX57(ushort addr, byte val, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
+            if (handled)
+                return;
+            handled = true;
 
-                if (SHADOW)
-                {
-                    if ((addr & 0x8000) != 0)
-                        card_cs = ((val & 0x02) != 0);
-                    else
-                        CardWr(val);
-                }
+            if (SHADOW)
+            {
+                if ((addr & 0x8000) != 0)
+                    card_cs = ((val & 0x02) != 0);
                 else
                     CardWr(val);
             }
+            else
+                CardWr(val);
         }
 
-        protected virtual void RdXX57(ushort addr, ref byte val, ref bool iorqge)
+        protected virtual void RdXX57(ushort addr, ref byte val, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
+            if (handled)
+                return;
+            handled = true;
 
-                if (SHADOW)
-                {
-                    if ((addr & 0x8000) != 0)
-                        val = 0;
-                    else
-                        val = CardRd();
-                }
+            if (SHADOW)
+            {
+                if ((addr & 0x8000) != 0)
+                    val = 0;
                 else
                     val = CardRd();
             }
+            else
+                val = CardRd();
         }
 
-        protected virtual void WrXX77(ushort addr, byte val, ref bool iorqge)
+        protected virtual void WrXX77(ushort addr, byte val, ref bool handled)
         {
-            if (iorqge && !SHADOW)
+            if (!handled && !SHADOW)
             {
-                iorqge = false;
+                handled = true;
                 card_cs = ((val & 0x02) != 0);
             }
         }
 
-        protected virtual void RdXX77(ushort addr, ref byte val, ref bool iorqge)
+        protected virtual void RdXX77(ushort addr, ref byte val, ref bool handled)
         {
-            if (iorqge && !SHADOW)
+            if (!handled && !SHADOW)
             {
-                iorqge = false;
+                handled = true;
                 val = 0;
             }
         }

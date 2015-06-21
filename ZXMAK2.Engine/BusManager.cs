@@ -313,8 +313,8 @@ namespace ZXMAK2.Engine
             var result = m_cpu.BUS;
             if (proc != null)
             {
-                var iorqge = true;
-                proc(addr, ref result, ref iorqge);
+                var handled = false;
+                proc(addr, ref result, ref handled);
             }
             if (RzxHandler.IsPlayback)
             {
@@ -332,8 +332,8 @@ namespace ZXMAK2.Engine
             var proc = m_mapWritePort[addr];
             if (proc != null)
             {
-                var iorqge = true;
-                proc(addr, value, ref iorqge);
+                var handled = false;
+                proc(addr, value, ref handled);
             }
         }
 

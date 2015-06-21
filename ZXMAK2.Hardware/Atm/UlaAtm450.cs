@@ -62,10 +62,10 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        protected override void WritePortFE(ushort addr, byte value, ref bool handled)
         {
             m_extBorderIndex = (addr & 8) ^ 8;
-            base.WritePortFE(addr, value, ref iorqge);
+            base.WritePortFE(addr, value, ref handled);
         }
 
         protected override IMemoryDevice Memory

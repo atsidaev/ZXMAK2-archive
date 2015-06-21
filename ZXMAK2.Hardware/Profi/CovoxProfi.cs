@@ -33,25 +33,21 @@ namespace ZXMAK2.Hardware.Profi
         private int m_mult = 0;
 
 
-        private void WritePortL(ushort addr, byte value, ref bool iorqge)
+        private void WritePortL(ushort addr, byte value, ref bool handled)
         {
-            if (m_memory.DOSEN)
+            if (handled || m_memory.DOSEN)
                 return;
-            if (!iorqge)
-                return;
-            iorqge = false;
+            handled = true;
             
             m_left = (ushort)(value * m_mult);
             UpdateDac(m_left, m_right);
         }
 
-        private void WritePortR(ushort addr, byte value, ref bool iorqge)
+        private void WritePortR(ushort addr, byte value, ref bool handled)
         {
-            if (m_memory.DOSEN)
+            if (handled || m_memory.DOSEN)
                 return;
-            if (!iorqge)
-                return;
-            iorqge = false;
+            handled = true;
             
             m_right = (ushort)(value * m_mult);
             UpdateDac(m_left, m_right);

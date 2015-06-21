@@ -83,13 +83,13 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #region Bus Handlers
 
-        private void writePort7FFD(ushort addr, byte value, ref bool iorqge)
+        private void writePort7FFD(ushort addr, byte value, ref bool handled)
         {
             if (!m_lock)
                 CMR0 = value;
         }
 
-        private void readPort7FFD(ushort addr, ref byte value, ref bool iorqge)
+        private void readPort7FFD(ushort addr, ref byte value, ref bool handled)
         {
             if (!m_lock)
                 CMR0 = value;// (byte)((CMR0 & 0x20) | (value & ~0x20));

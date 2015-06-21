@@ -127,7 +127,7 @@ namespace ZXMAK2.Hardware.Pentagon
 
         #region Bus Handlers
 
-        private void writePort7FFD(ushort addr, byte value, ref bool iorqge)
+        private void writePort7FFD(ushort addr, byte value, ref bool handled)
         {
             if (!m_lock)
                 CMR0 = value;

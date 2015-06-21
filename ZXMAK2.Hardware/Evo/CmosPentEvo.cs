@@ -109,10 +109,7 @@ namespace ZXMAK2.Hardware.Evo
         /// <summary>
         /// RTC address port
         /// </summary>
-        /// <param name="addr"></param>
-        /// <param name="val"></param>
-        /// <param name="iorqge"></param>
-        void WrDEF7(ushort addr, byte val, ref bool iorqge)
+        private void WrDEF7(ushort addr, byte val, ref bool handled)
         {
             if ((addr & 0x0100) == 0 && SHADOW)
                 this.addr = val;
@@ -123,10 +120,7 @@ namespace ZXMAK2.Hardware.Evo
         /// <summary>
         /// RTC write data port
         /// </summary>
-        /// <param name="addr"></param>
-        /// <param name="val"></param>
-        /// <param name="iorqge"></param>
-        void WrBEF7(ushort addr, byte val, ref bool iorqge)
+        private void WrBEF7(ushort addr, byte val, ref bool handled)
         {
             if ((addr & 0x0100) == 0 && SHADOW)
                 WrCMOS(val);
@@ -137,10 +131,7 @@ namespace ZXMAK2.Hardware.Evo
         /// <summary>
         /// RTC read data port
         /// </summary>
-        /// <param name="addr"></param>
-        /// <param name="val"></param>
-        /// <param name="iorqge"></param>
-        void RdBEF7(ushort addr, ref byte val, ref bool iorqge)
+        private void RdBEF7(ushort addr, ref byte val, ref bool handled)
         {
             if ((addr & 0x0100) == 0 && SHADOW)
                 val = RdCMOS();

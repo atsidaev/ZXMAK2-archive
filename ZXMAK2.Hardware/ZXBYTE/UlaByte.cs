@@ -88,11 +88,11 @@ namespace ZXMAK2.Hardware.ZXBYTE
             return timing;
         }
 
-        protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        protected override void WritePortFE(ushort addr, byte value, ref bool handled)
         {
             if ((addr & 0x34) == (0xFE & 0x34))
             {
-                base.WritePortFE(addr, value, ref iorqge);
+                base.WritePortFE(addr, value, ref handled);
             }
         }
 

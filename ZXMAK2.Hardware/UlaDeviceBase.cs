@@ -137,7 +137,7 @@ namespace ZXMAK2.Hardware
         }
 
 
-        protected virtual void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WritePortFE(ushort addr, byte value, ref bool handled)
         {
             UpdateState((int)(CPU.Tact % FrameTactCount));
             PortFE = value;

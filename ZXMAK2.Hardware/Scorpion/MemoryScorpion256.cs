@@ -130,20 +130,21 @@ namespace ZXMAK2.Hardware.Scorpion
 
         #region Bus Handlers
 
-        private void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
+        private void BusWritePort7FFD(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
+            if (handled)
                 return;
-            iorqge = false;
+            handled = true;
+
             if (!m_lock)
                 CMR0 = value;
         }
 
-        private void BusWritePort1FFD(ushort addr, byte value, ref bool iorqge)
+        private void BusWritePort1FFD(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
+            if (handled)
                 return;
-            iorqge = false;
+            handled = true;
             CMR1 = value;
         }
 

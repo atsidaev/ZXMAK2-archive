@@ -150,11 +150,11 @@ namespace ZXMAK2.Hardware.General
 		
         #region Private
 
-		private void ReadPortFe(ushort addr, ref byte value, ref bool iorqge)
+        private void ReadPortFe(ushort addr, ref byte value, ref bool handled)
 		{
-			if (!iorqge || (m_noDos && m_memory.DOSEN))
+            if (handled || (m_noDos && m_memory.DOSEN))
 				return;
-			//iorqge = false;
+            //handled = true;
 			value &= 0xE0;
 			value |= (byte)(~KeyboardMatrix.ScanPort(_rows, addr) & 0x1F);
 		}

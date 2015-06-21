@@ -54,38 +54,32 @@ namespace ZXMAK2.Hardware.General
 
         #region Private
 
-		private void ReadPortBtn(ushort addr, ref byte value, ref bool iorqge)
+        private void ReadPortBtn(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || m_memory.DOSEN)
-            {
+            if (handled || m_memory.DOSEN)
                 return;
-            }
-			iorqge = false;
+            handled = true;
 			
             var b = MouseState != null ? MouseState.Buttons : 0;
 			b = ((b & 1) << 1) | ((b & 2) >> 1) | (b & 0xFC);			// D0 - right, D1 - left, D2 - middle
 			value = (byte)(b ^ 0xFF);     //  Kempston mouse buttons
         }
 
-		private void ReadPortX(ushort addr, ref byte value, ref bool iorqge)
+        private void ReadPortX(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || m_memory.DOSEN)
-            {
+            if (handled || m_memory.DOSEN)
                 return;
-            }
-			iorqge = false;
+            handled = true;
 			
             var x = MouseState != null ? MouseState.X : 0;
             value = (byte)(x / 3);			//  Kempston mouse X        
         }
 
-		private void ReadPortY(ushort addr, ref byte value, ref bool iorqge)
+        private void ReadPortY(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || m_memory.DOSEN)
-            {
+            if (handled || m_memory.DOSEN)
                 return;
-            }
-			iorqge = false;
+            handled = true;
 			
             var y = MouseState != null ? MouseState.Y : 0;
 			value = (byte)(-y / 3);			//	Kempston mouse Y

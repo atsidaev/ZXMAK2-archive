@@ -61,10 +61,10 @@ namespace ZXMAK2.Hardware.Scorpion
 
         #region UlaDeviceBase
 
-        protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        protected override void WritePortFE(ushort addr, byte value, ref bool handled)
         {
             if (!Memory.DOSEN && (addr & 0x23) == (0xFE & 0x23))
-                base.WritePortFE(addr, value, ref iorqge);
+                base.WritePortFE(addr, value, ref handled);
         }
 
         #endregion

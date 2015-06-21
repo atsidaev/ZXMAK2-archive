@@ -249,31 +249,28 @@ namespace ZXMAK2.Hardware.Sprinter
             bmgr.SubscribeRdIo(0x00ff, 0x0018, new BusReadIoProc(readKbdData));
         }
 
-        private void readKbdState(ushort addr, ref byte value, ref bool iorqge)
+        private void readKbdState(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
-
-                value = (byte)((m_kbdbuf.Count > 0) ? 1 : 0);
-            }
+            if (handled)
+                return;
+            handled = true;
+            value = (byte)((m_kbdbuf.Count > 0) ? 1 : 0);
         }
 
-        private void readKbdData(ushort addr, ref byte value, ref bool iorqge)
+        private void readKbdData(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
+            if (handled)
+                return;
+            handled = true;
 
-                //            value = (byte)((m_kbd_buff.Length > 0) ? 1 : 0);
-                if (m_kbdbuf.Count > 0)
-                {
-                    value = m_kbdbuf.Dequeue();
-                }
-                else
-                {
-                    value = 0;
-                }
+            //            value = (byte)((m_kbd_buff.Length > 0) ? 1 : 0);
+            if (m_kbdbuf.Count > 0)
+            {
+                value = m_kbdbuf.Dequeue();
+            }
+            else
+            {
+                value = 0;
             }
         }
 

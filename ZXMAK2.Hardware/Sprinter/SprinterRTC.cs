@@ -67,7 +67,7 @@ namespace ZXMAK2.Hardware.Sprinter
         /// <summary>
         /// RTC address port
         /// </summary>
-        private void BusWriteAddr(ushort addr, byte val, ref bool iorqge)
+        private void BusWriteAddr(ushort addr, byte val, ref bool handled)
         {
             m_rtc.WriteAddr(val);
         }
@@ -75,7 +75,7 @@ namespace ZXMAK2.Hardware.Sprinter
         /// <summary>
         /// RTC write data port
         /// </summary>
-        private void BusWriteData(ushort addr, byte val, ref bool iorqge)
+        private void BusWriteData(ushort addr, byte val, ref bool handled)
         {
             m_rtc.WriteData(val);
         }
@@ -83,7 +83,7 @@ namespace ZXMAK2.Hardware.Sprinter
         /// <summary>
         /// RTC read data port
         /// </summary>
-        private void BusReadData(ushort addr, ref byte val, ref bool iorqge)
+        private void BusReadData(ushort addr, ref byte val, ref bool handled)
         {
             m_rtc.ReadData(ref val);
         }

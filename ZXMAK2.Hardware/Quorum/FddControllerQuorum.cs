@@ -46,75 +46,59 @@ namespace ZXMAK2.Hardware.Quorum
             }
         }
 
-        protected override void BusWriteFdc(ushort addr, byte value, ref bool iorqge)
+        protected override void BusWriteFdc(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled || !IsActive)
                 return;
-            }
-            if (IsActive)
+            handled = true;
+
+            var fdcReg = addr & 0x03;
+            if (LogIo)
             {
-                iorqge = false;
-                int fdcReg = addr & 0x03;
-                if (LogIo)
-                {
-                    LogIoWrite(m_cpu.Tact, (WD93REG)fdcReg, value);
-                }
-                m_wd.Write(m_cpu.Tact, (WD93REG)fdcReg, value);
+                LogIoWrite(m_cpu.Tact, (WD93REG)fdcReg, value);
+            }
+            m_wd.Write(m_cpu.Tact, (WD93REG)fdcReg, value);
+        }
+
+        protected override void BusReadFdc(ushort addr, ref byte value, ref bool handled)
+        {
+            if (handled || !IsActive)
+                return;
+            handled = true;
+
+            var fdcReg = addr & 0x03;
+            value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
+            if (LogIo)
+            {
+                LogIoRead(m_cpu.Tact, (WD93REG)fdcReg, value);
             }
         }
 
-        protected override void BusReadFdc(ushort addr, ref byte value, ref bool iorqge)
+        protected override void BusWriteSys(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled || !IsActive)
                 return;
-            }
-            if (IsActive)
+            handled = true;
+
+            var drv = s_drvDecode[value & 3];
+            drv = ((value & ~3) ^ 0x10) | drv;
+            if (LogIo)
             {
-                iorqge = false;
-                int fdcReg = addr & 0x03;
-                value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
-                if (LogIo)
-                {
-                    LogIoRead(m_cpu.Tact, (WD93REG)fdcReg, value);
-                }
+                LogIoWrite(m_cpu.Tact, WD93REG.SYS, (byte)drv);
             }
+            m_wd.Write(m_cpu.Tact, WD93REG.SYS, (byte)drv);
         }
 
-        protected override void BusWriteSys(ushort addr, byte value, ref bool iorqge)
+        protected override void BusReadSys(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled || !IsActive)
                 return;
-            }
-            if (IsActive)
-            {
-                iorqge = false;
-                int drv = s_drvDecode[value & 3];
-                drv = ((value & ~3) ^ 0x10) | drv;
-                if (LogIo)
-                {
-                    LogIoWrite(m_cpu.Tact, WD93REG.SYS, (byte)drv);
-                }
-                m_wd.Write(m_cpu.Tact, WD93REG.SYS, (byte)drv);
-            }
-        }
+            handled = true;
 
-        protected override void BusReadSys(ushort addr, ref byte value, ref bool iorqge)
-        {
-            if (!iorqge)
+            value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
+            if (LogIo)
             {
-                return;
-            }
-            if (IsActive)
-            {
-                iorqge = false;
-                value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
-                if (LogIo)
-                {
-                    LogIoRead(m_cpu.Tact, WD93REG.SYS, value);
-                }
+                LogIoRead(m_cpu.Tact, WD93REG.SYS, value);
             }
         }
 

@@ -68,13 +68,12 @@ namespace ZXMAK2.Hardware.Profi
 
         #region Bus Handlers
 
-        protected virtual void ReadPortFE(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadPortFE(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || m_memory.DOSEN)
-            {
+            if (handled || m_memory.DOSEN)
                 return;
-            }
-            //iorqge = false;
+            //handled = true;
+
             value &= (m_intState & ExtKeyMask) != 0 ?
                 (byte)0xC0 :
                 (byte)0xE0;

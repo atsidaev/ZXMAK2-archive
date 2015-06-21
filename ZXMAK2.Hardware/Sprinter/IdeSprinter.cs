@@ -152,13 +152,11 @@ namespace ZXMAK2.Hardware.Sprinter
         }
 
 
-        protected virtual void WriteIdeData(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIdeData(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             if ((addr & 0x0100) == 0)
             {
@@ -177,13 +175,11 @@ namespace ZXMAK2.Hardware.Sprinter
             m_ata.WriteData((ushort)data);
         }
 
-        protected virtual void ReadIdeData(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIdeData(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             if ((addr & 0x0100) != 0)
             {
@@ -203,156 +199,128 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-        protected virtual void WriteIdeError(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIdeError(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
             
             AtaWrite(AtaReg.FeatureError, value);
         }
 
-        protected virtual void ReadIdeError(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIdeError(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             value = AtaRead(AtaReg.FeatureError);
         }
 
-        protected virtual void WriteIdeCounter(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIdeCounter(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             AtaWrite(AtaReg.SectorCount, value);
         }
 
-        protected virtual void ReadIdeCounter(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIdeCounter(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             value = AtaRead(AtaReg.SectorCount);
         }
 
-        protected virtual void WriteIdeSector(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIdeSector(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             AtaWrite(AtaReg.SectorNumber, value);
         }
 
-        protected virtual void ReadIdeSector(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIdeSector(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             value = AtaRead(AtaReg.SectorNumber);
         }
 
-        protected virtual void WriteIdeCylHi(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIdeCylHi(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             AtaWrite(AtaReg.CylinderHigh, value);
         }
 
-        protected virtual void ReadIdeCylHi(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIdeCylHi(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             value = AtaRead(AtaReg.CylinderHigh);
         }
 
-        protected virtual void WriteIdeCylLo(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIdeCylLo(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             AtaWrite(AtaReg.CylinderLow, value);
         }
 
-        protected virtual void ReadIdeCylLo(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIdeCylLo(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             value = AtaRead(AtaReg.CylinderLow);
         }
 
-        protected virtual void WriteIdeControl(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIdeControl(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             AtaWrite(AtaReg.HeadAndDrive, value);
         }
 
-        protected virtual void ReadIdeControl(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIdeControl(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             value = AtaRead(AtaReg.HeadAndDrive);
         }
 
-        protected virtual void WriteIdeCommand(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIdeCommand(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             AtaWrite(AtaReg.CommandStatus, value);
         }
 
-        protected virtual void ReadIdeCommand(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIdeCommand(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             value = AtaRead(AtaReg.CommandStatus);
         }

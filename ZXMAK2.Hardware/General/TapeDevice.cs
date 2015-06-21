@@ -224,13 +224,12 @@ namespace ZXMAK2.Hardware.General
 
         #region Bus Handlers
 
-        private void WritePortFe(ushort addr, byte value, ref bool iorqge)
+        private void WritePortFe(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge || (m_noDos && m_memory.DOSEN))
-            {
+            if (handled || (m_noDos && m_memory.DOSEN))
                 return;
-            }
-            //iorqge = false;
+            //handled = true;
+
             if (!m_isPlay)
             {
                 // http://www.worldofspectrum.org/faq/reference/48kreference.htm
@@ -240,13 +239,11 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        private void ReadPortFe(ushort addr, ref byte value, ref bool iorqge)
+        private void ReadPortFe(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || (m_noDos && m_memory.DOSEN))
-            {
+            if (handled || (m_noDos && m_memory.DOSEN))
                 return;
-            }
-            //iorqge = false;
+            //handled = true;
 
             if (m_isPlay)
             {
