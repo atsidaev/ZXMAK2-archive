@@ -69,6 +69,10 @@ namespace ZXMAK2.Hardware.Profi
             iorqge = false;
 
             var fdcReg = (addr & 0x60) >> 5;
+            if (LogIo)
+            {
+                LogIoWrite(m_cpu.Tact, (WD93REG)fdcReg, value);
+            }
             m_wd.Write(m_cpu.Tact, (WD93REG)fdcReg, value);
         }
 
@@ -82,6 +86,10 @@ namespace ZXMAK2.Hardware.Profi
 
             var fdcReg = (addr & 0x60) >> 5;
             value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
+            if (LogIo)
+            {
+                LogIoRead(m_cpu.Tact, (WD93REG)fdcReg, value);
+            }
         }
 
         protected void BusWriteSysEx(ushort addr, byte value, ref bool iorqge)
@@ -92,6 +100,10 @@ namespace ZXMAK2.Hardware.Profi
             }
             iorqge = false;
 
+            if (LogIo)
+            {
+                LogIoWrite(m_cpu.Tact, WD93REG.SYS, value);
+            }
             m_wd.Write(m_cpu.Tact, WD93REG.SYS, value);
         }
 
@@ -104,6 +116,10 @@ namespace ZXMAK2.Hardware.Profi
             iorqge = false;
 
             value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
+            if (LogIo)
+            {
+                LogIoRead(m_cpu.Tact, WD93REG.SYS, value);
+            }
         }
 
         #endregion

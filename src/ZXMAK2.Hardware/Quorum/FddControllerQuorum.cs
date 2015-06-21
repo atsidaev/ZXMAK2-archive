@@ -56,6 +56,10 @@ namespace ZXMAK2.Hardware.Quorum
             {
                 iorqge = false;
                 int fdcReg = addr & 0x03;
+                if (LogIo)
+                {
+                    LogIoWrite(m_cpu.Tact, (WD93REG)fdcReg, value);
+                }
                 m_wd.Write(m_cpu.Tact, (WD93REG)fdcReg, value);
             }
         }
@@ -71,6 +75,10 @@ namespace ZXMAK2.Hardware.Quorum
                 iorqge = false;
                 int fdcReg = addr & 0x03;
                 value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
+                if (LogIo)
+                {
+                    LogIoRead(m_cpu.Tact, (WD93REG)fdcReg, value);
+                }
             }
         }
 
@@ -85,6 +93,10 @@ namespace ZXMAK2.Hardware.Quorum
                 iorqge = false;
                 int drv = s_drvDecode[value & 3];
                 drv = ((value & ~3) ^ 0x10) | drv;
+                if (LogIo)
+                {
+                    LogIoWrite(m_cpu.Tact, WD93REG.SYS, (byte)drv);
+                }
                 m_wd.Write(m_cpu.Tact, WD93REG.SYS, (byte)drv);
             }
         }
@@ -99,6 +111,10 @@ namespace ZXMAK2.Hardware.Quorum
             {
                 iorqge = false;
                 value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
+                if (LogIo)
+                {
+                    LogIoRead(m_cpu.Tact, WD93REG.SYS, value);
+                }
             }
         }
 
