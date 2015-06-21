@@ -111,7 +111,7 @@ namespace ZXMAK2.Hardware.Sprinter
         #region  -- Bus IO Procs --
         public override void BusInit(IBusManager bmgr)
         {
-            base.BusInit(bmgr);
+            base.BusInit(bmgr); // should be first because Accelerator depends on it
 
             m_ulaSprinter = bmgr.FindDevice<SprinterULA>();
             m_SprinterBDI = bmgr.FindDevice<SprinterFdd>();
