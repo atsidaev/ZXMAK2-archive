@@ -77,7 +77,7 @@ namespace ZXMAK2.Hardware.Lec
 
         #region Bus Handlers
 
-        protected virtual void BusWriteCmr1(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWriteCmr1(ushort addr, byte value, ref bool handled)
         {
             CMR1 = value;
         }

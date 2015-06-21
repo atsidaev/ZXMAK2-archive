@@ -282,7 +282,7 @@ namespace ZXMAK2.Hardware.Atm
 
         #region Bus Handlers
 
-        protected virtual void BusReadPortFE(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPortFE(ushort addr, ref byte value, ref bool handled)
         {
             // bit Z emulation
             value &= 0xDF;
@@ -294,7 +294,7 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        protected virtual void BusWritePortXXFF_PAL(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortXXFF_PAL(ushort addr, byte value, ref bool handled)
         {
             if ((DOSEN || SYSEN) && PEN2 && m_ulaAtm != null)
             {
@@ -302,17 +302,17 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        protected virtual void BusReadPort7FFD(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPort7FFD(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge && (DOSEN || SYSEN))
+            if (!handled && (DOSEN || SYSEN))
             {
                 // ADC ready emulation
-                iorqge = false;
+                handled = true;
                 value &= 0x7F;
             }
         }
 
-        protected virtual void BusWritePortXX77_SYS(ushort addr, byte value, ref bool iorqge) // ATM2
+        protected virtual void BusWritePortXX77_SYS(ushort addr, byte value, ref bool handled) // ATM2
         {
             if (DOSEN || SYSEN)
             {
@@ -325,7 +325,7 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        protected virtual void BusWritePortXFF7_WND(ushort addr, byte value, ref bool iorqge) // ATM2
+        protected virtual void BusWritePortXFF7_WND(ushort addr, byte value, ref bool handled) // ATM2
         {
             if (DOSEN || SYSEN)
             {
@@ -334,7 +334,7 @@ namespace ZXMAK2.Hardware.Atm
             }
         }
 
-        protected virtual void BusWritePort7FFD_128(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD_128(ushort addr, byte value, ref bool handled)
         {
             if (m_lock)
             {

@@ -129,13 +129,11 @@ namespace ZXMAK2.Hardware.Atm
         {
         }
 
-        protected virtual void WriteIde(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIde(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             if ((addr & 0x0100) != 0)
             {
@@ -164,13 +162,11 @@ namespace ZXMAK2.Hardware.Atm
             // ??m_ata.reset();
         }
 
-        protected virtual void ReadIde(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIde(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             if ((addr & 0x0100) != 0)
             {

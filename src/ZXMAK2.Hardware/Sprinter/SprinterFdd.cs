@@ -191,11 +191,11 @@ namespace ZXMAK2.Hardware.Sprinter
             m_iconRd.Visible = !m_wd.LedWr && m_wd.LedRd;
         }
 
-        protected virtual void BusReadPortFdc(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPortFdc(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge && (this.DOSEN || this.OpenPorts))
+            if (!handled && (this.DOSEN || this.OpenPorts))
             {
-                iorqge = false;
+                handled = true;
                 int fdcReg = (addr & 0x60) >> 5;
                 value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
                 if (LogIo)
@@ -205,11 +205,11 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-        protected virtual void BusReadPortSys(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPortSys(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge && (this.DOSEN || this.OpenPorts))
+            if (!handled && (this.DOSEN || this.OpenPorts))
             {
-                iorqge = false;
+                handled = true;
                 value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
                 if (LogIo)
                 {
@@ -219,11 +219,11 @@ namespace ZXMAK2.Hardware.Sprinter
         }
 
 
-        protected virtual void BusWriteBDIMode(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWriteBDIMode(ushort addr, byte value, ref bool handled)
         {
-            if (iorqge && (this.DOSEN || this.OpenPorts))
+            if (!handled && (this.DOSEN || this.OpenPorts))
             {
-                iorqge = false;
+                handled = true;
                 //0x21 - Set 1440 
                 //0x01 - Set  720
                 m_bdimode = value;
@@ -240,11 +240,11 @@ namespace ZXMAK2.Hardware.Sprinter
         }
 
 
-        protected virtual void BusWritePortFdc(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortFdc(ushort addr, byte value, ref bool handled)
         {
-            if (iorqge && (this.DOSEN || this.OpenPorts))
+            if (!handled && (this.DOSEN || this.OpenPorts))
             {
-                iorqge = false;
+                handled = true;
                 int fdcReg = (addr & 0x60) >> 5;
                 if (LogIo)
                 {
@@ -255,11 +255,11 @@ namespace ZXMAK2.Hardware.Sprinter
         }
 
 
-        protected virtual void BusWritePortSys(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortSys(ushort addr, byte value, ref bool handled)
         {
-            if (iorqge && (this.DOSEN || this.OpenPorts))
+            if (!handled && (this.DOSEN || this.OpenPorts))
             {
-                iorqge = false;
+                handled = true;
                 if (LogIo)
                 {
                     LogIoWrite(m_cpu.Tact, WD93REG.SYS, value);

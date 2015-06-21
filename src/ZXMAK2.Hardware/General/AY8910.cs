@@ -177,19 +177,19 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        private void WritePortAddr(ushort addr, byte value, ref bool iorqge)
+        private void WritePortAddr(ushort addr, byte value, ref bool handled)
         {
-            //if (!iorqge)
+            //if (handled)
             //    return;
-            //iorqge = false;
+            //handled = true;
             m_chip.RegAddr = value;
         }
 
-        private void WritePortData(ushort addr, byte value, ref bool iorqge)
+        private void WritePortData(ushort addr, byte value, ref bool handled)
         {
-            //if (!iorqge)
+            //if (handled)
             //    return;
-            //iorqge = false;
+            //handled = true;
             var index = m_chip.RegAddr;
             m_lastTime = m_chip.SetReg(m_lastTime, GetFrameTime(), index, value);
             index &= 0x0F;
@@ -203,11 +203,12 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        private void ReadPortData(ushort addr, ref byte value, ref bool iorqge)
+        private void ReadPortData(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
+            if (handled)
                 return;
-            iorqge = false;
+            handled = true;
+
             var index = m_chip.RegAddr;
             var indexF = index & 0x0F;
             if (indexF == PsgRegId.IRA)

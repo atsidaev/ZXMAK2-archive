@@ -42,8 +42,8 @@ namespace ZXMAK2.Engine.Interfaces
 
 	public delegate void BusReadProc(ushort addr, ref byte value);
 	public delegate void BusWriteProc(ushort addr, byte value);
-	public delegate void BusReadIoProc(ushort addr, ref byte value, ref bool iorqge);
-	public delegate void BusWriteIoProc(ushort addr, byte value, ref bool iorqge);
+	public delegate void BusReadIoProc(ushort addr, ref byte value, ref bool handled);
+	public delegate void BusWriteIoProc(ushort addr, byte value, ref bool handled);
     public delegate void BusRqProc(BusCancelArgs e);
 
     public class BusCancelArgs

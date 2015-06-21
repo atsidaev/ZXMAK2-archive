@@ -69,14 +69,12 @@ namespace ZXMAK2.Hardware.Profi
             }
         }
 
-        protected virtual void BusWriteRtc(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWriteRtc(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge || !IsExtendedMode)
-            {
+            if (handled || !IsExtendedMode)
                 return;
-            }
+            handled = true;
 
-            iorqge = false;
             if ((addr & 0x20) != 0)
             {
                 m_rtc.WriteAddr(value);
@@ -87,16 +85,14 @@ namespace ZXMAK2.Hardware.Profi
             }
         }
 
-        protected virtual void BusReadRtc(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadRtc(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !IsExtendedMode)
-            {
+            if (handled || !IsExtendedMode)
                 return;
-            }
 
             if ((addr & 0x20) == 0)
             {
-                iorqge = false;
+                handled = true;
                 m_rtc.ReadData(ref value);
             }
         }

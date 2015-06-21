@@ -141,7 +141,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
         
         #region Bus Handlers
 
-        private void BusReadPort1F(ushort addr, ref byte value, ref bool iorqge)
+        private void BusReadPort1F(ushort addr, ref byte value, ref bool handled)
         {
             if (!DOSEN)
             {

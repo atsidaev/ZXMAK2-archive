@@ -102,7 +102,7 @@ namespace ZXMAK2.Hardware.General
 
         #region Hayes modem port activity
 
-        private void readREG_IO(ushort addr, ref byte value, ref bool iorqge)
+        private void readREG_IO(ushort addr, ref byte value, ref bool handled)
         {
             value = 0;
             if (port != null && port.IsOpen && port.BytesToRead != 0)
@@ -112,7 +112,7 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        private void writeREG_IO(ushort addr, byte value, ref bool iorqge)
+        private void writeREG_IO(ushort addr, byte value, ref bool handled)
         {
             if ((REG_LINE_CTRL & (1 << DLAB)) > 0)
             {
@@ -127,7 +127,7 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        private void readREG_LINE_STATUS(ushort addr, ref byte value, ref bool iorqge)
+        private void readREG_LINE_STATUS(ushort addr, ref byte value, ref bool handled)
         {
             value = 0;
 
@@ -141,7 +141,7 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        private void readREG_MDM_STATUS(ushort addr, ref byte value, ref bool iorqge)
+        private void readREG_MDM_STATUS(ushort addr, ref byte value, ref bool handled)
         {
             value = 0;
             
@@ -149,18 +149,18 @@ namespace ZXMAK2.Hardware.General
                 value |= 0x10;
         }
 
-        private void writeREG_MDM_CTRL(ushort addr, byte value, ref bool iorqge)
+        private void writeREG_MDM_CTRL(ushort addr, byte value, ref bool handled)
         {
             RTS = ((value & 2) >> 1) != 0;
         }
 
-        private void writeREG_LINE_CTRL(ushort addr, byte value, ref bool iorqge)
+        private void writeREG_LINE_CTRL(ushort addr, byte value, ref bool handled)
         {
             // Can be used for setting DLAB only
             REG_LINE_CTRL = value;
         }
 
-        private void writeREG_IRQ_ENABLE(ushort addr, byte value, ref bool iorqge)
+        private void writeREG_IRQ_ENABLE(ushort addr, byte value, ref bool handled)
         {
             if ((REG_LINE_CTRL & (1 << DLAB)) > 0)
             {

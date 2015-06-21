@@ -43,13 +43,13 @@ namespace ZXMAK2.Hardware.Quorum
             m_cpu = bmgr.CPU;
         }
 
-        private void readPortFE(ushort addr, ref byte value, ref bool iorqge)
+        private void readPortFE(ushort addr, ref byte value, ref bool handled)
         {
             value = (byte)(value & 0xe0);
             value = (byte)(value | ((byte)(this.scanFEPort(addr) & 0x1f)));
         }
 
-        private void readPort7E(ushort addr, ref byte value, ref bool iorqge)
+        private void readPort7E(ushort addr, ref byte value, ref bool handled)
         {
             // Quorum ROM contains modificated keyboard procedures so we MUST handle 0x7E port
             // otherwise we'll get no keyboard at all, even 0xFE one

@@ -54,13 +54,11 @@ namespace ZXMAK2.Hardware.General
         }
 
 
-        protected virtual void ReadPort1F(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadPort1F(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || m_memory.DOSEN)
-            {
+            if (handled || m_memory.DOSEN)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             value = 0x00;
             if (JoystickState.IsRight) value |= 0x01;

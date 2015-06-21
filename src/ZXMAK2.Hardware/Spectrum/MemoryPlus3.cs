@@ -127,13 +127,13 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #region Bus Handlers
 
-        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool handled)
         {
             if (!m_lock)
                 CMR0 = value;
         }
 
-        protected virtual void BusWritePort1FFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort1FFD(ushort addr, byte value, ref bool handled)
         {
             CMR1 = value;
         }

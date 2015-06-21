@@ -67,16 +67,16 @@ namespace ZXMAK2.Hardware.Profi
                 base.WriteMemC000(addr, value);
         }
 
-        protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        protected override void WritePortFE(ushort addr, byte value, ref bool handled)
         {
             if ((addr & 0x67) != (0xFE & 0x67) || Memory.DOSEN)
             {
                 return;
             }
-            base.WritePortFE(addr, value, ref iorqge);
+            base.WritePortFE(addr, value, ref handled);
         }
 
-        protected virtual void ReadPortAll(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadPortAll(ushort addr, ref byte value, ref bool handled)
         {
             if ((addr & 0xFF) == 0xFF)
             {

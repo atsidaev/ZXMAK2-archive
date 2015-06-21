@@ -34,7 +34,7 @@ namespace ZXMAK2.Hardware.Evo
             bmgr.SubscribeRdIo(0x00FF, 0x008F, ReadPortEmu);
         }
 
-        protected virtual void WritePortEmu(ushort addr, byte val, ref bool iorqge)
+        protected virtual void WritePortEmu(ushort addr, byte val, ref bool handled)
         {
             if (IsActive)
             {
@@ -56,7 +56,7 @@ namespace ZXMAK2.Hardware.Evo
             }
         }
 
-        protected virtual void ReadPortEmu(ushort addr, ref byte val, ref bool iorqge)
+        protected virtual void ReadPortEmu(ushort addr, ref byte val, ref bool handled)
         {
             if (IsActive)
             {

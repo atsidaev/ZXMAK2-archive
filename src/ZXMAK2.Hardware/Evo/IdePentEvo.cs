@@ -134,13 +134,11 @@ namespace ZXMAK2.Hardware.Evo
         {
         }
 
-        protected virtual void WriteIde(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIde(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             if ((addr & 0xFF) == 0x11)
             {
@@ -194,13 +192,11 @@ namespace ZXMAK2.Hardware.Evo
             }
         }
 
-        protected virtual void ReadIde(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIde(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
             
             if ((addr & 0xFF) == 0x11)
             {
@@ -238,24 +234,20 @@ namespace ZXMAK2.Hardware.Evo
             value = (byte)dataWord;
         }
 
-        protected virtual void WriteIdeAltStatus(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIdeAltStatus(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             AtaWrite(AtaReg.ControlAltStatus, value);
         }
 
-        protected virtual void ReadIdeAltStatus(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIdeAltStatus(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             value = AtaRead(AtaReg.ControlAltStatus);
         }

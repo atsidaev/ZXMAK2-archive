@@ -24,16 +24,16 @@ namespace ZXMAK2.Hardware.Profi
 
         #region UlaDeviceBase
 
-        protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        protected override void WritePortFE(ushort addr, byte value, ref bool handled)
         {
             if ((addr & 0x0081) == 0 && (Memory.CMR1 & 0x80) != 0)
                 SetPalette((PortFE ^ 0x0F) & 0x0F, (byte)~(addr >> 8));
-            base.WritePortFE(addr, value, ref iorqge);
+            base.WritePortFE(addr, value, ref handled);
         }
 
-        protected override void ReadPortAll(ushort addr, ref byte value, ref bool iorqge)
+        protected override void ReadPortAll(ushort addr, ref byte value, ref bool handled)
         {
-            base.ReadPortAll(addr, ref value, ref iorqge);
+            base.ReadPortAll(addr, ref value, ref handled);
             if ((addr & 1) == 0)
             {
                 //LogAgent.Info("RD #FE @ PC=#{0:X4}", CPU.regs.PC);

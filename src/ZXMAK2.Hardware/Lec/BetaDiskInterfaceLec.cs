@@ -33,7 +33,7 @@ namespace ZXMAK2.Hardware.Lec
         
         #region Private
 
-        protected void BusWriteBdiHack(ushort addr, byte value, ref bool iorqge)
+        protected void BusWriteBdiHack(ushort addr, byte value, ref bool handled)
         {
             m_betaHack = (value & 0x10) != 0;
         }

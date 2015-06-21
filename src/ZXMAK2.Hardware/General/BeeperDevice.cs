@@ -148,11 +148,11 @@ namespace ZXMAK2.Hardware.General
 
         #region Bus Handlers
 
-        protected virtual void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WritePortFE(ushort addr, byte value, ref bool handled)
         {
-            //if (!iorqge)
+            //if (handled)
             //	return;
-            //iorqge = false;
+            //handled = true;
             //PortFE = value;
             if (m_memory != null && m_memory.DOSEN)
             {

@@ -246,23 +246,23 @@ namespace ZXMAK2.Hardware.Atm
         
         #region Bus Handlers
 
-        protected virtual void BusReadPortFE(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPortFE(ushort addr, ref byte value, ref bool handled)
         {
             value &= 0x7F;
             value |= Atm450_z((int)(m_cpu.Tact % m_ula.FrameTactCount));
         }
 
-        protected virtual void BusReadPortFB(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPortFB(ushort addr, ref byte value, ref bool handled)
         {
             AFB = (byte)addr;
         }
 
-        protected virtual void BusWritePortFE(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortFE(ushort addr, byte value, ref bool handled)
         {
             AFE = (byte)addr;
         }
 
-        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool handled)
         {
             if (m_lock)
             {
@@ -271,12 +271,12 @@ namespace ZXMAK2.Hardware.Atm
             CMR0 = value;
         }
 
-        protected virtual void BusWritePortFDFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortFDFD(ushort addr, byte value, ref bool handled)
         {
             CMR1 = value;
         }
 
-        protected virtual void BusWritePort7DFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7DFD(ushort addr, byte value, ref bool handled)
         {
             if (m_ulaAtm != null)
             {

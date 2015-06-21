@@ -380,7 +380,7 @@ namespace ZXMAK2.Hardware.Evo
 
         #region Bus Handlers
 
-        protected virtual void BusWritePortXXFF_PAL(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortXXFF_PAL(ushort addr, byte value, ref bool handled)
         {
             if ((DOSEN || SHADOW) && PEN2 && m_ulaAtm != null)
             {
@@ -388,7 +388,7 @@ namespace ZXMAK2.Hardware.Evo
             }
         }
 
-        protected virtual void BusWritePortXX77_SYS(ushort addr, byte value, ref bool iorqge) // ATM2
+        protected virtual void BusWritePortXX77_SYS(ushort addr, byte value, ref bool handled) // ATM2
         {
             if (DOSEN || SHADOW)
             {
@@ -401,7 +401,7 @@ namespace ZXMAK2.Hardware.Evo
             }
         }
 
-        protected virtual void BusWritePortXFF7_WND(ushort addr, byte value, ref bool iorqge) // ATM2
+        protected virtual void BusWritePortXFF7_WND(ushort addr, byte value, ref bool handled) // ATM2
         {
             if (DOSEN || SHADOW)
             {
@@ -421,7 +421,7 @@ namespace ZXMAK2.Hardware.Evo
             }
         }
 
-        protected virtual void BusWritePort7FFD_128(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD_128(ushort addr, byte value, ref bool handled)
         {
             if (m_lock)
             {
@@ -430,24 +430,24 @@ namespace ZXMAK2.Hardware.Evo
             CMR0 = value;
         }
 
-        protected virtual void BusWritePortXXBF_EVO(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortXXBF_EVO(ushort addr, byte value, ref bool handled)
         {
             m_pXXBF = value;
             UpdateMapping();
         }
 
-        protected virtual void BusReadPortXXBF_EVO(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPortXXBF_EVO(ushort addr, ref byte value, ref bool handled)
         {
             value = (byte)((value & 0xF0) | (m_pXXBF & 0x0F));
         }
 
-        protected virtual void BusWritePortEFF7_MOD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortEFF7_MOD(ushort addr, byte value, ref bool handled)
         {
             m_pEFF7 = value;
             UpdateMapping();
         }
 
-        protected virtual void BusReadPortXXBE_CFG(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void BusReadPortXXBE_CFG(ushort addr, ref byte value, ref bool handled)
         {
             switch ((addr >> 8) & 0x1F)
             {

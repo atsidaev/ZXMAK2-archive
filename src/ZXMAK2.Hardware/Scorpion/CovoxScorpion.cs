@@ -27,11 +27,11 @@ namespace ZXMAK2.Hardware.Scorpion
         private int m_mult = 0;
 
 
-        private void WritePort(ushort addr, byte value, ref bool iorqge)
+        private void WritePort(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
+            if (handled)
                 return;
-            iorqge = false;
+            handled = true;
 
             var dac = (ushort)(value * m_mult);
             UpdateDac(dac, dac);

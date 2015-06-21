@@ -87,11 +87,11 @@ namespace ZXMAK2.Hardware.Spectrum
 
         #region The same as 48
 
-        protected override void WritePortFE(ushort addr, byte value, ref bool iorqge)
+        protected override void WritePortFE(ushort addr, byte value, ref bool handled)
         {
         }
 
-        private void WritePortAll(ushort addr, byte value, ref bool iorqge)
+        private void WritePortAll(ushort addr, byte value, ref bool handled)
         {
             if ((addr & 0x0001) == 0)
             {
@@ -101,7 +101,7 @@ namespace ZXMAK2.Hardware.Spectrum
             }
         }
 
-        private void ReadPortAll(ushort addr, ref byte value, ref bool iorqge)
+        private void ReadPortAll(ushort addr, ref byte value, ref bool handled)
         {
             int frameTact = (int)((CPU.Tact - 1) % FrameTactCount);
             base.ReadPortFF(frameTact, ref value);

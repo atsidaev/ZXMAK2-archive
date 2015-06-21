@@ -57,33 +57,27 @@ namespace ZXMAK2.Hardware.General
 
         #region Bus Handlers
 
-        private void BusWriteAddr(ushort addr, byte value, ref bool iorqge)
+        private void BusWriteAddr(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
             m_rtc.WriteAddr(value);
         }
 
-        private void BusWriteData(ushort addr, byte value, ref bool iorqge)
+        private void BusWriteData(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
             m_rtc.WriteData(value);
         }
 
-        private void BusReadData(ushort addr, ref byte value, ref bool iorqge)
+        private void BusReadData(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
+            if (handled)
                 return;
-            }
-            iorqge = false;
+            handled = true;
             m_rtc.ReadData(ref value);
         }
 

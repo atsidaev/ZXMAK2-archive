@@ -148,7 +148,7 @@ namespace ZXMAK2.Hardware.Quorum
 
         #region Private
 
-        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool handled)
         {
             //LogAgent.Info("PC: #{0:X4}  CMR0 <- #{1:X2} {2}", m_cpu.regs.PC, value, m_lock ? "[locked]" : string.Empty);
             if (!m_lock)
@@ -157,7 +157,7 @@ namespace ZXMAK2.Hardware.Quorum
             }
         }
 
-        protected virtual void BusWritePort0000(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort0000(ushort addr, byte value, ref bool handled)
         {
             //LogAgent.Info("PC: #{0:X4}  CMR1 <- #{1:X2}", m_cpu.regs.PC, value);
             CMR1 = value;

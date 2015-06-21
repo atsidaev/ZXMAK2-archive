@@ -172,22 +172,23 @@ namespace ZXMAK2.Hardware.Profi
 
         #region Bus Handlers
 
-        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePort7FFD(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
+            if (handled)
                 return;
-            iorqge = false;
+            handled = true;
+
             if (!m_lock)
             {
                 CMR0 = value;
             }
         }
 
-        protected virtual void BusWritePortDFFD(ushort addr, byte value, ref bool iorqge)
+        protected virtual void BusWritePortDFFD(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
+            if (handled)
                 return;
-            iorqge = false;
+            handled = true;
             CMR1 = value;
         }
 

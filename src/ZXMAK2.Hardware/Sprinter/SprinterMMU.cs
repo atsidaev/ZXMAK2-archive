@@ -414,73 +414,73 @@ namespace ZXMAK2.Hardware.Sprinter
         #endregion
 
         //Обработчик записи в порт с расшифровкой по DCP-странице
-        private void WRDCP(ushort addr, byte value, ref bool iorqge)
+        private void WRDCP(ushort addr, byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                ushort dcpadr = (ushort)((this.DOSEN ? 2048 : 0) + (addr & 0x67) + (addr & 0x2000 >> 8) + (addr & 0xc000 >> 7));
+            if (handled)
+                return;
+
+            ushort dcpadr = (ushort)((this.DOSEN ? 2048 : 0) + (addr & 0x67) + (addr & 0x2000 >> 8) + (addr & 0xc000 >> 7));
 #if Debug
                 LogPort(addr, value);
 #endif
-                //            switch (m_ramPages[0x40][dcpadr])
-                if ((RamPages[0x40][dcpadr] >= 0xF0) && (RamPages[0x40][dcpadr] <= 0xFF))
+            //            switch (m_ramPages[0x40][dcpadr])
+            if ((RamPages[0x40][dcpadr] >= 0xF0) && (RamPages[0x40][dcpadr] <= 0xFF))
+            {
+                m_scorpion_pages[(RamPages[0x40][dcpadr] & 0x0f)] = value;
+                handled = true;
+            }
+            else
+            {
+                if ((RamPages[0x40][dcpadr] >= 0xE0) && (RamPages[0x40][dcpadr] <= 0xEF))
                 {
-                    m_scorpion_pages[(RamPages[0x40][dcpadr] & 0x0f)] = value;
-                    iorqge = false;
+                    m_pages[RamPages[0x40][dcpadr] & 0x0f] = value;
+                    handled = true;
                 }
-                else
-                {
-                    if ((RamPages[0x40][dcpadr] >= 0xE0) && (RamPages[0x40][dcpadr] <= 0xEF))
-                    {
-                        m_pages[RamPages[0x40][dcpadr] & 0x0f] = value;
-                        iorqge = false;
-                    }
 
-                    /*                    switch (m_ramPages[0x40][dcpadr])
-                                        {
-                                            case DCPports.dcpROMSysAlt: 
-                                        }*/
-                }
+                /*                    switch (m_ramPages[0x40][dcpadr])
+                                    {
+                                        case DCPports.dcpROMSysAlt: 
+                                    }*/
+            }
 #if Debug
-                if (!iorqge)
+                if (handled)
                     LogPort(addr, value);
 #endif
-            }
         }
 
         //Обработчик чтения из порта с расшифровкой по DCP-странице
-        private void RDDCP(ushort addr, ref byte value, ref bool iorqge)
+        private void RDDCP(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                ushort dcpadr = (ushort)((this.DOSEN ? 2048 : 0) + (addr & 0x67) + (addr & 0x2000 >> 8) + (addr & 0xc000 >> 7) + 1024);
+            if (handled)
+                return;
+
+            ushort dcpadr = (ushort)((this.DOSEN ? 2048 : 0) + (addr & 0x67) + (addr & 0x2000 >> 8) + (addr & 0xc000 >> 7) + 1024);
 #if Debug
                 LogPort(addr, value);
 #endif
-                //            switch (m_ramPages[0x40][dcpadr])
-                if ((RamPages[0x40][dcpadr] >= 0xF0) && (RamPages[0x40][dcpadr] <= 0xFF))
+            //            switch (m_ramPages[0x40][dcpadr])
+            if ((RamPages[0x40][dcpadr] >= 0xF0) && (RamPages[0x40][dcpadr] <= 0xFF))
+            {
+                value = m_scorpion_pages[(RamPages[0x40][dcpadr] & 0x0f)];
+                handled = true;
+            }
+            else
+            {
+                if ((RamPages[0x40][dcpadr] >= 0xE0) && (RamPages[0x40][dcpadr] <= 0xEF))
                 {
-                    value = m_scorpion_pages[(RamPages[0x40][dcpadr] & 0x0f)];
-                    iorqge = false;
+                    value = m_pages[RamPages[0x40][dcpadr] & 0x0f];
+                    handled = true;
                 }
-                else
-                {
-                    if ((RamPages[0x40][dcpadr] >= 0xE0) && (RamPages[0x40][dcpadr] <= 0xEF))
-                    {
-                        value = m_pages[RamPages[0x40][dcpadr] & 0x0f];
-                        iorqge = false;
-                    }
 
-                    /*                    switch (m_ramPages[0x40][dcpadr])
-                                        {
-                                            case DCPports.dcpROMSysAlt: 
-                                        }*/
-                }
+                /*                    switch (m_ramPages[0x40][dcpadr])
+                                    {
+                                        case DCPports.dcpROMSysAlt: 
+                                    }*/
+            }
 #if Debug
-                if (!iorqge)
+                if (handled)
                     LogPort(addr, value);
 #endif
-            }
         }
 
         private new void WriteMem0000(ushort addr, byte value)
@@ -749,98 +749,94 @@ namespace ZXMAK2.Hardware.Sprinter
             Logger.GetLogger().LogMessage(String.Format("#{0:X4}: Write to port #{1:X4} value #{2:X2}", m_opaddr, port, value));
         }
 #endif
-        private void readPort00h(ushort addr, ref byte value, ref bool iorqge)
+        private void readPort00h(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                value = 0;
-                iorqge = false;
-            }
+            if (handled)
+                return;
+            handled = true;
+            value = 0;
         }
 
-        private void writePort89h(ushort addr, byte value, ref bool iorqge)
+        private void writePort89h(ushort addr, byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
-                m_port_y = value;
-                if (m_ulaSprinter != null)
-                {
-                    m_ulaSprinter.RGADR = value;
-                }
+            if (handled)
+                return;
+            handled = true;
 
-                //Перепроверить!!! тут в TASM происходит глюк непонятный
-                /*                if ((this.CMR0 & 2) == 0)
-                                {
-                                    m_vblok4000 = (byte)(value & 31);
-                                    m_vblokC000 = (byte)((m_vblok4000 + 1) & 31);//((value & 31) + 1)
-                                }
-                                else
-                                {
-                                    m_vblokC000 = (byte)(value & 31);
-                                    m_vblok4000 = (byte)((m_vblokC000 + 1) & 31);//((value & 31) + 1);
-                                }*/
-                m_vblok4000 = (byte)(value & 31);
-                m_vblokC000 = (byte)((value & 31) ^ 1);
+            m_port_y = value;
+            if (m_ulaSprinter != null)
+            {
+                m_ulaSprinter.RGADR = value;
+            }
+
+            //Перепроверить!!! тут в TASM происходит глюк непонятный
+            /*                if ((this.CMR0 & 2) == 0)
+                            {
+                                m_vblok4000 = (byte)(value & 31);
+                                m_vblokC000 = (byte)((m_vblok4000 + 1) & 31);//((value & 31) + 1)
+                            }
+                            else
+                            {
+                                m_vblokC000 = (byte)(value & 31);
+                                m_vblok4000 = (byte)((m_vblokC000 + 1) & 31);//((value & 31) + 1);
+                            }*/
+            m_vblok4000 = (byte)(value & 31);
+            m_vblokC000 = (byte)((value & 31) ^ 1);
 #if Debug
                 LogPort(addr, value);
 #endif
-            }
         }
 
-        private void readPort89h(ushort addr, ref byte value, ref bool iorqge)
+        private void readPort89h(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                value = m_port_y;
-                iorqge = false;
-            }
+            if (handled)
+                return;
+            handled = true;
+            value = m_port_y;
         }
 
-        private void writePortC9h(ushort addr, byte value, ref bool iorqge)
+        private void writePortC9h(ushort addr, byte value, ref bool handled)
         {
-            if (iorqge)
+            if (handled)
+                return;
+            handled = true;
+            
+            m_port_videomode = value;
+            if (m_ulaSprinter != null)
             {
-                iorqge = false;
-                m_port_videomode = value;
-                if (m_ulaSprinter != null)
-                {
-                    m_ulaSprinter.RGMOD = value;
-                }
+                m_ulaSprinter.RGMOD = value;
+            }
 #if Debug
                 LogPort(addr, value);
 #endif
-            }
         }
 
-        private void readPortC9h(ushort addr, ref byte value, ref bool iorqge)
+        private void readPortC9h(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                value = m_port_videomode;
-                iorqge = false;
-            }
+            if (handled)
+                return;
+            handled = true;
+            value = m_port_videomode;
         }
 
-        private void writePortE9h(ushort addr, byte value, ref bool iorqge)
+        private void writePortE9h(ushort addr, byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
-                m_port_scr = value;
+            if (handled)
+                return;
+            handled = true;
+
+            m_port_scr = value;
 #if Debug
                 LogPort(addr, value);
 #endif
-            }
         }
 
-        private void readPortE9h(ushort addr, ref byte value, ref bool iorqge)
+        private void readPortE9h(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                value = m_port_scr;
-                iorqge = false;
-            }
+            if (handled)
+                return;
+            handled = true;
+            value = m_port_scr;
         }
 
 
@@ -864,196 +860,195 @@ namespace ZXMAK2.Hardware.Sprinter
             UpdateMapping();
         }
 
-        private void writePort7Ch(ushort addr, byte value, ref bool iorqge)
+        private void writePort7Ch(ushort addr, byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
-                m_sysport = value;
-                //Если в порт 0x7C/0x3C записано значение 01, то включается ROM Expansion
-                if ((addr & 64) == 64) this.m_romA16 = (value & 0x03) == 0x01;//) ? true : false;
-                //                Logger.GetLogger().LogMessage(String.Format("Write to port #{0:X4} value #{1:X2}", addr, value));
+            if (handled)
+                return;
+            handled = true;
 
-                //                this.lb.Items.Add(String.Format("Write to port #{0:X4} value #{1:X2}", addr, value));
-                this.m_sys = (addr & 64) == 0;//) ? true : false;
+            m_sysport = value;
+            //Если в порт 0x7C/0x3C записано значение 01, то включается ROM Expansion
+            if ((addr & 64) == 64) this.m_romA16 = (value & 0x03) == 0x01;//) ? true : false;
+            //                Logger.GetLogger().LogMessage(String.Format("Write to port #{0:X4} value #{1:X2}", addr, value));
+
+            //                this.lb.Items.Add(String.Format("Write to port #{0:X4} value #{1:X2}", addr, value));
+            this.m_sys = (addr & 64) == 0;//) ? true : false;
 #if Debug
                 LogPort(addr, value);
                 Logger.GetLogger().LogMessage(String.Format("State: SYS - {0}, AROM16 - {1}", this.m_sys, this.m_romA16));
 #endif
 
-                //                this.lb.Items.Add(String.Format("State: SYS - {0}, AROM16 - {1}", this.m_sys, this.m_romA16));
-                if ((value & 0x04) != 0 && m_SprinterBDI != null)
-                {
-                    m_SprinterBDI.OpenPorts = ((value & 0x1C) == 0x1C ? true : false);
-                }
-                this.UpdateMapping();
-
-                //                if ((value & 0x03) == 1) this.m_rom_exp = true;
-                //                    else this.m_rom_exp = false;
-                //                this.m_1ffd = value;
+            //                this.lb.Items.Add(String.Format("State: SYS - {0}, AROM16 - {1}", this.m_sys, this.m_romA16));
+            if ((value & 0x04) != 0 && m_SprinterBDI != null)
+            {
+                m_SprinterBDI.OpenPorts = ((value & 0x1C) == 0x1C ? true : false);
             }
+            this.UpdateMapping();
+
+            //                if ((value & 0x03) == 1) this.m_rom_exp = true;
+            //                    else this.m_rom_exp = false;
+            //                this.m_1ffd = value;
         }
 
-        private void readPortFBh(ushort addr, ref byte value, ref bool iorqge)
+        private void readPortFBh(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                //Включение кеша
-                this.m_cache = true;
-                this.UpdateMapping();
-            }
+            if (handled)
+                return;
+            
+            //Включение кеша
+            this.m_cache = true;
+            this.UpdateMapping();
         }
 
-        private void readPort7Bh(ushort addr, ref byte value, ref bool iorqge)
+        private void readPort7Bh(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                //Выключение кеша
-                this.m_cache = false;
-                this.UpdateMapping();
-            }
+            if (handled)
+                return;
+
+            //Выключение кеша
+            this.m_cache = false;
+            this.UpdateMapping();
         }
 
-        private void writePort1FFDh(ushort addr, byte value, ref bool iorqge)
+        private void writePort1FFDh(ushort addr, byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
-                this.CMR1 = value;
-                this.UpdateMapping();
+            if (handled)
+                return;
+            handled = true;
+            
+            this.CMR1 = value;
+            this.UpdateMapping();
 #if Debug
                 LogPort(addr, value);
 #endif
-            }
         }
 
-        private void writePort7FFDh(ushort addr, byte value, ref bool iorqge)
+        private void writePort7FFDh(ushort addr, byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
-                this.CMR0 = value;
-                this.UpdateMapping();
+            if (handled)
+                return;
+            handled = true;
+
+            this.CMR0 = value;
+            this.UpdateMapping();
 #if Debug
                 LogPort(addr, value);
 #endif
-            }
         }
 
-        private void readPort82h(ushort addr, ref byte value, ref bool iorqge)
+        private void readPort82h(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
-                if (m_firstread)
-                {
-                    this.PAGE0 = 0x40;
-                    this.UpdateMapping();
-                    m_firstread = false;
-                }
-                value = this.PAGE0;
-            }
-        }
+            if (handled)
+                return;
+            handled = true;
 
-        private void writePort82h(ushort addr, byte value, ref bool iorqge)
-        {
-            if (iorqge)
+            if (m_firstread)
             {
-                iorqge = false;
-                this.PAGE0 = value;
+                this.PAGE0 = 0x40;
                 this.UpdateMapping();
+                m_firstread = false;
+            }
+            value = this.PAGE0;
+        }
+
+        private void writePort82h(ushort addr, byte value, ref bool handled)
+        {
+            if (handled)
+                return;
+            handled = true;
+
+            this.PAGE0 = value;
+            this.UpdateMapping();
 #if Debug
                 LogPort(addr, value);
 #endif
-            }
         }
 
-        private void readPortA2h(ushort addr, ref byte value, ref bool iorqge)
+        private void readPortA2h(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
-                if (m_firstread)
-                {
-                    this.PAGE1 = 0x40;
-                    this.UpdateMapping();
-                    m_firstread = false;
-                }
-                value = this.PAGE1;
-            }
-        }
+            if (handled)
+                return;
+            handled = true;
 
-        private void writePortA2h(ushort addr, byte value, ref bool iorqge)
-        {
-            if (iorqge)
+            if (m_firstread)
             {
-                iorqge = false;
-                this.PAGE1 = value;
+                this.PAGE1 = 0x40;
                 this.UpdateMapping();
+                m_firstread = false;
+            }
+            value = this.PAGE1;
+        }
+
+        private void writePortA2h(ushort addr, byte value, ref bool handled)
+        {
+            if (handled)
+                return;
+            handled = true;
+
+            this.PAGE1 = value;
+            this.UpdateMapping();
 #if Debug
                 LogPort(addr, value);
 #endif
-            }
         }
 
-        private void readPortC2h(ushort addr, ref byte value, ref bool iorqge)
+        private void readPortC2h(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
-                if (m_firstread)
-                {
-                    this.PAGE2 = 0x40;
-                    this.UpdateMapping();
-                    m_firstread = false;
-                }
-                value = this.PAGE2;
+            if (handled)
+                return;
+            handled = true;
 
-            }
-        }
-
-        private void writePortC2h(ushort addr, byte value, ref bool iorqge)
-        {
-            if (iorqge)
+            if (m_firstread)
             {
-                iorqge = false;
-                this.PAGE2 = value;
+                this.PAGE2 = 0x40;
                 this.UpdateMapping();
+                m_firstread = false;
+            }
+            value = this.PAGE2;
+        }
+
+        private void writePortC2h(ushort addr, byte value, ref bool handled)
+        {
+            if (handled)
+                return;
+            handled = true;
+
+            this.PAGE2 = value;
+            this.UpdateMapping();
 #if Debug
                 LogPort(addr, value);
 #endif
-            }
         }
 
-        private void readPortE2h(ushort addr, ref byte value, ref bool iorqge)
+        private void readPortE2h(ushort addr, ref byte value, ref bool handled)
         {
-            if (iorqge)
-            {
-                iorqge = false;
-                if (m_firstread)
-                {
-                    this.PAGE3 = 0x40;
-                    this.UpdateMapping();
-                    m_firstread = false;
-                }
-                //  MessageBox.Show("Reading from PAGE3 Port: "+Convert.ToString(this.PAGE3));
-                value = this.PAGE3;
-            }
-        }
+            if (handled)
+                return;
+            handled = true;
 
-        private void writePortE2h(ushort addr, byte value, ref bool iorqge)
-        {
-            if (iorqge)
+            if (m_firstread)
             {
-                iorqge = false;
-                this.PAGE3 = value;
+                this.PAGE3 = 0x40;
                 this.UpdateMapping();
+                m_firstread = false;
+            }
+            //  MessageBox.Show("Reading from PAGE3 Port: "+Convert.ToString(this.PAGE3));
+            value = this.PAGE3;
+        }
+
+        private void writePortE2h(ushort addr, byte value, ref bool handled)
+        {
+            if (handled)
+                return;
+            handled = true;
+
+            this.PAGE3 = value;
+            this.UpdateMapping();
 #if Debug
                 LogPort(addr, value);
 #endif
 
-                //  MessageBox.Show("Write to PAGE3 Port: " + Convert.ToString(value));
-            }
+            //  MessageBox.Show("Write to PAGE3 Port: " + Convert.ToString(value));
         }
 
         #endregion

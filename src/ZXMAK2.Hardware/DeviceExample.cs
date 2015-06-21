@@ -37,44 +37,38 @@ namespace ZXMAK2.Hardware
         /// <summary>
         /// Handle write port #F1 (decimal 241)
         /// </summary>
-        public void WritePort00F1(ushort addr, byte value, ref bool iorqge)
+        public void WritePort00F1(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
-                // write port is already handled by another device
+            if (handled)        // write port is already handled by another device
                 return;
-            }
+            handled = true;     // set handled flag
+            
             _port00F1 = value;
-            iorqge = false;
         }
 
         /// <summary>
         /// Handle write port #F3 (decimal 243)
         /// </summary>
-        public void WritePort00F3(ushort addr, byte value, ref bool iorqge)
+        public void WritePort00F3(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
-                // write port is already handled by another device
+            if (handled)        // write port is already handled by another device
                 return;
-            }
+            handled = true;     // set handled flag
+            
             _port00F3 = value;
-            iorqge = false;
         }
 
         /// <summary>
         /// Handle read port #F1 (decimal 241)
         /// </summary>
-        public void ReadPort00F1(ushort addr, ref byte value, ref bool iorqge)
+        public void ReadPort00F1(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge)
-            {
-                // read port is already handled by another device
+            if (handled)        // read port is already handled by another device
                 return;
-            }
+            handled = true;     // set handled flag
+
             // add values written into ports #0001 and #0003 and return result
             value = (byte)(_port00F1 + _port00F3);
-            iorqge = false;
         }
     }
 }

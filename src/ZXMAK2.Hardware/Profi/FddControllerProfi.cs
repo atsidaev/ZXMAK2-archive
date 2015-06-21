@@ -60,13 +60,11 @@ namespace ZXMAK2.Hardware.Profi
             bmgr.SubscribeRdIo(0xFF, 0x3F, BusReadSysEx);
         }
 
-        protected void BusWriteFdcEx(ushort addr, byte value, ref bool iorqge)
+        protected void BusWriteFdcEx(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge || !IsExtendedMode)
-            {
+            if (handled || !IsExtendedMode)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             var fdcReg = (addr & 0x60) >> 5;
             if (LogIo)
@@ -76,13 +74,11 @@ namespace ZXMAK2.Hardware.Profi
             m_wd.Write(m_cpu.Tact, (WD93REG)fdcReg, value);
         }
 
-        protected void BusReadFdcEx(ushort addr, ref byte value, ref bool iorqge)
+        protected void BusReadFdcEx(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !IsExtendedMode)
-            {
+            if (handled || !IsExtendedMode)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             var fdcReg = (addr & 0x60) >> 5;
             value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
@@ -92,13 +88,11 @@ namespace ZXMAK2.Hardware.Profi
             }
         }
 
-        protected void BusWriteSysEx(ushort addr, byte value, ref bool iorqge)
+        protected void BusWriteSysEx(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge || !IsExtendedMode)
-            {
+            if (handled || !IsExtendedMode)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             if (LogIo)
             {
@@ -107,13 +101,11 @@ namespace ZXMAK2.Hardware.Profi
             m_wd.Write(m_cpu.Tact, WD93REG.SYS, value);
         }
 
-        protected void BusReadSysEx(ushort addr, ref byte value, ref bool iorqge)
+        protected void BusReadSysEx(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !IsExtendedMode)
-            {
+            if (handled || !IsExtendedMode)
                 return;
-            }
-            iorqge = false;
+            handled = true;
 
             value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
             if (LogIo)

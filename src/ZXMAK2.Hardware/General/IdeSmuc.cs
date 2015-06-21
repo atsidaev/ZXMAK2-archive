@@ -170,57 +170,57 @@ namespace ZXMAK2.Hardware.General
 
         #region Read I/O
 
-        protected virtual void ReadVer(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadVer(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
             value = 0x57;//0x3F;	  // D7,D6,D5,D3 (see table, there is no direct encoding)
         }
 
-        protected virtual void ReadRev(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadRev(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
             value = 0x17;//0x57;
         }
 
-        protected virtual void ReadFdd(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadFdd(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
             // D7=0 => fdd A virtual
             // D6=0 => fdd B virtual
             // D3=0 => HDD present
             value = (byte)(m_fdd | 0x37);	// us |= 0x3F
         }
 
-        protected virtual void ReadPic(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadPic(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
             //int ab0 = (addr >> 8) & 1;
             // not installed
             value = 0x57; // ???
         }
 
-        protected virtual void ReadRtc(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadRtc(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
             if ((m_sys & 0x80) == 0)
                 m_rtc.ReadData(ref value);
         }
 
-        protected virtual void ReadIdeHi(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIdeHi(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
             value = m_ide_rd_hi;
             if (LogIo)
             {
@@ -228,11 +228,12 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        protected virtual void ReadSys(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadSys(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
+
             value = m_nvram.Read();
             value &= 0x7F;
             value |= (byte)(m_ata.GetIntRq() & 0x80);
@@ -242,13 +243,13 @@ namespace ZXMAK2.Hardware.General
             }
         }
 
-        protected virtual void ReadIde(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIde(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
-            int ab = (addr >> 8) & 7;
+            handled = true;
 
+            var ab = (addr >> 8) & 7;
             if ((m_sys & 0x80) == 0)
             {
                 if (ab == 0)
@@ -277,30 +278,30 @@ namespace ZXMAK2.Hardware.General
         
         #region Write I/O
 
-        protected virtual void WriteFdd(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteFdd(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
             m_fdd = value;
         }
 
-        protected virtual void WriteRtc(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteRtc(ushort addr, byte value, ref bool handled)
         {
             if (!m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
             if ((m_sys & 0x80) == 0)
                 m_rtc.WriteAddr(value);
             else
                 m_rtc.WriteData(value);
         }
 
-        protected virtual void WriteIdeHi(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIdeHi(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
 
             if (LogIo)
             {
@@ -309,11 +310,11 @@ namespace ZXMAK2.Hardware.General
             m_ide_wr_hi = value;
         }
 
-        protected virtual void WriteSys(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteSys(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
+            handled = true;
 
             if (LogIo)
             {
@@ -327,13 +328,13 @@ namespace ZXMAK2.Hardware.General
             m_sys = value;
         }
 
-        protected virtual void WriteIde(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIde(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge || !m_memory.DOSEN)
+            if (handled || !m_memory.DOSEN)
                 return;
-            iorqge = false;
-            int ab = (addr >> 8) & 7;
+            handled = true;
 
+            var ab = (addr >> 8) & 7;
             if ((m_sys & 0x80) == 0)
             {
                 if (ab == 0)

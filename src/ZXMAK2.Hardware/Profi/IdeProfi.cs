@@ -141,16 +141,14 @@ namespace ZXMAK2.Hardware.Profi
             }
         }
 
-        protected virtual void WriteIde(ushort addr, byte value, ref bool iorqge)
+        protected virtual void WriteIde(ushort addr, byte value, ref bool handled)
         {
-            if (!iorqge || !IsExtendedMode)
-            {
+            if (handled || !IsExtendedMode)
                 return;
-            }
 
             if ((addr & 0x40) != 0)
             {
-                iorqge = false;
+                handled = true;
                 // cs1
                 if ((addr & 0x20) == 0)
                 {
@@ -183,24 +181,22 @@ namespace ZXMAK2.Hardware.Profi
                 // cs3
                 if (((addr >> 8) & 7) == 6)
                 {
-                    iorqge = false;
+                    handled = true;
                     AtaWrite(AtaReg.ControlAltStatus, value);
                     return;
                 }
             }
         }
 
-        protected virtual void ReadIde(ushort addr, ref byte value, ref bool iorqge)
+        protected virtual void ReadIde(ushort addr, ref byte value, ref bool handled)
         {
-            if (!iorqge || !IsExtendedMode)
-            {
+            if (handled || !IsExtendedMode)
                 return;
-            }
 
             if ((addr & 0x40) != 0)
             {
                 // cs1
-                iorqge = false;
+                handled = true;
                 if ((addr & 0x20) != 0)
                 {
                     value = (byte)m_ide_read;
