@@ -8,17 +8,17 @@ using ZXMAK2.Host.Interfaces;
 
 namespace ZXMAK2.Hardware.Sprinter
 {
-    public class SprinterMouse : BusDeviceBase, IMouseDevice
+    public sealed class SprinterMouse : BusDeviceBase, IMouseDevice
     {
         #region Fields
 
-        private IMouseState m_mouseState;
-        private int m_mouseX;
-        private int m_mouseY;
-        private int m_mouseBtn;
-        private bool m_swapbtns;
+        private readonly Queue<byte> _queue = new Queue<byte>();
 
-        private readonly Queue<byte> m_msbuf = new Queue<byte>();
+        private IMouseState _mouseState;
+        private int _mouseX;
+        private int _mouseY;
+        private int _mouseBtn;
+        private bool _isSwapBtns;
 
         #endregion Fields
 
@@ -33,8 +33,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public override void BusConnect()
         {
-            m_swapbtns = true;
-                 
+            _isSwapBtns = true;
         }
 
         public override void BusDisconnect()
@@ -43,31 +42,31 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public override void BusInit(IBusManager bmgr)
         {
-//            bmgr.SubscribeRDIO(0xffff, 0xfadf, new BusReadIoProc(this.readPortFADF));
-  //          bmgr.SubscribeRDIO(0xffff, 0xfbdf, new BusReadIoProc(this.readPortFBDF));
-    //        bmgr.SubscribeRDIO(0xffff, 0xffdf, new BusReadIoProc(this.readPortFFDF));
-            bmgr.SubscribeRdIo(0x00ff, 0x001B, new BusReadIoProc(readMouseState));
-            bmgr.SubscribeRdIo(0x00ff, 0x001A, new BusReadIoProc(readMouseData));
+            //bmgr.SubscribeRDIO(0xffff, 0xfadf, new BusReadIoProc(this.readPortFADF));
+            //bmgr.SubscribeRDIO(0xffff, 0xfbdf, new BusReadIoProc(this.readPortFBDF));
+            //bmgr.SubscribeRDIO(0xffff, 0xffdf, new BusReadIoProc(this.readPortFFDF));
+            bmgr.SubscribeRdIo(0x00ff, 0x001B, new BusReadIoProc(ReadPortMouseState));
+            bmgr.SubscribeRdIo(0x00ff, 0x001A, new BusReadIoProc(ReadPortMouseData));
         }
 
-        private void readMouseState(ushort addr, ref byte value, ref bool handled)
+        private void ReadPortMouseState(ushort addr, ref byte value, ref bool handled)
         {
             if (handled)
                 return;
             handled = true;
-            value = (byte)((m_msbuf.Count > 0) ? 1 : 0);
+            value = (byte)((_queue.Count > 0) ? 1 : 0);
         }
 
-        private void readMouseData(ushort addr, ref byte value, ref bool handled)
+        private void ReadPortMouseData(ushort addr, ref byte value, ref bool handled)
         {
             if (handled)
                 return;
             handled = true;
 
-            //            value = (byte)((m_kbd_buff.Length > 0) ? 1 : 0);
-            if (m_msbuf.Count > 0)
+            //value = (byte)((m_kbd_buff.Length > 0) ? 1 : 0);
+            if (_queue.Count > 0)
             {
-                value = m_msbuf.Dequeue();
+                value = _queue.Dequeue();
             }
             else
             {
@@ -77,10 +76,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public IMouseState MouseState
         {
-            get
-            {
-                return this.m_mouseState;
-            }
+            get { return _mouseState; }
             set
             {
 //                m_mouseState = value;
@@ -119,37 +115,37 @@ namespace ZXMAK2.Hardware.Sprinter
                         different = true;
                     }
                 }*/
-                if (!((m_mouseBtn== value.Buttons) && (m_mouseY == value.Y) && (m_mouseX == value.X)))
+                if (!((_mouseBtn== value.Buttons) && (_mouseY == value.Y) && (_mouseX == value.X)))
                 //if (different)
                 {
                     byte my;
-                    my = (byte)(Math.Abs(m_mouseY - value.Y) / 2);
-                    if ((m_mouseY - value.Y) > 0)
+                    my = (byte)(Math.Abs(_mouseY - value.Y) / 2);
+                    if ((_mouseY - value.Y) > 0)
                     {
                         my ^= 0x7f;
                         my |= 128;
                     }
                     byte mx;
-                    mx = (byte)(Math.Abs(m_mouseX - value.X) / 2);
-                    if ((m_mouseX - value.X) > 0)
+                    mx = (byte)(Math.Abs(_mouseX - value.X) / 2);
+                    if ((_mouseX - value.X) > 0)
                     {
                         mx ^= 0x7f;
                         mx |= 128;
                     }
-                    m_mouseX = value.X;
-                    m_mouseY = value.Y;
-                    if (m_swapbtns)
+                    _mouseX = value.X;
+                    _mouseY = value.Y;
+                    if (_isSwapBtns)
                     {
-                        m_mouseBtn = ((value.Buttons & 0x01) << 1) | ((value.Buttons & 0x02) >> 1);
-                    } else m_mouseBtn = value.Buttons;
+                        _mouseBtn = ((value.Buttons & 0x01) << 1) | ((value.Buttons & 0x02) >> 1);
+                    } else _mouseBtn = value.Buttons;
 
-                    m_mouseState = value;
-                    byte b1 = (byte)(64 + ((m_mouseBtn & 3) << 4) + (((my) & 192) >> 4) + (((mx) & 192) >> 6));
-                    m_msbuf.Enqueue(b1);
+                    _mouseState = value;
+                    byte b1 = (byte)(64 + ((_mouseBtn & 3) << 4) + (((my) & 192) >> 4) + (((mx) & 192) >> 6));
+                    _queue.Enqueue(b1);
                     b1 = (byte)((mx) & 63);
-                    m_msbuf.Enqueue(b1);
+                    _queue.Enqueue(b1);
                     b1 = (byte)((my) & 63);
-                    m_msbuf.Enqueue(b1);
+                    _queue.Enqueue(b1);
                     //Logger.GetLogger().LogTrace(String.Format("Mouse event start, Buffer size = {0}", m_msbuf.Count));
                 }
             }
