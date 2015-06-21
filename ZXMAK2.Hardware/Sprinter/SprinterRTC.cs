@@ -5,13 +5,13 @@ using ZXMAK2.Engine.Entities;
 
 namespace ZXMAK2.Hardware.Sprinter
 {
-    public class SprinterRTC : BusDeviceBase
+    public sealed class SprinterRTC : BusDeviceBase
     {
         #region Fields
 
-        private readonly RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
-        private bool m_isSandBox;
-        private string m_fileName;
+        private readonly RtcChip _rtc = new RtcChip(RtcChipType.DS12885);
+        private bool _isSandBox;
+        private string _fileName;
 
         #endregion Fields
 
@@ -28,28 +28,28 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public override void BusInit(IBusManager bmgr)
         {
-            m_isSandBox = bmgr.IsSandbox;
-            bmgr.SubscribeReset(BusReset);
-            bmgr.SubscribeWrIo(0xFFFF, 0xBFBD, BusWriteData);  //CMOS_DWR
-            bmgr.SubscribeWrIo(0xFFFF, 0xDFBD, BusWriteAddr);  //CMOS_AWR
-            bmgr.SubscribeRdIo(0xFFFF, 0xFFBD, BusReadData);  //CMOS_DRD
+            _isSandBox = bmgr.IsSandbox;
+            bmgr.SubscribeReset(ResetBus);
+            bmgr.SubscribeWrIo(0xFFFF, 0xBFBD, WritePortData);  //CMOS_DWR
+            bmgr.SubscribeWrIo(0xFFFF, 0xDFBD, WritePortAddr);  //CMOS_AWR
+            bmgr.SubscribeRdIo(0xFFFF, 0xFFBD, ReadPortData);  //CMOS_DRD
 
-            m_fileName = bmgr.GetSatelliteFileName("cmos");
+            _fileName = bmgr.GetSatelliteFileName("cmos");
         }
 
         public override void BusConnect()
         {
-            if (!m_isSandBox && m_fileName != null)
+            if (!_isSandBox && _fileName != null)
             {
-                m_rtc.Load(m_fileName);
+                _rtc.Load(_fileName);
             }
         }
 
         public override void BusDisconnect()
         {
-            if (!m_isSandBox && m_fileName != null)
+            if (!_isSandBox && _fileName != null)
             {
-                m_rtc.Save(m_fileName);
+                _rtc.Save(_fileName);
             }
         }
 
@@ -58,34 +58,34 @@ namespace ZXMAK2.Hardware.Sprinter
 
         #region Bus
 
-        private void BusReset()
+        private void ResetBus()
         {
-            m_rtc.WriteAddr(0);
+            _rtc.WriteAddr(0);
         }
 
 
         /// <summary>
         /// RTC address port
         /// </summary>
-        private void BusWriteAddr(ushort addr, byte val, ref bool handled)
+        private void WritePortAddr(ushort addr, byte val, ref bool handled)
         {
-            m_rtc.WriteAddr(val);
+            _rtc.WriteAddr(val);
         }
 
         /// <summary>
         /// RTC write data port
         /// </summary>
-        private void BusWriteData(ushort addr, byte val, ref bool handled)
+        private void WritePortData(ushort addr, byte val, ref bool handled)
         {
-            m_rtc.WriteData(val);
+            _rtc.WriteData(val);
         }
 
         /// <summary>
         /// RTC read data port
         /// </summary>
-        private void BusReadData(ushort addr, ref byte val, ref bool handled)
+        private void ReadPortData(ushort addr, ref byte val, ref bool handled)
         {
-            m_rtc.ReadData(ref val);
+            _rtc.ReadData(ref val);
         }
 
         #endregion

@@ -12,18 +12,18 @@ using ZXMAK2.Resources;
 
 namespace ZXMAK2.Hardware.Sprinter
 {
-    public class SprinterFdd : BusDeviceBase, IBetaDiskDevice
+    public sealed class SprinterFdd : BusDeviceBase, IBetaDiskDevice
     {
         #region Fields
 
-        private bool m_sandbox = false;
-        private IconDescriptor m_iconRd = new IconDescriptor("FDDRD", ImageResources.FddRd_128x128);
-        private IconDescriptor m_iconWr = new IconDescriptor("FDDWR", ImageResources.FddWr_128x128);
-        protected CpuUnit m_cpu;
-        protected IMemoryDevice m_memory;
-        protected Wd1793 m_wd = new Wd1793(2);
+        private readonly IconDescriptor _iconRd = new IconDescriptor("FDDRD", ImageResources.FddRd_128x128);
+        private readonly IconDescriptor _iconWr = new IconDescriptor("FDDWR", ImageResources.FddWr_128x128);
+        private bool _sandbox = false;
+        private CpuUnit _cpu;
+        private IMemoryDevice _memory;
+        private Wd1793 _wd = new Wd1793(2);
 
-        private byte m_bdimode;
+        private byte _isBdiMode;
         
         #endregion
 
@@ -32,7 +32,7 @@ namespace ZXMAK2.Hardware.Sprinter
             Category = BusDeviceCategory.Disk;
             Name = "FDD SPRINTER";
             Description = "Sprinter FDD controller WD1793";
-            LoadManager = new DiskLoadManager(m_wd.FDD[0]);
+            LoadManager = new DiskLoadManager(_wd.FDD[0]);
         }
 
 
@@ -49,12 +49,12 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public override void BusInit(IBusManager bmgr)
         {
-            m_cpu = bmgr.CPU;
-            m_sandbox = bmgr.IsSandbox;
-            m_memory = bmgr.FindDevice<IMemoryDevice>();
+            _cpu = bmgr.CPU;
+            _sandbox = bmgr.IsSandbox;
+            _memory = bmgr.FindDevice<IMemoryDevice>();
 
-            bmgr.RegisterIcon(m_iconRd);
-            bmgr.RegisterIcon(m_iconWr);
+            bmgr.RegisterIcon(_iconRd);
+            bmgr.RegisterIcon(_iconWr);
             bmgr.SubscribeBeginFrame(BusBeginFrame);
             bmgr.SubscribeEndFrame(BusEndFrame);
 
@@ -77,7 +77,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public override void BusConnect()
         {
-            if (!m_sandbox)
+            if (!_sandbox)
             {
                 foreach (DiskImage di in FDD)
                     di.Connect();
@@ -86,14 +86,14 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public override void BusDisconnect()
         {
-            if (!m_sandbox)
+            if (!_sandbox)
             {
                 foreach (DiskImage di in FDD)
                     di.Disconnect();
             }
-            if (m_memory != null)
+            if (_memory != null)
             {
-                m_memory.DOSEN = false;
+                _memory.DOSEN = false;
             }
         }
 
@@ -102,7 +102,7 @@ namespace ZXMAK2.Hardware.Sprinter
             base.OnConfigLoad(itemNode);
             NoDelay = Utils.GetXmlAttributeAsBool(itemNode, "noDelay", false);
             LogIo = Utils.GetXmlAttributeAsBool(itemNode, "logIo", false);
-            for (var i = 0; i < m_wd.FDD.Length; i++)
+            for (var i = 0; i < _wd.FDD.Length; i++)
             {
                 var inserted = false;
                 var readOnly = true;
@@ -115,9 +115,9 @@ namespace ZXMAK2.Hardware.Sprinter
                     fileName = Utils.GetXmlAttributeAsString(node, "fileName", fileName);
                 }
                 // will be opened on Connect
-                m_wd.FDD[i].FileName = fileName;
-                m_wd.FDD[i].IsWP = readOnly;
-                m_wd.FDD[i].Present = inserted;
+                _wd.FDD[i].FileName = fileName;
+                _wd.FDD[i].IsWP = readOnly;
+                _wd.FDD[i].Present = inserted;
             }
         }
 
@@ -126,17 +126,17 @@ namespace ZXMAK2.Hardware.Sprinter
             base.OnConfigSave(itemNode);
             Utils.SetXmlAttribute(itemNode, "noDelay", NoDelay);
             Utils.SetXmlAttribute(itemNode, "logIo", LogIo);
-            for (var i = 0; i < m_wd.FDD.Length; i++)
+            for (var i = 0; i < _wd.FDD.Length; i++)
             {
-                if (m_wd.FDD[i].Present)
+                if (_wd.FDD[i].Present)
                 {
                     XmlNode xn = itemNode.AppendChild(itemNode.OwnerDocument.CreateElement("Drive"));
                     Utils.SetXmlAttribute(xn, "index", i);
-                    Utils.SetXmlAttribute(xn, "inserted", m_wd.FDD[i].Present);
-                    Utils.SetXmlAttribute(xn, "readOnly", m_wd.FDD[i].IsWP);
-                    if (!string.IsNullOrEmpty(m_wd.FDD[i].FileName))
+                    Utils.SetXmlAttribute(xn, "inserted", _wd.FDD[i].Present);
+                    Utils.SetXmlAttribute(xn, "readOnly", _wd.FDD[i].IsWP);
+                    if (!string.IsNullOrEmpty(_wd.FDD[i].FileName))
                     {
-                        Utils.SetXmlAttribute(xn, "fileName", m_wd.FDD[i].FileName);
+                        Utils.SetXmlAttribute(xn, "fileName", _wd.FDD[i].FileName);
                     }
                 }
             }
@@ -149,19 +149,19 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public bool DOSEN
         {
-            get { return m_memory.DOSEN; }
-            set { m_memory.DOSEN = value; }
+            get { return _memory.DOSEN; }
+            set { _memory.DOSEN = value; }
         }
 
         public DiskImage[] FDD
         {
-            get { return m_wd.FDD; }
+            get { return _wd.FDD; }
         }
 
         public bool NoDelay
         {
-            get { return m_wd.NoDelay; }
-            set { m_wd.NoDelay = value; }
+            get { return _wd.NoDelay; }
+            set { _wd.NoDelay = value; }
         }
 
         public bool LogIo { get; set; }
@@ -170,77 +170,75 @@ namespace ZXMAK2.Hardware.Sprinter
 
         #region Private
 
-        protected virtual void OnSubscribeIo(IBusManager bmgr)
+        private void OnSubscribeIo(IBusManager bmgr)
         {
-            bmgr.SubscribeWrIo(0x83, 0x1F & 0x83, BusWritePortFdc);
-            bmgr.SubscribeRdIo(0x83, 0x1F & 0x83, BusReadPortFdc);
-            bmgr.SubscribeWrIo(0x83, 0xFF & 0x83, BusWritePortSys);
-            bmgr.SubscribeRdIo(0x83, 0xFF & 0x83, BusReadPortSys);
-            bmgr.SubscribeWrIo(0xFF, 0xBD, BusWriteBDIMode);
+            bmgr.SubscribeWrIo(0x83, 0x1F & 0x83, WritePortFdc);
+            bmgr.SubscribeRdIo(0x83, 0x1F & 0x83, ReadPortFdc);
+            bmgr.SubscribeWrIo(0x83, 0xFF & 0x83, WritePortSys);
+            bmgr.SubscribeRdIo(0x83, 0xFF & 0x83, ReadPortSys);
+            bmgr.SubscribeWrIo(0xFF, 0xBD, WritePortBdiMode);
         }
 
-        protected virtual void BusBeginFrame()
+        private void BusBeginFrame()
         {
-            m_wd.LedRd = false;
-            m_wd.LedWr = false;
+            _wd.LedRd = false;
+            _wd.LedWr = false;
         }
 
-        protected virtual void BusEndFrame()
+        private void BusEndFrame()
         {
-            m_iconWr.Visible = m_wd.LedWr;
-            m_iconRd.Visible = !m_wd.LedWr && m_wd.LedRd;
+            _iconWr.Visible = _wd.LedWr;
+            _iconRd.Visible = !_wd.LedWr && _wd.LedRd;
         }
 
-        protected virtual void BusReadPortFdc(ushort addr, ref byte value, ref bool handled)
+        private void ReadPortFdc(ushort addr, ref byte value, ref bool handled)
         {
             if (!handled && (this.DOSEN || this.OpenPorts))
             {
                 handled = true;
                 int fdcReg = (addr & 0x60) >> 5;
-                value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
+                value = _wd.Read(_cpu.Tact, (WD93REG)fdcReg);
                 if (LogIo)
                 {
-                    LogIoRead(m_cpu.Tact, (WD93REG)fdcReg, value);
+                    LogIoRead(_cpu.Tact, (WD93REG)fdcReg, value);
                 }
             }
         }
 
-        protected virtual void BusReadPortSys(ushort addr, ref byte value, ref bool handled)
+        private void ReadPortSys(ushort addr, ref byte value, ref bool handled)
         {
             if (!handled && (this.DOSEN || this.OpenPorts))
             {
                 handled = true;
-                value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
+                value = _wd.Read(_cpu.Tact, WD93REG.SYS);
                 if (LogIo)
                 {
-                    LogIoRead(m_cpu.Tact, WD93REG.SYS, value);
+                    LogIoRead(_cpu.Tact, WD93REG.SYS, value);
                 }
             }
         }
 
-
-        protected virtual void BusWriteBDIMode(ushort addr, byte value, ref bool handled)
+        private void WritePortBdiMode(ushort addr, byte value, ref bool handled)
         {
             if (!handled && (this.DOSEN || this.OpenPorts))
             {
                 handled = true;
                 //0x21 - Set 1440 
                 //0x01 - Set  720
-                m_bdimode = value;
+                _isBdiMode = value;
                 
                 if (LogIo)
                 {
                     Logger.Debug(
                         "WD93 BDI MODE <== #{0:X2} [PC=#{1:X4}, T={2}]",
                         value,
-                        m_cpu.regs.PC,
-                        m_cpu.Tact);
+                        _cpu.regs.PC,
+                        _cpu.Tact);
                 }
             }
         }
 
-
-        protected virtual void BusWritePortFdc(ushort addr, byte value, ref bool handled)
+        private void WritePortFdc(ushort addr, byte value, ref bool handled)
         {
             if (!handled && (this.DOSEN || this.OpenPorts))
             {
@@ -248,35 +246,35 @@ namespace ZXMAK2.Hardware.Sprinter
                 int fdcReg = (addr & 0x60) >> 5;
                 if (LogIo)
                 {
-                    LogIoWrite(m_cpu.Tact, (WD93REG)fdcReg, value);
+                    LogIoWrite(_cpu.Tact, (WD93REG)fdcReg, value);
                 }
-                m_wd.Write(m_cpu.Tact, (WD93REG)fdcReg, value);
+                _wd.Write(_cpu.Tact, (WD93REG)fdcReg, value);
             }
         }
 
 
-        protected virtual void BusWritePortSys(ushort addr, byte value, ref bool handled)
+        private void WritePortSys(ushort addr, byte value, ref bool handled)
         {
             if (!handled && (this.DOSEN || this.OpenPorts))
             {
                 handled = true;
                 if (LogIo)
                 {
-                    LogIoWrite(m_cpu.Tact, WD93REG.SYS, value);
+                    LogIoWrite(_cpu.Tact, WD93REG.SYS, value);
                 }
-                m_wd.Write(m_cpu.Tact, WD93REG.SYS, value);
+                _wd.Write(_cpu.Tact, WD93REG.SYS, value);
             }
         }
 
-        protected virtual void BusReadMem3D00_M1(ushort addr, ref byte value)
+        private void BusReadMem3D00_M1(ushort addr, ref byte value)
         {
-            if (m_memory.IsRom48)
+            if (_memory.IsRom48)
             {
                 DOSEN = true;
             }
         }
 
-        protected virtual void BusReadMemRam(ushort addr, ref byte value)
+        private void BusReadMemRam(ushort addr, ref byte value)
         {
             if (DOSEN)
             {
@@ -284,39 +282,39 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-        protected virtual void BusReset()
+        private void BusReset()
         {
             DOSEN = false;
-            m_bdimode = 1; // Возможно не верное значение
+            _isBdiMode = 1; // Возможно не верное значение
         }
 
-        protected virtual void BusNmiRq(BusCancelArgs e)
+        private void BusNmiRq(BusCancelArgs e)
         {
             e.Cancel = DOSEN;
         }
 
-        protected virtual void BusNmiAck()
+        private void BusNmiAck()
         {
             DOSEN = true;
         }
 
-        protected void LogIoWrite(long tact, WD93REG reg, byte value)
+        private void LogIoWrite(long tact, WD93REG reg, byte value)
         {
             Logger.Debug(
                 "WD93 {0} <== #{1:X2} [PC=#{2:X4}, T={3}]",
                 reg,
                 value,
-                m_cpu.regs.PC,
+                _cpu.regs.PC,
                 tact);
         }
 
-        protected void LogIoRead(long tact, WD93REG reg, byte value)
+        private void LogIoRead(long tact, WD93REG reg, byte value)
         {
             Logger.Debug(
                 "WD93 {0} ==> #{1:X2} [PC=#{2:X4}, T={3}]",
                 reg,
                 value,
-                m_cpu.regs.PC,
+                _cpu.regs.PC,
                 tact);
         }
 

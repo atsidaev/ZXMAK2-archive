@@ -13,14 +13,9 @@ namespace ZXMAK2.Hardware.Sprinter
     {
         #region Fields
 
-        private IKeyboardState m_keyboardState;
-//        private long m_intState;
-//        private Microsoft.DirectX.DirectInput.Device m_keyb;
-        //private KeyboardDevice m_zxkbd;
-
-        private readonly Queue<byte> m_kbdbuf = new Queue<byte>();
-        //private List<int> m_kbdhits = new List<int>();
-        private readonly KbdHits m_kbdhits = new KbdHits();
+        private readonly Queue<byte> _kbdbuf = new Queue<byte>();
+        private readonly KbdHits _kbdHits = new KbdHits();
+        private IKeyboardState _keyboardState;
 
         #endregion Fields
 
@@ -35,7 +30,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         #region ScanCodes
 
-        private static readonly Key[] m_kbd_sc_num = 
+        private static readonly Key[] s_kbd_sc_num = 
         {
             Key.Escape,
             Key.F1,
@@ -239,34 +234,29 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public override void BusInit(IBusManager bmgr)
         {
-
-//            bmgr.SubscribeRDIO(1, 0, new BusReadIoProc(this.readPortFE));
-//            m_zxkbd = bmgr.FindDevice(typeof(KeyboardDevice)) as KeyboardDevice;
-//            if (m_zxkbd == null) throw new ApplicationException("Standart ZX Keyboard Device not found");
-            //InitializeKeyboard();
             bmgr.SubscribeEndFrame(ScanKeys);
-            bmgr.SubscribeRdIo(0x00ff, 0x0019, new BusReadIoProc(readKbdState));
-            bmgr.SubscribeRdIo(0x00ff, 0x0018, new BusReadIoProc(readKbdData));
+            bmgr.SubscribeRdIo(0x00ff, 0x0019, ReadPortKbdState);
+            bmgr.SubscribeRdIo(0x00ff, 0x0018, ReadPortKbdData);
         }
 
-        private void readKbdState(ushort addr, ref byte value, ref bool handled)
+        private void ReadPortKbdState(ushort addr, ref byte value, ref bool handled)
         {
             if (handled)
                 return;
             handled = true;
-            value = (byte)((m_kbdbuf.Count > 0) ? 1 : 0);
+            value = (byte)((_kbdbuf.Count > 0) ? 1 : 0);
         }
 
-        private void readKbdData(ushort addr, ref byte value, ref bool handled)
+        private void ReadPortKbdData(ushort addr, ref byte value, ref bool handled)
         {
             if (handled)
                 return;
             handled = true;
 
-            //            value = (byte)((m_kbd_buff.Length > 0) ? 1 : 0);
-            if (m_kbdbuf.Count > 0)
+            //value = (byte)((m_kbd_buff.Length > 0) ? 1 : 0);
+            if (_kbdbuf.Count > 0)
             {
-                value = m_kbdbuf.Dequeue();
+                value = _kbdbuf.Dequeue();
             }
             else
             {
@@ -276,79 +266,68 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public IKeyboardState KeyboardState
         {
-            get
-            {
-                return this.m_keyboardState;
-            }
+            get { return this._keyboardState; }
             set
             {
-                this.m_keyboardState = value;
-
-//                this.m_intState = scanState(this.m_keyboardState);
+                this._keyboardState = value;
+                //this.m_intState = scanState(this.m_keyboardState);
             }
         }
 
-/*        public void InitializeKeyboard()
-        {
-            m_keyb = new Microsoft.DirectX.DirectInput.Device(SystemGuid.Keyboard);
-            m_keyb.SetCooperativeLevel(null , CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
-            m_keyb.Acquire();
-        }*/
-
         private void ScanKeys()
         {
-            if (m_keyboardState != null)
+            if (_keyboardState == null)
             {
-                for (int num = 0; num < m_kbdhits.Count;num++ )
+                return;
+            }
+            for (int num = 0; num < _kbdHits.Count; num++)
+            {
+                if (!_keyboardState[s_kbd_sc_num[_kbdHits.Items[num].Code]])
                 {
-                    if (!m_keyboardState[m_kbd_sc_num[m_kbdhits.Items[num].Code]])
+                    if (m_kbd_scancodes[_kbdHits.Items[num].Code][0] == 0xE0)
                     {
-                        if (m_kbd_scancodes[m_kbdhits.Items[num].Code][0] == 0xE0)
-                        {
-                            m_kbdbuf.Enqueue(m_kbd_scancodes[m_kbdhits.Items[num].Code][0]);
-                            m_kbdbuf.Enqueue(0xF0);
-                            m_kbdbuf.Enqueue(m_kbd_scancodes[m_kbdhits.Items[num].Code][1]);
-                        }
-                        else
-                        {
-                            m_kbdbuf.Enqueue(0xF0);
-                            m_kbdbuf.Enqueue(m_kbd_scancodes[m_kbdhits.Items[num].Code][0]);
-                        }
-                        m_kbdhits.Remove(num);
+                        _kbdbuf.Enqueue(m_kbd_scancodes[_kbdHits.Items[num].Code][0]);
+                        _kbdbuf.Enqueue(0xF0);
+                        _kbdbuf.Enqueue(m_kbd_scancodes[_kbdHits.Items[num].Code][1]);
                     }
                     else
                     {
-                        m_kbdhits.Items[num].Frames += 1;
-                        if ((m_kbdhits.Items[num].Frames == 15) && (m_kbdhits.Items[num].First))
+                        _kbdbuf.Enqueue(0xF0);
+                        _kbdbuf.Enqueue(m_kbd_scancodes[_kbdHits.Items[num].Code][0]);
+                    }
+                    _kbdHits.Remove(num);
+                }
+                else
+                {
+                    _kbdHits.Items[num].Frames += 1;
+                    if ((_kbdHits.Items[num].Frames == 15) && (_kbdHits.Items[num].First))
+                    {
+                        _kbdbuf.Enqueue(m_kbd_scancodes[_kbdHits.Items[num].Code][0]);
+                        if (m_kbd_scancodes[_kbdHits.Items[num].Code][1] != 0) _kbdbuf.Enqueue(m_kbd_scancodes[_kbdHits.Items[num].Code][1]);
+                        _kbdHits.Items[num].Frames = 0;
+                    }
+                    else
+                    {
+                        if ((_kbdHits.Items[num].Frames == 3) && (!_kbdHits.Items[num].First))
                         {
-                            m_kbdbuf.Enqueue(m_kbd_scancodes[m_kbdhits.Items[num].Code][0]);
-                            if (m_kbd_scancodes[m_kbdhits.Items[num].Code][1] != 0) m_kbdbuf.Enqueue(m_kbd_scancodes[m_kbdhits.Items[num].Code][1]);
-                            m_kbdhits.Items[num].Frames = 0;
-                        }
-                        else
-                        {
-                            if ((m_kbdhits.Items[num].Frames == 3) && (!m_kbdhits.Items[num].First))
-                            {
-                                m_kbdbuf.Enqueue(m_kbd_scancodes[m_kbdhits.Items[num].Code][0]);
-                                if (m_kbd_scancodes[m_kbdhits.Items[num].Code][1] != 0) m_kbdbuf.Enqueue(m_kbd_scancodes[m_kbdhits.Items[num].Code][1]);
-                                m_kbdhits.Items[num].Frames = 0;
-                            }
+                            _kbdbuf.Enqueue(m_kbd_scancodes[_kbdHits.Items[num].Code][0]);
+                            if (m_kbd_scancodes[_kbdHits.Items[num].Code][1] != 0) _kbdbuf.Enqueue(m_kbd_scancodes[_kbdHits.Items[num].Code][1]);
+                            _kbdHits.Items[num].Frames = 0;
                         }
                     }
                 }
-                for (int num = 0; num < m_kbd_sc_num.Length; num++)
+            }
+            for (int num = 0; num < s_kbd_sc_num.Length; num++)
+            {
+                if (_keyboardState[s_kbd_sc_num[num]])
                 {
-                    if (m_keyboardState[m_kbd_sc_num[num]])
+                    if (!_kbdHits.Contains(num))
                     {
-                        if (!m_kbdhits.Contains(num))
-                        {
-                            m_kbdhits.Add(num);
-                            m_kbdbuf.Enqueue(m_kbd_scancodes[num][0]);
-                            if (m_kbd_scancodes[num][1] != 0) m_kbdbuf.Enqueue(m_kbd_scancodes[num][1]);
-                        }
-                        //                    m_kbdhits.Enqueue(num);
+                        _kbdHits.Add(num);
+                        _kbdbuf.Enqueue(m_kbd_scancodes[num][0]);
+                        if (m_kbd_scancodes[num][1] != 0) _kbdbuf.Enqueue(m_kbd_scancodes[num][1]);
                     }
-
+                    //m_kbdhits.Enqueue(num);
                 }
             }
         }
