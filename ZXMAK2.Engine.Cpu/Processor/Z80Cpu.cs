@@ -131,7 +131,11 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 }
                 else
                 {
-                    Refresh();
+                    //Refresh();
+                    regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
+                    Tact += 1;
+                    RzxCounter++;
+
                     _opcodesCb[cmd](cmd);
                 }
                 XFX = CpuModeEx.None;
@@ -139,7 +143,11 @@ namespace ZXMAK2.Engine.Cpu.Processor
             }
             else if (XFX == CpuModeEx.Ed)
             {
-                Refresh();
+                //Refresh();
+                regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
+                Tact += 1;
+                RzxCounter++;
+
                 BINT = false;
                 var edop = _opcodesEd[cmd];
                 if (edop != null)
@@ -151,31 +159,51 @@ namespace ZXMAK2.Engine.Cpu.Processor
             }
             else if (cmd == 0xDD)
             {
-                Refresh();
+                //Refresh();
+                regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
+                Tact += 1;
+                RzxCounter++;
+
                 FX = CpuModeIndex.Ix;
                 BINT = true;
             }
             else if (cmd == 0xFD)
             {
-                Refresh();
+                //Refresh();
+                regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
+                Tact += 1;
+                RzxCounter++;
+
                 FX = CpuModeIndex.Iy;
                 BINT = true;
             }
             else if (cmd == 0xCB)
             {
-                Refresh();
+                //Refresh();
+                regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
+                Tact += 1;
+                RzxCounter++;
+
                 XFX = CpuModeEx.Cb;
                 BINT = true;
             }
             else if (cmd == 0xED)
             {
-                Refresh();
+                //Refresh();
+                regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
+                Tact += 1;
+                RzxCounter++;
+
                 XFX = CpuModeEx.Ed;
                 BINT = true;
             }
             else
             {
-                Refresh();
+                //Refresh();
+                regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
+                Tact += 1;
+                RzxCounter++;
+
                 BINT = false;
                 var opdo = FX == CpuModeIndex.None ? _opcodes[cmd] : _opcodesFx[cmd];
                 if (opdo != null)
@@ -186,20 +214,17 @@ namespace ZXMAK2.Engine.Cpu.Processor
             }
         }
 
-        private void Refresh()
-        {
-            regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
-            Tact += 1;
-            RzxCounter++;
-        }
-
         private bool ProcessSignals()
         {
             if (RST)    // RESET
             {
                 // 3T
                 RESET();
-                Refresh();      //+1T
+                //Refresh();      //+1T
+                regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
+                Tact += 1;
+                RzxCounter++;
+
 
                 FX = CpuModeIndex.None;
                 XFX = CpuModeEx.None;
@@ -226,7 +251,11 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 // M1
                 NMIACK_M1();
                 Tact += 4;
-                Refresh();
+                //Refresh();
+                regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
+                Tact += 1;
+                RzxCounter++;
+
 
                 IFF2 = IFF1;
                 IFF1 = false;
@@ -262,8 +291,11 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 //if (HALTED) ??
                 //    Tact += 2;
                 Tact += 4 + 2;
-                Refresh();
-                RzxCounter--;	// fix because INTAK should not be calculated
+                //Refresh();
+                //RzxCounter--;	// fix because INTAK should not be calculated
+                regs.R = (byte)(((regs.R + 1) & 0x7F) | (regs.R & 0x80));
+                Tact += 1;
+
 
                 IFF1 = false;
                 IFF2 = false; // proof?

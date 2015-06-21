@@ -198,7 +198,10 @@ namespace ZXMAK2.Hardware.Sprinter
                 iorqge = false;
                 int fdcReg = (addr & 0x60) >> 5;
                 value = m_wd.Read(m_cpu.Tact, (WD93REG)fdcReg);
-                LogIoRead(m_cpu.Tact, (WD93REG)fdcReg, value);
+                if (LogIo)
+                {
+                    LogIoRead(m_cpu.Tact, (WD93REG)fdcReg, value);
+                }
             }
         }
 
@@ -208,7 +211,10 @@ namespace ZXMAK2.Hardware.Sprinter
             {
                 iorqge = false;
                 value = m_wd.Read(m_cpu.Tact, WD93REG.SYS);
-                LogIoRead(m_cpu.Tact, WD93REG.SYS, value);
+                if (LogIo)
+                {
+                    LogIoRead(m_cpu.Tact, WD93REG.SYS, value);
+                }
             }
         }
 
@@ -240,7 +246,10 @@ namespace ZXMAK2.Hardware.Sprinter
             {
                 iorqge = false;
                 int fdcReg = (addr & 0x60) >> 5;
-                LogIoWrite(m_cpu.Tact, (WD93REG)fdcReg, value);
+                if (LogIo)
+                {
+                    LogIoWrite(m_cpu.Tact, (WD93REG)fdcReg, value);
+                }
                 m_wd.Write(m_cpu.Tact, (WD93REG)fdcReg, value);
             }
         }
@@ -251,7 +260,10 @@ namespace ZXMAK2.Hardware.Sprinter
             if (iorqge && (this.DOSEN || this.OpenPorts))
             {
                 iorqge = false;
-                LogIoWrite(m_cpu.Tact, WD93REG.SYS, value);
+                if (LogIo)
+                {
+                    LogIoWrite(m_cpu.Tact, WD93REG.SYS, value);
+                }
                 m_wd.Write(m_cpu.Tact, WD93REG.SYS, value);
             }
         }
@@ -290,28 +302,22 @@ namespace ZXMAK2.Hardware.Sprinter
 
         protected void LogIoWrite(long tact, WD93REG reg, byte value)
         {
-            if (LogIo)
-            {
-                Logger.Debug(
-                    "WD93 {0} <== #{1:X2} [PC=#{2:X4}, T={3}]",
-                    reg,
-                    value,
-                    m_cpu.regs.PC,
-                    tact);
-            }
+            Logger.Debug(
+                "WD93 {0} <== #{1:X2} [PC=#{2:X4}, T={3}]",
+                reg,
+                value,
+                m_cpu.regs.PC,
+                tact);
         }
 
         protected void LogIoRead(long tact, WD93REG reg, byte value)
         {
-            if (LogIo)
-            {
-                Logger.Debug(
-                    "WD93 {0} ==> #{1:X2} [PC=#{2:X4}, T={3}]",
-                    reg,
-                    value,
-                    m_cpu.regs.PC,
-                    tact);
-            }
+            Logger.Debug(
+                "WD93 {0} ==> #{1:X2} [PC=#{2:X4}, T={3}]",
+                reg,
+                value,
+                m_cpu.regs.PC,
+                tact);
         }
 
         #endregion
