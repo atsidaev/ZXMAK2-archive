@@ -117,6 +117,7 @@
     <Compile Include="Spectrum\UlaSpectrum128.cs" />
     <Compile Include="Spectrum\UlaSpectrum48.cs" />
     <Compile Include="Spectrum\UlaSpectrum48snow.cs" />
+    <Compile Include="Sprinter\CovoxBlaster.cs" />
     <Compile Include="Sprinter\IdeSprinter.cs" />
     <Compile Include="Sprinter\KbdHits.cs" />
     <Compile Include="Sprinter\SprinterDbg.cs" />
