@@ -79,6 +79,10 @@ namespace ZXMAK2.Hardware.Sprinter
             get { return _mouseState; }
             set
             {
+                if (_queue.Count > 3 * 4)   // buffer overflow
+                {
+                    return;
+                }
 //                m_mouseState = value;
                 /*bool different = false;
                 if (value != null)
