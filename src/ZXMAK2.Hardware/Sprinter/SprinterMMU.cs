@@ -65,6 +65,7 @@ namespace ZXMAK2.Hardware.Sprinter
 #endif
         private SprinterULA _ulaSprinter;
         private SprinterFdd _sprinterBdi;
+        private CovoxBlaster _covoxBlaster;
 
         #endregion Fields
 
@@ -122,6 +123,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
             _ulaSprinter = bmgr.FindDevice<SprinterULA>();
             _sprinterBdi = bmgr.FindDevice<SprinterFdd>();
+            _covoxBlaster = bmgr.FindDevice<CovoxBlaster>();
             if (_ulaSprinter != null)
             {
                 _ulaSprinter.VRAM = _vramPages;
@@ -597,6 +599,11 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private new void WriteMem0000(ushort addr, byte value)
         {
+            if (_accMode != AccelCMD.Off && _covoxBlaster != null && _page0 == 0xFD)
+            {
+                // accel only
+                _covoxBlaster.WriteMemory(addr, value);
+            }
             if ((_page0 >= 0x50) && (_page0 <= 0x5f))
             {
                 //открыта видеостраница, пишем в нее
@@ -649,6 +656,11 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private new void WriteMem4000(ushort addr, byte value)
         {
+            if (_accMode != AccelCMD.Off && _covoxBlaster != null && _page1 == 0xFD)
+            {
+                // accel only
+                _covoxBlaster.WriteMemory(addr, value);
+            }
             if ((_page1 >= 0x50) && (_page1 <= 0x5f))
             {
                 //открыта видеостраница, пишем в нее
@@ -697,6 +709,11 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private new void WriteMem8000(ushort addr, byte value)
         {
+            if (_accMode != AccelCMD.Off && _covoxBlaster != null && _page2 == 0xFD)
+            {
+                // accel only
+                _covoxBlaster.WriteMemory(addr, value);
+            }
             if ((_page2 >= 0x50) && (_page2 <= 0x5f))
             {
                 //открыта видеостраница, пишем в нее
@@ -725,6 +742,11 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private new void WriteMemC000(ushort addr, byte value)
         {
+            if (_accMode != AccelCMD.Off && _covoxBlaster != null && _page3 == 0xFD)
+            {
+                // accel only
+                _covoxBlaster.WriteMemory(addr, value);
+            }
             if ((_page3 >= 0x50) && (_page3 <= 0x5f))
             {
                 //открыта видеостраница, пишем в нее

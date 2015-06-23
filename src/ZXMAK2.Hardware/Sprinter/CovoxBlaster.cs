@@ -43,7 +43,7 @@ namespace ZXMAK2.Hardware.Sprinter
 
         #region Fields
 
-        private readonly byte[] _ram = new byte[0x100];
+        private readonly byte[] _ram = new byte[0x400];
         private int _index;
         private double _lastTime;
 
@@ -76,6 +76,8 @@ namespace ZXMAK2.Hardware.Sprinter
             bmgr.SubscribeWrIo(0x00FF, 0x004F, WritePort4f);
             bmgr.SubscribeWrIo(0x00FF, 0x00FB, WritePortFb);
             bmgr.SubscribeRdIo(0x00FF, 0x00FE, ReadPortFe);
+            //bmgr.SubscribeIntAck(() => _isInt = false);
+            bmgr.SubscribePreCycle(CheckInt);
             bmgr.SubscribeReset(ResetBus);
         }
 
@@ -126,7 +128,7 @@ namespace ZXMAK2.Hardware.Sprinter
             //if (handled)
             //    return;
             handled = true;
-            
+
             if (_port4e == value)
             {
                 return;
@@ -138,6 +140,8 @@ namespace ZXMAK2.Hardware.Sprinter
             Flush(GetFrameTime());
             _port4e = value;
             _sampleRateHz = GetFrequency(value & 0x0F);
+            _intCounter = 0;
+            _index = 0;
         }
 
         private void ReadPort4e(ushort addr, ref byte value, ref bool handled)
@@ -146,6 +150,16 @@ namespace ZXMAK2.Hardware.Sprinter
             //    return;
             handled = true;
             value = _port4e;
+        }
+
+        public void WriteMemory(ushort addr, byte value)
+        {
+            Flush(GetFrameTime());
+            //if (LogIo)
+            //{
+            //    Logger.Debug("CovoxBlaster: write* #{0:X2} (PC=#{1:X4}, addr={2:X4})", value, _cpu.LPC, addr);
+            //}
+            _ram[addr & 0xFF] = value;
         }
 
         private void WritePort4f(ushort addr, byte value, ref bool handled)
@@ -183,11 +197,12 @@ namespace ZXMAK2.Hardware.Sprinter
             //    return;
             //handled = true;
 
-            if ((_port4e & MODE_INTRQ) != 0)
+            Flush(GetFrameTime());
+            value &= 0x7F;
+
+            if (_intCounter > 0)
             {
-                Flush(GetFrameTime());
-                value &= 0x7F;
-                value |= (byte)(_index & 0x80);
+                value |= 0x80;
             }
         }
 
@@ -205,25 +220,72 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private void Flush(double frameTime)
         {
-            if (double.IsNaN(_sampleRateHz) || 
+            if ((_port4e & MODE_CBL) == 0 ||
+                double.IsNaN(_sampleRateHz) ||
                 _sampleRateHz < 1000D ||
                 _sampleRateHz > 200000D)
             {
                 return;
             }
-            var isCbl = (_port4e & MODE_CBL) != 0;
+            var is16 = (_port4e & MODE_16BIT) != 0;
+            var isStereo = (_port4e & MODE_STEREO) != 0;
             var tick = 50D / _sampleRateHz;
-            for (var time = _lastTime; time < frameTime && time <= 1D; time+=tick)
+
+            for (var time = _lastTime; time < frameTime && time <= 1D; time += tick)
             {
-                if (isCbl)
+                if (is16)
                 {
-                    var data = _ram[_index];
-                    var dac = (ushort)(data * m_mult);
-                    UpdateDac(time, dac, dac);
+                    // TODO: fix (something wrong)
+                    if (isStereo)
+                    {
+                        var left = (ushort)_ram[_index];
+                        Increment();
+                        left |= (ushort)(_ram[_index] << 8);
+                        Increment();
+                        var right = (ushort)_ram[_index];
+                        Increment();
+                        right |= (ushort)(_ram[_index] << 8);
+                        Increment();
+                        UpdateDac(time, left, right);
+                    }
+                    else
+                    {
+                        var dac = (ushort)_ram[_index];
+                        Increment();
+                        dac |= (ushort)(_ram[_index] << 8);
+                        Increment();
+                        UpdateDac(time, dac, dac);
+                    }
                 }
-                _index = (_index - 1) & 0xFF;
-                _lastTime = time+tick;
+                else
+                {
+                    if (isStereo)
+                    {
+                        var left = (ushort)(_ram[_index] << 8);
+                        Increment();
+                        var right = (ushort)(_ram[_index] << 8);
+                        Increment();
+                        UpdateDac(time, left, right);
+                    }
+                    else
+                    {
+                        var dac = (ushort)(_ram[_index] << 8);
+                        Increment();
+                        UpdateDac(time, dac, dac);
+                    }
+                }
+                _lastTime = time + tick;
             }
+        }
+
+        private void Increment()
+        {
+            var index = _index + 1;
+            if (((index ^ _index) & 0x80)!=0)
+            {
+                _intCounter = 32;
+            }
+            _index = index & 0xFF;
         }
 
         /// <summary>
@@ -254,5 +316,22 @@ namespace ZXMAK2.Hardware.Sprinter
         }
 
         #endregion Private
+
+        private int _intCounter;
+        
+        public void CheckInt(int tact)
+        {
+            // interrupt issue with 0x0F after startup (flashing cursor, etc)
+            if ((_port4e & MODE_INTRQ) == 0 || (_port4e&0x0F) == 0x0F)
+            {
+                return;
+            }
+            Flush(GetFrameTime());
+            if (_intCounter > 0)
+            {
+                _intCounter--;
+                _cpu.INT = true;
+            }
+        }
     }
 }
