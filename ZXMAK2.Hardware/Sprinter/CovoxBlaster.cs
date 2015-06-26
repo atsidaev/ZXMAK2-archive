@@ -27,6 +27,7 @@ using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Engine.Interfaces;
 
+
 namespace ZXMAK2.Hardware.Sprinter
 {
     public class CovoxBlaster : SoundDeviceBase
@@ -44,11 +45,19 @@ namespace ZXMAK2.Hardware.Sprinter
         #region Fields
 
         private readonly byte[] _ram = new byte[0x400];
-        private int _index;
+        private int _cnt;
         private double _lastTime;
 
         private byte _port4e;
+        private int _divider;
+        private bool _isBlaster;
+        private bool _is16bit;
+        private bool _isStereo;
+        private bool _isIntEnabled;
+        private bool _isInt;
+
         private double _sampleRateHz;
+        private double _tick;
         private int m_mult;
 
         private CpuUnit _cpu;
@@ -61,7 +70,6 @@ namespace ZXMAK2.Hardware.Sprinter
             Category = BusDeviceCategory.Sound;
             Name = "COVOX BLASTER";
             Description = "SPRINTER COVOX BLASTER";
-            _sampleRateHz = GetFrequency(_port4e);
         }
 
         
@@ -112,10 +120,8 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private void ResetBus()
         {
-            for (var i = 0; i < _ram.Length; i++)
-            {
-                _ram[i] = 0;
-            }
+            var handled = false;
+            WritePort4e(0x4E, 0x00, ref handled);
         }
 
         #endregion SoundDeviceBase
@@ -139,9 +145,16 @@ namespace ZXMAK2.Hardware.Sprinter
             }
             Flush(GetFrameTime());
             _port4e = value;
-            _sampleRateHz = GetFrequency(value & 0x0F);
-            _intCounter = 0;
-            _index = 0;
+            _divider = GetDivider(_port4e & 0x0F);
+            _isBlaster = (_port4e & MODE_CBL) != 0;
+            if (!_isBlaster)
+            {
+                Carry();
+            }
+            if ((_port4e & MODE_INTRQ) == 0)
+            {
+                _isIntEnabled = false;
+            }
         }
 
         private void ReadPort4e(ushort addr, ref byte value, ref bool handled)
@@ -152,14 +165,33 @@ namespace ZXMAK2.Hardware.Sprinter
             value = _port4e;
         }
 
+        private void WritePortFb(ushort addr, byte value, ref bool handled)
+        {
+            //if (handled)
+            //    return;
+            //handled = true;
+
+            if (!_isBlaster)
+            {
+                // Covox mode
+                var dac = (ushort)(value * m_mult);
+                UpdateDac(dac, dac);
+            }
+        }
+
         public void WriteMemory(ushort addr, byte value)
         {
+            if ((_port4e & MODE_INTRQ) == 0)
+            {
+                return;
+            }
             Flush(GetFrameTime());
-            //if (LogIo)
-            //{
-            //    Logger.Debug("CovoxBlaster: write* #{0:X2} (PC=#{1:X4}, addr={2:X4})", value, _cpu.LPC, addr);
-            //}
+            if (LogIo)
+            {
+                Logger.Debug("CovoxBlaster: WR* #{0:X2} (PC=#{1:X4}, addr={2:X4})", value, _cpu.LPC, addr);
+            }
             _ram[addr & 0xFF] = value;
+            _isInt = false;
         }
 
         private void WritePort4f(ushort addr, byte value, ref bool handled)
@@ -172,23 +204,10 @@ namespace ZXMAK2.Hardware.Sprinter
             Flush(GetFrameTime());
             if (LogIo)
             {
-                Logger.Debug("CovoxBlaster: write #{0:X2} (PC=#{1:X4}, BC={2:X4})", value, _cpu.LPC, _cpu.regs.BC);
+                Logger.Debug("CovoxBlaster: WR #{0:X2} (PC=#{1:X4}, BC={2:X4})", value, _cpu.LPC, _cpu.regs.BC);
             }
             _ram[addr >> 8] = value;
-        }
-
-        private void WritePortFb(ushort addr, byte value, ref bool handled)
-        {
-            //if (handled)
-            //    return;
-            //handled = true;
-
-            if ((_port4e & MODE_CBL) == 0)
-            {
-                // Covox mode
-                var dac = (ushort)(value * m_mult);
-                UpdateDac(dac, dac);
-            }
+            _isInt = false;
         }
 
         private void ReadPortFe(ushort addr, ref byte value, ref bool handled)
@@ -200,10 +219,11 @@ namespace ZXMAK2.Hardware.Sprinter
             Flush(GetFrameTime());
             value &= 0x7F;
 
-            if (_intCounter > 0)
+            if (_isInt)
             {
                 value |= 0x80;
             }
+            //Logger.Debug("IN #FE: {0}   pc={1:X4}", value >> 7, _cpu.LPC);
         }
 
         #endregion I/O Handlers
@@ -220,118 +240,147 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private void Flush(double frameTime)
         {
-            if ((_port4e & MODE_CBL) == 0 ||
-                double.IsNaN(_sampleRateHz) ||
-                _sampleRateHz < 1000D ||
-                _sampleRateHz > 200000D)
+            if (!_isBlaster)
+            {
+                Carry();
+            }
+            if (_divider==0)
+            {
+                _lastTime = frameTime;
+                return;
+            }
+            for (var time = _lastTime; time < frameTime && time <= 1D; time += _tick)
+            {
+                Step();
+                Fetch(time);
+                _lastTime = time + _tick;
+            }
+        }
+
+        private void Fetch(double time)
+        {
+            if (_divider <= 1)
             {
                 return;
             }
-            var is16 = (_port4e & MODE_16BIT) != 0;
-            var isStereo = (_port4e & MODE_STEREO) != 0;
-            var tick = 50D / _sampleRateHz;
-
-            for (var time = _lastTime; time < frameTime && time <= 1D; time += tick)
+            if (_is16bit)
             {
-                if (is16)
+                // TODO: fix (something wrong)
+                if (_isStereo)
                 {
-                    // TODO: fix (something wrong)
-                    if (isStereo)
-                    {
-                        var left = (ushort)_ram[_index];
-                        Increment();
-                        left |= (ushort)(_ram[_index] << 8);
-                        Increment();
-                        var right = (ushort)_ram[_index];
-                        Increment();
-                        right |= (ushort)(_ram[_index] << 8);
-                        Increment();
-                        UpdateDac(time, left, right);
-                    }
-                    else
-                    {
-                        var dac = (ushort)_ram[_index];
-                        Increment();
-                        dac |= (ushort)(_ram[_index] << 8);
-                        Increment();
-                        UpdateDac(time, dac, dac);
-                    }
+                    var left = (ushort)_ram[_cnt];
+                    left |= (ushort)(_ram[(_cnt + 1) & 0xFF] << 8);
+                    var right = (ushort)_ram[(_cnt + 2) & 0xFF];
+                    right |= (ushort)(_ram[(_cnt + 3) & 0xFF] << 8);
+                    UpdateDac(time, (short)left, (short)right);
+                    //Logger.Debug("STEREO16: {0:X2} => {1:X4}, {2:X4}", _cnt, left, right);
                 }
                 else
                 {
-                    if (isStereo)
-                    {
-                        var left = (ushort)(_ram[_index] << 8);
-                        Increment();
-                        var right = (ushort)(_ram[_index] << 8);
-                        Increment();
-                        UpdateDac(time, left, right);
-                    }
-                    else
-                    {
-                        var dac = (ushort)(_ram[_index] << 8);
-                        Increment();
-                        UpdateDac(time, dac, dac);
-                    }
+                    var dac = (ushort)_ram[_cnt];
+                    dac |= (ushort)(_ram[(_cnt + 1) & 0xFF] << 8);
+                    UpdateDac(time, dac, dac);
                 }
-                _lastTime = time + tick;
             }
-        }
-
-        private void Increment()
-        {
-            var index = _index + 1;
-            if (((index ^ _index) & 0x80)!=0)
+            else
             {
-                _intCounter = 32;
+                if (_isStereo)
+                {
+                    var left = (ushort)(_ram[_cnt] << 8);
+                    var right = (ushort)(_ram[(_cnt + 1) & 0xFF] << 8);
+                    UpdateDac(time, left, right);
+                }
+                else
+                {
+                    var dac = (ushort)(_ram[_cnt] << 8);
+                    UpdateDac(time, dac, dac);
+                }
             }
-            _index = index & 0xFF;
         }
 
-        /// <summary>
-        /// Returns sample rate frequency in Hz
-        /// </summary>
-        /// <param name="code">Control code (lower 4 bits of port #4E)</param>
-        private static double GetFrequency(int code)
+        private void Step()
+        {
+            if (_cnt == 0)
+            {
+                Carry();
+            }
+            var cnt = _cnt + _step;
+            if (cnt >= 0x100 || cnt < 0)
+            {
+                cnt = 0;
+            }
+            if (((cnt ^ _cnt) & 0x80) != 0)
+            {
+                // actually INT linked to the bit D6?
+                _isInt = true;
+            }
+            _cnt = cnt;
+            if (_cnt == 0)
+            {
+                Carry();
+            }
+        }
+
+        private int _step = 1;
+
+        private void Carry()
+        {
+            _cnt = 0;
+            _is16bit = (_port4e & MODE_16BIT) != 0;
+            _isStereo = (_port4e & MODE_STEREO) != 0;
+            _isIntEnabled = (_port4e & MODE_INTRQ) != 0;
+            _step = 1;
+            _step <<= _isStereo ? 1 : 0;
+            _step <<= _is16bit ? 1 : 0;
+            if (_divider == 0)
+            {
+                _sampleRateHz = double.NaN;
+                _tick = double.NaN;
+            }
+            const double frequency = 218750D;
+            _sampleRateHz = frequency / (double)(_divider + 1);
+            _tick = 50D / _sampleRateHz;
+        }
+
+        public void CheckInt(int tact)
+        {
+            // interrupt issue with 0x0F after startup (flashing cursor, etc)
+            if (!_isBlaster || _divider <= 1)
+            {
+                return;
+            }
+            Flush(GetFrameTime());
+            if ((_cnt & 0x40) != 0)
+            {
+                _isInt = false;
+            }
+            if (_isIntEnabled && _isInt)
+            {
+                _cpu.INT = true;
+            }
+        }
+
+        private static int GetDivider(int code)
         {
             switch (code)
             {
                 // это старые режимы -- не использовать!
                 // (old modes, do not use it!)
-                case 0: return 16000D;
-                case 1: return 22000D;
+                case 0: return 13;    // 16khz
+                case 1: return 9;     // 22khz
 
-                case 8: return 7812.5D;
-                case 9: return 10937.5D;
-                case 10: return 15625D;
-                case 11: return 21875D;
-                case 12: return 31250D;
-                case 13: return 43750D;
-                case 14: return 54687.5D;
-                case 15: return 109375D;
-
-                // 2-7 - reserved
-                default: return double.NaN;
+                case 8: return 27;    // 7.8125  kHz
+                case 9: return 19;    // 10.9375 kHz
+                case 10: return 13;   // 15.625  kHz
+                case 11: return 9;    // 21.875  kHz
+                case 12: return 6;    // 31.25   kHz
+                case 13: return 4;    // 43.75   kHz
+                case 14: return 3;    // 54.6875 kHz
+                case 15: return 1;    // 109.375 kHz
+                default: return 0;    // reserved
             }
         }
 
         #endregion Private
-
-        private int _intCounter;
-        
-        public void CheckInt(int tact)
-        {
-            // interrupt issue with 0x0F after startup (flashing cursor, etc)
-            if ((_port4e & MODE_INTRQ) == 0 || (_port4e&0x0F) == 0x0F)
-            {
-                return;
-            }
-            Flush(GetFrameTime());
-            if (_intCounter > 0)
-            {
-                _intCounter--;
-                _cpu.INT = true;
-            }
-        }
     }
 }
