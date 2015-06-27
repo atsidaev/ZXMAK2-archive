@@ -55,6 +55,9 @@ namespace ZXMAK2.Hardware.Sprinter
         private bool _isStereo;
         private bool _isIntEnabled;
         private bool _isInt;
+        private int _step = 1;
+        private int _cntShift;
+        private int _addrMask;
 
         private double _sampleRateHz;
         private double _tick;
@@ -84,7 +87,6 @@ namespace ZXMAK2.Hardware.Sprinter
             bmgr.SubscribeWrIo(0x00FF, 0x004F, WritePort4f);
             bmgr.SubscribeWrIo(0x00FF, 0x00FB, WritePortFb);
             bmgr.SubscribeRdIo(0x00FF, 0x00FE, ReadPortFe);
-            //bmgr.SubscribeIntAck(() => _isInt = false);
             bmgr.SubscribePreCycle(CheckInt);
             bmgr.SubscribeReset(ResetBus);
         }
@@ -147,13 +149,11 @@ namespace ZXMAK2.Hardware.Sprinter
             _port4e = value;
             _divider = GetDivider(_port4e & 0x0F);
             _isBlaster = (_port4e & MODE_CBL) != 0;
-            if (!_isBlaster)
-            {
-                Carry();
-            }
+            _addrMask = (_port4e & MODE_16BIT) != 0 ? 0x1FF : 0xFF;
             if ((_port4e & MODE_INTRQ) == 0)
             {
                 _isIntEnabled = false;
+                _isInt = false;
             }
         }
 
@@ -181,16 +181,16 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public void WriteMemory(ushort addr, byte value)
         {
-            if ((_port4e & MODE_INTRQ) == 0)
-            {
-                return;
-            }
+            //if ((_port4e & MODE_INTRQ) == 0)
+            //{
+            //    return;
+            //}
             Flush(GetFrameTime());
             if (LogIo)
             {
                 Logger.Debug("CovoxBlaster: WR* #{0:X2} (PC=#{1:X4}, addr={2:X4})", value, _cpu.LPC, addr);
             }
-            _ram[addr & 0xFF] = value;
+            _ram[addr & _addrMask] = value;
             _isInt = false;
         }
 
@@ -206,7 +206,12 @@ namespace ZXMAK2.Hardware.Sprinter
             {
                 Logger.Debug("CovoxBlaster: WR #{0:X2} (PC=#{1:X4}, BC={2:X4})", value, _cpu.LPC, _cpu.regs.BC);
             }
-            _ram[addr >> 8] = value;
+            var wraddr = addr >> 8;
+            if ((_port4e & MODE_16BIT) != 0)
+            {
+                wraddr |= ~_cnt & 0x100;
+            }
+            _ram[wraddr] = value;
             _isInt = false;
         }
 
@@ -217,9 +222,9 @@ namespace ZXMAK2.Hardware.Sprinter
             //handled = true;
 
             Flush(GetFrameTime());
-            value &= 0x7F;
+            value &= 0x3F;
 
-            if (_isInt)
+            if (_isBlaster && _isInt)
             {
                 value |= 0x80;
             }
@@ -240,14 +245,14 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private void Flush(double frameTime)
         {
-            if (!_isBlaster)
-            {
-                Carry();
-            }
-            if (_divider==0)
+            if (_divider == 0)
             {
                 _lastTime = frameTime;
                 return;
+            }
+            if (!_isBlaster)
+            {
+                _cnt = 0;
             }
             for (var time = _lastTime; time < frameTime && time <= 1D; time += _tick)
             {
@@ -259,42 +264,31 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private void Fetch(double time)
         {
-            if (_divider <= 1)
+            if (_divider == 1)
             {
                 return;
             }
             if (_is16bit)
             {
-                // TODO: fix (something wrong)
+                var left = (ushort)_ram[_cnt];
+                left |= (ushort)(_ram[(_cnt + 1) & 0x1FF] << 8);
+                var right = left;
                 if (_isStereo)
                 {
-                    var left = (ushort)_ram[_cnt];
-                    left |= (ushort)(_ram[(_cnt + 1) & 0xFF] << 8);
-                    var right = (ushort)_ram[(_cnt + 2) & 0xFF];
-                    right |= (ushort)(_ram[(_cnt + 3) & 0xFF] << 8);
-                    UpdateDac(time, (short)left, (short)right);
-                    //Logger.Debug("STEREO16: {0:X2} => {1:X4}, {2:X4}", _cnt, left, right);
+                    right = (ushort)_ram[(_cnt + 2) & 0x1FF];
+                    right |= (ushort)(_ram[(_cnt + 3) & 0x1FF] << 8);
                 }
-                else
-                {
-                    var dac = (ushort)_ram[_cnt];
-                    dac |= (ushort)(_ram[(_cnt + 1) & 0xFF] << 8);
-                    UpdateDac(time, dac, dac);
-                }
+                UpdateDac(time, (short)left, (short)right);
             }
             else
             {
+                var left = (ushort)(_ram[_cnt] << 8);
+                var right = left;
                 if (_isStereo)
                 {
-                    var left = (ushort)(_ram[_cnt] << 8);
-                    var right = (ushort)(_ram[(_cnt + 1) & 0xFF] << 8);
-                    UpdateDac(time, left, right);
+                    right = (ushort)(_ram[(_cnt + 1) & 0xFF] << 8);
                 }
-                else
-                {
-                    var dac = (ushort)(_ram[_cnt] << 8);
-                    UpdateDac(time, dac, dac);
-                }
+                UpdateDac(time, left, right);
             }
         }
 
@@ -305,11 +299,11 @@ namespace ZXMAK2.Hardware.Sprinter
                 Carry();
             }
             var cnt = _cnt + _step;
-            if (cnt >= 0x100 || cnt < 0)
+            if (cnt >= (0x100<<_cntShift) || cnt < 0)
             {
                 cnt = 0;
             }
-            if (((cnt ^ _cnt) & 0x80) != 0)
+            if (((cnt ^ _cnt) & (0x80<<_cntShift)) != 0)
             {
                 // actually INT linked to the bit D6?
                 _isInt = true;
@@ -321,17 +315,15 @@ namespace ZXMAK2.Hardware.Sprinter
             }
         }
 
-        private int _step = 1;
-
         private void Carry()
         {
             _cnt = 0;
             _is16bit = (_port4e & MODE_16BIT) != 0;
             _isStereo = (_port4e & MODE_STEREO) != 0;
             _isIntEnabled = (_port4e & MODE_INTRQ) != 0;
-            _step = 1;
-            _step <<= _isStereo ? 1 : 0;
-            _step <<= _is16bit ? 1 : 0;
+            _cntShift = _is16bit ? 1 : 0;
+            _step = _isStereo ? 2 : 1;
+            _step <<= _cntShift;
             if (_divider == 0)
             {
                 _sampleRateHz = double.NaN;
