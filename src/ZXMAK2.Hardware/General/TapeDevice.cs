@@ -150,10 +150,10 @@ namespace ZXMAK2.Hardware.General
             m_cpu = bmgr.CPU;
             m_memory = bmgr.FindDevice<IMemoryDevice>();
 
-            bmgr.SubscribeRdIo(Mask, Port & Mask, ReadPortFe);
-            bmgr.SubscribeWrIo(Mask, Port & Mask, WritePortFe);
+            bmgr.Events.SubscribeRdIo(Mask, Port & Mask, ReadPortFe);
+            bmgr.Events.SubscribeWrIo(Mask, Port & Mask, WritePortFe);
 
-            bmgr.SubscribePreCycle(busPreCycle);
+            bmgr.Events.SubscribePreCycle(busPreCycle);
 
             bmgr.AddSerializer(new TapSerializer(this));
             bmgr.AddSerializer(new TzxSerializer(this));

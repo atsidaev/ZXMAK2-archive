@@ -55,19 +55,19 @@ namespace ZXMAK2.Hardware.Sprinter
 
             bmgr.RegisterIcon(_iconRd);
             bmgr.RegisterIcon(_iconWr);
-            bmgr.SubscribeBeginFrame(BusBeginFrame);
-            bmgr.SubscribeEndFrame(BusEndFrame);
+            bmgr.Events.SubscribeBeginFrame(BusBeginFrame);
+            bmgr.Events.SubscribeEndFrame(BusEndFrame);
 
-            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
-            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRam);
-            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRam);
-            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRam);
+            bmgr.Events.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRam);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRam);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRam);
 
             OnSubscribeIo(bmgr);
 
-            bmgr.SubscribeReset(BusReset);
-            bmgr.SubscribeNmiRq(BusNmiRq);
-            bmgr.SubscribeNmiAck(BusNmiAck);
+            bmgr.Events.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeNmiRq(BusNmiRq);
+            bmgr.Events.SubscribeNmiAck(BusNmiAck);
 
             foreach (var fs in LoadManager.GetSerializers())
             {
@@ -172,11 +172,11 @@ namespace ZXMAK2.Hardware.Sprinter
 
         private void OnSubscribeIo(IBusManager bmgr)
         {
-            bmgr.SubscribeWrIo(0x83, 0x1F & 0x83, WritePortFdc);
-            bmgr.SubscribeRdIo(0x83, 0x1F & 0x83, ReadPortFdc);
-            bmgr.SubscribeWrIo(0x83, 0xFF & 0x83, WritePortSys);
-            bmgr.SubscribeRdIo(0x83, 0xFF & 0x83, ReadPortSys);
-            bmgr.SubscribeWrIo(0xFF, 0xBD, WritePortBdiMode);
+            bmgr.Events.SubscribeWrIo(0x83, 0x1F & 0x83, WritePortFdc);
+            bmgr.Events.SubscribeRdIo(0x83, 0x1F & 0x83, ReadPortFdc);
+            bmgr.Events.SubscribeWrIo(0x83, 0xFF & 0x83, WritePortSys);
+            bmgr.Events.SubscribeRdIo(0x83, 0xFF & 0x83, ReadPortSys);
+            bmgr.Events.SubscribeWrIo(0xFF, 0xBD, WritePortBdiMode);
         }
 
         private void BusBeginFrame()

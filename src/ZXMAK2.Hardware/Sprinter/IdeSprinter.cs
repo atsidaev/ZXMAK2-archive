@@ -45,36 +45,36 @@ namespace ZXMAK2.Hardware.Sprinter
             m_ideFileName = bmgr.GetSatelliteFileName("vmide");
 
             bmgr.RegisterIcon(m_iconHdd);
-            bmgr.SubscribeBeginFrame(BusBeginFrame);
-            bmgr.SubscribeEndFrame(BusEndFrame);
+            bmgr.Events.SubscribeBeginFrame(BusBeginFrame);
+            bmgr.Events.SubscribeEndFrame(BusEndFrame);
 
-            bmgr.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeReset(BusReset);
 
             var dataMask = 0x00E7;//0x00FF;
             var regMask = 0xE1E7;//0x00E7;//0xFEFF;
-            bmgr.SubscribeRdIo(dataMask, 0x0050 & dataMask, ReadIdeData);
-            bmgr.SubscribeWrIo(dataMask, 0x0050 & dataMask, WriteIdeData);
+            bmgr.Events.SubscribeRdIo(dataMask, 0x0050 & dataMask, ReadIdeData);
+            bmgr.Events.SubscribeWrIo(dataMask, 0x0050 & dataMask, WriteIdeData);
 
-            bmgr.SubscribeRdIo(regMask, 0x0051 & regMask, ReadIdeError);
-            bmgr.SubscribeWrIo(regMask, 0x0151 & regMask, WriteIdeError);
+            bmgr.Events.SubscribeRdIo(regMask, 0x0051 & regMask, ReadIdeError);
+            bmgr.Events.SubscribeWrIo(regMask, 0x0151 & regMask, WriteIdeError);
 
-            bmgr.SubscribeRdIo(regMask, 0x0052 & regMask, ReadIdeCounter);
-            bmgr.SubscribeWrIo(regMask, 0x0152 & regMask, WriteIdeCounter);
+            bmgr.Events.SubscribeRdIo(regMask, 0x0052 & regMask, ReadIdeCounter);
+            bmgr.Events.SubscribeWrIo(regMask, 0x0152 & regMask, WriteIdeCounter);
 
-            bmgr.SubscribeRdIo(regMask, 0x0053 & regMask, ReadIdeSector);
-            bmgr.SubscribeWrIo(regMask, 0x0153 & regMask, WriteIdeSector);
+            bmgr.Events.SubscribeRdIo(regMask, 0x0053 & regMask, ReadIdeSector);
+            bmgr.Events.SubscribeWrIo(regMask, 0x0153 & regMask, WriteIdeSector);
 
-            bmgr.SubscribeRdIo(regMask, 0x0055 & regMask, ReadIdeCylHi);
-            bmgr.SubscribeWrIo(regMask, 0x0155 & regMask, WriteIdeCylHi);
+            bmgr.Events.SubscribeRdIo(regMask, 0x0055 & regMask, ReadIdeCylHi);
+            bmgr.Events.SubscribeWrIo(regMask, 0x0155 & regMask, WriteIdeCylHi);
 
-            bmgr.SubscribeRdIo(regMask, 0x0054 & regMask, ReadIdeCylLo);
-            bmgr.SubscribeWrIo(regMask, 0x0154 & regMask, WriteIdeCylLo);
+            bmgr.Events.SubscribeRdIo(regMask, 0x0054 & regMask, ReadIdeCylLo);
+            bmgr.Events.SubscribeWrIo(regMask, 0x0154 & regMask, WriteIdeCylLo);
 
-            bmgr.SubscribeRdIo(regMask, 0x4052 & regMask, ReadIdeControl);
-            bmgr.SubscribeWrIo(regMask, 0x4152 & regMask, WriteIdeControl);
+            bmgr.Events.SubscribeRdIo(regMask, 0x4052 & regMask, ReadIdeControl);
+            bmgr.Events.SubscribeWrIo(regMask, 0x4152 & regMask, WriteIdeControl);
 
-            bmgr.SubscribeRdIo(regMask, 0x4053 & regMask, ReadIdeCommand);
-            bmgr.SubscribeWrIo(regMask, 0x4153 & regMask, WriteIdeCommand);
+            bmgr.Events.SubscribeRdIo(regMask, 0x4053 & regMask, ReadIdeCommand);
+            bmgr.Events.SubscribeWrIo(regMask, 0x4153 & regMask, WriteIdeCommand);
         }
 
         public override void BusConnect()

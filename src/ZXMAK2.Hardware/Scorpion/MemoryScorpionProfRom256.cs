@@ -25,8 +25,8 @@ namespace ZXMAK2.Hardware.Scorpion
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeRdMemM1(0xFFF0, 0x0100, BusProfRomGate);
-            bmgr.SubscribeRdMem(0xFFF0, 0x0100, BusProfRomGate);
+            bmgr.Events.SubscribeRdMemM1(0xFFF0, 0x0100, BusProfRomGate);
+            bmgr.Events.SubscribeRdMem(0xFFF0, 0x0100, BusProfRomGate);
 
             // Subscribe before MemoryBase.BusInit 
             // to handle memory switches before read

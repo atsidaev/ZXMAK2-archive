@@ -19,8 +19,8 @@ namespace ZXMAK2.Hardware.Lec
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeWrIo(0x0002, 0x00FD & 0x0002, BusWriteCmr1);
-            bmgr.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeWrIo(0x0002, 0x00FD & 0x0002, BusWriteCmr1);
+            bmgr.Events.SubscribeReset(BusReset);
 
             // Subscribe before MemoryBase.BusInit 
             // to handle memory switches before read

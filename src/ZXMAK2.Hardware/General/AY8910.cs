@@ -125,10 +125,10 @@ namespace ZXMAK2.Hardware.General
         {
             base.BusInit(bmgr);
             m_lastTime = 0D;
-            bmgr.SubscribeWrIo(MaskAddrReg, PortAddrReg & MaskAddrReg, WritePortAddr);   // #FFFD (reg#)
-            bmgr.SubscribeRdIo(MaskAddrReg, PortAddrReg & MaskAddrReg, ReadPortData);    // #FFFD (rd data/reg#)
-            bmgr.SubscribeWrIo(MaskDataReg, PortDataReg & MaskDataReg, WritePortData);   // #BFFD (data)
-            bmgr.SubscribeReset(Bus_OnReset);
+            bmgr.Events.SubscribeWrIo(MaskAddrReg, PortAddrReg & MaskAddrReg, WritePortAddr);   // #FFFD (reg#)
+            bmgr.Events.SubscribeRdIo(MaskAddrReg, PortAddrReg & MaskAddrReg, ReadPortData);    // #FFFD (rd data/reg#)
+            bmgr.Events.SubscribeWrIo(MaskDataReg, PortDataReg & MaskDataReg, WritePortData);   // #BFFD (data)
+            bmgr.Events.SubscribeReset(Bus_OnReset);
         }
 
         protected override void OnEndFrame()

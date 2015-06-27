@@ -141,7 +141,7 @@ namespace ZXMAK2.Hardware.General
         {
             base.BusInit(bmgr);
             m_memory = m_noDos ? bmgr.FindDevice<IMemoryDevice>() : null;
-            bmgr.SubscribeWrIo(Mask, Port & Mask, WritePortFE);
+            bmgr.Events.SubscribeWrIo(Mask, Port & Mask, WritePortFE);
         }
 
         #endregion

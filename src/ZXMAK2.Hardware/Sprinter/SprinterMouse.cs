@@ -45,8 +45,8 @@ namespace ZXMAK2.Hardware.Sprinter
             //bmgr.SubscribeRDIO(0xffff, 0xfadf, new BusReadIoProc(this.readPortFADF));
             //bmgr.SubscribeRDIO(0xffff, 0xfbdf, new BusReadIoProc(this.readPortFBDF));
             //bmgr.SubscribeRDIO(0xffff, 0xffdf, new BusReadIoProc(this.readPortFFDF));
-            bmgr.SubscribeRdIo(0x00ff, 0x001B, new BusReadIoProc(ReadPortMouseState));
-            bmgr.SubscribeRdIo(0x00ff, 0x001A, new BusReadIoProc(ReadPortMouseData));
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x001B, new BusReadIoProc(ReadPortMouseState));
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x001A, new BusReadIoProc(ReadPortMouseData));
         }
 
         private void ReadPortMouseState(ushort addr, ref byte value, ref bool handled)

@@ -82,13 +82,13 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             base.BusInit(bmgr);
             _cpu = bmgr.CPU;
-            bmgr.SubscribeWrIo(0x00FF, 0x004e, WritePort4e);
-            bmgr.SubscribeRdIo(0x00FF, 0x004e, ReadPort4e);
-            bmgr.SubscribeWrIo(0x00FF, 0x004F, WritePort4f);
-            bmgr.SubscribeWrIo(0x00FF, 0x00FB, WritePortFb);
-            bmgr.SubscribeRdIo(0x00FF, 0x00FE, ReadPortFe);
-            bmgr.SubscribePreCycle(CheckInt);
-            bmgr.SubscribeReset(ResetBus);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x004e, WritePort4e);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x004e, ReadPort4e);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x004F, WritePort4f);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x00FB, WritePortFb);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x00FE, ReadPortFe);
+            bmgr.Events.SubscribePreCycle(CheckInt);
+            bmgr.Events.SubscribeReset(ResetBus);
         }
 
         protected override void OnVolumeChanged(int oldVolume, int newVolume)

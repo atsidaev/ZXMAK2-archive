@@ -234,9 +234,9 @@ namespace ZXMAK2.Hardware.Sprinter
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeEndFrame(ScanKeys);
-            bmgr.SubscribeRdIo(0x00ff, 0x0019, ReadPortKbdState);
-            bmgr.SubscribeRdIo(0x00ff, 0x0018, ReadPortKbdData);
+            bmgr.Events.SubscribeEndFrame(ScanKeys);
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x0019, ReadPortKbdState);
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x0018, ReadPortKbdData);
         }
 
         private void ReadPortKbdState(ushort addr, ref byte value, ref bool handled)

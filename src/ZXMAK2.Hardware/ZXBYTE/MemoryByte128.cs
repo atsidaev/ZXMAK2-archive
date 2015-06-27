@@ -36,7 +36,7 @@ namespace ZXMAK2.Hardware.ZXBYTE
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeRdIo(0x75, 0x1F & 0x75, BusReadPort1F);
+            bmgr.Events.SubscribeRdIo(0x75, 0x1F & 0x75, BusReadPort1F);
             CommandSwitcher = new CommandDelegate(
                 CommandSwitcher_OnExecute,
                 () => true,

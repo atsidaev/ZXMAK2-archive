@@ -48,11 +48,11 @@ namespace ZXMAK2.Hardware.Evo
                     CommandUi_OnCanExecute, 
                     "Open SD Card image..."));
 
-            bmgr.SubscribeReset(Reset);
-            bmgr.SubscribeWrIo(0x00FF, 0x0057, WrXX57);
-            bmgr.SubscribeRdIo(0x00FF, 0x0057, RdXX57);
-            bmgr.SubscribeWrIo(0x00FF, 0x0077, WrXX77);
-            bmgr.SubscribeRdIo(0x00FF, 0x0077, RdXX77);
+            bmgr.Events.SubscribeReset(Reset);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x0057, WrXX57);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x0057, RdXX57);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x0077, WrXX77);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x0077, RdXX77);
         }
 
         public override void BusConnect()

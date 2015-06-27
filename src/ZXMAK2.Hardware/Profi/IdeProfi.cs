@@ -47,13 +47,13 @@ namespace ZXMAK2.Hardware.Profi
             m_ideFileName = bmgr.GetSatelliteFileName("vmide");
 
             bmgr.RegisterIcon(m_iconHdd);
-            bmgr.SubscribeBeginFrame(BusBeginFrame);
-            bmgr.SubscribeEndFrame(BusEndFrame);
+            bmgr.Events.SubscribeBeginFrame(BusBeginFrame);
+            bmgr.Events.SubscribeEndFrame(BusEndFrame);
 
-            bmgr.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeReset(BusReset);
 
-            bmgr.SubscribeRdIo(0x9F, 0x8B, ReadIde);
-            bmgr.SubscribeWrIo(0x9F, 0x8B, WriteIde);
+            bmgr.Events.SubscribeRdIo(0x9F, 0x8B, ReadIde);
+            bmgr.Events.SubscribeWrIo(0x9F, 0x8B, WriteIde);
         }
 
         public override void BusConnect()

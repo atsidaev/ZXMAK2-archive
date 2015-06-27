@@ -44,7 +44,7 @@ namespace ZXMAK2.Hardware.Atm
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeReset(busReset);
+            bmgr.Events.SubscribeReset(busReset);
         }
 
         #endregion

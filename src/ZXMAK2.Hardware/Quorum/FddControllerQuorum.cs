@@ -32,10 +32,10 @@ namespace ZXMAK2.Hardware.Quorum
             // #82 - SEC
             // #83 - DAT
             // #85 - SYS
-            bmgr.SubscribeWrIo(0x9C, 0x80 & 0x9C, BusWriteFdc);
-            bmgr.SubscribeRdIo(0x9C, 0x80 & 0x9C, BusReadFdc);
-            bmgr.SubscribeWrIo(0x9F, 0x85 & 0x9F, BusWriteSys);
-            bmgr.SubscribeRdIo(0x9F, 0x85 & 0x9F, BusReadSys);
+            bmgr.Events.SubscribeWrIo(0x9C, 0x80 & 0x9C, BusWriteFdc);
+            bmgr.Events.SubscribeRdIo(0x9C, 0x80 & 0x9C, BusReadFdc);
+            bmgr.Events.SubscribeWrIo(0x9F, 0x85 & 0x9F, BusWriteSys);
+            bmgr.Events.SubscribeRdIo(0x9F, 0x85 & 0x9F, BusReadSys);
         }
 
         public override bool IsActive

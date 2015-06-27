@@ -28,9 +28,9 @@ namespace ZXMAK2.Hardware.General
         {
             m_memory = bmgr.FindDevice<IMemoryDevice>();
             var mask = 0xFFFF;// 0x05FF;
-            bmgr.SubscribeRdIo(mask, 0xFADF & mask, ReadPortBtn);
-            bmgr.SubscribeRdIo(mask, 0xFBDF & mask, ReadPortX);
-            bmgr.SubscribeRdIo(mask, 0xFFDF & mask, ReadPortY);
+            bmgr.Events.SubscribeRdIo(mask, 0xFADF & mask, ReadPortBtn);
+            bmgr.Events.SubscribeRdIo(mask, 0xFBDF & mask, ReadPortX);
+            bmgr.Events.SubscribeRdIo(mask, 0xFFDF & mask, ReadPortY);
         }
 
         public override void BusConnect()

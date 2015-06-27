@@ -56,9 +56,9 @@ namespace ZXMAK2.Hardware.Evo
 
             OnSubscribeIo(bmgr);
 
-            bmgr.SubscribeRdMemM1(0x0000, 0x0000, BusReadM1);
-            bmgr.SubscribeWrMem(0x0000, 0x0000, WriteMemXXXX);
-            bmgr.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeRdMemM1(0x0000, 0x0000, BusReadM1);
+            bmgr.Events.SubscribeWrMem(0x0000, 0x0000, WriteMemXXXX);
+            bmgr.Events.SubscribeReset(BusReset);
 
             // Subscribe before MemoryBase.BusInit 
             // to handle memory switches before read
@@ -67,17 +67,17 @@ namespace ZXMAK2.Hardware.Evo
 
         protected virtual void OnSubscribeIo(IBusManager bmgr)
         {
-            bmgr.SubscribeWrIo(0x00FF, 0x00FF & 0x00FF, BusWritePortXXFF_PAL);	// atm_writepal(val);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x00FF & 0x00FF, BusWritePortXXFF_PAL);	// atm_writepal(val);
 
-            bmgr.SubscribeWrIo(0x00FF, 0xFF77 & 0x00FF, BusWritePortXX77_SYS);
-            bmgr.SubscribeWrIo(0x37FF, 0x3FF7 & 0x37FF, BusWritePortXFF7_WND);	//ATM3 mask=0x3FFF
-            bmgr.SubscribeWrIo(0x8002, 0x7FFD & 0x8002, BusWritePort7FFD_128);
-            bmgr.SubscribeWrIo(0xFFFF, 0xEFF7 & 0xFFFF, BusWritePortEFF7_MOD);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0xFF77 & 0x00FF, BusWritePortXX77_SYS);
+            bmgr.Events.SubscribeWrIo(0x37FF, 0x3FF7 & 0x37FF, BusWritePortXFF7_WND);	//ATM3 mask=0x3FFF
+            bmgr.Events.SubscribeWrIo(0x8002, 0x7FFD & 0x8002, BusWritePort7FFD_128);
+            bmgr.Events.SubscribeWrIo(0xFFFF, 0xEFF7 & 0xFFFF, BusWritePortEFF7_MOD);
 
-            bmgr.SubscribeWrIo(0x00FF, 0x00BF & 0x00FF, BusWritePortXXBF_EVO);
-            bmgr.SubscribeRdIo(0x00FF, 0x00BF & 0x00FF, BusReadPortXXBF_EVO);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x00BF & 0x00FF, BusWritePortXXBF_EVO);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x00BF & 0x00FF, BusReadPortXXBF_EVO);
 
-            bmgr.SubscribeRdIo(0xE0FF, 0x00BE & 0xE0FF, BusReadPortXXBE_CFG);
+            bmgr.Events.SubscribeRdIo(0xE0FF, 0x00BE & 0xE0FF, BusReadPortXXBE_CFG);
         }
 
         protected virtual void WriteMemXXXX(ushort addr, byte value)

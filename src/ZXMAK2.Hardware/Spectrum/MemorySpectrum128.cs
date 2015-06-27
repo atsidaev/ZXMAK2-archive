@@ -22,9 +22,9 @@ namespace ZXMAK2.Hardware.Spectrum
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeWrIo(0x8002, 0x0000, writePort7FFD);
-            bmgr.SubscribeRdIo(0x8002, 0x0000, readPort7FFD);
-            bmgr.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeWrIo(0x8002, 0x0000, writePort7FFD);
+            bmgr.Events.SubscribeRdIo(0x8002, 0x0000, readPort7FFD);
+            bmgr.Events.SubscribeReset(BusReset);
 
             // Subscribe before MemoryBase.BusInit 
             // to handle memory switches before read

@@ -59,26 +59,26 @@ namespace ZXMAK2.Hardware.General
             m_ideFileName = bmgr.GetSatelliteFileName("vmide");
 
             bmgr.RegisterIcon(m_iconHdd);
-            bmgr.SubscribeBeginFrame(BusBeginFrame);
-            bmgr.SubscribeEndFrame(BusEndFrame);
+            bmgr.Events.SubscribeBeginFrame(BusBeginFrame);
+            bmgr.Events.SubscribeEndFrame(BusEndFrame);
 
-            bmgr.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeReset(BusReset);
 
             const int mask = 0xB8E7;//0xA044;
-            bmgr.SubscribeRdIo(mask, 0x5FBA & mask, ReadVer);
-            bmgr.SubscribeRdIo(mask, 0x5FBE & mask, ReadRev);
-            bmgr.SubscribeRdIo(mask, 0x7FBA & mask, ReadFdd);
-            bmgr.SubscribeRdIo(mask, 0x7FBE & mask, ReadPic);
-            bmgr.SubscribeRdIo(mask, 0xDFBA & mask, ReadRtc);
-            bmgr.SubscribeRdIo(mask, 0xD8BE & mask, ReadIdeHi);
-            bmgr.SubscribeRdIo(mask, 0xFFBA & mask, ReadSys);
-            bmgr.SubscribeRdIo(mask, 0xFFBE & mask, ReadIde);
+            bmgr.Events.SubscribeRdIo(mask, 0x5FBA & mask, ReadVer);
+            bmgr.Events.SubscribeRdIo(mask, 0x5FBE & mask, ReadRev);
+            bmgr.Events.SubscribeRdIo(mask, 0x7FBA & mask, ReadFdd);
+            bmgr.Events.SubscribeRdIo(mask, 0x7FBE & mask, ReadPic);
+            bmgr.Events.SubscribeRdIo(mask, 0xDFBA & mask, ReadRtc);
+            bmgr.Events.SubscribeRdIo(mask, 0xD8BE & mask, ReadIdeHi);
+            bmgr.Events.SubscribeRdIo(mask, 0xFFBA & mask, ReadSys);
+            bmgr.Events.SubscribeRdIo(mask, 0xFFBE & mask, ReadIde);
 
-            bmgr.SubscribeWrIo(mask, 0x7FBA & mask, WriteFdd);
-            bmgr.SubscribeWrIo(mask, 0xDFBA & mask, WriteRtc);
-            bmgr.SubscribeWrIo(mask, 0xD8BE & mask, WriteIdeHi);
-            bmgr.SubscribeWrIo(mask, 0xFFBA & mask, WriteSys);
-            bmgr.SubscribeWrIo(mask, 0xFFBE & mask, WriteIde);
+            bmgr.Events.SubscribeWrIo(mask, 0x7FBA & mask, WriteFdd);
+            bmgr.Events.SubscribeWrIo(mask, 0xDFBA & mask, WriteRtc);
+            bmgr.Events.SubscribeWrIo(mask, 0xD8BE & mask, WriteIdeHi);
+            bmgr.Events.SubscribeWrIo(mask, 0xFFBA & mask, WriteSys);
+            bmgr.Events.SubscribeWrIo(mask, 0xFFBE & mask, WriteIde);
         }
 
         public override void BusConnect()

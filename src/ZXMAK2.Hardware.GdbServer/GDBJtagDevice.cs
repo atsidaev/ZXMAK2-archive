@@ -72,8 +72,8 @@ namespace ZXMAK2.Hardware.GdbServer
             emulator.Breakpoint += OnBreakpoint;
 
             // For memory read/write breakpoints:
-            busManager.SubscribeWrMem(0x0000, 0x0000, new BusWriteProc(OnMemoryWrite));
-            busManager.SubscribeRdMem(0x0000, 0x0000, new BusReadProc(OnMemoryRead));
+            busManager.Events.SubscribeWrMem(0x0000, 0x0000, OnMemoryWrite);
+            busManager.Events.SubscribeRdMem(0x0000, 0x0000, OnMemoryRead);
 
 
             server = new GDBNetworkServer(emulator, this);

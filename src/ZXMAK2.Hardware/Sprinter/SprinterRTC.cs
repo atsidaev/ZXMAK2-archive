@@ -29,10 +29,10 @@ namespace ZXMAK2.Hardware.Sprinter
         public override void BusInit(IBusManager bmgr)
         {
             _isSandBox = bmgr.IsSandbox;
-            bmgr.SubscribeReset(ResetBus);
-            bmgr.SubscribeWrIo(0xFFFF, 0xBFBD, WritePortData);  //CMOS_DWR
-            bmgr.SubscribeWrIo(0xFFFF, 0xDFBD, WritePortAddr);  //CMOS_AWR
-            bmgr.SubscribeRdIo(0xFFFF, 0xFFBD, ReadPortData);  //CMOS_DRD
+            bmgr.Events.SubscribeReset(ResetBus);
+            bmgr.Events.SubscribeWrIo(0xFFFF, 0xBFBD, WritePortData);  //CMOS_DWR
+            bmgr.Events.SubscribeWrIo(0xFFFF, 0xDFBD, WritePortAddr);  //CMOS_AWR
+            bmgr.Events.SubscribeRdIo(0xFFFF, 0xFFBD, ReadPortData);  //CMOS_DRD
 
             _fileName = bmgr.GetSatelliteFileName("cmos");
         }

@@ -50,8 +50,8 @@ namespace ZXMAK2.Hardware.Atm
 
             OnSubscribeIo(bmgr);
 
-            bmgr.SubscribeRdMemM1(0x0000, 0x0000, BusReadM1);
-            bmgr.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeRdMemM1(0x0000, 0x0000, BusReadM1);
+            bmgr.Events.SubscribeReset(BusReset);
 
             // Subscribe before MemoryBase.BusInit 
             // to handle memory switches before read
@@ -60,17 +60,17 @@ namespace ZXMAK2.Hardware.Atm
 
         protected virtual void OnSubscribeIo(IBusManager bmgr)
         {
-            bmgr.SubscribeRdIo(0x0001, 0x0000, BusReadPortFE);					// bit Z emulation
-            bmgr.SubscribeWrIo(0x009F, 0x00FF & 0x009F, BusWritePortXXFF_PAL);	// atm_writepal(val);
-            bmgr.SubscribeRdIo(0x8202, 0x7FFD & 0x8202, BusReadPort7FFD);		// ADC ready emulation
+            bmgr.Events.SubscribeRdIo(0x0001, 0x0000, BusReadPortFE);					// bit Z emulation
+            bmgr.Events.SubscribeWrIo(0x009F, 0x00FF & 0x009F, BusWritePortXXFF_PAL);	// atm_writepal(val);
+            bmgr.Events.SubscribeRdIo(0x8202, 0x7FFD & 0x8202, BusReadPort7FFD);		// ADC ready emulation
 
-            bmgr.SubscribeWrIo(0x00FF, 0xFF77 & 0x00FF, BusWritePortXX77_SYS);
-            bmgr.SubscribeWrIo(0x00FF, 0x3FF7 & 0x00FF, BusWritePortXFF7_WND);	//ATM3 mask=0x3FFF
+            bmgr.Events.SubscribeWrIo(0x00FF, 0xFF77 & 0x00FF, BusWritePortXX77_SYS);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x3FF7 & 0x00FF, BusWritePortXFF7_WND);	//ATM3 mask=0x3FFF
             
             // fix for #7FFD (original ATM710 mask is #8202)
             // http://www.nedopc.com/ATMZAK/atm710re.htm#re11
-            //bmgr.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD_128);
-            bmgr.SubscribeWrIo(0x8002, 0x7FFD & 0x8002, BusWritePort7FFD_128);
+            //bmgr.Events.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD_128);
+            bmgr.Events.SubscribeWrIo(0x8002, 0x7FFD & 0x8002, BusWritePort7FFD_128);
         }
 
         protected virtual void BusReadM1(ushort addr, ref byte value)
