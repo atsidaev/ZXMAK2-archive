@@ -50,9 +50,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             InitializeComponent();
             Init(debugTarget);
-            bmgr.SubscribeWrMem(0, 0, CheckWriteMem);
-            bmgr.SubscribeRdMem(0, 0, CheckReadMem);
-            bmgr.SubscribePreCycle(Bus_OnBeforeCpuCycle);
+            bmgr.Events.SubscribeWrMem(0, 0, CheckWriteMem);
+            bmgr.Events.SubscribeRdMem(0, 0, CheckReadMem);
+            bmgr.Events.SubscribePreCycle(Bus_OnBeforeCpuCycle);
             m_cpuRegs = bmgr.CPU.regs;
         }
 

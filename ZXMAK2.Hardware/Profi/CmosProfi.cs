@@ -31,8 +31,8 @@ namespace ZXMAK2.Hardware.Profi
         {
             m_isSandBox = bmgr.IsSandbox;
             m_memory = bmgr.FindDevice<IMemoryDevice>();
-            bmgr.SubscribeWrIo(0x009F, 0x009F, BusWriteRtc);
-            bmgr.SubscribeRdIo(0x009F, 0x009F, BusReadRtc);
+            bmgr.Events.SubscribeWrIo(0x009F, 0x009F, BusWriteRtc);
+            bmgr.Events.SubscribeRdIo(0x009F, 0x009F, BusReadRtc);
 
             m_fileName = bmgr.GetSatelliteFileName("cmos");
         }

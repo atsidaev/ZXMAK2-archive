@@ -33,7 +33,7 @@ namespace ZXMAK2.Hardware.Sprinter
         {
             base.BusInit(bmgr);
             //bmgr.SubscribeWRIO(0x00FF, 0x0089, this.writePort89h);  //write 89h
-            bmgr.SubscribeReset(ResetBus);
+            bmgr.Events.SubscribeReset(ResetBus);
         }
 
         protected override void EndFrame()

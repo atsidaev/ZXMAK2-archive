@@ -8,22 +8,7 @@ namespace ZXMAK2.Engine.Interfaces
 {
 	public interface IBusManager
 	{
-		void SubscribeRdMemM1(int addrMask, int maskedValue, BusReadProc proc);
-		void SubscribeRdMem(int addrMask, int maskedValue, BusReadProc proc);
-		void SubscribeWrMem(int addrMask, int maskedValue, BusWriteProc proc);
-		void SubscribeRdIo(int addrMask, int maskedValue, BusReadIoProc proc);
-		void SubscribeWrIo(int addrMask, int maskedValue, BusWriteIoProc proc);
-        void SubscribeRdNoMreq(int addrMask, int maskedValue, Action<ushort> proc);
-        void SubscribeWrNoMreq(int addrMask, int maskedValue, Action<ushort> proc);
-		void SubscribeReset(Action proc);
-        void SubscribeNmiRq(BusRqProc proc);
-        void SubscribeNmiAck(Action proc);
-		void SubscribeIntAck(Action proc);
-        void SubscribeScanInt(Action<int> handler);
-
-		void SubscribePreCycle(Action proc);
-		void SubscribeBeginFrame(Action handler);
-		void SubscribeEndFrame(Action handler);
+        IEventManager Events { get; }
 
 		void AddSerializer(IFormatSerializer serializer);
 		void RegisterIcon(IIconDescriptor iconDesc);
@@ -37,8 +22,6 @@ namespace ZXMAK2.Engine.Interfaces
         T FindDevice<T>() where T : class;
 
 		RzxHandler RzxHandler { get; }
-
-        void RequestNmi(int timeOut);
 	}
 
 	public delegate void BusReadProc(ushort addr, ref byte value);

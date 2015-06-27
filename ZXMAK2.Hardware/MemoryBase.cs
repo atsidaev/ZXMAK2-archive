@@ -48,19 +48,19 @@ namespace ZXMAK2.Hardware
         public override void BusInit(IBusManager bmgr)
         {
             m_ula = bmgr.FindDevice<UlaDeviceBase>();
-            bmgr.SubscribeRdMem(0xC000, 0x0000, ReadMem0000);
-            bmgr.SubscribeRdMem(0xC000, 0x4000, ReadMem4000);
-            bmgr.SubscribeRdMem(0xC000, 0x8000, ReadMem8000);
-            bmgr.SubscribeRdMem(0xC000, 0xC000, ReadMemC000);
-            bmgr.SubscribeRdMemM1(0xC000, 0x0000, ReadMem0000);
-            bmgr.SubscribeRdMemM1(0xC000, 0x4000, ReadMem4000);
-            bmgr.SubscribeRdMemM1(0xC000, 0x8000, ReadMem8000);
-            bmgr.SubscribeRdMemM1(0xC000, 0xC000, ReadMemC000);
+            bmgr.Events.SubscribeRdMem(0xC000, 0x0000, ReadMem0000);
+            bmgr.Events.SubscribeRdMem(0xC000, 0x4000, ReadMem4000);
+            bmgr.Events.SubscribeRdMem(0xC000, 0x8000, ReadMem8000);
+            bmgr.Events.SubscribeRdMem(0xC000, 0xC000, ReadMemC000);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x0000, ReadMem0000);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x4000, ReadMem4000);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x8000, ReadMem8000);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0xC000, ReadMemC000);
 
-            bmgr.SubscribeWrMem(0xC000, 0x0000, WriteMem0000);
-            bmgr.SubscribeWrMem(0xC000, 0x4000, WriteMem4000);
-            bmgr.SubscribeWrMem(0xC000, 0x8000, WriteMem8000);
-            bmgr.SubscribeWrMem(0xC000, 0xC000, WriteMemC000);
+            bmgr.Events.SubscribeWrMem(0xC000, 0x0000, WriteMem0000);
+            bmgr.Events.SubscribeWrMem(0xC000, 0x4000, WriteMem4000);
+            bmgr.Events.SubscribeWrMem(0xC000, 0x8000, WriteMem8000);
+            bmgr.Events.SubscribeWrMem(0xC000, 0xC000, WriteMemC000);
             if (m_viewHolder != null)
             {
                 bmgr.AddCommandUi(m_viewHolder.CommandOpen);

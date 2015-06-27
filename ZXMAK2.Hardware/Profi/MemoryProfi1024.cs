@@ -43,16 +43,16 @@ namespace ZXMAK2.Hardware.Profi
             m_cpu = bmgr.CPU;
             m_ulaProfi = bmgr.FindDevice<UlaProfi3XX>();
 
-            bmgr.SubscribeWrIo(0x8002, 0x7FFD & 0x8002, BusWritePort7FFD);
-            bmgr.SubscribeWrIo(0x2002, 0xDFFD & 0x2002, BusWritePortDFFD);
+            bmgr.Events.SubscribeWrIo(0x8002, 0x7FFD & 0x8002, BusWritePort7FFD);
+            bmgr.Events.SubscribeWrIo(0x2002, 0xDFFD & 0x2002, BusWritePortDFFD);
 
-            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
-            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
-            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
-            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
-            bmgr.SubscribeReset(BusReset);
-            bmgr.SubscribeNmiRq(BusNmiRq);
-            bmgr.SubscribeNmiAck(BusNmiAck);
+            bmgr.Events.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
+            bmgr.Events.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeNmiRq(BusNmiRq);
+            bmgr.Events.SubscribeNmiAck(BusNmiAck);
 
             // Subscribe before MemoryBase.BusInit 
             // to handle memory switches before read

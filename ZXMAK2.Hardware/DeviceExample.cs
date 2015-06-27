@@ -21,9 +21,9 @@ namespace ZXMAK2.Hardware
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeWrIo(0x00FF, 0x00F1, WritePort00F1);
-            bmgr.SubscribeWrIo(0x00FF, 0x00F3, WritePort00F3);
-            bmgr.SubscribeRdIo(0x00FF, 0x00F1, ReadPort00F1);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x00F1, WritePort00F1);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x00F3, WritePort00F3);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x00F1, ReadPort00F1);
         }
 
         public override void BusConnect()

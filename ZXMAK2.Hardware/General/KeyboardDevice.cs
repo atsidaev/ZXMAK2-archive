@@ -103,7 +103,7 @@ namespace ZXMAK2.Hardware.General
         public override void BusInit(IBusManager bmgr)
         {
             m_memory = bmgr.FindDevice<IMemoryDevice>();
-            bmgr.SubscribeRdIo(Mask, Port & Mask, ReadPortFe);
+            bmgr.Events.SubscribeRdIo(Mask, Port & Mask, ReadPortFe);
         }
 
         public override void BusConnect()

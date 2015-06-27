@@ -22,7 +22,7 @@ namespace ZXMAK2.Hardware.Spectrum
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeRdMemM1(0x0000, 0x0000, ReadMemM1);
+            bmgr.Events.SubscribeRdMemM1(0x0000, 0x0000, ReadMemM1);
         }
 
         #endregion

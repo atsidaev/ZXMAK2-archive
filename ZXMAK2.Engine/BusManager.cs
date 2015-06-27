@@ -91,79 +91,9 @@ namespace ZXMAK2.Engine
 
         #region IBusManager
 
-        void IBusManager.SubscribeRdMemM1(int addrMask, int maskedValue, BusReadProc proc)
+        IEventManager IBusManager.Events
         {
-            m_eventManager.SubscribeRdMemM1(addrMask, maskedValue, proc);
-        }
-
-        void IBusManager.SubscribeRdMem(int addrMask, int maskedValue, BusReadProc proc)
-        {
-            m_eventManager.SubscribeRdMem(addrMask, maskedValue, proc);
-        }
-
-        void IBusManager.SubscribeWrMem(int addrMask, int maskedValue, BusWriteProc proc)
-        {
-            m_eventManager.SubscribeWrMem(addrMask, maskedValue, proc);
-        }
-
-        void IBusManager.SubscribeRdIo(int addrMask, int maskedValue, BusReadIoProc proc)
-        {
-            m_eventManager.SubscribeRdIo(addrMask, maskedValue, proc);
-        }
-
-        void IBusManager.SubscribeWrIo(int addrMask, int maskedValue, BusWriteIoProc proc)
-        {
-            m_eventManager.SubscribeWrIo(addrMask, maskedValue, proc);
-        }
-
-        void IBusManager.SubscribeRdNoMreq(int addrMask, int maskedValue, Action<ushort> proc)
-        {
-            m_eventManager.SubscribeRdNoMreq(addrMask, maskedValue, proc);
-        }
-
-        void IBusManager.SubscribeWrNoMreq(int addrMask, int maskedValue, Action<ushort> proc)
-        {
-            m_eventManager.SubscribeWrNoMreq(addrMask, maskedValue, proc);
-        }
-
-        void IBusManager.SubscribePreCycle(Action proc)
-        {
-            m_eventManager.SubscribePreCycle(proc);
-        }
-
-        void IBusManager.SubscribeReset(Action proc)
-        {
-            m_eventManager.SubscribeReset(proc);
-        }
-
-        void IBusManager.SubscribeNmiRq(BusRqProc proc)
-        {
-            m_eventManager.SubscribeNmiRq(proc);
-        }
-
-        void IBusManager.SubscribeNmiAck(Action proc)
-        {
-            m_eventManager.SubscribeNmiAck(proc);
-        }
-
-        void IBusManager.SubscribeIntAck(Action proc)
-        {
-            m_eventManager.SubscribeIntAck(proc);
-        }
-
-        void IBusManager.SubscribeScanInt(Action<int> handler)
-        {
-            m_eventManager.SubscribeScanInt(handler);
-        }
-
-        void IBusManager.SubscribeBeginFrame(Action handler)
-        {
-            m_eventManager.SubscribeBeginFrame(handler);
-        }
-
-        void IBusManager.SubscribeEndFrame(Action handler)
-        {
-            m_eventManager.SubscribeEndFrame(handler);
+            get { return m_eventManager; }
         }
 
         void IBusManager.AddSerializer(IFormatSerializer serializer)

@@ -55,10 +55,10 @@ namespace ZXMAK2.Hardware.Evo
             mem = bmgr.FindDevice<MemoryPentEvo>();
             m_fileName = bmgr.GetSatelliteFileName("cmos");
 
-            bmgr.SubscribeReset(Reset);
-            bmgr.SubscribeWrIo(0xFEFF, 0xDEF7, WrDEF7);
-            bmgr.SubscribeWrIo(0xFEFF, 0xBEF7, WrBEF7);
-            bmgr.SubscribeRdIo(0xFEFF, 0xBEF7, RdBEF7);
+            bmgr.Events.SubscribeReset(Reset);
+            bmgr.Events.SubscribeWrIo(0xFEFF, 0xDEF7, WrDEF7);
+            bmgr.Events.SubscribeWrIo(0xFEFF, 0xBEF7, WrBEF7);
+            bmgr.Events.SubscribeRdIo(0xFEFF, 0xBEF7, RdBEF7);
         }
 
         public override void BusConnect()

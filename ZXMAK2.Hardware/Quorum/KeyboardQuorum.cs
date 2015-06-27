@@ -37,8 +37,8 @@ namespace ZXMAK2.Hardware.Quorum
         public override void BusInit(IBusManager bmgr)
         {
             m_busManager = bmgr;
-            bmgr.SubscribeRdIo(0x99, 0x98, readPortFE);
-            bmgr.SubscribeRdIo(0x99, 0x18, readPort7E);
+            bmgr.Events.SubscribeRdIo(0x99, 0x98, readPortFE);
+            bmgr.Events.SubscribeRdIo(0x99, 0x18, readPort7E);
 
             m_cpu = bmgr.CPU;
         }
@@ -135,7 +135,7 @@ namespace ZXMAK2.Hardware.Quorum
                 if (!m_nmiTriggered)
                 {
                     m_nmiTriggered = true;
-                    m_busManager.RequestNmi(50000);
+                    m_busManager.Events.RequestNmi(50000);
                 }
             }
             else

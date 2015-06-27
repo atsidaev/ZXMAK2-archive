@@ -18,9 +18,9 @@ namespace ZXMAK2.Hardware.Spectrum
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeRdIo(0xF002, 0x0000, portDataRead);
-            bmgr.SubscribeWrIo(0xF002, 0x0000, portDataWrite);
-            bmgr.SubscribeWrIo(0xF002, 0x1000, portStrbWrite);
+            bmgr.Events.SubscribeRdIo(0xF002, 0x0000, portDataRead);
+            bmgr.Events.SubscribeWrIo(0xF002, 0x0000, portDataWrite);
+            bmgr.Events.SubscribeWrIo(0xF002, 0x1000, portStrbWrite);
         }
 
         public override void BusConnect()

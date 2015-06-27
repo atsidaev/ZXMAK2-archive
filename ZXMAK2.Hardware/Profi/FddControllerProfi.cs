@@ -43,10 +43,10 @@ namespace ZXMAK2.Hardware.Profi
 
         protected override void OnSubscribeIo(IBusManager bmgr)
         {
-            bmgr.SubscribeWrIo(0x9F, 0x1F & 0x9F, BusWriteFdc);
-            bmgr.SubscribeRdIo(0x9F, 0x1F & 0x9F, BusReadFdc);
-            bmgr.SubscribeWrIo(0x9F, 0xFF & 0x9F, BusWriteSys);
-            bmgr.SubscribeRdIo(0x9F, 0xFF & 0x9F, BusReadSys);
+            bmgr.Events.SubscribeWrIo(0x9F, 0x1F & 0x9F, BusWriteFdc);
+            bmgr.Events.SubscribeRdIo(0x9F, 0x1F & 0x9F, BusReadFdc);
+            bmgr.Events.SubscribeWrIo(0x9F, 0xFF & 0x9F, BusWriteSys);
+            bmgr.Events.SubscribeRdIo(0x9F, 0xFF & 0x9F, BusReadSys);
 
             // ExtendedMode:
             // #83 - CMD
@@ -54,10 +54,10 @@ namespace ZXMAK2.Hardware.Profi
             // #C3 - SEC
             // #E3 - DAT
             // #3F - SYS
-            bmgr.SubscribeWrIo(0x9F, 0x83 & 0x9F, BusWriteFdcEx);
-            bmgr.SubscribeRdIo(0x9F, 0x83 & 0x9F, BusReadFdcEx);
-            bmgr.SubscribeWrIo(0xFF, 0x3F, BusWriteSysEx);
-            bmgr.SubscribeRdIo(0xFF, 0x3F, BusReadSysEx);
+            bmgr.Events.SubscribeWrIo(0x9F, 0x83 & 0x9F, BusWriteFdcEx);
+            bmgr.Events.SubscribeRdIo(0x9F, 0x83 & 0x9F, BusReadFdcEx);
+            bmgr.Events.SubscribeWrIo(0xFF, 0x3F, BusWriteSysEx);
+            bmgr.Events.SubscribeRdIo(0xFF, 0x3F, BusReadSysEx);
         }
 
         protected void BusWriteFdcEx(ushort addr, byte value, ref bool handled)

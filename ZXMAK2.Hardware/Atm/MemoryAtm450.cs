@@ -36,20 +36,20 @@ namespace ZXMAK2.Hardware.Atm
             m_cpu = bmgr.CPU;
             m_ulaAtm = bmgr.FindDevice<UlaAtm450>();
 
-            bmgr.SubscribeRdIo(0x0001, 0x0000, BusReadPortFE);      // bit Z emulation
-            bmgr.SubscribeWrIo(0x0001, 0x0000, BusWritePortFE);
-            bmgr.SubscribeRdIo(0x0004, 0x00FB & 0x0004, BusReadPortFB);   // CPSYS [(addr & 0x7F)==0x7B]
+            bmgr.Events.SubscribeRdIo(0x0001, 0x0000, BusReadPortFE);      // bit Z emulation
+            bmgr.Events.SubscribeWrIo(0x0001, 0x0000, BusWritePortFE);
+            bmgr.Events.SubscribeRdIo(0x0004, 0x00FB & 0x0004, BusReadPortFB);   // CPSYS [(addr & 0x7F)==0x7B]
 
-            bmgr.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD);
-            bmgr.SubscribeWrIo(0x8202, 0xFDFD & 0x8202, BusWritePortFDFD);
+            bmgr.Events.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD);
+            bmgr.Events.SubscribeWrIo(0x8202, 0xFDFD & 0x8202, BusWritePortFDFD);
 
-            bmgr.SubscribeWrIo(0x8202, 0x7DFD & 0x8202, BusWritePort7DFD); // atm_writepal(val);
+            bmgr.Events.SubscribeWrIo(0x8202, 0x7DFD & 0x8202, BusWritePort7DFD); // atm_writepal(val);
 
-            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
-            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
-            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
-            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
-            bmgr.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
+            bmgr.Events.SubscribeReset(BusReset);
 
             // Subscribe before MemoryBase.BusInit 
             // to handle memory switches before read

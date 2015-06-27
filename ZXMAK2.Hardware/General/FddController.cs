@@ -57,8 +57,8 @@ namespace ZXMAK2.Hardware.General
 
             bmgr.RegisterIcon(m_iconRd);
             bmgr.RegisterIcon(m_iconWr);
-            bmgr.SubscribeBeginFrame(BusBeginFrame);
-            bmgr.SubscribeEndFrame(BusEndFrame);
+            bmgr.Events.SubscribeBeginFrame(BusBeginFrame);
+            bmgr.Events.SubscribeEndFrame(BusEndFrame);
             
             OnSubscribeIo(bmgr);
 
@@ -206,10 +206,10 @@ namespace ZXMAK2.Hardware.General
             //var mask = 0x83;
             //var mask = 0x87;  // original #83 conflicts with port #FB (covox)
             var mask = 0x97;    // #87 conflicts with port #CF (IDE ATM)
-            bmgr.SubscribeWrIo(mask, 0x1F & mask, BusWriteFdc);
-            bmgr.SubscribeRdIo(mask, 0x1F & mask, BusReadFdc);
-            bmgr.SubscribeWrIo(mask, 0xFF & mask, BusWriteSys);
-            bmgr.SubscribeRdIo(mask, 0xFF & mask, BusReadSys);
+            bmgr.Events.SubscribeWrIo(mask, 0x1F & mask, BusWriteFdc);
+            bmgr.Events.SubscribeRdIo(mask, 0x1F & mask, BusReadFdc);
+            bmgr.Events.SubscribeWrIo(mask, 0xFF & mask, BusWriteSys);
+            bmgr.Events.SubscribeRdIo(mask, 0xFF & mask, BusReadSys);
         }
 
         protected virtual void BusBeginFrame()

@@ -37,7 +37,7 @@ namespace ZXMAK2.Hardware.Profi
         public override void BusInit(IBusManager bmgr)
         {
             m_memory = bmgr.FindDevice<IMemoryDevice>();
-            bmgr.SubscribeRdIo(0x67, 0xFE & 0x67, ReadPortFE);
+            bmgr.Events.SubscribeRdIo(0x67, 0xFE & 0x67, ReadPortFE);
         }
 
         public override void BusConnect()

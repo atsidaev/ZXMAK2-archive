@@ -129,47 +129,47 @@ namespace ZXMAK2.Hardware.Sprinter
                 _ulaSprinter.VRAM = _vramPages;
             }
 
-            bmgr.SubscribeWrIo(0x0000, 0x0000, this.WriteIoDcp);  //write to DCP Port
-            bmgr.SubscribeRdIo(0x0000, 0x0000, this.ReadIoDcp);    //read from DCP port
-            bmgr.SubscribeWrIo(0x00ff, 0x0082, this.WritePort82);  //write PAGE0
-            bmgr.SubscribeRdIo(0x00ff, 0x0082, this.ReadPort82);    //read PAGE0
-            bmgr.SubscribeWrIo(0x00ff, 0x00A2, this.WritePortA2);  //write PAGE1
-            bmgr.SubscribeRdIo(0x00ff, 0x00A2, this.ReadPortA2);    //read PAGE1
-            bmgr.SubscribeWrIo(0x00ff, 0x00C2, this.WritePortC2);  //write PAGE2
-            bmgr.SubscribeRdIo(0x00ff, 0x00C2, this.ReadPortC2);    //read PAGE2
-            bmgr.SubscribeWrIo(0x00ff, 0x00E2, this.WritePortE2);  //write PAGE3
-            bmgr.SubscribeRdIo(0x00ff, 0x00E2, this.ReadPortE2);    //read PAGE3
-            bmgr.SubscribeWrIo(0xd027, 0x5025, this.WritePort7FFD);    //write 7FFDh
-            bmgr.SubscribeWrIo(0xd027, 0x1025, this.WritePort1FFD);  //write 1FFDh
-            bmgr.SubscribeRdIo(0x00ff, 0x00fb, this.ReadPortFB);  //read FBh  Open Cash
-            bmgr.SubscribeRdIo(0x00ff, 0x007b, this.ReadPort7B);  //read 7Bh  Close Cash
-            bmgr.SubscribeWrIo(0x00BD, 0x003c, this.WritePort7C);  //write 7Ch
-            bmgr.SubscribeWrIo(0x00FF, 0x0089, this.WritePort89);  //write PORTY
-            bmgr.SubscribeWrIo(0x00FF, 0x00C9, this.WritePortC9);  //write C9h
-            bmgr.SubscribeWrIo(0x00FF, 0x00E9, this.WritePortE9);  //write E9h
-            bmgr.SubscribeRdIo(0x00ff, 0x0089, this.ReadPort89);  //read PORTY
-            bmgr.SubscribeRdIo(0x00ff, 0x00E9, this.ReadPortE9);  //read E9h
-            bmgr.SubscribeRdIo(0x00ff, 0x00C9, this.ReadPortC9);  //read C9h
+            bmgr.Events.SubscribeWrIo(0x0000, 0x0000, this.WriteIoDcp);  //write to DCP Port
+            bmgr.Events.SubscribeRdIo(0x0000, 0x0000, this.ReadIoDcp);    //read from DCP port
+            bmgr.Events.SubscribeWrIo(0x00ff, 0x0082, this.WritePort82);  //write PAGE0
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x0082, this.ReadPort82);    //read PAGE0
+            bmgr.Events.SubscribeWrIo(0x00ff, 0x00A2, this.WritePortA2);  //write PAGE1
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x00A2, this.ReadPortA2);    //read PAGE1
+            bmgr.Events.SubscribeWrIo(0x00ff, 0x00C2, this.WritePortC2);  //write PAGE2
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x00C2, this.ReadPortC2);    //read PAGE2
+            bmgr.Events.SubscribeWrIo(0x00ff, 0x00E2, this.WritePortE2);  //write PAGE3
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x00E2, this.ReadPortE2);    //read PAGE3
+            bmgr.Events.SubscribeWrIo(0xd027, 0x5025, this.WritePort7FFD);    //write 7FFDh
+            bmgr.Events.SubscribeWrIo(0xd027, 0x1025, this.WritePort1FFD);  //write 1FFDh
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x00fb, this.ReadPortFB);  //read FBh  Open Cash
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x007b, this.ReadPort7B);  //read 7Bh  Close Cash
+            bmgr.Events.SubscribeWrIo(0x00BD, 0x003c, this.WritePort7C);  //write 7Ch
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x0089, this.WritePort89);  //write PORTY
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x00C9, this.WritePortC9);  //write C9h
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x00E9, this.WritePortE9);  //write E9h
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x0089, this.ReadPort89);  //read PORTY
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x00E9, this.ReadPortE9);  //read E9h
+            bmgr.Events.SubscribeRdIo(0x00ff, 0x00C9, this.ReadPortC9);  //read C9h
             
             // fix call overhead (methods marked with new)
-            bmgr.SubscribeWrMem(0xC000, 0x0000, this.WriteMem0000);  //write 
-            bmgr.SubscribeWrMem(0xC000, 0x4000, this.WriteMem4000);  //write 
-            bmgr.SubscribeWrMem(0xC000, 0x8000, this.WriteMem8000);  //write 
-            bmgr.SubscribeWrMem(0xC000, 0xC000, this.WriteMemC000);  //write
-            bmgr.SubscribeRdMem(0xC000, 0x0000, this.ReadMem0000);  //read
-            bmgr.SubscribeRdMem(0xC000, 0x8000, this.ReadMem8000);  //read
-            bmgr.SubscribeRdMem(0xC000, 0xC000, this.ReadMemC000);  //read
-            bmgr.SubscribeRdMem(0xC000, 0x4000, this.ReadMem4000);  //read
-            
-            bmgr.SubscribeRdIo(0xFFFF, 0, this.ReadPort00);  //read 0
-            bmgr.SubscribeRdMemM1(0x0000, 0x0000, this.Accelerator);
-            bmgr.SubscribeRdMem(0x0000, 0x0000, this.AccelRead);
-            bmgr.SubscribeWrMem(0x0000, 0x0000, this.AccelWrite);
+            bmgr.Events.SubscribeWrMem(0xC000, 0x0000, this.WriteMem0000);  //write 
+            bmgr.Events.SubscribeWrMem(0xC000, 0x4000, this.WriteMem4000);  //write 
+            bmgr.Events.SubscribeWrMem(0xC000, 0x8000, this.WriteMem8000);  //write 
+            bmgr.Events.SubscribeWrMem(0xC000, 0xC000, this.WriteMemC000);  //write
+            bmgr.Events.SubscribeRdMem(0xC000, 0x0000, this.ReadMem0000);  //read
+            bmgr.Events.SubscribeRdMem(0xC000, 0x8000, this.ReadMem8000);  //read
+            bmgr.Events.SubscribeRdMem(0xC000, 0xC000, this.ReadMemC000);  //read
+            bmgr.Events.SubscribeRdMem(0xC000, 0x4000, this.ReadMem4000);  //read
+
+            bmgr.Events.SubscribeRdIo(0xFFFF, 0, this.ReadPort00);  //read 0
+            bmgr.Events.SubscribeRdMemM1(0x0000, 0x0000, this.Accelerator);
+            bmgr.Events.SubscribeRdMem(0x0000, 0x0000, this.AccelRead);
+            bmgr.Events.SubscribeWrMem(0x0000, 0x0000, this.AccelWrite);
 
 #if Debug
-            bmgr.SubscribeRdMemM1(0x0000, 0x0000, this.readRamM1);  //read operator from memory
+            bmgr.Events.SubscribeRdMemM1(0x0000, 0x0000, this.readRamM1);  //read operator from memory
 #endif
-            bmgr.SubscribeReset(ResetBus);
+            bmgr.Events.SubscribeReset(ResetBus);
         }
 
         protected override void UpdateMapping()

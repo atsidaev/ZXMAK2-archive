@@ -19,19 +19,19 @@ namespace ZXMAK2.Hardware.Evo
 
         protected override void OnSubscribeIo(IBusManager bmgr)
         {
-            bmgr.SubscribeWrIo(0x009F, 0x001F, BusWriteFdc);
-            bmgr.SubscribeRdIo(0x009F, 0x001F, BusReadFdc);
-            bmgr.SubscribeWrIo(0x00FF, 0x00FF, BusWriteSys);
-            bmgr.SubscribeRdIo(0x00FF, 0x00FF, BusReadSys);
+            bmgr.Events.SubscribeWrIo(0x009F, 0x001F, BusWriteFdc);
+            bmgr.Events.SubscribeRdIo(0x009F, 0x001F, BusReadFdc);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x00FF, BusWriteSys);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x00FF, BusReadSys);
 
-            bmgr.SubscribeWrIo(0x00FF, 0x002F, WritePortEmu);
-            bmgr.SubscribeWrIo(0x00FF, 0x004F, WritePortEmu);
-            bmgr.SubscribeWrIo(0x00FF, 0x006F, WritePortEmu);
-            bmgr.SubscribeWrIo(0x00FF, 0x008F, WritePortEmu);
-            bmgr.SubscribeRdIo(0x00FF, 0x002F, ReadPortEmu);
-            bmgr.SubscribeRdIo(0x00FF, 0x004F, ReadPortEmu);
-            bmgr.SubscribeRdIo(0x00FF, 0x006F, ReadPortEmu);
-            bmgr.SubscribeRdIo(0x00FF, 0x008F, ReadPortEmu);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x002F, WritePortEmu);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x004F, WritePortEmu);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x006F, WritePortEmu);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x008F, WritePortEmu);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x002F, ReadPortEmu);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x004F, ReadPortEmu);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x006F, ReadPortEmu);
+            bmgr.Events.SubscribeRdIo(0x00FF, 0x008F, ReadPortEmu);
         }
 
         protected virtual void WritePortEmu(ushort addr, byte val, ref bool handled)

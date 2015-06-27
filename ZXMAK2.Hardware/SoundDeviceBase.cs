@@ -63,8 +63,8 @@ namespace ZXMAK2.Hardware
             m_cpu = bmgr.CPU;
             var ula = bmgr.FindDevice<IUlaDevice>();
             m_frameTactCount = ula != null ? ula.FrameTactCount : 71680;
-            bmgr.SubscribeBeginFrame(BeginFrame);
-            bmgr.SubscribeEndFrame(EndFrame);
+            bmgr.Events.SubscribeBeginFrame(BeginFrame);
+            bmgr.Events.SubscribeEndFrame(EndFrame);
             ApplyTimings(m_frameTactCount * 50, SampleRate);
             OnVolumeChanged(m_volume, m_volume);
         }

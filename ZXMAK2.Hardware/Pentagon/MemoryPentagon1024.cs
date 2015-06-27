@@ -29,16 +29,16 @@ namespace ZXMAK2.Hardware.Pentagon
 
         public override void BusInit(IBusManager bmgr)
         {
-            bmgr.SubscribeWrIo(0xC002, 0x4000, writePort7FFD);
-            bmgr.SubscribeWrIo(0xF008, 0xE000, writePortEFF7);
+            bmgr.Events.SubscribeWrIo(0xC002, 0x4000, writePort7FFD);
+            bmgr.Events.SubscribeWrIo(0xF008, 0xE000, writePortEFF7);
 
-            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
-            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
-            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
-            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
-            bmgr.SubscribeNmiRq(BusNmiRq);
-            bmgr.SubscribeNmiAck(BusNmiAck);
-            bmgr.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
+            bmgr.Events.SubscribeNmiRq(BusNmiRq);
+            bmgr.Events.SubscribeNmiAck(BusNmiAck);
+            bmgr.Events.SubscribeReset(BusReset);
 
             // Subscribe before MemoryBase.BusInit 
             // to handle memory switches before read

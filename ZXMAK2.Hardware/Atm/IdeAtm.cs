@@ -45,14 +45,14 @@ namespace ZXMAK2.Hardware.Atm
             m_ideFileName = bmgr.GetSatelliteFileName("vmide");
 
             bmgr.RegisterIcon(m_iconHdd);
-            bmgr.SubscribeBeginFrame(BusBeginFrame);
-            bmgr.SubscribeEndFrame(BusEndFrame);
+            bmgr.Events.SubscribeBeginFrame(BusBeginFrame);
+            bmgr.Events.SubscribeEndFrame(BusEndFrame);
 
-            bmgr.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeReset(BusReset);
 
             const int mask = 0x001F;
-            bmgr.SubscribeRdIo(mask, 0xEF & mask, ReadIde);
-            bmgr.SubscribeWrIo(mask, 0xEF & mask, WriteIde);
+            bmgr.Events.SubscribeRdIo(mask, 0xEF & mask, ReadIde);
+            bmgr.Events.SubscribeWrIo(mask, 0xEF & mask, WriteIde);
         }
 
         public override void BusConnect()

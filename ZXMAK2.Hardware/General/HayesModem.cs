@@ -65,13 +65,13 @@ namespace ZXMAK2.Hardware.General
         {
             m_bmgr = bmgr;
 
-            bmgr.SubscribeWrIo(0xFFFF, 0xF8EF, writeREG_IO);
-            bmgr.SubscribeRdIo(0xFFFF, 0xF8EF, readREG_IO);
-            bmgr.SubscribeWrIo(0xFFFF, 0xF8EF + 0x100, writeREG_IRQ_ENABLE);
-            bmgr.SubscribeWrIo(0xFFFF, 0xF8EF + 0x300, writeREG_LINE_CTRL);
-            bmgr.SubscribeWrIo(0xFFFF, 0xF8EF + 0x400, writeREG_MDM_CTRL);
-            bmgr.SubscribeRdIo(0xFFFF, 0xF8EF + 0x500, readREG_LINE_STATUS);
-            bmgr.SubscribeRdIo(0xFFFF, 0xF8EF + 0x600, readREG_MDM_STATUS);
+            bmgr.Events.SubscribeWrIo(0xFFFF, 0xF8EF, writeREG_IO);
+            bmgr.Events.SubscribeRdIo(0xFFFF, 0xF8EF, readREG_IO);
+            bmgr.Events.SubscribeWrIo(0xFFFF, 0xF8EF + 0x100, writeREG_IRQ_ENABLE);
+            bmgr.Events.SubscribeWrIo(0xFFFF, 0xF8EF + 0x300, writeREG_LINE_CTRL);
+            bmgr.Events.SubscribeWrIo(0xFFFF, 0xF8EF + 0x400, writeREG_MDM_CTRL);
+            bmgr.Events.SubscribeRdIo(0xFFFF, 0xF8EF + 0x500, readREG_LINE_STATUS);
+            bmgr.Events.SubscribeRdIo(0xFFFF, 0xF8EF + 0x600, readREG_MDM_STATUS);
         }
 
         public override void BusConnect()

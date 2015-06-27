@@ -18,14 +18,14 @@ namespace ZXMAK2.Hardware.General
         {
             base.BusInit(bmgr);
 
-            bmgr.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
-            bmgr.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRam);
-            bmgr.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRam);
-            bmgr.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRam);
+            bmgr.Events.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRam);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRam);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRam);
 
-            bmgr.SubscribeReset(BusReset);
-            bmgr.SubscribeNmiRq(BusNmiRq);
-            bmgr.SubscribeNmiAck(BusNmiAck);
+            bmgr.Events.SubscribeReset(BusReset);
+            bmgr.Events.SubscribeNmiRq(BusNmiRq);
+            bmgr.Events.SubscribeNmiAck(BusNmiAck);
         }
 
         #endregion

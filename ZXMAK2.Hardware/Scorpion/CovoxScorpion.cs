@@ -19,7 +19,7 @@ namespace ZXMAK2.Hardware.Scorpion
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeWrIo(0x00FF, 0x00DD, WritePort);
+            bmgr.Events.SubscribeWrIo(0x00FF, 0x00DD, WritePort);
         }
 
         #endregion

@@ -29,10 +29,10 @@ namespace ZXMAK2.Hardware.ZXBYTE
         public override void BusInit(IBusManager bmgr)
         {
             base.BusInit(bmgr);
-            bmgr.SubscribeRdMem(0xC000, 0x4000, ReadMem4000);
-            bmgr.SubscribeRdMemM1(0xC000, 0x4000, ReadMem4000);
-            bmgr.SubscribeRdNoMreq(0xC000, 0x4000, NoMreq4000);
-            bmgr.SubscribeWrNoMreq(0xC000, 0x4000, NoMreq4000);
+            bmgr.Events.SubscribeRdMem(0xC000, 0x4000, ReadMem4000);
+            bmgr.Events.SubscribeRdMemM1(0xC000, 0x4000, ReadMem4000);
+            bmgr.Events.SubscribeRdNoMreq(0xC000, 0x4000, NoMreq4000);
+            bmgr.Events.SubscribeWrNoMreq(0xC000, 0x4000, NoMreq4000);
         }
 
         #endregion

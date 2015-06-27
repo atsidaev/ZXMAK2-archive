@@ -29,9 +29,9 @@ namespace ZXMAK2.Hardware.General
         public override void BusInit(IBusManager bmgr)
         {
             m_isSandBox = bmgr.IsSandbox;
-            bmgr.SubscribeRdIo(0xF008, 0xB000, BusReadData);   // DATA IN
-            bmgr.SubscribeWrIo(0xF008, 0xB000, BusWriteData);  // DATA OUT
-            bmgr.SubscribeWrIo(0xF008, 0xD000, BusWriteAddr);  // REG
+            bmgr.Events.SubscribeRdIo(0xF008, 0xB000, BusReadData);   // DATA IN
+            bmgr.Events.SubscribeWrIo(0xF008, 0xB000, BusWriteData);  // DATA OUT
+            bmgr.Events.SubscribeWrIo(0xF008, 0xD000, BusWriteAddr);  // REG
 
             m_fileName = bmgr.GetSatelliteFileName("cmos");
         }
