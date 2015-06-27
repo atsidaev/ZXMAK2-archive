@@ -91,7 +91,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             WRMEM(regs.SP, (byte)(val >> 8)); Tact += 3;
             regs.SP--;
 
-            WRMEM(regs.SP, (byte)(val & 0xFF)); Tact += 3;
+            WRMEM(regs.SP, (byte)val); Tact += 3;
         }
 
         private void FX_POPIX(byte cmd)        // POP IX
@@ -125,9 +125,9 @@ namespace ZXMAK2.Engine.Cpu.Processor
         {
             byte val;
             if (FX == CpuModeIndex.Ix)
-                val = (byte)(regs.IX & 0xFF);
+                val = (byte)regs.IX;
             else
-                val = (byte)(regs.IY & 0xFF);
+                val = (byte)regs.IY;
             _alualg[(cmd & 0x38) >> 3](val);
         }
 

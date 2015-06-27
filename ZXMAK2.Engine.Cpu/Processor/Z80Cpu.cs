@@ -268,7 +268,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 regs.SP--;
 
                 // M3
-                WRMEM(regs.SP, (byte)(regs.PC & 0xFF));
+                WRMEM(regs.SP, (byte)regs.PC);
                 regs.PC = 0x0066;
                 Tact += 3;
 
@@ -307,7 +307,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 Tact += 3;
 
                 // M3
-                WRMEM(regs.SP, (byte)(regs.PC & 0xFF)); // M3: 3T write PCL
+                WRMEM(regs.SP, (byte)regs.PC); // M3: 3T write PCL
                 Tact += 3;
 
                 if (IM == 0)        // IM 0: execute instruction taken from BUS with timing T+2???

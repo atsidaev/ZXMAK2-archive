@@ -98,8 +98,8 @@ namespace ZXMAK2.Engine.Cpu.Processor
             uint res = (uint)((rhl & 0xFFFF) + (rde & 0xFFFF));
 
             if ((res & 0x10000) != 0) regs.F |= CpuFlags.C;
-            regs.F |= (byte)((byte)((res >> 8) & 0xFF) & CpuFlags.F3F5);
-            return (ushort)(res & 0xFFFF);
+            regs.F |= (byte)((res >> 8) & CpuFlags.F3F5);
+            return (ushort)res;
         }
 
         #endregion
@@ -110,7 +110,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
         {
             regs.F = CpuTables.Rlcf[x];
             x <<= 1;
-            if ((x & 0x100) != 0) x = (x | 0x01) & 0xFF;
+            if ((x & 0x100) != 0) x |= 0x01;
             return (byte)x;
         }
         
@@ -135,7 +135,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 regs.F = CpuTables.Rl0[x];
                 x <<= 1;
             }
-            return (byte)(x & 0xFF);
+            return (byte)x;
         }
         
         private byte ALU_RR(int x)
@@ -151,7 +151,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
                 regs.F = CpuTables.Rr0[x];
                 x >>= 1;
             }
-            return (byte)(x & 0xFF);
+            return (byte)x;
         }
         
         private byte ALU_SLA(int x)
@@ -173,7 +173,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             regs.F = CpuTables.Rl1[x];
             x <<= 1;
             x++;
-            return (byte)(x & 0xFF);
+            return (byte)x;
         }
         
         private byte ALU_SRL(int x)

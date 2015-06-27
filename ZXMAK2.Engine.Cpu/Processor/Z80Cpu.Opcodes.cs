@@ -133,7 +133,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             regs.F = (byte)(CpuTables.Rlcaf[regs.A] | (regs.F & CpuFlags.SZP));
             int x = regs.A;
             x <<= 1;
-            if ((x & 0x100) != 0) x = (x | 0x01) & 0xFF;
+            if ((x & 0x100) != 0) x |= 0x01;
             regs.A = (byte)x;
         }
 
@@ -150,8 +150,8 @@ namespace ZXMAK2.Engine.Cpu.Processor
         {
             var carry = (regs.F & CpuFlags.C) != 0;
             regs.F = (byte)(CpuTables.Rlcaf[regs.A] | (regs.F & CpuFlags.SZP)); // use same table with rlca
-            regs.A = (byte)((regs.A << 1) & 0xFF);
-            if (carry) regs.A |= (byte)0x01;
+            regs.A = (byte)(regs.A << 1);
+            if (carry) regs.A |= 0x01;
         }
 
         private void RRA(byte cmd)
@@ -159,7 +159,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             var carry = (regs.F & CpuFlags.C) != 0;
             regs.F = (byte)(CpuTables.Rrcaf[regs.A] | (regs.F & CpuFlags.SZP)); // use same table with rrca
             regs.A = (byte)(regs.A >> 1);
-            if (carry) regs.A |= (byte)0x80;
+            if (carry) regs.A |= 0x80;
         }
 
         private void DAA(byte cmd)
@@ -169,7 +169,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
 
         private void CPL(byte cmd)
         {
-            regs.A ^= (byte)0xFF;
+            regs.A = (byte)~regs.A;
             regs.F = (byte)((regs.F & CpuFlags.NotF3F5) | CpuFlags.HN | (regs.A & CpuFlags.F3F5));
         }
 
@@ -278,7 +278,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             WRMEM(regs.SP, (byte)(regs.PC >> 8)); Tact += 3;
             regs.SP--;
 
-            WRMEM(regs.SP, (byte)(regs.PC & 0xFF)); Tact += 3;
+            WRMEM(regs.SP, (byte)regs.PC); Tact += 3;
             regs.PC = regs.MW;
         }
 
@@ -408,7 +408,7 @@ namespace ZXMAK2.Engine.Cpu.Processor
             WRMEM(regs.SP, (byte)(val >> 8)); Tact += 3;
 
             regs.SP--;
-            WRMEM(regs.SP, (byte)(val & 0xFF)); Tact += 3;
+            WRMEM(regs.SP, (byte)val); Tact += 3;
         }
 
         private void POPRR(byte cmd)     // POP RR
