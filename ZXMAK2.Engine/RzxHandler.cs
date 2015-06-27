@@ -10,7 +10,6 @@ using ZXMAK2.Engine.Entities;
       public sealed class RzxHandler : IRzxState
       {
           private CpuUnit m_cpu;
-          private BusManager m_busMgr;
 
           public bool IsPlayback;
           public bool IsRecording;
@@ -20,10 +19,9 @@ using ZXMAK2.Engine.Entities;
           private int m_playIndex;
           private IRzxFrameSource m_frameSource;
 
-          public RzxHandler(CpuUnit cpu, BusManager busMgr)
+          public RzxHandler(CpuUnit cpu)
           {
               m_cpu = cpu;
-              m_busMgr = busMgr;
               IsPlayback = false;
               IsRecording = false;
           }

@@ -260,7 +260,7 @@ namespace ZXMAK2.Hardware.General
             detectorRead();
         }
 
-        private void busPreCycle(int frameTact)
+        private void busPreCycle()
         {
             if (!m_isPlay)
                 return;
