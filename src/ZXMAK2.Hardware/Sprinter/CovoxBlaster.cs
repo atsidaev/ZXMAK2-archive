@@ -334,7 +334,7 @@ namespace ZXMAK2.Hardware.Sprinter
             _tick = 50D / _sampleRateHz;
         }
 
-        public void CheckInt(int tact)
+        public void CheckInt()
         {
             // interrupt issue with 0x0F after startup (flashing cursor, etc)
             if (!_isBlaster || _divider <= 1)

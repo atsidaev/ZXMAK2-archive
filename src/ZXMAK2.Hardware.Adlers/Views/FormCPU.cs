@@ -957,7 +957,7 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
         }
 
-        private void Bus_OnBeforeCpuCycle(int frameTact)
+        private void Bus_OnBeforeCpuCycle()
         {
             lock(m_sync)
             {

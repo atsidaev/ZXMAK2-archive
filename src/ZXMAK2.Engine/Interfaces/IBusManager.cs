@@ -19,8 +19,9 @@ namespace ZXMAK2.Engine.Interfaces
         void SubscribeNmiRq(BusRqProc proc);
         void SubscribeNmiAck(Action proc);
 		void SubscribeIntAck(Action proc);
+        void SubscribeScanInt(Action<int> handler);
 
-		void SubscribePreCycle(Action<int> proc);
+		void SubscribePreCycle(Action proc);
 		void SubscribeBeginFrame(Action handler);
 		void SubscribeEndFrame(Action handler);
 
@@ -35,7 +36,7 @@ namespace ZXMAK2.Engine.Interfaces
 
         T FindDevice<T>() where T : class;
 
-		RzxHandler RzxHandler { get; set; }
+		RzxHandler RzxHandler { get; }
 
         void RequestNmi(int timeOut);
 	}

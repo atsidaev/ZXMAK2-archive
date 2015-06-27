@@ -22,24 +22,13 @@ namespace ZXMAK2.Engine
         private bool m_connected = false;
         private bool m_sandBox = false;
         private String m_machineFile = null;
-        private CpuUnit m_cpu;
+        private readonly CpuUnit m_cpu;
         private IUlaDevice m_ula;
         private IDebuggable m_debuggable;
         private List<BusDeviceBase> m_deviceList = new List<BusDeviceBase>();
-        private BusReadProc[] m_mapReadMemoryM1;
-        private BusReadProc[] m_mapReadMemory;
-        private BusReadIoProc[] m_mapReadPort;
-        private BusWriteProc[] m_mapWriteMemory;
-        private BusWriteIoProc[] m_mapWritePort;
-        private Action<ushort>[] m_mapReadNoMreq;
-        private Action<ushort>[] m_mapWriteNoMreq;
-        private Action<int> m_preCycle;
-        private Action m_reset;
-        private BusRqProc m_nmiRq;
-        private Action m_nmiAck;
-        private Action m_intAck;
-        private Action m_beginFrame;
-        private Action m_endFrame;
+        private readonly EventManager m_eventManager;
+        private readonly RzxHandler m_rzx;
+        
         private IIconDescriptor[] m_iconDescList = new IIconDescriptor[0];
         private IconDescriptor m_iconPause = new IconDescriptor(
             "PAUSE",
@@ -51,19 +40,20 @@ namespace ZXMAK2.Engine
         public event EventHandler BusDisconnect;
         public event EventHandler ConfigChanged;
 
-        private int m_pendingNmi;
-        private long m_pendingNmiLastTact;
-
         public CpuUnit Cpu { get { return m_cpu; } }
         public ISerializeManager LoadManager { get; private set; }
         public ICommandManager CommandManager { get; set; }
-        public RzxHandler RzxHandler { get; set; }
         public IIconDescriptor[] IconDescriptorArray { get { return m_iconDescList; } }
         public IconDescriptor IconPause { get { return m_iconPause; } }
         
         public ModelId ModelId { get; set; }
         public string Name { get; set; }
         public int SampleRate { get; set; }
+
+        public RzxHandler RzxHandler 
+        {
+            get { return m_rzx; }
+        }
         
         public IFrameSound SoundFrame 
         { 
@@ -75,17 +65,8 @@ namespace ZXMAK2.Engine
         public BusManager()
         {
             m_cpu = new CpuUnit();
-            m_cpu.RDMEM_M1 = RDMEM_M1;
-            m_cpu.INTACK_M1 = INTACK_M1;
-            m_cpu.NMIACK_M1 = NMIACK_M1;
-            m_cpu.RDMEM = RDMEM;
-            m_cpu.WRMEM = WRMEM;
-            m_cpu.RDPORT = RDPORT;
-            m_cpu.WRPORT = WRPORT;
-            m_cpu.RDNOMREQ = RDNOMREQ;
-            m_cpu.WRNOMREQ = WRNOMREQ;
-            //m_cpu.OnCycle = OnCpuCycle;
-            m_cpu.RESET = RESET;
+            m_rzx = new RzxHandler(m_cpu);
+            m_eventManager = new EventManager(m_cpu, m_rzx);
             SampleRate = 44100;
         }
 
@@ -99,21 +80,9 @@ namespace ZXMAK2.Engine
             {
                 CommandManager.Clear();
             }
-            RzxHandler = new RzxHandler(m_cpu, this);
 
             m_deviceList.Clear();
-            m_mapReadMemoryM1 = null;
-            m_mapReadMemory = null;
-            m_mapReadPort = null;
-            m_mapWriteMemory = null;
-            m_mapWritePort = null;
-            m_reset = null;
-            m_nmiRq = null;
-            m_nmiAck = null;
-            m_intAck = null;
-            m_preCycle = null;
-            m_beginFrame = null;
-            m_endFrame = null;
+            m_eventManager.Clear();
 
             var config = new MachinesConfig();
             config.Load();
@@ -124,86 +93,77 @@ namespace ZXMAK2.Engine
 
         void IBusManager.SubscribeRdMemM1(int addrMask, int maskedValue, BusReadProc proc)
         {
-            for (int addr = 0; addr < 0x10000; addr++)
-                if ((addr & addrMask) == maskedValue)
-                    m_mapReadMemoryM1[addr] += proc;
+            m_eventManager.SubscribeRdMemM1(addrMask, maskedValue, proc);
         }
 
         void IBusManager.SubscribeRdMem(int addrMask, int maskedValue, BusReadProc proc)
         {
-            for (int addr = 0; addr < 0x10000; addr++)
-                if ((addr & addrMask) == maskedValue)
-                    m_mapReadMemory[addr] += proc;
+            m_eventManager.SubscribeRdMem(addrMask, maskedValue, proc);
         }
 
         void IBusManager.SubscribeWrMem(int addrMask, int maskedValue, BusWriteProc proc)
         {
-            for (int addr = 0; addr < 0x10000; addr++)
-                if ((addr & addrMask) == maskedValue)
-                    m_mapWriteMemory[addr] += proc;
+            m_eventManager.SubscribeWrMem(addrMask, maskedValue, proc);
         }
 
         void IBusManager.SubscribeRdIo(int addrMask, int maskedValue, BusReadIoProc proc)
         {
-            for (int addr = 0; addr < 0x10000; addr++)
-                if ((addr & addrMask) == maskedValue)
-                    m_mapReadPort[addr] += proc;
+            m_eventManager.SubscribeRdIo(addrMask, maskedValue, proc);
         }
 
         void IBusManager.SubscribeWrIo(int addrMask, int maskedValue, BusWriteIoProc proc)
         {
-            for (int addr = 0; addr < 0x10000; addr++)
-                if ((addr & addrMask) == maskedValue)
-                    m_mapWritePort[addr] += proc;
+            m_eventManager.SubscribeWrIo(addrMask, maskedValue, proc);
         }
 
         void IBusManager.SubscribeRdNoMreq(int addrMask, int maskedValue, Action<ushort> proc)
         {
-            for (int addr = 0; addr < 0x10000; addr++)
-                if ((addr & addrMask) == maskedValue)
-                    m_mapReadNoMreq[addr] += proc;
+            m_eventManager.SubscribeRdNoMreq(addrMask, maskedValue, proc);
         }
 
         void IBusManager.SubscribeWrNoMreq(int addrMask, int maskedValue, Action<ushort> proc)
         {
-            for (int addr = 0; addr < 0x10000; addr++)
-                if ((addr & addrMask) == maskedValue)
-                    m_mapWriteNoMreq[addr] += proc;
+            m_eventManager.SubscribeWrNoMreq(addrMask, maskedValue, proc);
         }
 
-        void IBusManager.SubscribePreCycle(Action<int> proc)
+        void IBusManager.SubscribePreCycle(Action proc)
         {
-            m_preCycle += proc;
+            m_eventManager.SubscribePreCycle(proc);
         }
 
         void IBusManager.SubscribeReset(Action proc)
         {
-            m_reset += proc;
+            m_eventManager.SubscribeReset(proc);
         }
 
         void IBusManager.SubscribeNmiRq(BusRqProc proc)
         {
-            m_nmiRq += proc;
+            m_eventManager.SubscribeNmiRq(proc);
         }
 
         void IBusManager.SubscribeNmiAck(Action proc)
         {
-            m_nmiAck += proc;
+            m_eventManager.SubscribeNmiAck(proc);
         }
 
         void IBusManager.SubscribeIntAck(Action proc)
         {
-            m_intAck += proc;
+            m_eventManager.SubscribeIntAck(proc);
+        }
+
+        void IBusManager.SubscribeScanInt(Action<int> handler)
+        {
+            m_eventManager.SubscribeScanInt(handler);
         }
 
         void IBusManager.SubscribeBeginFrame(Action handler)
         {
-            m_beginFrame += handler;
+            m_eventManager.SubscribeBeginFrame(handler);
         }
 
         void IBusManager.SubscribeEndFrame(Action handler)
         {
-            m_endFrame += handler;
+            m_eventManager.SubscribeEndFrame(handler);
         }
 
         void IBusManager.AddSerializer(IFormatSerializer serializer)
@@ -274,104 +234,6 @@ namespace ZXMAK2.Engine
 
         #endregion
 
-        #region CPU Handlers
-
-        private byte RDMEM_M1(ushort addr)
-        {
-            BusReadProc proc = m_mapReadMemoryM1[addr];
-            byte result = m_cpu.BUS;
-            if (proc != null)
-                proc(addr, ref result);
-            //LogAgent.Info(
-            //    "{0:D3}-{1:D6}: #{2:X4} = #{3:X2}",
-            //    m_cpu.Tact / m_ula.FrameTactCount,
-            //    m_cpu.Tact % m_ula.FrameTactCount,
-            //    m_cpu.regs.PC,
-            //    result);
-            return result;
-        }
-
-        private byte RDMEM(ushort addr)
-        {
-            BusReadProc proc = m_mapReadMemory[addr];
-            byte result = m_cpu.BUS;
-            if (proc != null)
-                proc(addr, ref result);
-            return result;
-        }
-
-        private void WRMEM(ushort addr, byte value)
-        {
-            BusWriteProc proc = m_mapWriteMemory[addr];
-            if (proc != null)
-                proc(addr, value);
-        }
-
-        private byte RDPORT(ushort addr)
-        {
-            var proc = m_mapReadPort[addr];
-            var result = m_cpu.BUS;
-            if (proc != null)
-            {
-                var handled = false;
-                proc(addr, ref result, ref handled);
-            }
-            if (RzxHandler.IsPlayback)
-            {
-                return RzxHandler.GetInput();
-            }
-            else if (RzxHandler.IsRecording)
-            {
-                RzxHandler.SetInput(result);
-            }
-            return result;
-        }
-
-        private void WRPORT(ushort addr, byte value)
-        {
-            var proc = m_mapWritePort[addr];
-            if (proc != null)
-            {
-                var handled = false;
-                proc(addr, value, ref handled);
-            }
-        }
-
-        private void RDNOMREQ(ushort addr)
-        {
-            var proc = m_mapReadNoMreq[addr];
-            if (proc != null)
-                proc(addr);
-        }
-
-        private void WRNOMREQ(ushort addr)
-        {
-            var proc = m_mapWriteNoMreq[addr];
-            if (proc != null)
-                proc(addr);
-        }
-
-        private void RESET()
-        {
-            m_pendingNmi = 0;
-            RzxHandler.Reset();
-            if (m_reset != null)
-                m_reset();
-        }
-
-        private void INTACK_M1()
-        {
-            if (m_intAck != null)
-                m_intAck();
-        }
-
-        private void NMIACK_M1()
-        {
-            if (m_nmiAck != null)
-                m_nmiAck();
-        }
-
-        #endregion
 
         #region Device Add/Remove
 
@@ -431,21 +293,7 @@ namespace ZXMAK2.Engine
             m_ula = null;
             m_soundFrame = null;
 
-            m_mapReadMemoryM1 = null;
-            m_mapReadMemory = null;
-            m_mapReadPort = null;
-            m_mapWriteMemory = null;
-            m_mapWritePort = null;
-            m_mapReadNoMreq = null;
-            m_mapWriteNoMreq = null;
-            m_preCycle = null;
-            m_reset = null;
-            m_nmiRq = null;
-            m_nmiAck = null;
-            m_intAck = null;
-            m_beginFrame = null;
-            m_endFrame = null;
-
+            m_eventManager.Clear();
             m_deviceList.Clear();
         }
 
@@ -459,20 +307,8 @@ namespace ZXMAK2.Engine
             if (m_ula == null)
                 throw new InvalidOperationException("ULA device is missing!");
             m_connected = true;
-            m_mapReadMemoryM1 = new BusReadProc[0x10000];
-            m_mapReadMemory = new BusReadProc[0x10000];
-            m_mapReadPort = new BusReadIoProc[0x10000];
-            m_mapWriteMemory = new BusWriteProc[0x10000];
-            m_mapWritePort = new BusWriteIoProc[0x10000];
-            m_mapReadNoMreq = new Action<ushort>[0x10000];
-            m_mapWriteNoMreq = new Action<ushort>[0x10000];
-            m_preCycle = null;
-            m_reset = null;
-            m_nmiRq = null;
-            m_nmiAck = null;
-            m_intAck = null;
-            m_beginFrame = null;
-            m_endFrame = null;
+            m_eventManager.Clear();
+
             m_deviceList.Sort(DevicePriorityComparison);
             for (int i = 0; i < m_deviceList.Count; i++)
             {
@@ -567,6 +403,7 @@ namespace ZXMAK2.Engine
                     Logger.Error(ex);
                 }
             }
+            m_eventManager.Clear();
         }
 
         private void OnBusConnected()
@@ -626,11 +463,7 @@ namespace ZXMAK2.Engine
             }
             m_frameOpened = true;
 
-            var beginHandler = m_beginFrame;
-            if (beginHandler != null)
-            {
-                beginHandler();
-            }
+            m_eventManager.BeginFrame();
         }
 
         private void OnEndFrame()
@@ -642,11 +475,7 @@ namespace ZXMAK2.Engine
             }
             m_frameOpened = false;
 
-            var endHandler = m_endFrame;
-            if (endHandler != null)
-            {
-                endHandler();
-            }
+            m_eventManager.EndFrame();
             var soundFrame = m_soundFrame;
             if (soundFrame != null)
             {
@@ -671,34 +500,10 @@ namespace ZXMAK2.Engine
             }
             m_lastFrameTact = frameTact;
 
-            m_cpu.INT = RzxHandler.IsPlayback ?
-                RzxHandler.CheckInt(frameTact) :
+            m_cpu.INT = m_rzx.IsPlayback ?
+                m_rzx.CheckInt(frameTact) :
                 m_ula.CheckInt(frameTact);
-            if (m_pendingNmi > 0)
-            {
-                var delta = (int)(m_cpu.Tact - m_pendingNmiLastTact);
-                m_pendingNmiLastTact = m_cpu.Tact;
-                m_pendingNmi -= delta;
-                var e = new BusCancelArgs();
-                if (m_nmiRq != null)
-                {
-                    m_nmiRq(e);
-                }
-                if (!e.Cancel)
-                {
-                    m_cpu.NMI = true;
-                    m_pendingNmi = 0;
-                }
-            }
-            else
-            {
-                m_cpu.NMI = false;
-            }
-
-            if (m_preCycle != null)
-            {
-                m_preCycle(frameTact);
-            }
+            m_eventManager.PreCycle();
             m_cpu.ExecCycle();
         }
 
@@ -936,8 +741,9 @@ namespace ZXMAK2.Engine
 
         public void RequestNmi(int timeOut)
         {
-            m_pendingNmiLastTact = m_cpu.Tact;
-            m_pendingNmi = timeOut;
+            m_eventManager.RequestNmi(timeOut);
+            //m_pendingNmiLastTact = m_cpu.Tact;
+            //m_pendingNmi = timeOut;
         }
     }
 }
