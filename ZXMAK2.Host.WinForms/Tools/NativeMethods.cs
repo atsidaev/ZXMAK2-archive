@@ -29,6 +29,8 @@ namespace ZXMAK2.Host.WinForms.Tools
     [SuppressUnmanagedCodeSecurity]
     internal static class NativeMethods
     {
+        public static bool IsWinApiNotAvailable { get; private set; }
+        
         #region P/Invoke
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -96,6 +98,10 @@ namespace ZXMAK2.Host.WinForms.Tools
 
         public static uint TimeBeginPeriod(uint uPeriod)
         {
+            if (IsWinApiNotAvailable)
+            {
+                return TIMERR_NOCANDO;
+            }
             try
             {
                 var result = timeBeginPeriod(uPeriod);
@@ -105,15 +111,24 @@ namespace ZXMAK2.Host.WinForms.Tools
                 }
                 return result;
             }
+            catch (EntryPointNotFoundException ex)
+            {
+                Logger.Warn(ex);
+                IsWinApiNotAvailable = true;
+            }
             catch (Exception ex)
             {
                 Logger.Debug("{0}: {1}", ex.GetType().Name, ex.Message);
             }
-            return 0xFFFFFFFF;
+            return TIMERR_NOCANDO;
         }
 
         public static uint TimeEndPeriod(uint uPeriod)
         {
+            if (IsWinApiNotAvailable)
+            {
+                return TIMERR_NOCANDO;
+            }
             try
             {
                 var result = timeEndPeriod(uPeriod);
@@ -122,11 +137,16 @@ namespace ZXMAK2.Host.WinForms.Tools
                     Logger.Debug("timeEndPeriod({0}): error {1}", uPeriod, result);
                 }
             }
+            catch (EntryPointNotFoundException ex)
+            {
+                Logger.Warn(ex);
+                IsWinApiNotAvailable = true;
+            }
             catch (Exception ex)
             {
                 Logger.Debug("{0}: {1}", ex.GetType().Name, ex.Message);
             }
-            return 0xFFFFFFFF;
+            return TIMERR_NOCANDO;
         }
 
         public static Rectangle GetWindowRect(IntPtr hWnd)
