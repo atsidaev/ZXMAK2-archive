@@ -17,6 +17,10 @@ namespace ZXMAK2.Hardware.WinForms.General
         {
             _target = target;
             _synchronizeInvoke = synchronizeInvoke;
+            CommandClose = new CommandDelegate(
+                CommandClose_OnExecute,
+                CommandClose_OnCanExecute,
+                "Close");
             CommandContinue = new CommandDelegate(
                 CommandContinue_OnExecute, 
                 CommandContinue_OnCanExecute, 
@@ -32,19 +36,14 @@ namespace ZXMAK2.Hardware.WinForms.General
             CommandStepOver = new CommandDelegate(
                 CommandStepOver_OnExecute,
                 CommandStepOver_OnCanExecute,
-                "Step Into");
+                "Step Over");
             CommandStepOut = new CommandDelegate(
                 () => { },
                 () => false,
                 "Step Out");
         }
 
-        public ICommand CommandContinue;
-        public ICommand CommandBreak;
-        public ICommand CommandStepInto;
-        public ICommand CommandStepOver;
-        public ICommand CommandStepOut;
-
+        public event EventHandler CloseRequest;
 
         public void Attach()
         {
@@ -56,12 +55,52 @@ namespace ZXMAK2.Hardware.WinForms.General
             _target.UpdateState -= Target_OnUpdateState;
         }
 
+        public void Close()
+        {
+            var handler = CloseRequest;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+
+        #region Properties
+
+        public ICommand CommandClose { get; private set; }
+        public ICommand CommandContinue { get; private set; }
+        public ICommand CommandBreak { get; private set; }
+        public ICommand CommandStepInto { get; private set; }
+        public ICommand CommandStepOver { get; private set; }
+        public ICommand CommandStepOut { get; private set; }
+
+        public bool IsRunning
+        {
+            get { return _target == null || _target.IsRunning; }
+        }
+
+        #endregion Properties
+
 
         #region Commands
 
+        private bool CommandClose_OnCanExecute()
+        {
+            return true;
+        }
+
+        private void CommandClose_OnExecute()
+        {
+            if (!CommandClose_OnCanExecute())
+            {
+                return;
+            }
+            Close();
+        }
+
         private bool CommandContinue_OnCanExecute()
         {
-            return _target != null && !_target.IsRunning;
+            return _target != null && !IsRunning;
         }
 
         private void CommandContinue_OnExecute()
@@ -75,7 +114,7 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         private bool CommandBreak_OnCanExecute()
         {
-            return _target != null && _target.IsRunning;
+            return _target != null && IsRunning;
         }
 
         private void CommandBreak_OnExecute()
@@ -89,7 +128,7 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         private bool CommandStepInto_OnCanExecute()
         {
-            return _target != null && !_target.IsRunning;
+            return _target != null && !IsRunning;
         }
 
         private void CommandStepInto_OnExecute()
@@ -103,7 +142,7 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         private bool CommandStepOver_OnCanExecute()
         {
-            return _target != null && !_target.IsRunning;
+            return _target != null && !IsRunning;
         }
 
         private void CommandStepOver_OnExecute()
@@ -117,6 +156,8 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         #endregion Commands
 
+
+        #region Private
 
         private void Target_OnUpdateState(object sender, EventArgs e)
         {
@@ -132,11 +173,15 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         private void Target_OnUpdateStateSynchronized()
         {
+            OnPropertyChanged("IsRunning");
+            CommandClose.Update();
             CommandContinue.Update();
             CommandBreak.Update();
             CommandStepInto.Update();
             CommandStepOver.Update();
             CommandStepOut.Update();
         }
+
+        #endregion Private
     }
 }
