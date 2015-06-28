@@ -101,7 +101,7 @@ namespace ZXMAK2.Host.WinForms.Tools
                 var result = timeBeginPeriod(uPeriod);
                 if (result != TIMERR_NOERROR)
                 {
-                    Logger.Debug("timeBeginPeriod({0}): error {1}", result);
+                    Logger.Debug("timeBeginPeriod({0}): error {1}", uPeriod, result);
                 }
                 return result;
             }
@@ -119,7 +119,7 @@ namespace ZXMAK2.Host.WinForms.Tools
                 var result = timeEndPeriod(uPeriod);
                 if (result != TIMERR_NOERROR)
                 {
-                    Logger.Debug("timeBeginPeriod({0}): error {1}", result);
+                    Logger.Debug("timeEndPeriod({0}): error {1}", uPeriod, result);
                 }
             }
             catch (Exception ex)
