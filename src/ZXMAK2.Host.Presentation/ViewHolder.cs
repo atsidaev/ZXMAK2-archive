@@ -78,6 +78,10 @@ namespace ZXMAK2.Host.Presentation
                 {
                     e.Cancel = true;
                     m_view.Hide();
+                    if (m_hostView!=null)
+                    {
+                        m_hostView.Activate();
+                    }
                 }
             };
         }
