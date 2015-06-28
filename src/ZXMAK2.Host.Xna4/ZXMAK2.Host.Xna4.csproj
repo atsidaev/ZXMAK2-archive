@@ -102,9 +102,9 @@
       <Name>ZXMAK2.Logging</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\ZXMAK2.Presentation\ZXMAK2.Presentation.csproj">
-      <Project>{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}</Project>
-      <Name>ZXMAK2.Presentation</Name>
+    <ProjectReference Include="..\ZXMAK2.Mvvm\ZXMAK2.Mvvm.csproj">
+      <Project>{99a1b2f4-b132-4eb3-9e56-10db22af6e6b}</Project>
+      <Name>ZXMAK2.Mvvm</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

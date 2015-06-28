@@ -8,9 +8,9 @@ using System.Diagnostics;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
-using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
+using ZXMAK2.Mvvm;
 
 
 

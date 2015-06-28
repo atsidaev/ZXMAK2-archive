@@ -1,7 +1,7 @@
 ﻿using System;
 using ZXMAK2.Engine.Cpu;
 using ZXMAK2.Host.Interfaces;
-using ZXMAK2.Presentation.Interfaces;
+using ZXMAK2.Mvvm;
 
 
 namespace ZXMAK2.Engine.Interfaces

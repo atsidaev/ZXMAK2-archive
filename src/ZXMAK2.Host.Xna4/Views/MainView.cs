@@ -7,13 +7,14 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using ZXMAK2.Engine;
+using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Host.Xna4.Properties;
 using ZXMAK2.Host.Xna4.Xna;
 using ZXMAK2.Host.Interfaces;
-using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Services;
+using ZXMAK2.Mvvm;
 
 
 namespace ZXMAK2.Host.Xna4.Views

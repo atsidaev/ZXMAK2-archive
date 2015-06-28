@@ -1,9 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using ZXMAK2.Dependency;
-using ZXMAK2.Presentation.Interfaces;
-using ZXMAK2.Presentation.Entities;
 using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.Mvvm;
 
 
 namespace ZXMAK2.Host.Presentation

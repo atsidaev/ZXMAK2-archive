@@ -1,5 +1,5 @@
 ﻿using System;
-using ZXMAK2.Presentation.Interfaces;
+using ZXMAK2.Mvvm;
 
 
 namespace ZXMAK2.Host.Presentation.Interfaces
