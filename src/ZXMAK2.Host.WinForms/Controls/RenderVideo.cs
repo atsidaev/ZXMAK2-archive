@@ -22,6 +22,7 @@ namespace ZXMAK2.Host.WinForms.Controls
         private readonly FrameResampler _frameResampler = new FrameResampler(50);
         private readonly AutoResetEvent _frameEvent = new AutoResetEvent(false);
         private readonly AutoResetEvent _cancelEvent = new AutoResetEvent(false);
+        private Bitmap _slowSurface;
 
         #region .ctor
 
@@ -185,6 +186,85 @@ namespace ZXMAK2.Host.WinForms.Controls
                 (int)(frame.Size.Height * frame.Ratio + 0.5F));
             _videoLayer.Update(frame);
             _iconLayer.Update(info.Icons);
+            
+            // slow GDI rendering...
+            if (!_allocator.IsRendering)
+            {
+                UpdateGdi(frame);
+            }
+        }
+
+        private readonly object _slowRenderSync = new object();
+
+        private void UpdateGdi(IFrameVideo frame)
+        {
+            lock (_slowRenderSync)
+            {
+                if (_slowSurface == null || _slowSurface.Size != frame.Size)
+                {
+                    if (_slowSurface != null)
+                    {
+                        _slowSurface.Dispose();
+                        _slowSurface = null;
+                    }
+                    _slowSurface = new Bitmap(frame.Size.Width, frame.Size.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                }
+                //var im = new Bitmap(columns, rows, stride,
+                //                            PixelFormat.Format8bppIndexed,
+                //                            Marshal.UnsafeAddrOfPinnedArrayElement(newbytes, 0));
+                var data = _slowSurface.LockBits(
+                    new Rectangle(0, 0, frame.Size.Width, frame.Size.Height),
+                    System.Drawing.Imaging.ImageLockMode.WriteOnly,
+                    System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                try
+                {
+                    unsafe
+                    {
+                        var stride = data.Stride;
+                        int* pDst = (int*)data.Scan0;
+                        fixed (int* pSrc = frame.Buffer)
+                        {
+                            for (var y = 0; y < frame.Size.Height; y++)
+                            {
+                                var offsetSrc = y * frame.Size.Width;
+                                var offsetDst = y * frame.Size.Width;
+                                for (var x = 0; x < frame.Size.Width; x++)
+                                {
+                                    pDst[offsetDst + x] = pSrc[offsetSrc + x];
+                                }
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    _slowSurface.UnlockBits(data);
+                }
+            }
+            Invalidate();
+        }
+
+        private void RenderGdi(Graphics g, Rectangle rect)
+        {
+            lock (_slowRenderSync)
+            {
+                if (_slowSurface != null)
+                {
+                    g.InterpolationMode = AntiAlias ? System.Drawing.Drawing2D.InterpolationMode.Bilinear : System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    
+                    var drawRect = Rectangle.Round(ScaleHelper.GetDestinationRect(ScaleMode, rect.Size, _slowSurface.Size));
+                    drawRect = new Rectangle(
+                        drawRect.Left + rect.Left, 
+                        drawRect.Top + rect.Top, 
+                        drawRect.Width, 
+                        drawRect.Height);
+                    g.DrawImage(_slowSurface, drawRect);
+                    
+                    var region = new Region(rect);
+                    region.Exclude(drawRect);
+                    g.FillRegion(Brushes.Black, region);
+                }
+            }
         }
 
         #endregion IHostVideo
@@ -195,25 +275,40 @@ namespace ZXMAK2.Host.WinForms.Controls
             {
                 return;
             }
-            e.Graphics.FillRectangle(Brushes.Black, e.ClipRectangle);
-            e.Graphics.DrawImage(SystemIcons.Warning.ToBitmap(), new Point(20, 20));
-            using (var font = new System.Drawing.Font(Font.FontFamily, 20))
+            var padding = 5;
+            var textHeight = 0;
+            using (var font = new System.Drawing.Font(Font.FontFamily, 10))
             {
                 var iconWidth = SystemIcons.Warning.Width;
-                var width = ClientSize.Width - (20 + iconWidth + 20);
-                var height = ClientSize.Height - 20;
-                width = width < 20 ? 20 : width;
-                height = height < 20 ? 20 : height;
+                var iconHeight = SystemIcons.Warning.Height;
+                var width = ClientSize.Width - (padding + iconWidth + padding);
+                var height = ClientSize.Height - (padding + padding);
+                width = width < padding ? padding : width;
+                height = height < padding ? padding : height;
+                var text = _allocator.ErrorMessage ?? "Loading...";
+                var size = e.Graphics.MeasureString(
+                    text,
+                    font,
+                    width);
+                textHeight = (int)(size.Height + 0.5F);
+                textHeight = textHeight < iconHeight ? iconHeight : textHeight;
+                textHeight += padding * 2;
+                var fillRect = new Rectangle(0, 0, ClientSize.Width, textHeight);
+                var textRect = new Rectangle(
+                    padding + iconWidth + padding,
+                    padding, 
+                    width, 
+                    textHeight);
+                e.Graphics.FillRectangle(Brushes.Black, fillRect);
+                e.Graphics.DrawImage(SystemIcons.Warning.ToBitmap(), new Point(padding, padding));
                 e.Graphics.DrawString(
-                    _allocator.ErrorMessage ?? "Loading...",
+                    text,
                     font,
                     Brushes.White,
-                    new RectangleF(
-                        20 + iconWidth + 20, 
-                        20,
-                        width,
-                        height));
+                    textRect);
             }
+            var spaceRect = new Rectangle(new Point(0, textHeight), new Size(ClientSize.Width, ClientSize.Height-textHeight));
+            RenderGdi(e.Graphics, spaceRect);
         }
 
         private void AllocatorPresenter_OnPresentCompleted(object sender, EventArgs e)
