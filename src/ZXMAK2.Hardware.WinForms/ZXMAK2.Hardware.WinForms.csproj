@@ -59,6 +59,7 @@
     <Compile Include="FormMemoryMap.Designer.cs">
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
     </Compile>
+    <Compile Include="General\DebuggerViewModel.cs" />
     <Compile Include="General\DebugPanels.cs">
       <SubType>Component</SubType>
     </Compile>

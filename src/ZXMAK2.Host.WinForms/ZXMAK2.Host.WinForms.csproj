@@ -75,6 +75,7 @@
     <Compile Include="Controls\MenuStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Tools\BindingManager.cs" />
     <Compile Include="Tools\ScaleMode.cs" />
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
