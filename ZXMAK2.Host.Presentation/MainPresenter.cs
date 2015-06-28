@@ -5,12 +5,11 @@ using System.ComponentModel;
 using ZXMAK2.Dependency;
 using ZXMAK2.Engine;
 using ZXMAK2.Engine.Interfaces;
-using ZXMAK2.Presentation.Interfaces;
-using ZXMAK2.Presentation.Entities;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.Presentation.Tools;
+using ZXMAK2.Mvvm;
 
 
 
@@ -385,7 +384,7 @@ namespace ZXMAK2.Host.Presentation
                     viewSettings.ShowDialog(m_view);
                     m_vm.RequestFrame();
                     
-                    ((CommandDelegate)CommandTapePause).RaiseCanExecuteChanged();
+                    CommandTapePause.Update();
                 }
             }
             catch (Exception ex)
@@ -548,7 +547,7 @@ namespace ZXMAK2.Host.Presentation
         {
             var text = m_vm.IsRunning ? "Pause" : "Resume";
             CommandVmPause.Text = text;
-            RaiseCommandCanExecuteChanged(CommandTapePause);
+            CommandTapePause.Update();
         }
 
         private void LoadDialog_FileOk(object sender, CancelEventArgs e)
@@ -653,15 +652,6 @@ namespace ZXMAK2.Host.Presentation
             {
                 if (running)
                     m_vm.DoRun();
-            }
-        }
-
-        private void RaiseCommandCanExecuteChanged(ICommand command)
-        {
-            var commandDelegate = command as CommandDelegate;
-            if (commandDelegate != null)
-            {
-                commandDelegate.RaiseCanExecuteChanged();
             }
         }
 

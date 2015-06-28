@@ -37,10 +37,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <HintPath>..\Libraries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="dbgWD1793.cs">
@@ -64,7 +68,42 @@
     <Compile Include="General\FormCPU.Designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
+    <Compile Include="General\FormDebuggerEx.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="General\FormDebuggerEx.Designer.cs">
+      <DependentUpon>FormDebuggerEx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="General\FormDisassembly.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="General\FormDisassembly.Designer.cs">
+      <DependentUpon>FormDisassembly.cs</DependentUpon>
+    </Compile>
+    <Compile Include="General\FormMemory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="General\FormMemory.Designer.cs">
+      <DependentUpon>FormMemory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="General\FormRegisters.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="General\FormRegisters.Designer.cs">
+      <DependentUpon>FormRegisters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="General\FormState.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="General\FormState.Designer.cs">
+      <DependentUpon>FormState.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Sprinter\DebugForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -84,6 +123,25 @@
     </EmbeddedResource>
     <EmbeddedResource Include="General\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="General\FormDebuggerEx.resx">
+      <DependentUpon>FormDebuggerEx.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="General\FormDisassembly.resx">
+      <DependentUpon>FormDisassembly.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="General\FormMemory.resx">
+      <DependentUpon>FormMemory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="General\FormRegisters.resx">
+      <DependentUpon>FormRegisters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="General\FormState.resx">
+      <DependentUpon>FormState.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Sprinter\DebugForm.resx">
       <DependentUpon>DebugForm.cs</DependentUpon>
@@ -142,6 +200,10 @@
       <Project>{8851E497-6345-45E3-9936-EC17A4477A71}</Project>
       <Name>ZXMAK2.Model.Tape</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZXMAK2.Mvvm\ZXMAK2.Mvvm.csproj">
+      <Project>{99a1b2f4-b132-4eb3-9e56-10db22af6e6b}</Project>
+      <Name>ZXMAK2.Mvvm</Name>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Resources\ZXMAK2.Resources.csproj">
       <Project>{1D3FFF75-30F8-4E8A-B650-B7FB3DA9C776}</Project>

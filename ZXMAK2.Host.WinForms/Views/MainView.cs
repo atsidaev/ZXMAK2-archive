@@ -5,8 +5,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using ZXMAK2.Dependency;
-using ZXMAK2.Presentation.Interfaces;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.WinForms.Mdx;
 using ZXMAK2.Host.WinForms.Controls;
@@ -15,6 +15,7 @@ using ZXMAK2.Host.WinForms.Services;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Services;
 using ZXMAK2.Resources;
+using ZXMAK2.Mvvm;
 
 
 namespace ZXMAK2.Host.WinForms.Views

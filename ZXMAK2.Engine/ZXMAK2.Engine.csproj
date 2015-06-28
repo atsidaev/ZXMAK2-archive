@@ -60,6 +60,7 @@
     <Compile Include="EventManager.cs" />
     <Compile Include="GraphMonitor.cs" />
     <Compile Include="InputAggregator.cs" />
+    <Compile Include="Interfaces\ICommandManager.cs" />
     <Compile Include="Interfaces\IEventManager.cs" />
     <Compile Include="Interfaces\IPsgDevice.cs" />
     <Compile Include="Interfaces\IBetaDiskDevice.cs" />
@@ -161,10 +162,9 @@
       <Name>ZXMAK2.Model.Tape</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\ZXMAK2.Presentation\ZXMAK2.Presentation.csproj">
-      <Project>{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}</Project>
-      <Name>ZXMAK2.Presentation</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\ZXMAK2.Mvvm\ZXMAK2.Mvvm.csproj">
+      <Project>{99a1b2f4-b132-4eb3-9e56-10db22af6e6b}</Project>
+      <Name>ZXMAK2.Mvvm</Name>
     </ProjectReference>
     <ProjectReference Include="..\ZXMAK2.Resources\ZXMAK2.Resources.csproj">
       <Project>{1D3FFF75-30F8-4E8A-B650-B7FB3DA9C776}</Project>

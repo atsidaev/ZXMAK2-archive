@@ -98,11 +98,6 @@
       <Name>ZXMAK2.Logging</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\ZXMAK2.Presentation\ZXMAK2.Presentation.csproj">
-      <Project>{C80C09FD-EB17-4CD9-94A5-93E553CBCE5D}</Project>
-      <Name>ZXMAK2.Presentation</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Keyboard.config">
