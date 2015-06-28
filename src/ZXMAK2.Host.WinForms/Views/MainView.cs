@@ -237,6 +237,7 @@ namespace ZXMAK2.Host.WinForms.Views
             base.OnLoad(e);
             try
             {
+                NativeMethods.TimeBeginPeriod(1);
                 renderVideo.InitWnd();
                 m_host = CreateHost();
                 OnViewOpened();
@@ -266,12 +267,10 @@ namespace ZXMAK2.Host.WinForms.Views
         {
             base.OnShown(e);
             m_allowSaveSize = true;
-            NativeMethods.TimeBeginPeriod(1);
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            NativeMethods.TimeEndPeriod(1);
             base.OnClosing(e);
             m_allowSaveSize = false;
         }
@@ -288,6 +287,7 @@ namespace ZXMAK2.Host.WinForms.Views
                     m_host = null;
                 }
                 renderVideo.FreeWnd();
+                NativeMethods.TimeEndPeriod(1);
             }
             catch (Exception ex)
             {
