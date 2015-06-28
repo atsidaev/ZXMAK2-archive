@@ -75,6 +75,7 @@
             this.toolStripBreakPoints = new System.Windows.Forms.ToolStripButton();
             this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.themeVS2012Light = new WeifenLuo.WinFormsUI.Docking.VS2012LightTheme();
+            this.menuDebugStepOut = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
@@ -167,38 +168,43 @@
             this.menuDebugBreak,
             this.menuDebugSplitter,
             this.menuDebugStepInto,
-            this.menuDebugStepOver});
+            this.menuDebugStepOver,
+            this.menuDebugStepOut});
             this.menuDebug.Name = "menuDebug";
             this.menuDebug.Size = new System.Drawing.Size(54, 20);
             this.menuDebug.Text = "Debug";
             // 
             // menuDebugContinue
             // 
+            this.menuDebugContinue.Image = ((System.Drawing.Image)(resources.GetObject("menuDebugContinue.Image")));
             this.menuDebugContinue.Name = "menuDebugContinue";
-            this.menuDebugContinue.Size = new System.Drawing.Size(125, 22);
+            this.menuDebugContinue.Size = new System.Drawing.Size(152, 22);
             this.menuDebugContinue.Text = "Continue";
             // 
             // menuDebugBreak
             // 
+            this.menuDebugBreak.Image = ((System.Drawing.Image)(resources.GetObject("menuDebugBreak.Image")));
             this.menuDebugBreak.Name = "menuDebugBreak";
-            this.menuDebugBreak.Size = new System.Drawing.Size(125, 22);
+            this.menuDebugBreak.Size = new System.Drawing.Size(152, 22);
             this.menuDebugBreak.Text = "Break";
             // 
             // menuDebugSplitter
             // 
             this.menuDebugSplitter.Name = "menuDebugSplitter";
-            this.menuDebugSplitter.Size = new System.Drawing.Size(122, 6);
+            this.menuDebugSplitter.Size = new System.Drawing.Size(149, 6);
             // 
             // menuDebugStepInto
             // 
+            this.menuDebugStepInto.Image = ((System.Drawing.Image)(resources.GetObject("menuDebugStepInto.Image")));
             this.menuDebugStepInto.Name = "menuDebugStepInto";
-            this.menuDebugStepInto.Size = new System.Drawing.Size(125, 22);
+            this.menuDebugStepInto.Size = new System.Drawing.Size(152, 22);
             this.menuDebugStepInto.Text = "Step Into";
             // 
             // menuDebugStepOver
             // 
+            this.menuDebugStepOver.Image = ((System.Drawing.Image)(resources.GetObject("menuDebugStepOver.Image")));
             this.menuDebugStepOver.Name = "menuDebugStepOver";
-            this.menuDebugStepOver.Size = new System.Drawing.Size(125, 22);
+            this.menuDebugStepOver.Size = new System.Drawing.Size(152, 22);
             this.menuDebugStepOver.Text = "Step Over";
             // 
             // statusStrip
@@ -362,6 +368,13 @@
             this.dockPanel.TabIndex = 4;
             this.dockPanel.Theme = this.themeVS2012Light;
             // 
+            // menuDebugStepOut
+            // 
+            this.menuDebugStepOut.Image = ((System.Drawing.Image)(resources.GetObject("menuDebugStepOut.Image")));
+            this.menuDebugStepOut.Name = "menuDebugStepOut";
+            this.menuDebugStepOut.Size = new System.Drawing.Size(152, 22);
+            this.menuDebugStepOut.Text = "Step Out";
+            // 
             // FormDebuggerEx
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -419,5 +432,6 @@
         private System.Windows.Forms.ToolStripButton toolStripBreakPoints;
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel;
         private WeifenLuo.WinFormsUI.Docking.VS2012LightTheme themeVS2012Light;
+        private System.Windows.Forms.ToolStripMenuItem menuDebugStepOut;
     }
 }
