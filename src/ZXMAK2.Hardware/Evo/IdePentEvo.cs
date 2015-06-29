@@ -18,7 +18,7 @@ namespace ZXMAK2.Hardware.Evo
 
         private bool m_sandbox = false;
         private CpuUnit m_cpu;
-        private IconDescriptor m_iconHdd = new IconDescriptor("HDD", ImageResources.HddRd_128x128);
+        private IconDescriptor m_iconHdd = new IconDescriptor("HDD", ResourceImages.HddRd_128x128);
         private AtaPort m_ata = new AtaPort();
         private string m_ideFileName;
         private int m_ide_write;

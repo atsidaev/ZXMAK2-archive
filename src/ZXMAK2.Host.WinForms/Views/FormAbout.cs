@@ -147,7 +147,7 @@ namespace ZXMAK2.Host.WinForms.Views
         public FormAbout()
 		{
 			InitializeComponent();
-            using (var icon = ImageResources.ZXMAK2)
+            using (var icon = ResourceImages.ZXMAK2)
             {
                 pctLogo.Image = icon.ToBitmap();
             }

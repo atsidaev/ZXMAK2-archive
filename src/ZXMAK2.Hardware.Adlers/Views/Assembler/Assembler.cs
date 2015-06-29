@@ -70,7 +70,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 this.Text = "Assembler, " + String.Format("ver {0:0.##}", compilerVersion).Replace(',', '.');
 
             //progress bar
-            this.btnStopBackgroundProcess.Image = global::ZXMAK2.Resources.ImageResources.Stop_real_16x16;
+            this.btnStopBackgroundProcess.Image = global::ZXMAK2.Resources.ResourceImages.Stop_real_16x16;
             
             //Z80 assembler resources
             _Z80AsmResourcesForm = new Z80AsmResources(ref this.txtAsm);

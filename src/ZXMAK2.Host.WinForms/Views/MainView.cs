@@ -48,7 +48,7 @@ namespace ZXMAK2.Host.WinForms.Views
             m_setting = new SettingService();
             SetStyle(ControlStyles.Opaque | ControlStyles.AllPaintingInWmPaint, true);
             InitializeComponent();
-            Icon = ImageResources.ZXMAK2;
+            Icon = ResourceImages.ZXMAK2;
 
             LoadClientSize();
             LoadRenderSetting();

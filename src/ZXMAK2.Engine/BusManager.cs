@@ -32,7 +32,7 @@ namespace ZXMAK2.Engine
         private IIconDescriptor[] m_iconDescList = new IIconDescriptor[0];
         private IconDescriptor m_iconPause = new IconDescriptor(
             "PAUSE",
-            ImageResources.Pause_32x32);
+            ResourceImages.Pause_32x32);
         private IFrameSound m_soundFrame;
 
         public event Action FrameReady;

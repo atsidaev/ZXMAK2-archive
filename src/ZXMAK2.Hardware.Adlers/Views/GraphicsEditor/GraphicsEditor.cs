@@ -31,7 +31,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
             _spectrum = spectrum;
 
             InitializeComponent();
-            this.Icon = Icon.FromHandle(global::ZXMAK2.Resources.ImageResources.ZXLogo.GetHicon());
+            this.Icon = Icon.FromHandle(global::ZXMAK2.Resources.ResourceImages.ZXLogo.GetHicon());
             this.ShowIcon = true;
 
             comboDisplayType.SelectedIndex = 0;

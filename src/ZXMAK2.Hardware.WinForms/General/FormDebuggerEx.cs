@@ -59,22 +59,22 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         private void LoadImages()
         {
-            Icon = ImageResources.DebuggerIcon;
+            Icon = ResourceImages.DebuggerIcon;
 
-            toolStripContinue.Image = ImageResources.DebuggerContinue;
-            toolStripBreak.Image = ImageResources.DebuggerBreak;
-            toolStripStepInto.Image = ImageResources.DebuggerStepInto;
-            toolStripStepOver.Image = ImageResources.DebuggerStepOver;
-            toolStripStepOut.Image = ImageResources.DebuggerStepOut;
-            toolStripShowNext.Image = ImageResources.DebuggerShowNext;
-            toolStripShowBreakpoints.Image = ImageResources.DebuggerShowBreakpoints;
-            
-            menuDebugContinue.Image = ImageResources.DebuggerContinue;
-            menuDebugBreak.Image = ImageResources.DebuggerBreak;
-            menuDebugStepInto.Image = ImageResources.DebuggerStepInto;
-            menuDebugStepOver.Image = ImageResources.DebuggerStepOver;
-            menuDebugStepOut.Image = ImageResources.DebuggerStepOut;
-            menuDebugShowNext.Image = ImageResources.DebuggerShowNext;
+            toolStripContinue.Image = ResourceImages.DebuggerContinue;
+            toolStripBreak.Image = ResourceImages.DebuggerBreak;
+            toolStripStepInto.Image = ResourceImages.DebuggerStepInto;
+            toolStripStepOver.Image = ResourceImages.DebuggerStepOver;
+            toolStripStepOut.Image = ResourceImages.DebuggerStepOut;
+            toolStripShowNext.Image = ResourceImages.DebuggerShowNext;
+            toolStripShowBreakpoints.Image = ResourceImages.DebuggerShowBreakpoints;
+
+            menuDebugContinue.Image = ResourceImages.DebuggerContinue;
+            menuDebugBreak.Image = ResourceImages.DebuggerBreak;
+            menuDebugStepInto.Image = ResourceImages.DebuggerStepInto;
+            menuDebugStepOver.Image = ResourceImages.DebuggerStepOver;
+            menuDebugStepOut.Image = ResourceImages.DebuggerStepOut;
+            menuDebugShowNext.Image = ResourceImages.DebuggerShowNext;
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)
