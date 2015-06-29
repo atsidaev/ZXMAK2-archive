@@ -49,6 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icons\Autoplay_64x64.png" />
+    <Content Include="Icons\DebuggerBreak.png" />
+    <Content Include="Icons\DebuggerContinue.png" />
+    <Content Include="Icons\DebuggerIcon.ico" />
+    <Content Include="Icons\DebuggerShowBreakpoints.png" />
+    <Content Include="Icons\DebuggerShowNext.png" />
+    <Content Include="Icons\DebuggerStepInto.png" />
+    <Content Include="Icons\DebuggerStepOut.png" />
+    <Content Include="Icons\DebuggerStepOver.png" />
     <Content Include="Icons\FddRd_128x128.png" />
     <Content Include="Icons\FddWr_128x128.png" />
     <Content Include="Icons\HddRd_128x128.png" />

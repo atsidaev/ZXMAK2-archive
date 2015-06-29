@@ -121,6 +121,30 @@
   <data name="Autoplay_64x64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>icons\autoplay_64x64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="DebuggerBreak" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\debuggerbreak.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DebuggerContinue" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\debuggercontinue.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DebuggerIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\debuggericon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DebuggerShowBreakpoints" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\debuggershowbreakpoints.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DebuggerShowNext" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\debuggershownext.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DebuggerStepInto" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\debuggerstepinto.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DebuggerStepOut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\debuggerstepout.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DebuggerStepOver" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\debuggerstepover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="FddRd_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>icons\fddrd_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

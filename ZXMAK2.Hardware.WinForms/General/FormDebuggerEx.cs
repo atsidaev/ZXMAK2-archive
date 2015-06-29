@@ -13,6 +13,7 @@ using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.WinForms.Tools;
 using ZXMAK2.Host.WinForms.Views;
+using ZXMAK2.Resources;
 
 namespace ZXMAK2.Hardware.WinForms.General
 {
@@ -32,6 +33,8 @@ namespace ZXMAK2.Hardware.WinForms.General
             _dataContext.CloseRequest += DataContext_OnCloseRequest;
             
             InitializeComponent();
+
+            LoadImages();
             dockPanel.DocumentStyle = DocumentStyle.DockingWindow;// .DockingMdi;
 
             var dasm = new FormDisassembly();
@@ -52,6 +55,26 @@ namespace ZXMAK2.Hardware.WinForms.General
 
 
             Bind();
+        }
+
+        private void LoadImages()
+        {
+            Icon = ImageResources.DebuggerIcon;
+
+            toolStripContinue.Image = ImageResources.DebuggerContinue;
+            toolStripBreak.Image = ImageResources.DebuggerBreak;
+            toolStripStepInto.Image = ImageResources.DebuggerStepInto;
+            toolStripStepOver.Image = ImageResources.DebuggerStepOver;
+            toolStripStepOut.Image = ImageResources.DebuggerStepOut;
+            toolStripShowNext.Image = ImageResources.DebuggerShowNext;
+            toolStripShowBreakpoints.Image = ImageResources.DebuggerShowBreakpoints;
+            
+            menuDebugContinue.Image = ImageResources.DebuggerContinue;
+            menuDebugBreak.Image = ImageResources.DebuggerBreak;
+            menuDebugStepInto.Image = ImageResources.DebuggerStepInto;
+            menuDebugStepOver.Image = ImageResources.DebuggerStepOver;
+            menuDebugStepOut.Image = ImageResources.DebuggerStepOut;
+            menuDebugShowNext.Image = ImageResources.DebuggerShowNext;
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)
