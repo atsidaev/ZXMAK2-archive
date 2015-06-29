@@ -16,8 +16,8 @@ namespace ZXMAK2.Hardware.Sprinter
     {
         #region Fields
 
-        private readonly IconDescriptor _iconRd = new IconDescriptor("FDDRD", ResourceImages.FddRd_128x128);
-        private readonly IconDescriptor _iconWr = new IconDescriptor("FDDWR", ResourceImages.FddWr_128x128);
+        private readonly IconDescriptor _iconRd = new IconDescriptor("FDDRD", ResourceImages.OsdFddRd);
+        private readonly IconDescriptor _iconWr = new IconDescriptor("FDDWR", ResourceImages.OsdFddWr);
         private bool _sandbox = false;
         private CpuUnit _cpu;
         private IMemoryDevice _memory;

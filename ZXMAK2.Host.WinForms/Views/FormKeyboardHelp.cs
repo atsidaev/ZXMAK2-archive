@@ -28,7 +28,7 @@ namespace ZXMAK2.Host.WinForms.Views
 			// 
 			// pictureBox
 			// 
-            this.pictureBox.Image = global::ZXMAK2.Resources.ResourceImages.KeyboardHelp;
+            this.pictureBox.Image = global::ZXMAK2.Resources.ResourceImages.ImageKeyboardHelp;
 			this.pictureBox.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox.Name = "pictureBox";
 			this.pictureBox.Size = new System.Drawing.Size(541, 201);

@@ -85,7 +85,7 @@ namespace ZXMAK2.Hardware.WinForms
             // btnRewind
             // 
             this.btnRewind.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnRewind.Image = global::ZXMAK2.Resources.ResourceImages.Rewind_16x16;
+            this.btnRewind.Image = global::ZXMAK2.Resources.ResourceImages.HardwareTapeRewind;
             this.btnRewind.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRewind.Name = "btnRewind";
             this.btnRewind.Size = new System.Drawing.Size(23, 24);
@@ -95,7 +95,7 @@ namespace ZXMAK2.Hardware.WinForms
             // btnPrev
             // 
             this.btnPrev.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnPrev.Image = global::ZXMAK2.Resources.ResourceImages.Prev_16x16;
+            this.btnPrev.Image = global::ZXMAK2.Resources.ResourceImages.HardwareTapePrev;
             this.btnPrev.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPrev.Name = "btnPrev";
             this.btnPrev.Size = new System.Drawing.Size(23, 24);
@@ -105,7 +105,7 @@ namespace ZXMAK2.Hardware.WinForms
             // btnPlay
             // 
             this.btnPlay.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnPlay.Image = global::ZXMAK2.Resources.ResourceImages.Play_16x16;
+            this.btnPlay.Image = global::ZXMAK2.Resources.ResourceImages.HardwareTapePlay;
             this.btnPlay.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(23, 24);
@@ -115,7 +115,7 @@ namespace ZXMAK2.Hardware.WinForms
             // btnNext
             // 
             this.btnNext.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnNext.Image = global::ZXMAK2.Resources.ResourceImages.Next_16x16;
+            this.btnNext.Image = global::ZXMAK2.Resources.ResourceImages.HardwareTapeNext;
             this.btnNext.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(23, 24);
@@ -134,7 +134,7 @@ namespace ZXMAK2.Hardware.WinForms
             // 
             this.btnUseTraps.CheckOnClick = true;
             this.btnUseTraps.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnUseTraps.Image = global::ZXMAK2.Resources.ResourceImages.Rocket_32x32;
+            this.btnUseTraps.Image = global::ZXMAK2.Resources.ResourceImages.HardwareTapeTraps;
             this.btnUseTraps.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUseTraps.Name = "btnTraps";
             this.btnUseTraps.Size = new System.Drawing.Size(23, 24);
@@ -145,7 +145,7 @@ namespace ZXMAK2.Hardware.WinForms
             // 
             this.btnUseAutoPlay.CheckOnClick = true;
             this.btnUseAutoPlay.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnUseAutoPlay.Image = global::ZXMAK2.Resources.ResourceImages.Autoplay_64x64;
+            this.btnUseAutoPlay.Image = global::ZXMAK2.Resources.ResourceImages.HardwareTapeAutoplay;
             this.btnUseAutoPlay.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUseAutoPlay.Name = "btnAutoPlay";
             this.btnUseAutoPlay.Size = new System.Drawing.Size(23, 24);
@@ -267,9 +267,9 @@ namespace ZXMAK2.Hardware.WinForms
                 btnNext.Enabled = btnPrev.Enabled = !m_tape.IsPlay;
                 btnRewind.Enabled = btnPlay.Enabled = true;
                 if (m_tape.IsPlay)
-                    btnPlay.Image = ResourceImages.Stop_16x16;
+                    btnPlay.Image = ResourceImages.HardwareTapePause;
                 else
-                    btnPlay.Image = ResourceImages.Play_16x16;
+                    btnPlay.Image = ResourceImages.HardwareTapePlay;
                 if (checkContentDifferent(blockList.Items, m_tape.Blocks))
                 {
                     blockList.Items.Clear();

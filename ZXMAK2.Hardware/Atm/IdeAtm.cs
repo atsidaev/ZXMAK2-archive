@@ -17,7 +17,7 @@ namespace ZXMAK2.Hardware.Atm
         #region Fields
 
         private readonly AtaPort m_ata = new AtaPort();
-        private readonly IconDescriptor m_iconHdd = new IconDescriptor("HDD", ResourceImages.HddRd_128x128);
+        private readonly IconDescriptor m_iconHdd = new IconDescriptor("HDD", ResourceImages.OsdHddRd);
         private bool m_sandbox = false;
         private CpuUnit m_cpu;
         private string m_ideFileName;

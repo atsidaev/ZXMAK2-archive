@@ -20,7 +20,7 @@ namespace ZXMAK2.Hardware.General
     {
         #region Fields
 
-        private readonly IconDescriptor m_iconHdd = new IconDescriptor("HDD", ResourceImages.HddRd_128x128);
+        private readonly IconDescriptor m_iconHdd = new IconDescriptor("HDD", ResourceImages.OsdHddRd);
         private readonly AtaPort m_ata = new AtaPort();
         private readonly RtcChip m_rtc = new RtcChip(RtcChipType.DS12885);
         private readonly NvramChip m_nvram = new NvramChip();

@@ -59,7 +59,7 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         private void LoadImages()
         {
-            Icon = ResourceImages.DebuggerIcon;
+            Icon = ResourceImages.IconDebugger;
 
             toolStripContinue.Image = ResourceImages.DebuggerContinue;
             toolStripBreak.Image = ResourceImages.DebuggerBreak;

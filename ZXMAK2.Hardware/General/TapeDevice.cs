@@ -25,7 +25,7 @@ namespace ZXMAK2.Hardware.General
     {
         #region Fields
 
-        private readonly IconDescriptor m_iconTape = new IconDescriptor("TAPE", ResourceImages.TapeRd_128x128);
+        private readonly IconDescriptor m_iconTape = new IconDescriptor("TAPE", ResourceImages.OsdTapeRd);
         private CpuUnit m_cpu;
         private IMemoryDevice m_memory;
         private bool m_trapsAllowed = true;

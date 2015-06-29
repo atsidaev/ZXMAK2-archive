@@ -118,17 +118,11 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Autoplay_64x64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\autoplay_64x64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="DebuggerBreak" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>icons\debuggerbreak.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DebuggerContinue" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>icons\debuggercontinue.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="DebuggerIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\debuggericon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DebuggerShowBreakpoints" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>icons\debuggershowbreakpoints.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -145,52 +139,58 @@
   <data name="DebuggerStepOver" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>icons\debuggerstepover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FddRd_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\fddrd_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="HardwareTapeAutoplay" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\hardwaretapeautoplay.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FddWr_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\fddwr_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="HardwareTapeNext" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\hardwaretapenext.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="HddRd_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\hddrd_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="HardwareTapePause" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\hardwaretapepause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KeyboardHelp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="HardwareTapePlay" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\hardwaretapeplay.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HardwareTapePrev" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\hardwaretapeprev.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HardwareTapeRecord" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\hardwaretaperecord.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HardwareTapeRewind" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\hardwaretaperewind.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HardwareTapeTraps" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\hardwaretapetraps.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconApp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\iconapp.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconDebugger" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\icondebugger.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ImageKeyboardHelp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>pictures\keyboardhelp.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Next_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\next_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="ImageZxLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Pictures\ZXLogo.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Pause_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\pause_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="OsdFddRd" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\osdfddrd.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Play_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\play_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="OsdFddWr" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\osdfddwr.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Prev_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\prev_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="OsdHddRd" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\osdhddrd.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Record_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\record_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="OsdPause" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\osdpause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Rewind_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\rewind_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Rocket_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\rocket_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Stop_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\stop_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="OsdTapeRd" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>icons\osdtaperd.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Stop_real_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Icons\Stop_real_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="TapeRd_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\taperd_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ZXLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Pictures\ZXLogo.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ZXMAK2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>icons\zxmak2.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
