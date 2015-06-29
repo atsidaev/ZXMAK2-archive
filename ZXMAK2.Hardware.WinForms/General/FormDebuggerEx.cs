@@ -56,6 +56,7 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
+            _dataContext.CloseRequest -= DataContext_OnCloseRequest;
             _dataContext.Detach();
             base.OnFormClosed(e);
         }
