@@ -154,4 +154,7 @@
   <data name="Keyboard_Mdx" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\keyboard.mdx.config;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="Keyboard_WinForms" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\keyboard.winforms.config;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>
