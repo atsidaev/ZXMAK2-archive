@@ -75,8 +75,8 @@ namespace ZXMAK2.Hardware.Adlers.Views
             }
 
             //some GUI init
-            this.btnStartTrace.Image = global::ZXMAK2.Resources.ResourceImages.Play_16x16;
-            this.btnStopTrace.Image = global::ZXMAK2.Resources.ResourceImages.Record_16x16;
+            this.btnStartTrace.Image = global::ZXMAK2.Resources.ResourceImages.HardwareTapePlay;
+            this.btnStopTrace.Image = global::ZXMAK2.Resources.ResourceImages.HardwareTapeRecord;
 
             m_debuggerTrace = new DebuggerTrace(m_spectrum);
 

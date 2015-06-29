@@ -63,16 +63,6 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Autoplay_64x64 {
-            get {
-                object obj = ResourceManager.GetObject("Autoplay_64x64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap DebuggerBreak {
             get {
                 object obj = ResourceManager.GetObject("DebuggerBreak", resourceCulture);
@@ -87,16 +77,6 @@ namespace ZXMAK2.Resources {
             get {
                 object obj = ResourceManager.GetObject("DebuggerContinue", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon DebuggerIcon {
-            get {
-                object obj = ResourceManager.GetObject("DebuggerIcon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -153,9 +133,9 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap FddRd_128x128 {
+        public static System.Drawing.Bitmap HardwareTapeAutoplay {
             get {
-                object obj = ResourceManager.GetObject("FddRd_128x128", resourceCulture);
+                object obj = ResourceManager.GetObject("HardwareTapeAutoplay", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -163,9 +143,9 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap FddWr_128x128 {
+        public static System.Drawing.Bitmap HardwareTapeNext {
             get {
-                object obj = ResourceManager.GetObject("FddWr_128x128", resourceCulture);
+                object obj = ResourceManager.GetObject("HardwareTapeNext", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -173,9 +153,9 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap HddRd_128x128 {
+        public static System.Drawing.Bitmap HardwareTapePause {
             get {
-                object obj = ResourceManager.GetObject("HddRd_128x128", resourceCulture);
+                object obj = ResourceManager.GetObject("HardwareTapePause", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,9 +163,9 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap KeyboardHelp {
+        public static System.Drawing.Bitmap HardwareTapePlay {
             get {
-                object obj = ResourceManager.GetObject("KeyboardHelp", resourceCulture);
+                object obj = ResourceManager.GetObject("HardwareTapePlay", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -193,9 +173,9 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Next_16x16 {
+        public static System.Drawing.Bitmap HardwareTapePrev {
             get {
-                object obj = ResourceManager.GetObject("Next_16x16", resourceCulture);
+                object obj = ResourceManager.GetObject("HardwareTapePrev", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -203,9 +183,9 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Pause_32x32 {
+        public static System.Drawing.Bitmap HardwareTapeRecord {
             get {
-                object obj = ResourceManager.GetObject("Pause_32x32", resourceCulture);
+                object obj = ResourceManager.GetObject("HardwareTapeRecord", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -213,9 +193,9 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Play_16x16 {
+        public static System.Drawing.Bitmap HardwareTapeRewind {
             get {
-                object obj = ResourceManager.GetObject("Play_16x16", resourceCulture);
+                object obj = ResourceManager.GetObject("HardwareTapeRewind", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -223,9 +203,39 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Prev_16x16 {
+        public static System.Drawing.Bitmap HardwareTapeTraps {
             get {
-                object obj = ResourceManager.GetObject("Prev_16x16", resourceCulture);
+                object obj = ResourceManager.GetObject("HardwareTapeTraps", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconApp {
+            get {
+                object obj = ResourceManager.GetObject("IconApp", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconDebugger {
+            get {
+                object obj = ResourceManager.GetObject("IconDebugger", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ImageKeyboardHelp {
+            get {
+                object obj = ResourceManager.GetObject("ImageKeyboardHelp", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -233,9 +243,9 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Record_16x16 {
+        public static System.Drawing.Bitmap ImageZxLogo {
             get {
-                object obj = ResourceManager.GetObject("Record_16x16", resourceCulture);
+                object obj = ResourceManager.GetObject("ImageZxLogo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -243,9 +253,9 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Rewind_16x16 {
+        public static System.Drawing.Bitmap OsdFddRd {
             get {
-                object obj = ResourceManager.GetObject("Rewind_16x16", resourceCulture);
+                object obj = ResourceManager.GetObject("OsdFddRd", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -253,9 +263,9 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Rocket_32x32 {
+        public static System.Drawing.Bitmap OsdFddWr {
             get {
-                object obj = ResourceManager.GetObject("Rocket_32x32", resourceCulture);
+                object obj = ResourceManager.GetObject("OsdFddWr", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -263,9 +273,29 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Stop_16x16 {
+        public static System.Drawing.Bitmap OsdHddRd {
             get {
-                object obj = ResourceManager.GetObject("Stop_16x16", resourceCulture);
+                object obj = ResourceManager.GetObject("OsdHddRd", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap OsdPause {
+            get {
+                object obj = ResourceManager.GetObject("OsdPause", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap OsdTapeRd {
+            get {
+                object obj = ResourceManager.GetObject("OsdTapeRd", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -277,36 +307,6 @@ namespace ZXMAK2.Resources {
             get {
                 object obj = ResourceManager.GetObject("Stop_real_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap TapeRd_128x128 {
-            get {
-                object obj = ResourceManager.GetObject("TapeRd_128x128", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap ZXLogo {
-            get {
-                object obj = ResourceManager.GetObject("ZXLogo", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon ZXMAK2 {
-            get {
-                object obj = ResourceManager.GetObject("ZXMAK2", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
     }

@@ -60,7 +60,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>..\ZXMAK2.Resources\Icons\ZXMAK2.ICO</ApplicationIcon>
+    <ApplicationIcon>..\ZXMAK2.Resources\Icons\IconApp.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
