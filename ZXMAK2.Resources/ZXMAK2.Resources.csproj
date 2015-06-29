@@ -40,10 +40,10 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImageResources.Designer.cs">
+    <Compile Include="ResourceImages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ImageResources.resx</DependentUpon>
+      <DependentUpon>ResourceImages.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -75,9 +75,9 @@
     <Content Include="Pictures\ZXLogo.gif" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ImageResources.resx">
+    <EmbeddedResource Include="ResourceImages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ImageResources.Designer.cs</LastGenOutput>
+      <LastGenOutput>ResourceImages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

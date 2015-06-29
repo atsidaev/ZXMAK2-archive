@@ -22,8 +22,8 @@ namespace ZXMAK2.Hardware.General
         #region Fields
 
         private bool m_sandbox = false;
-        private IconDescriptor m_iconRd = new IconDescriptor("FDDRD", ImageResources.FddRd_128x128);
-        private IconDescriptor m_iconWr = new IconDescriptor("FDDWR", ImageResources.FddWr_128x128);
+        private IconDescriptor m_iconRd = new IconDescriptor("FDDRD", ResourceImages.FddRd_128x128);
+        private IconDescriptor m_iconWr = new IconDescriptor("FDDWR", ResourceImages.FddWr_128x128);
         protected CpuUnit m_cpu;
         protected IMemoryDevice m_memory;
         protected Wd1793 m_wd = new Wd1793();
