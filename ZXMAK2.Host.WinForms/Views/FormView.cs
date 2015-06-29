@@ -26,7 +26,7 @@ namespace ZXMAK2.Host.WinForms.Views
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.UserClosing)
+            if (!e.Cancel && e.CloseReason == CloseReason.UserClosing)
             {
                 var handler = ViewClosing;
                 if (handler != null)

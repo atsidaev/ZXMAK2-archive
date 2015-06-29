@@ -21,6 +21,8 @@ namespace ZXMAK2.Hardware.WinForms.General
         private DebuggerViewModel _dataContext;
         private BindingManager _manager = new BindingManager();
         private bool _isCloseRequest;
+        private bool _isUiRequest;
+        private bool _isCloseCalled;
 
 
         public FormDebuggerEx(IDebuggable debugTarget)
@@ -30,17 +32,24 @@ namespace ZXMAK2.Hardware.WinForms.General
             _dataContext.CloseRequest += DataContext_OnCloseRequest;
             
             InitializeComponent();
-            dockPanel.DocumentStyle = DocumentStyle.DockingMdi;
+            dockPanel.DocumentStyle = DocumentStyle.DockingWindow;// .DockingMdi;
 
             var dasm = new FormDisassembly();
             var memr = new FormMemory();
             var regs = new FormRegisters();
             var stat = new FormState();
 
-            regs.Show(dockPanel, DockState.DockRight);
-            stat.Show(regs.Pane, DockAlignment.Bottom, 0.3);
+            //regs.Show(dockPanel, DockState.DockRight);
+            //stat.Show(regs.Pane, DockAlignment.Bottom, 0.3);
+            //dasm.Show(dockPanel, DockState.Document);
+            //memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
+            
+            // Mono compatible
             dasm.Show(dockPanel, DockState.Document);
             memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
+            regs.Show(dasm.Pane, DockAlignment.Right, 0.2);
+            stat.Show(memr.Pane, DockAlignment.Right, 0.2);
+
 
             Bind();
         }
@@ -54,13 +63,11 @@ namespace ZXMAK2.Hardware.WinForms.General
         
         #region Close Behavior
 
-        private bool _isUiRequest;
-        private bool _isCloseCalled;
-
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (!_isCloseRequest && 
-                _dataContext != null && 
+            //Logger.Debug("OnFormClosing: reason={0}, isRequest={1}, isUi={2}", e.CloseReason, _isCloseRequest, _isUiRequest);
+            if (!_isCloseRequest &&
+                _dataContext != null &&
                 _dataContext.CommandClose != null)
             {
                 _isCloseCalled = false;
@@ -74,13 +81,19 @@ namespace ZXMAK2.Hardware.WinForms.General
                 _isUiRequest = false;
                 if (!canClose)
                 {
+                    // WARN: Mono runtime has a bug, so if the user will
+                    // close parent window, it will be closed although Cancel=true.
+                    // In such case, attempt to show the window will cause 
+                    // fatal Mono runtime bug (it requires OS reboot).
+                    // So, we call it async to avoid such issues.
                     e.Cancel = true;
                     // show & highlight blocking window
-                    Visible = true;
-                    WindowState = FormWindowState.Normal;
-                    //BringToFront();
-                    Activate();
-                    return;
+                    BeginInvoke(new Action(() =>
+                        {
+                            Show();
+                            WindowState = FormWindowState.Normal;
+                            Activate();
+                        }), null);
                 }
             }
             base.OnFormClosing(e);
@@ -95,6 +108,7 @@ namespace ZXMAK2.Hardware.WinForms.General
             }
             _isCloseRequest = true;
             Close();
+            _isCloseRequest = false;
         }
 
         #endregion Close Behavior
@@ -155,9 +169,9 @@ namespace ZXMAK2.Hardware.WinForms.General
                 s_windowSystemMenuHandle[hWnd] = hMenu;
                 DeleteMenu(hMenu, 6, 1024);
             }
-            catch (Exception ex)
+            catch (EntryPointNotFoundException ex)
             {
-                Logger.Error(ex);
+                Logger.Warn(ex);
                 IsWinApiNotAvailable = true;
             }
         }
@@ -178,9 +192,9 @@ namespace ZXMAK2.Hardware.WinForms.General
                 DeleteMenu(hMenu, 6, 1024);
                 s_windowSystemMenuHandle.Remove(hWnd);
             }
-            catch (Exception ex)
+            catch (EntryPointNotFoundException ex)
             {
-                Logger.Error(ex);
+                Logger.Warn(ex);
                 IsWinApiNotAvailable = true;
             }
         }    
