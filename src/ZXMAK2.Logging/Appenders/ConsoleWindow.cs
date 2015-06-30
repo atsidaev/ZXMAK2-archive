@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Security;
+using System.IO;
 
 
 namespace ZXMAK2.Logging.Appenders
@@ -99,13 +100,32 @@ namespace ZXMAK2.Logging.Appenders
         {
             // Under debugger with no console, handle will be redirected to VS
             // workaround to recreate handle inside Console class
-            var handleFieldInfo = typeof(Console).GetField("_consoleOutputHandle", BindingFlags.Static | BindingFlags.NonPublic);
-            if (handleFieldInfo != null)
+            var defStdout = new IntPtr(7);
+            var stdOut = NativeMethods.GetStdHandle(STD_OUTPUT_HANDLE);
+            if (stdOut != defStdout)
             {
-                handleFieldInfo.SetValue(null, IntPtr.Zero);
+                // It seems that we running under VS debugger and "Enable native code debugging" is enabled
+                // So, get back our console...
+                Console.WriteLine("ConsoleWindow: stdout will be redirected from {0} for application needs", stdOut);
+                NativeMethods.SetStdHandle(STD_OUTPUT_HANDLE, defStdout);
+
+                // we are still need to recreate handle inside Console class...
+                // reopen stdout
+                var writer = new StreamWriter(Console.OpenStandardOutput()) 
+                { 
+                    AutoFlush = true 
+                };
+                Console.SetOut(writer);
+                Console.WriteLine("ConsoleWindow: stdout was redirected from {0}", stdOut);
             }
-            // workaround to recreate Out/Error writers inside Console class
-            Console.OutputEncoding = Console.OutputEncoding;
+            //var handleFieldInfo = typeof(Console).GetField("_consoleOutputHandle", BindingFlags.Static | BindingFlags.NonPublic);
+            //if (handleFieldInfo != null)
+            //{
+            //    handleFieldInfo.SetValue(null, IntPtr.Zero);
+            //}
+            //// workaround to recreate Out/Error writers inside Console class
+            //Console.OutputEncoding = Console.OutputEncoding;
+
         }
 
         private void ApplyCloseBehavior()
@@ -134,6 +154,13 @@ namespace ZXMAK2.Logging.Appenders
         
         #region WinApi
 
+        // The standard input device. Initially, this is the console input buffer, CONIN$.
+        private const int STD_INPUT_HANDLE = -10;
+        // The standard output device. Initially, this is the active console screen buffer, CONOUT$.
+        private const int STD_OUTPUT_HANDLE = -11;
+        // The standard error device. Initially, this is the active console screen buffer, CONOUT$.
+        private const int STD_ERROR_HANDLE = -12;
+        
         private const int CTRL_C_EVENT = 0;
         private const int CTRL_BREAK_EVENT = 1;
         private const int CTRL_CLOSE_EVENT = 2;
@@ -175,6 +202,12 @@ namespace ZXMAK2.Logging.Appenders
                 IntPtr hMenu,
                 uint nPosition,
                 uint wFlags);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern IntPtr GetStdHandle(int nStdHandle);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern void SetStdHandle(int nStdHandle, IntPtr handle);
         }
 
         #endregion Private
