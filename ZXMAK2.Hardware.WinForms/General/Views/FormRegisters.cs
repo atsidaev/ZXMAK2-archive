@@ -7,12 +7,14 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Hardware.WinForms.General.ViewModels;
+using ZXMAK2.Host.WinForms.Tools;
 
 namespace ZXMAK2.Hardware.WinForms.General.Views
 {
     public partial class FormRegisters : DockContent
     {
         private RegistersViewModel _dataContext;
+        
         
         public FormRegisters()
         {
@@ -25,6 +27,7 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             _dataContext.PropertyChanged += DataContext_OnPropertyChanged;
             _dataContext.TargetStateChanged += DataContext_OnTargetStateChanged;
             _dataContext.Attach();
+            Bind();
         }
 
         protected override void OnClosed(EventArgs e)
@@ -37,6 +40,27 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
 
 
         #region Binding
+
+        private void Bind()
+        {
+            Bind(chkIff1, "Iff1");
+            Bind(chkIff2, "Iff2");
+            Bind(chkHalt, "Halt");
+            Bind(chkBint, "Bint");
+            Bind(chkFlagS, "FlagS");
+            Bind(chkFlagZ, "FlagZ");
+            Bind(chkFlag5, "Flag5");
+            Bind(chkFlagH, "FlagH");
+            Bind(chkFlag3, "Flag3");
+            Bind(chkFlagV, "FlagV");
+            Bind(chkFlagN, "FlagN");
+            Bind(chkFlagC, "FlagC");
+        }
+
+        private void Bind(CheckBox control, string name)
+        {
+            control.DataBindings.Add("Checked", _dataContext, name, false, DataSourceUpdateMode.OnPropertyChanged);
+        }
 
         private void DataContext_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -59,10 +83,6 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
                 case "Im": txtRegIm.Text = _dataContext.Im.ToString(); break;
                 case "Wz": txtRegWz.Text = FormatRegValue(_dataContext.Wz); break;
                 case "Lpc": txtRegLpc.Text = FormatRegValue(_dataContext.Lpc); break;
-                case "Iff1": chkIff1.Checked = _dataContext.Iff1; break;
-                case "Iff2": chkIff2.Checked = _dataContext.Iff2; break;
-                case "Halted": chkHalt.Checked = _dataContext.Halted; break;
-                case "Bint": chkBint.Checked = _dataContext.Bint; break;
                 case "Af": txtRegAf.Text = FormatRegValue(_dataContext.Af); break;
                 case "Af_": txtRegAf_.Text = FormatRegValue(_dataContext.Af_); break;
                 case "Hl": txtRegHl.Text = FormatRegValue(_dataContext.Hl); break;
@@ -73,14 +93,6 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
                 case "Bc_": txtRegBc_.Text = FormatRegValue(_dataContext.Bc_); break;
                 case "Ix": txtRegIx.Text = FormatRegValue(_dataContext.Ix); break;
                 case "Iy": txtRegIy.Text = FormatRegValue(_dataContext.Iy); break;
-                case "FlagS": chkFlagS.Checked = _dataContext.FlagS; break;
-                case "FlagZ": chkFlagZ.Checked = _dataContext.FlagZ; break;
-                case "Flag5": chkFlag5.Checked = _dataContext.Flag5; break;
-                case "FlagH": chkFlagH.Checked = _dataContext.FlagH; break;
-                case "Flag3": chkFlag3.Checked = _dataContext.Flag3; break;
-                case "FlagV": chkFlagV.Checked = _dataContext.FlagV; break;
-                case "FlagN": chkFlagN.Checked = _dataContext.FlagN; break;
-                case "FlagC": chkFlagC.Checked = _dataContext.FlagC; break;
             }
         }
 
