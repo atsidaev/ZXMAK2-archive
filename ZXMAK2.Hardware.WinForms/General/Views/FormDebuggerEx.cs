@@ -22,6 +22,7 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
     {
         private DebuggerViewModel _dataContext;
         private BindingManager _manager = new BindingManager();
+        private List<DockContent> _childs = new List<DockContent>();
         private bool _isCloseRequest;
         private bool _isUiRequest;
         private bool _isCloseCalled;
@@ -56,6 +57,13 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
             dasm.Activate();
 
+            _childs.Add(dasm);
+            _childs.Add(regs);
+            _childs.Add(memr);
+            dasm.FormClosed += (s, e) => _childs.Remove(dasm);
+            regs.FormClosed += (s, e) => _childs.Remove(regs);
+            memr.FormClosed += (s, e) => _childs.Remove(memr);
+
             Bind();
             KeyPreview = true;
         }
@@ -86,6 +94,10 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             _dataContext.CloseRequest -= DataContext_OnCloseRequest;
             _dataContext.Detach();
             base.OnFormClosed(e);
+            foreach (var child in _childs.ToArray())
+            {
+                child.Close();
+            }
         }
 
         protected override void OnKeyDown(KeyEventArgs e)

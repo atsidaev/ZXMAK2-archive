@@ -528,35 +528,22 @@ namespace ZXMAK2.Hardware.WinForms.Sprinter
 
         private void spectrum_OnBreakpoint(object sender, EventArgs args)
         {
-            if (base.Created)
+            if (!base.Created)
+                return;
+            BeginInvoke(new Action(() =>
             {
-                if (base.InvokeRequired)
-                {
-                    base.Invoke(new EventHandler(spectrum_OnBreakpoint), new object[] { sender, args });
-                }
-                else
-                {
-                    base.Show();
-                    UpdateCPU(true);
-                    dasmPanel.Focus();
-                    base.Select();
-                }
-            }
+                base.Show();
+                UpdateCPU(true);
+                dasmPanel.Focus();
+                base.Select();
+            }), null);
         }
 
         private void spectrum_OnUpdateState(object sender, EventArgs args)
         {
-            if (base.Created)
-            {
-                if (base.InvokeRequired)
-                {
-                    base.Invoke(new EventHandler(spectrum_OnUpdateState), new object[] { sender, args });
-                }
-                else
-                {
-                    UpdateCPU(true);
-                }
-            }
+            if (!base.Created)
+                return;
+            BeginInvoke(new Action(() => UpdateCPU(true)), null);
         }
 
         private void UpdateCPU(bool updatePC)

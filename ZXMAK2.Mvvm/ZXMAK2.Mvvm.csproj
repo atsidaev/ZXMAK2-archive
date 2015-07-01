@@ -44,6 +44,7 @@
     <Compile Include="BaseViewModel.cs" />
     <Compile Include="CommandDelegate.cs" />
     <Compile Include="ICommand.cs" />
+    <Compile Include="IValueConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
