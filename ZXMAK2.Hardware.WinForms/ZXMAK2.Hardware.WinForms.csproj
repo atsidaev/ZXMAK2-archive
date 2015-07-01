@@ -95,11 +95,11 @@
     <Compile Include="General\Views\FormRegisters.Designer.cs">
       <DependentUpon>FormRegisters.cs</DependentUpon>
     </Compile>
-    <Compile Include="General\Views\FormState.cs">
+    <Compile Include="General\Views\FormBreakpoints.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="General\Views\FormState.designer.cs">
-      <DependentUpon>FormState.cs</DependentUpon>
+    <Compile Include="General\Views\FormBreakpoints.designer.cs">
+      <DependentUpon>FormBreakpoints.cs</DependentUpon>
     </Compile>
     <Compile Include="General\ViewModels\MemoryViewModel.cs" />
     <Compile Include="General\ViewModels\RegistersViewModel.cs" />
@@ -141,8 +141,8 @@
     <EmbeddedResource Include="General\Views\FormRegisters.resx">
       <DependentUpon>FormRegisters.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="General\Views\FormState.resx">
-      <DependentUpon>FormState.cs</DependentUpon>
+    <EmbeddedResource Include="General\Views\FormBreakpoints.resx">
+      <DependentUpon>FormBreakpoints.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
