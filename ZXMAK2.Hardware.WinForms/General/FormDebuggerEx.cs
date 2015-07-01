@@ -13,6 +13,7 @@ using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.WinForms.Tools;
 using ZXMAK2.Host.WinForms.Views;
 using ZXMAK2.Resources;
+using ZXMAK2.Hardware.WinForms.General.Views;
 
 namespace ZXMAK2.Hardware.WinForms.General
 {
