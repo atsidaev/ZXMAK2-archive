@@ -10,12 +10,12 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
 {
     public class RegistersViewModel : BaseDebuggerViewModel
     {
-        private static readonly List<string> _regNames = new[]
-        {
-            "Pc", "Sp", "Ir", "Im", "Wz", "Lpc", 
-            "Af", "Af_", "Hl", "Hl_", "De", "De_", "Bc", "Bc_", "Ix", "Iy",
-            "Iff1", "Iff2", "Halted", "Bint",
-        }.ToList();
+        private static readonly List<string> _regNames = typeof(RegistersViewModel)
+            .GetProperties()
+            .Where(pi => pi.DeclaringType == typeof(RegistersViewModel))
+            .Where(pi => !pi.Name.StartsWith("Flag"))
+            .Select(pi => pi.Name)
+            .ToList();
 
         
         public RegistersViewModel(IDebuggable target, ISynchronizeInvoke synchronizeInvoke)
