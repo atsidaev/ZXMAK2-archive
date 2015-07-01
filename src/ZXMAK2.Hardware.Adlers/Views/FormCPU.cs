@@ -125,33 +125,20 @@ namespace ZXMAK2.Hardware.Adlers.Views
         {
             if (!Created)
                 return;
-            if (InvokeRequired)
-            {
-                Invoke(new EventHandler(spectrum_OnUpdateState), sender, args);
-                return;
-            }
-            else
-            {
-                UpdateCPU(true);
-            }
+            BeginInvoke(new Action(()=>UpdateCPU(true)), null);
         }
         private void spectrum_OnBreakpoint(object sender, EventArgs args)
         {
             //LogAgent.Info("spectrum_OnBreakpoint {0}", sender);
             if (!Created)
                 return;
-            if (InvokeRequired)
-            {
-                Invoke(new EventHandler(spectrum_OnBreakpoint), sender, args);
-                return;
-            }
-            else
-            {
-                Show();
-                UpdateCPU(true);
-                dasmPanel.Focus();
-                Select();
-            }
+            BeginInvoke(new Action(() =>
+                {
+                    Show();
+                    UpdateCPU(true);
+                    dasmPanel.Focus();
+                    Select();
+                }), null);
         }
 
         private void UpdateStack()

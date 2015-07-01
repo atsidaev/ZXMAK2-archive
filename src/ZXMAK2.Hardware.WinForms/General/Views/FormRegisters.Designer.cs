@@ -115,6 +115,7 @@
             this.txtRegPc.WordWrap = false;
             this.txtRegPc.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegPc.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegPc.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegPc.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // txtRegSp
@@ -129,6 +130,7 @@
             this.txtRegSp.WordWrap = false;
             this.txtRegSp.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegSp.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegSp.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegSp.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegSp
@@ -151,7 +153,7 @@
             this.lblTitleGeneral.Margin = new System.Windows.Forms.Padding(0);
             this.lblTitleGeneral.Name = "lblTitleGeneral";
             this.lblTitleGeneral.Size = new System.Drawing.Size(51, 13);
-            this.lblTitleGeneral.TabIndex = 9;
+            this.lblTitleGeneral.TabIndex = 13;
             this.lblTitleGeneral.Text = "General";
             // 
             // txtRegAf_
@@ -161,11 +163,12 @@
             this.txtRegAf_.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegAf_.Name = "txtRegAf_";
             this.txtRegAf_.Size = new System.Drawing.Size(50, 13);
-            this.txtRegAf_.TabIndex = 14;
+            this.txtRegAf_.TabIndex = 18;
             this.txtRegAf_.Text = "#FFFF";
             this.txtRegAf_.WordWrap = false;
             this.txtRegAf_.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegAf_.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegAf_.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegAf_.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegAf_
@@ -176,7 +179,7 @@
             this.lblRegAf_.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegAf_.Name = "lblRegAf_";
             this.lblRegAf_.Size = new System.Drawing.Size(29, 13);
-            this.lblRegAf_.TabIndex = 13;
+            this.lblRegAf_.TabIndex = 17;
             this.lblRegAf_.Text = "AF\':";
             // 
             // txtRegAf
@@ -186,11 +189,12 @@
             this.txtRegAf.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegAf.Name = "txtRegAf";
             this.txtRegAf.Size = new System.Drawing.Size(50, 13);
-            this.txtRegAf.TabIndex = 12;
+            this.txtRegAf.TabIndex = 16;
             this.txtRegAf.Text = "#FFFF";
             this.txtRegAf.WordWrap = false;
             this.txtRegAf.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegAf.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegAf.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegAf.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegAf
@@ -201,7 +205,7 @@
             this.lblRegAf.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegAf.Name = "lblRegAf";
             this.lblRegAf.Size = new System.Drawing.Size(26, 13);
-            this.lblRegAf.TabIndex = 11;
+            this.lblRegAf.TabIndex = 15;
             this.lblRegAf.Text = "AF:";
             // 
             // txtRegHl_
@@ -211,11 +215,12 @@
             this.txtRegHl_.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegHl_.Name = "txtRegHl_";
             this.txtRegHl_.Size = new System.Drawing.Size(50, 13);
-            this.txtRegHl_.TabIndex = 18;
+            this.txtRegHl_.TabIndex = 22;
             this.txtRegHl_.Text = "#FFFF";
             this.txtRegHl_.WordWrap = false;
             this.txtRegHl_.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegHl_.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegHl_.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegHl_.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegHl_
@@ -226,7 +231,7 @@
             this.lblRegHl_.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegHl_.Name = "lblRegHl_";
             this.lblRegHl_.Size = new System.Drawing.Size(30, 13);
-            this.lblRegHl_.TabIndex = 17;
+            this.lblRegHl_.TabIndex = 21;
             this.lblRegHl_.Text = "HL\':";
             // 
             // txtRegHl
@@ -236,11 +241,12 @@
             this.txtRegHl.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegHl.Name = "txtRegHl";
             this.txtRegHl.Size = new System.Drawing.Size(50, 13);
-            this.txtRegHl.TabIndex = 16;
+            this.txtRegHl.TabIndex = 20;
             this.txtRegHl.Text = "#FFFF";
             this.txtRegHl.WordWrap = false;
             this.txtRegHl.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegHl.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegHl.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegHl.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegHl
@@ -251,7 +257,7 @@
             this.lblRegHl.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegHl.Name = "lblRegHl";
             this.lblRegHl.Size = new System.Drawing.Size(27, 13);
-            this.lblRegHl.TabIndex = 15;
+            this.lblRegHl.TabIndex = 19;
             this.lblRegHl.Text = "HL:";
             // 
             // txtRegDe_
@@ -261,11 +267,12 @@
             this.txtRegDe_.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegDe_.Name = "txtRegDe_";
             this.txtRegDe_.Size = new System.Drawing.Size(50, 13);
-            this.txtRegDe_.TabIndex = 22;
+            this.txtRegDe_.TabIndex = 26;
             this.txtRegDe_.Text = "#FFFF";
             this.txtRegDe_.WordWrap = false;
             this.txtRegDe_.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegDe_.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegDe_.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegDe_.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegDe_
@@ -276,7 +283,7 @@
             this.lblRegDe_.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegDe_.Name = "lblRegDe_";
             this.lblRegDe_.Size = new System.Drawing.Size(31, 13);
-            this.lblRegDe_.TabIndex = 21;
+            this.lblRegDe_.TabIndex = 25;
             this.lblRegDe_.Text = "DE\':";
             // 
             // txtRegDe
@@ -286,11 +293,12 @@
             this.txtRegDe.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegDe.Name = "txtRegDe";
             this.txtRegDe.Size = new System.Drawing.Size(50, 13);
-            this.txtRegDe.TabIndex = 20;
+            this.txtRegDe.TabIndex = 24;
             this.txtRegDe.Text = "#FFFF";
             this.txtRegDe.WordWrap = false;
             this.txtRegDe.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegDe.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegDe.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegDe.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegDe
@@ -301,7 +309,7 @@
             this.lblRegDe.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegDe.Name = "lblRegDe";
             this.lblRegDe.Size = new System.Drawing.Size(28, 13);
-            this.lblRegDe.TabIndex = 19;
+            this.lblRegDe.TabIndex = 23;
             this.lblRegDe.Text = "DE:";
             // 
             // txtRegBc_
@@ -311,11 +319,12 @@
             this.txtRegBc_.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegBc_.Name = "txtRegBc_";
             this.txtRegBc_.Size = new System.Drawing.Size(50, 13);
-            this.txtRegBc_.TabIndex = 26;
+            this.txtRegBc_.TabIndex = 30;
             this.txtRegBc_.Text = "#FFFF";
             this.txtRegBc_.WordWrap = false;
             this.txtRegBc_.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegBc_.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegBc_.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegBc_.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegBc_
@@ -326,7 +335,7 @@
             this.lblRegBc_.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegBc_.Name = "lblRegBc_";
             this.lblRegBc_.Size = new System.Drawing.Size(30, 13);
-            this.lblRegBc_.TabIndex = 25;
+            this.lblRegBc_.TabIndex = 29;
             this.lblRegBc_.Text = "BC\':";
             // 
             // txtRegBc
@@ -336,11 +345,12 @@
             this.txtRegBc.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegBc.Name = "txtRegBc";
             this.txtRegBc.Size = new System.Drawing.Size(50, 13);
-            this.txtRegBc.TabIndex = 24;
+            this.txtRegBc.TabIndex = 28;
             this.txtRegBc.Text = "#FFFF";
             this.txtRegBc.WordWrap = false;
             this.txtRegBc.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegBc.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegBc.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegBc.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegBc
@@ -351,7 +361,7 @@
             this.lblRegBc.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegBc.Name = "lblRegBc";
             this.lblRegBc.Size = new System.Drawing.Size(27, 13);
-            this.lblRegBc.TabIndex = 23;
+            this.lblRegBc.TabIndex = 27;
             this.lblRegBc.Text = "BC:";
             // 
             // txtRegIy
@@ -361,11 +371,12 @@
             this.txtRegIy.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegIy.Name = "txtRegIy";
             this.txtRegIy.Size = new System.Drawing.Size(50, 13);
-            this.txtRegIy.TabIndex = 30;
+            this.txtRegIy.TabIndex = 34;
             this.txtRegIy.Text = "#FFFF";
             this.txtRegIy.WordWrap = false;
             this.txtRegIy.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegIy.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegIy.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegIy.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegIy
@@ -376,7 +387,7 @@
             this.lblRegIy.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegIy.Name = "lblRegIy";
             this.lblRegIy.Size = new System.Drawing.Size(23, 13);
-            this.lblRegIy.TabIndex = 29;
+            this.lblRegIy.TabIndex = 33;
             this.lblRegIy.Text = "IY:";
             // 
             // txtRegIx
@@ -386,11 +397,12 @@
             this.txtRegIx.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegIx.Name = "txtRegIx";
             this.txtRegIx.Size = new System.Drawing.Size(50, 13);
-            this.txtRegIx.TabIndex = 28;
+            this.txtRegIx.TabIndex = 32;
             this.txtRegIx.Text = "#FFFF";
             this.txtRegIx.WordWrap = false;
             this.txtRegIx.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegIx.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegIx.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegIx.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegIx
@@ -401,7 +413,7 @@
             this.lblRegIx.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegIx.Name = "lblRegIx";
             this.lblRegIx.Size = new System.Drawing.Size(23, 13);
-            this.lblRegIx.TabIndex = 27;
+            this.lblRegIx.TabIndex = 31;
             this.lblRegIx.Text = "IX:";
             // 
             // txtRegIm
@@ -417,6 +429,7 @@
             this.txtRegIm.WordWrap = false;
             this.txtRegIm.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegIm.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegIm.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegIm.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegIm
@@ -442,6 +455,7 @@
             this.txtRegIr.WordWrap = false;
             this.txtRegIr.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegIr.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegIr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegIr.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegIr
@@ -463,7 +477,7 @@
             this.chkFlagS.Margin = new System.Windows.Forms.Padding(0);
             this.chkFlagS.Name = "chkFlagS";
             this.chkFlagS.Size = new System.Drawing.Size(18, 31);
-            this.chkFlagS.TabIndex = 32;
+            this.chkFlagS.TabIndex = 37;
             this.chkFlagS.TabStop = false;
             this.chkFlagS.Text = "S";
             this.chkFlagS.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -477,7 +491,7 @@
             this.chkFlagZ.Margin = new System.Windows.Forms.Padding(0);
             this.chkFlagZ.Name = "chkFlagZ";
             this.chkFlagZ.Size = new System.Drawing.Size(18, 31);
-            this.chkFlagZ.TabIndex = 33;
+            this.chkFlagZ.TabIndex = 38;
             this.chkFlagZ.TabStop = false;
             this.chkFlagZ.Text = "Z";
             this.chkFlagZ.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -491,7 +505,7 @@
             this.chkFlag5.Margin = new System.Windows.Forms.Padding(0);
             this.chkFlag5.Name = "chkFlag5";
             this.chkFlag5.Size = new System.Drawing.Size(17, 31);
-            this.chkFlag5.TabIndex = 34;
+            this.chkFlag5.TabIndex = 39;
             this.chkFlag5.TabStop = false;
             this.chkFlag5.Text = "5";
             this.chkFlag5.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -505,7 +519,7 @@
             this.chkFlagH.Margin = new System.Windows.Forms.Padding(0);
             this.chkFlagH.Name = "chkFlagH";
             this.chkFlagH.Size = new System.Drawing.Size(19, 31);
-            this.chkFlagH.TabIndex = 35;
+            this.chkFlagH.TabIndex = 40;
             this.chkFlagH.TabStop = false;
             this.chkFlagH.Text = "H";
             this.chkFlagH.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -519,7 +533,7 @@
             this.chkFlag3.Margin = new System.Windows.Forms.Padding(0);
             this.chkFlag3.Name = "chkFlag3";
             this.chkFlag3.Size = new System.Drawing.Size(17, 31);
-            this.chkFlag3.TabIndex = 36;
+            this.chkFlag3.TabIndex = 41;
             this.chkFlag3.TabStop = false;
             this.chkFlag3.Text = "3";
             this.chkFlag3.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -533,7 +547,7 @@
             this.chkFlagV.Margin = new System.Windows.Forms.Padding(0);
             this.chkFlagV.Name = "chkFlagV";
             this.chkFlagV.Size = new System.Drawing.Size(18, 31);
-            this.chkFlagV.TabIndex = 37;
+            this.chkFlagV.TabIndex = 42;
             this.chkFlagV.TabStop = false;
             this.chkFlagV.Text = "V";
             this.chkFlagV.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -547,7 +561,7 @@
             this.chkFlagN.Margin = new System.Windows.Forms.Padding(0);
             this.chkFlagN.Name = "chkFlagN";
             this.chkFlagN.Size = new System.Drawing.Size(19, 31);
-            this.chkFlagN.TabIndex = 38;
+            this.chkFlagN.TabIndex = 43;
             this.chkFlagN.TabStop = false;
             this.chkFlagN.Text = "N";
             this.chkFlagN.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -561,7 +575,7 @@
             this.chkFlagC.Margin = new System.Windows.Forms.Padding(0);
             this.chkFlagC.Name = "chkFlagC";
             this.chkFlagC.Size = new System.Drawing.Size(18, 31);
-            this.chkFlagC.TabIndex = 39;
+            this.chkFlagC.TabIndex = 44;
             this.chkFlagC.TabStop = false;
             this.chkFlagC.Text = "C";
             this.chkFlagC.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -576,7 +590,7 @@
             this.lblTitleFlags.Margin = new System.Windows.Forms.Padding(0);
             this.lblTitleFlags.Name = "lblTitleFlags";
             this.lblTitleFlags.Size = new System.Drawing.Size(37, 13);
-            this.lblTitleFlags.TabIndex = 30;
+            this.lblTitleFlags.TabIndex = 35;
             this.lblTitleFlags.Text = "Flags";
             // 
             // txtRegWz
@@ -586,11 +600,12 @@
             this.txtRegWz.Margin = new System.Windows.Forms.Padding(0);
             this.txtRegWz.Name = "txtRegWz";
             this.txtRegWz.Size = new System.Drawing.Size(50, 13);
-            this.txtRegWz.TabIndex = 41;
+            this.txtRegWz.TabIndex = 10;
             this.txtRegWz.Text = "#FFFF";
             this.txtRegWz.WordWrap = false;
             this.txtRegWz.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegWz.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegWz.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegWz.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegsWz
@@ -601,7 +616,7 @@
             this.lblRegsWz.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegsWz.Name = "lblRegsWz";
             this.lblRegsWz.Size = new System.Drawing.Size(31, 13);
-            this.lblRegsWz.TabIndex = 40;
+            this.lblRegsWz.TabIndex = 9;
             this.lblRegsWz.Text = "WZ:";
             // 
             // chkHalt
@@ -611,7 +626,7 @@
             this.chkHalt.Margin = new System.Windows.Forms.Padding(0);
             this.chkHalt.Name = "chkHalt";
             this.chkHalt.Size = new System.Drawing.Size(57, 17);
-            this.chkHalt.TabIndex = 46;
+            this.chkHalt.TabIndex = 47;
             this.chkHalt.TabStop = false;
             this.chkHalt.Text = "Halted";
             this.chkHalt.UseVisualStyleBackColor = true;
@@ -623,7 +638,7 @@
             this.chkIff1.Margin = new System.Windows.Forms.Padding(0);
             this.chkIff1.Name = "chkIff1";
             this.chkIff1.Size = new System.Drawing.Size(47, 17);
-            this.chkIff1.TabIndex = 44;
+            this.chkIff1.TabIndex = 45;
             this.chkIff1.TabStop = false;
             this.chkIff1.Text = "IFF1";
             this.chkIff1.UseVisualStyleBackColor = true;
@@ -634,7 +649,7 @@
             this.chkIff2.Location = new System.Drawing.Point(102, 268);
             this.chkIff2.Name = "chkIff2";
             this.chkIff2.Size = new System.Drawing.Size(47, 17);
-            this.chkIff2.TabIndex = 45;
+            this.chkIff2.TabIndex = 46;
             this.chkIff2.TabStop = false;
             this.chkIff2.Text = "IFF2";
             this.chkIff2.UseVisualStyleBackColor = true;
@@ -648,11 +663,12 @@
             this.txtRegLpc.Name = "txtRegLpc";
             this.txtRegLpc.ReadOnly = true;
             this.txtRegLpc.Size = new System.Drawing.Size(50, 13);
-            this.txtRegLpc.TabIndex = 43;
+            this.txtRegLpc.TabIndex = 12;
             this.txtRegLpc.Text = "#FFFF";
             this.txtRegLpc.WordWrap = false;
             this.txtRegLpc.Click += new System.EventHandler(this.txtReg_OnClick);
             this.txtRegLpc.Enter += new System.EventHandler(this.txtReg_OnEnter);
+            this.txtRegLpc.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtReg_KeyPress);
             this.txtRegLpc.Leave += new System.EventHandler(this.txtReg_OnLeave);
             // 
             // lblRegLpc
@@ -663,7 +679,7 @@
             this.lblRegLpc.Margin = new System.Windows.Forms.Padding(0);
             this.lblRegLpc.Name = "lblRegLpc";
             this.lblRegLpc.Size = new System.Drawing.Size(34, 13);
-            this.lblRegLpc.TabIndex = 42;
+            this.lblRegLpc.TabIndex = 11;
             this.lblRegLpc.Text = "LPC:";
             // 
             // chkBint
@@ -672,7 +688,7 @@
             this.chkBint.Location = new System.Drawing.Point(102, 285);
             this.chkBint.Name = "chkBint";
             this.chkBint.Size = new System.Drawing.Size(51, 17);
-            this.chkBint.TabIndex = 47;
+            this.chkBint.TabIndex = 48;
             this.chkBint.TabStop = false;
             this.chkBint.Text = "BINT";
             this.chkBint.UseVisualStyleBackColor = true;
@@ -688,7 +704,7 @@
             this.separator3.Orientation = System.Windows.Forms.Orientation.Horizontal;
             this.separator3.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.separator3.Size = new System.Drawing.Size(175, 6);
-            this.separator3.TabIndex = 31;
+            this.separator3.TabIndex = 36;
             this.separator3.TabStop = false;
             this.separator3.Text = "separator3";
             // 
@@ -703,7 +719,7 @@
             this.separator2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             this.separator2.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.separator2.Size = new System.Drawing.Size(175, 6);
-            this.separator2.TabIndex = 10;
+            this.separator2.TabIndex = 14;
             this.separator2.TabStop = false;
             this.separator2.Text = "separator2";
             // 

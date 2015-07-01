@@ -12,6 +12,7 @@ namespace ZXMAK2.Engine.Interfaces
         void DoStepOver();
         void DoRun();
         void DoStop();
+        void RaiseUpdateState();
 
         byte ReadMemory(ushort addr);
         void WriteMemory(ushort addr, byte value);

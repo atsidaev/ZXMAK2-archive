@@ -313,6 +313,7 @@ namespace ZXMAK2.Engine
 
                     m_ula = null;
                 }
+                OnUpdateState(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
@@ -423,6 +424,11 @@ namespace ZXMAK2.Engine
                 thread.Join();
             }
             PushFrame();
+        }
+
+        public void RaiseUpdateState()
+        {
+            Spectrum.RaiseUpdateState();
         }
 
         public byte ReadMemory(ushort addr)

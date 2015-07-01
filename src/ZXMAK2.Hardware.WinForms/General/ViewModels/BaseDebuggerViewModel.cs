@@ -47,28 +47,21 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
 
         protected IDebuggable Target { get; private set; }
 
-        protected void Invoke(Action action)
+        protected void InvokeAsync(Action action)
         {
-            if (_synchronizeInvoke.InvokeRequired)
-            {
-                _synchronizeInvoke.Invoke(action, null);
-            }
-            else
-            {
-                action();
-            }
+            _synchronizeInvoke.BeginInvoke(action, null);
         }
 
         private void Target_OnUpdateState(object sender, EventArgs e)
         {
-            Invoke(OnTargetStateChanged);
+            InvokeAsync(OnTargetStateChanged);
         }
 
         protected virtual void OnTargetStateChanged()
         {
             IsRunning = Target == null || Target.IsRunning;
         }
-        
+
         #endregion Private
     }
 }

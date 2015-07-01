@@ -23,39 +23,69 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
         {
         }
 
-        public event EventHandler TargetStateChanged;
-
         
         #region Properties
 
         public ushort Pc
         {
             get { return Target.CPU.regs.PC; }
-            set { PropertyChangeVal("Pc", ref Target.CPU.regs.PC, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Pc", ref Target.CPU.regs.PC, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Sp
         {
             get { return Target.CPU.regs.SP; }
-            set { PropertyChangeVal("Sp", ref Target.CPU.regs.SP, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Sp", ref Target.CPU.regs.SP, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Ir
         {
             get { return Target.CPU.regs.IR; }
-            set { PropertyChangeVal("Ir", ref Target.CPU.regs.IR, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Ir", ref Target.CPU.regs.IR, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public int Im
         {
             get { return Target.CPU.IM; }
-            set { PropertyChangeVal("Im", ref Target.CPU.IM, (byte)(value % 3)); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                if (value >= 0 && value <= 2)
+                {
+                    PropertyChangeVal("Im", ref Target.CPU.IM, (byte)(value % 3));
+                }
+                else
+                {
+                    OnPropertyChanged("Im");
+                }
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Wz
         {
             get { return Target.CPU.regs.MW; }
-            set { PropertyChangeVal("Wz", ref Target.CPU.regs.MW, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Wz", ref Target.CPU.regs.MW, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Lpc
@@ -66,85 +96,155 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
         public ushort Af
         {
             get { return Target.CPU.regs.AF; }
-            set { PropertyChangeVal("Af", ref Target.CPU.regs.AF, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Af", ref Target.CPU.regs.AF, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Af_
         {
             get { return Target.CPU.regs._AF; }
-            set { PropertyChangeVal("Af_", ref Target.CPU.regs._AF, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Af_", ref Target.CPU.regs._AF, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Hl
         {
             get { return Target.CPU.regs.HL; }
-            set { PropertyChangeVal("Hl", ref Target.CPU.regs.HL, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Hl", ref Target.CPU.regs.HL, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Hl_
         {
             get { return Target.CPU.regs._HL; }
-            set { PropertyChangeVal("Hl_", ref Target.CPU.regs._HL, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Hl_", ref Target.CPU.regs._HL, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort De
         {
             get { return Target.CPU.regs.DE; }
-            set { PropertyChangeVal("De", ref Target.CPU.regs.DE, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("De", ref Target.CPU.regs.DE, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort De_
         {
             get { return Target.CPU.regs._DE; }
-            set { PropertyChangeVal("De_", ref Target.CPU.regs._DE, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("De_", ref Target.CPU.regs._DE, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Bc
         {
             get { return Target.CPU.regs.BC; }
-            set { PropertyChangeVal("Bc", ref Target.CPU.regs.BC, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Bc", ref Target.CPU.regs.BC, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Bc_
         {
             get { return Target.CPU.regs._BC; }
-            set { PropertyChangeVal("Bc_", ref Target.CPU.regs._BC, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Bc_", ref Target.CPU.regs._BC, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Ix
         {
             get { return Target.CPU.regs.IX; }
-            set { PropertyChangeVal("Ix", ref Target.CPU.regs.IX, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Ix", ref Target.CPU.regs.IX, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public ushort Iy
         {
             get { return Target.CPU.regs.IY; }
-            set { PropertyChangeVal("Iy", ref Target.CPU.regs.IY, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Iy", ref Target.CPU.regs.IY, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public bool Iff1
         {
             get { return Target.CPU.IFF1; }
-            set { PropertyChangeVal("Iff1", ref Target.CPU.IFF1, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Iff1", ref Target.CPU.IFF1, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public bool Iff2
         {
             get { return Target.CPU.IFF2; }
-            set { PropertyChangeVal("Iff2", ref Target.CPU.IFF2, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Iff2", ref Target.CPU.IFF2, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public bool Halt
         {
             get { return Target.CPU.HALTED; }
-            set { PropertyChangeVal("Halt", ref Target.CPU.HALTED, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Halt", ref Target.CPU.HALTED, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         public bool Bint
         {
             get { return Target.CPU.BINT; }
-            set { PropertyChangeVal("Bint", ref Target.CPU.BINT, value); }
+            set 
+            {
+                if (Target.IsRunning) return;
+                PropertyChangeVal("Bint", ref Target.CPU.BINT, value);
+                Target.RaiseUpdateState();
+            }
         }
 
         #region Flags
@@ -215,13 +315,11 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
         protected override void OnTargetStateChanged()
         {
             base.OnTargetStateChanged();
-            _regNames.ForEach(OnPropertyChanged);
-            
-            var handler = TargetStateChanged;
-            if (handler != null)
+            if (IsRunning)
             {
-                handler(this, EventArgs.Empty);
+                return;
             }
+            _regNames.ForEach(OnPropertyChanged);
         }
 
         #endregion Private
