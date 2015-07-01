@@ -77,28 +77,28 @@
     <Compile Include="General\FormDebuggerEx.Designer.cs">
       <DependentUpon>FormDebuggerEx.cs</DependentUpon>
     </Compile>
-    <Compile Include="General\FormDisassembly.cs">
+    <Compile Include="General\Views\FormDisassembly.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="General\FormDisassembly.Designer.cs">
+    <Compile Include="General\Views\FormDisassembly.Designer.cs">
       <DependentUpon>FormDisassembly.cs</DependentUpon>
     </Compile>
-    <Compile Include="General\FormMemory.cs">
+    <Compile Include="General\Views\FormMemory.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="General\FormMemory.Designer.cs">
+    <Compile Include="General\Views\FormMemory.Designer.cs">
       <DependentUpon>FormMemory.cs</DependentUpon>
     </Compile>
-    <Compile Include="General\FormRegisters.cs">
+    <Compile Include="General\Views\FormRegisters.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="General\FormRegisters.Designer.cs">
+    <Compile Include="General\Views\FormRegisters.Designer.cs">
       <DependentUpon>FormRegisters.cs</DependentUpon>
     </Compile>
-    <Compile Include="General\FormState.cs">
+    <Compile Include="General\Views\FormState.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="General\FormState.designer.cs">
+    <Compile Include="General\Views\FormState.designer.cs">
       <DependentUpon>FormState.cs</DependentUpon>
     </Compile>
     <Compile Include="General\ViewModels\MemoryViewModel.cs" />
@@ -132,16 +132,16 @@
     <EmbeddedResource Include="General\FormDebuggerEx.resx">
       <DependentUpon>FormDebuggerEx.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="General\FormDisassembly.resx">
+    <EmbeddedResource Include="General\Views\FormDisassembly.resx">
       <DependentUpon>FormDisassembly.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="General\FormMemory.resx">
+    <EmbeddedResource Include="General\Views\FormMemory.resx">
       <DependentUpon>FormMemory.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="General\FormRegisters.resx">
+    <EmbeddedResource Include="General\Views\FormRegisters.resx">
       <DependentUpon>FormRegisters.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="General\FormState.resx">
+    <EmbeddedResource Include="General\Views\FormState.resx">
       <DependentUpon>FormState.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
