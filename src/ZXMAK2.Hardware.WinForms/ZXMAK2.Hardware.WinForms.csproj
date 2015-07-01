@@ -60,7 +60,7 @@
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
     </Compile>
     <Compile Include="General\ViewModels\BaseDebuggerViewModel.cs" />
-    <Compile Include="General\DebuggerViewModel.cs" />
+    <Compile Include="General\ViewModels\DebuggerViewModel.cs" />
     <Compile Include="General\DebugPanels.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -71,10 +71,10 @@
     <Compile Include="General\FormCPU.Designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
-    <Compile Include="General\FormDebuggerEx.cs">
+    <Compile Include="General\Views\FormDebuggerEx.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="General\FormDebuggerEx.Designer.cs">
+    <Compile Include="General\Views\FormDebuggerEx.Designer.cs">
       <DependentUpon>FormDebuggerEx.cs</DependentUpon>
     </Compile>
     <Compile Include="General\Views\FormDisassembly.cs">
@@ -129,7 +129,7 @@
     <EmbeddedResource Include="General\FormCPU.resx">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="General\FormDebuggerEx.resx">
+    <EmbeddedResource Include="General\Views\FormDebuggerEx.resx">
       <DependentUpon>FormDebuggerEx.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="General\Views\FormDisassembly.resx">
