@@ -1,4 +1,4 @@
-﻿namespace ZXMAK2.Hardware.WinForms.General
+﻿namespace ZXMAK2.Hardware.WinForms.General.Views
 {
     partial class FormDebuggerEx
     {

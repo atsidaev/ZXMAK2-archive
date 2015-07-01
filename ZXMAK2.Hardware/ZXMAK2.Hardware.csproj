@@ -71,6 +71,7 @@
     <Compile Include="General\BetaDiskInterface.cs" />
     <Compile Include="General\CmosGluck.cs" />
     <Compile Include="General\Debugger.cs" />
+    <Compile Include="General\DebuggerEx.cs" />
     <Compile Include="General\FddController.cs" />
     <Compile Include="General\HayesModem.cs" />
     <Compile Include="General\IdeSmuc.cs" />
