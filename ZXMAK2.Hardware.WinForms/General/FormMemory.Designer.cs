@@ -28,28 +28,29 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataPanel1 = new ZXMAK2.Hardware.WinForms.General.DataPanel();
+            this.dataPanel = new ZXMAK2.Hardware.WinForms.General.DataPanel();
             this.SuspendLayout();
             // 
-            // dataPanel1
+            // dataPanel
             // 
-            this.dataPanel1.ColCount = 8;
-            this.dataPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataPanel1.Font = new System.Drawing.Font("Courier New", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.dataPanel1.Location = new System.Drawing.Point(0, 0);
-            this.dataPanel1.Name = "dataPanel1";
-            this.dataPanel1.Size = new System.Drawing.Size(450, 151);
-            this.dataPanel1.TabIndex = 0;
-            this.dataPanel1.Text = "dataPanel1";
-            this.dataPanel1.TopAddress = ((ushort)(0));
+            this.dataPanel.ColCount = 16;
+            this.dataPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataPanel.Font = new System.Drawing.Font("Courier New", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.dataPanel.Location = new System.Drawing.Point(0, 0);
+            this.dataPanel.Name = "dataPanel";
+            this.dataPanel.Size = new System.Drawing.Size(676, 151);
+            this.dataPanel.TabIndex = 0;
+            this.dataPanel.Text = "dataPanel1";
+            this.dataPanel.TopAddress = ((ushort)(0));
+            this.dataPanel.GetData += new ZXMAK2.Hardware.WinForms.General.DataPanel.ONGETDATACPU(this.DasmPanel_OnGetData);
             // 
             // FormMemory
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(450, 151);
-            this.Controls.Add(this.dataPanel1);
+            this.ClientSize = new System.Drawing.Size(676, 151);
+            this.Controls.Add(this.dataPanel);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.ForeColor = System.Drawing.Color.Black;
             this.Name = "FormMemory";
@@ -61,6 +62,6 @@
 
         #endregion
 
-        private DataPanel dataPanel1;
+        private DataPanel dataPanel;
     }
 }

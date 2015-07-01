@@ -48,6 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Icons\DebuggerClose.png" />
     <Content Include="Icons\HardwareTapeAutoplay.png" />
     <Content Include="Icons\DebuggerBreak.png" />
     <Content Include="Icons\DebuggerContinue.png" />
