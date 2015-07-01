@@ -13,11 +13,12 @@ using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.WinForms.Tools;
 using ZXMAK2.Host.WinForms.Views;
 using ZXMAK2.Resources;
-using ZXMAK2.Hardware.WinForms.General.Views;
+using ZXMAK2.Hardware.WinForms.General.ViewModels;
 
-namespace ZXMAK2.Hardware.WinForms.General
+
+namespace ZXMAK2.Hardware.WinForms.General.Views
 {
-    public partial class FormDebuggerEx : FormView, IDebuggerGeneralView
+    public partial class FormDebuggerEx : FormView, IDebuggerExView
     {
         private DebuggerViewModel _dataContext;
         private BindingManager _manager = new BindingManager();

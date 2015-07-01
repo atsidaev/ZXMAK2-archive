@@ -26,6 +26,10 @@ namespace ZXMAK2.Host.Presentation.Interfaces
     {
     }
 
+    public interface IDebuggerExView : IView
+    {
+    }
+
     public interface IDebuggerSprinterView : IView
     {
     }

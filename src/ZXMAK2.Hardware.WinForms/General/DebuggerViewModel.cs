@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Mvvm;
-using ZXMAK2.Hardware.WinForms.General.ViewModels;
 
-namespace ZXMAK2.Hardware.WinForms.General
+namespace ZXMAK2.Hardware.WinForms.General.ViewModels
 {
     public class DebuggerViewModel : BaseDebuggerViewModel
     {
