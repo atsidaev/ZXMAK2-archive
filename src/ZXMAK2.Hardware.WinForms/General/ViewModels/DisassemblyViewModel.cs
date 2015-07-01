@@ -6,7 +6,7 @@ using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Mvvm;
 using ZXMAK2.Engine.Cpu.Tools;
 
-namespace ZXMAK2.Hardware.WinForms.General
+namespace ZXMAK2.Hardware.WinForms.General.ViewModels
 {
     public class DisassemblyViewModel : BaseDebuggerViewModel
     {

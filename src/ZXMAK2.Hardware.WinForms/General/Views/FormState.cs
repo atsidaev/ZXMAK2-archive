@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace ZXMAK2.Hardware.WinForms.General
+namespace ZXMAK2.Hardware.WinForms.General.Views
 {
     public partial class FormState : DockContent
     {

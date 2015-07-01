@@ -6,8 +6,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Hardware.WinForms.General.ViewModels;
 
-namespace ZXMAK2.Hardware.WinForms.General
+namespace ZXMAK2.Hardware.WinForms.General.Views
 {
     public partial class FormMemory : DockContent
     {

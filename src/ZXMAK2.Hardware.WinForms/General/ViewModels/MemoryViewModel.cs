@@ -5,7 +5,7 @@ using System.ComponentModel;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Mvvm;
 
-namespace ZXMAK2.Hardware.WinForms.General
+namespace ZXMAK2.Hardware.WinForms.General.ViewModels
 {
     public class MemoryViewModel : BaseDebuggerViewModel
     {
