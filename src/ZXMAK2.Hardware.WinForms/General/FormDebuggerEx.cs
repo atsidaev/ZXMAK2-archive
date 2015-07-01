@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using ZXMAK2.Engine.Interfaces;
@@ -40,21 +39,23 @@ namespace ZXMAK2.Hardware.WinForms.General
             var dasm = new FormDisassembly();
             var memr = new FormMemory();
             var regs = new FormRegisters();
-            var stat = new FormState();
+
+            dasm.Attach(debugTarget);
+            regs.Attach(debugTarget);
+            memr.Attach(debugTarget);
 
             //regs.Show(dockPanel, DockState.DockRight);
-            //stat.Show(regs.Pane, DockAlignment.Bottom, 0.3);
             //dasm.Show(dockPanel, DockState.Document);
             //memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
             
             // Mono compatible
             dasm.Show(dockPanel, DockState.Document);
+            regs.Show(dasm.Pane, DockAlignment.Right, 0.24);
             memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
-            regs.Show(dasm.Pane, DockAlignment.Right, 0.2);
-            stat.Show(memr.Pane, DockAlignment.Right, 0.2);
-
+            dasm.Activate();
 
             Bind();
+            KeyPreview = true;
         }
 
         private void LoadImages()
@@ -67,8 +68,9 @@ namespace ZXMAK2.Hardware.WinForms.General
             toolStripStepOver.Image = ResourceImages.DebuggerStepOver;
             toolStripStepOut.Image = ResourceImages.DebuggerStepOut;
             toolStripShowNext.Image = ResourceImages.DebuggerShowNext;
-            toolStripShowBreakpoints.Image = ResourceImages.DebuggerShowBreakpoints;
+            toolStripBreakpoints.Image = ResourceImages.DebuggerShowBreakpoints;
 
+            menuFileClose.Image = ResourceImages.DebuggerClose;
             menuDebugContinue.Image = ResourceImages.DebuggerContinue;
             menuDebugBreak.Image = ResourceImages.DebuggerBreak;
             menuDebugStepInto.Image = ResourceImages.DebuggerStepInto;
@@ -84,6 +86,20 @@ namespace ZXMAK2.Hardware.WinForms.General
             base.OnFormClosed(e);
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.KeyCode == Keys.F7 && _dataContext.CommandStepInto.CanExecute(null))
+            {
+                _dataContext.CommandStepInto.Execute(null);
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.F8 && _dataContext.CommandStepOver.CanExecute(null))
+            {
+                _dataContext.CommandStepOver.Execute(null);
+                e.Handled = true;
+            }
+        }
         
         #region Close Behavior
 
@@ -154,6 +170,36 @@ namespace ZXMAK2.Hardware.WinForms.General
             _manager.Bind(_dataContext.CommandClose, menuFileClose);
             _dataContext.CommandClose.CanExecuteChanged += DataContextCommandClose_OnCanExecuteChanged;
             DataContextCommandClose_OnCanExecuteChanged(this, EventArgs.Empty);
+
+            _dataContext.PropertyChanged += DataContext_OnPropertyChanged;
+            DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("IsRunning"));
+            DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("StatusText"));
+            DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("TactInfo"));
+        }
+
+        private void DataContext_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "IsRunning":
+                    if (_dataContext.IsRunning)
+                    {
+                        statusStrip.BackColor = ColorTranslator.FromHtml("#cc6600");
+                        statusStrip.ForeColor = ColorTranslator.FromHtml("#ffffff");
+                    }
+                    else
+                    {
+                        statusStrip.BackColor = SystemColors.Control;
+                        statusStrip.ForeColor = SystemColors.ControlText;
+                    }
+                    break;
+                case "StatusText":
+                    toolStripStatus.Text = _dataContext.StatusText;
+                    break;
+                case "TactInfo":
+                    toolStripStatusTact.Text = _dataContext.TactInfo;
+                    break;
+            }
         }
 
         private void DataContextCommandClose_OnCanExecuteChanged(object sender, EventArgs e)

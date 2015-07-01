@@ -1,22 +1,17 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Mvvm;
 
 namespace ZXMAK2.Hardware.WinForms.General
 {
-    public class DebuggerViewModel : BaseViewModel
+    public class DebuggerViewModel : BaseDebuggerViewModel
     {
-        private readonly IDebuggable _target;
-        private readonly ISynchronizeInvoke _synchronizeInvoke;
-
         public DebuggerViewModel(IDebuggable target, ISynchronizeInvoke synchronizeInvoke)
+            : base(target, synchronizeInvoke)
         {
-            _target = target;
-            _synchronizeInvoke = synchronizeInvoke;
             CommandClose = new CommandDelegate(
                 CommandClose_OnExecute,
                 CommandClose_OnCanExecute,
@@ -43,19 +38,12 @@ namespace ZXMAK2.Hardware.WinForms.General
                 "Step Out");
         }
 
+
+        #region Close Behavior
+
         public event EventHandler CloseRequest;
 
-        public void Attach()
-        {
-            _target.UpdateState += Target_OnUpdateState;
-        }
-
-        public void Detach()
-        {
-            _target.UpdateState -= Target_OnUpdateState;
-        }
-
-        public void Close()
+        private void Close()
         {
             var handler = CloseRequest;
             if (handler != null)
@@ -64,8 +52,31 @@ namespace ZXMAK2.Hardware.WinForms.General
             }
         }
 
+        #endregion Close Behavior
+
 
         #region Properties
+
+        private string _statusText;
+
+        public string StatusText
+        {
+            get { return _statusText; }
+            set { PropertyChangeRef("StatusText", ref _statusText, value); }
+        }
+
+        private string _tactInfo;
+
+        public string TactInfo
+        {
+            get { return _tactInfo; }
+            set { PropertyChangeRef("TactInfo", ref _tactInfo, value); }
+        }
+
+        #endregion Properties
+
+
+        #region Commands
 
         public ICommand CommandClose { get; private set; }
         public ICommand CommandContinue { get; private set; }
@@ -74,16 +85,7 @@ namespace ZXMAK2.Hardware.WinForms.General
         public ICommand CommandStepOver { get; private set; }
         public ICommand CommandStepOut { get; private set; }
 
-        public bool IsRunning
-        {
-            get { return _target == null || _target.IsRunning; }
-        }
-
-        #endregion Properties
-
-
-        #region Commands
-
+        
         private bool CommandClose_OnCanExecute()
         {
             return true;
@@ -100,7 +102,7 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         private bool CommandContinue_OnCanExecute()
         {
-            return _target != null && !IsRunning;
+            return Target != null && !IsRunning;
         }
 
         private void CommandContinue_OnExecute()
@@ -109,12 +111,12 @@ namespace ZXMAK2.Hardware.WinForms.General
             {
                 return;
             }
-            _target.DoRun();
+            Target.DoRun();
         }
 
         private bool CommandBreak_OnCanExecute()
         {
-            return _target != null && IsRunning;
+            return Target != null && IsRunning;
         }
 
         private void CommandBreak_OnExecute()
@@ -123,12 +125,12 @@ namespace ZXMAK2.Hardware.WinForms.General
             {
                 return;
             }
-            _target.DoStop();
+            Target.DoStop();
         }
 
         private bool CommandStepInto_OnCanExecute()
         {
-            return _target != null && !IsRunning;
+            return Target != null && !IsRunning;
         }
 
         private void CommandStepInto_OnExecute()
@@ -137,12 +139,12 @@ namespace ZXMAK2.Hardware.WinForms.General
             {
                 return;
             }
-            _target.DoStepInto();
+            Target.DoStepInto();
         }
 
         private bool CommandStepOver_OnCanExecute()
         {
-            return _target != null && !IsRunning;
+            return Target != null && !IsRunning;
         }
 
         private void CommandStepOver_OnExecute()
@@ -151,7 +153,7 @@ namespace ZXMAK2.Hardware.WinForms.General
             {
                 return;
             }
-            _target.DoStepOver();
+            Target.DoStepOver();
         }
 
         #endregion Commands
@@ -159,27 +161,19 @@ namespace ZXMAK2.Hardware.WinForms.General
 
         #region Private
 
-        private void Target_OnUpdateState(object sender, EventArgs e)
+        protected override void OnTargetStateChanged()
         {
-            if (_synchronizeInvoke.InvokeRequired)
-            {
-                _synchronizeInvoke.Invoke(new Action(Target_OnUpdateStateSynchronized), null);
-            }
-            else
-            {
-                Target_OnUpdateStateSynchronized();
-            }
-        }
-
-        private void Target_OnUpdateStateSynchronized()
-        {
-            OnPropertyChanged("IsRunning");
+            base.OnTargetStateChanged();
             CommandClose.Update();
             CommandContinue.Update();
             CommandBreak.Update();
             CommandStepInto.Update();
             CommandStepOver.Update();
             CommandStepOut.Update();
+
+            TactInfo = IsRunning ? string.Format("T: - / {0}", Target.FrameTactCount) :
+                string.Format("T: {0} / {1}", Target.GetFrameTact(), Target.FrameTactCount);
+            StatusText = IsRunning ? "Running" : "Ready";
         }
 
         #endregion Private

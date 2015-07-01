@@ -73,6 +73,16 @@ namespace ZXMAK2.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap DebuggerClose {
+            get {
+                object obj = ResourceManager.GetObject("DebuggerClose", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap DebuggerContinue {
             get {
                 object obj = ResourceManager.GetObject("DebuggerContinue", resourceCulture);

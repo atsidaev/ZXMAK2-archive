@@ -28,22 +28,26 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dasmPanel1 = new ZXMAK2.Hardware.WinForms.General.DasmPanel();
+            this.dasmPanel = new ZXMAK2.Hardware.WinForms.General.DasmPanel();
             this.SuspendLayout();
             // 
-            // dasmPanel1
+            // dasmPanel
             // 
-            this.dasmPanel1.ActiveAddress = ((ushort)(0));
-            this.dasmPanel1.BreakpointColor = System.Drawing.Color.Red;
-            this.dasmPanel1.BreakpointForeColor = System.Drawing.Color.Black;
-            this.dasmPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dasmPanel1.Font = new System.Drawing.Font("Courier New", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.dasmPanel1.Location = new System.Drawing.Point(0, 0);
-            this.dasmPanel1.Name = "dasmPanel1";
-            this.dasmPanel1.Size = new System.Drawing.Size(525, 273);
-            this.dasmPanel1.TabIndex = 0;
-            this.dasmPanel1.Text = "dasmPanel1";
-            this.dasmPanel1.TopAddress = ((ushort)(0));
+            this.dasmPanel.ActiveAddress = ((ushort)(0));
+            this.dasmPanel.BreakpointColor = System.Drawing.Color.Red;
+            this.dasmPanel.BreakpointForeColor = System.Drawing.Color.Black;
+            this.dasmPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dasmPanel.Font = new System.Drawing.Font("Courier New", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.dasmPanel.Location = new System.Drawing.Point(0, 0);
+            this.dasmPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.dasmPanel.Name = "dasmPanel";
+            this.dasmPanel.Size = new System.Drawing.Size(525, 273);
+            this.dasmPanel.TabIndex = 0;
+            this.dasmPanel.Text = "dasmPanel1";
+            this.dasmPanel.TopAddress = ((ushort)(0));
+            this.dasmPanel.CheckExecuting += new ZXMAK2.Hardware.WinForms.General.DasmPanel.ONCHECKCPU(this.DasmPanel_OnCheckExecuting);
+            this.dasmPanel.GetData += new ZXMAK2.Hardware.WinForms.General.DasmPanel.ONGETDATACPU(this.DasmPanel_OnGetData);
+            this.dasmPanel.GetDasm += new ZXMAK2.Hardware.WinForms.General.DasmPanel.ONGETDASMCPU(this.DasmPanel_OnGetDasm);
             // 
             // FormDisassembly
             // 
@@ -51,7 +55,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(525, 273);
-            this.Controls.Add(this.dasmPanel1);
+            this.Controls.Add(this.dasmPanel);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.ForeColor = System.Drawing.Color.Black;
             this.Name = "FormDisassembly";
             this.ShowIcon = false;
@@ -62,6 +67,6 @@
 
         #endregion
 
-        private DasmPanel dasmPanel1;
+        private DasmPanel dasmPanel;
     }
 }

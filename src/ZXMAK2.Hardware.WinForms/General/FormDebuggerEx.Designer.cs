@@ -61,7 +61,11 @@
             this.menuDebugStepInto = new System.Windows.Forms.ToolStripMenuItem();
             this.menuDebugStepOver = new System.Windows.Forms.ToolStripMenuItem();
             this.menuDebugStepOut = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuDebugSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuDebugShowNext = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusTact = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip = new ZXMAK2.Host.WinForms.Controls.ToolStripEx();
             this.toolStripContinue = new System.Windows.Forms.ToolStripButton();
             this.toolStripBreak = new System.Windows.Forms.ToolStripButton();
@@ -72,13 +76,14 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripShowNext = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripShowBreakpoints = new System.Windows.Forms.ToolStripButton();
+            this.toolStripBreakpoints = new System.Windows.Forms.ToolStripButton();
             this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.themeVS2012Light = new WeifenLuo.WinFormsUI.Docking.VS2012LightTheme();
-            this.menuDebugSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.menuDebugShowNext = new System.Windows.Forms.ToolStripMenuItem();
+            this.pnlContent = new System.Windows.Forms.Panel();
             this.menuStrip.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
+            this.pnlContent.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -89,7 +94,7 @@
             this.menuDebug});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(694, 24);
+            this.menuStrip.Size = new System.Drawing.Size(784, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -212,13 +217,42 @@
             this.menuDebugStepOut.Size = new System.Drawing.Size(190, 22);
             this.menuDebugStepOut.Text = "Step Out";
             // 
+            // menuDebugSeparator2
+            // 
+            this.menuDebugSeparator2.Name = "menuDebugSeparator2";
+            this.menuDebugSeparator2.Size = new System.Drawing.Size(187, 6);
+            // 
+            // menuDebugShowNext
+            // 
+            this.menuDebugShowNext.Name = "menuDebugShowNext";
+            this.menuDebugShowNext.Size = new System.Drawing.Size(190, 22);
+            this.menuDebugShowNext.Text = "Show Next Instruction";
+            // 
             // statusStrip
             // 
-            this.statusStrip.Location = new System.Drawing.Point(0, 411);
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatus,
+            this.toolStripStatusTact});
+            this.statusStrip.Location = new System.Drawing.Point(0, 440);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(694, 22);
+            this.statusStrip.Size = new System.Drawing.Size(784, 22);
+            this.statusStrip.SizingGrip = false;
             this.statusStrip.TabIndex = 1;
             this.statusStrip.Text = "statusStrip1";
+            // 
+            // toolStripStatus
+            // 
+            this.toolStripStatus.Name = "toolStripStatus";
+            this.toolStripStatus.Size = new System.Drawing.Size(678, 17);
+            this.toolStripStatus.Spring = true;
+            this.toolStripStatus.Text = "Ready";
+            this.toolStripStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // toolStripStatusTact
+            // 
+            this.toolStripStatusTact.Name = "toolStripStatusTact";
+            this.toolStripStatusTact.Size = new System.Drawing.Size(91, 17);
+            this.toolStripStatusTact.Text = "T: 71680 / 71680";
             // 
             // toolStrip
             // 
@@ -232,10 +266,11 @@
             this.toolStripSeparator2,
             this.toolStripShowNext,
             this.toolStripSeparator3,
-            this.toolStripShowBreakpoints});
+            this.toolStripBreakpoints});
             this.toolStrip.Location = new System.Drawing.Point(0, 24);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(694, 25);
+            this.toolStrip.Padding = new System.Windows.Forms.Padding(0);
+            this.toolStrip.Size = new System.Drawing.Size(784, 25);
             this.toolStrip.TabIndex = 2;
             this.toolStrip.Text = "toolStripEx1";
             // 
@@ -296,28 +331,29 @@
             this.toolStripShowNext.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripShowNext.Name = "toolStripShowNext";
             this.toolStripShowNext.Size = new System.Drawing.Size(23, 22);
-            this.toolStripShowNext.Text = "Show Next Instruction";
+            this.toolStripShowNext.Text = "Show Next Statement";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
-            // toolStripShowBreakpoints
+            // toolStripBreakpoints
             // 
-            this.toolStripShowBreakpoints.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripShowBreakpoints.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripShowBreakpoints.Name = "toolStripShowBreakpoints";
-            this.toolStripShowBreakpoints.Size = new System.Drawing.Size(23, 22);
-            this.toolStripShowBreakpoints.Text = "toolStripButton1";
+            this.toolStripBreakpoints.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripBreakpoints.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripBreakpoints.Name = "toolStripBreakpoints";
+            this.toolStripBreakpoints.Size = new System.Drawing.Size(23, 22);
+            this.toolStripBreakpoints.Text = "Breakpoints";
             // 
             // dockPanel
             // 
             this.dockPanel.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dockPanel.Location = new System.Drawing.Point(0, 49);
+            this.dockPanel.Location = new System.Drawing.Point(5, 7);
+            this.dockPanel.Margin = new System.Windows.Forms.Padding(0);
             this.dockPanel.Name = "dockPanel";
-            this.dockPanel.Size = new System.Drawing.Size(694, 362);
+            this.dockPanel.Size = new System.Drawing.Size(774, 379);
             dockPanelGradient1.EndColor = System.Drawing.SystemColors.ControlLight;
             dockPanelGradient1.StartColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
             autoHideStripSkin1.DockStripGradient = dockPanelGradient1;
@@ -366,23 +402,23 @@
             this.dockPanel.TabIndex = 4;
             this.dockPanel.Theme = this.themeVS2012Light;
             // 
-            // menuDebugSeparator2
+            // pnlContent
             // 
-            this.menuDebugSeparator2.Name = "menuDebugSeparator2";
-            this.menuDebugSeparator2.Size = new System.Drawing.Size(187, 6);
-            // 
-            // menuDebugShowNext
-            // 
-            this.menuDebugShowNext.Name = "menuDebugShowNext";
-            this.menuDebugShowNext.Size = new System.Drawing.Size(190, 22);
-            this.menuDebugShowNext.Text = "Show Next Instruction";
+            this.pnlContent.Controls.Add(this.dockPanel);
+            this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.Location = new System.Drawing.Point(0, 49);
+            this.pnlContent.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlContent.Name = "pnlContent";
+            this.pnlContent.Padding = new System.Windows.Forms.Padding(5, 7, 5, 5);
+            this.pnlContent.Size = new System.Drawing.Size(784, 391);
+            this.pnlContent.TabIndex = 7;
             // 
             // FormDebuggerEx
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(694, 433);
-            this.Controls.Add(this.dockPanel);
+            this.ClientSize = new System.Drawing.Size(784, 462);
+            this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
@@ -393,8 +429,11 @@
             this.Text = "DebuggerEx";
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
+            this.pnlContent.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -430,11 +469,14 @@
         private System.Windows.Forms.ToolStripButton toolStripShowNext;
         private System.Windows.Forms.ToolStripButton toolStripStepOut;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripButton toolStripShowBreakpoints;
+        private System.Windows.Forms.ToolStripButton toolStripBreakpoints;
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel;
         private WeifenLuo.WinFormsUI.Docking.VS2012LightTheme themeVS2012Light;
         private System.Windows.Forms.ToolStripMenuItem menuDebugStepOut;
         private System.Windows.Forms.ToolStripSeparator menuDebugSeparator2;
         private System.Windows.Forms.ToolStripMenuItem menuDebugShowNext;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatus;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusTact;
+        private System.Windows.Forms.Panel pnlContent;
     }
 }
