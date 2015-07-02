@@ -72,6 +72,29 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             Bind(chkFlagV, "FlagV");
             Bind(chkFlagN, "FlagN");
             Bind(chkFlagC, "FlagC");
+            Bind(lblRzxFetchValue, "RzxFetch");
+            Bind(lblRzxInputValue, "RzxInput");
+            Bind(lblRzxFrameValue, "RzxFrame");
+            BindVisible(lblTitleRzx, "IsRzxAvailable");
+            BindVisible(sepRzx, "IsRzxAvailable");
+            BindVisible(lblRzxFetch, "IsRzxAvailable");
+            BindVisible(lblRzxInput, "IsRzxAvailable");
+            BindVisible(lblRzxFrame, "IsRzxAvailable");
+            BindVisible(lblRzxFetchValue, "IsRzxAvailable");
+            BindVisible(lblRzxInputValue, "IsRzxAvailable");
+            BindVisible(lblRzxFrameValue, "IsRzxAvailable");
+        }
+
+        private void BindVisible(Control control, string name)
+        {
+            var binding = new Binding("Visible", _dataContext, name, false);
+            control.DataBindings.Add(binding);
+        }
+
+        private void Bind(Label control, string name)
+        {
+            var binding = new Binding("Text", _dataContext, name, false);
+            control.DataBindings.Add(binding);
         }
 
         private void Bind(TextBox control, string name)

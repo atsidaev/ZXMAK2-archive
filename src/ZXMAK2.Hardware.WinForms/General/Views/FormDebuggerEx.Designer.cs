@@ -243,7 +243,7 @@
             // toolStripStatus
             // 
             this.toolStripStatus.Name = "toolStripStatus";
-            this.toolStripStatus.Size = new System.Drawing.Size(678, 17);
+            this.toolStripStatus.Size = new System.Drawing.Size(567, 17);
             this.toolStripStatus.Spring = true;
             this.toolStripStatus.Text = "Ready";
             this.toolStripStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
