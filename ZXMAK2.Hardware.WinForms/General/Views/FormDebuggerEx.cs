@@ -50,11 +50,12 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             //regs.Show(dockPanel, DockState.DockRight);
             //dasm.Show(dockPanel, DockState.Document);
             //memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
-            
+
             // Mono compatible
             dasm.Show(dockPanel, DockState.Document);
             regs.Show(dasm.Pane, DockAlignment.Right, 0.24);
             memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
+            
             dasm.Activate();
 
             _childs.Add(dasm);
@@ -103,6 +104,16 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
+            if (e.KeyCode == Keys.F5 && _dataContext.CommandBreak.CanExecute(null))
+            {
+                _dataContext.CommandBreak.Execute(null);
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.F9 && _dataContext.CommandContinue.CanExecute(null))
+            {
+                _dataContext.CommandContinue.Execute(null);
+                e.Handled = true;
+            }
             if (e.KeyCode == Keys.F7 && _dataContext.CommandStepInto.CanExecute(null))
             {
                 _dataContext.CommandStepInto.Execute(null);
@@ -188,7 +199,8 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             _dataContext.PropertyChanged += DataContext_OnPropertyChanged;
             DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("IsRunning"));
             DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("StatusText"));
-            DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("TactInfo"));
+            DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("StatusRzx"));
+            DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("StatusTact"));
         }
 
         private void DataContext_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -203,15 +215,15 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
                     }
                     else
                     {
-                        statusStrip.BackColor = SystemColors.Control;
-                        statusStrip.ForeColor = SystemColors.ControlText;
+                        statusStrip.BackColor = ColorTranslator.FromHtml("#0077cc");
+                        statusStrip.ForeColor = ColorTranslator.FromHtml("#ffffff");
                     }
                     break;
                 case "StatusText":
                     toolStripStatus.Text = _dataContext.StatusText;
                     break;
-                case "TactInfo":
-                    toolStripStatusTact.Text = _dataContext.TactInfo;
+                case "StatusTact":
+                    toolStripStatusTact.Text = _dataContext.StatusTact;
                     break;
             }
         }

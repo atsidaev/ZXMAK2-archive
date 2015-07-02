@@ -65,12 +65,12 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
             set { PropertyChangeRef("StatusText", ref _statusText, value); }
         }
 
-        private string _tactInfo;
+        private string _statusTact;
 
-        public string TactInfo
+        public string StatusTact
         {
-            get { return _tactInfo; }
-            set { PropertyChangeRef("TactInfo", ref _tactInfo, value); }
+            get { return _statusTact; }
+            set { PropertyChangeRef("StatusTact", ref _statusTact, value); }
         }
 
         #endregion Properties
@@ -171,7 +171,7 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
             CommandStepOver.Update();
             CommandStepOut.Update();
 
-            TactInfo = IsRunning ? string.Format("T: - / {0}", Target.FrameTactCount) :
+            StatusTact = IsRunning ? string.Format("T: - / {0}", Target.FrameTactCount) :
                 string.Format("T: {0} / {1}", Target.GetFrameTact(), Target.FrameTactCount);
             StatusText = IsRunning ? "Running" : "Ready";
         }

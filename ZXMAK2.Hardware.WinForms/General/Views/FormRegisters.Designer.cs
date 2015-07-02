@@ -75,9 +75,17 @@
             this.txtRegLpc = new System.Windows.Forms.TextBox();
             this.lblRegLpc = new System.Windows.Forms.Label();
             this.chkBint = new System.Windows.Forms.CheckBox();
-            this.separator3 = new ZXMAK2.Host.WinForms.Controls.Separator();
-            this.separator2 = new ZXMAK2.Host.WinForms.Controls.Separator();
-            this.separator1 = new ZXMAK2.Host.WinForms.Controls.Separator();
+            this.sepFlags = new ZXMAK2.Host.WinForms.Controls.Separator();
+            this.sepGeneral = new ZXMAK2.Host.WinForms.Controls.Separator();
+            this.sepControl = new ZXMAK2.Host.WinForms.Controls.Separator();
+            this.lblTitleRzx = new System.Windows.Forms.Label();
+            this.sepRzx = new ZXMAK2.Host.WinForms.Controls.Separator();
+            this.lblRzxInput = new System.Windows.Forms.Label();
+            this.lblRzxInputValue = new System.Windows.Forms.Label();
+            this.lblRzxFrameValue = new System.Windows.Forms.Label();
+            this.lblRzxFrame = new System.Windows.Forms.Label();
+            this.lblRzxFetchValue = new System.Windows.Forms.Label();
+            this.lblRzxFetch = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblTitleControl
@@ -693,50 +701,143 @@
             this.chkBint.Text = "BINT";
             this.chkBint.UseVisualStyleBackColor = true;
             // 
-            // separator3
+            // sepFlags
             // 
-            this.separator3.Alignment = System.Drawing.ContentAlignment.MiddleCenter;
-            this.separator3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.sepFlags.Alignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.sepFlags.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.separator3.Location = new System.Drawing.Point(10, 225);
-            this.separator3.Margin = new System.Windows.Forms.Padding(0);
-            this.separator3.Name = "separator3";
-            this.separator3.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.separator3.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this.separator3.Size = new System.Drawing.Size(175, 6);
-            this.separator3.TabIndex = 36;
-            this.separator3.TabStop = false;
-            this.separator3.Text = "separator3";
+            this.sepFlags.Location = new System.Drawing.Point(10, 225);
+            this.sepFlags.Margin = new System.Windows.Forms.Padding(0);
+            this.sepFlags.Name = "sepFlags";
+            this.sepFlags.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.sepFlags.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.sepFlags.Size = new System.Drawing.Size(175, 6);
+            this.sepFlags.TabIndex = 36;
+            this.sepFlags.TabStop = false;
+            this.sepFlags.Text = "separator3";
             // 
-            // separator2
+            // sepGeneral
             // 
-            this.separator2.Alignment = System.Drawing.ContentAlignment.MiddleCenter;
-            this.separator2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.sepGeneral.Alignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.sepGeneral.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.separator2.Location = new System.Drawing.Point(10, 105);
-            this.separator2.Margin = new System.Windows.Forms.Padding(0);
-            this.separator2.Name = "separator2";
-            this.separator2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.separator2.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this.separator2.Size = new System.Drawing.Size(175, 6);
-            this.separator2.TabIndex = 14;
-            this.separator2.TabStop = false;
-            this.separator2.Text = "separator2";
+            this.sepGeneral.Location = new System.Drawing.Point(10, 105);
+            this.sepGeneral.Margin = new System.Windows.Forms.Padding(0);
+            this.sepGeneral.Name = "sepGeneral";
+            this.sepGeneral.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.sepGeneral.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.sepGeneral.Size = new System.Drawing.Size(175, 6);
+            this.sepGeneral.TabIndex = 14;
+            this.sepGeneral.TabStop = false;
+            this.sepGeneral.Text = "separator2";
             // 
-            // separator1
+            // sepControl
             // 
-            this.separator1.Alignment = System.Drawing.ContentAlignment.MiddleCenter;
-            this.separator1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.sepControl.Alignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.sepControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.separator1.Location = new System.Drawing.Point(10, 23);
-            this.separator1.Margin = new System.Windows.Forms.Padding(0);
-            this.separator1.Name = "separator1";
-            this.separator1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.separator1.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this.separator1.Size = new System.Drawing.Size(175, 6);
-            this.separator1.TabIndex = 1;
-            this.separator1.TabStop = false;
-            this.separator1.Text = "separator1";
+            this.sepControl.Location = new System.Drawing.Point(10, 23);
+            this.sepControl.Margin = new System.Windows.Forms.Padding(0);
+            this.sepControl.Name = "sepControl";
+            this.sepControl.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.sepControl.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.sepControl.Size = new System.Drawing.Size(175, 6);
+            this.sepControl.TabIndex = 1;
+            this.sepControl.TabStop = false;
+            this.sepControl.Text = "separator1";
+            // 
+            // lblTitleRzx
+            // 
+            this.lblTitleRzx.AutoSize = true;
+            this.lblTitleRzx.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblTitleRzx.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblTitleRzx.Location = new System.Drawing.Point(10, 314);
+            this.lblTitleRzx.Margin = new System.Windows.Forms.Padding(0);
+            this.lblTitleRzx.Name = "lblTitleRzx";
+            this.lblTitleRzx.Size = new System.Drawing.Size(28, 13);
+            this.lblTitleRzx.TabIndex = 49;
+            this.lblTitleRzx.Text = "Rzx";
+            // 
+            // sepRzx
+            // 
+            this.sepRzx.Alignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.sepRzx.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.sepRzx.Location = new System.Drawing.Point(10, 327);
+            this.sepRzx.Margin = new System.Windows.Forms.Padding(0);
+            this.sepRzx.Name = "sepRzx";
+            this.sepRzx.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.sepRzx.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.sepRzx.Size = new System.Drawing.Size(175, 6);
+            this.sepRzx.TabIndex = 50;
+            this.sepRzx.TabStop = false;
+            this.sepRzx.Text = "separator4";
+            // 
+            // lblRzxInput
+            // 
+            this.lblRzxInput.AutoSize = true;
+            this.lblRzxInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblRzxInput.Location = new System.Drawing.Point(10, 352);
+            this.lblRzxInput.Margin = new System.Windows.Forms.Padding(0);
+            this.lblRzxInput.Name = "lblRzxInput";
+            this.lblRzxInput.Size = new System.Drawing.Size(49, 13);
+            this.lblRzxInput.TabIndex = 51;
+            this.lblRzxInput.Text = "INPUT:";
+            // 
+            // lblRzxInputValue
+            // 
+            this.lblRzxInputValue.AutoSize = true;
+            this.lblRzxInputValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblRzxInputValue.Location = new System.Drawing.Point(61, 352);
+            this.lblRzxInputValue.Margin = new System.Windows.Forms.Padding(0);
+            this.lblRzxInputValue.Name = "lblRzxInputValue";
+            this.lblRzxInputValue.Size = new System.Drawing.Size(48, 13);
+            this.lblRzxInputValue.TabIndex = 52;
+            this.lblRzxInputValue.Text = "0 / 3000";
+            // 
+            // lblRzxFrameValue
+            // 
+            this.lblRzxFrameValue.AutoSize = true;
+            this.lblRzxFrameValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblRzxFrameValue.Location = new System.Drawing.Point(61, 371);
+            this.lblRzxFrameValue.Margin = new System.Windows.Forms.Padding(0);
+            this.lblRzxFrameValue.Name = "lblRzxFrameValue";
+            this.lblRzxFrameValue.Size = new System.Drawing.Size(48, 13);
+            this.lblRzxFrameValue.TabIndex = 54;
+            this.lblRzxFrameValue.Text = "0 / 3000";
+            // 
+            // lblRzxFrame
+            // 
+            this.lblRzxFrame.AutoSize = true;
+            this.lblRzxFrame.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblRzxFrame.Location = new System.Drawing.Point(10, 371);
+            this.lblRzxFrame.Margin = new System.Windows.Forms.Padding(0);
+            this.lblRzxFrame.Name = "lblRzxFrame";
+            this.lblRzxFrame.Size = new System.Drawing.Size(53, 13);
+            this.lblRzxFrame.TabIndex = 53;
+            this.lblRzxFrame.Text = "FRAME:";
+            // 
+            // lblRzxFetchValue
+            // 
+            this.lblRzxFetchValue.AutoSize = true;
+            this.lblRzxFetchValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblRzxFetchValue.Location = new System.Drawing.Point(61, 333);
+            this.lblRzxFetchValue.Margin = new System.Windows.Forms.Padding(0);
+            this.lblRzxFetchValue.Name = "lblRzxFetchValue";
+            this.lblRzxFetchValue.Size = new System.Drawing.Size(48, 13);
+            this.lblRzxFetchValue.TabIndex = 56;
+            this.lblRzxFetchValue.Text = "0 / 3000";
+            // 
+            // lblRzxFetch
+            // 
+            this.lblRzxFetch.AutoSize = true;
+            this.lblRzxFetch.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblRzxFetch.Location = new System.Drawing.Point(10, 333);
+            this.lblRzxFetch.Margin = new System.Windows.Forms.Padding(0);
+            this.lblRzxFetch.Name = "lblRzxFetch";
+            this.lblRzxFetch.Size = new System.Drawing.Size(51, 13);
+            this.lblRzxFetch.TabIndex = 55;
+            this.lblRzxFetch.Text = "FETCH:";
             // 
             // FormRegisters
             // 
@@ -745,7 +846,15 @@
             this.AutoScroll = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(195, 320);
+            this.ClientSize = new System.Drawing.Size(195, 399);
+            this.Controls.Add(this.lblRzxFetchValue);
+            this.Controls.Add(this.lblRzxFetch);
+            this.Controls.Add(this.lblRzxFrameValue);
+            this.Controls.Add(this.lblRzxFrame);
+            this.Controls.Add(this.lblRzxInputValue);
+            this.Controls.Add(this.lblRzxInput);
+            this.Controls.Add(this.sepRzx);
+            this.Controls.Add(this.lblTitleRzx);
             this.Controls.Add(this.chkBint);
             this.Controls.Add(this.txtRegLpc);
             this.Controls.Add(this.lblRegLpc);
@@ -754,7 +863,7 @@
             this.Controls.Add(this.chkHalt);
             this.Controls.Add(this.txtRegWz);
             this.Controls.Add(this.lblRegsWz);
-            this.Controls.Add(this.separator3);
+            this.Controls.Add(this.sepFlags);
             this.Controls.Add(this.lblTitleFlags);
             this.Controls.Add(this.chkFlagC);
             this.Controls.Add(this.chkFlagN);
@@ -788,13 +897,13 @@
             this.Controls.Add(this.lblRegAf_);
             this.Controls.Add(this.txtRegAf);
             this.Controls.Add(this.lblRegAf);
-            this.Controls.Add(this.separator2);
+            this.Controls.Add(this.sepGeneral);
             this.Controls.Add(this.lblTitleGeneral);
             this.Controls.Add(this.txtRegSp);
             this.Controls.Add(this.lblRegSp);
             this.Controls.Add(this.txtRegPc);
             this.Controls.Add(this.lblRegPc);
-            this.Controls.Add(this.separator1);
+            this.Controls.Add(this.sepControl);
             this.Controls.Add(this.lblTitleControl);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.ForeColor = System.Drawing.Color.Black;
@@ -811,12 +920,12 @@
         #endregion
 
         private System.Windows.Forms.Label lblTitleControl;
-        private Host.WinForms.Controls.Separator separator1;
+        private Host.WinForms.Controls.Separator sepControl;
         private System.Windows.Forms.Label lblRegPc;
         private System.Windows.Forms.TextBox txtRegPc;
         private System.Windows.Forms.TextBox txtRegSp;
         private System.Windows.Forms.Label lblRegSp;
-        private Host.WinForms.Controls.Separator separator2;
+        private Host.WinForms.Controls.Separator sepGeneral;
         private System.Windows.Forms.Label lblTitleGeneral;
         private System.Windows.Forms.TextBox txtRegAf_;
         private System.Windows.Forms.Label lblRegAf_;
@@ -850,7 +959,7 @@
         private System.Windows.Forms.CheckBox chkFlagV;
         private System.Windows.Forms.CheckBox chkFlagN;
         private System.Windows.Forms.CheckBox chkFlagC;
-        private Host.WinForms.Controls.Separator separator3;
+        private Host.WinForms.Controls.Separator sepFlags;
         private System.Windows.Forms.Label lblTitleFlags;
         private System.Windows.Forms.TextBox txtRegWz;
         private System.Windows.Forms.Label lblRegsWz;
@@ -860,5 +969,13 @@
         private System.Windows.Forms.TextBox txtRegLpc;
         private System.Windows.Forms.Label lblRegLpc;
         private System.Windows.Forms.CheckBox chkBint;
+        private System.Windows.Forms.Label lblTitleRzx;
+        private Host.WinForms.Controls.Separator sepRzx;
+        private System.Windows.Forms.Label lblRzxInput;
+        private System.Windows.Forms.Label lblRzxInputValue;
+        private System.Windows.Forms.Label lblRzxFrameValue;
+        private System.Windows.Forms.Label lblRzxFrame;
+        private System.Windows.Forms.Label lblRzxFetchValue;
+        private System.Windows.Forms.Label lblRzxFetch;
     }
 }

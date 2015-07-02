@@ -5,17 +5,18 @@ using System.ComponentModel;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Mvvm;
 using ZXMAK2.Mvvm.Attributes;
+using System.Reflection;
 
 namespace ZXMAK2.Hardware.WinForms.General.ViewModels
 {
     public class RegistersViewModel : BaseDebuggerViewModel
     {
-        private static readonly List<string> _regNames = typeof(RegistersViewModel)
+        private static readonly List<PropertyInfo> _regProps = typeof(RegistersViewModel)
             .GetProperties()
             .Where(pi => pi.DeclaringType == typeof(RegistersViewModel))
             .Where(pi => !pi.Name.StartsWith("Flag"))
-            .Select(pi => pi.Name)
             .ToList();
+        private Dictionary<PropertyInfo, object> _propertyCache = new Dictionary<PropertyInfo, object>();
 
         
         public RegistersViewModel(IDebuggable target, ISynchronizeInvoke synchronizeInvoke)
@@ -247,6 +248,7 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
             }
         }
 
+        
         #region Flags
 
         [DependsOnProperty("Af")]
@@ -307,6 +309,27 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
 
         #endregion Flags
 
+
+        public bool IsRzxAvailable
+        {
+            get { return Target.RzxState.IsPlayback; }
+        }
+        
+        public string RzxFetch
+        {
+            get { return string.Format("{0} / {1}", Target.RzxState.Fetch, Target.RzxState.FetchCount); }
+        }
+
+        public string RzxInput
+        {
+            get { return string.Format("{0} / {1}", Target.RzxState.Input, Target.RzxState.InputCount); }
+        }
+
+        public string RzxFrame
+        {
+            get { return string.Format("{0} / {1}", Target.RzxState.Frame, Target.RzxState.FrameCount); }
+        }
+
         #endregion Properties
 
 
@@ -319,7 +342,19 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
             {
                 return;
             }
-            _regNames.ForEach(OnPropertyChanged);
+            // In order to improve UI performance,
+            // we need to eliminate redundant notifications.
+            // So, we raise notification if value is really changed
+            foreach (var pi in _regProps)
+            {
+                var value = pi.GetValue(this, null);
+                if (_propertyCache.ContainsKey(pi) &&
+                    !object.Equals(_propertyCache[pi], value))
+                {
+                    OnPropertyChanged(pi.Name);
+                }
+                _propertyCache[pi] = value;
+            }
         }
 
         #endregion Private
