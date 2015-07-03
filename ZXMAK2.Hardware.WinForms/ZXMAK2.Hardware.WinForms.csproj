@@ -60,6 +60,7 @@
       <DependentUpon>FormMemoryMap.cs</DependentUpon>
     </Compile>
     <Compile Include="General\ViewModels\BaseDebuggerViewModel.cs" />
+    <Compile Include="General\ViewModels\BreakpointsViewModel.cs" />
     <Compile Include="General\ViewModels\DebuggerViewModel.cs" />
     <Compile Include="General\DebugPanels.cs">
       <SubType>Component</SubType>
@@ -71,6 +72,7 @@
     <Compile Include="General\FormCPU.Designer.cs">
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
+    <Compile Include="General\ViewModels\Entities\BreakpointViewModel.cs" />
     <Compile Include="General\Views\FormDebuggerEx.cs">
       <SubType>Form</SubType>
     </Compile>

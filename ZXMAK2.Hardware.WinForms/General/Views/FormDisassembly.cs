@@ -81,5 +81,20 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             }
             data = _dataContext.GetData(addr, len);
         }
+
+        private bool DasmPanel_OnCheckBreakpoint(object sender, ushort addr)
+        {
+            return _dataContext != null && 
+                _dataContext.CheckBreakpoint(addr);
+        }
+
+        private void DasmPanel_OnBreakpointClick(object sender, ushort addr)
+        {
+            if (_dataContext == null || !_dataContext.CommandSetBreakpoint.CanExecute(addr))
+            {
+                return;
+            }
+            _dataContext.CommandSetBreakpoint.Execute(addr);
+        }
     }
 }

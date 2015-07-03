@@ -45,9 +45,11 @@
             this.dasmPanel.TabIndex = 0;
             this.dasmPanel.Text = "dasmPanel1";
             this.dasmPanel.TopAddress = ((ushort)(0));
+            this.dasmPanel.CheckBreakpoint += new ZXMAK2.Hardware.WinForms.General.DasmPanel.ONCHECKCPU(this.DasmPanel_OnCheckBreakpoint);
             this.dasmPanel.CheckExecuting += new ZXMAK2.Hardware.WinForms.General.DasmPanel.ONCHECKCPU(this.DasmPanel_OnCheckExecuting);
             this.dasmPanel.GetData += new ZXMAK2.Hardware.WinForms.General.DasmPanel.ONGETDATACPU(this.DasmPanel_OnGetData);
             this.dasmPanel.GetDasm += new ZXMAK2.Hardware.WinForms.General.DasmPanel.ONGETDASMCPU(this.DasmPanel_OnGetDasm);
+            this.dasmPanel.BreakpointClick += new ZXMAK2.Hardware.WinForms.General.DasmPanel.ONCLICKCPU(this.DasmPanel_OnBreakpointClick);
             // 
             // FormDisassembly
             // 

@@ -21,12 +21,14 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
         public void Attach()
         {
             Target.UpdateState += Target_OnUpdateState;
+            Target.Breakpoint += Target_OnBreakpoint;
             OnTargetStateChanged();
         }
 
         public void Detach()
         {
             Target.UpdateState -= Target_OnUpdateState;
+            Target.Breakpoint -= Target_OnBreakpoint;
         }
 
 
@@ -57,9 +59,18 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
             InvokeAsync(OnTargetStateChanged);
         }
 
+        private void Target_OnBreakpoint(object sender, EventArgs e)
+        {
+            InvokeAsync(OnTargetBreakpoint);
+        }
+
         protected virtual void OnTargetStateChanged()
         {
             IsRunning = Target == null || Target.IsRunning;
+        }
+
+        protected virtual void OnTargetBreakpoint()
+        {
         }
 
         #endregion Private

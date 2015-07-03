@@ -38,6 +38,9 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
                 "Step Out");
         }
 
+        
+        public event EventHandler ShowRequest;
+
 
         #region Close Behavior
 
@@ -174,6 +177,16 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
             StatusTact = IsRunning ? string.Format("T: - / {0}", Target.FrameTactCount) :
                 string.Format("T: {0} / {1}", Target.GetFrameTact(), Target.FrameTactCount);
             StatusText = IsRunning ? "Running" : "Ready";
+        }
+
+        protected override void OnTargetBreakpoint()
+        {
+            base.OnTargetBreakpoint();
+            var handler = ShowRequest;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
 
         #endregion Private
