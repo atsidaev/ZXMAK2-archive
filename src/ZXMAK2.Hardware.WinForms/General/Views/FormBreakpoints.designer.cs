@@ -28,23 +28,39 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.lstItems = new ListBoxEx();
             this.SuspendLayout();
             // 
-            // FormState
+            // lstItems
+            // 
+            this.lstItems.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lstItems.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstItems.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lstItems.FormattingEnabled = true;
+            this.lstItems.ItemHeight = 16;
+            this.lstItems.Location = new System.Drawing.Point(0, 0);
+            this.lstItems.Name = "lstItems";
+            this.lstItems.Size = new System.Drawing.Size(191, 224);
+            this.lstItems.TabIndex = 0;
+            // 
+            // FormBreakpoints
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(191, 224);
+            this.Controls.Add(this.lstItems);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.ForeColor = System.Drawing.Color.Black;
-            this.Name = "FormState";
+            this.Name = "FormBreakpoints";
             this.ShowIcon = false;
-            this.Text = "State";
+            this.Text = "Breakpoints";
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private ListBoxEx lstItems;
     }
 }

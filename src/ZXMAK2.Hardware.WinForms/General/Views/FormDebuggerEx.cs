@@ -32,6 +32,7 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
         {
             _dataContext = new DebuggerViewModel(debugTarget, this);
             _dataContext.Attach();
+            _dataContext.ShowRequest += DataContext_OnShowRequest;
             _dataContext.CloseRequest += DataContext_OnCloseRequest;
             
             InitializeComponent();
@@ -42,31 +43,49 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             var dasm = new FormDisassembly();
             var memr = new FormMemory();
             var regs = new FormRegisters();
-
-            dasm.Attach(debugTarget);
-            regs.Attach(debugTarget);
-            memr.Attach(debugTarget);
-
-            //regs.Show(dockPanel, DockState.DockRight);
-            //dasm.Show(dockPanel, DockState.Document);
-            //memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
+            var bpts = new FormBreakpoints();
 
             // Mono compatible
-            dasm.Show(dockPanel, DockState.Document);
-            regs.Show(dasm.Pane, DockAlignment.Right, 0.24);
-            memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
+            //dasm.Show(dockPanel, DockState.Document);
+            //regs.Show(dasm.Pane, DockAlignment.Right, 0.24);
+            //memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
             
+            regs.Show(dockPanel, DockState.DockRight);
+            bpts.Show(dockPanel, DockState.DockRight);
+            dasm.Show(dockPanel, DockState.Document);
+            memr.Show(dasm.Pane, DockAlignment.Bottom, 0.3);
+
+            regs.Activate();
             dasm.Activate();
 
             _childs.Add(dasm);
             _childs.Add(regs);
             _childs.Add(memr);
+            _childs.Add(bpts);
             dasm.FormClosed += (s, e) => _childs.Remove(dasm);
             regs.FormClosed += (s, e) => _childs.Remove(regs);
             memr.FormClosed += (s, e) => _childs.Remove(memr);
+            bpts.FormClosed += (s, e) => _childs.Remove(bpts);
+
+            dasm.Attach(debugTarget);
+            regs.Attach(debugTarget);
+            memr.Attach(debugTarget);
+            bpts.Attach(debugTarget);
 
             Bind();
             KeyPreview = true;
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _dataContext.ShowRequest -= DataContext_OnShowRequest;
+            _dataContext.CloseRequest -= DataContext_OnCloseRequest;
+            _dataContext.Detach();
+            base.OnFormClosed(e);
+            foreach (var child in _childs.ToArray())
+            {
+                child.Close();
+            }
         }
 
         private void LoadImages()
@@ -88,17 +107,6 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             menuDebugStepOver.Image = ResourceImages.DebuggerStepOver;
             menuDebugStepOut.Image = ResourceImages.DebuggerStepOut;
             menuDebugShowNext.Image = ResourceImages.DebuggerShowNext;
-        }
-
-        protected override void OnFormClosed(FormClosedEventArgs e)
-        {
-            _dataContext.CloseRequest -= DataContext_OnCloseRequest;
-            _dataContext.Detach();
-            base.OnFormClosed(e);
-            foreach (var child in _childs.ToArray())
-            {
-                child.Close();
-            }
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -174,6 +182,11 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             _isCloseRequest = true;
             Close();
             _isCloseRequest = false;
+        }
+
+        private void DataContext_OnShowRequest(object sender, EventArgs e)
+        {
+            Show();
         }
 
         #endregion Close Behavior
