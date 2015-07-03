@@ -21,7 +21,8 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
 
             // Workaround #2 for binding.
             // ListBox does not expose SelectedItemChanged event,
-            // so DataBinding have no idea that something has changed in the control
+            // so DataBinding have no idea that something has changed in the control.
+            // And DataBinding didn't set property on view model.
             // There is workaround to fix it:
             lstItems.SelectedIndexChanged += (s, e) =>
             {
@@ -81,7 +82,9 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
                 // Workaround #1 for internal binding bug.
                 // Actually all works without it.
                 // But this workaround helps to avoid 
-                // first chance exception which happens inside ListBox
+                // first chance exception which happens inside ListBox.
+                // So, it eliminates ArgumentOutOfRangeException: "InvalidArgument=Value of '0' is not valid for 'SelectedIndex'."
+                // when ListBox is empty
                 base.SelectedIndex = value < Items.Count ? value : -1;
             }
         }
