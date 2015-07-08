@@ -174,8 +174,6 @@
             // checkBoxStackInstructionsItalic
             // 
             this.checkBoxStackInstructionsItalic.AutoSize = true;
-            this.checkBoxStackInstructionsItalic.Checked = true;
-            this.checkBoxStackInstructionsItalic.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxStackInstructionsItalic.Location = new System.Drawing.Point(164, 300);
             this.checkBoxStackInstructionsItalic.Name = "checkBoxStackInstructionsItalic";
             this.checkBoxStackInstructionsItalic.Size = new System.Drawing.Size(55, 19);
@@ -245,8 +243,6 @@
             // checkBoxNumbersItalic
             // 
             this.checkBoxNumbersItalic.AutoSize = true;
-            this.checkBoxNumbersItalic.Checked = true;
-            this.checkBoxNumbersItalic.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxNumbersItalic.Location = new System.Drawing.Point(164, 250);
             this.checkBoxNumbersItalic.Name = "checkBoxNumbersItalic";
             this.checkBoxNumbersItalic.Size = new System.Drawing.Size(55, 19);
@@ -316,8 +312,6 @@
             // checkBoxCommonInstructionsItalic
             // 
             this.checkBoxCommonInstructionsItalic.AutoSize = true;
-            this.checkBoxCommonInstructionsItalic.Checked = true;
-            this.checkBoxCommonInstructionsItalic.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxCommonInstructionsItalic.Location = new System.Drawing.Point(164, 200);
             this.checkBoxCommonInstructionsItalic.Name = "checkBoxCommonInstructionsItalic";
             this.checkBoxCommonInstructionsItalic.Size = new System.Drawing.Size(55, 19);
@@ -341,6 +335,8 @@
             // chcbxJumpsEnabled
             // 
             this.chcbxJumpsEnabled.AutoSize = true;
+            this.chcbxJumpsEnabled.Checked = true;
+            this.chcbxJumpsEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chcbxJumpsEnabled.Location = new System.Drawing.Point(9, 129);
             this.chcbxJumpsEnabled.Name = "chcbxJumpsEnabled";
             this.chcbxJumpsEnabled.Size = new System.Drawing.Size(60, 19);
@@ -352,6 +348,8 @@
             // chcbxCompilerDirectivesEnabled
             // 
             this.chcbxCompilerDirectivesEnabled.AutoSize = true;
+            this.chcbxCompilerDirectivesEnabled.Checked = true;
+            this.chcbxCompilerDirectivesEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chcbxCompilerDirectivesEnabled.Location = new System.Drawing.Point(9, 77);
             this.chcbxCompilerDirectivesEnabled.Name = "chcbxCompilerDirectivesEnabled";
             this.chcbxCompilerDirectivesEnabled.Size = new System.Drawing.Size(132, 19);
@@ -448,8 +446,6 @@
             // checkBoxJumpsItalic
             // 
             this.checkBoxJumpsItalic.AutoSize = true;
-            this.checkBoxJumpsItalic.Checked = true;
-            this.checkBoxJumpsItalic.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxJumpsItalic.Location = new System.Drawing.Point(164, 150);
             this.checkBoxJumpsItalic.Name = "checkBoxJumpsItalic";
             this.checkBoxJumpsItalic.Size = new System.Drawing.Size(55, 19);
@@ -506,8 +502,6 @@
             // checkBoxCompilerDirectivesItalic
             // 
             this.checkBoxCompilerDirectivesItalic.AutoSize = true;
-            this.checkBoxCompilerDirectivesItalic.Checked = true;
-            this.checkBoxCompilerDirectivesItalic.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxCompilerDirectivesItalic.Location = new System.Drawing.Point(166, 104);
             this.checkBoxCompilerDirectivesItalic.Name = "checkBoxCompilerDirectivesItalic";
             this.checkBoxCompilerDirectivesItalic.Size = new System.Drawing.Size(55, 19);

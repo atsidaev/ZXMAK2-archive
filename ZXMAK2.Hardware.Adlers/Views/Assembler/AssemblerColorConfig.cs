@@ -88,16 +88,21 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             public static Style  NumbersStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
             public static string regexNumbers = @"(?:\(|\n|,| |\+|\-|\*|\/)\d{1,5}\b|[^a-zA-Z](?:x|#|\$)[0-9A-Fa-f]{1,4}|%[0-1]{1,16}";
         
-        private void InitSyntaxHighlightningStyles()
+        public void InitSyntaxHighlightningStyles()
         {
-            CommentStyle = new TextStyle(Brushes.Green, null, FontStyle.Italic);
+            CommentStyle = new TextStyle(Brushes.DarkGreen, null, FontStyle.Italic);
             CommonInstructionStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
-            JumpInstructionStyle = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
+            JumpInstructionStyle = new TextStyle(Brushes.Salmon, null, FontStyle.Regular);
             StackInstructionStyle = new TextStyle(Brushes.DarkViolet, null, FontStyle.Regular);
             colorPickerStackInstructions.SelectedValue = Color.DarkViolet;
             CompilerDirectivesStyle = new TextStyle(Brushes.SaddleBrown, null, FontStyle.Italic);
             //styleRegistry = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
             NumbersStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
+
+            colorPickerCommonInstructions.SelectedValue = Color.Blue;
+            colorPickerJumps.SelectedValue = Color.Salmon;
+            colorPickerCompilerDirectives.SelectedValue = Color.Fuchsia;
+            colorPickerComments.SelectedValue = Color.DarkGreen;
             colorPickerNumbers.SelectedValue = Color.Teal;
         }
         public static void RefreshControlStyles( object i_fctxbBox, TextChangedEventArgs e)
