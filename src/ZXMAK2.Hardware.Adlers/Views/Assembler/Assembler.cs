@@ -56,6 +56,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             txtAsm.SelectionLength = 0;
             txtAsm.SelectionStart = txtAsm.Text.Length + 1;
 
+            //init syntax highlightning
+            AssemblerColorConfig.GetInstance();
+
             //register assembler source(noname.asm), will have Id = 0
             treeViewFiles.Nodes[0].Tag = (int)0;
             txtAsm.InsertText(_strDefaultAsmSourceCode); //must be here; will be used as source code for the new added source code

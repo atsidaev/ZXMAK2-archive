@@ -546,12 +546,15 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
                 }
             }
 
-            string filePath = Path.Combine(Utils.GetAppFolder(), fileName); //ToDo: make method which will save file to root app dir, avoid such contructions as this
+            string filePath = Path.Combine(Utils.GetAppFolder(), fileName);
 
             if (File.Exists(filePath))
                 File.Delete(filePath);
-            bmpZXMonochromatic.Save(filePath, i_imgFormat);
-            bmpZXMonochromatic.Dispose();
+
+            //save cropped bitmap
+            Bitmap bmp = pictureZXDisplay.Image as Bitmap;
+            Bitmap cloneBitmap = bmp.Clone(new Rectangle(0, 0, bitmapWidth, bitmapHeight), bmp.PixelFormat);
+            cloneBitmap.Save(filePath, i_imgFormat);
 
             Locator.Resolve<IUserMessage>().Info(String.Format("File '{0}' saved to root app directory!", fileName));
         }
