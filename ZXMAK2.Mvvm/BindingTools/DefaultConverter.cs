@@ -33,6 +33,14 @@ namespace ZXMAK2.Mvvm.BindingTools
             object parameter, 
             CultureInfo culture)
         {
+            if (value == null)
+            {
+                return null;
+            }
+            if (targetType.IsAssignableFrom(value.GetType()))
+            {
+                return value;
+            }
             return SysConvert.ChangeType(value, targetType, culture);
         }
 
@@ -42,6 +50,14 @@ namespace ZXMAK2.Mvvm.BindingTools
             object parameter, 
             CultureInfo culture)
         {
+            if (value == null)
+            {
+                return null;
+            }
+            if (targetType.IsAssignableFrom(value.GetType()))
+            {
+                return value;
+            }
             return SysConvert.ChangeType(value, targetType, culture);
         }
     }

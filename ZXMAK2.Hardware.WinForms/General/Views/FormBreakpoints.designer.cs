@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lstItems = new ListBoxEx();
+            this.lstItems = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // lstItems
@@ -61,6 +61,6 @@
 
         #endregion
 
-        private ListBoxEx lstItems;
+        private System.Windows.Forms.ListBox lstItems;
     }
 }
