@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindingTools\ControlBindingAdapter.cs" />
+    <Compile Include="BindingTools\ListBoxBindingAdapter.cs" />
     <Compile Include="Controls\MenuStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
