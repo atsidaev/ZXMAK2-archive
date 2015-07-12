@@ -7,9 +7,11 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Hardware.WinForms.General.ViewModels;
-using ZXMAK2.Host.WinForms.Tools;
 using ZXMAK2.Mvvm;
-using System.Globalization;
+using ZXMAK2.Mvvm.BindingTools;
+using ZXMAK2.Host.WinForms.Tools;
+using ZXMAK2.Host.WinForms.BindingTools;
+
 
 namespace ZXMAK2.Hardware.WinForms.General.Views
 {
@@ -17,12 +19,16 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
     {
         private RegistersViewModel _dataContext;
         private IValueConverter _regToStringConverter = new IntegerToStringConverter() { IsHex = true, DigitCount = 4 };
+        private BindingService _binding = new BindingService();
         
         
         public FormRegisters()
         {
             InitializeComponent();
+            _binding.RegisterAdapterFactory<Control>(
+                arg => new ControlBindingAdapter(arg));
         }
+
 
         public void Attach(IDebuggable target)
         {
@@ -30,12 +36,14 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             _dataContext.PropertyChanged += DataContext_OnPropertyChanged;
             _dataContext.Attach();
             Bind();
+            _binding.DataContext = _dataContext;
         }
 
         protected override void OnClosed(EventArgs e)
         {
             _dataContext.PropertyChanged -= DataContext_OnPropertyChanged;
             _dataContext.Detach();
+            _binding.Dispose();
             base.OnClosed(e);
         }
 
@@ -44,81 +52,48 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
 
         private void Bind()
         {
-            Bind(txtRegPc, "Pc", _regToStringConverter);
-            Bind(txtRegSp, "Sp", _regToStringConverter);
-            Bind(txtRegIr, "Ir", _regToStringConverter);
-            Bind(txtRegIm, "Im");
-            Bind(txtRegWz, "Wz", _regToStringConverter);
-            Bind(txtRegLpc, "Lpc", _regToStringConverter);
-            Bind(txtRegAf, "Af", _regToStringConverter);
-            Bind(txtRegAf_, "Af_", _regToStringConverter);
-            Bind(txtRegHl, "Hl", _regToStringConverter);
-            Bind(txtRegHl_, "Hl_", _regToStringConverter);
-            Bind(txtRegDe, "De", _regToStringConverter);
-            Bind(txtRegDe_, "De_", _regToStringConverter);
-            Bind(txtRegBc, "Bc", _regToStringConverter);
-            Bind(txtRegBc_, "Bc_", _regToStringConverter);
-            Bind(txtRegIx, "Ix", _regToStringConverter);
-            Bind(txtRegIy, "Iy", _regToStringConverter);
-            Bind(chkIff1, "Iff1");
-            Bind(chkIff2, "Iff2");
-            Bind(chkHalt, "Halt");
-            Bind(chkBint, "Bint");
-            Bind(chkFlagS, "FlagS");
-            Bind(chkFlagZ, "FlagZ");
-            Bind(chkFlag5, "Flag5");
-            Bind(chkFlagH, "FlagH");
-            Bind(chkFlag3, "Flag3");
-            Bind(chkFlagV, "FlagV");
-            Bind(chkFlagN, "FlagN");
-            Bind(chkFlagC, "FlagC");
-            Bind(lblRzxFetchValue, "RzxFetch");
-            Bind(lblRzxInputValue, "RzxInput");
-            Bind(lblRzxFrameValue, "RzxFrame");
-            BindVisible(lblTitleRzx, "IsRzxAvailable");
-            BindVisible(sepRzx, "IsRzxAvailable");
-            BindVisible(lblRzxFetch, "IsRzxAvailable");
-            BindVisible(lblRzxInput, "IsRzxAvailable");
-            BindVisible(lblRzxFrame, "IsRzxAvailable");
-            BindVisible(lblRzxFetchValue, "IsRzxAvailable");
-            BindVisible(lblRzxInputValue, "IsRzxAvailable");
-            BindVisible(lblRzxFrameValue, "IsRzxAvailable");
-        }
-
-        private void BindVisible(Control control, string name)
-        {
-            var binding = new Binding("Visible", _dataContext, name, false);
-            control.DataBindings.Add(binding);
-        }
-
-        private void Bind(Label control, string name)
-        {
-            var binding = new Binding("Text", _dataContext, name, false);
-            control.DataBindings.Add(binding);
-        }
-
-        private void Bind(TextBox control, string name)
-        {
-            var binding = new Binding("Text", _dataContext, name, false, DataSourceUpdateMode.OnValidation);
-            control.DataBindings.Add(binding);
-        }
-
-        private void Bind(TextBox control, string name, IValueConverter converter)
-        {
-            var binding = new Binding("Text", _dataContext, name, true, DataSourceUpdateMode.OnValidation);
-            binding.Format += (s, e) => e.Value = converter.Convert(e.Value, e.DesiredType, null, CultureInfo.CurrentCulture);
-            binding.Parse += (s, e) => e.Value = converter.ConvertBack(e.Value, e.DesiredType, null, CultureInfo.CurrentCulture);
-            control.DataBindings.Add(binding);
-        }
-
-        private void Bind(CheckBox control, string name)
-        {
-            control.DataBindings.Add(
-                "Checked", 
-                _dataContext, 
-                name, 
-                false, 
-                DataSourceUpdateMode.OnPropertyChanged);
+            var pText = "Text";
+            _binding.Bind(txtRegPc, pText, "Pc", _regToStringConverter);
+            _binding.Bind(txtRegSp, pText, "Sp", _regToStringConverter);
+            _binding.Bind(txtRegIr, pText, "Ir", _regToStringConverter);
+            _binding.Bind(txtRegIm, pText, "Im");
+            _binding.Bind(txtRegWz, pText, "Wz", _regToStringConverter);
+            _binding.Bind(txtRegLpc, pText, "Lpc", _regToStringConverter);
+            _binding.Bind(txtRegAf, pText, "Af", _regToStringConverter);
+            _binding.Bind(txtRegAf_, pText, "Af_", _regToStringConverter);
+            _binding.Bind(txtRegHl, pText, "Hl", _regToStringConverter);
+            _binding.Bind(txtRegHl_, pText, "Hl_", _regToStringConverter);
+            _binding.Bind(txtRegDe, pText, "De", _regToStringConverter);
+            _binding.Bind(txtRegDe_, pText, "De_", _regToStringConverter);
+            _binding.Bind(txtRegBc, pText, "Bc", _regToStringConverter);
+            _binding.Bind(txtRegBc_, pText, "Bc_", _regToStringConverter);
+            _binding.Bind(txtRegIx, pText, "Ix", _regToStringConverter);
+            _binding.Bind(txtRegIy, pText, "Iy", _regToStringConverter);
+            _binding.Bind(lblRzxFetchValue, pText, "RzxFetch");
+            _binding.Bind(lblRzxInputValue, pText, "RzxInput");
+            _binding.Bind(lblRzxFrameValue, pText, "RzxFrame");
+            var pChecked = "Checked";
+            _binding.Bind(chkIff1, pChecked, "Iff1");
+            _binding.Bind(chkIff2, pChecked, "Iff2");
+            _binding.Bind(chkHalt, pChecked, "Halt");
+            _binding.Bind(chkBint, pChecked, "Bint");
+            _binding.Bind(chkFlagS, pChecked, "FlagS");
+            _binding.Bind(chkFlagZ, pChecked, "FlagZ");
+            _binding.Bind(chkFlag5, pChecked, "Flag5");
+            _binding.Bind(chkFlagH, pChecked, "FlagH");
+            _binding.Bind(chkFlag3, pChecked, "Flag3");
+            _binding.Bind(chkFlagV, pChecked, "FlagV");
+            _binding.Bind(chkFlagN, pChecked, "FlagN");
+            _binding.Bind(chkFlagC, pChecked, "FlagC");
+            var pVisible = "Visible";
+            _binding.Bind(lblTitleRzx, pVisible, "IsRzxAvailable");
+            _binding.Bind(sepRzx, pVisible, "IsRzxAvailable");
+            _binding.Bind(lblRzxFetch, pVisible, "IsRzxAvailable");
+            _binding.Bind(lblRzxInput, pVisible, "IsRzxAvailable");
+            _binding.Bind(lblRzxFrame, pVisible, "IsRzxAvailable");
+            _binding.Bind(lblRzxFetchValue, pVisible, "IsRzxAvailable");
+            _binding.Bind(lblRzxInputValue, pVisible, "IsRzxAvailable");
+            _binding.Bind(lblRzxFrameValue, pVisible, "IsRzxAvailable");
         }
 
         private void DataContext_OnPropertyChanged(object sender, PropertyChangedEventArgs e)

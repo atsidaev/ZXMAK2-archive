@@ -42,6 +42,17 @@
   <ItemGroup>
     <Compile Include="Attributes\DependsOnPropertyAttribute.cs" />
     <Compile Include="BaseViewModel.cs" />
+    <Compile Include="BindingTools\BaseBindingAdapter.cs" />
+    <Compile Include="BindingTools\BindingInfo.cs" />
+    <Compile Include="BindingTools\BindingService.cs" />
+    <Compile Include="BindingTools\BindingObserver.cs" />
+    <Compile Include="BindingTools\BindingServiceExtensions.cs" />
+    <Compile Include="BindingTools\BindingTrigger.cs" />
+    <Compile Include="BindingTools\DefaultBindingAdapter.cs" />
+    <Compile Include="BindingTools\DefaultConverter.cs" />
+    <Compile Include="BindingTools\IBindingAdapter.cs" />
+    <Compile Include="BindingTools\ObserverPropertyChangedEventArgs.cs" />
+    <Compile Include="BindingTools\TargetPropertyChangedEventArgs.cs" />
     <Compile Include="CommandDelegate.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="IValueConverter.cs" />
