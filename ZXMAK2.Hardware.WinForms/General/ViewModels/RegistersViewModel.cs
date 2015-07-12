@@ -342,19 +342,22 @@ namespace ZXMAK2.Hardware.WinForms.General.ViewModels
             {
                 return;
             }
-            // In order to improve UI performance,
-            // we need to eliminate redundant notifications.
-            // So, we raise notification if value is really changed
-            foreach (var pi in _regProps)
-            {
-                var value = pi.GetValue(this, null);
-                if (_propertyCache.ContainsKey(pi) &&
-                    !object.Equals(_propertyCache[pi], value))
-                {
-                    OnPropertyChanged(pi.Name);
-                }
-                _propertyCache[pi] = value;
-            }
+            _regProps
+                .ForEach(pi => OnPropertyChanged(pi.Name));
+            // Check implemented on binding level
+            //// In order to improve UI performance,
+            //// we need to eliminate redundant notifications.
+            //// So, we raise notification if value is really changed
+            //foreach (var pi in _regProps)
+            //{
+            //    var value = pi.GetValue(this, null);
+            //    if (_propertyCache.ContainsKey(pi) &&
+            //        !object.Equals(_propertyCache[pi], value))
+            //    {
+            //        OnPropertyChanged(pi.Name);
+            //    }
+            //    _propertyCache[pi] = value;
+            //}
         }
 
         #endregion Private
