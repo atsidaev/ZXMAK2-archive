@@ -18,7 +18,6 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
     public partial class FormRegisters : DockContent
     {
         private RegistersViewModel _dataContext;
-        private IValueConverter _regToStringConverter = new IntegerToStringConverter() { IsHex = true, DigitCount = 4 };
         private BindingService _binding = new BindingService();
         
         
@@ -53,22 +52,22 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
         private void Bind()
         {
             var pText = "Text";
-            _binding.Bind(txtRegPc, pText, "Pc", _regToStringConverter);
-            _binding.Bind(txtRegSp, pText, "Sp", _regToStringConverter);
-            _binding.Bind(txtRegIr, pText, "Ir", _regToStringConverter);
+            _binding.Bind(txtRegPc, pText, "Pc", Converters.RegPairToString);
+            _binding.Bind(txtRegSp, pText, "Sp", Converters.RegPairToString);
+            _binding.Bind(txtRegIr, pText, "Ir", Converters.RegPairToString);
             _binding.Bind(txtRegIm, pText, "Im");
-            _binding.Bind(txtRegWz, pText, "Wz", _regToStringConverter);
-            _binding.Bind(txtRegLpc, pText, "Lpc", _regToStringConverter);
-            _binding.Bind(txtRegAf, pText, "Af", _regToStringConverter);
-            _binding.Bind(txtRegAf_, pText, "Af_", _regToStringConverter);
-            _binding.Bind(txtRegHl, pText, "Hl", _regToStringConverter);
-            _binding.Bind(txtRegHl_, pText, "Hl_", _regToStringConverter);
-            _binding.Bind(txtRegDe, pText, "De", _regToStringConverter);
-            _binding.Bind(txtRegDe_, pText, "De_", _regToStringConverter);
-            _binding.Bind(txtRegBc, pText, "Bc", _regToStringConverter);
-            _binding.Bind(txtRegBc_, pText, "Bc_", _regToStringConverter);
-            _binding.Bind(txtRegIx, pText, "Ix", _regToStringConverter);
-            _binding.Bind(txtRegIy, pText, "Iy", _regToStringConverter);
+            _binding.Bind(txtRegWz, pText, "Wz", Converters.RegPairToString);
+            _binding.Bind(txtRegLpc, pText, "Lpc", Converters.RegPairToString);
+            _binding.Bind(txtRegAf, pText, "Af", Converters.RegPairToString);
+            _binding.Bind(txtRegAf_, pText, "Af_", Converters.RegPairToString);
+            _binding.Bind(txtRegHl, pText, "Hl", Converters.RegPairToString);
+            _binding.Bind(txtRegHl_, pText, "Hl_", Converters.RegPairToString);
+            _binding.Bind(txtRegDe, pText, "De", Converters.RegPairToString);
+            _binding.Bind(txtRegDe_, pText, "De_", Converters.RegPairToString);
+            _binding.Bind(txtRegBc, pText, "Bc", Converters.RegPairToString);
+            _binding.Bind(txtRegBc_, pText, "Bc_", Converters.RegPairToString);
+            _binding.Bind(txtRegIx, pText, "Ix", Converters.RegPairToString);
+            _binding.Bind(txtRegIy, pText, "Iy", Converters.RegPairToString);
             _binding.Bind(lblRzxFetchValue, pText, "RzxFetch");
             _binding.Bind(lblRzxInputValue, pText, "RzxInput");
             _binding.Bind(lblRzxFrameValue, pText, "RzxFrame");
