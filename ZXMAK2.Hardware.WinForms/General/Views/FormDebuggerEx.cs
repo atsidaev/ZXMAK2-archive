@@ -10,18 +10,20 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
-using ZXMAK2.Host.WinForms.Tools;
 using ZXMAK2.Host.WinForms.Views;
 using ZXMAK2.Resources;
 using ZXMAK2.Hardware.WinForms.General.ViewModels;
+using ZXMAK2.Mvvm.BindingTools;
+using ZXMAK2.Host.WinForms.BindingTools;
+using ZXMAK2.Mvvm;
 
 
 namespace ZXMAK2.Hardware.WinForms.General.Views
 {
     public partial class FormDebuggerEx : FormView, IDebuggerExView
     {
+        private readonly BindingService _binding = new BindingService();
         private DebuggerViewModel _dataContext;
-        private BindingManager _manager = new BindingManager();
         private List<DockContent> _childs = new List<DockContent>();
         private bool _isCloseRequest;
         private bool _isUiRequest;
@@ -30,6 +32,11 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
 
         public FormDebuggerEx(IDebuggable debugTarget)
         {
+            _binding.RegisterAdapterFactory<Control>(
+                arg => new ControlBindingAdapter(arg));
+            _binding.RegisterAdapterFactory<ToolStripItem>(
+                arg => new ToolStripItemBindingAdapter(arg));
+
             _dataContext = new DebuggerViewModel(debugTarget, this);
             _dataContext.Attach();
             _dataContext.ShowRequest += DataContext_OnShowRequest;
@@ -72,7 +79,9 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             memr.Attach(debugTarget);
             bpts.Attach(debugTarget);
 
+            _binding.DataContext = _dataContext;
             Bind();
+
             KeyPreview = true;
         }
 
@@ -80,6 +89,10 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
         {
             _dataContext.ShowRequest -= DataContext_OnShowRequest;
             _dataContext.CloseRequest -= DataContext_OnCloseRequest;
+            if (CommandClose != null)
+            {
+                CommandClose.CanExecuteChanged -= CommandClose_OnCanExecuteChanged;
+            }
             _dataContext.Detach();
             base.OnFormClosed(e);
             foreach (var child in _childs.ToArray())
@@ -140,15 +153,14 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
         {
             //Logger.Debug("OnFormClosing: reason={0}, isRequest={1}, isUi={2}", e.CloseReason, _isCloseRequest, _isUiRequest);
             if (!_isCloseRequest &&
-                _dataContext != null &&
-                _dataContext.CommandClose != null)
+                CommandClose != null)
             {
                 _isCloseCalled = false;
                 _isUiRequest = true;
-                var canClose = _dataContext.CommandClose.CanExecute(null);
+                var canClose = CommandClose.CanExecute(null);
                 if (canClose)
                 {
-                    _dataContext.CommandClose.Execute(null);
+                    CommandClose.Execute(null);
                     canClose = _isCloseCalled;
                 }
                 _isUiRequest = false;
@@ -194,56 +206,56 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
 
         private void Bind()
         {
-            _manager.Bind(_dataContext.CommandContinue, menuDebugContinue);
-            _manager.Bind(_dataContext.CommandContinue, toolStripContinue);
-            _manager.Bind(_dataContext.CommandBreak, menuDebugBreak);
-            _manager.Bind(_dataContext.CommandBreak, toolStripBreak);
-            _manager.Bind(_dataContext.CommandStepInto, menuDebugStepInto);
-            _manager.Bind(_dataContext.CommandStepInto, toolStripStepInto);
-            _manager.Bind(_dataContext.CommandStepOver, menuDebugStepOver);
-            _manager.Bind(_dataContext.CommandStepOver, toolStripStepOver);
-            _manager.Bind(_dataContext.CommandStepOut, menuDebugStepOut);
-            _manager.Bind(_dataContext.CommandStepOut, toolStripStepOut);
+            _binding.Bind(this, "CommandClose", "CommandClose");
 
-            _manager.Bind(_dataContext.CommandClose, menuFileClose);
-            _dataContext.CommandClose.CanExecuteChanged += DataContextCommandClose_OnCanExecuteChanged;
-            DataContextCommandClose_OnCanExecuteChanged(this, EventArgs.Empty);
+            BindCommand(menuDebugContinue, "CommandContinue");
+            BindCommand(toolStripContinue, "CommandContinue");
+            BindCommand(menuDebugBreak, "CommandBreak");
+            BindCommand(toolStripBreak, "CommandBreak");
+            BindCommand(menuDebugStepInto, "CommandStepInto");
+            BindCommand(toolStripStepInto, "CommandStepInto");
+            BindCommand(menuDebugStepOver, "CommandStepOver");
+            BindCommand(toolStripStepOver, "CommandStepOver");
+            BindCommand(menuDebugStepOut, "CommandStepOut");
+            BindCommand(toolStripStepOut, "CommandStepOut");
+            BindCommand(menuFileClose, "CommandClose");
 
-            _dataContext.PropertyChanged += DataContext_OnPropertyChanged;
-            DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("IsRunning"));
-            DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("StatusText"));
-            DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("StatusRzx"));
-            DataContext_OnPropertyChanged(this, new PropertyChangedEventArgs("StatusTact"));
+            _binding.Bind(toolStripStatus, "Text", "StatusText");
+            _binding.Bind(toolStripStatusTact, "Text", "StatusTact");
+            _binding.Bind(statusStrip, "BackColor", "IsRunning", Converters.BoolToStatusBackColor);
+            _binding.Bind(statusStrip, "ForeColor", "IsRunning", Converters.BoolToStatusForeColor);
         }
 
-        private void DataContext_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void BindCommand(ToolStripItem target, string path)
         {
-            switch (e.PropertyName)
+            _binding.Bind(target, "Command", path);
+            _binding.Bind(target, "Text", path + ".Text");
+            _binding.Bind(target, "Checked", path + ".Checked");
+        }
+
+        private ICommand _commandClose;
+        
+        public ICommand CommandClose
+        {
+            get { return _commandClose; }
+            set
             {
-                case "IsRunning":
-                    if (_dataContext.IsRunning)
-                    {
-                        statusStrip.BackColor = ColorTranslator.FromHtml("#cc6600");
-                        statusStrip.ForeColor = ColorTranslator.FromHtml("#ffffff");
-                    }
-                    else
-                    {
-                        statusStrip.BackColor = ColorTranslator.FromHtml("#0077cc");
-                        statusStrip.ForeColor = ColorTranslator.FromHtml("#ffffff");
-                    }
-                    break;
-                case "StatusText":
-                    toolStripStatus.Text = _dataContext.StatusText;
-                    break;
-                case "StatusTact":
-                    toolStripStatusTact.Text = _dataContext.StatusTact;
-                    break;
+                if (_commandClose != null)
+                {
+                    _commandClose.CanExecuteChanged -= CommandClose_OnCanExecuteChanged;
+                }
+                _commandClose = value;
+                if (_commandClose != null)
+                {
+                    _commandClose.CanExecuteChanged += CommandClose_OnCanExecuteChanged;
+                    CommandClose_OnCanExecuteChanged(_commandClose, EventArgs.Empty);
+                }
             }
         }
 
-        private void DataContextCommandClose_OnCanExecuteChanged(object sender, EventArgs e)
+        private void CommandClose_OnCanExecuteChanged(object sender, EventArgs e)
         {
-            var canExecute = _dataContext.CommandClose.CanExecute(null);
+            var canExecute = CommandClose==null || CommandClose.CanExecute(null);
             if (canExecute)
             {
                 NativeMethods.EnableCloseButton(Handle);

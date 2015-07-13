@@ -74,11 +74,11 @@
   <ItemGroup>
     <Compile Include="BindingTools\ControlBindingAdapter.cs" />
     <Compile Include="BindingTools\ListBoxBindingAdapter.cs" />
+    <Compile Include="BindingTools\ToolStripItemBindingAdapter.cs" />
     <Compile Include="Controls\MenuStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\WinFormsKeyboard.cs" />
-    <Compile Include="Tools\BindingManager.cs" />
     <Compile Include="Tools\ScaleMode.cs" />
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
