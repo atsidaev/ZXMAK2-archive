@@ -43,24 +43,24 @@ namespace ZXMAK2.Mvvm.BindingTools
 
         public event EventHandler<TargetPropertyChangedEventArgs> PropertyChanged;
 
-        public virtual BindingTrigger GetDefaultTrigger(string name)
+        public virtual BindingTrigger GetDefaultPropertyTrigger(string name)
         {
             return BindingTrigger.PropertyChanged;
         }
 
-        public virtual Type GetAdapterPropertyType(string name)
+        public virtual Type GetTargetPropertyType(string name)
         {
             var propInfo = TargetType.GetProperty(name);
             return propInfo != null ? propInfo.PropertyType : null;
         }
 
-        public virtual object GetAdapterPropertyValue(string name)
+        public virtual object GetTargetPropertyValue(string name)
         {
             var propInfo = TargetType.GetProperty(name);
             return propInfo != null ? propInfo.GetValue(Target, null) : null;
         }
 
-        public virtual void SetAdapterPropertyValue(string name, object value)
+        public virtual void SetTargetPropertyValue(string name, object value)
         {
             var propInfo = TargetType.GetProperty(name);
             if (propInfo == null)

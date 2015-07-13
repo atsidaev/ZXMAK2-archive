@@ -44,19 +44,19 @@ namespace ZXMAK2.Mvvm.BindingTools
             string sourcePath,
             IValueConverter converter,
             object converterParameter,
-            BindingTrigger updateSourceTrigger)
+            BindingTrigger trigger)
         {
             SourcePath = sourcePath;
             TargetName = targetName;
             Converter = converter;
             ConverterParameter = converterParameter;
-            UpdateSourceTrigger = updateSourceTrigger;
+            Trigger = trigger;
         }
 
         public string TargetName { get; private set; }
         public string SourcePath { get; private set; }
         public IValueConverter Converter { get; private set; }
         public object ConverterParameter { get; private set; }
-        public BindingTrigger UpdateSourceTrigger { get; private set; }
+        public BindingTrigger Trigger { get; private set; }
     }
 }

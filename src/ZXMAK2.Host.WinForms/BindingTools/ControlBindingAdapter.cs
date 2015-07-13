@@ -69,14 +69,14 @@ namespace ZXMAK2.Host.WinForms.BindingTools
         }
 
 
-        public override BindingTrigger GetDefaultTrigger(string name)
+        public override BindingTrigger GetDefaultPropertyTrigger(string name)
         {
             if (name == "Text" &&
                 typeof(TextBox).IsAssignableFrom(TargetType))
             {
                 return BindingTrigger.LostFocus;
             }
-            return base.GetDefaultTrigger(name);
+            return base.GetDefaultPropertyTrigger(name);
         }
 
         private void Control_OnValidating(object sender, CancelEventArgs e)

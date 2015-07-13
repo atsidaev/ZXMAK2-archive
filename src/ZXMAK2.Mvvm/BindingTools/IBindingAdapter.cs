@@ -27,9 +27,9 @@ namespace ZXMAK2.Mvvm.BindingTools
     public interface IBindingAdapter : IDisposable
     {
         event EventHandler<TargetPropertyChangedEventArgs> PropertyChanged;
-        BindingTrigger GetDefaultTrigger(string name);
-        Type GetAdapterPropertyType(string name);
-        object GetAdapterPropertyValue(string name);
-        void SetAdapterPropertyValue(string name, object value);
+        BindingTrigger GetDefaultPropertyTrigger(string name);
+        Type GetTargetPropertyType(string name);
+        object GetTargetPropertyValue(string name);
+        void SetTargetPropertyValue(string name, object value);
     }
 }
