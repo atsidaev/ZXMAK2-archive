@@ -32,7 +32,6 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
         public void Attach(IDebuggable target)
         {
             _dataContext = new RegistersViewModel(target, this);
-            _dataContext.PropertyChanged += DataContext_OnPropertyChanged;
             _dataContext.Attach();
             Bind();
             _binding.DataContext = _dataContext;
@@ -40,9 +39,8 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
 
         protected override void OnClosed(EventArgs e)
         {
-            _dataContext.PropertyChanged -= DataContext_OnPropertyChanged;
-            _dataContext.Detach();
             _binding.Dispose();
+            _dataContext.Detach();
             base.OnClosed(e);
         }
 
@@ -51,6 +49,8 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
 
         private void Bind()
         {
+            _binding.Bind(this, "IsRunning", "IsRunning");
+            
             var pText = "Text";
             _binding.Bind(txtRegPc, pText, "Pc", Converters.RegPairToString);
             _binding.Bind(txtRegSp, pText, "Sp", Converters.RegPairToString);
@@ -95,22 +95,29 @@ namespace ZXMAK2.Hardware.WinForms.General.Views
             _binding.Bind(lblRzxFrameValue, pVisible, "IsRzxAvailable");
         }
 
-        private void DataContext_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private bool _isRunning;
+        
+        public bool IsRunning
         {
-            switch (e.PropertyName)
+            get { return _isRunning; }
+            set
             {
-                case "IsRunning":
-                    var allowEdit = !_dataContext.IsRunning;
-                    Controls
-                        .OfType<Control>()
-                        .ToList()
-                        .ForEach(arg => arg.Enabled = allowEdit);
-                    Controls
-                        .OfType<Control>()
-                        .ToList()
-                        .ForEach(arg => arg.BackColor = Color.White);
-                    break;
+                _isRunning = value;
+                OnIsRunningChanged();
             }
+        }
+
+        private void OnIsRunningChanged()
+        {
+            var allowEdit = !IsRunning;
+            Controls
+                .OfType<Control>()
+                .ToList()
+                .ForEach(arg => arg.Enabled = allowEdit);
+            Controls
+                .OfType<Control>()
+                .ToList()
+                .ForEach(arg => arg.BackColor = Color.White);
         }
 
         #endregion Binding
