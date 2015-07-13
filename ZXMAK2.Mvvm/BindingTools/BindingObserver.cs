@@ -124,6 +124,12 @@ namespace ZXMAK2.Mvvm.BindingTools
             var dotIndex = path.IndexOf('.');
             if (dotIndex >= 0)
             {
+                name = path.Substring(0, dotIndex);
+                var subPos = dotIndex + 1;
+                subName = path.Substring(subPos, path.Length - subPos);
+            }
+            if (subName.Length > 0)
+            {
                 if (!_subObservers.ContainsKey(name))
                 {
                     // path not found
@@ -160,6 +166,12 @@ namespace ZXMAK2.Mvvm.BindingTools
             var subName = string.Empty;
             var dotIndex = path.IndexOf('.');
             if (dotIndex >= 0)
+            {
+                name = path.Substring(0, dotIndex);
+                var subPos = dotIndex + 1;
+                subName = path.Substring(subPos, path.Length - subPos);
+            }
+            if (subName.Length > 0)
             {
                 return _subObservers[name].GetProperty(subName);
             }
