@@ -232,7 +232,7 @@ namespace ZXMAK2.Mvvm.BindingTools
             if (_subObservers.ContainsKey(e.PropertyName))
             {
                 var propInfo = _dataContext != null && _propInfoCache.ContainsKey(e.PropertyName) ? _propInfoCache[e.PropertyName] : null;
-                var dataContext = _dataContext != null ? propInfo.GetValue(_dataContext, null) : null;
+                var dataContext = _dataContext != null && propInfo.CanRead ? propInfo.GetValue(_dataContext, null) : null;
                 _subObservers[e.PropertyName].DataContext = dataContext;
             }
             var handler = PropertyChanged;
