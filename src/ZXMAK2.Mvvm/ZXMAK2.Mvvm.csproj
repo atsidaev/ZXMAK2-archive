@@ -50,6 +50,7 @@
     <Compile Include="BindingTools\BindingTrigger.cs" />
     <Compile Include="BindingTools\DefaultBindingAdapter.cs" />
     <Compile Include="BindingTools\DefaultConverter.cs" />
+    <Compile Include="BindingTools\FuncConverter.cs" />
     <Compile Include="BindingTools\IBindingAdapter.cs" />
     <Compile Include="BindingTools\ObserverPropertyChangedEventArgs.cs" />
     <Compile Include="BindingTools\TargetPropertyChangedEventArgs.cs" />
