@@ -73,6 +73,7 @@
       <DependentUpon>FormCPU.cs</DependentUpon>
     </Compile>
     <Compile Include="General\ViewModels\Entities\BreakpointViewModel.cs" />
+    <Compile Include="General\Views\Converters.cs" />
     <Compile Include="General\Views\FormDebuggerEx.cs">
       <SubType>Form</SubType>
     </Compile>
