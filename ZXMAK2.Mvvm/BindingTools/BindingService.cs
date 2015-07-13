@@ -159,11 +159,7 @@ namespace ZXMAK2.Mvvm.BindingTools
                     targetPropType, 
                     binding.ConverterParameter, 
                     CultureInfo.CurrentCulture);
-                var currentValue = adapter.GetTargetPropertyValue(binding.TargetName);
-                if (value != currentValue)
-                {
-                    adapter.SetTargetPropertyValue(binding.TargetName, value);
-                }
+                adapter.SetTargetPropertyValue(binding.TargetName, value);
             }
             finally
             {

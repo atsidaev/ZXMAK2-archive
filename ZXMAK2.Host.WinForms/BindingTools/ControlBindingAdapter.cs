@@ -79,6 +79,39 @@ namespace ZXMAK2.Host.WinForms.BindingTools
             return base.GetDefaultPropertyTrigger(name);
         }
 
+        public override void SetTargetPropertyValue(string name, object value)
+        {
+            // cache property set to eliminate redundant UI updates
+            if (name == "Text" )
+            {
+                var control = (Control)Target;
+                if (control.Text != (string)value)
+                {
+                    control.Text = (string)value;
+                }
+                return;
+            }
+            if (name == "Checked")
+            {
+                var control = (CheckBox)Target;
+                if (control.Checked != (bool)value)
+                {
+                    control.Checked = (bool)value;
+                }
+                return;
+            }
+            if (name == "CheckState")
+            {
+                var control = (CheckBox)Target;
+                if (control.CheckState != (CheckState)value)
+                {
+                    control.CheckState = (CheckState)value;
+                }
+                return;
+            }
+            base.SetTargetPropertyValue(name, value);
+        }
+
         private void Control_OnValidating(object sender, CancelEventArgs e)
         {
             try
