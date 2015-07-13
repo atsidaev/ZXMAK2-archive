@@ -63,7 +63,7 @@ namespace ZXMAK2.Host.WinForms.BindingTools
             }
         }
 
-        public override void SetAdapterPropertyValue(string name, object value)
+        public override void SetTargetPropertyValue(string name, object value)
         {
             if (name == "SelectedIndex" || name == "SelectedValue")
             {
@@ -130,10 +130,10 @@ namespace ZXMAK2.Host.WinForms.BindingTools
 
                 return;
             }
-            base.SetAdapterPropertyValue(name, value);
+            base.SetTargetPropertyValue(name, value);
         }
 
-        public override object GetAdapterPropertyValue(string name)
+        public override object GetTargetPropertyValue(string name)
         {
             if (name == "DataSource")   // virtual property
             {
@@ -143,7 +143,7 @@ namespace ZXMAK2.Host.WinForms.BindingTools
             {
                 return _selectedItem;
             }
-            return base.GetAdapterPropertyValue(name);
+            return base.GetTargetPropertyValue(name);
         }
 
         private void ListBox_OnSelectedIndexChanged(object sender, EventArgs e)
@@ -166,21 +166,36 @@ namespace ZXMAK2.Host.WinForms.BindingTools
             _isVirtualUpdate++;
             listBox.BeginUpdate();
             var newItems = dataSource ?? new object[0];
-            var oldItems = listBox.Items.Cast<object>();
-            var add = newItems
-                .Except(oldItems)
-                .ToList();
-            var del = oldItems
-                .Except(newItems)
-                .ToList();
             if (listBox.SelectedItem != null &&
-                del.Any(arg => arg == listBox.SelectedItem))
+                !newItems.Any(arg => arg == listBox.SelectedItem))
             {
                 listBox.ClearSelected();
                 isSelectionChanged = true;
             }
-            del.ForEach(arg => listBox.Items.Remove(arg));
-            add.ForEach(arg => listBox.Items.Add(arg));
+            switch (e.ListChangedType)
+            {
+                case ListChangedType.ItemAdded:
+                    listBox.Items.Insert(e.NewIndex, newItems.ElementAt(e.NewIndex));
+                    break;
+                case ListChangedType.ItemChanged:
+                    listBox.Items.RemoveAt(e.NewIndex);
+                    listBox.Items.Insert(e.NewIndex, newItems.ElementAt(e.NewIndex));
+                    break;
+                case ListChangedType.ItemDeleted:
+                    listBox.Items.RemoveAt(e.NewIndex);
+                    break;
+                case ListChangedType.ItemMoved:
+                    var item = listBox.Items[e.OldIndex];
+                    listBox.Items.RemoveAt(e.OldIndex);
+                    listBox.Items.Insert(e.NewIndex, item);
+                    break;
+                case ListChangedType.Reset:
+                    listBox.Items.Clear();
+                    newItems
+                        .ToList()
+                        .ForEach(arg => listBox.Items.Add(arg));
+                    break;
+            }
             if (!isSelectionChanged && listBox.SelectedItem != _selectedItem)
             {
                 if (_selectedItem == null)

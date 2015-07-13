@@ -41,7 +41,8 @@ namespace ZXMAK2.Mvvm.BindingTools
         
         #region Properties
 
-        public event EventHandler<ObserverPropertyChangedEventArgs> DataContextPropertyChanged;
+        public event EventHandler<ObserverPropertyChangedEventArgs> PropertyChanged;
+        
         public string Name { get; set; }
         
         public bool IsEmpty 
@@ -100,7 +101,7 @@ namespace ZXMAK2.Mvvm.BindingTools
                 {
                     var subObserver = new BindingObserver();
                     subObserver.Name = name;
-                    subObserver.DataContextPropertyChanged += SubObserver_OnPropertyChanged;
+                    subObserver.PropertyChanged += SubObserver_OnPropertyChanged;
                     _subObservers[name] = subObserver;
                 }
                 _subObservers[name].Register(subName);
@@ -203,7 +204,7 @@ namespace ZXMAK2.Mvvm.BindingTools
 
         private void SubObserver_OnPropertyChanged(object sender, ObserverPropertyChangedEventArgs e)
         {
-            var handler = DataContextPropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
                 var subObserver = sender as BindingObserver;
@@ -222,7 +223,7 @@ namespace ZXMAK2.Mvvm.BindingTools
                 var dataContext = _dataContext != null ? propInfo.GetValue(_dataContext, null) : null;
                 _subObservers[e.PropertyName].DataContext = dataContext;
             }
-            var handler = DataContextPropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null && _nameRefs.ContainsKey(e.PropertyName))
             {
                 var propInfo = _dataContext != null && _propInfoCache.ContainsKey(e.PropertyName) ? _propInfoCache[e.PropertyName] : null;

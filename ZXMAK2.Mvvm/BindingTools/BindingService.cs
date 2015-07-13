@@ -46,7 +46,7 @@ namespace ZXMAK2.Mvvm.BindingTools
 
         public BindingService()
         {
-            _sourceObserver.DataContextPropertyChanged += DataContext_OnPropertyChanged;
+            _sourceObserver.PropertyChanged += Observer_OnPropertyChanged;
         }
 
         public void Dispose()
@@ -54,7 +54,7 @@ namespace ZXMAK2.Mvvm.BindingTools
             _targetAdapters.Keys
                 .ToList()
                 .ForEach(RemoveTarget);
-            _sourceObserver.DataContextPropertyChanged -= DataContext_OnPropertyChanged;
+            _sourceObserver.PropertyChanged -= Observer_OnPropertyChanged;
             DataContext = null;
         }
 
@@ -80,7 +80,7 @@ namespace ZXMAK2.Mvvm.BindingTools
             {
                 var adapterFactory = FindTargetAdapterFactory(target.GetType());
                 _targetAdapters[target] = adapterFactory(target);
-                _targetAdapters[target].PropertyChanged += TargetAdapter_OnPropertyChanged;
+                _targetAdapters[target].PropertyChanged += Target_OnPropertyChanged;
                 _targetBindings[target] = new List<BindingInfo>();
             }
             _targetBindings[target].Add(binding);
@@ -88,7 +88,7 @@ namespace ZXMAK2.Mvvm.BindingTools
             
             // init
             var args = new ObserverPropertyChangedEventArgs(binding.SourcePath, _sourceObserver.GetProperty(binding.SourcePath));
-            DataContext_OnPropertyChanged(this, args);
+            Observer_OnPropertyChanged(this, args);
         }
 
         public void RemoveTarget(object target)
@@ -107,7 +107,7 @@ namespace ZXMAK2.Mvvm.BindingTools
 
         #region Private
 
-        private void DataContext_OnPropertyChanged(object sender, ObserverPropertyChangedEventArgs e)
+        private void Observer_OnPropertyChanged(object sender, ObserverPropertyChangedEventArgs e)
         {
             _targetBindings
                 .SelectMany(pair => pair.Value.Select(arg => new { Target = pair.Key, Binding = arg, }))
@@ -116,7 +116,7 @@ namespace ZXMAK2.Mvvm.BindingTools
                 .ForEach(arg => UpdateTarget(arg.Target, arg.Binding));
         }
 
-        private void TargetAdapter_OnPropertyChanged(object sender, TargetPropertyChangedEventArgs e)
+        private void Target_OnPropertyChanged(object sender, TargetPropertyChangedEventArgs e)
         {
             var target = _targetAdapters
                 .First(pair => pair.Value == sender)
@@ -145,7 +145,7 @@ namespace ZXMAK2.Mvvm.BindingTools
                     return;
                 }
                 var adapter = _targetAdapters[target];
-                var targetPropType = adapter.GetAdapterPropertyType(binding.TargetName);
+                var targetPropType = adapter.GetTargetPropertyType(binding.TargetName);
                 if (targetPropType == null)
                 {
                     return;
@@ -159,10 +159,10 @@ namespace ZXMAK2.Mvvm.BindingTools
                     targetPropType, 
                     binding.ConverterParameter, 
                     CultureInfo.CurrentCulture);
-                var currentValue = adapter.GetAdapterPropertyValue(binding.TargetName);
+                var currentValue = adapter.GetTargetPropertyValue(binding.TargetName);
                 if (value != currentValue)
                 {
-                    adapter.SetAdapterPropertyValue(binding.TargetName, value);
+                    adapter.SetTargetPropertyValue(binding.TargetName, value);
                 }
             }
             finally
@@ -190,23 +190,23 @@ namespace ZXMAK2.Mvvm.BindingTools
                     return;
                 }
                 var adapter = _targetAdapters[target];
-                var triggerExpected = binding.UpdateSourceTrigger;
+                var triggerExpected = binding.Trigger;
                 if (triggerExpected == BindingTrigger.Default)
                 {
-                    triggerExpected = adapter.GetDefaultTrigger(binding.TargetName);
+                    triggerExpected = adapter.GetDefaultPropertyTrigger(binding.TargetName);
                 }
                 if (trigger != triggerExpected)
                 {
                     return;
                 }
-                var targetPropType = adapter.GetAdapterPropertyType(binding.TargetName);
+                var targetPropType = adapter.GetTargetPropertyType(binding.TargetName);
                 if (targetPropType == null)
                 {
                     return;
                 }
                 var sourcePropType = sourcePropInfo.PropertyType;
 
-                var value = adapter.GetAdapterPropertyValue(binding.TargetName);
+                var value = adapter.GetTargetPropertyValue(binding.TargetName);
                 var converter = binding.Converter ?? _defaultConverter;
                 value = converter.ConvertBack(
                     value, 
