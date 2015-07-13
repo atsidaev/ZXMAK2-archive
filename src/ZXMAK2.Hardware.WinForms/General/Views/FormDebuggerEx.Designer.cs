@@ -233,7 +233,7 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatus,
             this.toolStripStatusTact});
-            this.statusStrip.Location = new System.Drawing.Point(0, 440);
+            this.statusStrip.Location = new System.Drawing.Point(0, 494);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(784, 22);
             this.statusStrip.SizingGrip = false;
@@ -243,7 +243,7 @@
             // toolStripStatus
             // 
             this.toolStripStatus.Name = "toolStripStatus";
-            this.toolStripStatus.Size = new System.Drawing.Size(567, 17);
+            this.toolStripStatus.Size = new System.Drawing.Size(678, 17);
             this.toolStripStatus.Spring = true;
             this.toolStripStatus.Text = "Ready";
             this.toolStripStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -353,7 +353,7 @@
             this.dockPanel.Location = new System.Drawing.Point(5, 7);
             this.dockPanel.Margin = new System.Windows.Forms.Padding(0);
             this.dockPanel.Name = "dockPanel";
-            this.dockPanel.Size = new System.Drawing.Size(774, 379);
+            this.dockPanel.Size = new System.Drawing.Size(774, 433);
             dockPanelGradient1.EndColor = System.Drawing.SystemColors.ControlLight;
             dockPanelGradient1.StartColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
             autoHideStripSkin1.DockStripGradient = dockPanelGradient1;
@@ -410,14 +410,14 @@
             this.pnlContent.Margin = new System.Windows.Forms.Padding(0);
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Padding = new System.Windows.Forms.Padding(5, 7, 5, 5);
-            this.pnlContent.Size = new System.Drawing.Size(784, 391);
+            this.pnlContent.Size = new System.Drawing.Size(784, 445);
             this.pnlContent.TabIndex = 7;
             // 
             // FormDebuggerEx
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 462);
+            this.ClientSize = new System.Drawing.Size(784, 516);
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusStrip);
