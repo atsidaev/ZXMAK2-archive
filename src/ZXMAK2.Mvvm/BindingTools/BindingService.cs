@@ -140,7 +140,7 @@ namespace ZXMAK2.Mvvm.BindingTools
             try
             {
                 var sourcePropInfo = _sourceObserver.GetProperty(binding.SourcePath);
-                if (sourcePropInfo == null)
+                if (sourcePropInfo == null || !sourcePropInfo.CanRead)
                 {
                     return;
                 }
@@ -159,6 +159,10 @@ namespace ZXMAK2.Mvvm.BindingTools
                     targetPropType, 
                     binding.ConverterParameter, 
                     CultureInfo.CurrentCulture);
+                if (value == BindingInfo.DoNothing)
+                {
+                    return;
+                }
                 adapter.SetTargetPropertyValue(binding.TargetName, value);
             }
             finally
@@ -181,7 +185,7 @@ namespace ZXMAK2.Mvvm.BindingTools
             try
             {
                 var sourcePropInfo = _sourceObserver.GetProperty(binding.SourcePath);
-                if (sourcePropInfo == null)
+                if (sourcePropInfo == null || !sourcePropInfo.CanWrite)
                 {
                     return;
                 }
@@ -203,12 +207,20 @@ namespace ZXMAK2.Mvvm.BindingTools
                 var sourcePropType = sourcePropInfo.PropertyType;
 
                 var value = adapter.GetTargetPropertyValue(binding.TargetName);
+                if (value == BindingInfo.DoNothing)
+                {
+                    return;
+                }
                 var converter = binding.Converter ?? _defaultConverter;
                 value = converter.ConvertBack(
                     value, 
                     sourcePropType, 
                     binding.ConverterParameter, 
                     CultureInfo.CurrentCulture);
+                if (value == BindingInfo.DoNothing)
+                {
+                    return;
+                }
                 sourcePropInfo.SetValue(DataContext, value, null);
             }
             finally

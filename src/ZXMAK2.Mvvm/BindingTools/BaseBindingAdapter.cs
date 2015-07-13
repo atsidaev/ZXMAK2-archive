@@ -57,13 +57,17 @@ namespace ZXMAK2.Mvvm.BindingTools
         public virtual object GetTargetPropertyValue(string name)
         {
             var propInfo = TargetType.GetProperty(name);
+            if (!propInfo.CanRead)
+            {
+                return BindingInfo.DoNothing;
+            }
             return propInfo != null ? propInfo.GetValue(Target, null) : null;
         }
 
         public virtual void SetTargetPropertyValue(string name, object value)
         {
             var propInfo = TargetType.GetProperty(name);
-            if (propInfo == null)
+            if (propInfo == null || !propInfo.CanWrite)
             {
                 return;
             }

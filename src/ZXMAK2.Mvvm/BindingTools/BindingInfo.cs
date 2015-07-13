@@ -58,5 +58,10 @@ namespace ZXMAK2.Mvvm.BindingTools
         public IValueConverter Converter { get; private set; }
         public object ConverterParameter { get; private set; }
         public BindingTrigger Trigger { get; private set; }
+    
+        /// <summary>
+        /// Used as a returned value to instruct the binding engine not to perform any action.
+        /// </summary>
+        public static readonly object DoNothing = new object();
     }
 }
