@@ -85,10 +85,6 @@ namespace ZXMAK2.Mvvm.BindingTools
             }
             _targetBindings[target].Add(binding);
             _sourceObserver.Register(binding.SourcePath);
-            
-            // init
-            var args = new ObserverPropertyChangedEventArgs(binding.SourcePath, _sourceObserver.GetProperty(binding.SourcePath));
-            Observer_OnPropertyChanged(this, args);
         }
 
         public void RemoveTarget(object target)
@@ -139,24 +135,22 @@ namespace ZXMAK2.Mvvm.BindingTools
             _activeUpdate.Add(updateInfo);
             try
             {
-                var sourcePropInfo = _sourceObserver.GetProperty(binding.SourcePath);
-                if (sourcePropInfo == null || !sourcePropInfo.CanRead)
+                var sourceValue = _sourceObserver.GetPropertyValue(binding.SourcePath);
+                if (sourceValue == BindingInfo.DoNothing)
                 {
                     return;
                 }
                 var adapter = _targetAdapters[target];
-                var targetPropType = adapter.GetTargetPropertyType(binding.TargetName);
-                if (targetPropType == null)
+                var targetType = adapter.GetTargetPropertyType(binding.TargetName);
+                if (targetType == null)
                 {
                     return;
                 }
-                var sourcePropType = sourcePropInfo.PropertyType;
 
-                var value = sourcePropInfo.GetValue(DataContext, null);
                 var converter = binding.Converter ?? _defaultConverter;
-                value = converter.Convert(
-                    value, 
-                    targetPropType, 
+                var value = converter.Convert(
+                    sourceValue, 
+                    targetType, 
                     binding.ConverterParameter, 
                     CultureInfo.CurrentCulture);
                 if (value == BindingInfo.DoNothing)
@@ -184,8 +178,8 @@ namespace ZXMAK2.Mvvm.BindingTools
             _activeUpdate.Add(updateInfo);
             try
             {
-                var sourcePropInfo = _sourceObserver.GetProperty(binding.SourcePath);
-                if (sourcePropInfo == null || !sourcePropInfo.CanWrite)
+                var sourceType = _sourceObserver.GetPropertyType(binding.SourcePath);
+                if (sourceType == null)
                 {
                     return;
                 }
@@ -199,29 +193,28 @@ namespace ZXMAK2.Mvvm.BindingTools
                 {
                     return;
                 }
-                var targetPropType = adapter.GetTargetPropertyType(binding.TargetName);
-                if (targetPropType == null)
+                var targetType = adapter.GetTargetPropertyType(binding.TargetName);
+                if (targetType == null)
                 {
                     return;
                 }
-                var sourcePropType = sourcePropInfo.PropertyType;
 
-                var value = adapter.GetTargetPropertyValue(binding.TargetName);
-                if (value == BindingInfo.DoNothing)
+                var targetValue = adapter.GetTargetPropertyValue(binding.TargetName);
+                if (targetValue == BindingInfo.DoNothing)
                 {
                     return;
                 }
                 var converter = binding.Converter ?? _defaultConverter;
-                value = converter.ConvertBack(
-                    value, 
-                    sourcePropType, 
+                var value = converter.ConvertBack(
+                    targetValue, 
+                    sourceType, 
                     binding.ConverterParameter, 
                     CultureInfo.CurrentCulture);
                 if (value == BindingInfo.DoNothing)
                 {
                     return;
                 }
-                sourcePropInfo.SetValue(DataContext, value, null);
+                _sourceObserver.SetPropertyValue(binding.SourcePath, value);
             }
             finally
             {

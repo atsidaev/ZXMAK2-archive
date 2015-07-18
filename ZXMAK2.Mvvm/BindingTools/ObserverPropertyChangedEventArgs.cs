@@ -27,13 +27,16 @@ namespace ZXMAK2.Mvvm.BindingTools
     public class ObserverPropertyChangedEventArgs : EventArgs
     {
         public string Path { get; private set; }
+        public object DataContext { get; private set; }
         public PropertyInfo PropertyInfo { get; private set; }
 
         public ObserverPropertyChangedEventArgs(
             string path,
+            object dataContext,
             PropertyInfo propertyInfo)
         {
             Path = path;
+            DataContext = dataContext;
             PropertyInfo = propertyInfo;
         }
     }
