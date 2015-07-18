@@ -509,54 +509,27 @@ namespace ZXMAK2.Engine
 
         public bool IsRunning
         {
-            get
-            {
-                lock (m_sync)
-                {
-                    return Spectrum.IsRunning;
-                }
-            }
+            get { return Spectrum.IsRunning; }
         }
 
         public CpuUnit CPU
         {
-            get
-            {
-                lock (m_sync)
-                {
-                    return Spectrum.CPU;
-                }
-            }
+            get { return Spectrum.CPU; }
         }
 
         public int GetFrameTact()
         {
-            lock (m_sync)
-            {
-                return Spectrum.BusManager.GetFrameTact();
-            }
+            return Spectrum.BusManager.GetFrameTact();
         }
 
         public int FrameTactCount
         {
-            get
-            {
-                lock (m_sync)
-                {
-                    return Spectrum.BusManager.FrameTactCount;
-                }
-            }
+            get { return Spectrum.BusManager.FrameTactCount; }
         }
 
         public IRzxState RzxState
         {
-            get
-            {
-                lock (m_sync)
-                {
-                    return Spectrum.BusManager.RzxHandler;
-                }
-            }
+            get { return Spectrum.BusManager.RzxHandler; }
         }
 
         #endregion
