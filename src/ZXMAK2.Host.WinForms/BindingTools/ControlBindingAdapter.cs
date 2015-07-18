@@ -82,32 +82,35 @@ namespace ZXMAK2.Host.WinForms.BindingTools
         public override void SetTargetPropertyValue(string name, object value)
         {
             // cache property set to eliminate redundant UI updates
-            if (name == "Text" )
+            if (name == "Text")
             {
-                var control = (Control)Target;
-                if (control.Text != (string)value)
+                var control = Target as Control;
+                if (control != null)
                 {
-                    control.Text = (string)value;
+                    if (control.Text != (string)value)
+                        control.Text = (string)value;
+                    return;
                 }
-                return;
             }
             if (name == "Checked")
             {
-                var control = (CheckBox)Target;
-                if (control.Checked != (bool)value)
+                var control = Target as CheckBox;
+                if (control != null)
                 {
-                    control.Checked = (bool)value;
+                    if (control.Checked != (bool)value)
+                        control.Checked = (bool)value;
+                    return;
                 }
-                return;
             }
             if (name == "CheckState")
             {
-                var control = (CheckBox)Target;
-                if (control.CheckState != (CheckState)value)
+                var control = Target as CheckBox;
+                if (control != null)
                 {
-                    control.CheckState = (CheckState)value;
+                    if (control.CheckState != (CheckState)value)
+                        control.CheckState = (CheckState)value;
+                    return;
                 }
-                return;
             }
             base.SetTargetPropertyValue(name, value);
         }

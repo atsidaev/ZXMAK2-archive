@@ -99,8 +99,14 @@ namespace ZXMAK2.Mvvm.BindingTools
             {
                 if (!_subObservers.ContainsKey(name))
                 {
+                    OnCacheAdd(name);
                     var subObserver = new BindingObserver();
                     subObserver.Name = name;
+
+                    var propInfo = _dataContext != null && _propInfoCache.ContainsKey(name) ? _propInfoCache[name] : null;
+                    var dataContext = _dataContext != null && propInfo.CanRead ? propInfo.GetValue(_dataContext, null) : null;
+                    subObserver.DataContext = _dataContext != null && propInfo.CanRead ? propInfo.GetValue(_dataContext, null) : null;
+
                     subObserver.PropertyChanged += SubObserver_OnPropertyChanged;
                     _subObservers[name] = subObserver;
                 }
@@ -114,6 +120,14 @@ namespace ZXMAK2.Mvvm.BindingTools
                 }
                 _nameRefs[name]++;
                 OnCacheAdd(name);
+                
+                // init
+                var handler = PropertyChanged;
+                if (handler != null)
+                {
+                    var args = new ObserverPropertyChangedEventArgs(name, DataContext, GetProperty(name));
+                    handler(this, args);
+                }
             }
         }
 
@@ -182,6 +196,100 @@ namespace ZXMAK2.Mvvm.BindingTools
             return _propInfoCache[name];
         }
 
+        public Type GetPropertyType(string path)
+        {
+            if (_dataContext == null)
+            {
+                return null;
+            }
+            var name = path;
+            var subName = string.Empty;
+            var dotIndex = path.IndexOf('.');
+            if (dotIndex >= 0)
+            {
+                name = path.Substring(0, dotIndex);
+                var subPos = dotIndex + 1;
+                subName = path.Substring(subPos, path.Length - subPos);
+            }
+            if (subName.Length > 0)
+            {
+                return _subObservers[name].GetPropertyType(subName);
+            }
+            if (!_propInfoCache.ContainsKey(name))
+            {
+                return null;
+            }
+            var propInfo = _propInfoCache[name];
+            if (propInfo == null)
+            {
+                return null;
+            }
+            return propInfo.PropertyType;
+        }
+
+        public object GetPropertyValue(string path)
+        {
+            if (_dataContext == null)
+            {
+                return BindingInfo.DoNothing;
+            }
+            var name = path;
+            var subName = string.Empty;
+            var dotIndex = path.IndexOf('.');
+            if (dotIndex >= 0)
+            {
+                name = path.Substring(0, dotIndex);
+                var subPos = dotIndex + 1;
+                subName = path.Substring(subPos, path.Length - subPos);
+            }
+            if (subName.Length > 0)
+            {
+                return _subObservers[name].GetPropertyValue(subName);
+            }
+            if (!_propInfoCache.ContainsKey(name))
+            {
+                return BindingInfo.DoNothing;
+            }
+            var propInfo = _propInfoCache[name];
+            if (propInfo == null || !propInfo.CanRead)
+            {
+                return BindingInfo.DoNothing;
+            }
+            return propInfo.GetValue(_dataContext, null);
+        }
+
+        public void SetPropertyValue(string path, object value)
+        {
+            if (_dataContext == null || value == BindingInfo.DoNothing)
+            {
+                return;
+            }
+            var name = path;
+            var subName = string.Empty;
+            var dotIndex = path.IndexOf('.');
+            if (dotIndex >= 0)
+            {
+                name = path.Substring(0, dotIndex);
+                var subPos = dotIndex + 1;
+                subName = path.Substring(subPos, path.Length - subPos);
+            }
+            if (subName.Length > 0)
+            {
+                _subObservers[name].SetPropertyValue(subName, value);
+                return;
+            }
+            if (!_propInfoCache.ContainsKey(name))
+            {
+                return;
+            }
+            var propInfo = _propInfoCache[name];
+            if (propInfo == null || !propInfo.CanWrite)
+            {
+                return;
+            }
+            propInfo.SetValue(_dataContext, value, null);
+        }
+
         #endregion Public
 
 
@@ -222,6 +330,7 @@ namespace ZXMAK2.Mvvm.BindingTools
                 var subObserver = sender as BindingObserver;
                 var args = new ObserverPropertyChangedEventArgs(
                     subObserver.Name + "." + e.Path, 
+                    e.DataContext,
                     e.PropertyInfo);
                 handler(this, args);
             }
@@ -235,12 +344,18 @@ namespace ZXMAK2.Mvvm.BindingTools
                 var dataContext = _dataContext != null && propInfo.CanRead ? propInfo.GetValue(_dataContext, null) : null;
                 _subObservers[e.PropertyName].DataContext = dataContext;
             }
+            if (!_nameRefs.ContainsKey(e.PropertyName))
+            {
+                // do not raise events for non-registered path (sub observer will do it)
+                return;
+            }
             var handler = PropertyChanged;
             if (handler != null && _nameRefs.ContainsKey(e.PropertyName))
             {
                 var propInfo = _dataContext != null && _propInfoCache.ContainsKey(e.PropertyName) ? _propInfoCache[e.PropertyName] : null;
                 var args = new ObserverPropertyChangedEventArgs(
                     e.PropertyName,
+                    DataContext,
                     propInfo);
                 handler(this, args);
             }

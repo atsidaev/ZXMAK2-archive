@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -58,34 +59,39 @@ namespace ZXMAK2.Host.WinForms.BindingTools
             if (name == "Text")
             {
                 var control = (ToolStripItem)Target;
-                if (control.Text != (string)value)
+                if (control != null)
                 {
-                    control.Text = (string)value;
+                    if (control.Text != (string)value)
+                        control.Text = (string)value;
+                    return;
                 }
-                return;
             }
             if (name == "Visible")
             {
                 var control = (ToolStripItem)Target;
-                if (control.Visible != (bool)value)
+                if (control != null)
                 {
-                    control.Visible = (bool)value;
+                    if (control.Visible != (bool)value)
+                        control.Visible = (bool)value;
+                    return;
                 }
-                return;
             }
             if (name == "Checked")
             {
                 var menuItem = Target as ToolStripMenuItem;
-                if (menuItem.Checked != (bool)value)
+                if (menuItem != null)
                 {
-                    menuItem.Checked = (bool)value;
+                    if (menuItem.Checked != (bool)value)
+                        menuItem.Checked = (bool)value;
+                    return;
                 }
                 var button = Target as ToolStripButton;
-                if (button.Checked != (bool)value)
+                if (button != null)
                 {
-                    button.Checked = (bool)value;
+                    if (button.Checked != (bool)value)
+                        button.Checked = (bool)value;
+                    return;
                 }
-                return;
             }
             base.SetTargetPropertyValue(name, value);
         }
