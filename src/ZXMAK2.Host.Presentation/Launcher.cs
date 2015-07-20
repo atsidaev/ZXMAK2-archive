@@ -39,15 +39,15 @@ namespace ZXMAK2.Host.Presentation
                     var list = new List<Argument>();
                     list.Add(new Argument("view", view));
                     list.Add(new Argument("args", args));
-                    using (var presenter = m_resolver.Resolve<IMainViewModel>(list.ToArray()))
+                    using (var viewModel = m_resolver.Resolve<IMainViewModel>(list.ToArray()))
                     {
                         var synchronizeInvoke = view as ISynchronizeInvoke;
                         if (synchronizeInvoke != null)
                         {
-                            presenter.Attach(synchronizeInvoke);
+                            viewModel.Attach(synchronizeInvoke);
                         }
-                        view.DataContext = presenter;
-                        presenter.Run();
+                        view.DataContext = viewModel;
+                        viewModel.Run();
                     }
                 }
             }
