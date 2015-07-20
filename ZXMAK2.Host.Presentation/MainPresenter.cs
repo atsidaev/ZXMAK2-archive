@@ -17,7 +17,7 @@ using ZXMAK2.Mvvm.Attributes;
 
 namespace ZXMAK2.Host.Presentation
 {
-    public class MainPresenter : BaseViewModel, IMainPresenter
+    public class MainViewModel : BaseViewModel, IMainViewModel
     {
         private readonly IResolver m_resolver;
         private readonly ISettingService m_settingService;
@@ -28,7 +28,7 @@ namespace ZXMAK2.Host.Presentation
         private VirtualMachine m_vm;
         
         
-        public MainPresenter(
+        public MainViewModel(
             IResolver resolver,
             ISettingService settingService,
             IUserMessage userMessage,
