@@ -25,7 +25,7 @@ namespace ZXMAK2.Mvvm.BindingTools
             object parameter, 
             CultureInfo culture)
         {
-            throw new NotSupportedException();
+            return BindingInfo.DoNothing;
         }
     }
 }

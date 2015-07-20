@@ -16,24 +16,30 @@ using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.Services;
 using ZXMAK2.Resources;
 using ZXMAK2.Mvvm;
+using ZXMAK2.Mvvm.BindingTools;
+using ZXMAK2.Host.WinForms.BindingTools;
 
 
 namespace ZXMAK2.Host.WinForms.Views
 {
-    public partial class MainView : Form, IMainView, ICommandManager
+    public partial class MainView : Form, IMainView, ICommandManager, INotifyPropertyChanged
     {
-        private readonly IResolver m_resolver;
-        private readonly SettingService m_setting;
+        #region Fields
 
-        private IHostService m_host;
+        private readonly IResolver _resolver;
+        private readonly BindingService _binding; 
 
-        private bool m_fullScreen;
-        private Point m_location;
-        private Size m_size;
-        private FormBorderStyle m_style;
+        private IHostService _host;
 
-        private string m_title;
-        private bool m_allowSaveSize;
+        //private Size _size;
+        private Point _location;
+        private FormBorderStyle _style;
+        private bool _isToolBarPopupActive;
+        private bool _isFullScreenChanging;
+        private bool _isFormShown;
+
+        #endregion Fields
+
 
         static MainView()
         {
@@ -44,46 +50,164 @@ namespace ZXMAK2.Host.WinForms.Views
 
         public MainView(IResolver resolver)
         {
-            m_resolver = resolver;
-            m_setting = new SettingService();
+            _resolver = resolver;
+            _binding = new BindingService();
+            _binding.RegisterAdapterFactory<Control>(
+                arg => new ControlBindingAdapter(arg));
+            _binding.RegisterAdapterFactory<ToolStripItem>(
+                arg => new ToolStripItemBindingAdapter(arg));
+
             SetStyle(ControlStyles.Opaque | ControlStyles.AllPaintingInWmPaint, true);
             InitializeComponent();
             Icon = ResourceImages.IconApp;
 
-            LoadClientSize();
-            LoadRenderSetting();
+            Bind();
+        }
+
+
+        private void Bind()
+        {
+            _binding.Bind(this, "IsToolBarEnabled", "IsToolBarEnabled");
+            _binding.Bind(this, "IsStatusBarEnabled", "IsStatusBarEnabled");
+            _binding.Bind(this, "RenderSize", "RenderSize");
+            BindCommandLight(menuViewSizeX1, "CommandViewScaleRatio", 1);
+            BindCommandLight(menuViewSizeX2, "CommandViewScaleRatio", 2);
+            BindCommandLight(menuViewSizeX3, "CommandViewScaleRatio", 3);
+            BindCommandLight(menuViewSizeX4, "CommandViewScaleRatio", 4);
+            _binding.Bind(this, "RenderScaleRatio", "RenderScaleRatio");
+
+            BindCommand(menuFileOpen, "CommandFileOpen", this);
+            BindCommand(menuFileSaveAs, "CommandFileSave", this);
+            BindCommand(menuFileExit, "CommandFileExit");
+            BindCommand(menuViewFullScreen, "CommandViewFullScreen");
+            BindCommand(menuVmPause, "CommandVmPause");
+            BindCommand(menuVmMaximumSpeed, "CommandVmMaxSpeed");
+            BindCommand(menuVmWarmReset, "CommandVmWarmReset");
+            BindCommand(menuVmColdReset, "CommandVmColdReset");
+            BindCommand(menuVmNmi, "CommandVmNmi");
+            BindCommand(menuVmSettings, "CommandVmSettings", this);
+            BindCommand(menuHelpViewHelp, "CommandHelpViewHelp", this);
+            BindCommand(menuHelpKeyboardHelp, "CommandHelpKeyboardHelp", this);
+            BindCommand(menuHelpAbout, "CommandHelpAbout", this);
+
+            BindCommand(tbrButtonOpen, "CommandFileOpen", this);
+            BindCommand(tbrButtonSave, "CommandFileSave", this);
+            BindCommand(tbrButtonPause, "CommandVmPause");
+            BindCommand(tbrButtonMaxSpeed, "CommandVmMaxSpeed");
+            BindCommand(tbrButtonWarmReset, "CommandVmWarmReset");
+            BindCommand(tbrButtonColdReset, "CommandVmColdReset");
+            BindCommand(tbrButtonFullScreen, "CommandViewFullScreen");
+            BindCommand(tbrButtonQuickLoad, "CommandQuickLoad");
+            BindCommand(tbrButtonSettings, "CommandVmSettings", this);
+
+            BindCommand(menuViewCustomizeShowToolBar, "CommandViewToolBar");
+            BindCommand(menuViewCustomizeShowStatusBar, "CommandViewStatusBar");
+            _binding.Bind(this, "IsToolBarEnabled", "CommandViewToolBar.Checked");
+            _binding.Bind(this, "IsStatusBarEnabled", "CommandViewStatusBar.Checked");
+
+            BindCommandLight(menuViewFrameSyncTime, "CommandViewSyncSource", SyncSource.Time);
+            BindCommandLight(menuViewFrameSyncSound, "CommandViewSyncSource", SyncSource.Sound);
+            BindCommandLight(menuViewFrameSyncVideo, "CommandViewSyncSource", SyncSource.Video);
+            _binding.Bind(this, "SelectedSyncSource", "SyncSource");
+
+            BindCommandLight(menuViewScaleModeStretch, "CommandViewScaleMode", ScaleMode.Stretch);
+            BindCommandLight(menuViewScaleModeKeepProportion, "CommandViewScaleMode", ScaleMode.KeepProportion);
+            BindCommandLight(menuViewScaleModeFixedPixelSize, "CommandViewScaleMode", ScaleMode.FixedPixelSize);
+            BindCommandLight(menuViewScaleModeSquarePixelSize, "CommandViewScaleMode", ScaleMode.SquarePixelSize);
+            _binding.Bind(this, "SelectedScaleMode", "RenderScaleMode");
+
+            BindCommandLight(menuViewVideoFilterNone, "CommandViewVideoFilter", VideoFilter.None);
+            BindCommandLight(menuViewVideoFilterNoFlick, "CommandViewVideoFilter", VideoFilter.NoFlick);
+            _binding.Bind(this, "SelectedVideoFilter", "RenderVideoFilter");
+
+            BindCommand(menuViewSmoothing, "CommandViewSmooth");
+            BindCommand(menuViewMimicTv, "CommandViewMimicTv");
+            BindCommand(menuViewDisplayIcon, "CommandViewDisplayIcon");
+            BindCommand(menuViewDebugInfo, "CommandViewDebugInfo");
+
+            _binding.Bind(renderVideo, "AntiAlias", "CommandViewSmooth.Checked");
+            _binding.Bind(renderVideo, "MimicTv", "CommandViewMimicTv.Checked");
+            _binding.Bind(renderVideo, "DisplayIcon", "CommandViewDisplayIcon.Checked");
+            _binding.Bind(renderVideo, "DebugInfo", "CommandViewDebugInfo.Checked");
+
+            _binding.Bind(this, "Title", "Title");
+            _binding.Bind(this, "IsFullScreen", "IsFullScreen");
+            _binding.Bind(this, "IsRunning", "IsRunning");
+            _binding.Bind(renderVideo, "IsRunning", "IsRunning");
+
+            var imagePause = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuPause_32x32;
+            var imageResume = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuResume_32x32;
+            var imageWindowed = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuWindowed_32x32;
+            var imageFullScreen = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuFullScreen_32x32;
+            _binding.Bind(
+                tbrButtonPause,
+                "Image",
+                "IsRunning",
+                arg => (bool)arg ? imagePause : imageResume);
+            _binding.Bind(
+                tbrButtonFullScreen,
+                "Image",
+                "IsFullScreen",
+                arg => (bool)arg ? imageWindowed : imageFullScreen);
+
+            _binding.Bind(this, "CommandViewFullScreen", "CommandViewFullScreen");
+            _binding.Bind(this, "CommandVmPause", "CommandVmPause");
+            _binding.Bind(this, "CommandVmMaxSpeed", "CommandVmMaxSpeed");
+            _binding.Bind(this, "CommandVmWarmReset", "CommandVmWarmReset");
+            _binding.Bind(this, "CommandTapePause", "CommandTapePause");
+            _binding.Bind(this, "CommandQuickLoad", "CommandQuickLoad");
+            _binding.Bind(this, "CommandOpenUri", "CommandOpenUri");
         }
 
 
         #region Commands
 
-        private ICommand CommandViewFullScreen { get; set; }
-        private ICommand CommandViewSyncSource { get; set; }
-        private ICommand CommandVmPause { get; set; }
-        private ICommand CommandVmMaxSpeed { get; set; }
-        private ICommand CommandVmWarmReset { get; set; }
-        private ICommand CommandTapePause { get; set; }
-        private ICommand CommandQuickLoad { get; set; }
-        private ICommand CommandOpenUri { get; set; }
+        public ICommand CommandViewFullScreen { get; set; }
+        public ICommand CommandVmPause { get; set; }
+        public ICommand CommandVmMaxSpeed { get; set; }
+        public ICommand CommandVmWarmReset { get; set; }
+        public ICommand CommandTapePause { get; set; }
+        public ICommand CommandQuickLoad { get; set; }
+        public ICommand CommandOpenUri { get; set; }
 
         #endregion Commands
 
 
         #region IMainView
 
+        public object DataContext
+        {
+            get { return _binding.DataContext; }
+            set { _binding.DataContext = value; }
+        }
+
+        private string _title;
+        
         public string Title
         {
-            get { return m_title; }
+            get { return _title; }
             set
             {
-                m_title = value;
+                _title = value;
+                UpdateTitle();
+            }
+        }
+
+        private bool _isRunning;
+
+        public bool IsRunning
+        {
+            get { return _isRunning; }
+            set
+            {
+                _isRunning = value;
                 UpdateTitle();
             }
         }
 
         public IHostService Host
         {
-            get { return m_host; }
+            get { return _host; }
         }
 
         public ICommandManager CommandManager
@@ -100,87 +224,18 @@ namespace ZXMAK2.Host.WinForms.Views
             Application.Run(this);
         }
 
-        public void Bind(IMainPresenter presenter)
-        {
-            if (presenter.CommandViewSyncSource != null)
-            {
-                // set back to apply registry setting
-                OnCommand(presenter.CommandViewSyncSource, SelectedSyncSource);
-            }
-
-            BindMenuCommand(menuFileOpen, presenter.CommandFileOpen, this);
-            BindMenuCommand(menuFileSaveAs, presenter.CommandFileSave, this);
-            BindMenuCommand(menuFileExit, presenter.CommandFileExit);
-            BindMenuCommand(menuViewFullScreen, presenter.CommandViewFullScreen);
-            BindMenuCommand(menuVmPause, presenter.CommandVmPause);
-            BindMenuCommand(menuVmMaximumSpeed, presenter.CommandVmMaxSpeed);
-            BindMenuCommand(menuVmWarmReset, presenter.CommandVmWarmReset);
-            BindMenuCommand(menuVmColdReset, presenter.CommandVmColdReset);
-            BindMenuCommand(menuVmNmi, presenter.CommandVmNmi);
-            BindMenuCommand(menuVmSettings, presenter.CommandVmSettings, this);
-            BindMenuCommand(menuHelpViewHelp, presenter.CommandHelpViewHelp, this);
-            BindMenuCommand(menuHelpKeyboardHelp, presenter.CommandHelpKeyboardHelp, this);
-            BindMenuCommand(menuHelpAbout, presenter.CommandHelpAbout, this);
-
-            BindToolBarCommand(tbrButtonOpen, presenter.CommandFileOpen, this);
-            BindToolBarCommand(tbrButtonSave, presenter.CommandFileSave, this);
-            BindToolBarCommand(tbrButtonPause, presenter.CommandVmPause);
-            BindToolBarCommand(tbrButtonMaxSpeed, presenter.CommandVmMaxSpeed);
-            BindToolBarCommand(tbrButtonWarmReset, presenter.CommandVmWarmReset);
-            BindToolBarCommand(tbrButtonColdReset, presenter.CommandVmColdReset);
-            BindToolBarCommand(tbrButtonFullScreen, presenter.CommandViewFullScreen);
-            BindToolBarCommand(tbrButtonQuickLoad, presenter.CommandQuickLoad);
-            BindToolBarCommand(tbrButtonSettings, presenter.CommandVmSettings, this);
-
-            BindProperty<string>(
-                presenter.CommandVmPause,
-                "Text",
-                new Action<string>((value) =>
-                {
-                    if (value == "Pause")
-                    {
-                        tbrButtonPause.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuPause_32x32;
-                        renderVideo.IsRunning = true;
-                    }
-                    else
-                    {
-                        tbrButtonPause.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuResume_32x32;
-                        renderVideo.IsRunning = false;
-                    }
-                    UpdateTitle();
-                }));
-            BindProperty<string>(
-                presenter.CommandViewFullScreen,
-                "Text",
-                new Action<string>((value) =>
-                {
-                    if (value == "Windowed")
-                    {
-                        tbrButtonFullScreen.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuWindowed_32x32;
-                    }
-                    else
-                    {
-                        tbrButtonFullScreen.Image = global::ZXMAK2.Host.WinForms.Properties.Resources.EmuFullScreen_32x32;
-                    }
-                }));
-
-            CommandViewFullScreen = presenter.CommandViewFullScreen;
-            CommandViewSyncSource = presenter.CommandViewSyncSource;
-            CommandVmPause = presenter.CommandVmPause;
-            CommandVmMaxSpeed = presenter.CommandVmMaxSpeed;
-            CommandVmWarmReset = presenter.CommandVmWarmReset;
-            CommandTapePause = presenter.CommandTapePause;
-            CommandQuickLoad = presenter.CommandQuickLoad;
-            CommandOpenUri = presenter.CommandOpenUri;
-        }
-
         #endregion IMainView
 
 
         #region IHostUi
 
+        private List<ToolStripItemBindingAdapter> _deviceItemAdapters = new List<ToolStripItemBindingAdapter>();
+
         public void Clear()
         {
+            _deviceItemAdapters
+                .ForEach(arg => arg.Dispose());
+            _deviceItemAdapters.Clear();
             menuTools.DropDownItems.Clear();
         }
 
@@ -191,7 +246,10 @@ namespace ZXMAK2.Host.WinForms.Views
             {
                 return;
             }
-            BindMenuCommand(subMenu, command, this);
+            var adapter = new ToolStripItemBindingAdapter(subMenu);
+            adapter.CommandParameter = this;
+            adapter.Command = command;
+            _deviceItemAdapters.Add(adapter);
             SortMenuTools();
         }
 
@@ -239,7 +297,7 @@ namespace ZXMAK2.Host.WinForms.Views
             {
                 NativeMethods.TimeBeginPeriod(1);
                 renderVideo.InitWnd();
-                m_host = CreateHost();
+                _host = CreateHost();
                 OnViewOpened();
             }
             catch (Exception ex)
@@ -266,13 +324,13 @@ namespace ZXMAK2.Host.WinForms.Views
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            m_allowSaveSize = true;
+            _isFormShown = true;
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
-            m_allowSaveSize = false;
+            _isFormShown = false;
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)
@@ -281,10 +339,10 @@ namespace ZXMAK2.Host.WinForms.Views
             try
             {
                 OnViewClosed();
-                if (m_host != null)
+                if (_host != null)
                 {
-                    m_host.Dispose();
-                    m_host = null;
+                    _host.Dispose();
+                    _host = null;
                 }
                 renderVideo.FreeWnd();
                 NativeMethods.TimeEndPeriod(1);
@@ -292,7 +350,7 @@ namespace ZXMAK2.Host.WinForms.Views
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                m_resolver.Resolve<IUserMessage>().ErrorDetails(ex);
+                _resolver.Resolve<IUserMessage>().ErrorDetails(ex);
             }
         }
 
@@ -303,25 +361,19 @@ namespace ZXMAK2.Host.WinForms.Views
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            UpdateLayout(true);
-            if (m_allowSaveSize &&
-                WindowState == FormWindowState.Normal &&
-                !m_fullScreen)
-            {
-                SaveClientSize();
-            }
+            Relayout(true);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            if (m_host.IsCaptured)
+            if (_host.IsCaptured)
             {
                 e.SuppressKeyPress = true;
             }
             if (e.Alt && e.Control)
             {
-                m_host.Uncapture();
+                _host.Uncapture();
             }
             // FULLSCREEN
             if (e.Alt && e.KeyCode == Keys.Enter)
@@ -411,12 +463,12 @@ namespace ZXMAK2.Host.WinForms.Views
                 if (ddw.IsFileDrop)
                 {
                     var uri = new Uri(Path.GetFullPath(ddw.GetFilePath()));
-                    allowOpen = CommandOpenUri.CanExecute(uri);
+                    allowOpen = CanExecute(CommandOpenUri, uri);
                 }
                 else if (ddw.IsLinkDrop)
                 {
                     var uri = new Uri(ddw.GetLinkUri());
-                    allowOpen = CommandOpenUri.CanExecute(uri);
+                    allowOpen = CanExecute(CommandOpenUri, uri);
                 }
                 e.Effect = allowOpen ? DragDropEffects.Link : DragDropEffects.None;
             }
@@ -475,84 +527,214 @@ namespace ZXMAK2.Host.WinForms.Views
 
         #region Layout
 
-        private void UpdateLayout(bool isResize = false)
+        private bool _isToolBarEnabled;
+
+        public bool IsToolBarEnabled
         {
-            var pos = isResize ? new Point(0, 0) : PointToClient(Cursor.Position);
-            var menuEnabled = true || m_fullScreen;
-            var toolEnabled = menuViewCustomizeShowToolBar.Checked;
-            var statEnabled = menuViewCustomizeShowStatusBar.Checked;
-            var menuHeight = (menuEnabled ? mnuStrip.Height : 0);
-            var tbarHeight = (toolEnabled ? tbrStrip.Height : 0);
-            var sbarHeight = (statEnabled ? sbrStrip.Height : 0);
-            var toolHeight = menuHeight + tbarHeight;
-            var toolArea = pos.X >= 0 && pos.X < ClientSize.Width &&
-                pos.Y >= 0 && pos.Y < toolHeight + 2;
-            toolArea |= !m_fullScreen;
-            sbrStrip.SizingGrip = !m_fullScreen;
-            mnuStrip.Visible = toolArea && menuEnabled;
-            tbrStrip.Visible = toolArea && toolEnabled;
-            sbrStrip.Visible = statEnabled;
-
-            sbarHeight = m_fullScreen ? 0 : sbarHeight;
-
-            var shift = m_fullScreen ? 0 : toolHeight;
-            renderVideo.Location = new Point(0, shift);
-            shift += sbarHeight;
-            renderVideo.Size = new Size(ClientSize.Width, ClientSize.Height - shift);
-        }
-
-        private void SetRenderSize(Size size)
-        {
-            var menuEnabled = true || m_fullScreen;
-            var toolEnabled = m_setting.IsToolBarVisible;
-            var statEnabled = m_setting.IsStatusBarVisible;
-            var menuHeight = (menuEnabled ? mnuStrip.Height : 0);
-            var tbarHeight = (toolEnabled ? tbrStrip.Height : 0);
-            var sbarHeight = (statEnabled ? sbrStrip.Height : 0);
-            var toolHeight = menuHeight + tbarHeight;
-            var shift = m_fullScreen ? 0 : toolHeight + sbarHeight;
-            ClientSize = new Size(size.Width, size.Height + shift);
-        }
-
-        public bool IsFullScreen
-        {
-            get { return m_fullScreen; }
+            get { return _isToolBarEnabled; }
             set
             {
-                if (value == m_fullScreen)
+                _isToolBarEnabled = value;
+                Relayout(false);
+            }
+        }
+
+        private bool _isStatusBarEnabled;
+
+        public bool IsStatusBarEnabled
+        {
+            get { return _isStatusBarEnabled; }
+            set
+            {
+                _isStatusBarEnabled = value;
+                Relayout(false);
+            }
+        }
+
+        private bool _renderSizeInitialized;
+
+        private Size _renderSize;
+
+        public Size RenderSize
+        {
+            get { return _renderSize; }
+            set
+            {
+                if (_renderSize == value && _renderSizeInitialized)
                 {
                     return;
                 }
-                m_fullScreen = value;
-                if (m_fullScreen)
-                {
-                    m_style = FormBorderStyle;
-                    m_location = Location;
-                    m_size = ClientSize;
+                _renderSizeInitialized = true;
+                if (value.Width < 0)
+                    value = new Size(0, value.Height);
+                if (value.Height < 0)
+                    value = new Size(value.Width, 0);
+                _renderSize = value;
+                Relayout(false);
+            }
+        }
 
+        private int? _renderScaleRatio;
+
+        public int? RenderScaleRatio
+        {
+            get { return _renderScaleRatio; }
+            set
+            {
+                menuViewSizeX1.Checked = value.HasValue && value.Value == 1;
+                menuViewSizeX2.Checked = value.HasValue && value.Value == 2;
+                menuViewSizeX3.Checked = value.HasValue && value.Value == 3;
+                menuViewSizeX4.Checked = value.HasValue && value.Value == 4;
+                _renderScaleRatio = value;
+            }
+        }
+
+        private void Relayout(bool srcUserResizing)
+        {
+            if (!_renderSizeInitialized || _isFullScreenChanging)
+            {
+                return;
+            }
+            if (IsFullScreen)
+            {
+                var menuEnabled = _isToolBarPopupActive;
+                var toolEnabled = IsToolBarEnabled && _isToolBarPopupActive;
+                var statEnabled = IsStatusBarEnabled;
+
+                sbrStrip.SizingGrip = false;
+                mnuStrip.Visible = menuEnabled;
+                tbrStrip.Visible = toolEnabled;
+                sbrStrip.Visible = statEnabled;
+
+                var sbarHeight = statEnabled ? sbrStrip.Height : 0;
+                var size = new Size(ClientSize.Width, ClientSize.Height - sbarHeight);
+                var pos = new Point(0, 0);
+                if (renderVideo.Location != pos)
+                {
+                    renderVideo.Location = pos;
+                }
+                if (renderVideo.Size != size)
+                {
+                    renderVideo.Size = size;
+                }
+            }
+            else
+            {
+                var menuEnabled = true;
+                var toolEnabled = IsToolBarEnabled;
+                var statEnabled = IsStatusBarEnabled;
+
+                sbrStrip.SizingGrip = true;
+                mnuStrip.Visible = menuEnabled;
+                tbrStrip.Visible = toolEnabled;
+                sbrStrip.Visible = statEnabled;
+
+                var menuHeight = menuEnabled ? mnuStrip.Height : 0;
+                var tbarHeight = toolEnabled ? tbrStrip.Height : 0;
+                var sbarHeight = statEnabled ? sbrStrip.Height : 0;
+                var shift = menuHeight + tbarHeight + sbarHeight;
+                var notifyNeeded = false;
+                if (srcUserResizing)
+                {
+                    var size = new Size(ClientSize.Width, ClientSize.Height - shift);
+                    if (_renderSize != size && _isFormShown)
+                    {
+                        _renderSize = size;
+                        notifyNeeded = true;
+                    }
+                }
+                else
+                {
+                    var size = new Size(RenderSize.Width, RenderSize.Height + shift);
+                    if (ClientSize != size)
+                    {
+                        ClientSize = size;
+                    }
+                }
+                var pos = new Point(0, menuHeight+tbarHeight);
+                if (renderVideo.Location != pos)
+                {
+                    renderVideo.Location = pos;
+                }
+                if (renderVideo.Size != RenderSize)
+                {
+                    renderVideo.Size = RenderSize;
+                }
+                if (notifyNeeded)
+                {
+                    OnPropertyChanged("RenderSize");
+                }
+            }
+        }
+
+        private void ScanPopup()
+        {
+            if (!IsFullScreen)
+            {
+                _isToolBarPopupActive = false;
+                return;
+            }
+            var pos = PointToClient(Cursor.Position);
+            var menuHeight = mnuStrip.Height;
+            var tbarHeight = IsToolBarEnabled ? tbrStrip.Height : 0;
+            var sbarHeight = IsStatusBarEnabled ? sbrStrip.Height : 0;
+            var toolHeight = menuHeight + tbarHeight;
+            var isTopArea = pos.X >= 0 && pos.X < ClientSize.Width &&
+                pos.Y >= 0 && pos.Y < toolHeight + 2;
+            if (_isToolBarPopupActive == isTopArea)
+            {
+                return;
+            }
+            _isToolBarPopupActive = isTopArea;
+            Relayout(true);
+        }
+
+        private bool _isFullScreen;
+
+        public bool IsFullScreen
+        {
+            get { return _isFullScreen; }
+            set
+            {
+                if (value == _isFullScreen)
+                {
+                    return;
+                }
+                _isFullScreen = value;
+                if (_isFullScreen)
+                {
+                    _style = FormBorderStyle;
+                    _location = Location;
+                    //_size = ClientSize;
+
+                    _isFullScreenChanging = true;
                     FormBorderStyle = FormBorderStyle.None;
                     var screen = Screen.FromControl(this);
                     Location = screen.Bounds.Location;
+                    _isFullScreenChanging = false;
                     Size = screen.Bounds.Size;
 
-                    //m_host.StartInputCapture();
+                    //_host.StartInputCapture();
 
                     Focus();
                 }
                 else
                 {
-                    Location = m_location;
-                    FormBorderStyle = m_style;
-                    ClientSize = m_size;
+                    _isFullScreenChanging = true;
+                    Location = _location;
+                    FormBorderStyle = _style;
+                    _isFullScreenChanging = false;
+                    Relayout(false);
+                    //ClientSize = _size;
 
-                    m_host.Uncapture();
+                    _host.Uncapture();
                 }
             }
         }
 
         private void renderVideo_MouseMove(object sender, MouseEventArgs e)
         {
-            UpdateLayout();
+            ScanPopup();
         }
 
         private void renderVideo_DoubleClick(object sender, EventArgs e)
@@ -561,7 +743,7 @@ namespace ZXMAK2.Host.WinForms.Views
             {
                 return;
             }
-            m_host.Capture();
+            _host.Capture();
         }
 
         private void renderVideo_Resize(object sender, EventArgs e)
@@ -576,247 +758,65 @@ namespace ZXMAK2.Host.WinForms.Views
 
         private void UpdateTitle()
         {
-            var tail = "ZXMAK2";
-            if (CommandVmPause != null && CommandVmPause.Text != "Pause")
-            {
-                tail += " (Paused)";
-            }
-            Text = string.IsNullOrEmpty(m_title) ?
+            var tail = IsRunning ? "ZXMAK2" : "ZXMAK2 [paused]";
+            Text = string.IsNullOrEmpty(_title) ?
                 tail :
-                string.Format("[{0}] - {1}", m_title, tail);
+                string.Format("[{0}] - {1}", Title, tail);
         }
 
         #endregion Layout
 
 
-        #region Save/Load Registry Settings
+        #region View Settings
 
-        private void SaveClientSize()
+        private SyncSource _selectedSyncSource;
+        
+        public SyncSource SelectedSyncSource
         {
-            m_setting.WindowWidth = renderVideo.Size.Width;
-            m_setting.WindowHeight = renderVideo.Size.Height;
-            m_setting.IsToolBarVisible = menuViewCustomizeShowToolBar.Checked;
-            m_setting.IsStatusBarVisible = menuViewCustomizeShowStatusBar.Checked;
-        }
-
-        private void LoadClientSize()
-        {
-            try
-            {
-                menuViewCustomizeShowToolBar.Checked = m_setting.IsToolBarVisible;
-                menuViewCustomizeShowStatusBar.Checked = m_setting.IsStatusBarVisible;
-                SetRenderSize(new Size(m_setting.WindowWidth, m_setting.WindowHeight));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
-        private void SaveRenderSetting()
-        {
-            try
-            {
-                m_setting.SyncSource = SelectedSyncSource;
-                m_setting.RenderScaleMode = SelectedScaleMode;
-                m_setting.RenderVideoFilter = SelectedVideoFilter;
-                m_setting.RenderSmooth = menuViewSmoothing.Checked;
-                m_setting.RenderMimicTv = menuViewMimicTv.Checked;
-                m_setting.RenderDisplayIcon = menuViewDisplayIcon.Checked;
-                m_setting.RenderDebugInfo = menuViewDebugInfo.Checked;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
-        private void LoadRenderSetting()
-        {
-            try
-            {
-                SelectedSyncSource = m_setting.SyncSource;
-                SelectedScaleMode = m_setting.RenderScaleMode;
-                SelectedVideoFilter = m_setting.RenderVideoFilter;
-                menuViewSmoothing.Checked = m_setting.RenderSmooth;
-                menuViewMimicTv.Checked = m_setting.RenderMimicTv;
-                menuViewDisplayIcon.Checked = m_setting.RenderDisplayIcon;
-                menuViewDebugInfo.Checked = m_setting.RenderDebugInfo;
-                
-                ApplyRenderSetting();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
-        private void ApplyRenderSetting()
-        {
-            renderVideo.AntiAlias = m_setting.RenderSmooth;
-            renderVideo.MimicTv = m_setting.RenderMimicTv;
-            renderVideo.VideoFilter = m_setting.RenderVideoFilter;
-            renderVideo.ScaleMode = m_setting.RenderScaleMode;
-            renderVideo.DisplayIcon = m_setting.RenderDisplayIcon;
-            renderVideo.DebugInfo = m_setting.RenderDebugInfo;
-            if (CommandViewSyncSource != null)
-            {
-                // set back
-                OnCommand(CommandViewSyncSource, m_setting.SyncSource);
-            }
-            renderVideo.Invalidate();
-        }
-
-        private SyncSource SelectedSyncSource
-        {
-            get
-            {
-                //return menuViewVBlankSync.Checked ? SyncSource.Video : SyncSource.Sound;
-                return menuViewFrameSyncTime.Checked ? SyncSource.Time :
-                    menuViewFrameSyncSound.Checked ? SyncSource.Sound :
-                    menuViewFrameSyncVideo.Checked ? SyncSource.Video :
-                    default(SyncSource);
-            }
+            get { return _selectedSyncSource; }
             set
             {
-                //menuViewVBlankSync.Checked = value == SyncSource.Video;
                 menuViewFrameSyncTime.Checked = value == SyncSource.Time;
                 menuViewFrameSyncSound.Checked = value == SyncSource.Sound;
                 menuViewFrameSyncVideo.Checked = value == SyncSource.Video;
+                _selectedSyncSource = value;
             }
         }
 
-        private ScaleMode SelectedScaleMode
+        private ScaleMode _selectedScaleMode;
+        
+        public ScaleMode SelectedScaleMode
         {
-            get
-            {
-                //return GetSelectedScaleMode();
-                return menuViewScaleModeStretch.Checked ? ScaleMode.Stretch :
-                    menuViewScaleModeKeepProportion.Checked ? ScaleMode.KeepProportion :
-                    menuViewScaleModeFixedPixelSize.Checked ? ScaleMode.FixedPixelSize :
-                    menuViewScaleModeSquarePixelSize.Checked ? ScaleMode.SquarePixelSize :
-                    default(ScaleMode);
-            }
+            get { return _selectedScaleMode; }
             set
             {
                 menuViewScaleModeStretch.Checked = value == ScaleMode.Stretch;
                 menuViewScaleModeKeepProportion.Checked = value == ScaleMode.KeepProportion;
                 menuViewScaleModeFixedPixelSize.Checked = value == ScaleMode.FixedPixelSize;
                 menuViewScaleModeSquarePixelSize.Checked = value == ScaleMode.SquarePixelSize;
+                renderVideo.ScaleMode = value;
+                _selectedScaleMode = value;
             }
         }
 
-        private VideoFilter SelectedVideoFilter
+        private VideoFilter _selectedVideoFilter;
+
+        public VideoFilter SelectedVideoFilter
         {
-            get
-            {
-                return menuViewVideoFilterNoFlick.Checked ? VideoFilter.NoFlick : 
-                    menuViewVideoFilterNone.Checked ? VideoFilter.None :
-                    default(VideoFilter);
-            }
+            get { return _selectedVideoFilter; }
             set
             {
                 menuViewVideoFilterNoFlick.Checked = value == VideoFilter.NoFlick;
                 menuViewVideoFilterNone.Checked = value == VideoFilter.None;
+                renderVideo.VideoFilter = value;
+                _selectedVideoFilter = value;
             }
         }
 
-        #endregion
+        #endregion View Settings
 
 
         #region Menu Handlers
-
-        private static bool CanExecute(ICommand command, object arg)
-        {
-            return command != null && command.CanExecute(arg);
-        }
-
-        private void menuView_DropDownOpening(object sender, EventArgs e)
-        {
-            OnRequestFrame();
-            var videoSize = renderVideo.FrameSize;
-            menuViewSizeX1.Enabled = m_fullScreen || renderVideo.Size != videoSize;
-            menuViewSizeX1.Checked = !m_fullScreen && renderVideo.Size == videoSize;
-            menuViewSizeX2.Enabled = m_fullScreen || renderVideo.Size != new Size(videoSize.Width * 2, videoSize.Height * 2);
-            menuViewSizeX2.Checked = !m_fullScreen && renderVideo.Size == new Size(videoSize.Width * 2, videoSize.Height * 2);
-            menuViewSizeX3.Enabled = m_fullScreen || renderVideo.Size != new Size(videoSize.Width * 3, videoSize.Height * 3);
-            menuViewSizeX3.Checked = !m_fullScreen && renderVideo.Size == new Size(videoSize.Width * 3, videoSize.Height * 3);
-            menuViewSizeX4.Enabled = m_fullScreen || renderVideo.Size != new Size(videoSize.Width * 4, videoSize.Height * 4);
-            menuViewSizeX4.Checked = !m_fullScreen && renderVideo.Size == new Size(videoSize.Width * 4, videoSize.Height * 4);
-            menuViewFrameSyncTime.Enabled = CanExecute(CommandViewSyncSource, SyncSource.Time);
-            menuViewFrameSyncSound.Enabled = CanExecute(CommandViewSyncSource, SyncSource.Sound);
-            menuViewFrameSyncVideo.Enabled = CanExecute(CommandViewSyncSource, SyncSource.Video);
-        }
-
-        private void menuViewCustomize_Click(object sender, EventArgs e)
-        {
-            var menuItem = sender as ToolStripMenuItem;
-            var tool = sender == menuViewCustomizeShowToolBar ? (ToolStrip)tbrStrip :
-                sender == menuViewCustomizeShowStatusBar ? sbrStrip :
-                null;
-            if (tool == null)
-            {
-                return;
-            }
-            var delta = menuItem.Checked ? tool.Height : -tool.Height;
-            if (m_fullScreen)
-            {
-                m_size = new Size(m_size.Width, m_size.Height + delta);
-            }
-            else
-            {
-                Height += delta;
-            }
-            //UpdateLayout(true);
-        }
-
-        private void menuViewX_Click(object sender, EventArgs e)
-        {
-            OnCommand(CommandViewFullScreen, false);
-            int mult = 1;
-            if (sender == menuViewSizeX1)
-                mult = 1;
-            if (sender == menuViewSizeX2)
-                mult = 2;
-            if (sender == menuViewSizeX3)
-                mult = 3;
-            if (sender == menuViewSizeX4)
-                mult = 4;
-            OnRequestFrame();
-            var videoSize = renderVideo.FrameSize;
-            var size = new Size(
-                videoSize.Width * mult,
-                videoSize.Height * mult);
-            SetRenderSize(size);
-        }
-
-        private void menuViewRender_Click(object sender, EventArgs e)
-        {
-            SelectedScaleMode =
-                sender == menuViewScaleModeStretch ? ScaleMode.Stretch :
-                sender == menuViewScaleModeKeepProportion ? ScaleMode.KeepProportion :
-                sender == menuViewScaleModeFixedPixelSize ? ScaleMode.FixedPixelSize :
-                sender == menuViewScaleModeSquarePixelSize ? ScaleMode.SquarePixelSize :
-                SelectedScaleMode;
-            SelectedSyncSource =
-                sender == menuViewFrameSyncTime ? SyncSource.Time :
-                sender == menuViewFrameSyncSound ? SyncSource.Sound :
-                sender == menuViewFrameSyncVideo ? SyncSource.Video :
-                SelectedSyncSource;
-            SelectedVideoFilter =
-                sender == menuViewVideoFilterNoFlick ? VideoFilter.NoFlick :
-                sender == menuViewVideoFilterNone ? VideoFilter.None :
-                SelectedVideoFilter;
-            SaveRenderSetting();
-            ApplyRenderSetting();
-        }
-
-        private void menuViewRender_CheckStateChanged(object sender, EventArgs e)
-        {
-            SaveRenderSetting();
-            ApplyRenderSetting();
-        }
-
 
         private void SortMenuTools()
         {
@@ -846,6 +846,27 @@ namespace ZXMAK2.Host.WinForms.Views
 
         #region Bind Helpers
 
+        private void BindCommand(ToolStripItem target, string path, object parameter = null)
+        {
+            target.Tag = parameter; // CommandParameter
+            _binding.Bind(target, "Command", path);
+            _binding.Bind(target, "Text", path + ".Text");
+            _binding.Bind(target, "Checked", path + ".Checked");
+            _binding.Bind(target, "Visible", path, arg => arg != null);
+        }
+
+        private void BindCommandLight(ToolStripItem target, string path, object parameter = null)
+        {
+            target.Tag = parameter; // CommandParameter
+            _binding.Bind(target, "Command", path);
+            _binding.Bind(target, "Visible", path, arg => arg != null);
+        }
+
+        private static bool CanExecute(ICommand command, object arg)
+        {
+            return command != null && command.CanExecute(arg);
+        }
+
         private static void OnCommand(ICommand command, object arg = null)
         {
             if (command == null || !command.CanExecute(arg))
@@ -855,97 +876,15 @@ namespace ZXMAK2.Host.WinForms.Views
             command.Execute(arg);
         }
 
-        private void BindMenuCommand(
-            ToolStripMenuItem toolItem,
-            ICommand command,
-            object arg = null)
-        {
-            if (command == null)
-            {
-                toolItem.Visible = false;
-                return;
-            }
-            BindToolStripItemCommand(toolItem, command, arg);
-            toolItem.Checked = command.Checked;
-            BindProperty<bool>(command, "Checked", (v) => toolItem.Checked = v);
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        private void BindToolBarCommand(
-            ToolStripButton toolItem,
-            ICommand command,
-            object arg = null)
+        private void OnPropertyChanged(string propertyName)
         {
-            if (command == null)
+            var handler = PropertyChanged;
+            if (handler != null)
             {
-                toolItem.Visible = false;
-                return;
+                handler(this, new PropertyChangedEventArgs(propertyName));
             }
-            BindToolStripItemCommand(toolItem, command, arg);
-            toolItem.Checked = command.Checked;
-            BindProperty<bool>(command, "Checked", (v) => toolItem.Checked = v);
-        }
-
-        private void BindToolStripItemCommand(
-            ToolStripItem toolItem,
-            ICommand command,
-            object arg = null)
-        {
-            if (command == null)
-            {
-                toolItem.Visible = false;
-                return;
-            }
-            toolItem.Tag = command;
-            toolItem.Click += (s, e) => OnCommand(command, arg);
-            command.CanExecuteChanged += (s, e) =>
-            {
-                var canExecute = command.CanExecute(arg);
-                var action = new Action(() => toolItem.Enabled = canExecute);
-                if (InvokeRequired)
-                {
-                    BeginInvoke(action);
-                }
-                else
-                {
-                    action();
-                }
-            };
-            toolItem.Enabled = command.CanExecute(arg);
-            if (!string.IsNullOrEmpty(command.Text))
-            {
-                toolItem.Text = command.Text;
-            }
-            else
-            {
-                command.Text = toolItem.Text;
-            }
-            BindProperty<string>(command, "Text", (v) => toolItem.Text = v);
-        }
-
-        private void BindProperty<T>(
-            INotifyPropertyChanged viewModel,
-            string name,
-            Action<T> setter)
-        {
-            var property = viewModel
-                .GetType()
-                .GetProperty(name);
-            setter((T)property.GetValue(viewModel, null));
-            viewModel.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == name)
-                {
-                    var value = (T)property.GetValue(viewModel, null);
-                    if (InvokeRequired)
-                    {
-                        BeginInvoke(setter, value);
-                    }
-                    else
-                    {
-                        setter(value);
-                    }
-                }
-            };
         }
 
         #endregion Bind Helpers

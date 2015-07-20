@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\IAboutView.cs" />
@@ -44,8 +45,11 @@
     <Compile Include="Interfaces\IMachineSettingsView.cs" />
     <Compile Include="Interfaces\IMainPresenter.cs" />
     <Compile Include="Interfaces\IMainView.cs" />
+    <Compile Include="Interfaces\ISettingService.cs" />
     <Compile Include="Interfaces\IView.cs" />
     <Compile Include="Interfaces\IViewHolder.cs" />
+    <Compile Include="Interfaces\ScaleMode.cs" />
+    <Compile Include="Interfaces\VideoFilter.cs" />
     <Compile Include="Launcher.cs" />
     <Compile Include="MainPresenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

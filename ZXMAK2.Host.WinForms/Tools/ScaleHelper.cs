@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using ZXMAK2.Host.Presentation.Interfaces;
 
 
 namespace ZXMAK2.Host.WinForms.Tools

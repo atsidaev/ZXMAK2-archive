@@ -3,11 +3,12 @@ using Microsoft.Win32;
 using ZXMAK2.Host.WinForms.Controls;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.WinForms.Tools;
+using ZXMAK2.Host.Presentation.Interfaces;
 
 
 namespace ZXMAK2.Host.WinForms.Services
 {
-    public class SettingService
+    public class SettingService : ISettingService
     {
         private const string RegistryPath = "SOFTWARE\\ZXMAK2";
 

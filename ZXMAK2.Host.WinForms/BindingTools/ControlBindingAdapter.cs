@@ -45,6 +45,11 @@ namespace ZXMAK2.Host.WinForms.BindingTools
                 checkBox.CheckedChanged += CheckBox_OnCheckedChanged;
                 checkBox.CheckStateChanged += CheckBox_OnCheckStateChanged;
             }
+            var notify = control as INotifyPropertyChanged;
+            if (notify != null)
+            {
+                notify.PropertyChanged += Control_OnPropertyChanged;
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -65,6 +70,11 @@ namespace ZXMAK2.Host.WinForms.BindingTools
             {
                 checkBox.CheckedChanged -= CheckBox_OnCheckedChanged;
                 checkBox.CheckStateChanged -= CheckBox_OnCheckStateChanged;
+            }
+            var notify = control as INotifyPropertyChanged;
+            if (notify != null)
+            {
+                notify.PropertyChanged -= Control_OnPropertyChanged;
             }
         }
 
@@ -151,6 +161,11 @@ namespace ZXMAK2.Host.WinForms.BindingTools
         private void CheckBox_OnCheckStateChanged(object sender, EventArgs e)
         {
             OnPropertyChanged("CheckState", BindingTrigger.PropertyChanged);
+        }
+
+        private void Control_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(e.PropertyName, BindingTrigger.PropertyChanged);
         }
     }
 }

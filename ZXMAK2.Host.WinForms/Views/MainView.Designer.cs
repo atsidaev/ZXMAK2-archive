@@ -15,9 +15,9 @@
         {
             if (disposing)
             {
-                if (m_host != null)
+                if (_host != null)
                 {
-                    m_host.Dispose();
+                    _host.Dispose();
                 }
                 if (components != null)
                 {
@@ -172,7 +172,6 @@
             this.menuView.Name = "menuView";
             this.menuView.Size = new System.Drawing.Size(44, 20);
             this.menuView.Text = "View";
-            this.menuView.DropDownOpening += new System.EventHandler(this.menuView_DropDownOpening);
             // 
             // menuViewCustomize
             // 
@@ -189,7 +188,6 @@
             this.menuViewCustomizeShowToolBar.Name = "menuViewCustomizeShowToolBar";
             this.menuViewCustomizeShowToolBar.Size = new System.Drawing.Size(126, 22);
             this.menuViewCustomizeShowToolBar.Text = "Tool Bar";
-            this.menuViewCustomizeShowToolBar.Click += new System.EventHandler(this.menuViewCustomize_Click);
             // 
             // menuViewCustomizeShowStatusBar
             // 
@@ -197,7 +195,6 @@
             this.menuViewCustomizeShowStatusBar.Name = "menuViewCustomizeShowStatusBar";
             this.menuViewCustomizeShowStatusBar.Size = new System.Drawing.Size(126, 22);
             this.menuViewCustomizeShowStatusBar.Text = "Status Bar";
-            this.menuViewCustomizeShowStatusBar.Click += new System.EventHandler(this.menuViewCustomize_Click);
             // 
             // menuViewSeparator1
             // 
@@ -220,28 +217,24 @@
             this.menuViewSizeX1.Name = "menuViewSizeX1";
             this.menuViewSizeX1.Size = new System.Drawing.Size(102, 22);
             this.menuViewSizeX1.Text = "100%";
-            this.menuViewSizeX1.Click += new System.EventHandler(this.menuViewX_Click);
             // 
             // menuViewSizeX2
             // 
             this.menuViewSizeX2.Name = "menuViewSizeX2";
             this.menuViewSizeX2.Size = new System.Drawing.Size(102, 22);
             this.menuViewSizeX2.Text = "200%";
-            this.menuViewSizeX2.Click += new System.EventHandler(this.menuViewX_Click);
             // 
             // menuViewSizeX3
             // 
             this.menuViewSizeX3.Name = "menuViewSizeX3";
             this.menuViewSizeX3.Size = new System.Drawing.Size(102, 22);
             this.menuViewSizeX3.Text = "300%";
-            this.menuViewSizeX3.Click += new System.EventHandler(this.menuViewX_Click);
             // 
             // menuViewSizeX4
             // 
             this.menuViewSizeX4.Name = "menuViewSizeX4";
             this.menuViewSizeX4.Size = new System.Drawing.Size(102, 22);
             this.menuViewSizeX4.Text = "400%";
-            this.menuViewSizeX4.Click += new System.EventHandler(this.menuViewX_Click);
             // 
             // menuViewFullScreen
             // 
@@ -271,28 +264,24 @@
             this.menuViewScaleModeStretch.Name = "menuViewScaleModeStretch";
             this.menuViewScaleModeStretch.Size = new System.Drawing.Size(160, 22);
             this.menuViewScaleModeStretch.Text = "Stretch";
-            this.menuViewScaleModeStretch.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewScaleModeKeepProportion
             // 
             this.menuViewScaleModeKeepProportion.Name = "menuViewScaleModeKeepProportion";
             this.menuViewScaleModeKeepProportion.Size = new System.Drawing.Size(160, 22);
             this.menuViewScaleModeKeepProportion.Text = "Keep Proportion";
-            this.menuViewScaleModeKeepProportion.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewScaleModeFixedPixelSize
             // 
             this.menuViewScaleModeFixedPixelSize.Name = "menuViewScaleModeFixedPixelSize";
             this.menuViewScaleModeFixedPixelSize.Size = new System.Drawing.Size(160, 22);
             this.menuViewScaleModeFixedPixelSize.Text = "Fixed Pixel Size";
-            this.menuViewScaleModeFixedPixelSize.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewScaleModeSquarePixelSize
             // 
             this.menuViewScaleModeSquarePixelSize.Name = "menuViewScaleModeSquarePixelSize";
             this.menuViewScaleModeSquarePixelSize.Size = new System.Drawing.Size(160, 22);
             this.menuViewScaleModeSquarePixelSize.Text = "Square Pixel Size";
-            this.menuViewScaleModeSquarePixelSize.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewVideoFilter
             // 
@@ -308,14 +297,12 @@
             this.menuViewVideoFilterNone.Name = "menuViewVideoFilterNone";
             this.menuViewVideoFilterNone.Size = new System.Drawing.Size(152, 22);
             this.menuViewVideoFilterNone.Text = "None";
-            this.menuViewVideoFilterNone.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewVideoFilterNoFlick
             // 
             this.menuViewVideoFilterNoFlick.Name = "menuViewVideoFilterNoFlick";
             this.menuViewVideoFilterNoFlick.Size = new System.Drawing.Size(152, 22);
             this.menuViewVideoFilterNoFlick.Text = "No Flick";
-            this.menuViewVideoFilterNoFlick.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewSeparator3
             // 
@@ -337,21 +324,18 @@
             this.menuViewFrameSyncTime.Name = "menuViewFrameSyncTime";
             this.menuViewFrameSyncTime.Size = new System.Drawing.Size(108, 22);
             this.menuViewFrameSyncTime.Text = "Time";
-            this.menuViewFrameSyncTime.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewFrameSyncSound
             // 
             this.menuViewFrameSyncSound.Name = "menuViewFrameSyncSound";
             this.menuViewFrameSyncSound.Size = new System.Drawing.Size(108, 22);
             this.menuViewFrameSyncSound.Text = "Sound";
-            this.menuViewFrameSyncSound.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewFrameSyncVideo
             // 
             this.menuViewFrameSyncVideo.Name = "menuViewFrameSyncVideo";
             this.menuViewFrameSyncVideo.Size = new System.Drawing.Size(108, 22);
             this.menuViewFrameSyncVideo.Text = "Video";
-            this.menuViewFrameSyncVideo.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewSeparator4
             // 
@@ -360,35 +344,27 @@
             // 
             // menuViewSmoothing
             // 
-            this.menuViewSmoothing.CheckOnClick = true;
             this.menuViewSmoothing.Name = "menuViewSmoothing";
             this.menuViewSmoothing.Size = new System.Drawing.Size(188, 22);
             this.menuViewSmoothing.Text = "Smoothing";
-            this.menuViewSmoothing.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewMimicTv
             // 
-            this.menuViewMimicTv.CheckOnClick = true;
             this.menuViewMimicTv.Name = "menuViewMimicTv";
             this.menuViewMimicTv.Size = new System.Drawing.Size(188, 22);
             this.menuViewMimicTv.Text = "Mimic TV";
-            this.menuViewMimicTv.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewDisplayIcon
             // 
-            this.menuViewDisplayIcon.CheckOnClick = true;
             this.menuViewDisplayIcon.Name = "menuViewDisplayIcon";
             this.menuViewDisplayIcon.Size = new System.Drawing.Size(188, 22);
             this.menuViewDisplayIcon.Text = "Display Icons";
-            this.menuViewDisplayIcon.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuViewDebugInfo
             // 
-            this.menuViewDebugInfo.CheckOnClick = true;
             this.menuViewDebugInfo.Name = "menuViewDebugInfo";
             this.menuViewDebugInfo.Size = new System.Drawing.Size(188, 22);
             this.menuViewDebugInfo.Text = "Debug Info";
-            this.menuViewDebugInfo.Click += new System.EventHandler(this.menuViewRender_Click);
             // 
             // menuVm
             // 
