@@ -741,6 +741,12 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 {
                     switch (m.Msg)
                     {
+                        case WM_WINDOWPOSCHANGING:
+                            lock (_child._allocator._syncRoot)
+                            {
+                                base.WndProc(ref m);
+                            }
+                            return;
                         case WM_WINDOWPOSCHANGED:
                             _child.CheckAdapter();
                             break;

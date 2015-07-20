@@ -15,6 +15,7 @@ using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Services;
 using ZXMAK2.Mvvm;
+using ZXMAK2.Mvvm.BindingTools;
 
 
 namespace ZXMAK2.Host.Xna4.Views
@@ -27,6 +28,7 @@ namespace ZXMAK2.Host.Xna4.Views
         private readonly object m_syncTexture = new object();
         private readonly AutoResetEvent m_frameEvent = new AutoResetEvent(false);
         private readonly AutoResetEvent m_cancelEvent = new AutoResetEvent(false);
+        private readonly BindingService m_binding = new BindingService();
         private Texture2D[] m_texture = new Texture2D[2];
         private SpriteBatch m_sprite;
         private SpriteFont m_font;
@@ -49,10 +51,18 @@ namespace ZXMAK2.Host.Xna4.Views
         public MainView()
         {
             m_deviceManager = new GraphicsDeviceManager(this);
+
+            m_binding.Bind(this, "Title", "Title");
         }
 
 
         #region IMainView
+
+        public object DataContext
+        {
+            get { return m_binding.DataContext; }
+            set { m_binding.DataContext = value; }
+        }
 
         public string Title
         {
@@ -93,15 +103,16 @@ namespace ZXMAK2.Host.Xna4.Views
         public event EventHandler ViewClosed;
         public event EventHandler RequestFrame;
 
-        public void Bind(IMainPresenter presenter)
+        public void Bind()
         {
-            presenter.CommandViewSyncSource.Execute(false);
-            CommandViewFullScreen = presenter.CommandViewFullScreen;
-            CommandVmWarmReset = presenter.CommandVmWarmReset;
+            //presenter.CommandViewSyncSource.Execute(false);
+            m_binding.Bind(this, "CommandViewFullScreen", "CommandViewFullScreen");
+            m_binding.Bind(this, "CommandVmWarmReset", "CommandVmWarmReset");
         }
 
         public void Close()
         {
+            m_binding.Dispose();
             Exit();
         }
 

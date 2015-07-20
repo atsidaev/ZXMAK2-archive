@@ -79,14 +79,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\WinFormsKeyboard.cs" />
-    <Compile Include="Tools\ScaleMode.cs" />
     <Compile Include="Controls\Separator.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\ToolStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\VideoFilter.cs" />
     <Compile Include="Mdx\AllocatorPresenter.cs" />
     <Compile Include="Mdx\IAllocatorPresenter.cs" />
     <Compile Include="Mdx\IRenderer.cs" />

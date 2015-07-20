@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -14,7 +15,8 @@ namespace ZXMAK2.Host.WinForms.BindingTools
         public ToolStripItemBindingAdapter(ToolStripItem control)
             : base(control)
         {
-            control.Click += ToolStrip_OnClick;    
+            control.Click += ToolStrip_OnClick;
+            CommandParameter = control.Tag;
         }
 
         protected override void Dispose(bool disposing)
@@ -55,6 +57,11 @@ namespace ZXMAK2.Host.WinForms.BindingTools
                 Command = (ICommand)value;
                 return;
             }
+            if (name == "CommandParameter")  // virtual property
+            {
+                CommandParameter = value;
+                return;
+            }
             // cache property set to eliminate redundant UI updates
             if (name == "Text")
             {
@@ -66,12 +73,23 @@ namespace ZXMAK2.Host.WinForms.BindingTools
                     return;
                 }
             }
+            if (name == "Image")
+            {
+                var control = (ToolStripItem)Target;
+                if (control != null)
+                {
+                    if (control.Image != (Image)value)
+                        control.Image = (Image)value;
+                    return;
+                }
+            }
             if (name == "Visible")
             {
                 var control = (ToolStripItem)Target;
                 if (control != null)
                 {
-                    if (control.Visible != (bool)value)
+                    // cache not allowed
+                    //if (control.Visible != (bool)value)
                         control.Visible = (bool)value;
                     return;
                 }
@@ -96,10 +114,26 @@ namespace ZXMAK2.Host.WinForms.BindingTools
             base.SetTargetPropertyValue(name, value);
         }
 
-        // Virtual property
+        // Virtual properties
+        private object _commandParameter;
+
+        public object CommandParameter
+        {
+            get { return _commandParameter; }
+            set
+            {
+                if (_commandParameter == value)
+                {
+                    return;
+                }
+                _commandParameter = value;
+                Command_OnCanExecuteChanged(_command, EventArgs.Empty);
+            }
+        }
+
         private ICommand _command;
 
-        private ICommand Command
+        public ICommand Command
         {
             get { return _command; }
             set 
@@ -123,18 +157,20 @@ namespace ZXMAK2.Host.WinForms.BindingTools
 
         private void Command_OnCanExecuteChanged(object sender, EventArgs e)
         {
-            var control = (ToolStripItem)Target;
             if (Command != null)
             {
-                control.Enabled = Command.CanExecute(null);
+                var canExecute = Command.CanExecute(CommandParameter);
+                var control = (ToolStripItem)Target;
+                if (control.Enabled != canExecute)
+                    control.Enabled = canExecute;
             }
         }
 
         private void ToolStrip_OnClick(object sender, EventArgs e)
         {
-            if (Command != null && Command.CanExecute(null))
+            if (Command != null && Command.CanExecute(CommandParameter))
             {
-                Command.Execute(null);    
+                Command.Execute(CommandParameter);
             }
         }
     }

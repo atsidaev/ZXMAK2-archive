@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
+using System.Diagnostics;
 
 
 namespace ZXMAK2.Mvvm.BindingTools
@@ -74,6 +75,7 @@ namespace ZXMAK2.Mvvm.BindingTools
             _adapterFactories[typeof(T)] = arg => adapterFactory((T)arg);
         }
 
+        [DebuggerStepThrough]
         public void Bind(object target, BindingInfo binding)
         {
             if (!_targetAdapters.ContainsKey(target))
@@ -82,6 +84,12 @@ namespace ZXMAK2.Mvvm.BindingTools
                 _targetAdapters[target] = adapterFactory(target);
                 _targetAdapters[target].PropertyChanged += Target_OnPropertyChanged;
                 _targetBindings[target] = new List<BindingInfo>();
+            }
+            if (_targetAdapters[target].GetTargetPropertyType(binding.TargetName) == null)
+            {
+                throw new ArgumentException(
+                    string.Format("Property not found: {0}", binding.TargetName),
+                    "binding");
             }
             _targetBindings[target].Add(binding);
             _sourceObserver.Register(binding.SourcePath);

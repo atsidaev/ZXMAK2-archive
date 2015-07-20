@@ -18,21 +18,33 @@
  *  
  * 
  */
+using System;
+using System.Diagnostics;
 
 
 namespace ZXMAK2.Mvvm.BindingTools
 {
     public static class BindingServiceExtensions
     {
+        [DebuggerStepThrough]
         public static void Bind(this BindingService service, object target, string propName, string path)
         {
             var binding = new BindingInfo(propName, path);
             service.Bind(target, binding);
         }
 
+        [DebuggerStepThrough]
         public static void Bind(this BindingService service, object target, string propName, string path, IValueConverter converter)
         {
             var binding = new BindingInfo(propName, path, converter);
+            service.Bind(target, binding);
+        }
+
+        [DebuggerStepThrough]
+        public static void Bind(this BindingService service, object target, string propName, string path, Func<object, object> converter)
+        {
+            var funcConverter = new FuncConverter() { Function=converter, };
+            var binding = new BindingInfo(propName, path, funcConverter);
             service.Bind(target, binding);
         }
     }

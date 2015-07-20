@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ZXMAK2.Dependency;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Presentation.Interfaces;
+using System.ComponentModel;
 
 
 namespace ZXMAK2.Host.Presentation
@@ -40,6 +41,12 @@ namespace ZXMAK2.Host.Presentation
                     list.Add(new Argument("args", args));
                     using (var presenter = m_resolver.Resolve<IMainPresenter>(list.ToArray()))
                     {
+                        var synchronizeInvoke = view as ISynchronizeInvoke;
+                        if (synchronizeInvoke != null)
+                        {
+                            presenter.Attach(synchronizeInvoke);
+                        }
+                        view.DataContext = presenter;
                         presenter.Run();
                     }
                 }

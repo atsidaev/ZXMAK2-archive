@@ -1,6 +1,6 @@
 ﻿
 
-namespace ZXMAK2.Host.WinForms.Tools
+namespace ZXMAK2.Host.Presentation.Interfaces
 {
     public enum ScaleMode
     {

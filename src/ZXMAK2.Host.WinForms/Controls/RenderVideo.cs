@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using ZXMAK2.Host.Interfaces;
+using ZXMAK2.Host.Presentation.Interfaces;
 using ZXMAK2.Host.WinForms.Mdx;
 using ZXMAK2.Host.WinForms.Mdx.Renderers;
 using ZXMAK2.Host.WinForms.Tools;

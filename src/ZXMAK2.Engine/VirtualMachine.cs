@@ -11,6 +11,7 @@ using ZXMAK2.Host.Entities;
 using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Mvvm;
+using System.Drawing;
 
 
 
@@ -221,6 +222,7 @@ namespace ZXMAK2.Engine
                 isRequested);
             var ula = m_ula ?? Spectrum.BusManager.FindDevice<IUlaDevice>();
             var videoFrame = ula != null && ula.VideoData != null ? ula.VideoData : m_blankData;
+            FrameSize = videoFrame.Size;
             if (isRequested)
             {
                 m_host.PushFrame(infoFrame, videoFrame, null);
@@ -228,6 +230,32 @@ namespace ZXMAK2.Engine
             }
             var soundFrame = Spectrum.BusManager.SoundFrame;
             m_host.PushFrame(infoFrame, videoFrame, soundFrame);
+        }
+
+        public event EventHandler FrameSizeChanged;
+        
+        private Size _frameSize;
+
+        public Size FrameSize
+        {
+            get { return _frameSize; }
+            private set
+            {
+                _frameSize = value;
+                var handler = FrameSizeChanged;
+                if (handler != null)
+                {
+                    handler(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        
+        public Size GetFrameSize()
+        {
+            var ula = m_ula ?? Spectrum.BusManager.FindDevice<IUlaDevice>();
+            var videoFrame = ula != null && ula.VideoData != null ? ula.VideoData : m_blankData;
+            return videoFrame.Size;
         }
 
         private long _renderTime;
