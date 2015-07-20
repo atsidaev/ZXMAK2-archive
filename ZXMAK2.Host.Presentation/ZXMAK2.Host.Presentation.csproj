@@ -43,7 +43,7 @@
     <Compile Include="Interfaces\IAboutView.cs" />
     <Compile Include="Interfaces\ILauncher.cs" />
     <Compile Include="Interfaces\IMachineSettingsView.cs" />
-    <Compile Include="Interfaces\IMainPresenter.cs" />
+    <Compile Include="Interfaces\IMainViewModel.cs" />
     <Compile Include="Interfaces\IMainView.cs" />
     <Compile Include="Interfaces\ISettingService.cs" />
     <Compile Include="Interfaces\IView.cs" />
@@ -51,7 +51,7 @@
     <Compile Include="Interfaces\ScaleMode.cs" />
     <Compile Include="Interfaces\VideoFilter.cs" />
     <Compile Include="Launcher.cs" />
-    <Compile Include="MainPresenter.cs" />
+    <Compile Include="MainViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\WebDownloader.cs" />
     <Compile Include="ViewHolder.cs" />
