@@ -866,7 +866,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                                 if (prevToken.EndsWith(","))
                                     spaces = new String(' ', Math.Max(4 - prevToken.Length, 1));
-                                else if (prevToken == "+" || prevToken == "-" || prevToken == "*" || prevToken == "/")
+                                else if (prevToken == "+" || prevToken == "-" || prevToken == "*" || prevToken == "/" || prevToken == "%")
                                     spaces = " ";
                                 else if (token == ":" && opcodes.Contains(prevToken.ToLower()))
                                 {
