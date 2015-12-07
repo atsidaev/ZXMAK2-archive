@@ -632,7 +632,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // exitToolStripMenuItem
@@ -647,7 +647,7 @@
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.hexNumbersToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // hexNumbersToolStripMenuItem
@@ -656,7 +656,7 @@
             this.hexNumbersToolStripMenuItem.CheckOnClick = true;
             this.hexNumbersToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.hexNumbersToolStripMenuItem.Name = "hexNumbersToolStripMenuItem";
-            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.hexNumbersToolStripMenuItem.Text = "Hex numbers";
             this.hexNumbersToolStripMenuItem.Click += new System.EventHandler(this.hexNumbersToolStripMenuItem_Click);
             // 
@@ -1062,7 +1062,7 @@
             // 
             // txtbxY1
             // 
-            this.txtbxY1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.txtbxY1.BackColor = System.Drawing.SystemColors.Window;
             this.txtbxY1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtbxY1.Hexadecimal = true;
             this.txtbxY1.Location = new System.Drawing.Point(108, 48);
@@ -1082,7 +1082,7 @@
             // 
             // txtbxX1
             // 
-            this.txtbxX1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.txtbxX1.BackColor = System.Drawing.SystemColors.Window;
             this.txtbxX1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtbxX1.Hexadecimal = true;
             this.txtbxX1.Location = new System.Drawing.Point(108, 23);
@@ -1120,7 +1120,7 @@
             // 
             // txtbxY0
             // 
-            this.txtbxY0.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.txtbxY0.BackColor = System.Drawing.SystemColors.Window;
             this.txtbxY0.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtbxY0.Hexadecimal = true;
             this.txtbxY0.Location = new System.Drawing.Point(29, 50);
@@ -1135,7 +1135,7 @@
             // 
             // txtbxX0
             // 
-            this.txtbxX0.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.txtbxX0.BackColor = System.Drawing.SystemColors.Window;
             this.txtbxX0.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtbxX0.Hexadecimal = true;
             this.txtbxX0.Location = new System.Drawing.Point(29, 23);
