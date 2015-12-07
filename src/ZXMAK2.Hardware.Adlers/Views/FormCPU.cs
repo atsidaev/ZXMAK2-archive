@@ -990,9 +990,9 @@ namespace ZXMAK2.Hardware.Adlers.Views
                 //Detecting jump to an address
                 if( m_debuggerTrace.IsDetectingJumpOnAddress() )
                 {
-                    if( m_debuggerTrace.GetIsPrevInstructionJumpOrCall() )
+                    if( m_debuggerTrace.IsPrevInstructionJumpOrCall() )
                     {
-                        if (m_debuggerTrace.GetIsPrevInstructionJumpOrCall() && m_debuggerTrace.GetDetectingJumpToAddress() == m_cpuRegs.PC)
+                        if (m_debuggerTrace.GetDetectingJumpToAddress() == m_cpuRegs.PC)
                         {
                             m_debuggerTrace.IncCounter(m_debuggerTrace.GetPrevInstructionAddress());
                             if (checkBoxShowConsole.Checked)
@@ -1452,8 +1452,12 @@ namespace ZXMAK2.Hardware.Adlers.Views
         //Dasm context menu: Insert breakpoint(extended) here
         private void menuItemInsertBreakpointHere_Click(object sender, EventArgs e)
         {
-            List<string> newBreakpoint 
-                = new List<string>(String.Format("br pc == #{0:X4}", dasmPanel.ActiveAddress).Split(new char[] { ' ' }).ToArray());
+            InsertExtBreakpoint(dasmPanel.ActiveAddress);
+        }
+
+        public void InsertExtBreakpoint(ushort i_addr)
+        {
+            List<string> newBreakpoint = new List<string>(String.Format("br pc == #{0:X4}", i_addr).Split(new char[] { ' ' }).ToArray());
             this.AddExtBreakpoint(newBreakpoint);
             m_showStack = false;
             this.UpdateREGS();
