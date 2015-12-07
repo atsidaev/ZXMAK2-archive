@@ -336,7 +336,7 @@ namespace ZXMAK2.Hardware.Adlers.Core
         {
             _tracedOpcode = i_opcode;
         }
-        public bool GetIsPrevInstructionJumpOrCall()
+        public bool IsPrevInstructionJumpOrCall()
         {
             return _isPrevInstructionJumpOrCall;
         }

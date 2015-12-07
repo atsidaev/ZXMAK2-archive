@@ -664,6 +664,17 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
         }
 
+        //Context menu - set breakpoint at symbol address
+        private void setBreakpointHereToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listViewSymbols.SelectedItems.Count >= 1)
+            {
+                ListView.SelectedListViewItemCollection items = listViewSymbols.SelectedItems;
+                foreach (ListViewItem item in items)
+                    m_debugger.InsertExtBreakpoint(ConvertRadix.ConvertNumberWithPrefix(item.Tag.ToString()));
+            }
+        }
+
         //Context menu - Convert numbers to hexadecimal format
         private void toHexadecimalToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -695,7 +706,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             //ToDo: we need a list of all assembler commands here, but cannot use AssemblerConfig regex patterns
             string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "adc", "and", "sub", "xor", "jr", "jp", "exx",
                                               "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn", "rra", "rla", "sbc", "rst",
-                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "rrca", "rr"};
+                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "rrca", "rr", "neg"};
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
             //Range actLineSave = new Range(txtAsm, txtAsm.Selection.Start, txtAsm.Selection.End);
             //Place actLineSave = ...
