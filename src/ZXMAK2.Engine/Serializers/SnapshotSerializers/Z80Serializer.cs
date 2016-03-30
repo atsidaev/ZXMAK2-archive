@@ -150,13 +150,16 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 						break;
 					case 3:  // 128k
 					case 4:  // 128k + If.1
+                    case 7:  // Spectrum +3
 					case 9:  // [ext] Pentagon (128K)
 					case 10: // [ext] Scorpion (256K)
 						mode128 = true;
-						break;
-					default:
+                        Logger.Debug("Z80HDR1_HWMODE=0x{0:X2}!",
+                            hdr1[Z80HDR1_HWMODE]);
+                        break;
+                    default:
 						Logger.Warn(
-							"Z80Serializer.loadFromStream: Unrecognized ZX Spectrum config (Z80HDR1_HWMODE=0x{0:2X})!", 
+							"Z80Serializer.loadFromStream: Unrecognized ZX Spectrum config (Z80HDR1_HWMODE=0x{0:X2})!", 
                             hdr1[Z80HDR1_HWMODE]);
 						break;
 				}
@@ -175,13 +178,16 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 					case 4:  // 128k
 					case 5:  // 128k + If.1
 					case 6:  // 128k + M.G.T.
-					case 9:  // [ext] Pentagon (128K)
+                    case 7:  // Spectrum +3
+                    case 9:  // [ext] Pentagon (128K)
 					case 10: // [ext] Scorpion (256K)
 						mode128 = true;
+                        Logger.Debug("Z80HDR1_HWMODE=0x{0:X2}!",
+                            hdr1[Z80HDR1_HWMODE]);
 						break;
 					default:
 						Logger.Warn(
-							"Z80Serializer.loadFromStream: Unrecognized ZX Spectrum config (Z80HDR1_HWMODE=0x{0:2X})!", 
+							"Z80Serializer.loadFromStream: Unrecognized ZX Spectrum config (Z80HDR1_HWMODE=0x{0:X2})!", 
                             hdr1[Z80HDR1_HWMODE]);
 						break;
 				}
