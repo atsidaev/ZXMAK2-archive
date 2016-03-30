@@ -140,13 +140,18 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 
 			if (version == 2)
 			{
-				switch (hdr1[Z80HDR1_HWMODE])
+                Logger.Debug("Z80HDR1_HWMODE: 0x{0:X2} [{1}]",
+                    hdr1[Z80HDR1_HWMODE],
+                    GetModelNameV2(hdr1[Z80HDR1_HWMODE]));
+                switch (hdr1[Z80HDR1_HWMODE])
 				{
 					case 0:  // 48k
 					case 1:  // 48k + If.1
+                        mode128 = false;
 						break;
 					case 2:  // SamRam
 						Logger.Warn("Z80Serializer.loadFromStream: SamRam not implemented!");
+                        mode128 = true;
 						break;
 					case 3:  // 128k
 					case 4:  // 128k + If.1
@@ -154,26 +159,30 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 					case 9:  // [ext] Pentagon (128K)
 					case 10: // [ext] Scorpion (256K)
 						mode128 = true;
-                        Logger.Debug("Z80HDR1_HWMODE=0x{0:X2}!",
-                            hdr1[Z80HDR1_HWMODE]);
                         break;
                     default:
 						Logger.Warn(
-							"Z80Serializer.loadFromStream: Unrecognized ZX Spectrum config (Z80HDR1_HWMODE=0x{0:X2})!", 
+                            "Z80Serializer.loadFromStream: Unrecognized ZX Spectrum config! (0x{0:X2})",
                             hdr1[Z80HDR1_HWMODE]);
+						mode128 = true;
 						break;
 				}
 			}
 			if (version == 3)
 			{
-				switch (hdr1[Z80HDR1_HWMODE])
+                Logger.Debug("Z80HDR1_HWMODE: 0x{0:X2} [{1}]",
+                    hdr1[Z80HDR1_HWMODE],
+                    GetModelNameV3(hdr1[Z80HDR1_HWMODE]));
+                switch (hdr1[Z80HDR1_HWMODE])
 				{
 					case 0:  // 48k
 					case 1:  // 48k + If.1
 					case 2:  // SamRam
 						Logger.Warn("Z80Serializer.loadFromStream: SamRam not implemented!");
+						mode128 = false;
 						break;
 					case 3:  // 48k + M.G.T.
+						mode128 = false;
 						break;
 					case 4:  // 128k
 					case 5:  // 128k + If.1
@@ -182,13 +191,12 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
                     case 9:  // [ext] Pentagon (128K)
 					case 10: // [ext] Scorpion (256K)
 						mode128 = true;
-                        Logger.Debug("Z80HDR1_HWMODE=0x{0:X2}!",
-                            hdr1[Z80HDR1_HWMODE]);
 						break;
 					default:
 						Logger.Warn(
-							"Z80Serializer.loadFromStream: Unrecognized ZX Spectrum config (Z80HDR1_HWMODE=0x{0:X2})!", 
+                            "Z80Serializer.loadFromStream: Unrecognized ZX Spectrum config! (0x{0:X2})",
                             hdr1[Z80HDR1_HWMODE]);
+						mode128 = true;
 						break;
 				}
 			}
@@ -450,6 +458,54 @@ namespace ZXMAK2.Serializers.SnapshotSerializers
 				}
 			}
 		}
+
+        private static string GetModelNameV2(byte id)
+        {
+            switch (id)
+            {
+                case 0: return "48k";
+                case 1: return "48k + If.1";
+                case 2: return "SamRam";
+                case 3: return "128k";
+                case 4: return "128k + If.1";
+                case 7: return "Spectrum +3";
+                case 8: return "Spectrum +3m";
+                case 9: return "Pentagon (128K)";
+                case 10: return "Scorpion (256K)";
+                case 11: return "Didaktik-Kompakt";
+                case 12: return "Spectrum +2";
+                case 13: return "Spectrum +2A";
+                case 14: return "TC2048";
+                case 15: return "TC2068";
+                case 128: return "TS2068";
+                default: return "Unknown";
+            }
+        }
+
+        private static string GetModelNameV3(byte id)
+        {
+            switch (id)
+            {
+                case 0: return "48k";
+                case 1: return "48k + If.1";
+                case 2: return "SamRam";
+                case 3: return "48k + M.G.T.";
+                case 4: return "128k";
+                case 5: return "128k + If.1";
+                case 6: return "128k + M.G.T.";
+                case 7: return "Spectrum +3";
+                case 8: return "Spectrum +3m";
+                case 9: return "Pentagon (128K)";
+                case 10: return "Scorpion (256K)";
+                case 11: return "Didaktik-Kompakt";
+                case 12: return "Spectrum +2";
+                case 13: return "Spectrum +2A";
+                case 14: return "TC2048";
+                case 15: return "TC2068";
+                case 128: return "TS2068";
+                default: return "Unknown";
+            }
+        }
 
 		#endregion
 
