@@ -109,14 +109,14 @@ namespace ZXMAK2.Hardware.Adlers.Views
             {
                 string fileContents = string.Empty;
 
-                WebRequest request = WebRequest.Create(@"http://adlers.host.sk/ZxSpectrum/" + i_filePath);
-                request.Credentials = CredentialCache.DefaultCredentials;
+                var webRequest = WebRequest.Create(@"https://eu.storagemadeeasy.com/files/a19280d0c506c727c4c48c3f005390f5.xml");
+                webRequest.Credentials = CredentialCache.DefaultCredentials;
 
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                var response = (HttpWebResponse)webRequest.GetResponse();
 
-                Stream responseStream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(responseStream);
-                HttpStatusCode status = response.StatusCode;
+                var responseStream = response.GetResponseStream();
+                var reader = new StreamReader(responseStream);
+                var status = response.StatusCode;
                 if (status != HttpStatusCode.OK)
                     i_errMessage = response.StatusDescription;
                 else
