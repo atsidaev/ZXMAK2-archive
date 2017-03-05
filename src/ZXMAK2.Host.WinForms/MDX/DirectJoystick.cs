@@ -104,7 +104,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     var joystick = new Device(deviceInstance.InstanceGuid);
                     try
                     {
-                        joystick.SetCooperativeLevel(m_hwnd, CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
+                        joystick.SetCooperativeLevel(null, CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
                         joystick.SetDataFormat(DeviceDataFormat.Joystick);
                         joystick.Acquire();
                         m_devices.Add(hostId, joystick);
