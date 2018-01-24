@@ -5,6 +5,8 @@ In other words, it's ZX Spectrum emulator.
 Project written in C#. Currently it works on Windows platform and using Managed DirectX or XNA4.
 Linux platform is also supported, but with no audio.
 
+![ZXMAK2](https://raw.githubusercontent.com/wiki/atsidaev/ZXMAK2/img/ZXMAK2.png)
+
 Full support for Windows 8 x86/x64, Windows 7 x86/x64, Windows Vista x86/x64, Windows XP. \
 Don't forgot to install DirectX 9!
 
