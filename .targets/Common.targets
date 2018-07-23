@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <Import Project="CommonAssemblyVersion.targets" />
     <PropertyGroup>
-        <AssemblyVersion>2.9.2.0</AssemblyVersion>
+        <AssemblyVersion>2.9.3.8</AssemblyVersion>
     </PropertyGroup>
 <!--
     <PropertyGroup Condition="'$(MSBuildProjectName)' != 'ZipLib'">
