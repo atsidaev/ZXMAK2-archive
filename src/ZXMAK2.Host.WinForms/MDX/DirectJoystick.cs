@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Globalization;
-using Microsoft.DirectX.DirectInput;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
+using ZXMAK2.DirectX;
 using ZxmakKey = ZXMAK2.Host.Entities.Key;
+using ZXMAK2.DirectX.DirectInput;
 
 
 namespace ZXMAK2.Host.WinForms.Mdx
@@ -17,12 +18,12 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         private const string KeyboardNumpadId = "keyboard";
 
-        private readonly Dictionary<string, IJoystickState> m_states = new Dictionary<string, IJoystickState>();
-        private readonly Dictionary<string, Device> m_devices = new Dictionary<string, Device>();
-        private readonly Dictionary<string, bool> m_acquired = new Dictionary<string, bool>();
-        private Form m_form;
-        private IntPtr m_hwnd;
-        private IJoystickState m_numpadState;
+        private readonly Dictionary<string, IJoystickState> _states = new Dictionary<string, IJoystickState>();
+        private readonly Dictionary<string, DirectInputDevice8W> _devices = new Dictionary<string, DirectInputDevice8W>();
+        private readonly Dictionary<string, bool> _acquired = new Dictionary<string, bool>();
+        private Form _form;
+        private IntPtr _hwnd;
+        private IJoystickState _numpadState;
 
         #endregion Fields
 
@@ -31,19 +32,19 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public DirectJoystick(Form form)
         {
-            m_form = form;
-            m_hwnd = form.Handle;
-            m_form.Activated += WndActivated;
-            m_form.Deactivate += WndDeactivate;
+            _form = form;
+            _hwnd = form.Handle;
+            _form.Activated += WndActivated;
+            _form.Deactivate += WndDeactivate;
         }
 
         public void Scan()
         {
-            var guidList = m_devices.Keys;
+            var guidList = _devices.Keys;
             foreach (var guid in guidList)
             {
                 ActivateDevice(guid);
-                m_states[guid] = ScanDevice(guid);
+                _states[guid] = ScanDevice(guid);
             }
             if (IsKeyboardStateRequired)
             {
@@ -53,7 +54,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 var isRight = KeyboardState[ZxmakKey.NumPad6];
                 var isFire = KeyboardState[ZxmakKey.NumPad5] ||
                     KeyboardState[ZxmakKey.NumPad0];
-                m_numpadState = new StateWrapper(
+                _numpadState = new StateWrapper(
                     isLeft,
                     isRight,
                     isUp,
@@ -64,12 +65,12 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public void Dispose()
         {
-            if (m_form != null)
+            if (_form != null)
             {
-                m_form.Activated -= WndActivated;
-                m_form.Deactivate -= WndDeactivate;
+                _form.Activated -= WndActivated;
+                _form.Deactivate -= WndDeactivate;
             }
-            foreach (var guid in m_devices.Keys)
+            foreach (var guid in _devices.Keys)
             {
                 ReleaseHostDevice(guid);
             }
@@ -88,34 +89,36 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     IsKeyboardStateRequired = true;
                     return;
                 }
-                var list = Manager.GetDevices(
-                    DeviceClass.GameControl,
-                    EnumDevicesFlags.AttachedOnly);
-                while (list.MoveNext())
+                using (var di = new DirectInput8W())
                 {
-                    var deviceInstance = (DeviceInstance)list.Current;
-                    if (string.Compare(
-                        GetDeviceId(deviceInstance.InstanceGuid),
-                        hostId,
-                        true) != 0)
+                    var list = di.EnumDevices(DI8DEVCLASS.GAMECTRL, DIEDFL.ATTACHEDONLY);
+                    foreach (var deviceInstance in list)
                     {
-                        continue;
+                        if (string.Compare(
+                            GetDeviceId(deviceInstance.guidInstance),
+                            hostId,
+                            true) != 0)
+                        {
+                            continue;
+                        }
+                        var joystick = di.CreateDevice(deviceInstance.guidInstance, null);
+                        try
+                        {
+                            joystick.SetDataFormat(DIDATAFORMAT.c_dfDIJoystick).CheckError();
+                            //joystick.SetCooperativeLevel(_hwnd, DISCL.BACKGROUND | DISCL.NONEXCLUSIVE).CheckError();
+                            // someone replaced hwnd with null to fix app close hung (when MDX was used)
+                            joystick.SetCooperativeLevel(IntPtr.Zero, DISCL.BACKGROUND | DISCL.NONEXCLUSIVE).CheckError();
+                            joystick.Acquire().CheckError();
+                            _devices.Add(hostId, joystick);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                            joystick.Dispose();
+                            continue;
+                        }
+                        ActivateDevice(hostId);
                     }
-                    var joystick = new Device(deviceInstance.InstanceGuid);
-                    try
-                    {
-                        joystick.SetCooperativeLevel(null, CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
-                        joystick.SetDataFormat(DeviceDataFormat.Joystick);
-                        joystick.Acquire();
-                        m_devices.Add(hostId, joystick);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                        joystick.Dispose();
-                        continue;
-                    }
-                    ActivateDevice(hostId);
                 }
             }
             catch (Exception ex)
@@ -133,11 +136,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     IsKeyboardStateRequired = false;
                     return;
                 }
-                if (!m_devices.ContainsKey(hostId))
+                if (!_devices.ContainsKey(hostId))
                 {
                     return;
                 }
-                var device = m_devices[hostId];
+                var device = _devices[hostId];
                 DeactivateDevice(hostId);
                 try
                 {
@@ -147,10 +150,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 {
                     Logger.Error(ex);
                 }
-                m_devices.Remove(hostId);
-                if (m_states.ContainsKey(hostId))
+                _devices.Remove(hostId);
+                if (_states.ContainsKey(hostId))
                 {
-                    m_states.Remove(hostId);
+                    _states.Remove(hostId);
                 }
             }
             catch (Exception ex)
@@ -161,13 +164,13 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         public IJoystickState GetState(string hostId)
         {
-            if (m_states.ContainsKey(hostId))
+            if (_states.ContainsKey(hostId))
             {
-                return m_states[hostId];
+                return _states[hostId];
             }
             if (hostId == KeyboardNumpadId)
             {
-                return m_numpadState;
+                return _numpadState;
             }
             return StateWrapper.Empty;
         }
@@ -180,16 +183,16 @@ namespace ZXMAK2.Host.WinForms.Mdx
             var list = new List<IHostDeviceInfo>();
             try
             {
-                var devList = Manager.GetDevices(
-                    DeviceClass.GameControl,
-                    EnumDevicesFlags.AttachedOnly);
-                while (devList.MoveNext())
+                using (var di = new DirectInput8W())
                 {
-                    var deviceInstance = (DeviceInstance)devList.Current;
-                    var hdi = new HostDeviceInfo(
-                        deviceInstance.InstanceName,
-                        GetDeviceId(deviceInstance.InstanceGuid));
-                    list.Add(hdi);
+                    var devList = di.EnumDevices(DI8DEVCLASS.GAMECTRL, DIEDFL.ATTACHEDONLY);
+                    foreach (var deviceInstance in devList)
+                    {
+                        var hdi = new HostDeviceInfo(
+                            deviceInstance.tszInstanceName,
+                            GetDeviceId(deviceInstance.guidInstance));
+                        list.Add(hdi);
+                    }
                 }
             }
             catch (Exception ex)
@@ -218,7 +221,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         private void WndActivated(object sender, EventArgs e)
         {
-            var guidList = m_devices.Keys;
+            var guidList = _devices.Keys;
             foreach (var guid in guidList)
             {
                 ActivateDevice(guid);
@@ -227,7 +230,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         private void WndDeactivate(object sender, EventArgs e)
         {
-            var guidList = m_devices.Keys;
+            var guidList = _devices.Keys;
             foreach (var guid in guidList)
             {
                 DeactivateDevice(guid);
@@ -238,18 +241,18 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             try
             {
-                var device = m_devices[guid];
-                var acquired = m_acquired.ContainsKey(guid) &&
-                    m_acquired[guid];
+                var device = _devices[guid];
+                var acquired = _acquired.ContainsKey(guid) &&
+                    _acquired[guid];
                 if (!acquired)
                 {
-                    device.Acquire();
+                    device.Acquire().CheckError();
                 }
-                m_acquired[guid] = true;
+                _acquired[guid] = true;
             }
             catch
             {
-                m_acquired[guid] = false;
+                _acquired[guid] = false;
             }
         }
 
@@ -257,40 +260,41 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             try
             {
-                var device = m_devices[guid];
-                device.Unacquire();
-                m_acquired[guid] = false;
+                _acquired[guid] = false;
+                _devices[guid].Unacquire().CheckError();
             }
             catch
             {
             }
         }
 
-
+        private DIJOYSTATE _diState;
         private IJoystickState ScanDevice(string hostId)
         {
             try
             {
-                if (!m_acquired.ContainsKey(hostId) || 
-                    !m_acquired[hostId])
+                if (!_acquired.ContainsKey(hostId) || 
+                    !_acquired[hostId])
                 {
                     return StateWrapper.Empty;
                 }
-                var device = m_devices[hostId];
+                var device = _devices[hostId];
 
                 // axisTolerance check is needed because of little fluctuation of axis values even when nothing is pressed.
                 int axisTolerance = 0x1000; // Should this be taken from joystick device somehow?
                 ushort center = 0x7FFF;
 
-                try
+                var hr = device.Poll();
+                if (hr.IsSuccess) 
+                    hr = device.GetDeviceState(out _diState);
+                if (hr.IsSuccess)
                 {
-                    device.Poll();
-                    var diState = device.CurrentJoystickState;
+                    var diState = _diState;
 
-                    var isDown = diState.Y > center && diState.Y - center > axisTolerance;
-                    var isUp = diState.Y < center && center - diState.Y > axisTolerance;
-                    var isRight = diState.X > center && diState.X - center > axisTolerance;
-                    var isLeft = diState.X < center && center - diState.X > axisTolerance;
+                    var isDown = diState.lY > center && diState.lY - center > axisTolerance;
+                    var isUp = diState.lY < center && center - diState.lY > axisTolerance;
+                    var isRight = diState.lX > center && diState.lX - center > axisTolerance;
+                    var isLeft = diState.lX < center && center - diState.lX > axisTolerance;
                     var isFire = false;
 
                     var buttons = diState.GetButtons();
@@ -307,14 +311,18 @@ namespace ZXMAK2.Host.WinForms.Mdx
                         isDown,
                         isFire);
                 }
-                catch (NotAcquiredException)
+                else if (hr == ErrorCode.DIERR_NOTACQUIRED)
                 {
-                    m_acquired[hostId] = false;
+                    _acquired[hostId] = false;
                 }
-                catch (InputLostException)
+                else if (hr == ErrorCode.DIERR_INPUTLOST)
                 {
-                    m_acquired[hostId] = false;
+                    _acquired[hostId] = false;
                     //ReleaseHostDevice(hostId);
+                }
+                else
+                {
+                    Logger.Error("[joy.ScanDevice] {0}", hr);
                 }
             }
             catch (Exception ex)

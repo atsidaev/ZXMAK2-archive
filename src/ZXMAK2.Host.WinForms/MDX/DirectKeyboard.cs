@@ -1,16 +1,36 @@
-/// Description: ZX Spectrum keyboard emulator
-/// Author: Alex Makeev
-/// Date: 26.03.2008
+/* 
+ *  Copyright 2008-2018 Alex Makeev
+ * 
+ *  This file is part of ZXMAK2 (ZX Spectrum virtual machine).
+ *
+ *  ZXMAK2 is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  ZXMAK2 is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with ZXMAK2.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  Description: ZX Spectrum keyboard emulator
+ *  Author: Alex Makeev
+ *  Date: 26.03.2008, 10.07.2018
+ */
 using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.DirectX.DirectInput;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities.Tools;
 using ZXMAK2.Host.WinForms.Tools;
+using ZXMAK2.DirectX;
+using ZXMAK2.DirectX.DirectInput;
 using ZxmakKey = ZXMAK2.Host.Entities.Key;
-using MdxKey = Microsoft.DirectX.DirectInput.Key;
+using MdxKey = ZXMAK2.DirectX.DirectInput.Key;
 
 
 namespace ZXMAK2.Host.WinForms.Mdx
@@ -19,14 +39,14 @@ namespace ZXMAK2.Host.WinForms.Mdx
     {
         private readonly Form _form;
         private readonly IntPtr _hWnd;
-        private Device _device;
+        private DirectInputDevice8W _device;
         private KeyboardStateMapper<MdxKey> _mapper = new KeyboardStateMapper<MdxKey>();
         private readonly Dictionary<ZxmakKey, bool> _state = new Dictionary<ZxmakKey, bool>();
         private bool _isAcquired;
 
 
 
-        public DirectKeyboard(Form form)
+        public unsafe DirectKeyboard(Form form)
         {
             if (form == null)
             {
@@ -34,8 +54,12 @@ namespace ZXMAK2.Host.WinForms.Mdx
             }
             _form = form;
             _hWnd = form.Handle;
-            _device = new Device(SystemGuid.Keyboard);
-            _device.SetCooperativeLevel(form, CooperativeLevelFlags.NonExclusive | CooperativeLevelFlags.Foreground);
+            using (var dinput = new DirectInput8W())
+            {
+                _device = dinput.CreateDevice(SysGuid.GUID_SysKeyboard, null);
+            }
+            _device.SetDataFormat(DIDATAFORMAT.c_dfDIKeyboard).CheckError();
+            _device.SetCooperativeLevel(_hWnd, DISCL.NONEXCLUSIVE | DISCL.FOREGROUND).CheckError();
             form.Deactivate += WndDeactivate;
             TryAcquire();
             _mapper.LoadMapFromString(
@@ -51,23 +75,18 @@ namespace ZXMAK2.Host.WinForms.Mdx
             // TODO: sync needed
             var device = _device;
             _device = null;
-            try
+            
+            _form.Deactivate -= WndDeactivate;
+            if (_isAcquired)
             {
-                _form.Deactivate -= WndDeactivate;
-                if (_isAcquired)
+                _isAcquired = false;
+                var hr = device.Unacquire();
+                if (hr.IsFailure)
                 {
-                    _isAcquired = false;
-                    device.Unacquire();
+                    Logger.Error("DirectKeyboard.Dispose: {0}", hr);
                 }
             }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-            finally
-            {
-                device.Dispose();
-            }
+            device.Dispose();
         }
 
 
@@ -88,17 +107,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
             get { return this; }
         }
 
-        //public void LoadConfiguration(string fileName)
-        //{
-        //    using (var reader = (TextReader)new StreamReader(fileName))
-        //    {
-        //        var xml = reader.ReadToEnd();
-        //        var mapper = new KeyboardStateMapper<MdxKey>();
-        //        mapper.LoadMapFromString(xml);
-        //        _mapper = mapper;
-        //    }
-        //}
-
+        private byte[] _diState = new byte[256];
         public void Scan()
         {
             if (_device == null || (!_isAcquired && !TryAcquire()))
@@ -109,25 +118,25 @@ namespace ZXMAK2.Host.WinForms.Mdx
                 }
                 return;
             }
-            try
+            var hr = _device.GetDeviceState(_diState);
+            if (hr.IsSuccess)
             {
-                var state = _device.GetCurrentKeyboardState();
                 foreach (var key in _mapper.Keys)
                 {
-                    _state[key] = state[_mapper[key]];
+                    _state[key] = _diState[(int)_mapper[key]] != 0;
                 }
             }
-            catch (NotAcquiredException)
+            else if (hr == ErrorCode.DIERR_NOTACQUIRED)
             {
                 // TODO: sync needed
             }
-            catch (InputLostException)
+            else if (hr == ErrorCode.DIERR_INPUTLOST)
             {
                 WndDeactivate(null, null);
             }
-            catch (Exception ex)
+            else
             {
-                Logger.Error(ex);
+                Logger.Error("DirectKeyboard.Scan: {0}", hr);
                 WndDeactivate(null, null);
             }
         }
@@ -144,21 +153,16 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 return false;
             }
-            try
+            var hr = _device.Acquire();
+            _isAcquired = true;
+            if (hr.IsSuccess)
             {
-                _device.Acquire();
-                _isAcquired = true;
                 return true;
             }
-            catch (OtherApplicationHasPriorityException)
+            if (hr != ErrorCode.DIERR_OTHERAPPHASPRIO &&
+                hr != ErrorCode.DIERR_INPUTLOST)
             {
-            }
-            catch (InputLostException)
-            {
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
+                Logger.Error("DirectKeyboard.TryAcquire: {0}", hr);
             }
             return false;
         }
@@ -169,15 +173,13 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 return;
             }
-            try
+            _isAcquired = false;
+            var hr = _device.Unacquire();
+            if (hr.IsSuccess)
             {
-                _isAcquired = false;
-                _device.Unacquire();
+                return;
             }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            Logger.Error("DirectKeyboard.WndDeactivate: {0}", hr);
         }
 
         #endregion Private

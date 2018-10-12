@@ -56,14 +56,12 @@
             this.pictureZoomedArea = new System.Windows.Forms.PictureBox();
             this.checkBoxMirror = new System.Windows.Forms.CheckBox();
             this.groupBoxSpriteDetails = new System.Windows.Forms.GroupBox();
-            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.CustomControls.BitmapGrid();
             this.textBoxSpriteBytes = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxSpriteAddress = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hexNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -137,6 +135,8 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.bitmapGridSpriteView = new ZXMAK2.Hardware.Adlers.Views.CustomControls.BitmapGrid();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxScreenViewType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownActualAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureZXDisplay)).BeginInit();
@@ -451,7 +451,6 @@
             this.textBoxAttributeAddress.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxAttributeAddress.Location = new System.Drawing.Point(60, 45);
             this.textBoxAttributeAddress.Name = "textBoxAttributeAddress";
-            this.textBoxAttributeAddress.ReadOnly = true;
             this.textBoxAttributeAddress.Size = new System.Drawing.Size(53, 23);
             this.textBoxAttributeAddress.TabIndex = 7;
             // 
@@ -471,7 +470,6 @@
             this.textBoxBytesAtAdress.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxBytesAtAdress.Location = new System.Drawing.Point(168, 47);
             this.textBoxBytesAtAdress.Name = "textBoxBytesAtAdress";
-            this.textBoxBytesAtAdress.ReadOnly = true;
             this.textBoxBytesAtAdress.Size = new System.Drawing.Size(136, 23);
             this.textBoxBytesAtAdress.TabIndex = 5;
             // 
@@ -501,7 +499,6 @@
             this.textBoxXCoorYCoor.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxXCoorYCoor.Location = new System.Drawing.Point(168, 18);
             this.textBoxXCoorYCoor.Name = "textBoxXCoorYCoor";
-            this.textBoxXCoorYCoor.ReadOnly = true;
             this.textBoxXCoorYCoor.Size = new System.Drawing.Size(53, 23);
             this.textBoxXCoorYCoor.TabIndex = 2;
             // 
@@ -511,7 +508,6 @@
             this.textBoxScreenAddress.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxScreenAddress.Location = new System.Drawing.Point(60, 17);
             this.textBoxScreenAddress.Name = "textBoxScreenAddress";
-            this.textBoxScreenAddress.ReadOnly = true;
             this.textBoxScreenAddress.Size = new System.Drawing.Size(53, 23);
             this.textBoxScreenAddress.TabIndex = 1;
             // 
@@ -568,16 +564,6 @@
             this.groupBoxSpriteDetails.Text = "Sprite details:";
             this.groupBoxSpriteDetails.Visible = false;
             // 
-            // bitmapGridSpriteView
-            // 
-            this.bitmapGridSpriteView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.bitmapGridSpriteView.Location = new System.Drawing.Point(9, 84);
-            this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
-            this.bitmapGridSpriteView.Size = new System.Drawing.Size(256, 256);
-            this.bitmapGridSpriteView.TabIndex = 10;
-            this.bitmapGridSpriteView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseClick);
-            this.bitmapGridSpriteView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseUp);
-            // 
             // textBoxSpriteBytes
             // 
             this.textBoxSpriteBytes.BackColor = System.Drawing.SystemColors.InactiveBorder;
@@ -632,22 +618,15 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.hexNumbersToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // hexNumbersToolStripMenuItem
@@ -656,7 +635,7 @@
             this.hexNumbersToolStripMenuItem.CheckOnClick = true;
             this.hexNumbersToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.hexNumbersToolStripMenuItem.Name = "hexNumbersToolStripMenuItem";
-            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.hexNumbersToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.hexNumbersToolStripMenuItem.Text = "Hex numbers";
             this.hexNumbersToolStripMenuItem.Click += new System.EventHandler(this.hexNumbersToolStripMenuItem_Click);
             // 
@@ -1062,7 +1041,7 @@
             // 
             // txtbxY1
             // 
-            this.txtbxY1.BackColor = System.Drawing.SystemColors.Window;
+            this.txtbxY1.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.txtbxY1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtbxY1.Hexadecimal = true;
             this.txtbxY1.Location = new System.Drawing.Point(108, 48);
@@ -1082,7 +1061,7 @@
             // 
             // txtbxX1
             // 
-            this.txtbxX1.BackColor = System.Drawing.SystemColors.Window;
+            this.txtbxX1.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.txtbxX1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtbxX1.Hexadecimal = true;
             this.txtbxX1.Location = new System.Drawing.Point(108, 23);
@@ -1120,7 +1099,7 @@
             // 
             // txtbxY0
             // 
-            this.txtbxY0.BackColor = System.Drawing.SystemColors.Window;
+            this.txtbxY0.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.txtbxY0.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtbxY0.Hexadecimal = true;
             this.txtbxY0.Location = new System.Drawing.Point(29, 50);
@@ -1135,7 +1114,7 @@
             // 
             // txtbxX0
             // 
-            this.txtbxX0.BackColor = System.Drawing.SystemColors.Window;
+            this.txtbxX0.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.txtbxX0.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtbxX0.Hexadecimal = true;
             this.txtbxX0.Location = new System.Drawing.Point(29, 23);
@@ -1193,6 +1172,23 @@
             this.splitContainer1.Size = new System.Drawing.Size(724, 494);
             this.splitContainer1.SplitterDistance = 155;
             this.splitContainer1.TabIndex = 41;
+            // 
+            // bitmapGridSpriteView
+            // 
+            this.bitmapGridSpriteView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.bitmapGridSpriteView.Location = new System.Drawing.Point(9, 84);
+            this.bitmapGridSpriteView.Name = "bitmapGridSpriteView";
+            this.bitmapGridSpriteView.Size = new System.Drawing.Size(256, 256);
+            this.bitmapGridSpriteView.TabIndex = 10;
+            this.bitmapGridSpriteView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseClick);
+            this.bitmapGridSpriteView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.bitmapGridSpriteView_MouseUp);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // GraphicsEditor
             // 

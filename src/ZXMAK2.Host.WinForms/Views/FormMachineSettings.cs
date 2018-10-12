@@ -805,13 +805,32 @@ namespace ZXMAK2.Host.WinForms.Views
         {
             if (ctxMenuWizard.Items.Count < 1)
                 return;
-            var p = new Point(
-                btnWizard.Location.X + btnWizard.Width / 2,
-                btnWizard.Location.Y + btnWizard.Height / 2);
-            p = this.PointToScreen(p);
-            ctxMenuWizard.Show(p);
+            var p = new Point(btnWizard.Width, 0);
+
+            // fix self collapse on first appearance
+            if (!ctxMenuWizard.Created)
+            {
+                // we needs to show/hide it
+                // temporary set zero height to avoid flicks
+                var height = ctxMenuWizard.Height;
+                ctxMenuWizard.Height = 0;           
+                ctxMenuWizard.Show(btnWizard, p);
+                ctxMenuWizard.Hide();
+                ctxMenuWizard.Height = height;
+            }
+            ctxMenuWizard.Show(btnWizard, p);
         }
 
+        public static Control FindFocusedControl(Control control)
+        {
+            var container = control as IContainerControl;
+            while (container != null)
+            {
+                control = container.ActiveControl;
+                container = control as IContainerControl;
+            }
+            return control;
+        }
         private void ctxMenuWizardItem_Click(object sender, EventArgs e)
         {
             var item = sender as ToolStripMenuItem;

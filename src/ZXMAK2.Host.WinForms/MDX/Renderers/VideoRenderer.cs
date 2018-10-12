@@ -21,12 +21,14 @@ using System;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Drawing;
-using Microsoft.DirectX.Direct3D;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.Entities;
 using ZXMAK2.Host.WinForms.Controls;
 using ZXMAK2.Host.WinForms.Tools;
 using ZXMAK2.Host.Presentation.Interfaces;
+using ZXMAK2.DirectX;
+using ZXMAK2.DirectX.Direct3D;
+using ZXMAK2.DirectX.Vectors;
 
 
 namespace ZXMAK2.Host.WinForms.Mdx.Renderers
@@ -54,10 +56,10 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
         private int _textureStride;
         private int _textureMaskTvStride;
 
-        private Sprite _sprite;
-        private Sprite _spriteTv;
-        private Texture _texture0;
-        private Texture _textureMaskTv;
+        private D3DXSprite _sprite;
+        private D3DXSprite _spriteTv;
+        private Direct3DTexture9 _texture0;
+        private Direct3DTexture9 _textureMaskTv;
 
         #endregion Fields
 
@@ -80,8 +82,8 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
         protected override void LoadSynchronized()
         {
             base.LoadSynchronized();
-            _sprite = new Sprite(Allocator.Device);
-            _spriteTv = new Sprite(Allocator.Device);
+            _sprite = D3DX9.CreateSprite(Allocator.Device);
+            _spriteTv = D3DX9.CreateSprite(Allocator.Device);
         }
 
         protected override void UnloadSynchronized()
@@ -184,32 +186,22 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
         #region Private
 
         private void RenderSprite(
-            Sprite sprite, 
-            Texture texture,
+            D3DXSprite sprite,
+            Direct3DTexture9 texture,
             Size srcSize,
             RectangleF dstRect, 
             bool antiAlias)
         {
-            var srcRect = new Rectangle(
-                0, 
-                0, 
-                srcSize.Width, 
-                srcSize.Height);
-            sprite.Begin(SpriteFlags.None);
+            sprite.Begin(D3DXSPRITEFLAG.NONE);
             try
             {
                 if (!antiAlias)
                 {
-                    Allocator.Device.SetSamplerState(0, SamplerStageStates.MinFilter, (int)TextureFilter.Point);
-                    Allocator.Device.SetSamplerState(0, SamplerStageStates.MagFilter, (int)TextureFilter.Point);
-                    Allocator.Device.SetSamplerState(0, SamplerStageStates.MipFilter, (int)TextureFilter.Point);
+                    Allocator.Device.SetSamplerState(0, D3DSAMPLERSTATETYPE.D3DSAMP_MINFILTER, (int)D3DTEXTUREFILTERTYPE.D3DTEXF_POINT);
+                    Allocator.Device.SetSamplerState(0, D3DSAMPLERSTATETYPE.D3DSAMP_MAGFILTER, (int)D3DTEXTUREFILTERTYPE.D3DTEXF_POINT);
+                    Allocator.Device.SetSamplerState(0, D3DSAMPLERSTATETYPE.D3DSAMP_MIPFILTER, (int)D3DTEXTUREFILTERTYPE.D3DTEXF_POINT);
                 }
-                sprite.Draw2D(
-                   texture,
-                   srcRect,
-                   dstRect.Size,
-                   dstRect.Location,
-                   -1);
+                D3DXHelper.Draw2D(sprite, texture, dstRect, srcSize);
             }
             finally
             {
@@ -233,33 +225,34 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             _frameSize = size;
             var maxSize = Math.Max(size.Width, size.Height);
             var potSize = ScaleHelper.GetPotSize(maxSize);
-            _texture0 = new Texture(
-                Allocator.Device,
+            _texture0 = Allocator.Device.CreateTexture(
                 potSize,
                 potSize,
-                1,
-                Usage.None,
-                Format.X8R8G8B8,
-                Pool.Managed);
+                1, 
+                D3DUSAGE.NONE, 
+                D3DFORMAT.D3DFMT_X8R8G8B8,
+                D3DPOOL.D3DPOOL_MANAGED);
             _textureStride = potSize;
 
             var maskSizeTv = new Size(size.Width, size.Height * MimicTvRatio);
             var maxSizeTv = Math.Max(maskSizeTv.Width, maskSizeTv.Height);
             var potSizeTv = ScaleHelper.GetPotSize(maxSizeTv);
-            _textureMaskTv = new Texture(
-                Allocator.Device,
+            _textureMaskTv = Allocator.Device.CreateTexture(
                 potSizeTv,
                 potSizeTv,
-                1,
-                Usage.None, Format.A8R8G8B8, Pool.Managed);
+                1, 
+                D3DUSAGE.NONE, 
+                D3DFORMAT.D3DFMT_A8R8G8B8, 
+                D3DPOOL.D3DPOOL_MANAGED);
             _textureMaskTvStride = potSizeTv;
-            using (var gs = _textureMaskTv.LockRectangle(0, LockFlags.None))
+            var lockRect = _textureMaskTv.LockRectangle(0, D3DLOCK.NONE);
+            try
             {
                 var pixelColor = 0;
                 var gapColor = MimicTvAlpha << 24;
                 unsafe
                 {
-                    var pdst = (int*)gs.InternalData.ToPointer();
+                    var pdst = (int*)lockRect.pBits;
                     for (var y = 0; y < maskSizeTv.Height; y++)
                     {
                         pdst += potSizeTv;
@@ -271,7 +264,10 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                     }
                 }
             }
-            _textureMaskTv.UnlockRectangle(0);
+            finally
+            {
+                _textureMaskTv.UnlockRectangle(0);
+            }
         }
 
         private void UpdateTextureData(IFrameVideo videoData)
@@ -280,14 +276,15 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             {
                 return;
             }
-            using (var gs = _texture0.LockRectangle(0, LockFlags.None))
+            var lockRect = _texture0.LockRectangle(0, D3DLOCK.NONE);
+            try
             {
                 unsafe
                 {
                     fixed (int* srcPtr = videoData.Buffer)
                     {
                         NativeMethods.CopyStride(
-                            (int*)gs.InternalData.ToPointer(),
+                            (int*)lockRect.pBits,
                             srcPtr,
                             _frameSize.Width,
                             _frameSize.Height,
@@ -295,7 +292,10 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                     }
                 }
             }
-            _texture0.UnlockRectangle(0);
+            finally
+            {
+                _texture0.UnlockRectangle(0);
+            }
         }
 
         private void FilterNoFlick(

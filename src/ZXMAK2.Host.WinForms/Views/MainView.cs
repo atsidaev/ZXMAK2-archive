@@ -299,6 +299,7 @@ namespace ZXMAK2.Host.WinForms.Views
                 renderVideo.InitWnd();
                 _host = CreateHost();
                 OnViewOpened();
+                //_host.MediaRecorder = new ZXMAK2.Host.Media.MediaRecorder("C:\\test.mp4", 320*2, 256*2, _host.SampleRate);
             }
             catch (Exception ex)
             {

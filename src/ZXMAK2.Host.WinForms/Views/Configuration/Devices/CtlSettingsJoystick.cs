@@ -2,6 +2,7 @@
 using ZXMAK2.Engine;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Engine.Interfaces;
+using ZXMAK2.Engine.Entities;
 
 
 namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
@@ -22,6 +23,9 @@ namespace ZXMAK2.Host.WinForms.Views.Configuration.Devices
             m_bmgr = bmgr;
             m_host = host;
             m_device = device;
+            var busDevice = (BusDeviceBase)device;
+            //txtDevice.Text = busDevice.Name;
+            txtDescription.Text = busDevice.Description.Replace("\n", Environment.NewLine);
 
             cbxType.Items.Clear();
             if (m_host != null && m_host.Joystick != null)

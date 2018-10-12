@@ -14,8 +14,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.GraphicsEditorView
 {
     public partial class GraphicsEditor : Form
     {
-        private const ushort ZX_SCREEN_WIDTH  = 512; //in pixels
-        private const ushort ZX_SCREEN_HEIGHT = 384; //in pixels 
+        private static ushort ZX_SCREEN_WIDTH  = 512; //in pixels
+        private static ushort ZX_SCREEN_HEIGHT = 384; //in pixels 
 
         private static GraphicsEditor m_instance = null;
         private IDebuggable _spectrum = null;

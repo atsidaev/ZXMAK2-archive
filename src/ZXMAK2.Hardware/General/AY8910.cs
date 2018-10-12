@@ -8,6 +8,7 @@ using ZXMAK2.Engine.Interfaces;
 using ZXMAK2.Engine.Entities;
 using ZXMAK2.Hardware.Circuits.Sound;
 using ZXMAK2.Dependency;
+using System.Text;
 
 
 namespace ZXMAK2.Hardware.General
@@ -20,10 +21,13 @@ namespace ZXMAK2.Hardware.General
         private readonly PsgPortState m_iraState = new PsgPortState(0xFF);
         private readonly PsgPortState m_irbState = new PsgPortState(0xFF);
 
-        private int m_maskAddrReg;
-        private int m_portAddrReg;
-        private int m_maskDataReg;
-        private int m_portDataReg;
+        private IMemoryDevice m_memory;
+        private bool m_noDos;
+        private int m_maskAddr;
+        private int m_portAddr;
+        private int m_maskData;
+        private int m_portData;
+        
         private double m_lastTime;
 
         #endregion Fields
@@ -33,60 +37,127 @@ namespace ZXMAK2.Hardware.General
         {
             m_chip = Locator.Resolve<IPsgChip>();
             m_chip.UpdateHandler = UpdateDac;
-            m_chip.Volume = Volume;
 
             Category = BusDeviceCategory.Music;
             Name = "AY8910";
-            Description = "Standard AY8910 Programmable Sound Generator";
 
-            MaskAddrReg = 0xC0FF;       // for compatibility (Quorum for example)
-            MaskDataReg = 0xC0FF;       // for compatibility (Quorum for example)
-            PortAddrReg = 0xFFFD;
-            PortDataReg = 0xBFFD;
+            m_noDos = false;
+            m_maskAddr = 0xC0FF;       // for compatibility (Quorum for example)
+            m_maskData = 0xC0FF;       // for compatibility (Quorum for example)
+            m_portAddr = 0xFFFD;
+            m_portData = 0xBFFD;
+            OnProcessConfigChange();
         }
+
+
+        #region Properties
+
+        public bool NoDos
+        {
+            get { return m_noDos; }
+            set
+            {
+                m_noDos = value;
+                OnConfigChanged();
+            }
+        }
+
+        public int MaskAddr
+        {
+            get { return m_maskAddr; }
+            set
+            {
+                m_maskAddr = value;
+                OnConfigChanged();
+            }
+        }
+
+        public int PortAddr
+        {
+            get { return m_portAddr; }
+            set
+            {
+                m_portAddr = value;
+                OnConfigChanged();
+            }
+        }
+
+        public int MaskData
+        {
+            get { return m_maskData; }
+            set
+            {
+                m_maskData = value;
+                OnConfigChanged();
+            }
+        }
+
+        public int PortData
+        {
+            get { return m_portData; }
+            set
+            {
+                m_portData = value;
+                OnConfigChanged();
+            }
+        }
+
+        protected override void OnConfigLoad(XmlNode node)
+        {
+            base.OnConfigLoad(node);
+            m_chip.ChipFrequency = Utils.GetXmlAttributeAsInt32(node, "frequency", m_chip.ChipFrequency);
+            m_chip.AmpType = Utils.GetXmlAttributeAsEnum<AmpType>(node, "ampType", m_chip.AmpType);
+            m_chip.PanType = Utils.GetXmlAttributeAsEnum<PanType>(node, "panType", m_chip.PanType);
+            NoDos = Utils.GetXmlAttributeAsBool(node, "noDos", NoDos);
+            MaskAddr = Utils.GetXmlAttributeAsInt32(node, "maskAddr", MaskAddr);
+            MaskData = Utils.GetXmlAttributeAsInt32(node, "maskData", MaskData);
+            PortAddr = Utils.GetXmlAttributeAsInt32(node, "portAddr", PortAddr);
+            PortData = Utils.GetXmlAttributeAsInt32(node, "portData", PortData);
+        }
+
+        protected override void OnConfigSave(XmlNode node)
+        {
+            base.OnConfigSave(node);
+            Utils.SetXmlAttribute(node, "frequency", m_chip.ChipFrequency);
+            Utils.SetXmlAttributeAsEnum(node, "ampType", m_chip.AmpType);
+            Utils.SetXmlAttributeAsEnum(node, "panType", m_chip.PanType);
+            Utils.SetXmlAttribute(node, "noDos", NoDos);
+            Utils.SetXmlAttribute(node, "maskAddr", MaskAddr);
+            Utils.SetXmlAttribute(node, "maskData", MaskData);
+            Utils.SetXmlAttribute(node, "portAddr", PortAddr);
+            Utils.SetXmlAttribute(node, "portData", PortData);
+        }
+
+        protected override void OnProcessConfigChange()
+        {
+            base.OnProcessConfigChange();
+            if (m_chip != null && m_chip.Volume != Volume)
+            {
+                m_chip.Volume = Volume;
+            }
+
+            // update description...
+            var builder = new StringBuilder();
+            builder.Append("AY8910 Programmable Sound Generator");
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("NoDos: {0}", NoDos));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("MaskAddr:  #{0:X4}", MaskAddr));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("MaskData:  #{0:X4}", MaskData));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("PortAddr:  #{0:X4}", PortAddr));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("PortData:  #{0:X4}", PortData));
+            builder.Append(Environment.NewLine);
+            builder.Append(Environment.NewLine);
+            Description = builder.ToString();
+        }
+
+        #endregion Properties
 
 
         #region Public
-
-        public int MaskAddrReg
-        {
-            get { return m_maskAddrReg; }
-            set
-            {
-                m_maskAddrReg = value;
-                OnConfigChanged();
-            }
-        }
-
-        public int PortAddrReg
-        {
-            get { return m_portAddrReg; }
-            set
-            {
-                m_portAddrReg = value;
-                OnConfigChanged();
-            }
-        }
-
-        public int MaskDataReg
-        {
-            get { return m_maskDataReg; }
-            set
-            {
-                m_maskDataReg = value;
-                OnConfigChanged();
-            }
-        }
-
-        public int PortDataReg
-        {
-            get { return m_portDataReg; }
-            set
-            {
-                m_portDataReg = value;
-                OnConfigChanged();
-            }
-        }
 
         public byte RegAddr
         {
@@ -125,9 +196,10 @@ namespace ZXMAK2.Hardware.General
         {
             base.BusInit(bmgr);
             m_lastTime = 0D;
-            bmgr.Events.SubscribeWrIo(MaskAddrReg, PortAddrReg & MaskAddrReg, WritePortAddr);   // #FFFD (reg#)
-            bmgr.Events.SubscribeRdIo(MaskAddrReg, PortAddrReg & MaskAddrReg, ReadPortData);    // #FFFD (rd data/reg#)
-            bmgr.Events.SubscribeWrIo(MaskDataReg, PortDataReg & MaskDataReg, WritePortData);   // #BFFD (data)
+            m_memory = m_noDos ? bmgr.FindDevice<IMemoryDevice>() : null;
+            bmgr.Events.SubscribeWrIo(MaskAddr, PortAddr & MaskAddr, WritePortAddr);   // #FFFD (reg#)
+            bmgr.Events.SubscribeRdIo(MaskAddr, PortAddr & MaskAddr, ReadPortData);    // #FFFD (rd data/reg#)
+            bmgr.Events.SubscribeWrIo(MaskData, PortData & MaskData, WritePortData);   // #BFFD (data)
             bmgr.Events.SubscribeReset(Bus_OnReset);
         }
 
@@ -145,40 +217,11 @@ namespace ZXMAK2.Hardware.General
             base.OnEndFrame();
         }
 
-        protected override void OnConfigLoad(XmlNode node)
-        {
-            base.OnConfigLoad(node);
-            m_chip.ChipFrequency = Utils.GetXmlAttributeAsInt32(node, "frequency", m_chip.ChipFrequency);
-            m_chip.AmpType = Utils.GetXmlAttributeAsEnum<AmpType>(node, "ampType", m_chip.AmpType);
-            m_chip.PanType = Utils.GetXmlAttributeAsEnum<PanType>(node, "panType", m_chip.PanType);
-            MaskAddrReg = Utils.GetXmlAttributeAsInt32(node, "maskAddrReg", MaskAddrReg);
-            MaskDataReg = Utils.GetXmlAttributeAsInt32(node, "maskDataReg", MaskDataReg);
-            PortAddrReg = Utils.GetXmlAttributeAsInt32(node, "portAddrReg", PortAddrReg);
-            PortDataReg = Utils.GetXmlAttributeAsInt32(node, "portDataReg", PortDataReg);
-        }
-
-        protected override void OnConfigSave(XmlNode node)
-        {
-            base.OnConfigSave(node);
-            Utils.SetXmlAttribute(node, "frequency", m_chip.ChipFrequency);
-            Utils.SetXmlAttributeAsEnum(node, "ampType", m_chip.AmpType);
-            Utils.SetXmlAttributeAsEnum(node, "panType", m_chip.PanType);
-            Utils.SetXmlAttribute(node, "maskAddrReg", MaskAddrReg);
-            Utils.SetXmlAttribute(node, "maskDataReg", MaskDataReg);
-            Utils.SetXmlAttribute(node, "portAddrReg", PortAddrReg);
-            Utils.SetXmlAttribute(node, "portDataReg", PortDataReg);
-        }
-
-        protected override void OnVolumeChanged(int oldVolume, int newVolume)
-        {
-            if (m_chip != null)
-            {
-                m_chip.Volume = newVolume;
-            }
-        }
-
         private void WritePortAddr(ushort addr, byte value, ref bool handled)
         {
+            if (m_memory != null && m_memory.DOSEN)
+                return;
+            
             //if (handled)
             //    return;
             //handled = true;
@@ -187,6 +230,8 @@ namespace ZXMAK2.Hardware.General
 
         private void WritePortData(ushort addr, byte value, ref bool handled)
         {
+            if (m_memory != null && m_memory.DOSEN)
+                return;
             //if (handled)
             //    return;
             //handled = true;
@@ -205,7 +250,7 @@ namespace ZXMAK2.Hardware.General
 
         private void ReadPortData(ushort addr, ref byte value, ref bool handled)
         {
-            if (handled)
+            if (handled || (m_memory != null && m_memory.DOSEN))
                 return;
             handled = true;
 

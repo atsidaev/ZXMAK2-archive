@@ -353,7 +353,7 @@ namespace ZXMAK2.Hardware.Adlers
 
         public static string getRegistryFromReference( string registryMemoryRef )
         {
-            if (registryMemoryRef.Length < 4 || registryMemoryRef[0] != '(' || !registryMemoryRef.EndsWith(")")) // (PC), (DE), (HL), ...
+            if (registryMemoryRef.Length < 4 || !registryMemoryRef.StartsWith("(") || !registryMemoryRef.EndsWith(")")) // (PC), (DE), (hl), ...
                 return String.Empty;
 
             return registryMemoryRef.Substring(1, registryMemoryRef.Length - 2);

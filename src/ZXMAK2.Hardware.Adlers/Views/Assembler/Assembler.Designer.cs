@@ -78,7 +78,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.addToDebuggerAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.commentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.setBreakpointHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.txtAsm)).BeginInit();
             this.toolMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -577,10 +576,9 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             // ctxmenuSymbols
             // 
             this.ctxmenuSymbols.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.setBreakpointHereToolStripMenuItem,
             this.addToDebuggerAsToolStripMenuItem});
             this.ctxmenuSymbols.Name = "ctxmenuSymbols";
-            this.ctxmenuSymbols.Size = new System.Drawing.Size(183, 70);
+            this.ctxmenuSymbols.Size = new System.Drawing.Size(170, 26);
             // 
             // addToDebuggerAsToolStripMenuItem
             // 
@@ -588,7 +586,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.commentToolStripMenuItem,
             this.noteToolStripMenuItem});
             this.addToDebuggerAsToolStripMenuItem.Name = "addToDebuggerAsToolStripMenuItem";
-            this.addToDebuggerAsToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.addToDebuggerAsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.addToDebuggerAsToolStripMenuItem.Text = "Add to debugger as";
             // 
             // commentToolStripMenuItem
@@ -604,13 +602,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             this.noteToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.noteToolStripMenuItem.Text = "Note";
             this.noteToolStripMenuItem.Click += new System.EventHandler(this.noteToolStripMenuItem_Click);
-            // 
-            // setBreakpointHereToolStripMenuItem
-            // 
-            this.setBreakpointHereToolStripMenuItem.Name = "setBreakpointHereToolStripMenuItem";
-            this.setBreakpointHereToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.setBreakpointHereToolStripMenuItem.Text = "Insert breakpoint here";
-            this.setBreakpointHereToolStripMenuItem.Click += new System.EventHandler(this.setBreakpointHereToolStripMenuItem_Click);
             // 
             // Assembler
             // 
@@ -706,6 +697,5 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
         private System.Windows.Forms.RadioButton radioBtnTAPBASOutput;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtbxFileOutputPath;
-        private System.Windows.Forms.ToolStripMenuItem setBreakpointHereToolStripMenuItem;
     }
 }

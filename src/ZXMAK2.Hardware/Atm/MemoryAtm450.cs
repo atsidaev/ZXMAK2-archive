@@ -39,16 +39,25 @@ namespace ZXMAK2.Hardware.Atm
             bmgr.Events.SubscribeRdIo(0x0001, 0x0000, BusReadPortFE);      // bit Z emulation
             bmgr.Events.SubscribeWrIo(0x0001, 0x0000, BusWritePortFE);
             bmgr.Events.SubscribeRdIo(0x0004, 0x00FB & 0x0004, BusReadPortFB);   // CPSYS [(addr & 0x7F)==0x7B]
-
             bmgr.Events.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD);
             bmgr.Events.SubscribeWrIo(0x8202, 0xFDFD & 0x8202, BusWritePortFDFD);
-
             bmgr.Events.SubscribeWrIo(0x8202, 0x7DFD & 0x8202, BusWritePort7DFD); // atm_writepal(val);
-
             bmgr.Events.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
             bmgr.Events.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
             bmgr.Events.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
             bmgr.Events.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
+
+            //bmgr.Events.SubscribeRdIo(0x0005, 0x00FE & 0x0005, BusReadPortFE);      // bit Z emulation
+            //bmgr.Events.SubscribeWrIo(0x0005, 0x00FE & 0x0005, BusWritePortFE);
+            //bmgr.Events.SubscribeRdIo(0x0005, 0x00FB & 0x0005, BusReadPortFB);   // CPSYS [(addr & 0x7F)==0x7B]
+            //bmgr.Events.SubscribeWrIo(0x8202, 0x7FFD & 0x8202, BusWritePort7FFD);
+            //bmgr.Events.SubscribeWrIo(0x8202, 0xFDFD & 0x8202, BusWritePortFDFD);
+            //bmgr.Events.SubscribeWrIo(0x8202, 0x7DFD & 0x8202, BusWritePort7DFD); // atm_writepal(val);
+            //bmgr.Events.SubscribeRdMemM1(0xFF00, 0x3D00, BusReadMem3D00_M1);
+            //bmgr.Events.SubscribeRdMemM1(0xC000, 0x4000, BusReadMemRamM1);
+            //bmgr.Events.SubscribeRdMemM1(0xC000, 0x8000, BusReadMemRamM1);
+            //bmgr.Events.SubscribeRdMemM1(0xC000, 0xC000, BusReadMemRamM1);
+
             bmgr.Events.SubscribeReset(BusReset);
 
             // Subscribe before MemoryBase.BusInit 
