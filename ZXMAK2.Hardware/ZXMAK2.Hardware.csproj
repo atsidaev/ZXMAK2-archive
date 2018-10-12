@@ -12,10 +12,14 @@
     <AssemblyName>ZXMAK2.Hardware</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -50,6 +54,7 @@
     <Compile Include="Atm\EvoA16Renderer.cs" />
     <Compile Include="Atm\EvoHwmRenderer.cs" />
     <Compile Include="Atm\EvoTxtRenderer.cs" />
+    <Compile Include="Atm\FddAtm450.cs" />
     <Compile Include="Atm\IdeAtm.cs" />
     <Compile Include="Atm\MemoryAtm450.cs" />
     <Compile Include="Atm\MemoryAtm710.cs" />
@@ -70,6 +75,8 @@
     <Compile Include="General\BeeperDevice.cs" />
     <Compile Include="General\BetaDiskInterface.cs" />
     <Compile Include="General\CmosGluck.cs" />
+    <Compile Include="General\CovoxMono.cs" />
+    <Compile Include="General\CovoxStereo.cs" />
     <Compile Include="General\Debugger.cs" />
     <Compile Include="General\DebuggerEx.cs" />
     <Compile Include="General\FddController.cs" />
@@ -82,13 +89,11 @@
     <Compile Include="Lec\BetaDiskInterfaceLec.cs" />
     <Compile Include="Lec\MemoryLec528.cs" />
     <Compile Include="MemoryBase.cs" />
-    <Compile Include="Pentagon\CovoxPentagon.cs" />
     <Compile Include="Pentagon\MemoryPentagon1024.cs" />
     <Compile Include="Pentagon\MemoryPentagon128.cs" />
     <Compile Include="Pentagon\MemoryPentagon512.cs" />
     <Compile Include="Pentagon\UlaPentagon.cs" />
     <Compile Include="Profi\CmosProfi.cs" />
-    <Compile Include="Profi\CovoxProfi.cs" />
     <Compile Include="Profi\FddControllerProfi.cs" />
     <Compile Include="Profi\IdeProfi.cs" />
     <Compile Include="Profi\KeyboardProfi.cs" />
@@ -102,7 +107,6 @@
     <Compile Include="Quorum\MemoryQuorum256.cs" />
     <Compile Include="Quorum\UlaQuorum.cs" />
     <Compile Include="RomPack.cs" />
-    <Compile Include="Scorpion\CovoxScorpion.cs" />
     <Compile Include="Scorpion\MemoryScorpion256.cs" />
     <Compile Include="Scorpion\MemoryScorpionProfRom256.cs" />
     <Compile Include="Scorpion\UlaScorpionGreen.cs" />

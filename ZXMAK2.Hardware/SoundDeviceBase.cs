@@ -66,7 +66,7 @@ namespace ZXMAK2.Hardware
             bmgr.Events.SubscribeBeginFrame(BeginFrame);
             bmgr.Events.SubscribeEndFrame(EndFrame);
             ApplyTimings(m_frameTactCount * 50, SampleRate);
-            OnVolumeChanged(m_volume, m_volume);
+            OnProcessConfigChange(); // update volume
         }
         
         public override void BusConnect()
@@ -122,7 +122,6 @@ namespace ZXMAK2.Hardware
                 value = value > 100 ? 100 : value;
                 var oldVolume = m_volume;
                 m_volume = value;
-                OnVolumeChanged(oldVolume, m_volume);
                 OnConfigChanged();
             }
         }
@@ -172,8 +171,6 @@ namespace ZXMAK2.Hardware
             }
 #endif
         }
-
-        protected abstract void OnVolumeChanged(int oldVolume, int newVolume);
 
         #endregion
 

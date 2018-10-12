@@ -664,17 +664,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             }
         }
 
-        //Context menu - set breakpoint at symbol address
-        private void setBreakpointHereToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (listViewSymbols.SelectedItems.Count >= 1)
-            {
-                ListView.SelectedListViewItemCollection items = listViewSymbols.SelectedItems;
-                foreach (ListViewItem item in items)
-                    m_debugger.InsertExtBreakpoint(ConvertRadix.ConvertNumberWithPrefix(item.Tag.ToString()));
-            }
-        }
-
         //Context menu - Convert numbers to hexadecimal format
         private void toHexadecimalToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -706,7 +695,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             //ToDo: we need a list of all assembler commands here, but cannot use AssemblerConfig regex patterns
             string[] opcodes = new string[] { "ld", "org", "push", "ex", "call", "inc", "pop", "sla", "ldir", "djnz", "ret", "add", "adc", "and", "sub", "xor", "jr", "jp", "exx",
                                               "dec", "srl", "scf", "ccf", "di", "ei", "im", "or", "cpl", "out", "in", "cp", "reti", "retn", "rra", "rla", "sbc", "rst",
-                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "rrca", "rr", "neg"};
+                                              "rlca", "rrc", "res", "set", "bit", "halt", "cpd", "cpdr", "cpi", "cpir", "cpl", "daa", "rrca", "rr"};
             string[] strAsmLines = txtAsm.Lines.ToArray<string>();
             //Range actLineSave = new Range(txtAsm, txtAsm.Selection.Start, txtAsm.Selection.End);
             //Place actLineSave = ...
@@ -769,7 +758,6 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
                 string[] lineSplitted = Regex.Split(line, @"\s+", RegexOptions.IgnoreCase);
                 string prevToken = String.Empty;
-                string prevPrevToken = String.Empty;
                 foreach (string token in lineSplitted)
                 {
                     lineTokeCounter++;
@@ -833,19 +821,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                         }
                         else if (prevToken != String.Empty)
                         {
-                            string spaces;
-                            
-                            if( prevToken == ":" )
-                            {
-                                if (opcodes.Contains(prevPrevToken.ToLower()))
-                                    spaces = " ";
-                                else
-                                    spaces = new String(' ', Math.Max(_tabSpace - prevToken.Length, 1));
-
-                                prevPrevToken = ":";
-                            }
-                            else
-                                spaces= new String(' ', Math.Max(_tabSpace - prevToken.Length, 1));
+                            string spaces = new String(' ', Math.Max(_tabSpace - prevToken.Length, 1));
                             codeFormatted.Append(spaces);
                         }
                         codeFormatted.Append(token);
@@ -863,19 +839,11 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                             if (prevToken != String.Empty)
                             {
                                 string spaces;
-
-                                if (prevToken.EndsWith(","))
+                                
+                                if( prevToken.EndsWith(",") )
                                     spaces = new String(' ', Math.Max(4 - prevToken.Length, 1));
-                                else if (prevToken == "+" || prevToken == "-" || prevToken == "*" || prevToken == "/" || prevToken == "%")
-                                    spaces = " ";
-                                else if (token == ":" && opcodes.Contains(prevToken.ToLower()))
-                                {
-                                    spaces = " ";
-                                    prevPrevToken = prevToken;
-                                }
                                 else
                                     spaces = new String(' ', Math.Max(6 - prevToken.Length, 1));
-
                                 codeFormatted.Append(spaces + token);
                             }
                             else

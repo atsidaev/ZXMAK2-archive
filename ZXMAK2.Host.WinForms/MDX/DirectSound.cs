@@ -1,5 +1,5 @@
 /* 
- *  Copyright 2008 Alex Makeev
+ *  Copyright 2008-2018 Alex Makeev
  * 
  *  This file is part of ZXMAK2 (ZX Spectrum virtual machine).
  *
@@ -17,15 +17,18 @@
  *  along with ZXMAK2.  If not, see <http://www.gnu.org/licenses/>.
  *
  *  Description: Sound player
- *  Date: 26.03.2008
+ *  Date: 10.07.2018
  */
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Microsoft.DirectX.DirectSound;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.WinForms.Tools;
+using ZXMAK2.DirectX;
+using ZXMAK2.DirectX.DirectSound;
+using ZXMAK2.DirectX.Native;
 
 
 
@@ -35,9 +38,8 @@ namespace ZXMAK2.Host.WinForms.Mdx
     {
         #region Fields
 
-        private readonly Device _device;
-        private readonly SecondaryBuffer _soundBuffer;
-        private readonly Notify _notify;
+        private readonly DirectSound8 _device;
+        private readonly SecondarySoundBuffer _soundBuffer;
         private readonly ConcurrentQueue<uint[]> _fillQueue = new ConcurrentQueue<uint[]>();
         private readonly ConcurrentQueue<uint[]> _playQueue = new ConcurrentQueue<uint[]>();
         private readonly AutoResetEvent _fillEvent = new AutoResetEvent(true);
@@ -74,39 +76,35 @@ namespace ZXMAK2.Host.WinForms.Mdx
             _bufferCount = bufferCount;
             _zeroValue = 0;
 
-            _device = new Device();
-            _device.SetCooperativeLevel(form, CooperativeLevel.Priority);
+            var hWnd = form != null ? form.Handle : IntPtr.Zero;
+            _device = new DirectSound8();
+            _device.SetCooperativeLevel(hWnd, DSSCL.PRIORITY);
 
             // we always use 16 bit stereo (uint per sample)
             const short channels = 2;
             const short bitsPerSample = 16;
             const int sampleSize = 4; // channels * (bitsPerSample / 8);
-            var wf = new WaveFormat();
-            wf.FormatTag = WaveFormatTag.Pcm;
-            wf.SamplesPerSecond = _sampleRate;
-            wf.BitsPerSample = bitsPerSample;
-            wf.Channels = channels;
-            wf.BlockAlign = (short)(wf.Channels * (wf.BitsPerSample / 8));
-            wf.AverageBytesPerSecond = wf.SamplesPerSecond * wf.BlockAlign;
+            var wf = new WaveFormat(_sampleRate, bitsPerSample, channels);
 
             // Create a buffer
-            using (var bufferDesc = new BufferDescription(wf))
-            {
-                bufferDesc.BufferBytes = _bufferSize * sampleSize * _bufferCount;
-                bufferDesc.ControlPositionNotify = true;
-                bufferDesc.GlobalFocus = true;
-                _soundBuffer = new SecondaryBuffer(bufferDesc, _device);
-            }
+            var bufferDesc = new DSBUFFERDESC();
+            bufferDesc.dwBufferBytes = _bufferSize * sampleSize * _bufferCount;
+            bufferDesc.dwFlags =
+                DSBCAPS_FLAGS.CTRLVOLUME |
+                DSBCAPS_FLAGS.CTRLPOSITIONNOTIFY |
+                DSBCAPS_FLAGS.GLOBALFOCUS |
+                DSBCAPS_FLAGS.GETCURRENTPOSITION2;
+            bufferDesc.Format = wf;
+            _soundBuffer = new SecondarySoundBuffer(_device, bufferDesc);
 
-            _notify = new Notify(_soundBuffer);
-            var posNotify = new BufferPositionNotify[_bufferCount];
+            var posNotify = new DSBPOSITIONNOTIFY[_bufferCount];
             for (int i = 0; i < posNotify.Length; i++)
             {
-                posNotify[i] = new BufferPositionNotify();
-                posNotify[i].Offset = i * _bufferSize * sampleSize;
-                posNotify[i].EventNotifyHandle = _fillEvent.SafeWaitHandle.DangerousGetHandle();
+                posNotify[i] = new DSBPOSITIONNOTIFY();
+                posNotify[i].dwOffset = i * _bufferSize * sampleSize;
+                posNotify[i].WaitHandle = _fillEvent;
             }
-            _notify.SetNotificationPositions(posNotify);
+            _soundBuffer.SetNotificationPositions(posNotify);
 
             _wavePlayThread = new Thread(WavePlayThreadProc);
             _wavePlayThread.IsBackground = true;
@@ -131,15 +129,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
                 if (_soundBuffer != null)
                 {
-                    if (_soundBuffer.Status.Playing)
+                    if (_soundBuffer.Status == DSBSTATUS.PLAYING)
                     {
                         _soundBuffer.Stop();
                     }
                     _soundBuffer.Dispose();
-                }
-                if (_notify != null)
-                {
-                    _notify.Dispose();
                 }
                 if (_device != null)
                 {
@@ -167,41 +161,39 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         #region WavePlay
 
-        private void WavePlayThreadProc()
+        private unsafe void WavePlayThreadProc()
         {
             try
             {
-                _soundBuffer.Play(0, BufferPlayFlags.Looping);
+                _soundBuffer.Play(0, DSBPLAY_FLAGS.LOOPING);
+                const int sampleSize = 4;
+                var rawBufferLength = _bufferSize * sampleSize;
+                var hBuffer = Marshal.AllocHGlobal(rawBufferLength);
+                NativeHelper.INITBLK((void*)hBuffer, 0, rawBufferLength);
                 try
                 {
-                    var playingBuffer = new uint[_bufferSize];
-                    fixed (uint* lpBuffer = playingBuffer)
+                    var lastWrittenBuffer = -1;
+                    do
                     {
-                        for (var i = 0; i < playingBuffer.Length; i++)
+                        _fillEvent.WaitOne();
+                        var nextIndex = (lastWrittenBuffer + 1) % _bufferCount;
+                        var playPos = _soundBuffer.PlayPosition % (_bufferCount * rawBufferLength);
+                        var playingIndex = playPos / rawBufferLength;
+                        for (var i = nextIndex; i != playingIndex && !_isFinished; i = ++i % _bufferCount)
                         {
-                            lpBuffer[i] = _zeroValue;
-                        }
-                        const int sampleSize = 4;
-                        var rawBufferLength = _bufferSize * sampleSize;
-                        var lastWrittenBuffer = -1;
-                        do
-                        {
-                            _fillEvent.WaitOne();
-                            var nextIndex = (lastWrittenBuffer + 1) % _bufferCount;
-                            var playPos = _soundBuffer.PlayPosition % (_bufferCount * rawBufferLength);
-                            var playingIndex = playPos / rawBufferLength;
-                            for (var i = nextIndex; i != playingIndex && !_isFinished; i = ++i % _bufferCount)
+                            if (!OnBufferRequest((uint*)hBuffer, _bufferSize))
                             {
-                                OnBufferRequest(lpBuffer, playingBuffer.Length);
-                                var writePos = i * rawBufferLength;
-                                _soundBuffer.Write(writePos, playingBuffer, LockFlag.None);
-                                lastWrittenBuffer = i;
+                                NativeHelper.INITBLK((void*)hBuffer, 0, rawBufferLength);
                             }
-                        } while (!_isFinished);
-                    }
+                            var writePos = i * rawBufferLength;
+                            _soundBuffer.Write(writePos, (void*)hBuffer, rawBufferLength, DSBLOCK.None);
+                            lastWrittenBuffer = i;
+                        }
+                    } while (!_isFinished);
                 }
                 finally
                 {
+                    Marshal.FreeHGlobal(hBuffer);
                     _soundBuffer.Stop();
                 }
             }
@@ -211,25 +203,28 @@ namespace ZXMAK2.Host.WinForms.Mdx
             }
         }
 
-        private void OnBufferRequest(uint* pBuffer, int sampleCount)
+        private bool OnBufferRequest(uint* pBuffer, int sampleCount)
         {
             uint[] source;
             if (!_playQueue.TryDequeue(out source))
             {
                 var sample = _lastSample.HasValue ? _lastSample.Value : _zeroValue;
+                // TODO: native optimization?
                 for (var i = 0; i < sampleCount; i++)
                 {
                     pBuffer[i] = sample;
                 }
-                return;
+                return true;
             }
             try
             {
                 fixed (uint* psrc = source)
                 {
-                    NativeMethods.CopyMemory(pBuffer, psrc, sampleCount * 4);
+                    NativeHelper.CPBLK(pBuffer, psrc, sampleCount * 4);
+                    //NativeMethods.CopyMemory(pBuffer, psrc, sampleCount * 4);
                     _lastSample = pBuffer[sampleCount - 1];
                 }
+                return true;
             }
             finally
             {

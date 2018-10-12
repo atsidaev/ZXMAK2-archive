@@ -21,9 +21,11 @@ using System;
 using System.Linq;
 using System.Drawing;
 using System.Collections.Generic;
-using Microsoft.DirectX.Direct3D;
 using ZXMAK2.Host.Interfaces;
 using ZXMAK2.Host.WinForms.Tools;
+using ZXMAK2.DirectX;
+using ZXMAK2.DirectX.Direct3D;
+using ZXMAK2.DirectX.Vectors;
 
 namespace ZXMAK2.Host.WinForms.Mdx.Renderers
 {
@@ -32,7 +34,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
         #region Fields
 
         private readonly Dictionary<IIconDescriptor, IconTextureWrapper> _iconTextures = new Dictionary<IIconDescriptor, IconTextureWrapper>();
-        private Sprite _spriteIcon;
+        private D3DXSprite _spriteIcon;
 
         #endregion Fields
 
@@ -52,7 +54,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
         protected override void LoadSynchronized()
         {
             base.LoadSynchronized();
-            _spriteIcon = new Sprite(Allocator.Device);
+            _spriteIcon = D3DX9.CreateSprite(Allocator.Device);
         }
 
         protected override void UnloadSynchronized()
@@ -73,7 +75,8 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
         {
             var size = new Size(width, height);
             var visibleIcons = _iconTextures.Values
-                .Where(icon => icon.Visible);
+                .Where(icon => icon.Visible)
+                .ToArray();
             foreach (var icon in visibleIcons)
             {
                 icon.LoadResources(Allocator.Device);
@@ -87,15 +90,14 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                 var iconPos = new PointF(
                     size.Width - iconSize.Width * iconNumber,
                     0);
-                _spriteIcon.Begin(SpriteFlags.AlphaBlend);
+                _spriteIcon.Begin(D3DXSPRITEFLAG.D3DXSPRITE_ALPHABLEND);
                 try
                 {
-                    _spriteIcon.Draw2D(
-                       iconTexture.Texture,
-                       iconRect,
-                       iconSize,
-                       iconPos,
-                       -1);
+                    D3DXHelper.Draw2D(
+                        _spriteIcon,
+                        iconTexture.Texture,
+                        new RectangleF(iconPos, iconSize),
+                        iconTexture.Size);
                 }
                 finally
                 {
@@ -134,6 +136,8 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                 {
                     foreach (var id in nonUsed)
                     {
+                        if (!_iconTextures.ContainsKey(id))
+                            continue;
                         _iconTextures[id].Dispose();
                         _iconTextures.Remove(id);
                     }
@@ -150,7 +154,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
         {
             private IIconDescriptor m_iconDesc;
 
-            public Texture Texture;
+            public Direct3DTexture9 Texture;
             public bool Visible;
 
             public IconTextureWrapper(IIconDescriptor iconDesc)
@@ -169,7 +173,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                 get { return m_iconDesc.Size; }
             }
 
-            public void LoadResources(Device device)
+            public void LoadResources(Direct3DDevice9 device)
             {
                 if (device == null || Texture != null)
                 {
@@ -177,7 +181,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                 }
                 using (var stream = m_iconDesc.GetImageStream())
                 {
-                    Texture = TextureLoader.FromStream(device, stream);
+                    Texture = D3DX9.CreateTextureFromStream(device, stream);
                 }
             }
 

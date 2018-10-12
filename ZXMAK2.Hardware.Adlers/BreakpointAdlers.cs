@@ -9,7 +9,7 @@ namespace ZXMAK2.Hardware.Adlers
         public bool IsNeedWriteMemoryCheck { get; set; }
         public bool IsForceStop { get; set; }
         
-        private readonly object _lock = new object();
+        private object lockingObj = new object();
 
         private static bool debuggerStop = false;
 
@@ -39,7 +39,7 @@ namespace ZXMAK2.Hardware.Adlers
                 return true;
             }
             
-            lock (_lock)
+            lock (lockingObj)
             {
                 if (debuggerStop)
                 {
@@ -75,7 +75,7 @@ namespace ZXMAK2.Hardware.Adlers
             if (!Info.IsOn)
                 return false;
 
-            lock (_lock)
+            lock (lockingObj)
             {
                 if (debuggerStop)
                 {
@@ -84,7 +84,7 @@ namespace ZXMAK2.Hardware.Adlers
                 }
             }
 
-			const ushort leftValue = 0;
+            ushort leftValue = 0;
 
             switch (Info.AccessType)
             {

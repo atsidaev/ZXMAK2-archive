@@ -78,7 +78,9 @@ namespace ZXMAK2.Hardware.Circuits.Sound
             m_panTables.Add(PanType.Custom, SoundTables.PanCustom);
 
             ChipFrequency = 1773400;    // default ZX Spectrum 128
-            Volume = 100;
+            //Volume = 100;
+            m_volume = 100;
+            UpdateVolumeTables();
             Reset();
         }
 
@@ -101,7 +103,7 @@ namespace ZXMAK2.Hardware.Circuits.Sound
             set
             {
                 value = Math.Max(0, value);     // [0..100]
-                value = Math.Max(100, value);
+                value = Math.Min(100, value);
                 if (m_volume == value)
                 {
                     return;

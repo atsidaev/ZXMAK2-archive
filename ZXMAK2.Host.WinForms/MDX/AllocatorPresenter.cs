@@ -20,10 +20,11 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.DirectX.Direct3D;
 using ZXMAK2.Host.WinForms.Tools;
 using System.Threading;
-using NativeWindow=System.Windows.Forms.NativeWindow;
+using ZXMAK2.DirectX;
+using ZXMAK2.DirectX.Direct3D;
+using NativeWindow = System.Windows.Forms.NativeWindow;
 using Message = System.Windows.Forms.Message;
 using Size=System.Drawing.Size;
 
@@ -43,10 +44,10 @@ namespace ZXMAK2.Host.WinForms.Mdx
         private Thread _thread;
         private bool _isRunning;
         private IntPtr _monitorId;
-        private Device _device;
-        private PresentParameters _d3dpp;
-        private SwapChain _swapChain;
-        private Surface _renderTarget;
+        private Direct3DDevice9 _device;
+        private D3DPRESENT_PARAMETERS _d3dpp;
+        private Direct3DSwapChain9 _swapChain;
+        private Direct3DSurface9 _renderTarget;
         private Size _size;
 
         #endregion Fields
@@ -149,15 +150,15 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     var hr = TestCooperativeLevel();
                     switch (hr)
                     {
-                        case ResultCode.Success:
+                        case ErrorCode.D3D_OK: //Success
                             break;
-                        case ResultCode.DeviceNotReset: // appears once after DeviceLost
+                        case ErrorCode.D3DERR_DEVICENOTRESET: // appears once after DeviceLost
                             //Logger.Debug("Direct3D: DeviceNotReset");
                             //OnLost();
                             //OnDeviceDestroy();
                             OnDeviceReset();
                             return false;
-                        case ResultCode.DeviceLost:     // appears continuously when DeviceLost
+                        case ErrorCode.D3DERR_DEVICELOST:     // appears continuously when DeviceLost
                             //Logger.Debug("Direct3D: DeviceLost");
                             OnLost();
                             Thread.Sleep(500);
@@ -187,34 +188,37 @@ namespace ZXMAK2.Host.WinForms.Mdx
                         OnLost();
                         return true;
                     }
-                    
+
                     // device & resources OK
                     OnRender();
                     if (_swapChain != null)
                     {
-                        _swapChain.Present(); // Present.DoNotWait // Present.None
+                        _swapChain.Present(0).CheckError(); // Present.DoNotWait // Present.None
                     }
                     else
                     {
-                        _device.Present();
+                        _device.Present().CheckError();
                     }
                     RefreshRate = Device.DisplayMode.RefreshRate;
                     OnPresentCompleted();
                     IsRendering = true;
                     return true;
                 }
-                catch (DeviceLostException ex)
+                catch (DirectXException ex)
                 {
-                    Logger.Debug(ex);
-                    return false;
-                }
-                catch (GraphicsException ex)
-                {
-                    Logger.Error(ex);
-                    ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
-                    IsRendering = false;
-                    Thread.Sleep(1000);
-                    return false;
+                    if (ex.ErrorCode == ErrorCode.D3DERR_DEVICELOST) // DeviceLostException
+                    {
+                        Logger.Debug(ex);
+                        return false;
+                    }
+                    else // GraphicsException
+                    {
+                        Logger.Error(ex);
+                        ErrorMessage = string.Format("{0}: {1}", ex.GetType().Name, ex.Message);
+                        IsRendering = false;
+                        Thread.Sleep(1000);
+                        return false;
+                    }
                 }
             }
         }
@@ -223,7 +227,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
         {
             OnLost();   // actually already called in case of DeviceLost
             Logger.Debug("Direct3D: reset");
-            _device.Reset(_d3dpp);
+            _device.Reset(_d3dpp).CheckError();
             OnDeviceInit();
         }
 
@@ -253,7 +257,7 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
         #region Internal
 
-        internal Device Device
+        internal Direct3DDevice9 Device
         {
             get { return _device; }
         }
@@ -328,21 +332,26 @@ namespace ZXMAK2.Host.WinForms.Mdx
 
             _monitorId = _window.MonitorId;
             var adapterId = _window.AdapterId;
-            var caps = Manager.GetDeviceCaps(adapterId, DeviceType.Hardware);
-            var flags = CreateFlags.NoWindowChanges | CreateFlags.FpuPreserve;// CreateFlags.MultiThreaded;
-            if (caps.DeviceCaps.SupportsHardwareTransformAndLight)
-                flags |= CreateFlags.HardwareVertexProcessing;
-            else
-                flags |= CreateFlags.SoftwareVertexProcessing;
+            using (var d3d = new Direct3D9())
+            {
+                D3DCAPS9 caps;
+                d3d.GetDeviceCaps(adapterId, D3DDEVTYPE.D3DDEVTYPE_HAL, out caps).CheckError();
+                var flags = D3DCREATE.D3DCREATE_NOWINDOWCHANGES | D3DCREATE.D3DCREATE_FPU_PRESERVE;// CreateFlags.MultiThreaded;
+                if ((caps.DevCaps & D3DDEVCAPS.D3DDEVCAPS_HWTRANSFORMANDLIGHT) != 0)
+                    flags |= D3DCREATE.D3DCREATE_HARDWARE_VERTEXPROCESSING;
+                else
+                    flags |= D3DCREATE.D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 
-            Logger.Debug("Direct3D: create Device, threadId={0}", Thread.CurrentThread.ManagedThreadId);
-            _device = new Device(
-                adapterId,
-                DeviceType.Hardware,
-                _window.Handle,
-                flags,
-                _d3dpp);
-            _device.DeviceResizing += (s, e) => e.Cancel = true;
+                Logger.Debug("Direct3D: create Device, threadId={0}", Thread.CurrentThread.ManagedThreadId);
+                _device = d3d.CreateDevice(
+                    adapterId,
+                    D3DDEVTYPE.D3DDEVTYPE_HAL,
+                    _window.Handle,
+                    flags,
+                    _d3dpp);
+            }
+            //TODO: check
+            //_device.DeviceResizing += (s, e) => e.Cancel = true;
             //_device.DeviceReset += Device_OnDeviceReset;
 
             OnDeviceInit();
@@ -361,16 +370,16 @@ namespace ZXMAK2.Host.WinForms.Mdx
         private void OnDeviceInit()
         {
             // Set default sampler/renderer state
-            _device.SetSamplerState(0, SamplerStageStates.MagFilter, (int)TextureFilter.Linear);
-            _device.SetSamplerState(0, SamplerStageStates.MinFilter, (int)TextureFilter.Linear);
-            _device.SetRenderState(RenderStates.Lighting, false);
-            _device.SetRenderState(RenderStates.ZEnable, true);
-            _device.SetRenderState(RenderStates.DitherEnable, true);
-            _device.SetRenderState(RenderStates.CullMode, 1);
+            _device.SetSamplerState(0, D3DSAMPLERSTATETYPE.D3DSAMP_MAGFILTER, (int)D3DTEXTUREFILTERTYPE.D3DTEXF_LINEAR);
+            _device.SetSamplerState(0, D3DSAMPLERSTATETYPE.D3DSAMP_MINFILTER, (int)D3DTEXTUREFILTERTYPE.D3DTEXF_LINEAR);
+            _device.SetRenderState(D3DRENDERSTATETYPE.D3DRS_LIGHTING, false);
+            _device.SetRenderState(D3DRENDERSTATETYPE.D3DRS_ZENABLE, true);
+            _device.SetRenderState(D3DRENDERSTATETYPE.D3DRS_DITHERENABLE, true);
+            _device.SetRenderState(D3DRENDERSTATETYPE.D3DRS_CULLMODE, 1);
 
-            _device.SetRenderState(RenderStates.AlphaBlendEnable, true);
-            _device.SetRenderState(RenderStates.SourceBlend, (int)Blend.SourceAlpha);
-            _device.SetRenderState(RenderStates.DestinationBlend, (int)Blend.InvSourceAlpha);
+            _device.SetRenderState(D3DRENDERSTATETYPE.D3DRS_ALPHABLENDENABLE, true);
+            _device.SetRenderState(D3DRENDERSTATETYPE.D3DRS_SRCBLEND, (int)D3DBLEND.D3DBLEND_SRCALPHA);
+            _device.SetRenderState(D3DRENDERSTATETYPE.D3DRS_DESTBLEND, (int)D3DBLEND.D3DBLEND_INVSRCALPHA);
             //_device.SetRenderState(RenderStates.BlendOperation, (int)BlendOperation.Add);
         }
 
@@ -445,9 +454,9 @@ namespace ZXMAK2.Host.WinForms.Mdx
             {
                 return;
             }
-            var d3dpp = (PresentParameters)_d3dpp.Clone();
+            var d3dpp = (D3DPRESENT_PARAMETERS)_d3dpp;//.Clone();
             _size = _window.Size;
-            d3dpp.DeviceWindowHandle = _window.Handle;
+            d3dpp.hDeviceWindow = _window.Handle;
             d3dpp.BackBufferWidth = _size.Width;
             d3dpp.BackBufferHeight = _size.Height;
 
@@ -459,8 +468,8 @@ namespace ZXMAK2.Host.WinForms.Mdx
             var failed = false;
             try
             {
-                _swapChain = new SwapChain(_device, d3dpp);
-                _renderTarget = _swapChain.GetBackBuffer(0, BackBufferType.Mono);
+                _swapChain = _device.CreateAdditionalSwapChain(ref d3dpp);
+                _renderTarget = _swapChain.GetBackBuffer(0, D3DBACKBUFFER_TYPE.D3DBACKBUFFER_TYPE_MONO);
                 //_renderTarget = _device.GetRenderTarget(0);
             }
             catch (Exception ex)
@@ -493,11 +502,11 @@ namespace ZXMAK2.Host.WinForms.Mdx
             }
         }
 
-        private void OnRender()
+        private unsafe void OnRender()
         {
-            _device.SetRenderTarget(0, _renderTarget);
-            _device.Clear(ClearFlags.Target, 0, 1.0f, 0);
-            _device.BeginScene();
+            _device.SetRenderTarget(0, _renderTarget).CheckError();
+            _device.Clear(D3DCLEAR.TARGET, 0, 1.0f, 0).CheckError();
+            _device.BeginScene().CheckError();
             try
             {
                 var renderers = _good.ToArray();
@@ -517,40 +526,38 @@ namespace ZXMAK2.Host.WinForms.Mdx
             }
             finally
             {
-                _device.EndScene();
+                _device.EndScene().CheckError();
             }
         }
 
-        private ResultCode TestCooperativeLevel()
+        private ErrorCode TestCooperativeLevel()
         {
             if (_device == null)
             {
-                return ResultCode.NotAvailable;
+                return ErrorCode.D3DERR_NOTAVAILABLE;
             }
-            int hr;
-            _device.CheckCooperativeLevel(out hr);
-            return (ResultCode)hr;
+            return (ErrorCode)_device.TestCooperativeLevel();
         }
 
-        private PresentParameters CreatePresentParams(IntPtr hwnd)
+        private D3DPRESENT_PARAMETERS CreatePresentParams(IntPtr hwnd)
         {
-            var format = Format.A8R8G8B8;   // mode.Format;
+            var format = D3DFORMAT.D3DFMT_A8R8G8B8;   // mode.Format;
 
-            var d3dpp = new PresentParameters();
-            d3dpp.DeviceWindowHandle = hwnd;
+            var d3dpp = new D3DPRESENT_PARAMETERS();
+            d3dpp.hDeviceWindow = hwnd;
             d3dpp.Windowed = true;
-            d3dpp.PresentationInterval = PresentInterval.One;// PresentInterval.One;//vbSync ? PresentInterval.One : PresentInterval.Immediate;//PresentInterval.Default;
+            d3dpp.PresentationInterval = D3DPRESENT_INTERVAL.D3DPRESENT_INTERVAL_ONE;// PresentInterval.One;//vbSync ? PresentInterval.One : PresentInterval.Immediate;//PresentInterval.Default;
             //make sure you are NOT using flipping if you are in windowed mode. 
             //In windowed mode, you share the current video mode of the applications running. 
             //Unfortunately, you have to use the slower blitting process.
-            d3dpp.SwapEffect = SwapEffect.Discard;//vbSync ? SwapEffect.Flip : SwapEffect.Discard;//SwapEffect.Discard;
+            d3dpp.SwapEffect = D3DSWAPEFFECT.D3DSWAPEFFECT_DISCARD;//vbSync ? SwapEffect.Flip : SwapEffect.Discard;//SwapEffect.Discard;
             d3dpp.BackBufferCount = 1;
             d3dpp.BackBufferFormat = format;
             d3dpp.BackBufferWidth = _size.Width > 0 ? _size.Width : 1;
             d3dpp.BackBufferHeight = _size.Height > 0 ? _size.Height : 1;
             d3dpp.EnableAutoDepthStencil = false;
             //d3dpp.MultiSample = MultiSampleType.NonMaskable;
-            d3dpp.PresentFlag = PresentFlag.Video; // PresentFlag.DeviceClip == single display mode
+            d3dpp.Flags = D3DPRESENTFLAG.VIDEO; // PresentFlag.DeviceClip == single display mode
             return d3dpp;
         }
 
@@ -676,38 +683,38 @@ namespace ZXMAK2.Host.WinForms.Mdx
                     Logger.Debug(
                         "AdapterId: {0} [\"{1}\", \"{2}\"]",
                         AdapterId,
-                        adapter.Information.DeviceName,
-                        adapter.Information.Description);
+                        adapter.Details.DeviceName,
+                        adapter.Details.Description);
                 }
             }
 
             private AdapterInformation GetAdapterId(IntPtr hwnd)
             {
-                var screen = System.Windows.Forms.Screen.FromHandle(hwnd);
-                if (screen == null)
+                using (var d3d = new Direct3D9())
                 {
-                    Logger.Warn("SubclassWindow.GetAdapterId: Screen.FromHandle({0}) == null", Handle);
-                    return Manager.Adapters.Default;
+                    var screen = System.Windows.Forms.Screen.FromHandle(hwnd);
+                    if (screen == null)
+                    {
+                        Logger.Warn("SubclassWindow.GetAdapterId: Screen.FromHandle({0}) == null", Handle);
+                        return d3d.GetAdapters().First();
+                    }
+                    var deviceName = FixWinXpDeviceName(screen.DeviceName);
+                    var adapterInfo = d3d.GetAdapters()
+                        .FirstOrDefault(ai => ai.Details.DeviceName == deviceName);
+                    if (adapterInfo == null)
+                    {
+                        // happens when display just connected on the fly
+                        // so it is missing from Manager.Adapters
+                        Logger.Warn("SubclassWindow.GetAdapterId: adapter not found!");
+                        Logger.Debug("Screen.DeviceName: \"{0}\"", screen.DeviceName);
+                        Logger.Debug("Fixed DeviceName: \"{0}\"", deviceName);
+                        var list = d3d.GetAdapters().ToList();
+                        list.ForEach(ai => Logger.Debug("Manager.Adapters[{0}].DeviceName: \"{1}\"", ai.Adapter, ai.Details.DeviceName));
+                        return list.First();
+                    }
+                    adapterInfo = adapterInfo ?? d3d.GetAdapters().First();
+                    return adapterInfo;
                 }
-                var deviceName = FixWinXpDeviceName(screen.DeviceName);
-                var adapterInfo = Manager.Adapters
-                    .OfType<AdapterInformation>()
-                    .FirstOrDefault(ai => ai.Information.DeviceName == deviceName);
-                if (adapterInfo == null)
-                {
-                    // happens when display just connected on the fly
-                    // so it is missing from Manager.Adapters
-                    Logger.Warn("SubclassWindow.GetAdapterId: adapter not found!");
-                    Logger.Debug("Screen.DeviceName: \"{0}\"", screen.DeviceName);
-                    Logger.Debug("Fixed DeviceName: \"{0}\"", deviceName);
-                    Manager.Adapters
-                        .OfType<AdapterInformation>()
-                        .ToList()
-                        .ForEach(ai => Logger.Debug("Manager.Adapters[{0}].DeviceName: \"{1}\"", ai.Adapter, ai.Information.DeviceName));
-                    return Manager.Adapters.Default;
-                }
-                adapterInfo = adapterInfo ?? Manager.Adapters.Default;
-                return adapterInfo;
             }
 
             private string FixWinXpDeviceName(string name)

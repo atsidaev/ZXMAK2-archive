@@ -1,0 +1,6 @@
+.nuget
+obj
+bin
+*.suo
+_bindebug
+_binrelease

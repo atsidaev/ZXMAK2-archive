@@ -60,6 +60,7 @@ namespace ZXMAK2.Engine.Entities
         {
             if (!m_isConfigLoading)
             {
+                OnProcessConfigChange();
                 var handler = ConfigChanged;
                 if (handler != null)
                 {
@@ -99,6 +100,10 @@ namespace ZXMAK2.Engine.Entities
             {
                 m_isConfigLoading = false;
             }
+        }
+
+        protected virtual void OnProcessConfigChange()
+        {
         }
     }
 }

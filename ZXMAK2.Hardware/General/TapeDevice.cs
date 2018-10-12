@@ -62,14 +62,16 @@ namespace ZXMAK2.Hardware.General
             Category = BusDeviceCategory.Tape;
             Name = "TAPE PLAYER";
 
+            m_noDos = true;
+            m_mask = 0x01;
+            m_port = 0xFE;
+            m_bit = 6;
+            m_bitMask = 1 << m_bit;
+            //OnProcessConfigChange();
+
             Blocks = new List<ITapeBlock>();
             Volume = 5;
             CreateViewHolder();
-
-            NoDos = true;
-            Mask = 0x01;
-            Port = 0xFE;
-            Bit = 6;
         }
 
 
@@ -81,7 +83,6 @@ namespace ZXMAK2.Hardware.General
             set
             {
                 m_noDos = value;
-                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -92,7 +93,6 @@ namespace ZXMAK2.Hardware.General
             set
             {
                 m_mask = value;
-                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -103,7 +103,6 @@ namespace ZXMAK2.Hardware.General
             set
             {
                 m_port = value;
-                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -117,22 +116,28 @@ namespace ZXMAK2.Hardware.General
                 value = value > 7 ? 7 : value;
                 m_bit = value;
                 m_bitMask = 1 << m_bit;
-                UpdateDescription();
                 OnConfigChanged();
             }
         }
 
-        private void UpdateDescription()
+        protected override void OnProcessConfigChange()
         {
+            base.OnProcessConfigChange();
+
+            // process Volume change...
+            m_dacValue0 = ushort.MinValue;
+            m_dacValue1 = (ushort)((ushort.MaxValue * Volume) / 100);
+
+            // update description...
             var builder = new StringBuilder();
             builder.Append("Common Tape Device");
             builder.Append(Environment.NewLine);
             builder.Append(Environment.NewLine);
             builder.Append(string.Format("NoDos: {0}", NoDos));
             builder.Append(Environment.NewLine);
-            builder.Append(string.Format("Port:  #{0:X4}", Port));
-            builder.Append(Environment.NewLine);
             builder.Append(string.Format("Mask:  #{0:X4}", Mask));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("Port:  #{0:X4}", Port));
             builder.Append(Environment.NewLine);
             builder.Append(string.Format("Bit:   D{0}", Bit));
             builder.Append(Environment.NewLine);
@@ -216,11 +221,6 @@ namespace ZXMAK2.Hardware.General
 
         #endregion
 
-        protected override void OnVolumeChanged(int oldVolume, int newVolume)
-        {
-            m_dacValue0 = ushort.MinValue;
-            m_dacValue1 = (ushort)((ushort.MaxValue * newVolume) / 100);
-        }
 
         #region Bus Handlers
 

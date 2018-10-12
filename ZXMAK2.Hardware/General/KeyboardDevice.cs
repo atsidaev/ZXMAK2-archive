@@ -21,9 +21,9 @@ namespace ZXMAK2.Hardware.General
 
         private readonly KeyboardMatrix _matrix;
         private int[] _rows;
-        private IMemoryDevice m_memory;
         private IKeyboardState m_keyboardState = null;
 
+        private IMemoryDevice m_memory;
         private bool m_noDos;
         private int m_mask;
         private int m_port;
@@ -35,12 +35,14 @@ namespace ZXMAK2.Hardware.General
         {
             Category = BusDeviceCategory.Keyboard;
             Name = "KEYBOARD";
-            NoDos = true;
-            Mask = 0x01;
-            Port = 0xFE;
+
+            m_noDos = true;
+            m_mask = 0x01;
+            m_port = 0xFE;
             _matrix = KeyboardMatrix.Deserialize(
                 KeyboardMatrix.DefaultRows,
                 Path.Combine(Utils.GetAppFolder(), "Keyboard.config"));
+            OnProcessConfigChange();
         }
 
         
@@ -52,7 +54,6 @@ namespace ZXMAK2.Hardware.General
             set
             {
                 m_noDos = value;
-                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -62,8 +63,7 @@ namespace ZXMAK2.Hardware.General
             get { return m_mask; }
             set
             {
-                m_mask = value;
-                UpdateDescription();
+                m_mask = value & 0x00FF; // high addr byte is required
                 OnConfigChanged();
             }
         }
@@ -73,45 +73,9 @@ namespace ZXMAK2.Hardware.General
             get { return m_port; }
             set
             {
-                m_port = value;
-                UpdateDescription();
+                m_port = value & 0x00FF;
                 OnConfigChanged();
             }
-        }
-
-        private void UpdateDescription()
-        {
-            var builder = new StringBuilder();
-            builder.Append("Common Spectrum Keyboard");
-            builder.Append(Environment.NewLine);
-            builder.Append(Environment.NewLine);
-            builder.Append(string.Format("NoDos: {0}", NoDos));
-            builder.Append(Environment.NewLine);
-            builder.Append(string.Format("Port:  #{0:X4}", Port));
-            builder.Append(Environment.NewLine);
-            builder.Append(string.Format("Mask:  #{0:X4}", Mask));
-            builder.Append(Environment.NewLine);
-            Description = builder.ToString();
-        }
-
-        #endregion Properties
-
-
-        
-        #region IBusDevice
-
-        public override void BusInit(IBusManager bmgr)
-        {
-            m_memory = bmgr.FindDevice<IMemoryDevice>();
-            bmgr.Events.SubscribeRdIo(Mask, Port & Mask, ReadPortFe);
-        }
-
-        public override void BusConnect()
-        {
-        }
-
-        public override void BusDisconnect()
-        {
         }
 
         protected override void OnConfigLoad(XmlNode node)
@@ -128,6 +92,42 @@ namespace ZXMAK2.Hardware.General
             Utils.SetXmlAttribute(node, "noDos", NoDos);
             Utils.SetXmlAttribute(node, "mask", Mask);
             Utils.SetXmlAttribute(node, "port", Port);
+        }
+
+        protected override void OnProcessConfigChange()
+        {
+            base.OnProcessConfigChange();
+            var builder = new StringBuilder();
+            builder.Append("Common Spectrum Keyboard");
+            builder.Append(Environment.NewLine);
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("NoDos: {0}", NoDos));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("Mask:  #{0:X2}", Mask));
+            builder.Append(Environment.NewLine);
+            builder.Append(string.Format("Port:  #{0:X2}", Port));
+            builder.Append(Environment.NewLine);
+            Description = builder.ToString();
+        }
+
+        #endregion Properties
+
+
+        
+        #region IBusDevice
+
+        public override void BusInit(IBusManager bmgr)
+        {
+            m_memory = m_noDos ? bmgr.FindDevice<IMemoryDevice>() : null;
+            bmgr.Events.SubscribeRdIo(Mask, Port & Mask, ReadPortFe);
+        }
+
+        public override void BusConnect()
+        {
+        }
+
+        public override void BusDisconnect()
+        {
         }
 
         #endregion IBusDevice
@@ -152,7 +152,7 @@ namespace ZXMAK2.Hardware.General
 
         private void ReadPortFe(ushort addr, ref byte value, ref bool handled)
 		{
-            if (handled || (m_noDos && m_memory.DOSEN))
+            if (handled || (m_memory != null && m_memory.DOSEN))
 				return;
             //handled = true;
 			value &= 0xE0;

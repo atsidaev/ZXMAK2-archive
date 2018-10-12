@@ -21,10 +21,12 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
-using Microsoft.DirectX.Direct3D;
 using ZXMAK2.Engine;
+using ZXMAK2.DirectX;
+using ZXMAK2.DirectX.Direct3D;
 using SysFont = System.Drawing.Font;
-using D3dFont = Microsoft.DirectX.Direct3D.Font;
+using D3dFont = ZXMAK2.DirectX.Direct3D.D3DXFont;
+using ZXMAK2.DirectX.Vectors;
 
 
 namespace ZXMAK2.Host.WinForms.Mdx.Renderers
@@ -119,7 +121,8 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                 10f/*8.25f*/,
                 FontStyle.Bold,
                 GraphicsUnit.Pixel);
-            _font = new D3dFont(Allocator.Device, gdiFont);
+            //_font = new D3dFont(Allocator.Device, gdiFont);
+            _font = D3DXHelper.CreateFont(Allocator.Device, gdiFont);
         }
 
         protected override void UnloadSynchronized()
@@ -182,11 +185,7 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                 FrameSize.Height,
                 SampleRate / 1000D,
                 FrameStartTact);
-            var textRect = _font.MeasureString(
-                null,
-                textValue,
-                DrawTextFormat.NoClip,
-                Color.Yellow);
+            var textRect = D3DXHelper.GetRect(_font.MeasureText(null, textValue, DT.DT_NOCLIP));
             textRect = new Rectangle(
                 textRect.Left,
                 textRect.Top,
@@ -196,9 +195,9 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             _font.DrawText(
                 null,
                 textValue,
-                textRect,
-                DrawTextFormat.NoClip,
-                Color.Yellow);
+                D3DXHelper.GetRawRect(textRect),
+                DT.DT_NOCLIP,
+                D3DXHelper.GetColor(Color.Yellow));
             // Draw graphs
             var graphRect = new Rectangle(
                 textRect.Left,
@@ -233,9 +232,9 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             _font.DrawText(
                 null,
                 msgTime,
-                graphRect,
-                DrawTextFormat.NoClip,
-                Color.FromArgb(156, Color.Yellow));
+                D3DXHelper.GetRawRect(graphRect), 
+                DT.DT_NOCLIP,
+                D3DXHelper.GetColor(Color.FromArgb(156, Color.Yellow)));
 
         }
 
@@ -280,8 +279,8 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             var vertices = list
                 .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, icolor))
                 .ToArray();
-            Allocator.Device.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
-            Allocator.Device.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
+            Allocator.Device.VertexFormat = CustomVertex.TransformedColored.Format | D3DFVF.D3DFVF_DIFFUSE;
+            Allocator.Device.DrawUserPrimitives(D3DPRIMITIVETYPE.D3DPT_LINELIST, vertices.Length / 2, vertices);
         }
 
         private void RenderLimit(
@@ -307,8 +306,8 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             var vertices = list
                 .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, icolor))
                 .ToArray();
-            Allocator.Device.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
-            Allocator.Device.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
+            Allocator.Device.VertexFormat = CustomVertex.TransformedColored.Format | D3DFVF.D3DFVF_DIFFUSE;
+            Allocator.Device.DrawUserPrimitives(D3DPRIMITIVETYPE.D3DPT_LINELIST, vertices.Length / 2, vertices);
         }
 
         private void RenderGraph(
@@ -337,8 +336,8 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
             var vertices = list
                 .Select(p => new CustomVertex.TransformedColored(p.X, p.Y, 0, 1f, icolor))
                 .ToArray();
-            Allocator.Device.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
-            Allocator.Device.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
+            Allocator.Device.VertexFormat = CustomVertex.TransformedColored.Format | D3DFVF.D3DFVF_DIFFUSE;
+            Allocator.Device.DrawUserPrimitives(D3DPRIMITIVETYPE.D3DPT_LINELIST, vertices.Length / 2, vertices);
         }
 
         private void FillRect(Rectangle rect, Color color)
@@ -351,8 +350,8 @@ namespace ZXMAK2.Host.WinForms.Mdx.Renderers
                 new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top+rect.Height+0.5F, 0, 1f, icolor),
                 new CustomVertex.TransformedColored(rect.Left+rect.Width, rect.Top, 0, 1f, icolor),
             };
-            Allocator.Device.VertexFormat = CustomVertex.TransformedColored.Format | VertexFormats.Diffuse;
-            Allocator.Device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, rectv);
+            Allocator.Device.VertexFormat = CustomVertex.TransformedColored.Format | D3DFVF.D3DFVF_DIFFUSE;
+            Allocator.Device.DrawUserPrimitives(D3DPRIMITIVETYPE.D3DPT_TRIANGLESTRIP, 2, rectv);
         }
 
         #endregion Private

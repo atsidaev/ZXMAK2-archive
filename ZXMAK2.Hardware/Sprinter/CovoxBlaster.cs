@@ -73,6 +73,7 @@ namespace ZXMAK2.Hardware.Sprinter
             Category = BusDeviceCategory.Sound;
             Name = "COVOX BLASTER";
             Description = "SPRINTER COVOX BLASTER";
+            OnProcessConfigChange();
         }
 
         
@@ -91,9 +92,12 @@ namespace ZXMAK2.Hardware.Sprinter
             bmgr.Events.SubscribeReset(ResetBus);
         }
 
-        protected override void OnVolumeChanged(int oldVolume, int newVolume)
+        protected override void OnProcessConfigChange()
         {
-            m_mult = (ushort.MaxValue * newVolume) / (100 * 0xFF);
+            base.OnProcessConfigChange();
+
+            // process volume change...
+            m_mult = (ushort.MaxValue * Volume) / (100 * 0xFF);
         }
 
         protected override void OnBeginFrame()

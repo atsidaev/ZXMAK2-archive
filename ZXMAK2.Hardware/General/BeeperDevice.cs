@@ -36,13 +36,15 @@ namespace ZXMAK2.Hardware.General
             Category = BusDeviceCategory.Sound;
             Name = "BEEPER";
             Description = "Standard Beeper";
-            Volume = 40;    // default 100% is too loud and jamming AY
 
-            NoDos = true;
-            Mask = 0x01;
-            Port = 0xFE;
-            BitMic = -1;
-            BitEar = 4;
+            m_noDos = true;
+            m_mask = 0x01;
+            m_port = 0xFE;
+            m_bitMic = -1;
+            m_bitEar = 4;
+            //OnProcessConfigChange();
+
+            Volume = 40;    // default 100% is too loud and jamming AY
         }
 
         #region Properties
@@ -53,7 +55,6 @@ namespace ZXMAK2.Hardware.General
             set
             {
                 m_noDos = value;
-                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -64,7 +65,6 @@ namespace ZXMAK2.Hardware.General
             set
             {
                 m_mask = value;
-                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -75,7 +75,6 @@ namespace ZXMAK2.Hardware.General
             set
             {
                 m_port = value;
-                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -88,7 +87,6 @@ namespace ZXMAK2.Hardware.General
                 m_bitEar = value;
                 m_bitEarMask = (value >= 0 && value <= 7) ? 1 << value : 0;
                 m_shiftEar = (value >= 0 && value <= 7) ? 9 - value : 0;
-                UpdateDescription();
                 OnConfigChanged();
             }
         }
@@ -102,33 +100,72 @@ namespace ZXMAK2.Hardware.General
                 m_bitMicMask = (value >= 0 && value <= 7) ? 1 << value : 0;
                 m_shiftMic = (value >= 0 && value <= 7) ? 8 - value : 0;
                 m_fixMic = (value >= 0 && value <= 7) ? 0 : 1;
-                UpdateDescription();
                 OnConfigChanged();
             }
         }
 
-        private void UpdateDescription()
+        protected override void OnConfigLoad(XmlNode node)
         {
+            base.OnConfigLoad(node);
+            NoDos = Utils.GetXmlAttributeAsBool(node, "noDos", NoDos);
+            Mask = Utils.GetXmlAttributeAsInt32(node, "mask", Mask);
+            Port = Utils.GetXmlAttributeAsInt32(node, "port", Port);
+            BitEar = Utils.GetXmlAttributeAsInt32(node, "bitEar", BitEar);
+            BitMic = Utils.GetXmlAttributeAsInt32(node, "bitMic", BitMic);
+        }
+
+        protected override void OnConfigSave(XmlNode node)
+        {
+            base.OnConfigSave(node);
+            Utils.SetXmlAttribute(node, "noDos", NoDos);
+            Utils.SetXmlAttribute(node, "mask", Mask);
+            Utils.SetXmlAttribute(node, "port", Port);
+            Utils.SetXmlAttribute(node, "bitEar", BitEar);
+            Utils.SetXmlAttribute(node, "bitMic", BitMic);
+        }
+
+        protected override void OnProcessConfigChange()
+        {
+            base.OnProcessConfigChange();
+            
+            // process Volume change...
+            // http://www.worldofspectrum.org/faq/reference/48kreference.htm
+            // issue 2: 0.39D, 0.73D, 3.66D, 3.79D
+            // issue 3: 0.34D, 0.66D, 3.56D, 3.70D
+            //
+            // -0.5D/+0.1D => temp fix to correct nonlinearity of soundcard ADC
+            var amps = new[] { 0.34D, 0.66D + 0.2D, 3.56D - 0.5D, 3.70D };
+            var ampMin = amps.Min();
+            var norm = amps.Select(amp => amp - ampMin);
+            var ampMax = norm.Max();
+            norm = norm.Select(amp => amp / ampMax);
+            var normAmps = norm.ToArray();
+            for (var i = 0; i < m_dac.Length; i++)
+            {
+                m_dac[i] = ScaleDacValue(0xFFFF, (normAmps[i] * Volume) / 100D);
+            }
+
+            // update description...
             var builder = new StringBuilder();
             builder.Append("Common Beeper Device");
             builder.Append(Environment.NewLine);
             builder.Append(Environment.NewLine);
             builder.Append(string.Format("NoDos: {0}", NoDos));
             builder.Append(Environment.NewLine);
-            builder.Append(string.Format("Port:  #{0:X4}", Port));
-            builder.Append(Environment.NewLine);
             builder.Append(string.Format("Mask:  #{0:X4}", Mask));
             builder.Append(Environment.NewLine);
+            builder.Append(string.Format("Port:  #{0:X4}", Port));
+            builder.Append(Environment.NewLine);
             if (BitEar >= 0)
-            {
                 builder.Append(string.Format("Ear:   D{0}", BitEar));
-                builder.Append(Environment.NewLine);
-            }
+            else
+                builder.Append(string.Format("Ear:   disabled"));
+            builder.Append(Environment.NewLine);
             if (BitMic >= 0)
-            {
                 builder.Append(string.Format("Mic:   D{0}", BitMic));
-                builder.Append(Environment.NewLine);
-            }
+            else
+                builder.Append(string.Format("Mic:   disabled"));
+            builder.Append(Environment.NewLine);
             Description = builder.ToString();
         }
 
@@ -152,8 +189,6 @@ namespace ZXMAK2.Hardware.General
         {
             //if (handled)
             //	return;
-            //handled = true;
-            //PortFE = value;
             if (m_memory != null && m_memory.DOSEN)
             {
                 return;
@@ -172,51 +207,12 @@ namespace ZXMAK2.Hardware.General
 
         #endregion
 
-        protected override void OnVolumeChanged(int oldVolume, int newVolume)
-        {
-            // http://www.worldofspectrum.org/faq/reference/48kreference.htm
-            // issue 2: 0.39D, 0.73D, 3.66D, 3.79D
-            // issue 3: 0.34D, 0.66D, 3.56D, 3.70D
-            //
-            // -0.5D/+0.1D => temp fix to correct nonlinearity of soundcard ADC
-            var amps = new[] { 0.34D, 0.66D + 0.2D, 3.56D - 0.5D, 3.70D };
-            var ampMin = amps.Min();
-            var norm = amps.Select(amp => amp - ampMin);
-            var ampMax = norm.Max();
-            norm = norm.Select(amp => amp / ampMax);
-            var normAmps = norm.ToArray();
-            for (var i = 0; i < m_dac.Length; i++)
-            {
-                m_dac[i] = ScaleDacValue(0xFFFF, (normAmps[i] * newVolume) / 100D);
-            }
-        }
-
         private static ushort ScaleDacValue(ushort value, double coef)
         {
             coef = double.IsNaN(coef) ? 1D : coef;
             coef = coef > 1D ? 1D : coef;
             coef = coef < 0D ? 0D : coef;
             return (ushort)Math.Floor((double)value * coef);
-        }
-
-        protected override void OnConfigLoad(XmlNode node)
-        {
-            base.OnConfigLoad(node);
-            NoDos = Utils.GetXmlAttributeAsBool(node, "noDos", NoDos);
-            Mask = Utils.GetXmlAttributeAsInt32(node, "mask", Mask);
-            Port = Utils.GetXmlAttributeAsInt32(node, "port", Port);
-            BitEar = Utils.GetXmlAttributeAsInt32(node, "bitEar", BitEar);
-            BitMic = Utils.GetXmlAttributeAsInt32(node, "bitMic", BitMic);
-        }
-
-        protected override void OnConfigSave(XmlNode node)
-        {
-            base.OnConfigSave(node);
-            Utils.SetXmlAttribute(node, "noDos", NoDos);
-            Utils.SetXmlAttribute(node, "mask", Mask);
-            Utils.SetXmlAttribute(node, "port", Port);
-            Utils.SetXmlAttribute(node, "bitEar", BitEar);
-            Utils.SetXmlAttribute(node, "bitMic", BitMic);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 {
     public partial class Z80AsmResources : Form
     {
-        private const string _configFileName = "code_index.xml";
+        private string _configFileName = "code_index.xml";
         private FastColoredTextBox _asmToAddSourceCode;
 
         public Z80AsmResources(ref FastColoredTextBox i_asmToAddSourceCode)
@@ -29,10 +29,10 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
 
             if (!File.Exists(Path.Combine(Utils.GetAppFolder(), _configFileName)))
             {
-                System.Windows.Forms.Cursor.Current = Cursors.WaitCursor;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
                 string errMessage;
                 string fileContents = TcpHelper.GetFtpFileContents(_configFileName, out errMessage);
-                System.Windows.Forms.Cursor.Current = Cursors.Default;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
                 if (fileContents != string.Empty)
                 {
                     File.WriteAllText(_configFileName, fileContents);
@@ -41,7 +41,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
                 else
                     return;
             }
-            //TODO: here must file check follow because server returns html back instead of erroneous HttpStatusCode response
+            //ToDo: here must file check follow because server returns html back instead of erroneous HttpStatusCode response
 
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(Path.Combine(Utils.GetAppFolder(), _configFileName));
@@ -182,7 +182,8 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             bool isCheckedActual = e.Node.Checked;
             foreach(TreeNode childNode in e.Node.Nodes)
             {
-				childNode.Checked = isCheckedActual;
+                if (childNode.Checked != isCheckedActual)
+                    childNode.Checked = isCheckedActual;
             }
         }
         //Done
@@ -296,7 +297,7 @@ namespace ZXMAK2.Hardware.Adlers.Views.AssemblerView
             css += "table.routine_details tr td{ font-size: 12px; }";
             css += "p.source_code { font-size: 10px;}";
             css += "</style>";
-			const string css_bodyStyle = "<body style=\"background-color:lightgrey;font-family:consolas,courier;\">";
+            string css_bodyStyle = "<body style=\"background-color:lightgrey;font-family:consolas,courier;\">";
 
             string htmlPrepared = "<!DOCTYPE html><html><head>" + css + "</head>" + css_bodyStyle + i_htmlToFormat + "</body></html>";
 
