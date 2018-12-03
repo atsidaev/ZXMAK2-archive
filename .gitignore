@@ -1,6 +1,7 @@
+_bindebug
+*/**/obj
+.vs
 .nuget
-obj
 bin
 *.suo
-_bindebug
 _binrelease
