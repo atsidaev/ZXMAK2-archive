@@ -77,7 +77,7 @@ namespace ZXMAK2.Hardware.Adlers
         {
             try
             {
-                m_viewHolder = new ViewHolder<IDebuggerAdlersView>("Debugger");
+                m_viewHolder = new ViewHolder<IDebuggerAdlersView>("Adlers Debugger");
             }
             catch (Exception ex)
             {

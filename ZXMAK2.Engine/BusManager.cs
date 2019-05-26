@@ -183,13 +183,6 @@ namespace ZXMAK2.Engine
                             device.Name));
                 }
             }
-            if (device is IJtagDevice && FindDevice<IJtagDevice>() != null)
-            {
-                throw new InvalidOperationException(
-                    string.Format(
-                        "Cannot add second instance of JtagDevice! '{0}'",
-                        device.Name));
-            }
             var ula = device as IUlaDevice;
             if (ula != null)
             {
@@ -287,9 +280,9 @@ namespace ZXMAK2.Engine
             OnBeginFrame();
             if (m_debuggable != null)
             {
-                var jtag = FindDevice<IJtagDevice>();
-                if (jtag != null)
-                    jtag.Attach(m_debuggable);
+                var jtag = FindDevices<IJtagDevice>();
+                foreach (var j in jtag)
+                    j.Attach(m_debuggable);
             }
             m_soundFrame = new FrameSound(
                 SampleRate,
@@ -317,9 +310,9 @@ namespace ZXMAK2.Engine
             }
             if (m_debuggable != null)
             {
-                var jtag = FindDevice<IJtagDevice>();
-                if (jtag != null)
-                    jtag.Detach();
+                var jtag = FindDevices<IJtagDevice>();
+                foreach (var j in jtag)
+                    j.Detach();
             }
             foreach (var device in m_deviceList)
             {
@@ -370,9 +363,9 @@ namespace ZXMAK2.Engine
             m_debuggable = dbg;
             if (m_connected)
             {
-                var jtag = FindDevice<IJtagDevice>();
-                if (jtag != null)
-                    jtag.Attach(m_debuggable);
+                var jtag = FindDevices<IJtagDevice>();
+                foreach (var j in jtag)
+                    j.Attach(m_debuggable);
             }
         }
 
