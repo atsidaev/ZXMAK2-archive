@@ -1,8 +1,8 @@
 # ZXMAK2
 
-Attention! This is a copy of legacy ZXMAK2 repo, which had been located at Codeplex. It contains **all** commits history from Codeplex, so it may be used for archeological purposes. Unfortunately, author decided to create a fresh upload of source code when switched to GitHub.
+Attention! This is a copy of legacy ZXMAK2 repo, which had been located at Codeplex. It contains **all** commits history from Codeplex, so it may be used for archeological purposes and so on. Unfortunately, author decided to create a fresh upload of source code when switched to GitHub.
 
-Thus, this verson stays as an archive only. For current releases and development questions please visit original author's repo: https://github.com/ZXMAK/ZXMAK2
+Thus, this verson stays as an archive only. For current releases and development questions please visit original author's repo: https://github.com/ZXMAK/ZXMAK2.
 
 ## ZX Spectrum Emulator - Virtual Machine
 
