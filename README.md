@@ -1,5 +1,9 @@
 # ZXMAK2
 
+Attention! This is a copy of legacy ZXMAK2 repo, which had been located at Codeplex. It contains **all** commits history from Codeplex, so it may be used for archeological purposes. Unfortunately, author decided to create a fresh upload of source code when switched to GitHub.
+
+Thus, this verson stays as an archive only. For current releases and development questions please visit original author's repo: https://github.com/ZXMAK/ZXMAK2
+
 ## ZX Spectrum Emulator - Virtual Machine
 
 The project written in C# and needs only .NET framework 4 and DirectX 9.
@@ -62,7 +66,7 @@ You may also be interested about this emulator history:
 - Managed DirectX removed, the code rewritten to use direct calls to DirectX. Eliminated LoaderLock issue (Managed DirectX bug). Now emulator has full support of x64 mode. 
 
 2.9.3.6
-- a little change for port decode, covoxPentagon, CovoxScorpion were removed and replaced with CovoxMono è CovoxStereo. You can configure it with text editor in VMZ file.
+- a little change for port decode, covoxPentagon, CovoxScorpion were removed and replaced with CovoxMono Ã¨ CovoxStereo. You can configure it with text editor in VMZ file.
 - fixed ContextMenu bug - blinking menu (popup menu Wizard on Settings window)
 - changed Kempston port decode setting for Spectrum 48 model (incorrect change, see next version)
 
