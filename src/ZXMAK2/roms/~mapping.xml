@@ -55,8 +55,11 @@
 	<RomSet name="PROFI-HDDBOOT">
 		<Page name="RAW" image="PROFI/profi-hddboot.rom" />
 	</RomSet>
-	<RomSet name="Quorum">
+	<RomSet name="Quorum128">
 		<Page name="RAW" image="QUORUM/QU7V42.rom" />
+	</RomSet>
+	<RomSet name="Quorum64">
+		<Page name="RAW" image="QUORUM/QU4I1993.ROM" />
 	</RomSet>
 	<RomSet name="Scorpion">
 		<Page name="RAW" image="SCORPION/scorp295.rom" />		
