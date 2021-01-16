@@ -43,6 +43,9 @@
 	<RomSet name="PROFI">
 		<Page name="RAW" image="PROFI/PROF-M.ROM" />
 	</RomSet>
+	<RomSet name="PROFI-FATALL">
+		<Page name="RAW" image="PROFI/profi_mainrom_fatall.ROM" />
+	</RomSet>
 	<RomSet name="PROFI-V03">
 		<Page name="RAW" image="PROFI/PROFI_v03.ROM" />
 	</RomSet>
